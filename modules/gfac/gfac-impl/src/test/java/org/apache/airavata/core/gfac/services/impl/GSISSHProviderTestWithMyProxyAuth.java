@@ -90,7 +90,7 @@
 //                    "E.g :- mvn clean install -Dmyproxy.username=xxx -Dmyproxy.password=xxx -Dgsi.working.directory=/path<<<<<<<");
 //            throw new Exception("Need my proxy user name password to run tests.");
 //        }
-//        URL resource = GSISSHProviderTestWithMyProxyAuth.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
+//        URL resource = ApplicationSettings.loadFile(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
 //        assert resource != null;
 //        System.out.println(resource.getFile());
 //        GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), null);

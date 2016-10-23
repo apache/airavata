@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>airavata</artifactId>
+        <groupId>org.apache.airavata</groupId>
+        <relativePath>../../pom.xml</relativePath>
+        <version>0.17-SNAPSHOT</version>
+    </parent>
+
+    <properties>
+        <global.version>0.17-SNAPSHOT</global.version>
+    </properties>
+
+    <groupId>org.apache.airavata</groupId>
+    <artifactId>airavata-sharing-registry</artifactId>
+    <packaging>pom</packaging>
+    <version>${global.version}</version>
+
+
+
+    <modules>
+        <module>sharing-registry-stubs</module>
+        <module>sharing-registry-server</module>
+        <module>sharing-data-migrator</module>
+        <module>sharing-registry-distribution</module>
+    </modules>
+</project>

@@ -69,12 +69,14 @@ DATAMODEL_THRIFT_FILE='data-models/airavata_data_models.thrift'
 APP_CATALOG_THRIFT_FILE='data-models/app-catalog-models/app_catalog_models.thrift'
 RESOURCE_CATALOG_THRIFT_FILE='data-models/resource-catalog-models/resource_catalog_models.thrift'
 WORKFLOW_THRIFT_FILE='data-models/workflow-models/workflow_data_model.thrift'
+CREDENTIAL_STORE_DATAMODEL_THRIFT_FILE='data-models/credential-store-models/credential_store_data_models.thrift'
 
 DATAMODEL_SRC_DIR='../airavata-api/airavata-data-models/src/main/java'
 JAVA_API_SDK_DIR='../airavata-api/airavata-api-stubs/src/main/java'
 PHP_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-php-sdk/src/main/resources/lib'
 CPP_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-cpp-sdk/src/main/resources/lib/airavata/'
 PYTHON_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-python-sdk/src/main/resources/lib/'
+CREDENTIAL_DATAMODEL_SRC_DIR='../modules/credential-store/credential-store-stubs/src/main/java/org/apache/airavata/credential/store/datamodel'
 
 # Initialize the thrift arguments.
 #  Since most of the Airavata API and Data Models have includes, use recursive option by default.
@@ -184,6 +186,27 @@ generate_java_stubs() {
     # As a precaution  remove and previously generated files if exists
     rm -rf ${JAVA_GEN_DIR}
 
+    # Generate the credential store data models in move them to respective modules/credential-store directory
+
+     $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans ${CREDENTIAL_STORE_DATAMODEL_THRIFT_FILE} || fail unable to generate java bean thrift classes on app workflow data models
+
+    # For the generated java beans add the ASF V2 License header
+    add_license_header $JAVA_BEAN_GEN_DIR
+
+    # Compare the newly generated beans with existing sources and replace the changed ones.
+    copy_changed_files ${JAVA_BEAN_GEN_DIR}/org/apache/airavata/credential/store/datamodel} ${CREDENTIAL_DATAMODEL_SRC_DIR}
+
+    ###############################################################################
+    # Generate/Update source used by Airavata Server Skeletons & Java Client Stubs #
+    #  JAVA server and client both use generated api-boilerplate-code             #
+    ###############################################################################
+
+    #Java generation directory
+    JAVA_GEN_DIR=${BASE_TARGET_DIR}/gen-java
+
+    # As a precaution  remove and previously generated files if exists
+    rm -rf ${JAVA_GEN_DIR}
+
     # Using thrift Java generator, generate the java classes based on Airavata API. This
     #   The airavata_api.thrift includes rest of data models.
     $THRIFT_EXEC ${THRIFT_ARGS} --gen java ${AIRAVATA_API_THRIFT_FILE} || fail unable to generate java thrift classes on AiravataAPI
@@ -216,6 +239,7 @@ generate_php_stubs() {
     $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${APP_CATALOG_THRIFT_FILE}  || fail unable to generate PHP thrift classes
     $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${RESOURCE_CATALOG_THRIFT_FILE}   || fail unable to generate PHP thrift classes
     $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${AIRAVATA_API_THRIFT_FILE} || fail unable to generate PHP thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${CREDENTIAL_STORE_DATAMODEL_THRIFT_FILE} || fail unable to generate PHP thrift classes
 
     # For the generated java classes add the ASF V2 License header
     ## TODO Write PHP license parser

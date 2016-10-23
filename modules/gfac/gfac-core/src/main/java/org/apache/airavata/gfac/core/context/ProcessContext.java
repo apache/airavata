@@ -64,6 +64,7 @@ public class ProcessContext {
 	private final String tokenId;
 	private ProcessModel processModel;
 	private String workingDir;
+	private String scratchLocation;
 	private String inputDir;
 	private String outputDir;
 	private String localWorkingDir;
@@ -166,18 +167,22 @@ public class ProcessContext {
             if (processModel.getProcessResourceSchedule().getStaticWorkingDir() != null){
                 workingDir = processModel.getProcessResourceSchedule().getStaticWorkingDir();
             }else {
-                String scratchLocation = null;
-				String overrideScratchLocation = processModel.getProcessResourceSchedule().getOverrideScratchLocation();
-                if (overrideScratchLocation != null && !overrideScratchLocation.equals("")) {
-					scratchLocation = overrideScratchLocation;
-				} else {
-					scratchLocation = computeResourcePreference.getScratchLocation();
-				}
+                String scratchLocation = getScratchLocation();
                 workingDir = (scratchLocation.endsWith("/") ? scratchLocation + processId : scratchLocation + "/" +
                         processId);
             }
 		}
 		return workingDir;
+	}
+
+	public String getScratchLocation() {
+		if (scratchLocation == null) {
+			scratchLocation = processModel.getProcessResourceSchedule().getOverrideScratchLocation();
+			if(scratchLocation == null || scratchLocation.isEmpty()){
+				scratchLocation = computeResourcePreference.getScratchLocation();
+			}
+		}
+		return scratchLocation;
 	}
 
 	public void setWorkingDir(String workingDir) {
@@ -523,6 +528,7 @@ public class ProcessContext {
 	public void setRecoveryWithCancel(boolean recoveryWithCancel) {
 		this.recoveryWithCancel = recoveryWithCancel;
 	}
+
 
 }
 

@@ -23,16 +23,32 @@
  */
 package org.apache.airavata.model.task;
 
-import org.apache.thrift.EncodingUtils;
-import org.apache.thrift.protocol.TTupleProtocol;
 import org.apache.thrift.scheme.IScheme;
 import org.apache.thrift.scheme.SchemeFactory;
 import org.apache.thrift.scheme.StandardScheme;
-import org.apache.thrift.scheme.TupleScheme;
 
-import javax.annotation.Generated;
+import org.apache.thrift.scheme.TupleScheme;
+import org.apache.thrift.protocol.TTupleProtocol;
+import org.apache.thrift.protocol.TProtocolException;
+import org.apache.thrift.EncodingUtils;
+import org.apache.thrift.TException;
+import org.apache.thrift.async.AsyncMethodCallback;
+import org.apache.thrift.server.AbstractNonblockingServer.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.EnumMap;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.EnumSet;
+import java.util.Collections;
+import java.util.BitSet;
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.Arrays;
+import javax.annotation.Generated;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked"})
 /**
@@ -53,10 +69,10 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
   private static final org.apache.thrift.protocol.TField PARENT_PROCESS_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("parentProcessId", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("creationTime", org.apache.thrift.protocol.TType.I64, (short)4);
   private static final org.apache.thrift.protocol.TField LAST_UPDATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("lastUpdateTime", org.apache.thrift.protocol.TType.I64, (short)5);
-  private static final org.apache.thrift.protocol.TField TASK_STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("taskStatuses", org.apache.thrift.protocol.TType.LIST, (short)6);
+  private static final org.apache.thrift.protocol.TField TASK_STATUSES_FIELD_DESC = new org.apache.thrift.protocol.TField("taskStatuses", org.apache.thrift.protocol.TType.LIST, (short)6);
   private static final org.apache.thrift.protocol.TField TASK_DETAIL_FIELD_DESC = new org.apache.thrift.protocol.TField("taskDetail", org.apache.thrift.protocol.TType.STRING, (short)7);
   private static final org.apache.thrift.protocol.TField SUB_TASK_MODEL_FIELD_DESC = new org.apache.thrift.protocol.TField("subTaskModel", org.apache.thrift.protocol.TType.STRING, (short)8);
-  private static final org.apache.thrift.protocol.TField TASK_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("taskErrors", org.apache.thrift.protocol.TType.LIST, (short)9);
+  private static final org.apache.thrift.protocol.TField TASK_ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("taskErrors", org.apache.thrift.protocol.TType.LIST, (short)9);
   private static final org.apache.thrift.protocol.TField JOBS_FIELD_DESC = new org.apache.thrift.protocol.TField("jobs", org.apache.thrift.protocol.TType.LIST, (short)10);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -87,10 +103,10 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
     PARENT_PROCESS_ID((short)3, "parentProcessId"),
     CREATION_TIME((short)4, "creationTime"),
     LAST_UPDATE_TIME((short)5, "lastUpdateTime"),
-    TASK_STATUS((short)6, "taskStatuses"),
+    TASK_STATUSES((short)6, "taskStatuses"),
     TASK_DETAIL((short)7, "taskDetail"),
     SUB_TASK_MODEL((short)8, "subTaskModel"),
-    TASK_ERROR((short)9, "taskErrors"),
+    TASK_ERRORS((short)9, "taskErrors"),
     JOBS((short)10, "jobs");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
@@ -116,14 +132,14 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
           return CREATION_TIME;
         case 5: // LAST_UPDATE_TIME
           return LAST_UPDATE_TIME;
-        case 6: // TASK_STATUS
-          return TASK_STATUS;
+        case 6: // TASK_STATUSES
+          return TASK_STATUSES;
         case 7: // TASK_DETAIL
           return TASK_DETAIL;
         case 8: // SUB_TASK_MODEL
           return SUB_TASK_MODEL;
-        case 9: // TASK_ERROR
-          return TASK_ERROR;
+        case 9: // TASK_ERRORS
+          return TASK_ERRORS;
         case 10: // JOBS
           return JOBS;
         default:
@@ -169,7 +185,7 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
   private static final int __CREATIONTIME_ISSET_ID = 0;
   private static final int __LASTUPDATETIME_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.TASK_DETAIL,_Fields.SUB_TASK_MODEL,_Fields.TASK_ERROR,_Fields.JOBS};
+  private static final _Fields optionals[] = {_Fields.TASK_DETAIL,_Fields.SUB_TASK_MODEL,_Fields.TASK_ERRORS,_Fields.JOBS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -183,14 +199,14 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     tmpMap.put(_Fields.LAST_UPDATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("lastUpdateTime", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
-    tmpMap.put(_Fields.TASK_STATUS, new org.apache.thrift.meta_data.FieldMetaData("taskStatuses", org.apache.thrift.TFieldRequirementType.REQUIRED,
+    tmpMap.put(_Fields.TASK_STATUSES, new org.apache.thrift.meta_data.FieldMetaData("taskStatuses", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.status.TaskStatus.class))));
     tmpMap.put(_Fields.TASK_DETAIL, new org.apache.thrift.meta_data.FieldMetaData("taskDetail", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.SUB_TASK_MODEL, new org.apache.thrift.meta_data.FieldMetaData("subTaskModel", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , true)));
-    tmpMap.put(_Fields.TASK_ERROR, new org.apache.thrift.meta_data.FieldMetaData("taskErrors", org.apache.thrift.TFieldRequirementType.OPTIONAL,
+    tmpMap.put(_Fields.TASK_ERRORS, new org.apache.thrift.meta_data.FieldMetaData("taskErrors", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.commons.ErrorModel.class))));
     tmpMap.put(_Fields.JOBS, new org.apache.thrift.meta_data.FieldMetaData("jobs", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -211,7 +227,7 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
     String parentProcessId,
     long creationTime,
     long lastUpdateTime,
-    List<org.apache.airavata.model.status.TaskStatus> taskStatus)
+    List<org.apache.airavata.model.status.TaskStatus> taskStatuses)
   {
     this();
     this.taskId = taskId;
@@ -221,7 +237,7 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
     setCreationTimeIsSet(true);
     this.lastUpdateTime = lastUpdateTime;
     setLastUpdateTimeIsSet(true);
-    this.taskStatuses = taskStatus;
+    this.taskStatuses = taskStatuses;
   }
 
   /**
@@ -240,12 +256,12 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
     }
     this.creationTime = other.creationTime;
     this.lastUpdateTime = other.lastUpdateTime;
-    if (other.isSetTaskStatus()) {
-      List<org.apache.airavata.model.status.TaskStatus> __this__taskStatus = new ArrayList<org.apache.airavata.model.status.TaskStatus>(other.taskStatuses.size());
+    if (other.isSetTaskStatuses()) {
+      List<org.apache.airavata.model.status.TaskStatus> __this__taskStatuses = new ArrayList<org.apache.airavata.model.status.TaskStatus>(other.taskStatuses.size());
       for (org.apache.airavata.model.status.TaskStatus other_element : other.taskStatuses) {
-        __this__taskStatus.add(new org.apache.airavata.model.status.TaskStatus(other_element));
+        __this__taskStatuses.add(new org.apache.airavata.model.status.TaskStatus(other_element));
       }
-      this.taskStatuses = __this__taskStatus;
+      this.taskStatuses = __this__taskStatuses;
     }
     if (other.isSetTaskDetail()) {
       this.taskDetail = other.taskDetail;
@@ -253,12 +269,12 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
     if (other.isSetSubTaskModel()) {
       this.subTaskModel = org.apache.thrift.TBaseHelper.copyBinary(other.subTaskModel);
     }
-    if (other.isSetTaskError()) {
-      List<org.apache.airavata.model.commons.ErrorModel> __this__taskError = new ArrayList<org.apache.airavata.model.commons.ErrorModel>(other.taskErrors.size());
+    if (other.isSetTaskErrors()) {
+      List<org.apache.airavata.model.commons.ErrorModel> __this__taskErrors = new ArrayList<org.apache.airavata.model.commons.ErrorModel>(other.taskErrors.size());
       for (org.apache.airavata.model.commons.ErrorModel other_element : other.taskErrors) {
-        __this__taskError.add(new org.apache.airavata.model.commons.ErrorModel(other_element));
+        __this__taskErrors.add(new org.apache.airavata.model.commons.ErrorModel(other_element));
       }
-      this.taskErrors = __this__taskError;
+      this.taskErrors = __this__taskErrors;
     }
     if (other.isSetJobs()) {
       List<org.apache.airavata.model.job.JobModel> __this__jobs = new ArrayList<org.apache.airavata.model.job.JobModel>(other.jobs.size());
@@ -411,15 +427,15 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __LASTUPDATETIME_ISSET_ID, value);
   }
 
-  public int getTaskStatusSize() {
+  public int getTaskStatusesSize() {
     return (this.taskStatuses == null) ? 0 : this.taskStatuses.size();
   }
 
-  public java.util.Iterator<org.apache.airavata.model.status.TaskStatus> getTaskStatusIterator() {
+  public java.util.Iterator<org.apache.airavata.model.status.TaskStatus> getTaskStatusesIterator() {
     return (this.taskStatuses == null) ? null : this.taskStatuses.iterator();
   }
 
-  public void addToTaskStatus(org.apache.airavata.model.status.TaskStatus elem) {
+  public void addToTaskStatuses(org.apache.airavata.model.status.TaskStatus elem) {
     if (this.taskStatuses == null) {
       this.taskStatuses = new ArrayList<org.apache.airavata.model.status.TaskStatus>();
     }
@@ -434,16 +450,16 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
     this.taskStatuses = taskStatuses;
   }
 
-  public void unsetTaskStatus() {
+  public void unsetTaskStatuses() {
     this.taskStatuses = null;
   }
 
   /** Returns true if field taskStatuses is set (has been assigned a value) and false otherwise */
-  public boolean isSetTaskStatus() {
+  public boolean isSetTaskStatuses() {
     return this.taskStatuses != null;
   }
 
-  public void setTaskStatusIsSet(boolean value) {
+  public void setTaskStatusesIsSet(boolean value) {
     if (!value) {
       this.taskStatuses = null;
     }
@@ -504,15 +520,15 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
     }
   }
 
-  public int getTaskErrorSize() {
+  public int getTaskErrorsSize() {
     return (this.taskErrors == null) ? 0 : this.taskErrors.size();
   }
 
-  public java.util.Iterator<org.apache.airavata.model.commons.ErrorModel> getTaskErrorIterator() {
+  public java.util.Iterator<org.apache.airavata.model.commons.ErrorModel> getTaskErrorsIterator() {
     return (this.taskErrors == null) ? null : this.taskErrors.iterator();
   }
 
-  public void addToTaskError(org.apache.airavata.model.commons.ErrorModel elem) {
+  public void addToTaskErrors(org.apache.airavata.model.commons.ErrorModel elem) {
     if (this.taskErrors == null) {
       this.taskErrors = new ArrayList<org.apache.airavata.model.commons.ErrorModel>();
     }
@@ -527,16 +543,16 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
     this.taskErrors = taskErrors;
   }
 
-  public void unsetTaskError() {
+  public void unsetTaskErrors() {
     this.taskErrors = null;
   }
 
   /** Returns true if field taskErrors is set (has been assigned a value) and false otherwise */
-  public boolean isSetTaskError() {
+  public boolean isSetTaskErrors() {
     return this.taskErrors != null;
   }
 
-  public void setTaskErrorIsSet(boolean value) {
+  public void setTaskErrorsIsSet(boolean value) {
     if (!value) {
       this.taskErrors = null;
     }
@@ -622,11 +638,11 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
       }
       break;
 
-    case TASK_STATUS:
+    case TASK_STATUSES:
       if (value == null) {
-        unsetTaskStatus();
+        unsetTaskStatuses();
       } else {
-        setTaskStatuses((List<org.apache.airavata.model.status.TaskStatus>) value);
+        setTaskStatuses((List<org.apache.airavata.model.status.TaskStatus>)value);
       }
       break;
 
@@ -646,11 +662,11 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
       }
       break;
 
-    case TASK_ERROR:
+    case TASK_ERRORS:
       if (value == null) {
-        unsetTaskError();
+        unsetTaskErrors();
       } else {
-        setTaskErrors((List<org.apache.airavata.model.commons.ErrorModel>) value);
+        setTaskErrors((List<org.apache.airavata.model.commons.ErrorModel>)value);
       }
       break;
 
@@ -682,7 +698,7 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
     case LAST_UPDATE_TIME:
       return getLastUpdateTime();
 
-    case TASK_STATUS:
+    case TASK_STATUSES:
       return getTaskStatuses();
 
     case TASK_DETAIL:
@@ -691,7 +707,7 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
     case SUB_TASK_MODEL:
       return getSubTaskModel();
 
-    case TASK_ERROR:
+    case TASK_ERRORS:
       return getTaskErrors();
 
     case JOBS:
@@ -718,14 +734,14 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
       return isSetCreationTime();
     case LAST_UPDATE_TIME:
       return isSetLastUpdateTime();
-    case TASK_STATUS:
-      return isSetTaskStatus();
+    case TASK_STATUSES:
+      return isSetTaskStatuses();
     case TASK_DETAIL:
       return isSetTaskDetail();
     case SUB_TASK_MODEL:
       return isSetSubTaskModel();
-    case TASK_ERROR:
-      return isSetTaskError();
+    case TASK_ERRORS:
+      return isSetTaskErrors();
     case JOBS:
       return isSetJobs();
     }
@@ -790,10 +806,10 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
         return false;
     }
 
-    boolean this_present_taskStatus = true && this.isSetTaskStatus();
-    boolean that_present_taskStatus = true && that.isSetTaskStatus();
-    if (this_present_taskStatus || that_present_taskStatus) {
-      if (!(this_present_taskStatus && that_present_taskStatus))
+    boolean this_present_taskStatuses = true && this.isSetTaskStatuses();
+    boolean that_present_taskStatuses = true && that.isSetTaskStatuses();
+    if (this_present_taskStatuses || that_present_taskStatuses) {
+      if (!(this_present_taskStatuses && that_present_taskStatuses))
         return false;
       if (!this.taskStatuses.equals(that.taskStatuses))
         return false;
@@ -817,10 +833,10 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
         return false;
     }
 
-    boolean this_present_taskError = true && this.isSetTaskError();
-    boolean that_present_taskError = true && that.isSetTaskError();
-    if (this_present_taskError || that_present_taskError) {
-      if (!(this_present_taskError && that_present_taskError))
+    boolean this_present_taskErrors = true && this.isSetTaskErrors();
+    boolean that_present_taskErrors = true && that.isSetTaskErrors();
+    if (this_present_taskErrors || that_present_taskErrors) {
+      if (!(this_present_taskErrors && that_present_taskErrors))
         return false;
       if (!this.taskErrors.equals(that.taskErrors))
         return false;
@@ -867,9 +883,9 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
     if (present_lastUpdateTime)
       list.add(lastUpdateTime);
 
-    boolean present_taskStatus = true && (isSetTaskStatus());
-    list.add(present_taskStatus);
-    if (present_taskStatus)
+    boolean present_taskStatuses = true && (isSetTaskStatuses());
+    list.add(present_taskStatuses);
+    if (present_taskStatuses)
       list.add(taskStatuses);
 
     boolean present_taskDetail = true && (isSetTaskDetail());
@@ -882,9 +898,9 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
     if (present_subTaskModel)
       list.add(subTaskModel);
 
-    boolean present_taskError = true && (isSetTaskError());
-    list.add(present_taskError);
-    if (present_taskError)
+    boolean present_taskErrors = true && (isSetTaskErrors());
+    list.add(present_taskErrors);
+    if (present_taskErrors)
       list.add(taskErrors);
 
     boolean present_jobs = true && (isSetJobs());
@@ -953,11 +969,11 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetTaskStatus()).compareTo(other.isSetTaskStatus());
+    lastComparison = Boolean.valueOf(isSetTaskStatuses()).compareTo(other.isSetTaskStatuses());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetTaskStatus()) {
+    if (isSetTaskStatuses()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.taskStatuses, other.taskStatuses);
       if (lastComparison != 0) {
         return lastComparison;
@@ -983,11 +999,11 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetTaskError()).compareTo(other.isSetTaskError());
+    lastComparison = Boolean.valueOf(isSetTaskErrors()).compareTo(other.isSetTaskErrors());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetTaskError()) {
+    if (isSetTaskErrors()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.taskErrors, other.taskErrors);
       if (lastComparison != 0) {
         return lastComparison;
@@ -1082,7 +1098,7 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
       }
       first = false;
     }
-    if (isSetTaskError()) {
+    if (isSetTaskErrors()) {
       if (!first) sb.append(", ");
       sb.append("taskErrors:");
       if (this.taskErrors == null) {
@@ -1128,7 +1144,7 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'lastUpdateTime' is unset! Struct:" + toString());
     }
 
-    if (!isSetTaskStatus()) {
+    if (!isSetTaskStatuses()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'taskStatuses' is unset! Struct:" + toString());
     }
 
@@ -1211,7 +1227,7 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // TASK_STATUS
+          case 6: // TASK_STATUSES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
@@ -1225,7 +1241,7 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
                 }
                 iprot.readListEnd();
               }
-              struct.setTaskStatusIsSet(true);
+              struct.setTaskStatusesIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1246,7 +1262,7 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 9: // TASK_ERROR
+          case 9: // TASK_ERRORS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list3 = iprot.readListBegin();
@@ -1260,7 +1276,7 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
                 }
                 iprot.readListEnd();
               }
-              struct.setTaskErrorIsSet(true);
+              struct.setTaskErrorsIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1319,7 +1335,7 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
       oprot.writeI64(struct.lastUpdateTime);
       oprot.writeFieldEnd();
       if (struct.taskStatuses != null) {
-        oprot.writeFieldBegin(TASK_STATUS_FIELD_DESC);
+        oprot.writeFieldBegin(TASK_STATUSES_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.taskStatuses.size()));
           for (org.apache.airavata.model.status.TaskStatus _iter9 : struct.taskStatuses)
@@ -1345,8 +1361,8 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
         }
       }
       if (struct.taskErrors != null) {
-        if (struct.isSetTaskError()) {
-          oprot.writeFieldBegin(TASK_ERROR_FIELD_DESC);
+        if (struct.isSetTaskErrors()) {
+          oprot.writeFieldBegin(TASK_ERRORS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.taskErrors.size()));
             for (org.apache.airavata.model.commons.ErrorModel _iter10 : struct.taskErrors)
@@ -1408,7 +1424,7 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
       if (struct.isSetSubTaskModel()) {
         optionals.set(1);
       }
-      if (struct.isSetTaskError()) {
+      if (struct.isSetTaskErrors()) {
         optionals.set(2);
       }
       if (struct.isSetJobs()) {
@@ -1421,7 +1437,7 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
       if (struct.isSetSubTaskModel()) {
         oprot.writeBinary(struct.subTaskModel);
       }
-      if (struct.isSetTaskError()) {
+      if (struct.isSetTaskErrors()) {
         {
           oprot.writeI32(struct.taskErrors.size());
           for (org.apache.airavata.model.commons.ErrorModel _iter13 : struct.taskErrors)
@@ -1465,7 +1481,7 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
           struct.taskStatuses.add(_elem16);
         }
       }
-      struct.setTaskStatusIsSet(true);
+      struct.setTaskStatusesIsSet(true);
       BitSet incoming = iprot.readBitSet(4);
       if (incoming.get(0)) {
         struct.taskDetail = iprot.readString();
@@ -1487,7 +1503,7 @@ public class TaskModel implements org.apache.thrift.TBase<TaskModel, TaskModel._
             struct.taskErrors.add(_elem19);
           }
         }
-        struct.setTaskErrorIsSet(true);
+        struct.setTaskErrorsIsSet(true);
       }
       if (incoming.get(3)) {
         {

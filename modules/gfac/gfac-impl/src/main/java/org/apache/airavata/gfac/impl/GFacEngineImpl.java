@@ -80,6 +80,8 @@ public class GFacEngineImpl implements GFacEngine {
     @Override
     public ProcessContext populateProcessContext(String processId, String gatewayId, String
             tokenId) throws GFacException {
+
+        // NOTE: Process context gives precedence to data come with process Computer resources;
         ProcessContext processContext = new ProcessContext(processId, gatewayId, tokenId);
         try {
             AppCatalog appCatalog = Factory.getDefaultAppCatalog();
@@ -195,6 +197,9 @@ public class GFacEngineImpl implements GFacEngine {
                 }
                 processContext.setJobModel(((JobModel) jobModels.get(0)));
             }
+
+
+
             return processContext;
         } catch (AppCatalogException e) {
             String msg = "App catalog access exception ";
@@ -493,7 +498,8 @@ public class GFacEngineImpl implements GFacEngine {
         try {
             EnvironmentSetupTaskModel subTaskModel = (EnvironmentSetupTaskModel) taskContext.getSubTaskModel();
             Task envSetupTask = null;
-            if (subTaskModel.getProtocol() == SecurityProtocol.SSH_KEYS) {
+            if (subTaskModel.getProtocol() == SecurityProtocol.SSH_KEYS ||
+                    subTaskModel.getProtocol() == SecurityProtocol.LOCAL) {
                 envSetupTask = new EnvironmentSetupTask();
             } else {
                 throw new GFacException("Unsupported security protocol, Airavata doesn't support " +
@@ -539,6 +545,10 @@ public class GFacEngineImpl implements GFacEngine {
         ProcessContext processContext = taskContext.getParentProcessContext();
         // handle URI_COLLECTION input data type
         Task dMoveTask = Factory.getDataMovementTask(processContext.getDataMovementProtocol());
+        if(null == dMoveTask){
+            throw new GFacException("Unsupported security protocol, Airavata doesn't support " +
+                    processContext.getDataMovementProtocol() + " protocol yet.");
+        }
         if (taskContext.getProcessInput().getType() == DataType.URI_COLLECTION) {
             String values = taskContext.getProcessInput().getValue();
             String[] multiple_inputs = values.split(GFacConstants.MULTIPLE_INPUTS_SPLITTER);
@@ -708,6 +718,10 @@ public class GFacEngineImpl implements GFacEngine {
             dMoveTask = Factory.getArchiveTask();
         } else {
             dMoveTask = Factory.getDataMovementTask(processContext.getDataMovementProtocol());
+        }
+        if(null == dMoveTask){
+            throw new GFacException("Unsupported security protocol, Airavata doesn't support " +
+                    processContext.getDataMovementProtocol() + " protocol yet.");
         }
         taskStatus = executeTask(taskContext, dMoveTask, recovery);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());

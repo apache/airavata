@@ -21,6 +21,7 @@ import apache.airavata.model.appcatalog.appinterface.ttypes
 import apache.airavata.model.appcatalog.computeresource.ttypes
 import apache.airavata.model.appcatalog.storageresource.ttypes
 import apache.airavata.model.appcatalog.gatewayprofile.ttypes
+import apache.airavata.model.appcatalog.userresourceprofile.ttypes
 import apache.airavata.model.data.movement.ttypes
 import apache.airavata.model.workflow.ttypes
 import apache.airavata.model.data.replica.ttypes

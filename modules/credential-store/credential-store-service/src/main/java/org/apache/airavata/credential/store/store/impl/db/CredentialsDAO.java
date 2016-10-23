@@ -86,7 +86,7 @@ public class CredentialsDAO extends ParentDAO {
     public void addCredentials(String gatewayId, Credential credential, Connection connection)
             throws CredentialStoreException {
 
-        String sql = "INSERT INTO CREDENTIALS VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO CREDENTIALS VALUES (?, ?, ?, ?, ?, ?)";
 
         PreparedStatement preparedStatement = null;
 
@@ -105,6 +105,8 @@ public class CredentialsDAO extends ParentDAO {
             Timestamp timestamp = new Timestamp(date.getTime());
 
             preparedStatement.setTimestamp(5, timestamp);
+
+            preparedStatement.setString(6,credential.getDescription());
 
             preparedStatement.executeUpdate();
 
@@ -161,7 +163,7 @@ public class CredentialsDAO extends ParentDAO {
     public void updateCredentials(String gatewayId, Credential credential, Connection connection)
             throws CredentialStoreException {
 
-        String sql = "UPDATE CREDENTIALS set CREDENTIAL = ?, PORTAL_USER_ID = ?, TIME_PERSISTED = ? where GATEWAY_ID = ? and TOKEN_ID = ?";
+        String sql = "UPDATE CREDENTIALS set CREDENTIAL = ?, PORTAL_USER_ID = ?, TIME_PERSISTED = ?, DESCRIPTION = ? where GATEWAY_ID = ? and TOKEN_ID = ?";
 
         PreparedStatement preparedStatement = null;
 
@@ -174,8 +176,10 @@ public class CredentialsDAO extends ParentDAO {
             preparedStatement.setString(2, credential.getPortalUserName());
 
             preparedStatement.setTimestamp(3, new Timestamp(new java.util.Date().getTime()));
-            preparedStatement.setString(4, gatewayId);
-            preparedStatement.setString(5, credential.getToken());
+            preparedStatement.setString(4, credential.getDescription());
+            preparedStatement.setString(5, gatewayId);
+            preparedStatement.setString(6, credential.getToken());
+
 
             preparedStatement.executeUpdate();
 
@@ -227,6 +231,7 @@ public class CredentialsDAO extends ParentDAO {
 
                 certificateCredential.setPortalUserName(resultSet.getString("PORTAL_USER_ID"));
                 certificateCredential.setCertificateRequestedTime(resultSet.getTimestamp("TIME_PERSISTED"));
+                certificateCredential.setDescription(resultSet.getString("DESCRIPTION"));
 
                 return certificateCredential;
             }
@@ -314,6 +319,7 @@ public class CredentialsDAO extends ParentDAO {
 
                 certificateCredential.setPortalUserName(resultSet.getString("PORTAL_USER_ID"));
                 certificateCredential.setCertificateRequestedTime(resultSet.getTimestamp("TIME_PERSISTED"));
+                certificateCredential.setDescription(resultSet.getString("DESCRIPTION"));
 
                 credentialList.add(certificateCredential);
             }
@@ -363,6 +369,7 @@ public class CredentialsDAO extends ParentDAO {
 
                 certificateCredential.setPortalUserName(resultSet.getString("PORTAL_USER_ID"));
                 certificateCredential.setCertificateRequestedTime(resultSet.getTimestamp("TIME_PERSISTED"));
+                certificateCredential.setDescription(resultSet.getString("DESCRIPTION"));
 
                 credentialList.add(certificateCredential);
             }

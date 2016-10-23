@@ -76,7 +76,9 @@
 		<surefire.version>2.18.1</surefire.version>
 		<junit.version>4.12</junit.version>
 		<curator.version>2.8.0</curator.version>
+<!--remove xmlbeans version -->
 		<xmlbeans.version>2.5.0</xmlbeans.version>
+		<groovy.version>2.4.7</groovy.version>
 		<xpp3.version>1.1.6</xpp3.version>
 		<xpp5.version>1.2.8</xpp5.version>
 		<xsul.version>2.10.7</xsul.version>
@@ -101,6 +103,8 @@
         <snakeyaml.version>1.15</snakeyaml.version>
 		<maven.javadoc.failOnError>false</maven.javadoc.failOnError>
 		<maven.replacer.plugin.version>1.5.3</maven.replacer.plugin.version>
+		<kafka-clients.version>0.8.2.2</kafka-clients.version>
+		<logback.version>1.1.6</logback.version>
 	</properties>
 
 	<developers>
@@ -434,6 +438,16 @@
 				<artifactId>curator-framework</artifactId>
 				<version>${curator.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.apache.kafka</groupId>
+				<artifactId>kafka-clients</artifactId>
+				<version>${kafka-clients.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${logback.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -479,6 +493,39 @@
 			<id>default</id>
 			<build>
 				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>templating-maven-plugin</artifactId>
+						<version>1.0.0</version>
+						<executions>
+							<execution>
+								<id>filtering-java-templates</id>
+								<goals>
+									<goal>filter-sources</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>com.lukegb.mojo</groupId>
+						<artifactId>gitdescribe-maven-plugin</artifactId>
+						<version>3.0</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>gitdescribe</goal>
+								</goals>
+								<id>git-describe</id>
+								<phase>initialize</phase>
+								<configuration>
+									<extraArguments>
+										<param>--tags</param>
+									</extraArguments>
+									<descriptionProperty>git-describe</descriptionProperty>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-remote-resources-plugin</artifactId>
@@ -542,6 +589,26 @@
 							</excludes>
 						</configuration>
 					</plugin>
+					<plugin>
+						<groupId>com.lukegb.mojo</groupId>
+						<artifactId>gitdescribe-maven-plugin</artifactId>
+						<version>3.0</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>gitdescribe</goal>
+								</goals>
+								<id>git-describe</id>
+								<phase>initialize</phase>
+								<configuration>
+									<extraArguments>
+										<param>--tags</param>
+									</extraArguments>
+									<descriptionProperty>git-describe</descriptionProperty>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
 				</plugins>
 			</build>
 			<activation>
@@ -563,7 +630,7 @@
 				<module>modules/server</module>
 				<module>modules/workflow</module>
 				<module>modules/test-suite</module>
-				<module>modules/group-manager</module>
+				<module>modules/sharing-registry</module>
 				<!-- Deprecated Modules-->
 				<!--<module>modules/integration-tests</module>-->
 				<!--<module>modules/workflow-model</module>-->

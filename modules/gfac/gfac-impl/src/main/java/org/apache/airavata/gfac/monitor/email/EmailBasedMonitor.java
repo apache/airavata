@@ -91,7 +91,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
         properties = new Properties();
         properties.put("mail.store.protocol", storeProtocol);
         timer = new Timer("CancelJobHandler", true);
-        long period = 1000*60*5; // five minute delay between successive task executions.
+        long period = 1000 * 60 * 5; // five minute delay between successive task executions.
         timer.schedule(new CancelTimerTask(), 0 , period);
     }
 
@@ -117,7 +117,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 	}
 	@Override
 	public void monitor(String jobId, TaskContext taskContext) {
-		log.info("[EJM]: Added monitor Id : " + jobId + " to email based monitor map");
+		log.info("[EJM]: Added monitor Id : {} to email based monitor map", jobId);
 		jobMonitorMap.put(jobId, taskContext);
         taskContext.getParentProcessContext().setPauseTaskExecution(true);
 	}
@@ -203,7 +203,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 					    continue;
 				    } else {
                         quite = false;
-					    log.info("[EJM]: " + jobMonitorMap.size() + " job/s in job monitor map");
+					    log.info("[EJM]: {} job/s in job monitor map", jobMonitorMap.size());
 				    }
 				    if (!store.isConnected()) {
 					    store.connect();

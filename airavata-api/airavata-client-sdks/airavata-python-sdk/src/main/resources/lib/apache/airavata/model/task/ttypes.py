@@ -94,10 +94,10 @@ class TaskModel:
    - parentProcessId
    - creationTime
    - lastUpdateTime
-   - taskStatus
+   - taskStatuses
    - taskDetail
    - subTaskModel
-   - taskError
+   - taskErrors
    - jobs
   """
 
@@ -108,23 +108,23 @@ class TaskModel:
     (3, TType.STRING, 'parentProcessId', None, None, ), # 3
     (4, TType.I64, 'creationTime', None, None, ), # 4
     (5, TType.I64, 'lastUpdateTime', None, None, ), # 5
-    (6, TType.LIST, 'taskStatus', (TType.STRUCT,(apache.airavata.model.status.ttypes.TaskStatus, apache.airavata.model.status.ttypes.TaskStatus.thrift_spec)), None, ), # 6
+    (6, TType.LIST, 'taskStatuses', (TType.STRUCT,(apache.airavata.model.status.ttypes.TaskStatus, apache.airavata.model.status.ttypes.TaskStatus.thrift_spec)), None, ), # 6
     (7, TType.STRING, 'taskDetail', None, None, ), # 7
     (8, TType.STRING, 'subTaskModel', None, None, ), # 8
-    (9, TType.LIST, 'taskError', (TType.STRUCT,(apache.airavata.model.commons.ttypes.ErrorModel, apache.airavata.model.commons.ttypes.ErrorModel.thrift_spec)), None, ), # 9
+    (9, TType.LIST, 'taskErrors', (TType.STRUCT,(apache.airavata.model.commons.ttypes.ErrorModel, apache.airavata.model.commons.ttypes.ErrorModel.thrift_spec)), None, ), # 9
     (10, TType.LIST, 'jobs', (TType.STRUCT,(apache.airavata.model.job.ttypes.JobModel, apache.airavata.model.job.ttypes.JobModel.thrift_spec)), None, ), # 10
   )
 
-  def __init__(self, taskId=thrift_spec[1][4], taskType=None, parentProcessId=None, creationTime=None, lastUpdateTime=None, taskStatus=None, taskDetail=None, subTaskModel=None, taskError=None, jobs=None,):
+  def __init__(self, taskId=thrift_spec[1][4], taskType=None, parentProcessId=None, creationTime=None, lastUpdateTime=None, taskStatuses=None, taskDetail=None, subTaskModel=None, taskErrors=None, jobs=None,):
     self.taskId = taskId
     self.taskType = taskType
     self.parentProcessId = parentProcessId
     self.creationTime = creationTime
     self.lastUpdateTime = lastUpdateTime
-    self.taskStatus = taskStatus
+    self.taskStatuses = taskStatuses
     self.taskDetail = taskDetail
     self.subTaskModel = subTaskModel
-    self.taskError = taskError
+    self.taskErrors = taskErrors
     self.jobs = jobs
 
   def read(self, iprot):
@@ -163,12 +163,12 @@ class TaskModel:
           iprot.skip(ftype)
       elif fid == 6:
         if ftype == TType.LIST:
-          self.taskStatus = []
+          self.taskStatuses = []
           (_etype3, _size0) = iprot.readListBegin()
           for _i4 in xrange(_size0):
             _elem5 = apache.airavata.model.status.ttypes.TaskStatus()
             _elem5.read(iprot)
-            self.taskStatus.append(_elem5)
+            self.taskStatuses.append(_elem5)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -184,12 +184,12 @@ class TaskModel:
           iprot.skip(ftype)
       elif fid == 9:
         if ftype == TType.LIST:
-          self.taskError = []
+          self.taskErrors = []
           (_etype9, _size6) = iprot.readListBegin()
           for _i10 in xrange(_size6):
             _elem11 = apache.airavata.model.commons.ttypes.ErrorModel()
             _elem11.read(iprot)
-            self.taskError.append(_elem11)
+            self.taskErrors.append(_elem11)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -234,10 +234,10 @@ class TaskModel:
       oprot.writeFieldBegin('lastUpdateTime', TType.I64, 5)
       oprot.writeI64(self.lastUpdateTime)
       oprot.writeFieldEnd()
-    if self.taskStatus is not None:
-      oprot.writeFieldBegin('taskStatus', TType.LIST, 6)
-      oprot.writeListBegin(TType.STRUCT, len(self.taskStatus))
-      for iter18 in self.taskStatus:
+    if self.taskStatuses is not None:
+      oprot.writeFieldBegin('taskStatuses', TType.LIST, 6)
+      oprot.writeListBegin(TType.STRUCT, len(self.taskStatuses))
+      for iter18 in self.taskStatuses:
         iter18.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
@@ -249,10 +249,10 @@ class TaskModel:
       oprot.writeFieldBegin('subTaskModel', TType.STRING, 8)
       oprot.writeString(self.subTaskModel)
       oprot.writeFieldEnd()
-    if self.taskError is not None:
-      oprot.writeFieldBegin('taskError', TType.LIST, 9)
-      oprot.writeListBegin(TType.STRUCT, len(self.taskError))
-      for iter19 in self.taskError:
+    if self.taskErrors is not None:
+      oprot.writeFieldBegin('taskErrors', TType.LIST, 9)
+      oprot.writeListBegin(TType.STRUCT, len(self.taskErrors))
+      for iter19 in self.taskErrors:
         iter19.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
@@ -277,8 +277,8 @@ class TaskModel:
       raise TProtocol.TProtocolException(message='Required field creationTime is unset!')
     if self.lastUpdateTime is None:
       raise TProtocol.TProtocolException(message='Required field lastUpdateTime is unset!')
-    if self.taskStatus is None:
-      raise TProtocol.TProtocolException(message='Required field taskStatus is unset!')
+    if self.taskStatuses is None:
+      raise TProtocol.TProtocolException(message='Required field taskStatuses is unset!')
     return
 
 
@@ -289,10 +289,10 @@ class TaskModel:
     value = (value * 31) ^ hash(self.parentProcessId)
     value = (value * 31) ^ hash(self.creationTime)
     value = (value * 31) ^ hash(self.lastUpdateTime)
-    value = (value * 31) ^ hash(self.taskStatus)
+    value = (value * 31) ^ hash(self.taskStatuses)
     value = (value * 31) ^ hash(self.taskDetail)
     value = (value * 31) ^ hash(self.subTaskModel)
-    value = (value * 31) ^ hash(self.taskError)
+    value = (value * 31) ^ hash(self.taskErrors)
     value = (value * 31) ^ hash(self.jobs)
     return value
 

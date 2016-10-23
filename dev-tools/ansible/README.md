@@ -1,20 +1,23 @@
 # airavata-ansible
 
-Ansible script to deploy Apache Airavata
+Ansible script to deploy Apache Airavata and PGA. 
+There are ansible roles to install Airavata pre-requisites (RabbitMQ, Zookeeper, MariaDB).
 
-## Support OS
+## Supported OS with versions.
 
 - Centos 7
 
 ## Roles
 
-- **env_setup** :- Create user and group, install oracle java 8
+- **env_setup** :- Create user and group, install oracle java 8, open firewall ports.
 - **zookeeper** :- Download and install zookeeper.
 - **rabbitmq** :- Download and install rabbitmq as service.
+- **database** :- Download and install mysql(mariadb) as a service.
 - **common** :- Checkout Airavata source from git and run maven build. Move keystore files.
-- **gfac** :- Setup Gfac deployment and Change configurations.
-- **api-orch** :- Setup Api-Orch deployment and Change configurations.
-- **pga** :- Deploy Airavata PHP Gateway._(Under development)_
+- **gfac** :- Setup and deploy Gfac component.
+- **registry** Setup and deploy registry component.
+- **api-orch** :- Setup and deploy Api-Orch components.
+- **pga** :- Setup and deploy Airavata PHP Gateway.
 
 ## Useful commands
 

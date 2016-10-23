@@ -91,6 +91,19 @@ workflowcatalog.jdbc.password={{ db_password }}
 workflowcatalog.validationQuery=SELECT 1 from CONFIGURATION
 
 ###########################################################################
+#  Sharing Catalog DB Configuration
+###########################################################################
+#for derby [AiravataJPARegistry]
+#sharingcatalog.jdbc.driver=org.apache.derby.jdbc.ClientDriver
+#sharingcatalog.jdbc.url=jdbc:derby://localhost:1527/sharing_catalog;create=true;user=airavata;password=airavata
+# MySql database configuration
+sharingcatalog.jdbc.driver=com.mysql.jdbc.Driver
+sharingcatalog.jdbc.url=jdbc:mysql://{{ db_server }}:3306/{{ sharing_catalog }}
+sharingcatalog.jdbc.user={{ db_user }}
+sharingcatalog.jdbc.password={{ db_password }}
+sharingcatalog.validationQuery=SELECT 1 from CONFIGURATION
+
+###########################################################################
 #  User Profile MongoDB Configuration
 ###########################################################################
 userprofile.mongodb.host=localhost

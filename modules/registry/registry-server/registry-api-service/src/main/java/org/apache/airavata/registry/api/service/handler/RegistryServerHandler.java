@@ -30,6 +30,9 @@ import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
@@ -62,6 +65,7 @@ import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 import java.util.*;
 
@@ -1667,7 +1671,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Fetch a Storage Resource Preference of a registered gateway profile.
      *
      * @param gatewayID         The identifier of the gateway profile to request to fetch the particular storage resource preference.
-     * @param storageResourceId Identifier of the Stprage Preference required to be fetched.
+     * @param storageId Identifier of the Stprage Preference required to be fetched.
      * @return StoragePreference
      * Returns the StoragePreference object.
      */
@@ -2100,7 +2104,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      *
      * @param gatewayID         The identifier of the gateway profile to be added.
      * @param storageResourceId Preferences related to a particular compute resource
-     * @param storagePreference
+     * @param dataStoragePreference
      * @return status
      * Returns a success/failure of the addition. If a profile already exists, this operation will fail.
      * Instead an update should be used.
@@ -2261,9 +2265,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     /**
      * Delete a given data movement interface
      *
-     * @param productUri
+     *
      * @param dataMovementInterfaceId The identifier of the DataMovement Interface to be changed
-     * @param dataMoveType
+     * @param dmType
      * @return status
      * Returns a success/failure of the deletion.
      */
@@ -2321,8 +2325,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Add a GridFTP data movement details to a compute resource
      * App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
      *
-     * @param productUri          The identifier of the compute resource to which dataMovement protocol to be added
-     * @param dataMoveType
+     * productUri          The identifier of the compute resource to which dataMovement protocol to be added
+     * @param dmType
      * @param priorityOrder       Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
      * @param gridFTPDataMovement The GridFTPDataMovement object to be added to the resource.
      * @return status
@@ -2375,8 +2379,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Add a UNICORE data movement details to a compute resource
      * App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
      *
-     * @param productUri          The identifier of the compute resource to which data movement protocol to be added
-     * @param dataMoveType
+     *  productUri          The identifier of the compute resource to which data movement protocol to be added
+     * @param dmType
      * @param priorityOrder       Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
      * @param unicoreDataMovement
      * @return status
@@ -2428,8 +2432,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Add a SCP data movement details to a compute resource
      * App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
      *
-     * @param productUri      The identifier of the compute resource to which JobSubmission protocol to be added
-     * @param dataMoveType
+     * productUri      The identifier of the compute resource to which JobSubmission protocol to be added
+     * @param dmType
      * @param priorityOrder   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
      * @param scpDataMovement The SCPDataMovement object to be added to the resource.
      * @return status
@@ -2480,7 +2484,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Add a Local data movement details to a compute resource
      * App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
      *
-     * @param productUri        The identifier of the compute resource to which JobSubmission protocol to be added
+     * productUri        The identifier of the compute resource to which JobSubmission protocol to be added
      * @param dataMoveType
      * @param priorityOrder     Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
      * @param localDataMovement The LOCALDataMovement object to be added to the resource.
@@ -3262,7 +3266,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
         try {
-            if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
+                if (!ExpCatResourceUtils.isUserExist(userName, gatewayId)){
                 logger.error("User does not exist in the system. Please provide a valid user..");
                 AiravataSystemException exception = new AiravataSystemException();
                 exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
@@ -3655,4 +3659,544 @@ public class RegistryServerHandler implements RegistryService.Iface {
         }
         return workflowCatalog;
     }
+
+    /**
+     * Register a User Resource Profile.
+     *
+     * @param userResourceProfile User Resource Profile Object.
+     *                               The GatewayID should be obtained from Airavata user profile data model and passed to register a corresponding
+     *                               resource profile.
+     * @return status
+     * Returns a success/failure of the update.
+     */
+    @Override
+    public String registerUserResourceProfile(UserResourceProfile userResourceProfile) throws RegistryServiceException, TException {
+        try {
+            if (!validateString(userResourceProfile.getUserId())){
+                logger.error("Cannot create user resource profile with empty user id");
+                RegistryServiceException exception =  new RegistryServiceException();
+                exception.setMessage("Cannot create user resource profile with empty gateway id");
+                throw exception;
+            }
+            if (!validateString(userResourceProfile.getGatewayID())){
+                logger.error("Cannot create user resource profile with empty gateway id");
+                RegistryServiceException exception =  new RegistryServiceException();
+                exception.setMessage("Cannot create user resource profile with empty gateway id");
+                throw exception;
+            }
+
+            if (!ExpCatResourceUtils.isUserExist(userResourceProfile.getUserId(), userResourceProfile.getGatewayID())){
+                logger.error("User does not exist.Please provide a valid user ID...");
+                throw new RegistryServiceException("User does not exist.Please provide a valid user ID...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
+            String resourceProfile = userProfile.addUserResourceProfile(userResourceProfile);
+            logger.debug("Airavata registered user resource profile with gateway id : " + userResourceProfile.getGatewayID() + "and user id : " + userResourceProfile.getUserId());
+            return resourceProfile;
+        } catch (AppCatalogException e) {
+            logger.error("Error while registering user resource profile...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while registering user resource profile. More info : " + e.getMessage());
+            throw exception;
+        } catch (RegistryException e) {
+            logger.error("Error while registering user resource profile...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while registering user resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Fetch the given Gateway Resource Profile.
+     *
+     * @param userId The identifier for the requested user resource.
+     * @return UserResourceProfile object
+     *
+     */
+    @Override
+    public UserResourceProfile getUserResourceProfile(String userId, String gatewayId) throws RegistryServiceException, TException {
+        try {
+            if (!ExpCatResourceUtils.isUserExist(userId, gatewayId)){
+                logger.error("user does not exist.Please provide a valid gateway id...");
+                throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            UsrResourceProfile usrResourceProfile = appCatalog.getUserResourceProfile();
+            UserResourceProfile userResourceProfile = usrResourceProfile.getUserResourceProfile(userId,gatewayId);
+            logger.debug("Airavata retrieved User resource profile with user id : " + userId);
+            return userResourceProfile;
+        } catch (AppCatalogException e) {
+            logger.error(userId, "Error while retrieving user resource profile...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving user resource profile. More info : " + e.getMessage());
+            throw exception;
+        } catch (RegistryException e) {
+            logger.error(userId, "Error while retrieving user resource profile...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving user resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Update a User Resource Profile.
+     *
+     * @param gatewayID              The identifier for the requested gateway resource to be updated.
+     * @param userResourceProfile Gateway Resource Profile Object.
+     * @return status
+     * Returns a success/failure of the update.
+     */
+
+    @Override
+    public boolean updateUserResourceProfile(String userId, String gatewayID, UserResourceProfile userResourceProfile) throws RegistryServiceException, TException {
+        try {
+            if (!ExpCatResourceUtils.isUserExist(userId, gatewayID)){
+                logger.error("User does not exist.Please provide a valid user id...");
+                throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
+            userProfile.updateUserResourceProfile(userId, gatewayID, userResourceProfile);
+            logger.debug("Airavata updated gateway profile with gateway id : " + userId);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(gatewayID, "Error while updating gateway resource profile...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating gateway resource profile. More info : " + e.getMessage());
+            throw exception;
+        } catch (RegistryException e) {
+            logger.error(userId, "Error while retrieving user resource profile...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving user resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Delete the given User Resource Profile.
+     * @param userId identifier for user profile
+     * @param gatewayID The identifier for the requested gateway resource to be deleted.
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    public boolean deleteUserResourceProfile(String userId, String gatewayID) throws RegistryServiceException, TException {
+        try {
+            if (!ExpCatResourceUtils.isUserExist(userId, gatewayID)){
+                logger.error("user does not exist.Please provide a valid user id...");
+                throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            UsrResourceProfile userResourceProfile = appCatalog.getUserResourceProfile();
+            userResourceProfile.removeUserResourceProfile(userId, gatewayID);
+            logger.debug("Airavata deleted User profile with gateway id : " + gatewayID + " and user id : " + userId);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(gatewayID, "Error while removing User resource profile...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while removing User resource profile. More info : " + e.getMessage());
+            throw exception;
+        } catch (RegistryException e) {
+            logger.error(userId, "Error while retrieving user resource profile...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving user resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Add a User Compute Resource Preference to a registered gateway profile.
+     * @param userId
+     * @param gatewayID                 The identifier for the gateway profile to be added.
+     * @param computeResourceId         Preferences related to a particular compute resource
+     * @param userComputeResourcePreference The UserComputeResourcePreference object to be added to the resource profile.
+     * @return status
+     * Returns a success/failure of the addition. If a profile already exists, this operation will fail.
+     * Instead an update should be used.
+     */
+    @Override
+    public boolean addUserComputeResourcePreference(String userId, String gatewayID, String computeResourceId, UserComputeResourcePreference userComputeResourcePreference) throws RegistryServiceException, TException {
+        try {
+            if (!ExpCatResourceUtils.isUserExist(userId, gatewayID)){
+                logger.error("user does not exist.Please provide a valid user id...");
+                throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
+            if (!userProfile.isUserResourceProfileExists(userId, gatewayID)){
+                throw new RegistryServiceException("User resource profile with user id'"+userId+" &  gateway Id"+gatewayID+"' does not exist!!!");
+            }
+            UserResourceProfile profile = userProfile.getUserResourceProfile(userId,gatewayID);
+//            gatewayProfile.removeGatewayResourceProfile(gatewayID);
+            profile.addToUserComputeResourcePreferences(userComputeResourcePreference);
+            userProfile.updateUserResourceProfile(userId, gatewayID, profile);
+            logger.debug("Airavata added User compute resource preference with gateway id : " + gatewayID + " and for compute resource id : " + computeResourceId );
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(gatewayID, "Error while registering User resource profile preference...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while registering user resource profile preference. More info : " + e.getMessage());
+            throw exception;
+        } catch (RegistryException e) {
+            logger.error(userId, "Error while retrieving user resource profile...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving user resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Add a Storage Resource Preference to a registered gateway profile.
+     *
+     * @param gatewayID         The identifier of the gateway profile to be added.
+     * @param storageResourceId Preferences related to a particular compute resource
+     * @param dataStoragePreference
+     * @return status
+     * Returns a success/failure of the addition. If a profile already exists, this operation will fail.
+     * Instead an update should be used.
+     */
+    @Override
+    public boolean addUserStoragePreference(String userId, String gatewayID, String storageResourceId, UserStoragePreference dataStoragePreference) throws RegistryServiceException, TException {
+        try {
+            if (!ExpCatResourceUtils.isUserExist(userId, gatewayID)){
+                logger.error("user does not exist.Please provide a valid user id...");
+                throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
+            if (!userProfile.isUserResourceProfileExists(userId, gatewayID)){
+                throw new RegistryServiceException("User resource profile with user id'"+userId+" &  gateway Id"+gatewayID+"' does not exist!!!");
+            }
+            UserResourceProfile profile = userProfile.getUserResourceProfile(userId,gatewayID);
+//            gatewayProfile.removeGatewayResourceProfile(gatewayID);
+            dataStoragePreference.setStorageResourceId(storageResourceId);
+            profile.addToUserStoragePreferences(dataStoragePreference);
+            userProfile.updateUserResourceProfile(userId, gatewayID, profile);
+            logger.debug("Airavata added storage resource preference with gateway id : " + gatewayID + " and for storage resource id : " + storageResourceId );
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(gatewayID, "Error while registering user resource profile preference...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while registering user resource profile preference. More info : " + e.getMessage());
+            throw exception;
+        } catch (RegistryException e) {
+            logger.error(userId, "Error while retrieving user resource profile...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving user resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Fetch a Compute Resource Preference of a registered gateway profile.
+     * @param userId
+     * @param gatewayID         The identifier for the gateway profile to be requested
+     * @param userComputeResourceId Preferences related to a particular compute resource
+     * @return computeResourcePreference
+     * Returns the ComputeResourcePreference object.
+     */
+    @Override
+    public UserComputeResourcePreference getUserComputeResourcePreference(String userId, String gatewayID, String userComputeResourceId) throws RegistryServiceException, TException {
+        try {
+            if (!ExpCatResourceUtils.isUserExist(userId, gatewayID)){
+                logger.error("user does not exist.Please provide a valid user id...");
+                throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            appCatalog = RegistryFactory.getAppCatalog();
+            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
+            if (!userProfile.isUserResourceProfileExists(userId, gatewayID)){
+                throw new RegistryServiceException("User resource profile with user id'"+userId+" &  gateway Id"+gatewayID+"' does not exist!!!");
+            }
+            ComputeResource computeResource = appCatalog.getComputeResource();
+            if (!computeResource.isComputeResourceExists(userComputeResourceId)){
+                logger.error(userComputeResourceId, "Given compute resource does not exist in the system. Please provide a valid compute resource id...");
+                RegistryServiceException exception = new RegistryServiceException();
+                exception.setMessage("Given compute resource does not exist in the system. Please provide a valid compute resource id...");
+                throw exception;
+            }
+            UserComputeResourcePreference userComputeResourcePreference = userProfile.getUserComputeResourcePreference(userId, gatewayID, userComputeResourceId);
+            logger.debug("Airavata retrieved user compute resource preference with gateway id : " + gatewayID + " and for compute resoruce id : " + userComputeResourceId );
+            return userComputeResourcePreference;
+        } catch (AppCatalogException e) {
+            logger.error(gatewayID, "Error while reading user compute resource preference...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while reading user compute resource preference. More info : " + e.getMessage());
+            throw exception;
+        } catch (RegistryException e) {
+            logger.error(userId, "Error while retrieving user resource profile...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving user resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Fetch a Storage Resource Preference of a registered gateway profile.
+     * @param userId identifier for user data model
+     * @param gatewayID         The identifier of the gateway profile to request to fetch the particular storage resource preference.
+     * @param storageId Identifier of the Storage Preference required to be fetched.
+     * @return StoragePreference
+     * Returns the StoragePreference object.
+     */
+    @Override
+    public UserStoragePreference getUserStoragePreference(String userId, String gatewayID, String storageId) throws RegistryServiceException, TException {
+        try {
+            if (!ExpCatResourceUtils.isUserExist(userId, gatewayID)){
+                logger.error("user does not exist.Please provide a valid user id...");
+                throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
+            if (!userProfile.isUserResourceProfileExists(userId, gatewayID)){
+                throw new RegistryServiceException("User resource profile with user id'"+userId+" &  gateway Id"+gatewayID+"' does not exist!!!");
+            }
+
+            UserStoragePreference storagePreference = userProfile.getUserStoragePreference(userId, gatewayID, storageId);
+            logger.debug("Airavata retrieved user storage resource preference with gateway id : " + gatewayID + " and for storage resource id : " + storageId);
+            return storagePreference;
+        } catch (AppCatalogException e) {
+            logger.error(gatewayID, "Error while reading gateway data storage preference...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while reading gateway data storage preference. More info : " + e.getMessage());
+            throw exception;
+        } catch (RegistryException e) {
+            logger.error(userId, "Error while retrieving user resource profile...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving user resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Fetch all User Resource Profiles registered
+     *
+     * @return UserResourceProfile
+     * Returns all the UserResourceProfile list object.
+     */
+    @Override
+    public List<UserResourceProfile> getAllUserResourceProfiles() throws RegistryServiceException, TException {
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
+            return userProfile.getAllUserResourceProfiles();
+        } catch (AppCatalogException e) {
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while reading retrieving all gateway profiles. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Update a Compute Resource Preference to a registered user resource profile.
+     * @param userId identifier for user data model
+     * @param gatewayID                 The identifier for the gateway profile to be updated.
+     * @param computeResourceId         Preferences related to a particular compute resource
+     * @param userComputeResourcePreference The ComputeResourcePreference object to be updated to the resource profile.
+     * @return status
+     * Returns a success/failure of the updation.
+     */
+    @Override
+    public boolean updateUserComputeResourcePreference(String userId, String gatewayID, String computeResourceId, UserComputeResourcePreference userComputeResourcePreference) throws RegistryServiceException, TException {
+        try {
+            if (!ExpCatResourceUtils.isUserExist(userId, gatewayID)){
+                logger.error("user does not exist.Please provide a valid user id...");
+                throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
+            UserResourceProfile profile = userProfile.getUserResourceProfile(userId,gatewayID);
+            List<UserComputeResourcePreference> userComputeResourcePreferences = profile.getUserComputeResourcePreferences();
+            UserComputeResourcePreference preferenceToRemove = null;
+            for (UserComputeResourcePreference preference : userComputeResourcePreferences) {
+                if (preference.getComputeResourceId().equals(computeResourceId)){
+                    preferenceToRemove=preference;
+                    break;
+                }
+            }
+            if (preferenceToRemove!=null) {
+                profile.getUserComputeResourcePreferences().remove(
+                        preferenceToRemove);
+            }
+            profile.getUserComputeResourcePreferences().add(userComputeResourcePreference);
+            userProfile.updateUserResourceProfile(userId, gatewayID, profile);
+            logger.debug("Airavata updated compute resource preference with gateway id : " + gatewayID + " and for compute resource id : " + computeResourceId );
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(userId, "Error while reading user compute resource preference...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating user compute resource preference. More info : " + e.getMessage());
+            throw exception;
+        } catch (RegistryException e) {
+            logger.error(userId, "Error while retrieving user resource profile...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving user resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Update a Storage Resource Preference of a registered user resource profile.
+     * @param userId identifier for user data model
+     * @param gatewayID         The identifier of the gateway profile to be updated.
+     * @param storageId         The Storage resource identifier of the one that you want to update
+     * @param userStoragePreference The storagePreference object to be updated to the resource profile.
+     * @return status
+     * Returns a success/failure of the updation.
+     */
+    @Override
+    public boolean updateUserStoragePreference(String userId, String gatewayID, String storageId, UserStoragePreference userStoragePreference) throws RegistryServiceException, TException {
+        try {
+            if (!ExpCatResourceUtils.isUserExist(userId, gatewayID)){
+                logger.error("user does not exist.Please provide a valid user id...");
+                throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
+            UserResourceProfile profile = userProfile.getUserResourceProfile(userId,gatewayID);
+            List<UserStoragePreference> dataStoragePreferences = profile.getUserStoragePreferences();
+            UserStoragePreference preferenceToRemove = null;
+            for (UserStoragePreference preference : dataStoragePreferences) {
+                if (preference.getStorageResourceId().equals(storageId)){
+                    preferenceToRemove=preference;
+                    break;
+                }
+            }
+            if (preferenceToRemove!=null) {
+                profile.getUserStoragePreferences().remove(
+                        preferenceToRemove);
+            }
+            profile.getUserStoragePreferences().add(userStoragePreference);
+            userProfile.updateUserResourceProfile(userId, gatewayID, profile);
+            logger.debug("Airavata updated user storage resource preference with gateway id : " + gatewayID + " and for storage resource id : " + storageId );
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error(gatewayID, "Error while reading user data storage preference...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating user data storage preference. More info : " + e.getMessage());
+            throw exception;
+        } catch (RegistryException e) {
+            logger.error(userId, "Error while retrieving user resource profile...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving user resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Delete the Compute Resource Preference of a registered gateway profile.
+     * @param userId The identifier for user data model
+     * @param gatewayID         The identifier for the gateway profile to be deleted.
+     * @param computeResourceId Preferences related to a particular compute resource
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    public boolean deleteUserComputeResourcePreference(String userId, String gatewayID, String computeResourceId) throws RegistryServiceException, TException {
+        try {
+            if (!ExpCatResourceUtils.isUserExist(userId, gatewayID)){
+                logger.error("user does not exist.Please provide a valid user id...");
+                throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
+            return userProfile.removeUserComputeResourcePreferenceFromGateway(userId, gatewayID, computeResourceId);
+        } catch (AppCatalogException e) {
+            logger.error(userId, "Error while reading user compute resource preference...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating user compute resource preference. More info : " + e.getMessage());
+            throw exception;
+        } catch (RegistryException e) {
+            logger.error(userId, "Error while retrieving user resource profile...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving user resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Delete the Storage Resource Preference of a registered gateway profile.
+     * @param userId The identifier for user data model
+     * @param gatewayID The identifier of the gateway profile to be deleted.
+     * @param storageId ID of the storage preference you want to delete.
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    public boolean deleteUserStoragePreference(String userId, String gatewayID, String storageId) throws RegistryServiceException, TException {
+        try {
+            if (!ExpCatResourceUtils.isUserExist(userId, gatewayID)){
+                logger.error("user does not exist.Please provide a valid user id...");
+                throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
+            return userProfile.removeUserDataStoragePreferenceFromGateway(userId, gatewayID, storageId);
+        } catch (AppCatalogException e) {
+            logger.error(gatewayID, "Error while reading user data storage preference...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating user data storage preference. More info : " + e.getMessage());
+            throw exception;
+        } catch (RegistryException e) {
+            logger.error(userId, "Error while retrieving user resource profile...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving user resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Fetch all User Compute Resource Preferences of a registered User Resource Profile.
+     *
+     * @param userId
+     * @param gatewayID The identifier for the gateway profile to be requested
+     * @return computeResourcePreference
+     * Returns the ComputeResourcePreference object.
+     */
+    @Override
+    public List<UserComputeResourcePreference> getAllUserComputeResourcePreferences(String userId, String gatewayID) throws RegistryServiceException, TException {
+        try {
+            if (!isUserExists(gatewayID,userId)){
+                logger.error("User Resource Profile does not exist.Please provide a valid gateway id...");
+                throw new RegistryServiceException("User Resource Profile does not exist.Please provide a valid gateway id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
+            return userProfile.getUserResourceProfile(userId, gatewayID).getUserComputeResourcePreferences();
+        } catch (AppCatalogException e) {
+            logger.error(userId, "Error while reading User Resource Profile compute resource preferences...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while reading User Resource Profile compute resource preferences. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Fetch all Storage Resource Preferences of a registered User Resource Profile.
+     *
+     * @param userId
+     * @param gatewayID The identifier for the gateway profile to be requested
+     * @return StoragePreference
+     * Returns the StoragePreference object.
+     */
+    @Override
+    public List<UserStoragePreference> getAllUserStoragePreferences(String userId, String gatewayID) throws RegistryServiceException, TException {
+        try {
+            if (!isUserExists(gatewayID,userId)){
+                logger.error("User does not exist.Please provide a valid gateway id...");
+                throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+            }
+            appCatalog = RegistryFactory.getAppCatalog();
+            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
+            return userProfile.getUserResourceProfile(userId, gatewayID).getUserStoragePreferences();
+        } catch (AppCatalogException e) {
+            logger.error(userId, "Error while reading user resource Profile data storage preferences...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while reading user resource Profile data storage preferences. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+
 }
