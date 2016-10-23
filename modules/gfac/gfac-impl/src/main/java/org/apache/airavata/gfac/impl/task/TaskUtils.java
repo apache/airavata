@@ -43,7 +43,7 @@ public class TaskUtils {
         } else {
             filePath = inputPath + taskContext.getParentProcessContext().getProcessId() + File.separator + fileName;
         }
-        return new URI("file", hostName, filePath, null);
+        return new URI("file", taskContext.getParentProcessContext().getStoragePreference().getLoginUserName(), hostName, 0, filePath, null, null);
 
     }
 }

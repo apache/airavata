@@ -1,0 +1,28 @@
+---
+- name: include credentials
+  include_vars: vars/openstack-credentials.yml
+
+- name: create openstack instance(s)
+  os_server:
+    state: present
+    auth:
+      auth_url: "{{os_auth_url}}"
+      username: "{{os_username}}"
+      password: "{{os_password}}"
+      project_name: "{{os_project_name}}"
+
+    name: "{{item}}"
+    region_name: "{{os_region_name}}"
+    image: "{{centos7_gc_image}}"
+    key_name: "{{key_name}}"
+    timeout: 200
+    flavor: "{{flavor_id}}"
+
+    nics:
+      - net-name: "{{network_name}}"
+    security_groups: "{{security_group}}"
+    floating_ip_pools: "{{floating_ip_pool}}"
+  
+  with_items:
+    - test_ansible_1
+    - test_ansible_2

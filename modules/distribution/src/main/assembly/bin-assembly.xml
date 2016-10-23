@@ -67,6 +67,15 @@
             </includes>
         </fileSet>
         <fileSet>
+            <directory>../sharing-registry/sharing-registry-core/src/main/resources/
+            </directory>
+            <outputDirectory>bin/database_scripts
+            </outputDirectory>
+            <includes>
+                <include>*sql*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>src/main/resources/bin</directory>
             <outputDirectory>bin</outputDirectory>
             <fileMode>777</fileMode>
@@ -98,11 +107,16 @@
                 <include>persistence.xml</include>
                 <include>provenance.sql</include>
                 <include>gfac-config.yaml</include>
-                <include>PBSTemplate.xslt</include>
-                <include>SLURMTemplate.xslt</include>
-                <include>LSFTemplate.xslt</include>
-                <include>UGETemplate.xslt</include>
-                <include>ForkTemplate.xslt</include>
+                <!--<include>PBSTemplate.xslt</include>-->
+                <!--<include>SLURMTemplate.xslt</include>-->
+                <!--<include>LSFTemplate.xslt</include>-->
+                <!--<include>UGETemplate.xslt</include>-->
+                <!--<include>ForkTemplate.xslt</include>-->
+                <include>PBS_Groovy.template</include>
+                <include>SLURM_Groovy.template</include>
+                <include>LSF_Groovy.template</include>
+                <include>UGE_Groovy.template</include>
+                <include>FORK_Groovy.template</include>
                 <include>gsissh.properties</include>
                 <include>airavata.jks</include>
                 <include>client_truststore.jks</include>

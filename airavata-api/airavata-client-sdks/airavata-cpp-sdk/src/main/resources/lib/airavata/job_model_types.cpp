@@ -56,9 +56,9 @@ void JobModel::__set_creationTime(const int64_t val) {
 __isset.creationTime = true;
 }
 
-void JobModel::__set_jobStatus(const std::vector< ::apache::airavata::model::status::JobStatus> & val) {
-  this->jobStatus = val;
-__isset.jobStatus = true;
+void JobModel::__set_jobStatuses(const std::vector< ::apache::airavata::model::status::JobStatus> & val) {
+  this->jobStatuses = val;
+__isset.jobStatuses = true;
 }
 
 void JobModel::__set_computeResourceConsumed(const std::string& val) {
@@ -159,19 +159,19 @@ uint32_t JobModel::read(::apache::thrift::protocol::TProtocol* iprot) {
       case 6:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
-            this->jobStatus.clear();
+            this->jobStatuses.clear();
             uint32_t _size0;
             ::apache::thrift::protocol::TType _etype3;
             xfer += iprot->readListBegin(_etype3, _size0);
-            this->jobStatus.resize(_size0);
+            this->jobStatuses.resize(_size0);
             uint32_t _i4;
             for (_i4 = 0; _i4 < _size0; ++_i4)
             {
-              xfer += this->jobStatus[_i4].read(iprot);
+              xfer += this->jobStatuses[_i4].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
-          this->__isset.jobStatus = true;
+          this->__isset.jobStatuses = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -270,12 +270,12 @@ uint32_t JobModel::write(::apache::thrift::protocol::TProtocol* oprot) const {
     xfer += oprot->writeI64(this->creationTime);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.jobStatus) {
-    xfer += oprot->writeFieldBegin("jobStatus", ::apache::thrift::protocol::T_LIST, 6);
+  if (this->__isset.jobStatuses) {
+    xfer += oprot->writeFieldBegin("jobStatuses", ::apache::thrift::protocol::T_LIST, 6);
     {
-      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->jobStatus.size()));
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->jobStatuses.size()));
       std::vector< ::apache::airavata::model::status::JobStatus> ::const_iterator _iter5;
-      for (_iter5 = this->jobStatus.begin(); _iter5 != this->jobStatus.end(); ++_iter5)
+      for (_iter5 = this->jobStatuses.begin(); _iter5 != this->jobStatuses.end(); ++_iter5)
       {
         xfer += (*_iter5).write(oprot);
       }
@@ -325,7 +325,7 @@ void swap(JobModel &a, JobModel &b) {
   swap(a.processId, b.processId);
   swap(a.jobDescription, b.jobDescription);
   swap(a.creationTime, b.creationTime);
-  swap(a.jobStatus, b.jobStatus);
+  swap(a.jobStatuses, b.jobStatuses);
   swap(a.computeResourceConsumed, b.computeResourceConsumed);
   swap(a.jobName, b.jobName);
   swap(a.workingDir, b.workingDir);
@@ -341,7 +341,7 @@ JobModel::JobModel(const JobModel& other6) {
   processId = other6.processId;
   jobDescription = other6.jobDescription;
   creationTime = other6.creationTime;
-  jobStatus = other6.jobStatus;
+  jobStatuses = other6.jobStatuses;
   computeResourceConsumed = other6.computeResourceConsumed;
   jobName = other6.jobName;
   workingDir = other6.workingDir;
@@ -356,7 +356,7 @@ JobModel& JobModel::operator=(const JobModel& other7) {
   processId = other7.processId;
   jobDescription = other7.jobDescription;
   creationTime = other7.creationTime;
-  jobStatus = other7.jobStatus;
+  jobStatuses = other7.jobStatuses;
   computeResourceConsumed = other7.computeResourceConsumed;
   jobName = other7.jobName;
   workingDir = other7.workingDir;
@@ -374,7 +374,7 @@ void JobModel::printTo(std::ostream& out) const {
   out << ", " << "processId=" << to_string(processId);
   out << ", " << "jobDescription=" << to_string(jobDescription);
   out << ", " << "creationTime="; (__isset.creationTime ? (out << to_string(creationTime)) : (out << "<null>"));
-  out << ", " << "jobStatus="; (__isset.jobStatus ? (out << to_string(jobStatus)) : (out << "<null>"));
+  out << ", " << "jobStatuses="; (__isset.jobStatuses ? (out << to_string(jobStatuses)) : (out << "<null>"));
   out << ", " << "computeResourceConsumed="; (__isset.computeResourceConsumed ? (out << to_string(computeResourceConsumed)) : (out << "<null>"));
   out << ", " << "jobName="; (__isset.jobName ? (out << to_string(jobName)) : (out << "<null>"));
   out << ", " << "workingDir="; (__isset.workingDir ? (out << to_string(workingDir)) : (out << "<null>"));

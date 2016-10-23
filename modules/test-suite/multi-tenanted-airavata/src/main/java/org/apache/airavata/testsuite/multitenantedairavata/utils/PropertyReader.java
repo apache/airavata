@@ -21,6 +21,7 @@
 
 package org.apache.airavata.testsuite.multitenantedairavata.utils;
 
+import org.apache.airavata.common.utils.ApplicationSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +42,7 @@ public class PropertyReader {
     }
 
     protected void loadProperties() throws IOException {
-        URL airavataURL = PropertyFileType.class.getClassLoader().getResource(TestFrameworkConstants.AIRAVATA_CLIENT_PROPERTIES);
+        URL airavataURL = ApplicationSettings.loadFile(TestFrameworkConstants.AIRAVATA_CLIENT_PROPERTIES);
         if (airavataURL != null){
             airavataClientProperties.load(airavataURL.openStream());
         }

@@ -72,13 +72,14 @@ public class CredentialsDAOTest extends DatabaseTestCases {
          * "        REQUESTED_TIME TIMESTAMP DEFAULT '0000-00-00 00:00:00',\n" +
          * "        PRIMARY KEY (GATEWAY_NAME, COMMUNITY_USER_NAME)\n" + ")";
          */
-
+        // Adding description field as per pull request https://github.com/apache/airavata/pull/54
         String createTable = "CREATE TABLE CREDENTIALS\n" + "(\n"
                 + "        GATEWAY_ID VARCHAR(256) NOT NULL,\n"
                 + "        TOKEN_ID VARCHAR(256) NOT NULL,\n"
                 + // Actual token used to identify the credential
                 "        CREDENTIAL BLOB NOT NULL,\n" + "        PORTAL_USER_ID VARCHAR(256) NOT NULL,\n"
                 + "        TIME_PERSISTED TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n"
+                + "        DESCRIPTION VARCHAR(500),\n"
                 + "        PRIMARY KEY (GATEWAY_ID, TOKEN_ID)\n" + ")";
 
         String dropTable = "drop table CREDENTIALS";

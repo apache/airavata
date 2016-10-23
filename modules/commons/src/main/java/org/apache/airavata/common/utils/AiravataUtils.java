@@ -41,7 +41,7 @@ public class AiravataUtils {
     }
 
     public static String getId (String name){
-        String id = name.replaceAll("\\s", "");
+        String id = name.trim().replaceAll("\\s|\\.", "_");
         return id + "_" + UUID.randomUUID();
     }
 }

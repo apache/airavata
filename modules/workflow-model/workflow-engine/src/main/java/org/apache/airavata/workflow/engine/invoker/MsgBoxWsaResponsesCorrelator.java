@@ -20,7 +20,7 @@
 //*/
 //package org.apache.airavata.workflow.engine.invoker;
 //
-//import org.apache.airavata.common.utils.XMLUtil;
+//import org.apache.airavata.workflow.core.XMLUtil;
 //import org.apache.airavata.wsmg.msgbox.client.MsgBoxClient;
 //import org.apache.axiom.om.OMElement;
 //import org.apache.axis2.addressing.EndpointReference;

@@ -25,9 +25,11 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -35,10 +37,12 @@ import java.util.regex.Pattern;
 
 public class ApplicationSettings {
     public static final String SERVER_PROPERTIES="airavata-server.properties";
-    
-	public static String ADDITIONAL_SETTINGS_FILES = "external.settings";
+    public static final String AIRAVATA_CONFIG_DIR = "airavata.config.dir";
+
+    public static String ADDITIONAL_SETTINGS_FILES = "external.settings";
 
 	protected Properties properties = new Properties();
+
     private Exception propertyLoadException;
 
 
@@ -63,7 +67,6 @@ public class ApplicationSettings {
 	private void loadProperties() {
 		URL url = getPropertyFileURL();
         try {
-        	
             properties.load(url.openStream());
             logger.info("Settings loaded from "+url.toString());
             URL[] externalSettingsFileURLs = getExternalSettingsFileURLs();
@@ -77,7 +80,7 @@ public class ApplicationSettings {
 	}
 
 	protected URL getPropertyFileURL() {
-		return ApplicationSettings.class.getClassLoader().getResource(SERVER_PROPERTIES);
+		return ApplicationSettings.loadFile(SERVER_PROPERTIES);
 	}
 	
 	protected URL[] getExternalSettingsFileURLs(){
@@ -86,7 +89,7 @@ public class ApplicationSettings {
 			String externalSettingsFileNames = getSettingImpl(ADDITIONAL_SETTINGS_FILES);
 			String[] externalSettingFiles = externalSettingsFileNames.split(",");
 			for (String externalSettingFile : externalSettingFiles) {
-				URL externalSettingFileURL = ApplicationSettings.class.getClassLoader().getResource(externalSettingFile);
+				URL externalSettingFileURL = ApplicationSettings.loadFile(externalSettingFile);
 				if (externalSettingFileURL==null){
 					logger.warn("Could not file external settings file "+externalSettingFile);
 				}else{
@@ -313,11 +316,11 @@ public class ApplicationSettings {
      * Static methods which will be used by the users
      */
     
-    public static String getSetting(String key) throws ApplicationSettingsException{
+    public static String getSetting(String key) throws ApplicationSettingsException {
     	return getInstance().getSettingImpl(key);
     }
-    
-    public static String getSetting(String key, String defaultValue){
+
+    public static String getSetting(String key, String defaultValue) {
     	return getInstance().getSettingImpl(key,defaultValue);
 
     }
@@ -425,5 +428,20 @@ public class ApplicationSettings {
  
     public static ShutdownStrategy getShutdownStrategy() throws Exception{
     	return getInstance().getShutdownStrategyImpl();
+    }
+
+    public static URL loadFile(String fileName) {
+        final URL resource = ApplicationSettings.class.getClassLoader().getResource(fileName);
+        if(resource == null) {
+            if(System.getProperty(AIRAVATA_CONFIG_DIR) != null) {
+                final String airavataConfigDir = System.getProperty(AIRAVATA_CONFIG_DIR);
+                try {
+                     return new File(airavataConfigDir + File.separator + fileName).toURI().toURL();
+                } catch (MalformedURLException e) {
+                    logger.error("Error parsing the file from airavata.config.dir", airavataConfigDir);
+                }
+            }
+        }
+        return resource;
     }
 }

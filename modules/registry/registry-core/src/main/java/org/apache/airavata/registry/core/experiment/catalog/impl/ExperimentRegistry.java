@@ -331,6 +331,10 @@ public class ExperimentRegistry {
             processResourceSchedule.setQueueName(resourceSchedule.getQueueName());
             processResourceSchedule.setWallTimeLimit(resourceSchedule.getWallTimeLimit());
             processResourceSchedule.setTotalPhysicalMemory(resourceSchedule.getTotalPhysicalMemory());
+            processResourceSchedule.setOverrideAllocationProjectNumber(resourceSchedule.getOverrideAllocationProjectNumber());
+            processResourceSchedule.setOverrideLoginUserName(resourceSchedule.getOverrideLoginUserName());
+            processResourceSchedule.setOverrideScratchLocation(resourceSchedule.getOverrideScratchLocation());
+            processResourceSchedule.setStaticWorkingDir(resourceSchedule.getStaticWorkingDir());
             processResourceSchedule.save();
         } catch (Exception e) {
             logger.error("Unable to save user config data", e);
@@ -793,6 +797,10 @@ public class ExperimentRegistry {
             processResourceSchedule.setQueueName(resourceSchedule.getQueueName());
             processResourceSchedule.setWallTimeLimit(resourceSchedule.getWallTimeLimit());
             processResourceSchedule.setTotalPhysicalMemory(resourceSchedule.getTotalPhysicalMemory());
+            processResourceSchedule.setOverrideAllocationProjectNumber(resourceSchedule.getOverrideAllocationProjectNumber());
+            processResourceSchedule.setOverrideLoginUserName(resourceSchedule.getOverrideLoginUserName());
+            processResourceSchedule.setOverrideScratchLocation(resourceSchedule.getOverrideScratchLocation());
+            processResourceSchedule.setStaticWorkingDir(resourceSchedule.getStaticWorkingDir());
             processResourceSchedule.save();
         } catch (Exception e) {
             logger.error("Unable to save process resource schedule data", e);
