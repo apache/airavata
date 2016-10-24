@@ -165,6 +165,7 @@ public class EmailBasedMonitor implements Runnable{
             case "SDSC Admin <slurm@comet-fe3.sdsc.edu>": // comet
             case "slurm@batch1.stampede.tacc.utexas.edu": // stampede
             case "slurm user <slurm@tempest.dsc.soic.indiana.edu>": //tempest
+            case "root@master.ls5.tacc.utexas.edu": //Lonestar5
                 return ResourceJobManagerType.SLURM;
 //            case "lsf":
 //                return ResourceJobManagerType.LSF;
