@@ -176,6 +176,8 @@ public class EmailBasedMonitor implements Runnable{
                     return ResourceJobManagerType.PBS;
                 }else if (addressStr.contains("sdsc.edu")) {
                     return ResourceJobManagerType.SLURM;
+                }else if (addressStr.contains("ls5.tacc.utexas.edu")) {
+                    return ResourceJobManagerType.SLURM;
                 } else {
                     throw new AiravataException("[EJM]: Couldn't identify Resource job manager type from address " + addressStr);
                 }
