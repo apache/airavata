@@ -218,7 +218,7 @@ public class UsrResourceProfileImpl implements UsrResourceProfile {
     public boolean removeUserDataStoragePreferenceFromGateway(String userId, String gatewayId, String preferenceId) throws AppCatalogException {
         try {
             UserStoragePreferenceResource resource = new UserStoragePreferenceResource();
-            CompositeIdentifier ids = new CompositeIdentifier(userId,gatewayId);
+            CompositeIdentifier ids = new CompositeIdentifier(preferenceId,userId);
             resource.remove(ids);
             return true;
         }catch (Exception e) {
