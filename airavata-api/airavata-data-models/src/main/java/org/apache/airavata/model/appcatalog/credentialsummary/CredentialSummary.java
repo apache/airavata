@@ -57,9 +57,10 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
 
   private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField USERNAME_FIELD_DESC = new org.apache.thrift.protocol.TField("username", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField PUBLIC_KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("publicKey", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField PERSISTED_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("persistedTime", org.apache.thrift.protocol.TType.I64, (short)4);
-  private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)5);
+  private static final org.apache.thrift.protocol.TField TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("token", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField PUBLIC_KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("publicKey", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField PERSISTED_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("persistedTime", org.apache.thrift.protocol.TType.I64, (short)5);
+  private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)6);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -69,6 +70,7 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
 
   private String gatewayId; // required
   private String username; // required
+  private String token; // required
   private String publicKey; // optional
   private long persistedTime; // optional
   private String description; // optional
@@ -77,9 +79,10 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     GATEWAY_ID((short)1, "gatewayId"),
     USERNAME((short)2, "username"),
-    PUBLIC_KEY((short)3, "publicKey"),
-    PERSISTED_TIME((short)4, "persistedTime"),
-    DESCRIPTION((short)5, "description");
+    TOKEN((short)3, "token"),
+    PUBLIC_KEY((short)4, "publicKey"),
+    PERSISTED_TIME((short)5, "persistedTime"),
+    DESCRIPTION((short)6, "description");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -98,11 +101,13 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
           return GATEWAY_ID;
         case 2: // USERNAME
           return USERNAME;
-        case 3: // PUBLIC_KEY
+        case 3: // TOKEN
+          return TOKEN;
+        case 4: // PUBLIC_KEY
           return PUBLIC_KEY;
-        case 4: // PERSISTED_TIME
+        case 5: // PERSISTED_TIME
           return PERSISTED_TIME;
-        case 5: // DESCRIPTION
+        case 6: // DESCRIPTION
           return DESCRIPTION;
         default:
           return null;
@@ -154,6 +159,8 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.USERNAME, new org.apache.thrift.meta_data.FieldMetaData("username", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.TOKEN, new org.apache.thrift.meta_data.FieldMetaData("token", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.PUBLIC_KEY, new org.apache.thrift.meta_data.FieldMetaData("publicKey", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.PERSISTED_TIME, new org.apache.thrift.meta_data.FieldMetaData("persistedTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -169,11 +176,13 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
 
   public CredentialSummary(
     String gatewayId,
-    String username)
+    String username,
+    String token)
   {
     this();
     this.gatewayId = gatewayId;
     this.username = username;
+    this.token = token;
   }
 
   /**
@@ -186,6 +195,9 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
     }
     if (other.isSetUsername()) {
       this.username = other.username;
+    }
+    if (other.isSetToken()) {
+      this.token = other.token;
     }
     if (other.isSetPublicKey()) {
       this.publicKey = other.publicKey;
@@ -204,6 +216,7 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
   public void clear() {
     this.gatewayId = null;
     this.username = null;
+    this.token = null;
     this.publicKey = null;
     setPersistedTimeIsSet(false);
     this.persistedTime = 0;
@@ -253,6 +266,29 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
   public void setUsernameIsSet(boolean value) {
     if (!value) {
       this.username = null;
+    }
+  }
+
+  public String getToken() {
+    return this.token;
+  }
+
+  public void setToken(String token) {
+    this.token = token;
+  }
+
+  public void unsetToken() {
+    this.token = null;
+  }
+
+  /** Returns true if field token is set (has been assigned a value) and false otherwise */
+  public boolean isSetToken() {
+    return this.token != null;
+  }
+
+  public void setTokenIsSet(boolean value) {
+    if (!value) {
+      this.token = null;
     }
   }
 
@@ -342,6 +378,14 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
       }
       break;
 
+    case TOKEN:
+      if (value == null) {
+        unsetToken();
+      } else {
+        setToken((String)value);
+      }
+      break;
+
     case PUBLIC_KEY:
       if (value == null) {
         unsetPublicKey();
@@ -377,6 +421,9 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
     case USERNAME:
       return getUsername();
 
+    case TOKEN:
+      return getToken();
+
     case PUBLIC_KEY:
       return getPublicKey();
 
@@ -401,6 +448,8 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
       return isSetGatewayId();
     case USERNAME:
       return isSetUsername();
+    case TOKEN:
+      return isSetToken();
     case PUBLIC_KEY:
       return isSetPublicKey();
     case PERSISTED_TIME:
@@ -439,6 +488,15 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
       if (!(this_present_username && that_present_username))
         return false;
       if (!this.username.equals(that.username))
+        return false;
+    }
+
+    boolean this_present_token = true && this.isSetToken();
+    boolean that_present_token = true && that.isSetToken();
+    if (this_present_token || that_present_token) {
+      if (!(this_present_token && that_present_token))
+        return false;
+      if (!this.token.equals(that.token))
         return false;
     }
 
@@ -486,6 +544,11 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
     if (present_username)
       list.add(username);
 
+    boolean present_token = true && (isSetToken());
+    list.add(present_token);
+    if (present_token)
+      list.add(token);
+
     boolean present_publicKey = true && (isSetPublicKey());
     list.add(present_publicKey);
     if (present_publicKey)
@@ -528,6 +591,16 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
     }
     if (isSetUsername()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.username, other.username);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetToken()).compareTo(other.isSetToken());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetToken()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.token, other.token);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -597,6 +670,14 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
       sb.append(this.username);
     }
     first = false;
+    if (!first) sb.append(", ");
+    sb.append("token:");
+    if (this.token == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.token);
+    }
+    first = false;
     if (isSetPublicKey()) {
       if (!first) sb.append(", ");
       sb.append("publicKey:");
@@ -635,6 +716,10 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
 
     if (!isSetUsername()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'username' is unset! Struct:" + toString());
+    }
+
+    if (!isSetToken()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'token' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -692,7 +777,15 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // PUBLIC_KEY
+          case 3: // TOKEN
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.token = iprot.readString();
+              struct.setTokenIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 4: // PUBLIC_KEY
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.publicKey = iprot.readString();
               struct.setPublicKeyIsSet(true);
@@ -700,7 +793,7 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // PERSISTED_TIME
+          case 5: // PERSISTED_TIME
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.persistedTime = iprot.readI64();
               struct.setPersistedTimeIsSet(true);
@@ -708,7 +801,7 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // DESCRIPTION
+          case 6: // DESCRIPTION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.description = iprot.readString();
               struct.setDescriptionIsSet(true);
@@ -737,6 +830,11 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
       if (struct.username != null) {
         oprot.writeFieldBegin(USERNAME_FIELD_DESC);
         oprot.writeString(struct.username);
+        oprot.writeFieldEnd();
+      }
+      if (struct.token != null) {
+        oprot.writeFieldBegin(TOKEN_FIELD_DESC);
+        oprot.writeString(struct.token);
         oprot.writeFieldEnd();
       }
       if (struct.publicKey != null) {
@@ -777,6 +875,7 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeString(struct.gatewayId);
       oprot.writeString(struct.username);
+      oprot.writeString(struct.token);
       BitSet optionals = new BitSet();
       if (struct.isSetPublicKey()) {
         optionals.set(0);
@@ -806,6 +905,8 @@ public class CredentialSummary implements org.apache.thrift.TBase<CredentialSumm
       struct.setGatewayIdIsSet(true);
       struct.username = iprot.readString();
       struct.setUsernameIsSet(true);
+      struct.token = iprot.readString();
+      struct.setTokenIsSet(true);
       BitSet incoming = iprot.readBitSet(3);
       if (incoming.get(0)) {
         struct.publicKey = iprot.readString();

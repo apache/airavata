@@ -551,6 +551,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 summary.setGatewayId(key.getGatewayId());
                 summary.setUsername(key.getUsername());
                 summary.setPublicKey(key.getPublicKey());
+                summary.setToken(key.getToken());
                 summary.setDescription(key.getDescription());
                 summary.setPersistedTime(key.getPersistedTime());
                 allCredentialSummaries.add(summary);
@@ -579,6 +580,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 userPubKeySummary.setGatewayId(key.getGatewayId());
                 userPubKeySummary.setUsername(key.getUsername());
                 userPubKeySummary.setPublicKey(key.getPublicKey());
+                userPubKeySummary.setToken(key.getToken());
                 userPubKeySummary.setDescription(key.getDescription());
                 userPubKeySummary.setPersistedTime(key.getPersistedTime());
                 allCredentialSummaries.add(userPubKeySummary);
