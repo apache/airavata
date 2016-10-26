@@ -460,6 +460,29 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    @Override
+    @SecurityCheck
+    public String generateAndRegisterSSHKeysWithDescription(AuthzToken authzToken, String gatewayId, String userName, String desc) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            if (csClient == null){
+                csClient = getCredentialStoreServiceClient();
+            }
+            SSHCredential sshCredential = new SSHCredential();
+            sshCredential.setUsername(userName);
+            sshCredential.setGatewayId(gatewayId);
+            sshCredential.setDescription(desc);
+            String key = csClient.addSSHCredential(sshCredential);
+            logger.debug("Airavata generated SSH keys for gateway : " + gatewayId + " and for user : " + userName);
+            return key;
+        }catch (Exception e){
+            logger.error("Error occurred while registering SSH Credential", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error occurred while registering SSH Credential. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
     /**
      * Generate and Register Username PWD Pair with Airavata Credential Store.
      *
