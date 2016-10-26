@@ -1,0 +1,1 @@
+g++ -I../lib -w -Wall -I/usr/local/include/thrift -w -Wall -std=c++11 -Wno-write-strings -DHAVE_CONFIG_H -DHAVE_INTTYPES_H -DHAVE_NETINET_IN_H  -I/usr/local/include `pkg-config --cflags glib-2.0` Register.cpp -L/usr/local/lib `pkg-config --libs glib-2.0` -o Register -lthrift

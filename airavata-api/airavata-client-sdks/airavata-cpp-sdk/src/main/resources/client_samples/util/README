@@ -1,0 +1,39 @@
+===========================================
+README: GENAPP AIRAVATA INTEGRATION
+===========================================
+
+1. Go to register folder
+2. run make (or ./compile.sh)
+
+
+
+
+
+
+
+
+
+
++++++++++++++++++++++++++++++++++
+Present error
++++++++++++++++++++++++++++++++++
+/tmp/ccMsywup.o: In function `apache::airavata::api::Airavata_getWorkflow_result::read(apache::thrift::protocol::TProtocol*)':
+Register.cpp:(.text+0x4c31a): undefined reference to `Workflow::read(apache::thrift::protocol::TProtocol*)'
+/tmp/ccMsywup.o: In function `apache::airavata::api::Airavata_getWorkflow_result::write(apache::thrift::protocol::TProtocol*) const':
+Register.cpp:(.text+0x4c4f1): undefined reference to `Workflow::write(apache::thrift::protocol::TProtocol*) const'
+/tmp/ccMsywup.o: In function `apache::airavata::api::Airavata_getWorkflow_presult::read(apache::thrift::protocol::TProtocol*)':
+Register.cpp:(.text+0x4c6f6): undefined reference to `Workflow::read(apache::thrift::protocol::TProtocol*)'
+/tmp/ccMsywup.o: In function `apache::airavata::api::Airavata_registerWorkflow_args::read(apache::thrift::protocol::TProtocol*)':
+Register.cpp:(.text+0x4d07a): undefined reference to `Workflow::read(apache::thrift::protocol::TProtocol*)'
+/tmp/ccMsywup.o: In function `apache::airavata::api::Airavata_registerWorkflow_args::write(apache::thrift::protocol::TProtocol*) const':
+Register.cpp:(.text+0x4d231): undefined reference to `Workflow::write(apache::thrift::protocol::TProtocol*) const'
+/tmp/ccMsywup.o: In function `apache::airavata::api::Airavata_registerWorkflow_pargs::write(apache::thrift::protocol::TProtocol*) const':
+Register.cpp:(.text+0x4d30d): undefined reference to `Workflow::write(apache::thrift::protocol::TProtocol*) const'
+/tmp/ccMsywup.o: In function `apache::airavata::api::Airavata_updateWorkflow_args::read(apache::thrift::protocol::TProtocol*)':
+Register.cpp:(.text+0x4d9f2): undefined reference to `Workflow::read(apache::thrift::protocol::TProtocol*)'
+/tmp/ccMsywup.o: In function `apache::airavata::api::Airavata_updateWorkflow_args::write(apache::thrift::protocol::TProtocol*) const':
+Register.cpp:(.text+0x4dba9): undefined reference to `Workflow::write(apache::thrift::protocol::TProtocol*) const'
+/tmp/ccMsywup.o: In function `apache::airavata::api::Airavata_updateWorkflow_pargs::write(apache::thrift::protocol::TProtocol*) const':
+Register.cpp:(.text+0x4dc85): undefined reference to `Workflow::write(apache::thrift::protocol::TProtocol*) const'
+collect2: error: ld returned 1 exit status
+make: *** [register] Error 1
