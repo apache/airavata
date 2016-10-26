@@ -26,6 +26,7 @@ import com.jcraft.jsch.Session;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.gfac.core.DataStagingException;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
@@ -39,6 +40,7 @@ import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.Factory;
+import org.apache.airavata.gfac.impl.SSHUtils;
 import org.apache.airavata.gfac.impl.StandardOutReader;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
@@ -119,7 +121,6 @@ public class ArchiveTask implements Task {
             ServerInfo serverInfo = new ServerInfo(userName, hostName, DEFAULT_SSH_PORT);
             Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
             URI sourceURI = new URI(subTaskModel.getSource());
-            URI destinationURI = null;
             String workingDirName = null, path = null;
             if (sourceURI.getPath().endsWith("/")) {
                 path = sourceURI.getPath().substring(0, sourceURI.getPath().length() - 1);
@@ -136,8 +137,14 @@ public class ArchiveTask implements Task {
 
             // move tar to storage resource
             remoteCluster.execute(commandInfo);
-            destinationURI = TaskUtils.getDestinationURI(taskContext, hostName, inputPath, archiveTar);
-            remoteCluster.scpThirdParty(resourceAbsTarFilePath ,destinationURI.getPath() , sshSession, RemoteCluster.DIRECTION.FROM, true);
+            URI destinationURI = TaskUtils.getDestinationURI(taskContext, hostName, inputPath, archiveTar);
+            remoteCluster.thirdPartyTransfer(resourceAbsTarFilePath ,destinationURI.getPath(), session -> {
+                try {
+                    SSHUtils.scpThirdParty(sourceURI.getPath(),session, destinationURI.getPath(), sshSession, true);
+                } catch (Exception e) {
+                    throw new DataStagingException("Error while transferring " + sourceURI.getPath() + " to " + destinationURI.getPath());
+                }
+            });
 
             // delete tar in remote computer resource
             commandInfo = new RawCommandInfo("rm " + resourceAbsTarFilePath);

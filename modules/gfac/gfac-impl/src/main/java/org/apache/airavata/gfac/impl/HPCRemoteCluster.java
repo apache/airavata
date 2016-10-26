@@ -26,6 +26,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.gfac.core.DataStagingException;
 import org.apache.airavata.gfac.core.JobManagerConfiguration;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
@@ -164,7 +165,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	}
 
 	@Override
-	public void scpThirdParty(String sourceFile, String destinationFile, Session clientSession, DIRECTION direction, boolean ignoreEmptyFile) throws SSHApiException {
+	public void thirdPartyTransfer(String sourceFile, String destinationFile, SessionConsumer<Session> sessionConsumer) throws SSHApiException {
 		int retryCount= 0;
 		try {
 			while (retryCount < MAX_RETRY_COUNT) {
@@ -172,24 +173,19 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 				session = Factory.getSSHSession(authenticationInfo, serverInfo);
 				log.info("Transferring from:" + sourceFile + " To: " + destinationFile);
 				try {
-					if (direction == DIRECTION.TO) {
-                        SSHUtils.scpThirdParty(sourceFile, clientSession, destinationFile, session, ignoreEmptyFile);
-                    } else {
-                        SSHUtils.scpThirdParty(sourceFile, session, destinationFile, clientSession, ignoreEmptyFile);
-                    }
+					sessionConsumer.consume(session);
 					break; // exit while loop
-				} catch (JSchException e) {
+				} catch (DataStagingException e) {
 					if (retryCount == MAX_RETRY_COUNT) {
 						log.error("Retry count " + MAX_RETRY_COUNT + " exceeded for  transferring from:"
 								+ sourceFile + " To: " + destinationFile, e);
 						throw e;
 					}
-					log.error("Issue with jsch, Retry transferring from:" + sourceFile + " To: " + destinationFile, e);
+					log.error("Issue with file staging, Retry transferring from:" + sourceFile + " To: " + destinationFile, e);
 				}
 			}
-        } catch (IOException | AiravataException| JSchException e) {
-			throw new SSHApiException("Failed scp file:" + sourceFile + " to remote file "
-					+destinationFile , e);
+        } catch (AiravataException| DataStagingException e) {
+			throw new SSHApiException("Failed scp file:" + sourceFile + " to remote file " + destinationFile, e);
 		}
 	}
 

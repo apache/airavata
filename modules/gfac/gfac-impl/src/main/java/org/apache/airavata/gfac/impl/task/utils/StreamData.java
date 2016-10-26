@@ -25,6 +25,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
+import org.apache.airavata.gfac.core.DataStagingException;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.SSHApiException;
@@ -151,8 +152,15 @@ public class StreamData extends TimerTask  {
         /**
          * scp third party file transfer 'from' comute resource.
          */
-        taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(),
-                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.FROM, true);
+        taskContext.getParentProcessContext().getDataMovementRemoteCluster()
+                .thirdPartyTransfer(sourceURI.getPath(), destinationURI.getPath(), session -> {
+                    try {
+                        SSHUtils.scpThirdParty(sourceURI.getPath(), session, destinationURI.getPath(), sshSession, true);
+                    } catch (Exception e) {
+                        throw new DataStagingException("Error while file staging, from " + sourceURI.getPath()
+                                + " to " + destinationURI.getPath());
+                    }
+                });
         // update output locations
         GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.getPath());
         GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.getPath());
