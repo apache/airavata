@@ -25,6 +25,7 @@ import org.apache.airavata.app.catalog.util.Initialize;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
@@ -39,7 +40,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class UserResourceProfileTest {
     private static Initialize initialize;
@@ -90,19 +91,35 @@ public class UserResourceProfileTest {
         preference2.setScratchLocation("/tmp");
         preference2.setAllocationProjectNumber("project2");
 
+        UserStoragePreference storagePreference = new UserStoragePreference();
+        storagePreference.setStorageResourceId("st3");
+        storagePreference.setLoginUserName("Anuj");
+        storagePreference.setFileSystemRootLocation("/home/Anuj/scratch/");
+
         List<UserComputeResourcePreference> list = new ArrayList<UserComputeResourcePreference>();
         list.add(preference1);
         list.add(preference2);
-        System.out.println("input list size : " + list.size());
+        List<UserStoragePreference> stList = new ArrayList<>();
+        stList.add(storagePreference);
+
         uf.setUserComputeResourcePreferences(list);
         uf.setGatewayID("airavataPGA");
         uf.setUserId("Anuj");
+        uf.setUserStoragePreferences(stList);
+
+        // Check if UserResourceProfile exists (should not exist)
+        // This tests the mechanism that PGA will use to figure out if a user doesn't already have a UserResourceProfile
+        UserResourceProfile checkUserResourceProfile = userProfile.getUserResourceProfile(uf.getUserId(), uf.getGatewayID());
+        assertNotNull(checkUserResourceProfile.getUserId());
+        assertNotNull(checkUserResourceProfile.getGatewayID());
+        assertTrue(checkUserResourceProfile.isIsNull());
 
         String gwId = userProfile.addUserResourceProfile(uf);
         UserResourceProfile retrievedProfile = null;
         //retrievedProfile = userProfile.getUserResourceProfile("hello",uf.getGatewayID());
         if (userProfile.isUserResourceProfileExists(uf.getUserId(),uf.getGatewayID())){
             retrievedProfile = userProfile.getUserResourceProfile(uf.getUserId(),uf.getGatewayID());
+            assertFalse(retrievedProfile.isIsNull());
             System.out.println("gateway ID :" + retrievedProfile.getGatewayID());
             System.out.println("user ID : " + retrievedProfile.getUserId());
             System.out.println("compute resource size : " + retrievedProfile.getUserComputeResourcePreferencesSize());
@@ -116,6 +133,16 @@ public class UserResourceProfileTest {
                     System.out.println(cm.getPreferredBatchQueue());
                     // this statement will remove all the compute resources created
                     System.out.println("Compute Preference removed : " + userProfile.removeUserComputeResourcePreferenceFromGateway(retrievedProfile.getUserId(),retrievedProfile.getGatewayID(),cm.getComputeResourceId()));
+                }
+            }
+            List<UserStoragePreference> storagePreferences = userProfile.getAllUserStoragePreferences(retrievedProfile.getUserId(),retrievedProfile.getGatewayID());
+            System.out.println("storage preferences size : " + storagePreferences.size());
+            if (storagePreferences != null && !storagePreferences.isEmpty()){
+                for (UserStoragePreference cm : storagePreferences){
+                    System.out.println("******** storage id ********* : " + cm.getStorageResourceId());
+                    System.out.println(cm.getFileSystemRootLocation());
+                    // this statement will remove all the compute resources created
+                    System.out.println("Storage Preference removed : " + userProfile.removeUserDataStoragePreferenceFromGateway(retrievedProfile.getUserId(),retrievedProfile.getGatewayID(),cm.getStorageResourceId()));
                 }
             }
             //remove the user resource profile created.

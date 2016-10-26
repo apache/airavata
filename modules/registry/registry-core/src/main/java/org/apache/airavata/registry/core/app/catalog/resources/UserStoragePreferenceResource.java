@@ -302,7 +302,7 @@ public class UserStoragePreferenceResource extends AppCatAbstractResource {
             UserResourceProfile userResourceProfile = em.find(UserResourceProfile.class, userId);
             if (existingPreference != null) {
                 existingPreference.setStorageResourceId(storageResourceId);
-                existingPreference.setGatewayID(userId);
+                existingPreference.setUserId(userId);
                 existingPreference.setGatewayID(gatewayID);
                 existingPreference.setUserResourceProfile(userResourceProfile);
                 existingPreference.setLoginUserName(loginUserName);
@@ -313,7 +313,7 @@ public class UserStoragePreferenceResource extends AppCatAbstractResource {
                 UserStoragePreference resourcePreference = new UserStoragePreference();
                 resourcePreference.setStorageResourceId(storageResourceId);
                 resourcePreference.setGatewayID(gatewayID);
-                resourcePreference.setGatewayID(userId);
+                resourcePreference.setUserId(userId);
                 resourcePreference.setUserResourceProfile(userResourceProfile);
                 resourcePreference.setLoginUserName(loginUserName);
                 resourcePreference.setComputeResourceCSToken(resourceCSToken);
