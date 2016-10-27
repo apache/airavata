@@ -138,13 +138,8 @@ public class ArchiveTask implements Task {
             // move tar to storage resource
             remoteCluster.execute(commandInfo);
             URI destinationURI = TaskUtils.getDestinationURI(taskContext, hostName, inputPath, archiveTar);
-            remoteCluster.thirdPartyTransfer(resourceAbsTarFilePath ,destinationURI.getPath(), session -> {
-                try {
-                    SSHUtils.scpThirdParty(sourceURI.getPath(),session, destinationURI.getPath(), sshSession, true);
-                } catch (Exception e) {
-                    throw new DataStagingException("Error while transferring " + sourceURI.getPath() + " to " + destinationURI.getPath());
-                }
-            });
+            remoteCluster.thirdPartyTransfer(resourceAbsTarFilePath, destinationURI.getPath(),
+                    session -> SSHUtils.scpThirdParty(sourceURI.getPath(), session, destinationURI.getPath(), sshSession, true));
 
             // delete tar in remote computer resource
             commandInfo = new RawCommandInfo("rm " + resourceAbsTarFilePath);
