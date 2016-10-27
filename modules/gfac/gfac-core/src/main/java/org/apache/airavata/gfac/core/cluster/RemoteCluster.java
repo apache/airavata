@@ -52,7 +52,7 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 	 * @param remoteFile remote file location, this can be a directory too
 	 * @throws SSHApiException throws exception during error
 	 */
-	void copyTo(String localFile, String remoteFile) throws SSHApiException;
+	void copyTo(String localFile, String remoteFile, SessionConsumer<Session> sessionSessionConsumer) throws SSHApiException;
 
 	/**
 	 * This will copy a remote file in path rFile to local file lFile
@@ -60,7 +60,7 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 	 * @param remoteFile      remote file path, this has to be a full qualified path
 	 * @param localFile This is the local file to copy, this can be a directory too
 	 */
-	void copyFrom(String remoteFile, String localFile) throws SSHApiException;
+	void copyFrom(String remoteFile, String localFile, SessionConsumer<Session> sessionSessionConsumer) throws SSHApiException;
 
 	/**
 	 * This wil copy source remote file to target remote file.
@@ -77,7 +77,7 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 	 * @param directoryPath the full qualified path for the directory user wants to create
 	 * @throws SSHApiException throws during error
 	 */
-	void makeDirectory(String directoryPath) throws SSHApiException;
+	void makeDirectory(String directoryPath, SessionConsumer<Session> sessionConsumer) throws SSHApiException;
 
 	/**
 	 * This will delete the given job from the queue
