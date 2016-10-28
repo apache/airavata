@@ -104,6 +104,7 @@ const std::map<int, const char*> _JobSubmissionProtocol_VALUES_TO_NAMES(::apache
 
 int _kMonitorModeValues[] = {
   MonitorMode::POLL_JOB_MANAGER,
+  MonitorMode::CLOUD_JOB_MONITOR,
   MonitorMode::JOB_EMAIL_NOTIFICATION_MONITOR,
   MonitorMode::XSEDE_AMQP_SUBSCRIBE,
   MonitorMode::FORK,
@@ -111,12 +112,13 @@ int _kMonitorModeValues[] = {
 };
 const char* _kMonitorModeNames[] = {
   "POLL_JOB_MANAGER",
+  "CLOUD_JOB_MONITOR",
   "JOB_EMAIL_NOTIFICATION_MONITOR",
   "XSEDE_AMQP_SUBSCRIBE",
   "FORK",
   "LOCAL"
 };
-const std::map<int, const char*> _MonitorMode_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(5, _kMonitorModeValues, _kMonitorModeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _MonitorMode_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(6, _kMonitorModeValues, _kMonitorModeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kDMTypeValues[] = {
   DMType::COMPUTE_RESOURCE,
