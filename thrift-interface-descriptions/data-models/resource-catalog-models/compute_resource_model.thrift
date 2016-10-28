@@ -193,6 +193,7 @@ enum JobSubmissionProtocol {
 **/
 enum MonitorMode {
    POLL_JOB_MANAGER,
+   CLOUD_JOB_MONITOR,
    JOB_EMAIL_NOTIFICATION_MONITOR,
    XSEDE_AMQP_SUBSCRIBE,
    FORK,
