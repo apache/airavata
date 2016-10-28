@@ -171,16 +171,18 @@ final class JobSubmissionProtocol {
  */
 final class MonitorMode {
   const POLL_JOB_MANAGER = 0;
-  const JOB_EMAIL_NOTIFICATION_MONITOR = 1;
-  const XSEDE_AMQP_SUBSCRIBE = 2;
-  const FORK = 3;
-  const LOCAL = 4;
+  const CLOUD_JOB_MONITOR = 1;
+  const JOB_EMAIL_NOTIFICATION_MONITOR = 2;
+  const XSEDE_AMQP_SUBSCRIBE = 3;
+  const FORK = 4;
+  const LOCAL = 5;
   static public $__names = array(
     0 => 'POLL_JOB_MANAGER',
-    1 => 'JOB_EMAIL_NOTIFICATION_MONITOR',
-    2 => 'XSEDE_AMQP_SUBSCRIBE',
-    3 => 'FORK',
-    4 => 'LOCAL',
+    1 => 'CLOUD_JOB_MONITOR',
+    2 => 'JOB_EMAIL_NOTIFICATION_MONITOR',
+    3 => 'XSEDE_AMQP_SUBSCRIBE',
+    4 => 'FORK',
+    5 => 'LOCAL',
   );
 }
 

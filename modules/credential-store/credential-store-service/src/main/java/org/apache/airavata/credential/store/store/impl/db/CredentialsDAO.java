@@ -316,7 +316,7 @@ public class CredentialsDAO extends ParentDAO {
                 byte[] certificate = blobCredentials.getBytes(1, (int) blobCredentials.length());
 
                 certificateCredential = (Credential) convertByteArrayToObject(certificate);
-
+                certificateCredential.setToken("TOKEN_ID");
                 certificateCredential.setPortalUserName(resultSet.getString("PORTAL_USER_ID"));
                 certificateCredential.setCertificateRequestedTime(resultSet.getTimestamp("TIME_PERSISTED"));
                 certificateCredential.setDescription(resultSet.getString("DESCRIPTION"));
@@ -366,7 +366,7 @@ public class CredentialsDAO extends ParentDAO {
                 byte[] certificate = blobCredentials.getBytes(1, (int) blobCredentials.length());
 
                 certificateCredential = (Credential) convertByteArrayToObject(certificate);
-
+                certificateCredential.setToken(resultSet.getString("TOKEN_ID"));
                 certificateCredential.setPortalUserName(resultSet.getString("PORTAL_USER_ID"));
                 certificateCredential.setCertificateRequestedTime(resultSet.getTimestamp("TIME_PERSISTED"));
                 certificateCredential.setDescription(resultSet.getString("DESCRIPTION"));

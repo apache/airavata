@@ -39,7 +39,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URL;
-import java.security.*;
+import java.security.KeyStore;
+import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.sql.Connection;
 import java.util.Arrays;
@@ -419,4 +420,5 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         }
 
     }
+
 }

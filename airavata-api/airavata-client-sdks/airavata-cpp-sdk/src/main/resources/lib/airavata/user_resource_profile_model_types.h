@@ -232,12 +232,13 @@ inline std::ostream& operator<<(std::ostream& out, const UserStoragePreference& 
 }
 
 typedef struct _UserResourceProfile__isset {
-  _UserResourceProfile__isset() : credentialStoreToken(false), userComputeResourcePreferences(false), userStoragePreferences(false), identityServerTenant(false), identityServerPwdCredToken(false) {}
+  _UserResourceProfile__isset() : credentialStoreToken(false), userComputeResourcePreferences(false), userStoragePreferences(false), identityServerTenant(false), identityServerPwdCredToken(false), isNull(true) {}
   bool credentialStoreToken :1;
   bool userComputeResourcePreferences :1;
   bool userStoragePreferences :1;
   bool identityServerTenant :1;
   bool identityServerPwdCredToken :1;
+  bool isNull :1;
 } _UserResourceProfile__isset;
 
 class UserResourceProfile {
@@ -245,7 +246,7 @@ class UserResourceProfile {
 
   UserResourceProfile(const UserResourceProfile&);
   UserResourceProfile& operator=(const UserResourceProfile&);
-  UserResourceProfile() : userId(), gatewayID(), credentialStoreToken(), identityServerTenant(), identityServerPwdCredToken() {
+  UserResourceProfile() : userId(), gatewayID(), credentialStoreToken(), identityServerTenant(), identityServerPwdCredToken(), isNull(false) {
   }
 
   virtual ~UserResourceProfile() throw();
@@ -256,6 +257,7 @@ class UserResourceProfile {
   std::vector<UserStoragePreference>  userStoragePreferences;
   std::string identityServerTenant;
   std::string identityServerPwdCredToken;
+  bool isNull;
 
   _UserResourceProfile__isset __isset;
 
@@ -272,6 +274,8 @@ class UserResourceProfile {
   void __set_identityServerTenant(const std::string& val);
 
   void __set_identityServerPwdCredToken(const std::string& val);
+
+  void __set_isNull(const bool val);
 
   bool operator == (const UserResourceProfile & rhs) const
   {
@@ -298,6 +302,10 @@ class UserResourceProfile {
     if (__isset.identityServerPwdCredToken != rhs.__isset.identityServerPwdCredToken)
       return false;
     else if (__isset.identityServerPwdCredToken && !(identityServerPwdCredToken == rhs.identityServerPwdCredToken))
+      return false;
+    if (__isset.isNull != rhs.__isset.isNull)
+      return false;
+    else if (__isset.isNull && !(isNull == rhs.isNull))
       return false;
     return true;
   }

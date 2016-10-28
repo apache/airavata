@@ -510,6 +510,11 @@ void UserResourceProfile::__set_identityServerPwdCredToken(const std::string& va
 __isset.identityServerPwdCredToken = true;
 }
 
+void UserResourceProfile::__set_isNull(const bool val) {
+  this->isNull = val;
+__isset.isNull = true;
+}
+
 uint32_t UserResourceProfile::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -613,6 +618,14 @@ uint32_t UserResourceProfile::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
+      case 8:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->isNull);
+          this->__isset.isNull = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -683,6 +696,11 @@ uint32_t UserResourceProfile::write(::apache::thrift::protocol::TProtocol* oprot
     xfer += oprot->writeString(this->identityServerPwdCredToken);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.isNull) {
+    xfer += oprot->writeFieldBegin("isNull", ::apache::thrift::protocol::T_BOOL, 8);
+    xfer += oprot->writeBool(this->isNull);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -697,6 +715,7 @@ void swap(UserResourceProfile &a, UserResourceProfile &b) {
   swap(a.userStoragePreferences, b.userStoragePreferences);
   swap(a.identityServerTenant, b.identityServerTenant);
   swap(a.identityServerPwdCredToken, b.identityServerPwdCredToken);
+  swap(a.isNull, b.isNull);
   swap(a.__isset, b.__isset);
 }
 
@@ -708,6 +727,7 @@ UserResourceProfile::UserResourceProfile(const UserResourceProfile& other16) {
   userStoragePreferences = other16.userStoragePreferences;
   identityServerTenant = other16.identityServerTenant;
   identityServerPwdCredToken = other16.identityServerPwdCredToken;
+  isNull = other16.isNull;
   __isset = other16.__isset;
 }
 UserResourceProfile& UserResourceProfile::operator=(const UserResourceProfile& other17) {
@@ -718,6 +738,7 @@ UserResourceProfile& UserResourceProfile::operator=(const UserResourceProfile& o
   userStoragePreferences = other17.userStoragePreferences;
   identityServerTenant = other17.identityServerTenant;
   identityServerPwdCredToken = other17.identityServerPwdCredToken;
+  isNull = other17.isNull;
   __isset = other17.__isset;
   return *this;
 }
@@ -731,6 +752,7 @@ void UserResourceProfile::printTo(std::ostream& out) const {
   out << ", " << "userStoragePreferences="; (__isset.userStoragePreferences ? (out << to_string(userStoragePreferences)) : (out << "<null>"));
   out << ", " << "identityServerTenant="; (__isset.identityServerTenant ? (out << to_string(identityServerTenant)) : (out << "<null>"));
   out << ", " << "identityServerPwdCredToken="; (__isset.identityServerPwdCredToken ? (out << to_string(identityServerPwdCredToken)) : (out << "<null>"));
+  out << ", " << "isNull="; (__isset.isNull ? (out << to_string(isNull)) : (out << "<null>"));
   out << ")";
 }
 
