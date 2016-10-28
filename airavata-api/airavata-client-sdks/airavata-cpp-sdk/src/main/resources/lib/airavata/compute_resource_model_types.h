@@ -94,10 +94,11 @@ extern const std::map<int, const char*> _JobSubmissionProtocol_VALUES_TO_NAMES;
 struct MonitorMode {
   enum type {
     POLL_JOB_MANAGER = 0,
-    JOB_EMAIL_NOTIFICATION_MONITOR = 1,
-    XSEDE_AMQP_SUBSCRIBE = 2,
-    FORK = 3,
-    LOCAL = 4
+    CLOUD_JOB_MONITOR = 1,
+    JOB_EMAIL_NOTIFICATION_MONITOR = 2,
+    XSEDE_AMQP_SUBSCRIBE = 3,
+    FORK = 4,
+    LOCAL = 5
   };
 };
 

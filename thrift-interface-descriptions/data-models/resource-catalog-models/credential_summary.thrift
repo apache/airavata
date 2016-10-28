@@ -26,7 +26,8 @@ namespace py apache.airavata.model.appcatalog.credentialsummary
 struct CredentialSummary {
     1: required string gatewayId,
     2: required string username,
-    3: optional string publicKey,
-    4: optional i64 persistedTime,
-    5: optional string description
+    3: required string token;
+    4: optional string publicKey,
+    5: optional i64 persistedTime,
+    6: optional string description
 }

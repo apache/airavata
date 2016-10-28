@@ -25,6 +25,7 @@ import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
+import org.apache.airavata.gfac.impl.SSHUtils;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
@@ -48,7 +49,8 @@ public class EnvironmentSetupTask implements Task {
 		TaskStatus status = new TaskStatus(TaskState.COMPLETED);
 		try {
 			RemoteCluster remoteCluster = taskContext.getParentProcessContext().getJobSubmissionRemoteCluster();
-			remoteCluster.makeDirectory(taskContext.getParentProcessContext().getWorkingDir());
+			String workingDir = taskContext.getParentProcessContext().getWorkingDir();
+			remoteCluster.makeDirectory(workingDir, session -> SSHUtils.makeDirectory(workingDir, session));
 			status.setReason("Successfully created environment");
 		} catch (SSHApiException e) {
 			String msg = "Error while environment setup";

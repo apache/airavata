@@ -24,6 +24,7 @@ import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import org.apache.airavata.gfac.core.DataStagingException;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,97 +54,100 @@ public class SSHUtils {
 	 * @param localFile  Local file to transfer, this can be a directory
 	 * @return returns the final remote file path, so that users can use the new file location
 	 */
-	public static String scpTo(String localFile, String remoteFile, Session session) throws IOException,
-			JSchException, SSHApiException {
+	public static String scpTo(String localFile, String remoteFile, Session session) throws DataStagingException {
 		FileInputStream fis = null;
 		String prefix = null;
 		if (new File(localFile).isDirectory()) {
 			prefix = localFile + File.separator;
 		}
 		boolean ptimestamp = true;
-
+		Channel channel = null;
 		// exec 'scp -t rfile' remotely
 		String command = "scp " + (ptimestamp ? "-p" : "") + " -t " + remoteFile;
-		Channel channel = session.openChannel("exec");
+		try {
+			channel = session.openChannel("exec");
 
-		StandardOutReader stdOutReader = new StandardOutReader();
-		((ChannelExec) channel).setErrStream(stdOutReader.getStandardError());
-		((ChannelExec) channel).setCommand(command);
+			StandardOutReader stdOutReader = new StandardOutReader();
+			((ChannelExec) channel).setErrStream(stdOutReader.getStandardError());
+			((ChannelExec) channel).setCommand(command);
 
-		// get I/O streams for remote scp
-		OutputStream out = channel.getOutputStream();
-		InputStream in = channel.getInputStream();
+			// get I/O streams for remote scp
+			try (OutputStream out = channel.getOutputStream();
+				 InputStream in = channel.getInputStream()) {
 
-		channel.connect();
+				channel.connect();
+				if (checkAck(in) != 0) {
+					String error = "Error Reading input Stream";
+					log.error(error);
+					throw new DataStagingException(error);
+				}
 
-		if (checkAck(in) != 0) {
-			String error = "Error Reading input Stream";
-			log.error(error);
-			throw new SSHApiException(error);
-		}
+				File _lfile = new File(localFile);
 
-		File _lfile = new File(localFile);
+				if (ptimestamp) {
+					command = "T" + (_lfile.lastModified() / 1000) + " 0";
+					// The access time should be sent here,
+					// but it is not accessible with JavaAPI ;-<
+					command += (" " + (_lfile.lastModified() / 1000) + " 0\n");
+					out.write(command.getBytes());
+					out.flush();
+					if (checkAck(in) != 0) {
+						String error = "Error Reading input Stream";
+						log.error(error);
+						throw new DataStagingException(error);
+					}
+				}
 
-		if (ptimestamp) {
-			command = "T" + (_lfile.lastModified() / 1000) + " 0";
-			// The access time should be sent here,
-			// but it is not accessible with JavaAPI ;-<
-			command += (" " + (_lfile.lastModified() / 1000) + " 0\n");
-			out.write(command.getBytes());
-			out.flush();
-			if (checkAck(in) != 0) {
-				String error = "Error Reading input Stream";
-				log.error(error);
-				throw new SSHApiException(error);
+				// send "C0644 filesize filename", where filename should not include '/'
+				long filesize = _lfile.length();
+				command = "C0644 " + filesize + " ";
+				if (localFile.lastIndexOf('/') > 0) {
+					command += localFile.substring(localFile.lastIndexOf('/') + 1);
+				} else {
+					command += localFile;
+				}
+				command += "\n";
+				out.write(command.getBytes());
+				out.flush();
+				if (checkAck(in) != 0) {
+					String error = "Error Reading input Stream";
+					log.error(error);
+					throw new DataStagingException(error);
+				}
+
+				// send a content of localFile
+				fis = new FileInputStream(localFile);
+				byte[] buf = new byte[1024];
+				while (true) {
+					int len = fis.read(buf, 0, buf.length);
+					if (len <= 0) break;
+					out.write(buf, 0, len); //out.flush();
+				}
+				fis.close();
+				fis = null;
+				// send '\0'
+				buf[0] = 0;
+				out.write(buf, 0, 1);
+				out.flush();
+				if (checkAck(in) != 0) {
+					String error = "Error Reading input Stream";
+					log.error(error);
+					throw new DataStagingException(error);
+				}
+			}
+			stdOutReader.onOutput(channel);
+			if (stdOutReader.getStdErrorString().contains("scp:")) {
+				throw new DataStagingException(stdOutReader.getStdErrorString());
+			}
+			//since remote file is always a file  we just return the file
+			return remoteFile;
+		} catch (IOException | JSchException e) {
+			throw new DataStagingException(e);
+		} finally {
+			if (channel != null && channel.isConnected()) {
+				channel.disconnect();
 			}
 		}
-
-		// send "C0644 filesize filename", where filename should not include '/'
-		long filesize = _lfile.length();
-		command = "C0644 " + filesize + " ";
-		if (localFile.lastIndexOf('/') > 0) {
-			command += localFile.substring(localFile.lastIndexOf('/') + 1);
-		} else {
-			command += localFile;
-		}
-		command += "\n";
-		out.write(command.getBytes());
-		out.flush();
-		if (checkAck(in) != 0) {
-			String error = "Error Reading input Stream";
-			log.error(error);
-			throw new SSHApiException(error);
-		}
-
-		// send a content of localFile
-		fis = new FileInputStream(localFile);
-		byte[] buf = new byte[1024];
-		while (true) {
-			int len = fis.read(buf, 0, buf.length);
-			if (len <= 0) break;
-			out.write(buf, 0, len); //out.flush();
-		}
-		fis.close();
-		fis = null;
-		// send '\0'
-		buf[0] = 0;
-		out.write(buf, 0, 1);
-		out.flush();
-		if (checkAck(in) != 0) {
-			String error = "Error Reading input Stream";
-			log.error(error);
-			throw new SSHApiException(error);
-		}
-		out.close();
-		stdOutReader.onOutput(channel);
-
-
-		channel.disconnect();
-		if (stdOutReader.getStdErrorString().contains("scp:")) {
-			throw new SSHApiException(stdOutReader.getStdErrorString());
-		}
-		//since remote file is always a file  we just return the file
-		return remoteFile;
 	}
 
 	/**
@@ -153,8 +157,7 @@ public class SSHUtils {
 	 * @param localFile  This is the local file to copy, this can be a directory too
 	 * @return returns the final local file path of the new file came from the remote resource
 	 */
-	public static void scpFrom(String remoteFile, String localFile, Session session) throws IOException,
-			JSchException, SSHApiException {
+	public static void scpFrom(String remoteFile, String localFile, Session session) throws DataStagingException {
 		FileOutputStream fos = null;
 		try {
 			String prefix = null;
@@ -255,6 +258,7 @@ public class SSHUtils {
 
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
+			throw new DataStagingException(e);
 		} finally {
 			try {
 				if (fos != null) fos.close();
@@ -272,8 +276,11 @@ public class SSHUtils {
      * @param destinationSession JSch Session for target
      * @return returns the final local file path of the new file came from the remote resource
      */
-    public static void scpThirdParty(String sourceFile, Session sourceSession, String destinationFile, Session destinationSession, boolean ignoreEmptyFile) throws
-            IOException, JSchException {
+    public static void scpThirdParty(String sourceFile,
+									 Session sourceSession,
+									 String destinationFile,
+									 Session destinationSession,
+									 boolean ignoreEmptyFile) throws DataStagingException {
         OutputStream sout = null;
         InputStream sin = null;
         OutputStream dout = null;
@@ -401,7 +408,7 @@ public class SSHUtils {
 
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            throw new JSchException(e.getMessage());
+            throw new DataStagingException(e.getMessage());
         } finally {
             try {
                 if (dout != null) dout.close();
@@ -426,35 +433,32 @@ public class SSHUtils {
         }
     }
 
-	public static void makeDirectory(String path, Session session) throws IOException, JSchException, SSHApiException {
+	public static void makeDirectory(String path, Session session) throws DataStagingException {
 
-		// exec 'scp -t rfile' remotely
+		Channel channel = null;
 		String command = "mkdir -p " + path;
-		Channel channel = session.openChannel("exec");
-		StandardOutReader stdOutReader = new StandardOutReader();
-
-		((ChannelExec) channel).setCommand(command);
-
-
-		((ChannelExec) channel).setErrStream(stdOutReader.getStandardError());
 		try {
+			// exec 'scp -t rfile' remotely
+			channel = session.openChannel("exec");
+			StandardOutReader stdOutReader = new StandardOutReader();
 			channel.connect();
+			stdOutReader.onOutput(channel);
+			if (stdOutReader.getStdErrorString().contains("mkdir:")) {
+				throw new DataStagingException(stdOutReader.getStdErrorString());
+			}
+
 		} catch (JSchException e) {
 
-			channel.disconnect();
 //            session.disconnect();
 			log.error("Unable to retrieve command output. Command - " + command +
 					" on server - " + session.getHost() + ":" + session.getPort() +
 					" connecting user name - "
 					+ session.getUserName());
-			throw e;
+			throw new DataStagingException(e);
+		}finally {
+			if(channel != null && channel.isConnected())
+				channel.disconnect();
 		}
-		stdOutReader.onOutput(channel);
-		if (stdOutReader.getStdErrorString().contains("mkdir:")) {
-			throw new SSHApiException(stdOutReader.getStdErrorString());
-		}
-
-		channel.disconnect();
 	}
 
 	public static List<String> listDirectory(String path, Session session) throws IOException, JSchException,

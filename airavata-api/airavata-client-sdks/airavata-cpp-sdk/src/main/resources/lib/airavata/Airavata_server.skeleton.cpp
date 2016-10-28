@@ -259,6 +259,35 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
+   * Generate and Register SSH Key Pair with Airavata Credential Store.
+   * 
+   * @param gatewayId
+   *    The identifier for the requested Gateway.
+   * 
+   * @param userName
+   *    The User for which the credential should be registered. For community accounts, this user is the name of the
+   *    community user name. For computational resources, this user name need not be the same user name on resoruces.
+   * 
+   * @param description
+   *    The description field for a credential type, all type of credential can have a description.
+   * 
+   * @return airavataCredStoreToken
+   *   An SSH Key pair is generated and stored in the credential store and associated with users or community account
+   *   belonging to a Gateway.
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayId
+   * @param userName
+   * @param description
+   */
+  void generateAndRegisterSSHKeysWithDescription(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description) {
+    // Your implementation goes here
+    printf("generateAndRegisterSSHKeysWithDescription\n");
+  }
+
+  /**
    * Generate and Register Username PWD Pair with Airavata Credential Store.
    * 
    * @param gatewayId
@@ -332,6 +361,54 @@ class AiravataHandler : virtual public AiravataIf {
   void getAllGatewaySSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getAllGatewaySSHPubKeys\n");
+  }
+
+  /**
+   * 
+   * Get all Public Keys of the Gateway
+   * 
+   * @param CredStoreToken
+   *    Credential Store Token which you want to find the Public Key for.
+   * 
+   * @param gatewayId
+   *    This is the unique identifier of your gateway where the token and public key was generated from.
+   * 
+   * @return publicKey
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayId
+   */
+  void getAllGatewaySSHPubKeysSummary(std::vector< ::apache::airavata::model::appcatalog::credentialsummary::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("getAllGatewaySSHPubKeysSummary\n");
+  }
+
+  /**
+   * 
+   * Get all Public Key summaries for user in a Gateway
+   * 
+   * @param CredStoreToken
+   *    Credential Store Token which you want to find the Public Key for.
+   * 
+   * @param gatewayId
+   *    This is the unique identifier of your gateway where the token and public key was generated from.
+   * 
+   * @param userId
+   *    This is the unique identifier of user whose public keys are to be fetched.
+   * 
+   * @return CredentialSummary
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param gatewayId
+   * @param userId
+   */
+  void getAllSSHPubKeysSummaryForUserInGateway(std::vector< ::apache::airavata::model::appcatalog::credentialsummary::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userId) {
+    // Your implementation goes here
+    printf("getAllSSHPubKeysSummaryForUserInGateway\n");
   }
 
   void getAllGatewayPWDCredentials(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
