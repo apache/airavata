@@ -262,6 +262,11 @@ public class OrchestratorUtils {
                 if (sshJobSubmission != null) {
                     return sshJobSubmission.getSecurityProtocol();
                 }
+            } else if (submissionProtocol == JobSubmissionProtocol.CLOUD) {
+                CloudJobSubmission cloudJobSubmission = getCloudJobSubmission(context, jobSubmissionInterface.getJobSubmissionInterfaceId());
+                if (cloudJobSubmission != null) {
+                    return cloudJobSubmission.getSecurityProtocol();
+                }
             }
         } catch (RegistryException e) {
             logger.error("Error occurred while retrieving security protocol", e);
@@ -295,6 +300,17 @@ public class OrchestratorUtils {
         try {
             AppCatalog appCatalog = context.getRegistry().getAppCatalog();
             return appCatalog.getComputeResource().getSSHJobSubmission(submissionId);
+        } catch (Exception e) {
+            String errorMsg = "Error while retrieving SSH job submission with submission id : " + submissionId;
+            logger.error(errorMsg, e);
+            throw new RegistryException(errorMsg, e);
+        }
+    }
+
+    public static CloudJobSubmission getCloudJobSubmission(OrchestratorContext context, String submissionId) throws RegistryException {
+        try {
+            AppCatalog appCatalog = context.getRegistry().getAppCatalog();
+            return appCatalog.getComputeResource().getCloudJobSubmission(submissionId);
         } catch (Exception e) {
             String errorMsg = "Error while retrieving SSH job submission with submission id : " + submissionId;
             logger.error(errorMsg, e);
