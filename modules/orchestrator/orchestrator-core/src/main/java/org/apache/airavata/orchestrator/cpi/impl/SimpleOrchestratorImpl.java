@@ -481,6 +481,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             monitorMode = MonitorMode.FORK;
         } else if(jobSubmissionProtocol == JobSubmissionProtocol.LOCAL){
             monitorMode = MonitorMode.LOCAL;
+        } else if (jobSubmissionProtocol == JobSubmissionProtocol.CLOUD) {
+            monitorMode = MonitorMode.CLOUD_JOB_MONITOR;
         }else {
             logger.error("expId : {}, processId : {} :- Unsupported Job submission protocol {}.",
                     processModel.getExperimentId(), processModel.getProcessId(), jobSubmissionProtocol.name());
@@ -507,7 +509,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         submissionTaskIds.add(taskModel.getTaskId());
 
         // create monitor task for this Email based monitor mode job
-        if (monitorMode == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR) {
+        if (monitorMode == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR
+                || monitorMode == MonitorMode.CLOUD_JOB_MONITOR) {
             TaskModel monitorTaskModel = new TaskModel();
             monitorTaskModel.setParentProcessId(processModel.getProcessId());
             monitorTaskModel.setCreationTime(new Date().getTime());

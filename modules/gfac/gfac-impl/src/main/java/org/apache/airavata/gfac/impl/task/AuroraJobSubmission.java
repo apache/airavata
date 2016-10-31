@@ -1,0 +1,146 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+package org.apache.airavata.gfac.impl.task;
+
+import org.apache.airavata.cloud.aurora.client.AuroraThriftClient;
+import org.apache.airavata.cloud.aurora.client.bean.IdentityBean;
+import org.apache.airavata.cloud.aurora.client.bean.JobConfigBean;
+import org.apache.airavata.cloud.aurora.client.bean.JobKeyBean;
+import org.apache.airavata.cloud.aurora.client.bean.ProcessBean;
+import org.apache.airavata.cloud.aurora.client.bean.ResourceBean;
+import org.apache.airavata.cloud.aurora.client.bean.ResponseBean;
+import org.apache.airavata.cloud.aurora.client.bean.TaskConfigBean;
+import org.apache.airavata.cloud.aurora.util.AuroraThriftClientUtil;
+import org.apache.airavata.cloud.aurora.util.Constants;
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.gfac.core.GFacException;
+import org.apache.airavata.gfac.core.GFacUtils;
+import org.apache.airavata.gfac.core.context.ProcessContext;
+import org.apache.airavata.gfac.core.context.TaskContext;
+import org.apache.airavata.gfac.core.task.JobSubmissionTask;
+import org.apache.airavata.gfac.core.task.TaskException;
+import org.apache.airavata.gfac.impl.AuroraUtils;
+import org.apache.airavata.model.commons.ErrorModel;
+import org.apache.airavata.model.job.JobModel;
+import org.apache.airavata.model.status.JobState;
+import org.apache.airavata.model.status.JobStatus;
+import org.apache.airavata.model.status.TaskState;
+import org.apache.airavata.model.status.TaskStatus;
+import org.apache.airavata.model.task.TaskTypes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
+public class AuroraJobSubmission implements JobSubmissionTask{
+
+    private static final Logger log = LoggerFactory.getLogger(AuroraJobSubmission.class);
+
+    @Override
+    public JobStatus cancel(TaskContext taskcontext) throws TaskException {
+        return null;
+    }
+
+    @Override
+    public void init(Map<String, String> propertyMap) throws TaskException {
+
+    }
+
+    @Override
+    public TaskStatus execute(TaskContext taskContext) {
+        TaskStatus taskStatus = new TaskStatus(TaskState.COMPLETED); // set to completed.
+        ProcessContext processContext = taskContext.getParentProcessContext();
+        JobModel jobModel = processContext.getJobModel();
+        jobModel.setTaskId(taskContext.getTaskId());
+        String jobIdAndName = "A" + GFacUtils.generateJobName();
+        jobModel.setJobName(jobIdAndName);
+        JobStatus jobStatus = new JobStatus();
+        jobStatus.setJobState(JobState.SUBMITTED);
+
+        try {
+            JobKeyBean jobKey = new JobKeyBean(AuroraUtils.ENVIRONMENT, AuroraUtils.ROLE, jobIdAndName);
+            IdentityBean owner = new IdentityBean(AuroraUtils.ROLE);
+            // only autodoc vina
+            String workingDir = taskContext.getWorkingDir();
+            ProcessBean proc1 = new ProcessBean("process_1", "mkdir -p " + workingDir, false);
+            ProcessBean proc2 = new ProcessBean("process_1", "cp -rf /home/centos/efs-mount-point/autodock-vina/* " + workingDir , false);
+            ProcessBean proc3 = new ProcessBean("process_2", "cd " + workingDir + " && ./vina_screenA.sh", false);
+            Set<ProcessBean> processes = new LinkedHashSet<>();
+            processes.add(proc1);
+            processes.add(proc2);
+            processes.add(proc3);
+
+            ResourceBean resources = new ResourceBean(1.5, 512, 512);
+
+            TaskConfigBean taskConfig = new TaskConfigBean("Airavata-Aurora-" + jobIdAndName, processes, resources);
+            JobConfigBean jobConfig = new JobConfigBean(jobKey, owner, taskConfig, AuroraUtils.CLUSTER);
+
+            String executorConfigJson = AuroraThriftClientUtil.getExecutorConfigJson(jobConfig);
+            log.info("Executor Config for Job {} , {}", jobIdAndName, executorConfigJson);
+
+            AuroraThriftClient client = AuroraThriftClient.getAuroraThriftClient(Constants.AURORA_SCHEDULER_PROP_FILE);
+            ResponseBean response = client.createJob(jobConfig);
+            log.info("Response for job {}, {}", jobIdAndName, response);
+
+            jobModel.setJobId(jobIdAndName);
+            jobStatus.setReason("Successfully Submitted");
+            jobModel.setJobStatuses(Arrays.asList(jobStatus ));
+            jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            taskContext.getParentProcessContext().setJobModel(jobModel);
+
+            GFacUtils.saveJobModel(processContext, jobModel);
+            GFacUtils.saveJobStatus(processContext, jobModel);
+            taskStatus.setReason("Successfully submitted job to Aurora");
+        } catch (Exception e) {
+            String msg = "Error occurred while submitting the job";
+            log.error(msg, e);
+            taskStatus.setState(TaskState.FAILED);
+            taskStatus.setReason(msg);
+            taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setActualErrorMessage(e.getMessage());
+            errorModel.setUserFriendlyMessage(msg);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
+        }
+
+        taskContext.setTaskStatus(taskStatus);
+        try {
+            GFacUtils.saveAndPublishTaskStatus(taskContext);
+        } catch (GFacException e) {
+            log.error("Error while saving task status", e);
+        }
+        return taskStatus;
+    }
+
+    @Override
+    public TaskStatus recover(TaskContext taskContext) {
+        return null;
+    }
+
+    @Override
+    public TaskTypes getType() {
+        return null;
+    }
+}

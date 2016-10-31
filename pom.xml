@@ -626,7 +626,7 @@
 				<module>modules/orchestrator</module>
 				<module>modules/monitoring</module>
 				<module>modules/user-profile</module>
-				<!--<module>modules/cloud</module>-->
+				<module>modules/cloud</module>
 				<module>modules/server</module>
 				<module>modules/workflow</module>
 				<module>modules/test-suite</module>
