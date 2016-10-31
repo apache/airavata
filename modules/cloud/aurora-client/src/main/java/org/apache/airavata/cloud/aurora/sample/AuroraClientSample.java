@@ -21,8 +21,10 @@ package org.apache.airavata.cloud.aurora.sample;
 
 import java.text.MessageFormat;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.airavata.cloud.aurora.client.AuroraSchedulerClientFactory;
 import org.apache.airavata.cloud.aurora.client.AuroraThriftClient;
@@ -129,6 +131,43 @@ public class AuroraClientSample {
 		System.out.println(response);
 	}
 	
+	public static void createAutoDockJob() throws Exception {
+		JobKeyBean jobKey = new JobKeyBean("devel", "centos", "test_autodock");
+		IdentityBean owner = new IdentityBean("centos");
+		
+		String working_dir = "/home/centos/efs-mount-point/job_" + ThreadLocalRandom.current().nextInt(1, 101) + "/";
+		String autodock_path = "/home/centos/efs-mount-point/autodock-vina";
+		ProcessBean proc1 = new ProcessBean("process_1", "mkdir " + working_dir, false);
+		ProcessBean proc2 = new ProcessBean("process_2", "cp " + autodock_path + "/vina_screenM.sh " + working_dir, false);
+		ProcessBean proc3 = new ProcessBean("process_3", "cp " + autodock_path + "/ligand* " + working_dir, false);
+		ProcessBean proc4 = new ProcessBean("process_4", "cd " + working_dir + " && sh vina_screenM.sh", false);
+		
+		Set<ProcessBean> processes = new LinkedHashSet<>();
+		processes.add(proc1);		
+		processes.add(proc2);
+		processes.add(proc3);
+		processes.add(proc4);
+		
+		ResourceBean resources = new ResourceBean(1.5, 125, 512);
+		
+		TaskConfigBean taskConfig = new TaskConfigBean("test_autodock", processes, resources);
+		JobConfigBean jobConfig = new JobConfigBean(jobKey, owner, taskConfig, "example");
+		
+		String executorConfigJson = AuroraThriftClientUtil.getExecutorConfigJson(jobConfig);
+		System.out.println(executorConfigJson);
+		
+		AuroraThriftClient client = AuroraThriftClient.getAuroraThriftClient(Constants.AURORA_SCHEDULER_PROP_FILE);
+		ResponseBean response = client.createJob(jobConfig);
+		System.out.println(response);
+	}
+	
+	public static void killTasks(String jobName) throws Exception {
+		JobKeyBean jobKey = new JobKeyBean("devel", "centos", jobName);
+		AuroraThriftClient client = AuroraThriftClient.getAuroraThriftClient(Constants.AURORA_SCHEDULER_PROP_FILE);
+		ResponseBean response = client.killTasks(jobKey, new HashSet<>());
+		System.out.println(response);
+	}
+	
 	/**
 	 * The main method.
 	 *
@@ -141,14 +180,19 @@ public class AuroraClientSample {
 			String auroraPort = properties.getProperty(Constants.AURORA_SCHEDULER_PORT);
 			auroraSchedulerClient = AuroraSchedulerClientFactory.createReadOnlySchedulerClient(MessageFormat.format(Constants.AURORA_SCHEDULER_CONNECTION_URL, auroraHost, auroraPort));
 			
-			// get jobs summary
-//			AuroraClientSample.getJobSummary(auroraSchedulerClient);
-			
 			// create sample job
 //			AuroraClientSample.createJob();
-			AuroraThriftClient client = AuroraThriftClient.getAuroraThriftClient(Constants.AURORA_SCHEDULER_PROP_FILE);
-			ResponseBean response = client.getPendingReasonForJob(new JobKeyBean("devel", "centos", "hello_pending"));
-			System.out.println(response);
+			AuroraClientSample.createAutoDockJob();
+			
+			// kill pending job
+//			AuroraClientSample.killTasks("test_autodock");
+			
+			// get jobs summary
+			AuroraClientSample.getJobSummary(auroraSchedulerClient);
+			
+//			AuroraThriftClient client = AuroraThriftClient.getAuroraThriftClient(Constants.AURORA_SCHEDULER_PROP_FILE);
+//			ResponseBean response = client.getPendingReasonForJob(new JobKeyBean("devel", "centos", "hello_pending"));
+//			System.out.println(response);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		} 
