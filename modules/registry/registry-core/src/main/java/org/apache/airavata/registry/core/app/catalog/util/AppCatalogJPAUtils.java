@@ -519,6 +519,10 @@ public class AppCatalogJPAUtils {
             batchQueueResource.setMaxProcessors(o.getMaxProcessors());
             batchQueueResource.setMaxNodes(o.getMaxNodes());
             batchQueueResource.setMaxMemory(o.getMaxMemory());
+            batchQueueResource.setCpuPerNode(o.getCpuPerNode());
+            batchQueueResource.setDefaultNodeCount(o.getDefaultNodeCount());
+            batchQueueResource.setDefaultCPUCount(o.getDefaultCPUCount());
+            batchQueueResource.setIsDefaultQueue(o.isDefaultQueue());
         }
         return batchQueueResource;
     }
@@ -755,6 +759,10 @@ public class AppCatalogJPAUtils {
             resource.setExecutablePath(o.getExecutablePath());
             resource.setGatewayId(o.getGatewayId());
             resource.setParallelism(o.getParallelism());
+            resource.setDefaultQueueName(o.getDefaultQueueName());
+            resource.setDefaultNodeCount(o.getDefaultNodeCount());
+            resource.setDefaultCPUCount(o.getDefaultCPUCount());
+            resource.setEditableByUser(o.isEditableByUser());
             resource.setModuleResource((AppModuleResource) createApplicationModule(o.getApplicationModule()));
             resource.setHostResource((ComputeResourceResource) createComputeResource(o.getComputeResource()));
             resource.setCreatedTime(o.getCreationTime());

@@ -224,13 +224,17 @@ inline std::ostream& operator<<(std::ostream& out, const ResourceJobManager& obj
 }
 
 typedef struct _BatchQueue__isset {
-  _BatchQueue__isset() : queueDescription(false), maxRunTime(false), maxNodes(false), maxProcessors(false), maxJobsInQueue(false), maxMemory(false) {}
+  _BatchQueue__isset() : queueDescription(false), maxRunTime(false), maxNodes(false), maxProcessors(false), maxJobsInQueue(false), maxMemory(false), cpuPerNode(false), defaultNodeCount(false), defaultCPUCount(false), isDefaultQueue(false) {}
   bool queueDescription :1;
   bool maxRunTime :1;
   bool maxNodes :1;
   bool maxProcessors :1;
   bool maxJobsInQueue :1;
   bool maxMemory :1;
+  bool cpuPerNode :1;
+  bool defaultNodeCount :1;
+  bool defaultCPUCount :1;
+  bool isDefaultQueue :1;
 } _BatchQueue__isset;
 
 class BatchQueue {
@@ -238,7 +242,7 @@ class BatchQueue {
 
   BatchQueue(const BatchQueue&);
   BatchQueue& operator=(const BatchQueue&);
-  BatchQueue() : queueName(), queueDescription(), maxRunTime(0), maxNodes(0), maxProcessors(0), maxJobsInQueue(0), maxMemory(0) {
+  BatchQueue() : queueName(), queueDescription(), maxRunTime(0), maxNodes(0), maxProcessors(0), maxJobsInQueue(0), maxMemory(0), cpuPerNode(0), defaultNodeCount(0), defaultCPUCount(0), isDefaultQueue(0) {
   }
 
   virtual ~BatchQueue() throw();
@@ -249,6 +253,10 @@ class BatchQueue {
   int32_t maxProcessors;
   int32_t maxJobsInQueue;
   int32_t maxMemory;
+  int32_t cpuPerNode;
+  int32_t defaultNodeCount;
+  int32_t defaultCPUCount;
+  bool isDefaultQueue;
 
   _BatchQueue__isset __isset;
 
@@ -265,6 +273,14 @@ class BatchQueue {
   void __set_maxJobsInQueue(const int32_t val);
 
   void __set_maxMemory(const int32_t val);
+
+  void __set_cpuPerNode(const int32_t val);
+
+  void __set_defaultNodeCount(const int32_t val);
+
+  void __set_defaultCPUCount(const int32_t val);
+
+  void __set_isDefaultQueue(const bool val);
 
   bool operator == (const BatchQueue & rhs) const
   {
@@ -293,6 +309,22 @@ class BatchQueue {
     if (__isset.maxMemory != rhs.__isset.maxMemory)
       return false;
     else if (__isset.maxMemory && !(maxMemory == rhs.maxMemory))
+      return false;
+    if (__isset.cpuPerNode != rhs.__isset.cpuPerNode)
+      return false;
+    else if (__isset.cpuPerNode && !(cpuPerNode == rhs.cpuPerNode))
+      return false;
+    if (__isset.defaultNodeCount != rhs.__isset.defaultNodeCount)
+      return false;
+    else if (__isset.defaultNodeCount && !(defaultNodeCount == rhs.defaultNodeCount))
+      return false;
+    if (__isset.defaultCPUCount != rhs.__isset.defaultCPUCount)
+      return false;
+    else if (__isset.defaultCPUCount && !(defaultCPUCount == rhs.defaultCPUCount))
+      return false;
+    if (__isset.isDefaultQueue != rhs.__isset.isDefaultQueue)
+      return false;
+    else if (__isset.isDefaultQueue && !(isDefaultQueue == rhs.isDefaultQueue))
       return false;
     return true;
   }
