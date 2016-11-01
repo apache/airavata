@@ -201,10 +201,10 @@ public class ComputeResourceImpl implements ComputeResource {
     }
 
     @Override
-    public String addCloudJobSubmission(CloudJobSubmission sshJobSubmission) throws AppCatalogException {
+    public String addCloudJobSubmission(CloudJobSubmission cloudJobSubmission) throws AppCatalogException {
         try {
-            sshJobSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("Cloud"));
-            CloudSubmissionResource resource = AppCatalogThriftConversion.getCloudJobSubmission(sshJobSubmission);
+            cloudJobSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("Cloud"));
+            CloudSubmissionResource resource = AppCatalogThriftConversion.getCloudJobSubmission(cloudJobSubmission);
             resource.save();
             return resource.getJobSubmissionInterfaceId();
         }catch (Exception e) {
