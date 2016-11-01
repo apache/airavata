@@ -43,7 +43,15 @@ public class ApplicationDeployment implements Serializable {
     private String parallelism;
     @Column(name = "GATEWAY_ID")
     private String gatewayId;
-    
+    @Column(name = "DEFAULT_QUEUE_NAME")
+    private String defaultQueueName;
+    @Column(name = "DEFAULT_NODE_COUNT")
+    private int defaultNodeCount;
+    @Column(name = "DEFAULT_CPU_COUNT")
+    private int defaultCPUCount;
+    @Column(name = "EDITABLE_BY_USER")
+    private boolean editableByUser;
+
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "APP_MODULE_ID")
     private ApplicationModule applicationModule;
@@ -145,4 +153,36 @@ public class ApplicationDeployment implements Serializable {
 	public void setParallelism(String parallelism) {
 		this.parallelism = parallelism;
 	}
+
+    public String getDefaultQueueName() {
+        return defaultQueueName;
+    }
+
+    public void setDefaultQueueName(String defaultQueueName) {
+        this.defaultQueueName = defaultQueueName;
+    }
+
+    public int getDefaultNodeCount() {
+        return defaultNodeCount;
+    }
+
+    public void setDefaultNodeCount(int defaultNodeCount) {
+        this.defaultNodeCount = defaultNodeCount;
+    }
+
+    public int getDefaultCPUCount() {
+        return defaultCPUCount;
+    }
+
+    public void setDefaultCPUCount(int defaultCPUCount) {
+        this.defaultCPUCount = defaultCPUCount;
+    }
+
+    public boolean isEditableByUser() {
+        return editableByUser;
+    }
+
+    public void setEditableByUser(boolean editableByUser) {
+        this.editableByUser = editableByUser;
+    }
 }
