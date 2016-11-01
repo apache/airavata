@@ -929,6 +929,8 @@ public class GFacEngineImpl implements GFacEngine {
                     (jsInterface.getJobSubmissionInterfaceId());
             processCtx.setMonitorMode(sshJobSubmission.getMonitorMode()); // fixme - Move this to populate process
             resourceJobManager = sshJobSubmission.getResourceJobManager();
+        } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.CLOUD) {
+            return null;
         } else {
             throw new GFacException("Unsupported JobSubmissionProtocol - " + jsInterface.getJobSubmissionProtocol()
                     .name());
