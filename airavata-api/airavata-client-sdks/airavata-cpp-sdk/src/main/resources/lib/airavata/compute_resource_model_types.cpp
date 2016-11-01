@@ -435,6 +435,26 @@ void BatchQueue::__set_maxMemory(const int32_t val) {
 __isset.maxMemory = true;
 }
 
+void BatchQueue::__set_cpuPerNode(const int32_t val) {
+  this->cpuPerNode = val;
+__isset.cpuPerNode = true;
+}
+
+void BatchQueue::__set_defaultNodeCount(const int32_t val) {
+  this->defaultNodeCount = val;
+__isset.defaultNodeCount = true;
+}
+
+void BatchQueue::__set_defaultCPUCount(const int32_t val) {
+  this->defaultCPUCount = val;
+__isset.defaultCPUCount = true;
+}
+
+void BatchQueue::__set_isDefaultQueue(const bool val) {
+  this->isDefaultQueue = val;
+__isset.isDefaultQueue = true;
+}
+
 uint32_t BatchQueue::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -513,6 +533,38 @@ uint32_t BatchQueue::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 8:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->cpuPerNode);
+          this->__isset.cpuPerNode = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 9:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->defaultNodeCount);
+          this->__isset.defaultNodeCount = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 10:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->defaultCPUCount);
+          this->__isset.defaultCPUCount = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 11:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->isDefaultQueue);
+          this->__isset.isDefaultQueue = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -566,6 +618,26 @@ uint32_t BatchQueue::write(::apache::thrift::protocol::TProtocol* oprot) const {
     xfer += oprot->writeI32(this->maxMemory);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.cpuPerNode) {
+    xfer += oprot->writeFieldBegin("cpuPerNode", ::apache::thrift::protocol::T_I32, 8);
+    xfer += oprot->writeI32(this->cpuPerNode);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.defaultNodeCount) {
+    xfer += oprot->writeFieldBegin("defaultNodeCount", ::apache::thrift::protocol::T_I32, 9);
+    xfer += oprot->writeI32(this->defaultNodeCount);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.defaultCPUCount) {
+    xfer += oprot->writeFieldBegin("defaultCPUCount", ::apache::thrift::protocol::T_I32, 10);
+    xfer += oprot->writeI32(this->defaultCPUCount);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.isDefaultQueue) {
+    xfer += oprot->writeFieldBegin("isDefaultQueue", ::apache::thrift::protocol::T_BOOL, 11);
+    xfer += oprot->writeBool(this->isDefaultQueue);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -580,6 +652,10 @@ void swap(BatchQueue &a, BatchQueue &b) {
   swap(a.maxProcessors, b.maxProcessors);
   swap(a.maxJobsInQueue, b.maxJobsInQueue);
   swap(a.maxMemory, b.maxMemory);
+  swap(a.cpuPerNode, b.cpuPerNode);
+  swap(a.defaultNodeCount, b.defaultNodeCount);
+  swap(a.defaultCPUCount, b.defaultCPUCount);
+  swap(a.isDefaultQueue, b.isDefaultQueue);
   swap(a.__isset, b.__isset);
 }
 
@@ -591,6 +667,10 @@ BatchQueue::BatchQueue(const BatchQueue& other21) {
   maxProcessors = other21.maxProcessors;
   maxJobsInQueue = other21.maxJobsInQueue;
   maxMemory = other21.maxMemory;
+  cpuPerNode = other21.cpuPerNode;
+  defaultNodeCount = other21.defaultNodeCount;
+  defaultCPUCount = other21.defaultCPUCount;
+  isDefaultQueue = other21.isDefaultQueue;
   __isset = other21.__isset;
 }
 BatchQueue& BatchQueue::operator=(const BatchQueue& other22) {
@@ -601,6 +681,10 @@ BatchQueue& BatchQueue::operator=(const BatchQueue& other22) {
   maxProcessors = other22.maxProcessors;
   maxJobsInQueue = other22.maxJobsInQueue;
   maxMemory = other22.maxMemory;
+  cpuPerNode = other22.cpuPerNode;
+  defaultNodeCount = other22.defaultNodeCount;
+  defaultCPUCount = other22.defaultCPUCount;
+  isDefaultQueue = other22.isDefaultQueue;
   __isset = other22.__isset;
   return *this;
 }
@@ -614,6 +698,10 @@ void BatchQueue::printTo(std::ostream& out) const {
   out << ", " << "maxProcessors="; (__isset.maxProcessors ? (out << to_string(maxProcessors)) : (out << "<null>"));
   out << ", " << "maxJobsInQueue="; (__isset.maxJobsInQueue ? (out << to_string(maxJobsInQueue)) : (out << "<null>"));
   out << ", " << "maxMemory="; (__isset.maxMemory ? (out << to_string(maxMemory)) : (out << "<null>"));
+  out << ", " << "cpuPerNode="; (__isset.cpuPerNode ? (out << to_string(cpuPerNode)) : (out << "<null>"));
+  out << ", " << "defaultNodeCount="; (__isset.defaultNodeCount ? (out << to_string(defaultNodeCount)) : (out << "<null>"));
+  out << ", " << "defaultCPUCount="; (__isset.defaultCPUCount ? (out << to_string(defaultCPUCount)) : (out << "<null>"));
+  out << ", " << "isDefaultQueue="; (__isset.isDefaultQueue ? (out << to_string(isDefaultQueue)) : (out << "<null>"));
   out << ")";
 }
 

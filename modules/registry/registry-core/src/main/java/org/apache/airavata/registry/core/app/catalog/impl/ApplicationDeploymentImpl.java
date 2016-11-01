@@ -64,6 +64,10 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             deploymentResource.setAppDes(deploymentDescription.getAppDeploymentDescription());
             deploymentResource.setExecutablePath(deploymentDescription.getExecutablePath());
             deploymentResource.setGatewayId(gatewayId);
+            deploymentResource.setDefaultQueueName(deploymentDescription.getDefaultQueueName());
+            deploymentResource.setDefaultCPUCount(deploymentDescription.getDefaultCPUCount());
+            deploymentResource.setDefaultNodeCount(deploymentDescription.getDefaultNodeCount());
+            deploymentResource.setEditableByUser(deploymentDescription.isEditableByUser());
             ApplicationParallelismType parallelism = deploymentDescription.getParallelism();
             if (parallelism != null){
                 deploymentResource.setParallelism(parallelism.toString());
@@ -168,6 +172,10 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             existingDep.setHostResource((ComputeResourceResource)computeHostResource.get(updatedDeployment.getComputeHostId()));
             existingDep.setAppDes(updatedDeployment.getAppDeploymentDescription());
             existingDep.setExecutablePath(updatedDeployment.getExecutablePath());
+            existingDep.setDefaultQueueName(updatedDeployment.getDefaultQueueName());
+            existingDep.setDefaultCPUCount(updatedDeployment.getDefaultCPUCount());
+            existingDep.setDefaultNodeCount(updatedDeployment.getDefaultNodeCount());
+            existingDep.setEditableByUser(updatedDeployment.isEditableByUser());
             if (updatedDeployment.getParallelism() != null){
                 existingDep.setParallelism(updatedDeployment.getParallelism().toString());
             }

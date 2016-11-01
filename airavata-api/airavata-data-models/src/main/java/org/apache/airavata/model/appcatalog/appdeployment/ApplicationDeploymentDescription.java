@@ -93,6 +93,10 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
   private static final org.apache.thrift.protocol.TField SET_ENVIRONMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("setEnvironment", org.apache.thrift.protocol.TType.LIST, (short)10);
   private static final org.apache.thrift.protocol.TField PRE_JOB_COMMANDS_FIELD_DESC = new org.apache.thrift.protocol.TField("preJobCommands", org.apache.thrift.protocol.TType.LIST, (short)11);
   private static final org.apache.thrift.protocol.TField POST_JOB_COMMANDS_FIELD_DESC = new org.apache.thrift.protocol.TField("postJobCommands", org.apache.thrift.protocol.TType.LIST, (short)12);
+  private static final org.apache.thrift.protocol.TField DEFAULT_QUEUE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultQueueName", org.apache.thrift.protocol.TType.STRING, (short)13);
+  private static final org.apache.thrift.protocol.TField DEFAULT_NODE_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultNodeCount", org.apache.thrift.protocol.TType.I32, (short)14);
+  private static final org.apache.thrift.protocol.TField DEFAULT_CPUCOUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultCPUCount", org.apache.thrift.protocol.TType.I32, (short)15);
+  private static final org.apache.thrift.protocol.TField EDITABLE_BY_USER_FIELD_DESC = new org.apache.thrift.protocol.TField("editableByUser", org.apache.thrift.protocol.TType.BOOL, (short)16);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -112,6 +116,10 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
   private List<SetEnvPaths> setEnvironment; // optional
   private List<CommandObject> preJobCommands; // optional
   private List<CommandObject> postJobCommands; // optional
+  private String defaultQueueName; // optional
+  private int defaultNodeCount; // optional
+  private int defaultCPUCount; // optional
+  private boolean editableByUser; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -130,7 +138,11 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
     LIB_APPEND_PATHS((short)9, "libAppendPaths"),
     SET_ENVIRONMENT((short)10, "setEnvironment"),
     PRE_JOB_COMMANDS((short)11, "preJobCommands"),
-    POST_JOB_COMMANDS((short)12, "postJobCommands");
+    POST_JOB_COMMANDS((short)12, "postJobCommands"),
+    DEFAULT_QUEUE_NAME((short)13, "defaultQueueName"),
+    DEFAULT_NODE_COUNT((short)14, "defaultNodeCount"),
+    DEFAULT_CPUCOUNT((short)15, "defaultCPUCount"),
+    EDITABLE_BY_USER((short)16, "editableByUser");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -169,6 +181,14 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
           return PRE_JOB_COMMANDS;
         case 12: // POST_JOB_COMMANDS
           return POST_JOB_COMMANDS;
+        case 13: // DEFAULT_QUEUE_NAME
+          return DEFAULT_QUEUE_NAME;
+        case 14: // DEFAULT_NODE_COUNT
+          return DEFAULT_NODE_COUNT;
+        case 15: // DEFAULT_CPUCOUNT
+          return DEFAULT_CPUCOUNT;
+        case 16: // EDITABLE_BY_USER
+          return EDITABLE_BY_USER;
         default:
           return null;
       }
@@ -209,7 +229,11 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
   }
 
   // isset id assignments
-  private static final _Fields optionals[] = {_Fields.APP_DEPLOYMENT_DESCRIPTION,_Fields.MODULE_LOAD_CMDS,_Fields.LIB_PREPEND_PATHS,_Fields.LIB_APPEND_PATHS,_Fields.SET_ENVIRONMENT,_Fields.PRE_JOB_COMMANDS,_Fields.POST_JOB_COMMANDS};
+  private static final int __DEFAULTNODECOUNT_ISSET_ID = 0;
+  private static final int __DEFAULTCPUCOUNT_ISSET_ID = 1;
+  private static final int __EDITABLEBYUSER_ISSET_ID = 2;
+  private byte __isset_bitfield = 0;
+  private static final _Fields optionals[] = {_Fields.APP_DEPLOYMENT_DESCRIPTION,_Fields.MODULE_LOAD_CMDS,_Fields.LIB_PREPEND_PATHS,_Fields.LIB_APPEND_PATHS,_Fields.SET_ENVIRONMENT,_Fields.PRE_JOB_COMMANDS,_Fields.POST_JOB_COMMANDS,_Fields.DEFAULT_QUEUE_NAME,_Fields.DEFAULT_NODE_COUNT,_Fields.DEFAULT_CPUCOUNT,_Fields.EDITABLE_BY_USER};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -243,6 +267,14 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
     tmpMap.put(_Fields.POST_JOB_COMMANDS, new org.apache.thrift.meta_data.FieldMetaData("postJobCommands", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, CommandObject.class))));
+    tmpMap.put(_Fields.DEFAULT_QUEUE_NAME, new org.apache.thrift.meta_data.FieldMetaData("defaultQueueName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.DEFAULT_NODE_COUNT, new org.apache.thrift.meta_data.FieldMetaData("defaultNodeCount", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.DEFAULT_CPUCOUNT, new org.apache.thrift.meta_data.FieldMetaData("defaultCPUCount", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.EDITABLE_BY_USER, new org.apache.thrift.meta_data.FieldMetaData("editableByUser", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ApplicationDeploymentDescription.class, metaDataMap);
   }
@@ -273,6 +305,7 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
    * Performs a deep copy on <i>other</i>.
    */
   public ApplicationDeploymentDescription(ApplicationDeploymentDescription other) {
+    __isset_bitfield = other.__isset_bitfield;
     if (other.isSetAppDeploymentId()) {
       this.appDeploymentId = other.appDeploymentId;
     }
@@ -333,6 +366,12 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
       }
       this.postJobCommands = __this__postJobCommands;
     }
+    if (other.isSetDefaultQueueName()) {
+      this.defaultQueueName = other.defaultQueueName;
+    }
+    this.defaultNodeCount = other.defaultNodeCount;
+    this.defaultCPUCount = other.defaultCPUCount;
+    this.editableByUser = other.editableByUser;
   }
 
   public ApplicationDeploymentDescription deepCopy() {
@@ -355,6 +394,13 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
     this.setEnvironment = null;
     this.preJobCommands = null;
     this.postJobCommands = null;
+    this.defaultQueueName = null;
+    setDefaultNodeCountIsSet(false);
+    this.defaultNodeCount = 0;
+    setDefaultCPUCountIsSet(false);
+    this.defaultCPUCount = 0;
+    setEditableByUserIsSet(false);
+    this.editableByUser = false;
   }
 
   public String getAppDeploymentId() {
@@ -731,6 +777,95 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
     }
   }
 
+  public String getDefaultQueueName() {
+    return this.defaultQueueName;
+  }
+
+  public void setDefaultQueueName(String defaultQueueName) {
+    this.defaultQueueName = defaultQueueName;
+  }
+
+  public void unsetDefaultQueueName() {
+    this.defaultQueueName = null;
+  }
+
+  /** Returns true if field defaultQueueName is set (has been assigned a value) and false otherwise */
+  public boolean isSetDefaultQueueName() {
+    return this.defaultQueueName != null;
+  }
+
+  public void setDefaultQueueNameIsSet(boolean value) {
+    if (!value) {
+      this.defaultQueueName = null;
+    }
+  }
+
+  public int getDefaultNodeCount() {
+    return this.defaultNodeCount;
+  }
+
+  public void setDefaultNodeCount(int defaultNodeCount) {
+    this.defaultNodeCount = defaultNodeCount;
+    setDefaultNodeCountIsSet(true);
+  }
+
+  public void unsetDefaultNodeCount() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __DEFAULTNODECOUNT_ISSET_ID);
+  }
+
+  /** Returns true if field defaultNodeCount is set (has been assigned a value) and false otherwise */
+  public boolean isSetDefaultNodeCount() {
+    return EncodingUtils.testBit(__isset_bitfield, __DEFAULTNODECOUNT_ISSET_ID);
+  }
+
+  public void setDefaultNodeCountIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __DEFAULTNODECOUNT_ISSET_ID, value);
+  }
+
+  public int getDefaultCPUCount() {
+    return this.defaultCPUCount;
+  }
+
+  public void setDefaultCPUCount(int defaultCPUCount) {
+    this.defaultCPUCount = defaultCPUCount;
+    setDefaultCPUCountIsSet(true);
+  }
+
+  public void unsetDefaultCPUCount() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __DEFAULTCPUCOUNT_ISSET_ID);
+  }
+
+  /** Returns true if field defaultCPUCount is set (has been assigned a value) and false otherwise */
+  public boolean isSetDefaultCPUCount() {
+    return EncodingUtils.testBit(__isset_bitfield, __DEFAULTCPUCOUNT_ISSET_ID);
+  }
+
+  public void setDefaultCPUCountIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __DEFAULTCPUCOUNT_ISSET_ID, value);
+  }
+
+  public boolean isEditableByUser() {
+    return this.editableByUser;
+  }
+
+  public void setEditableByUser(boolean editableByUser) {
+    this.editableByUser = editableByUser;
+    setEditableByUserIsSet(true);
+  }
+
+  public void unsetEditableByUser() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __EDITABLEBYUSER_ISSET_ID);
+  }
+
+  /** Returns true if field editableByUser is set (has been assigned a value) and false otherwise */
+  public boolean isSetEditableByUser() {
+    return EncodingUtils.testBit(__isset_bitfield, __EDITABLEBYUSER_ISSET_ID);
+  }
+
+  public void setEditableByUserIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __EDITABLEBYUSER_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case APP_DEPLOYMENT_ID:
@@ -829,6 +964,38 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
       }
       break;
 
+    case DEFAULT_QUEUE_NAME:
+      if (value == null) {
+        unsetDefaultQueueName();
+      } else {
+        setDefaultQueueName((String)value);
+      }
+      break;
+
+    case DEFAULT_NODE_COUNT:
+      if (value == null) {
+        unsetDefaultNodeCount();
+      } else {
+        setDefaultNodeCount((Integer)value);
+      }
+      break;
+
+    case DEFAULT_CPUCOUNT:
+      if (value == null) {
+        unsetDefaultCPUCount();
+      } else {
+        setDefaultCPUCount((Integer)value);
+      }
+      break;
+
+    case EDITABLE_BY_USER:
+      if (value == null) {
+        unsetEditableByUser();
+      } else {
+        setEditableByUser((Boolean)value);
+      }
+      break;
+
     }
   }
 
@@ -870,6 +1037,18 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
     case POST_JOB_COMMANDS:
       return getPostJobCommands();
 
+    case DEFAULT_QUEUE_NAME:
+      return getDefaultQueueName();
+
+    case DEFAULT_NODE_COUNT:
+      return getDefaultNodeCount();
+
+    case DEFAULT_CPUCOUNT:
+      return getDefaultCPUCount();
+
+    case EDITABLE_BY_USER:
+      return isEditableByUser();
+
     }
     throw new IllegalStateException();
   }
@@ -905,6 +1084,14 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
       return isSetPreJobCommands();
     case POST_JOB_COMMANDS:
       return isSetPostJobCommands();
+    case DEFAULT_QUEUE_NAME:
+      return isSetDefaultQueueName();
+    case DEFAULT_NODE_COUNT:
+      return isSetDefaultNodeCount();
+    case DEFAULT_CPUCOUNT:
+      return isSetDefaultCPUCount();
+    case EDITABLE_BY_USER:
+      return isSetEditableByUser();
     }
     throw new IllegalStateException();
   }
@@ -1030,6 +1217,42 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
         return false;
     }
 
+    boolean this_present_defaultQueueName = true && this.isSetDefaultQueueName();
+    boolean that_present_defaultQueueName = true && that.isSetDefaultQueueName();
+    if (this_present_defaultQueueName || that_present_defaultQueueName) {
+      if (!(this_present_defaultQueueName && that_present_defaultQueueName))
+        return false;
+      if (!this.defaultQueueName.equals(that.defaultQueueName))
+        return false;
+    }
+
+    boolean this_present_defaultNodeCount = true && this.isSetDefaultNodeCount();
+    boolean that_present_defaultNodeCount = true && that.isSetDefaultNodeCount();
+    if (this_present_defaultNodeCount || that_present_defaultNodeCount) {
+      if (!(this_present_defaultNodeCount && that_present_defaultNodeCount))
+        return false;
+      if (this.defaultNodeCount != that.defaultNodeCount)
+        return false;
+    }
+
+    boolean this_present_defaultCPUCount = true && this.isSetDefaultCPUCount();
+    boolean that_present_defaultCPUCount = true && that.isSetDefaultCPUCount();
+    if (this_present_defaultCPUCount || that_present_defaultCPUCount) {
+      if (!(this_present_defaultCPUCount && that_present_defaultCPUCount))
+        return false;
+      if (this.defaultCPUCount != that.defaultCPUCount)
+        return false;
+    }
+
+    boolean this_present_editableByUser = true && this.isSetEditableByUser();
+    boolean that_present_editableByUser = true && that.isSetEditableByUser();
+    if (this_present_editableByUser || that_present_editableByUser) {
+      if (!(this_present_editableByUser && that_present_editableByUser))
+        return false;
+      if (this.editableByUser != that.editableByUser)
+        return false;
+    }
+
     return true;
   }
 
@@ -1096,6 +1319,26 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
     list.add(present_postJobCommands);
     if (present_postJobCommands)
       list.add(postJobCommands);
+
+    boolean present_defaultQueueName = true && (isSetDefaultQueueName());
+    list.add(present_defaultQueueName);
+    if (present_defaultQueueName)
+      list.add(defaultQueueName);
+
+    boolean present_defaultNodeCount = true && (isSetDefaultNodeCount());
+    list.add(present_defaultNodeCount);
+    if (present_defaultNodeCount)
+      list.add(defaultNodeCount);
+
+    boolean present_defaultCPUCount = true && (isSetDefaultCPUCount());
+    list.add(present_defaultCPUCount);
+    if (present_defaultCPUCount)
+      list.add(defaultCPUCount);
+
+    boolean present_editableByUser = true && (isSetEditableByUser());
+    list.add(present_editableByUser);
+    if (present_editableByUser)
+      list.add(editableByUser);
 
     return list.hashCode();
   }
@@ -1224,6 +1467,46 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
     }
     if (isSetPostJobCommands()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.postJobCommands, other.postJobCommands);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetDefaultQueueName()).compareTo(other.isSetDefaultQueueName());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDefaultQueueName()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.defaultQueueName, other.defaultQueueName);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetDefaultNodeCount()).compareTo(other.isSetDefaultNodeCount());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDefaultNodeCount()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.defaultNodeCount, other.defaultNodeCount);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetDefaultCPUCount()).compareTo(other.isSetDefaultCPUCount());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDefaultCPUCount()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.defaultCPUCount, other.defaultCPUCount);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetEditableByUser()).compareTo(other.isSetEditableByUser());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetEditableByUser()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.editableByUser, other.editableByUser);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1357,6 +1640,34 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
       }
       first = false;
     }
+    if (isSetDefaultQueueName()) {
+      if (!first) sb.append(", ");
+      sb.append("defaultQueueName:");
+      if (this.defaultQueueName == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.defaultQueueName);
+      }
+      first = false;
+    }
+    if (isSetDefaultNodeCount()) {
+      if (!first) sb.append(", ");
+      sb.append("defaultNodeCount:");
+      sb.append(this.defaultNodeCount);
+      first = false;
+    }
+    if (isSetDefaultCPUCount()) {
+      if (!first) sb.append(", ");
+      sb.append("defaultCPUCount:");
+      sb.append(this.defaultCPUCount);
+      first = false;
+    }
+    if (isSetEditableByUser()) {
+      if (!first) sb.append(", ");
+      sb.append("editableByUser:");
+      sb.append(this.editableByUser);
+      first = false;
+    }
     sb.append(")");
     return sb.toString();
   }
@@ -1396,6 +1707,8 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
 
   private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
     try {
+      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+      __isset_bitfield = 0;
       read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
     } catch (org.apache.thrift.TException te) {
       throw new java.io.IOException(te);
@@ -1582,6 +1895,38 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 13: // DEFAULT_QUEUE_NAME
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.defaultQueueName = iprot.readString();
+              struct.setDefaultQueueNameIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 14: // DEFAULT_NODE_COUNT
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.defaultNodeCount = iprot.readI32();
+              struct.setDefaultNodeCountIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 15: // DEFAULT_CPUCOUNT
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.defaultCPUCount = iprot.readI32();
+              struct.setDefaultCPUCountIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 16: // EDITABLE_BY_USER
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct.editableByUser = iprot.readBool();
+              struct.setEditableByUserIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1711,6 +2056,28 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
           oprot.writeFieldEnd();
         }
       }
+      if (struct.defaultQueueName != null) {
+        if (struct.isSetDefaultQueueName()) {
+          oprot.writeFieldBegin(DEFAULT_QUEUE_NAME_FIELD_DESC);
+          oprot.writeString(struct.defaultQueueName);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.isSetDefaultNodeCount()) {
+        oprot.writeFieldBegin(DEFAULT_NODE_COUNT_FIELD_DESC);
+        oprot.writeI32(struct.defaultNodeCount);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetDefaultCPUCount()) {
+        oprot.writeFieldBegin(DEFAULT_CPUCOUNT_FIELD_DESC);
+        oprot.writeI32(struct.defaultCPUCount);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetEditableByUser()) {
+        oprot.writeFieldBegin(EDITABLE_BY_USER_FIELD_DESC);
+        oprot.writeBool(struct.editableByUser);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1755,7 +2122,19 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
       if (struct.isSetPostJobCommands()) {
         optionals.set(6);
       }
-      oprot.writeBitSet(optionals, 7);
+      if (struct.isSetDefaultQueueName()) {
+        optionals.set(7);
+      }
+      if (struct.isSetDefaultNodeCount()) {
+        optionals.set(8);
+      }
+      if (struct.isSetDefaultCPUCount()) {
+        optionals.set(9);
+      }
+      if (struct.isSetEditableByUser()) {
+        optionals.set(10);
+      }
+      oprot.writeBitSet(optionals, 11);
       if (struct.isSetAppDeploymentDescription()) {
         oprot.writeString(struct.appDeploymentDescription);
       }
@@ -1813,6 +2192,18 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
           }
         }
       }
+      if (struct.isSetDefaultQueueName()) {
+        oprot.writeString(struct.defaultQueueName);
+      }
+      if (struct.isSetDefaultNodeCount()) {
+        oprot.writeI32(struct.defaultNodeCount);
+      }
+      if (struct.isSetDefaultCPUCount()) {
+        oprot.writeI32(struct.defaultCPUCount);
+      }
+      if (struct.isSetEditableByUser()) {
+        oprot.writeBool(struct.editableByUser);
+      }
     }
 
     @Override
@@ -1828,7 +2219,7 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
       struct.setExecutablePathIsSet(true);
       struct.parallelism = org.apache.airavata.model.parallelism.ApplicationParallelismType.findByValue(iprot.readI32());
       struct.setParallelismIsSet(true);
-      BitSet incoming = iprot.readBitSet(7);
+      BitSet incoming = iprot.readBitSet(11);
       if (incoming.get(0)) {
         struct.appDeploymentDescription = iprot.readString();
         struct.setAppDeploymentDescriptionIsSet(true);
@@ -1916,6 +2307,22 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
           }
         }
         struct.setPostJobCommandsIsSet(true);
+      }
+      if (incoming.get(7)) {
+        struct.defaultQueueName = iprot.readString();
+        struct.setDefaultQueueNameIsSet(true);
+      }
+      if (incoming.get(8)) {
+        struct.defaultNodeCount = iprot.readI32();
+        struct.setDefaultNodeCountIsSet(true);
+      }
+      if (incoming.get(9)) {
+        struct.defaultCPUCount = iprot.readI32();
+        struct.setDefaultCPUCountIsSet(true);
+      }
+      if (incoming.get(10)) {
+        struct.editableByUser = iprot.readBool();
+        struct.setEditableByUserIsSet(true);
       }
     }
   }
