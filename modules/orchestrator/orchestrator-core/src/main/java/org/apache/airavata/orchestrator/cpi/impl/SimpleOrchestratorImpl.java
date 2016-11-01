@@ -291,7 +291,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 // TODO - breakdown unicore all in one task to multiple tasks, then we don't need to handle UNICORE here.
                 taskIdList.addAll(createAndSaveSubmissionTasks(gatewayId, preferredJobSubmissionInterface, processModel, userGivenWallTime));
             } else {
-                taskIdList.addAll(createAndSaveEnvSetupTask(gatewayId, processModel, experimentCatalog));
+                if(resourcePreference.getPreferredJobSubmissionProtocol() != JobSubmissionProtocol.CLOUD){
+                    taskIdList.addAll(createAndSaveEnvSetupTask(gatewayId, processModel, experimentCatalog));
+                }
                 taskIdList.addAll(createAndSaveInputDataStagingTasks(processModel, gatewayId));
                 if (autoSchedule) {
                     List<BatchQueue> definedBatchQueues = computeResource.getBatchQueues();
