@@ -683,6 +683,7 @@ public class AppCatalogJPAUtils {
             cloudSubmissionResource.setExecutableType(o.getExecutableType());
             cloudSubmissionResource.setUserAccountName(o.getUserAccountName());
             cloudSubmissionResource.setNodeId(o.getNodeId());
+            cloudSubmissionResource.setProviderName(o.getProviderName());
         }
         return cloudSubmissionResource;
     }
