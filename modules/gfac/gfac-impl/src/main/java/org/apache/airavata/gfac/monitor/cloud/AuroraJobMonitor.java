@@ -85,7 +85,7 @@ public class AuroraJobMonitor implements JobMonitor, Runnable {
         AuroraTimer task = null;
         try {
             task = new AuroraTimer();
-            timer.schedule(task, 5000, 2000);
+            timer.schedule(task, 5000, 5000);
         } catch (Exception e) {
             log.error("Error couldn't run Aurora status poll timer task");
         }
@@ -96,7 +96,6 @@ public class AuroraJobMonitor implements JobMonitor, Runnable {
         jobMonitoringMap.put(jobId, taskContext);
         log.info("Added JobId : {} to Aurora Job Monitoring map", jobId);
         taskContext.getParentProcessContext().setPauseTaskExecution(true);
-
     }
 
     @Override
