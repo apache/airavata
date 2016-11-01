@@ -493,6 +493,22 @@ class ApplicationDeploymentDescription {
    * @var \Airavata\Model\AppCatalog\AppDeployment\CommandObject[]
    */
   public $postJobCommands = null;
+  /**
+   * @var string
+   */
+  public $defaultQueueName = null;
+  /**
+   * @var int
+   */
+  public $defaultNodeCount = null;
+  /**
+   * @var int
+   */
+  public $defaultCPUCount = null;
+  /**
+   * @var bool
+   */
+  public $editableByUser = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -575,6 +591,22 @@ class ApplicationDeploymentDescription {
             'class' => '\Airavata\Model\AppCatalog\AppDeployment\CommandObject',
             ),
           ),
+        13 => array(
+          'var' => 'defaultQueueName',
+          'type' => TType::STRING,
+          ),
+        14 => array(
+          'var' => 'defaultNodeCount',
+          'type' => TType::I32,
+          ),
+        15 => array(
+          'var' => 'defaultCPUCount',
+          'type' => TType::I32,
+          ),
+        16 => array(
+          'var' => 'editableByUser',
+          'type' => TType::BOOL,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -613,6 +645,18 @@ class ApplicationDeploymentDescription {
       }
       if (isset($vals['postJobCommands'])) {
         $this->postJobCommands = $vals['postJobCommands'];
+      }
+      if (isset($vals['defaultQueueName'])) {
+        $this->defaultQueueName = $vals['defaultQueueName'];
+      }
+      if (isset($vals['defaultNodeCount'])) {
+        $this->defaultNodeCount = $vals['defaultNodeCount'];
+      }
+      if (isset($vals['defaultCPUCount'])) {
+        $this->defaultCPUCount = $vals['defaultCPUCount'];
+      }
+      if (isset($vals['editableByUser'])) {
+        $this->editableByUser = $vals['editableByUser'];
       }
     }
   }
@@ -786,6 +830,34 @@ class ApplicationDeploymentDescription {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 13:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->defaultQueueName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 14:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->defaultNodeCount);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 15:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->defaultCPUCount);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 16:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->editableByUser);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -929,6 +1001,26 @@ class ApplicationDeploymentDescription {
         }
         $output->writeListEnd();
       }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->defaultQueueName !== null) {
+      $xfer += $output->writeFieldBegin('defaultQueueName', TType::STRING, 13);
+      $xfer += $output->writeString($this->defaultQueueName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->defaultNodeCount !== null) {
+      $xfer += $output->writeFieldBegin('defaultNodeCount', TType::I32, 14);
+      $xfer += $output->writeI32($this->defaultNodeCount);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->defaultCPUCount !== null) {
+      $xfer += $output->writeFieldBegin('defaultCPUCount', TType::I32, 15);
+      $xfer += $output->writeI32($this->defaultCPUCount);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->editableByUser !== null) {
+      $xfer += $output->writeFieldBegin('editableByUser', TType::BOOL, 16);
+      $xfer += $output->writeBool($this->editableByUser);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
