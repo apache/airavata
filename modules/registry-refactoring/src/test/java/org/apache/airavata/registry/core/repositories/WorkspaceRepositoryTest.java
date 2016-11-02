@@ -20,61 +20,43 @@
 */
 package org.apache.airavata.registry.core.repositories;
 
-import org.apache.airavata.model.WorkflowModel;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.experiment.UserConfigurationDataModel;
-import org.apache.airavata.model.user.NSFDemographics;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.registry.core.entities.expcatalog.ExperimentEntity;
-import org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowEntity;
 import org.apache.airavata.registry.core.entities.workspacecatalog.GatewayEntity;
 import org.apache.airavata.registry.core.entities.workspacecatalog.NotificationEntity;
 import org.apache.airavata.registry.core.entities.workspacecatalog.ProjectEntity;
 import org.apache.airavata.registry.core.entities.workspacecatalog.UserProfileEntity;
-import org.apache.airavata.registry.core.repositories.expcatalog.ExperimentRepository;
-import org.apache.airavata.registry.core.repositories.workflowcatalog.WorkflowRepository;
 import org.apache.airavata.registry.core.repositories.workspacecatalog.GatewayRepository;
 import org.apache.airavata.registry.core.repositories.workspacecatalog.NotificationRepository;
 import org.apache.airavata.registry.core.repositories.workspacecatalog.ProjectRepository;
 import org.apache.airavata.registry.core.repositories.workspacecatalog.UserProfileRepository;
-import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
-import org.dozer.Mapper;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
-public class RepositoryTest {
-    private final static Logger logger = LoggerFactory.getLogger(RepositoryTest.class);
+public class WorkspaceRepositoryTest {
+    private final static Logger logger = LoggerFactory.getLogger(WorkspaceRepositoryTest.class);
 
     private GatewayRepository gatewayRepository;
     private NotificationRepository notificationRepository;
     private UserProfileRepository userProfileRepository;
     private ProjectRepository projectRepository;
-    private ExperimentRepository experimentRepository;
-    private WorkflowRepository workflowRepository;
     private String gatewayId;
     private String notificationId;
     private String userId;
     private String projectId;
-    private String experimentId;
-    private String templateId;
 
     private final String GATEWAY_DOMAIN = "test1.com";
     private final String NOTIFY_MESSAGE = "NotifyMe";
     private final String USER_COMMENT = "TestComment";
     private final String PROJECT_DESCRIPTION = "Test Description";
-    private final String EXPERIMENT_NAME = "sample experiment";
-    private final String EXPERIMENT_DESCRIPTION = "sample description";
-    private final String WORKFLOW_NAME = "test Workflow";
 
 
     @Before
@@ -85,15 +67,11 @@ public class RepositoryTest {
                 NotificationEntity.class);
         userProfileRepository = new UserProfileRepository(UserProfile.class, UserProfileEntity.class);
         projectRepository = new ProjectRepository(Project.class, ProjectEntity.class);
-        experimentRepository = new ExperimentRepository(ExperimentModel.class, ExperimentEntity.class);
-        workflowRepository = new WorkflowRepository(WorkflowModel.class, WorkflowEntity.class);
 
         gatewayId = "test.com" + System.currentTimeMillis();
         notificationId = UUID.randomUUID().toString();
         userId = "testuser" + System.currentTimeMillis();
         projectId = "project" + System.currentTimeMillis();
-        experimentId = "exp" + System.currentTimeMillis();
-        templateId = "templateId" + System.currentTimeMillis();
     }
 
 
@@ -218,7 +196,6 @@ public class RepositoryTest {
 		/*
          * Workspace UserProfile Repository Select Operation Test
 		 */
-        userProfile = null;
         userProfile = userProfileRepository.get(userId);
         Assert.assertNotNull(userProfile);
 
@@ -265,14 +242,11 @@ public class RepositoryTest {
         project.setGatewayIdIsSet(true);
 
 
-
         /*
          * Workspace Project Repository Insert Operation Test
 		 */
         project = projectRepository.create(project);
         Assert.assertTrue(!project.getProjectID().isEmpty());
-
-
 
         /*
          * Workspace Project Repository Update Operation Test
@@ -285,7 +259,6 @@ public class RepositoryTest {
 		/*
          * Workspace Project Repository Select Operation Test
 		 */
-        project = null;
         project = projectRepository.get(projectId);
         Assert.assertNotNull(project);
 
@@ -293,169 +266,6 @@ public class RepositoryTest {
          * Workspace Project Repository Delete Operation
 		 */
         boolean deleteResult = projectRepository.delete(projectId);
-        Assert.assertTrue(deleteResult);
-
-        deleteResult = userProfileRepository.delete(userId);
-        Assert.assertTrue(deleteResult);
-
-        deleteResult = gatewayRepository.delete(gatewayId);
-        Assert.assertTrue(deleteResult);
-
-
-    }
-
-    @Test
-    public void experimentRepositoryTest() {
-
-		/*
-         * Creating Gateway required for UserProfile & Project creation
-		 */
-        Gateway gateway = new Gateway();
-        gateway.setGatewayApprovalStatus(GatewayApprovalStatus.ACTIVE);
-        gateway.setGatewayId(gatewayId);
-        gateway.setDomain(GATEWAY_DOMAIN);
-        gateway = gatewayRepository.create(gateway);
-        Assert.assertTrue(!gateway.getGatewayId().isEmpty());
-
-		/*
-         * UserProfile Instance creation required for Project Creation
-		 */
-        UserProfile userProfile = new UserProfile();
-        userProfile.setAiravataInternalUserId(userId);
-        userProfile.setGatewayId(gateway.getGatewayId());
-        userProfile = userProfileRepository.create(userProfile);
-        Assert.assertTrue(!userProfile.getAiravataInternalUserId().isEmpty());
-
-        /*
-         * Project Instance creation
-         */
-        Project project = new Project();
-        project.setGatewayId(gatewayId);
-        project.setOwner(userId);
-        project.setProjectID(projectId);
-        project.setGatewayIdIsSet(true);
-        project = projectRepository.create(project);
-        Assert.assertTrue(!project.getProjectID().isEmpty());
-
-        /*
-         * Experiment Instance Creation
-         */
-
-        ExperimentModel experiment = new ExperimentModel();
-        experiment.setExperimentId(experimentId);
-        experiment.setExperimentName(EXPERIMENT_NAME);
-        experiment.setGatewayId(gatewayId);
-        experiment.setUserName(userId);
-        experiment.setProjectId(projectId);
-
-        /*
-         * Experiment Repository Insert Operation Test
-		 */
-        experiment = experimentRepository.create(experiment);
-        Assert.assertTrue(!experiment.getExperimentId().isEmpty());
-
-
-
-
-        /*
-         * Experiment Repository Update Operation Test
-		 */
-        experiment.setDescription(EXPERIMENT_DESCRIPTION);
-        experimentRepository.update(experiment);
-        experiment = experimentRepository.get(experimentId);
-        Assert.assertEquals(experiment.getDescription(), EXPERIMENT_DESCRIPTION);
-
-		/*
-         * Workspace Project Repository Select Operation Test
-		 */
-        experiment = null;
-        experiment = experimentRepository.get(experimentId);
-        Assert.assertNotNull(experiment);
-
-		/*
-         * Experiment Repository Delete Operation
-		 */
-
-        boolean deleteResult = experimentRepository.delete(experimentId);
-        Assert.assertTrue(deleteResult);
-
-        deleteResult = projectRepository.delete(projectId);
-        Assert.assertTrue(deleteResult);
-
-        deleteResult = userProfileRepository.delete(userId);
-        Assert.assertTrue(deleteResult);
-
-        deleteResult = gatewayRepository.delete(gatewayId);
-        Assert.assertTrue(deleteResult);
-
-
-    }
-
-
-    @Test
-    public void workflowRepositoryTest() {
-
-
-        System.out.println();
-		/*
-         * Creating Gateway required for UserProfile & Workflow creation
-		 */
-        Gateway gateway = new Gateway();
-        gateway.setGatewayApprovalStatus(GatewayApprovalStatus.ACTIVE);
-        gateway.setGatewayId(gatewayId);
-        gateway.setDomain(GATEWAY_DOMAIN);
-        gateway = gatewayRepository.create(gateway);
-        Assert.assertTrue(!gateway.getGatewayId().isEmpty());
-
-		/*
-         * UserProfile Instance creation required for Workflow Creation
-		 */
-        UserProfile userProfile = new UserProfile();
-        userProfile.setAiravataInternalUserId(userId);
-        userProfile.setGatewayId(gateway.getGatewayId());
-        userProfile = userProfileRepository.create(userProfile);
-        Assert.assertTrue(!userProfile.getAiravataInternalUserId().isEmpty());
-
-        /*
-         * Workflow Instance Creation
-         */
-
-        WorkflowModel workflowModel = new WorkflowModel();
-        workflowModel.setTemplateId(templateId);
-        workflowModel.setCreatedUser(userId);
-        workflowModel.setGatewayId(gatewayId);
-        workflowModel.setName(WORKFLOW_NAME);
-
-
-        /*
-         * Workflow Repository Insert Operation Test
-		 */
-        workflowModel = workflowRepository.create(workflowModel);
-        Assert.assertTrue(!workflowModel.getTemplateId().isEmpty());
-
-
-
-
-        /*
-         * Workflow Repository Update Operation Test
-		 */
-        workflowModel.setGraph("test");
-        workflowRepository.update(workflowModel);
-        workflowModel = workflowRepository.get(templateId);
-        Assert.assertEquals(workflowModel.getGraph(), "test");
-
-		/*
-         * Workflow Repository Select Operation Test
-		 */
-        workflowModel = null;
-        workflowModel = workflowRepository.get(templateId);
-        Assert.assertNotNull(workflowModel);
-
-		/*
-         * Workflow Repository Delete Operation
-		 */
-
-        boolean deleteResult = workflowRepository.delete(templateId);
         Assert.assertTrue(deleteResult);
 
         deleteResult = userProfileRepository.delete(userId);
