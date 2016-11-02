@@ -20,6 +20,11 @@
  */
 package org.apache.airavata.gfac.impl.task;
 
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.airavata.cloud.aurora.client.AuroraThriftClient;
 import org.apache.airavata.cloud.aurora.client.bean.IdentityBean;
 import org.apache.airavata.cloud.aurora.client.bean.JobConfigBean;
@@ -29,7 +34,6 @@ import org.apache.airavata.cloud.aurora.client.bean.ResourceBean;
 import org.apache.airavata.cloud.aurora.client.bean.ResponseBean;
 import org.apache.airavata.cloud.aurora.client.bean.TaskConfigBean;
 import org.apache.airavata.cloud.aurora.util.AuroraThriftClientUtil;
-import org.apache.airavata.cloud.aurora.util.Constants;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
@@ -47,12 +51,6 @@ import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
 
 public class AuroraJobSubmission implements JobSubmissionTask{
 
@@ -102,7 +100,7 @@ public class AuroraJobSubmission implements JobSubmissionTask{
             String executorConfigJson = AuroraThriftClientUtil.getExecutorConfigJson(jobConfig);
             log.info("Executor Config for Job {} , {}", jobIdAndName, executorConfigJson);
 
-            AuroraThriftClient client = AuroraThriftClient.getAuroraThriftClient(Constants.AURORA_SCHEDULER_PROP_FILE);
+            AuroraThriftClient client = AuroraThriftClient.getAuroraThriftClient();
             ResponseBean response = client.createJob(jobConfig);
             log.info("Response for job {}, {}", jobIdAndName, response);
             jobModel.setJobDescription(resources.toString());
