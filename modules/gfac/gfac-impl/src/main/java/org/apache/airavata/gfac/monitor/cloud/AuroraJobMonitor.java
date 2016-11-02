@@ -167,24 +167,11 @@ public class AuroraJobMonitor implements JobMonitor, Runnable {
 
         private void updateStatus(String jobKey, TaskContext taskContext, JobState jobState) {
             ProcessContext pc = taskContext.getParentProcessContext();
-            ExperimentCatalog experimentCatalog = pc.getExperimentCatalog();
-            Object object;
-            JobStatus prevJobStatus = null;
-            try {
-                CompositeIdentifier ci = new CompositeIdentifier(taskContext.getTaskId(), jobKey);
-                object = experimentCatalog.get(ExperimentCatalogModelType.JOB_STATUS, ci);
-                if (object instanceof JobStatus) {
-                    prevJobStatus = ((JobStatus) object);
-                }
-            } catch (RegistryException e) {
-                log.error("Error while getting job statuses for job : {} , task : {}, process : {}", jobKey,
-                        taskContext.getTaskId(), pc.getProcessId());
-            }
-            if (prevJobStatus == null || prevJobStatus.getJobState() != jobState) {
+            JobModel jobModel = pc.getJobModel();
+            if (jobModel.getJobStatuses().get(0).getJobState() != jobState) {
                 JobStatus jobStatus = new JobStatus(jobState);
                 jobStatus.setReason("Aurora return " + jobState.name());
                 jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                JobModel jobModel = pc.getJobModel();
                 jobModel.setJobStatuses(Arrays.asList(jobStatus));
                 try {
                     GFacUtils.saveJobStatus(pc, jobModel);
@@ -193,7 +180,6 @@ public class AuroraJobMonitor implements JobMonitor, Runnable {
                             jobState.name(), jobKey, taskContext.getTaskId(), pc.getProcessId(), pc.getExperimentId());
                 }
             }
-
         }
 
         private void processJob(String jobKey, TaskContext taskContext, JobState jobState) {
