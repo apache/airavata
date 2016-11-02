@@ -105,6 +105,7 @@ public class AuroraJobSubmission implements JobSubmissionTask{
             AuroraThriftClient client = AuroraThriftClient.getAuroraThriftClient(Constants.AURORA_SCHEDULER_PROP_FILE);
             ResponseBean response = client.createJob(jobConfig);
             log.info("Response for job {}, {}", jobIdAndName, response);
+            jobModel.setJobDescription(resources.toString());
 
             jobModel.setJobId(jobIdAndName);
             jobStatus.setReason("Successfully Submitted");
