@@ -455,6 +455,10 @@ class BatchQueue:
    - maxProcessors
    - maxJobsInQueue
    - maxMemory
+   - cpuPerNode
+   - defaultNodeCount
+   - defaultCPUCount
+   - isDefaultQueue
   """
 
   thrift_spec = (
@@ -466,9 +470,13 @@ class BatchQueue:
     (5, TType.I32, 'maxProcessors', None, None, ), # 5
     (6, TType.I32, 'maxJobsInQueue', None, None, ), # 6
     (7, TType.I32, 'maxMemory', None, None, ), # 7
+    (8, TType.I32, 'cpuPerNode', None, None, ), # 8
+    (9, TType.I32, 'defaultNodeCount', None, None, ), # 9
+    (10, TType.I32, 'defaultCPUCount', None, None, ), # 10
+    (11, TType.BOOL, 'isDefaultQueue', None, None, ), # 11
   )
 
-  def __init__(self, queueName=None, queueDescription=None, maxRunTime=None, maxNodes=None, maxProcessors=None, maxJobsInQueue=None, maxMemory=None,):
+  def __init__(self, queueName=None, queueDescription=None, maxRunTime=None, maxNodes=None, maxProcessors=None, maxJobsInQueue=None, maxMemory=None, cpuPerNode=None, defaultNodeCount=None, defaultCPUCount=None, isDefaultQueue=None,):
     self.queueName = queueName
     self.queueDescription = queueDescription
     self.maxRunTime = maxRunTime
@@ -476,6 +484,10 @@ class BatchQueue:
     self.maxProcessors = maxProcessors
     self.maxJobsInQueue = maxJobsInQueue
     self.maxMemory = maxMemory
+    self.cpuPerNode = cpuPerNode
+    self.defaultNodeCount = defaultNodeCount
+    self.defaultCPUCount = defaultCPUCount
+    self.isDefaultQueue = isDefaultQueue
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -521,6 +533,26 @@ class BatchQueue:
           self.maxMemory = iprot.readI32()
         else:
           iprot.skip(ftype)
+      elif fid == 8:
+        if ftype == TType.I32:
+          self.cpuPerNode = iprot.readI32()
+        else:
+          iprot.skip(ftype)
+      elif fid == 9:
+        if ftype == TType.I32:
+          self.defaultNodeCount = iprot.readI32()
+        else:
+          iprot.skip(ftype)
+      elif fid == 10:
+        if ftype == TType.I32:
+          self.defaultCPUCount = iprot.readI32()
+        else:
+          iprot.skip(ftype)
+      elif fid == 11:
+        if ftype == TType.BOOL:
+          self.isDefaultQueue = iprot.readBool()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -559,6 +591,22 @@ class BatchQueue:
       oprot.writeFieldBegin('maxMemory', TType.I32, 7)
       oprot.writeI32(self.maxMemory)
       oprot.writeFieldEnd()
+    if self.cpuPerNode is not None:
+      oprot.writeFieldBegin('cpuPerNode', TType.I32, 8)
+      oprot.writeI32(self.cpuPerNode)
+      oprot.writeFieldEnd()
+    if self.defaultNodeCount is not None:
+      oprot.writeFieldBegin('defaultNodeCount', TType.I32, 9)
+      oprot.writeI32(self.defaultNodeCount)
+      oprot.writeFieldEnd()
+    if self.defaultCPUCount is not None:
+      oprot.writeFieldBegin('defaultCPUCount', TType.I32, 10)
+      oprot.writeI32(self.defaultCPUCount)
+      oprot.writeFieldEnd()
+    if self.isDefaultQueue is not None:
+      oprot.writeFieldBegin('isDefaultQueue', TType.BOOL, 11)
+      oprot.writeBool(self.isDefaultQueue)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -577,6 +625,10 @@ class BatchQueue:
     value = (value * 31) ^ hash(self.maxProcessors)
     value = (value * 31) ^ hash(self.maxJobsInQueue)
     value = (value * 31) ^ hash(self.maxMemory)
+    value = (value * 31) ^ hash(self.cpuPerNode)
+    value = (value * 31) ^ hash(self.defaultNodeCount)
+    value = (value * 31) ^ hash(self.defaultCPUCount)
+    value = (value * 31) ^ hash(self.isDefaultQueue)
     return value
 
   def __repr__(self):

@@ -256,6 +256,10 @@ public class AppCatalogThriftConversion {
     	batchQueue.setMaxMemory(resource.getMaxMemory());
     	batchQueue.setQueueDescription(resource.getQueueDescription());
     	batchQueue.setQueueName(resource.getQueueName());
+        batchQueue.setCpuPerNode(resource.getCpuPerNode());
+        batchQueue.setDefaultNodeCount(resource.getDefaultNodeCount());
+        batchQueue.setDefaultCPUCount(resource.getDefaultCPUCount());
+        batchQueue.setIsDefaultQueue(resource.isDefaultQueue());
         return batchQueue;
     }
 
@@ -268,6 +272,10 @@ public class AppCatalogThriftConversion {
     	batchQueue.setQueueDescription(resource.getQueueDescription());
     	batchQueue.setQueueName(resource.getQueueName());
     	batchQueue.setMaxMemory(resource.getMaxMemory());
+        batchQueue.setCpuPerNode(resource.getCpuPerNode());
+        batchQueue.setDefaultCPUCount(resource.getDefaultCPUCount());
+        batchQueue.setDefaultNodeCount(resource.getDefaultNodeCount());
+        batchQueue.setIsDefaultQueue(resource.isIsDefaultQueue());
         return batchQueue;
     }
     
@@ -714,6 +722,11 @@ public class AppCatalogThriftConversion {
             description.setParallelism(ApplicationParallelismType.valueOf(resource.getParallelism()));
         }
         description.setAppDeploymentDescription(resource.getAppDes());
+        description.setDefaultQueueName(resource.getDefaultQueueName());
+        description.setDefaultCPUCount(resource.getDefaultCPUCount());
+        description.setDefaultNodeCount(resource.getDefaultNodeCount());
+        description.setEditableByUser(resource.isEditableByUser());
+
         ModuleLoadCmdResource cmdResource = new ModuleLoadCmdResource();
         List<AppCatalogResource> moduleLoadCmds = cmdResource.get(AppCatAbstractResource.ModuleLoadCmdConstants.APP_DEPLOYMENT_ID, resource.getDeploymentId());
         if (moduleLoadCmds != null && !moduleLoadCmds.isEmpty()){

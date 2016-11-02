@@ -62,6 +62,7 @@ import org.apache.airavata.gfac.impl.job.UGEJobConfiguration;
 import org.apache.airavata.gfac.impl.task.ArchiveTask;
 import org.apache.airavata.gfac.impl.watcher.CancelRequestWatcherImpl;
 import org.apache.airavata.gfac.impl.watcher.RedeliveryRequestWatcherImpl;
+import org.apache.airavata.gfac.monitor.cloud.AuroraJobMonitor;
 import org.apache.airavata.gfac.monitor.email.EmailBasedMonitor;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.MessagingFactory;
@@ -184,6 +185,9 @@ public abstract class Factory {
 	}
 
 	public static JobManagerConfiguration getJobManagerConfiguration(ResourceJobManager resourceJobManager) throws GFacException {
+		if(resourceJobManager == null)
+			return null;
+
 		ResourceConfig resourceConfig = Factory.getResourceConfig(resourceJobManager.getResourceJobManagerType());
 		OutputParser outputParser;
 		try {
@@ -208,9 +212,9 @@ public abstract class Factory {
 			case UGE:
 				return new UGEJobConfiguration("UGE_Groovy.template", ".pbs", resourceJobManager.getJobManagerBinPath(),
 						resourceJobManager.getJobManagerCommands(), outputParser);
-            case FORK:
-                return new ForkJobConfiguration("FORK_Groovy.template", ".sh", resourceJobManager.getJobManagerBinPath(),
-                        resourceJobManager.getJobManagerCommands(), outputParser);
+			case FORK:
+				return new ForkJobConfiguration("FORK_Groovy.template", ".sh", resourceJobManager.getJobManagerBinPath(),
+						resourceJobManager.getJobManagerCommands(), outputParser);
 			default:
 				return null;
 		}
@@ -244,17 +248,23 @@ public abstract class Factory {
                     jobSubmissionProtocol == JobSubmissionProtocol.LOCAL_FORK) {
                 remoteCluster = new LocalRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration, null);
             } else if (jobSubmissionProtocol == JobSubmissionProtocol.SSH ||
-                    jobSubmissionProtocol == JobSubmissionProtocol.SSH_FORK) {
+                    jobSubmissionProtocol == JobSubmissionProtocol.SSH_FORK
+					|| jobSubmissionProtocol == JobSubmissionProtocol.CLOUD) {
+
                 remoteCluster = new HPCRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration,
                         processContext.getSshKeyAuthentication());
-            }
+            }else {
+				throw new GFacException("No remote cluster implementation map to job submission protocol "
+						+ jobSubmissionProtocol.name());
+			}
             remoteClusterMap.put(key, remoteCluster);
         }else {
             AuthenticationInfo authentication = remoteCluster.getAuthentication();
             if (authentication instanceof SSHKeyAuthentication){
                 SSHKeyAuthentication sshKeyAuthentication = (SSHKeyAuthentication)authentication;
                 if (!sshKeyAuthentication.getUserName().equals(getLoginUserName(processContext))){
-                    JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
+                    JobManagerConfiguration jobManagerConfiguration =
+							getJobManagerConfiguration(processContext.getResourceJobManager());
                     if (jobSubmissionProtocol == JobSubmissionProtocol.SSH ||
                             jobSubmissionProtocol == JobSubmissionProtocol.SSH_FORK) {
                         remoteCluster = new HPCRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration,
@@ -281,7 +291,10 @@ public abstract class Factory {
             } else if (dataMovementProtocol == DataMovementProtocol.SCP) {
                 remoteCluster = new HPCRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration,
                         processContext.getSshKeyAuthentication());
-            }
+            }else {
+				throw new GFacException("No remote cluster implementation map to job data movement protocol "
+						+ dataMovementProtocol.name());
+			}
 
             remoteClusterMap.put(key, remoteCluster);
         }else {
@@ -289,7 +302,8 @@ public abstract class Factory {
             if (authentication instanceof SSHKeyAuthentication){
                 SSHKeyAuthentication sshKeyAuthentication = (SSHKeyAuthentication)authentication;
                 if (!sshKeyAuthentication.getUserName().equals(getLoginUserName(processContext))){
-                    JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
+                    JobManagerConfiguration jobManagerConfiguration =
+							getJobManagerConfiguration(processContext.getResourceJobManager());
                     dataMovementProtocol = processContext.getDataMovementProtocol();
                     if (dataMovementProtocol == DataMovementProtocol.SCP) {
                         remoteCluster = new HPCRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration,
@@ -440,7 +454,7 @@ public abstract class Factory {
 		}
 	}
 
-	public static JobMonitor getMonitorService(MonitorMode monitorMode) throws AiravataException {
+	public static JobMonitor getMonitorService(MonitorMode monitorMode) throws AiravataException, GFacException {
 		JobMonitor jobMonitor = jobMonitorServices.get(monitorMode);
 		if (jobMonitor == null) {
 			synchronized (JobMonitor.class) {
@@ -450,8 +464,18 @@ public abstract class Factory {
 						case JOB_EMAIL_NOTIFICATION_MONITOR:
 							EmailBasedMonitor emailBasedMonitor = new EmailBasedMonitor(Factory.getResourceConfig());
 							jobMonitorServices.put(MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR, emailBasedMonitor);
-							jobMonitor = ((JobMonitor) emailBasedMonitor);
+							jobMonitor = emailBasedMonitor;
 							new Thread(emailBasedMonitor).start();
+							break;
+						case CLOUD_JOB_MONITOR:
+							AuroraJobMonitor auroraJobMonitor = AuroraJobMonitor.getInstance();
+							new Thread(auroraJobMonitor).start();
+							jobMonitorServices.put(MonitorMode.CLOUD_JOB_MONITOR, auroraJobMonitor);
+							jobMonitor = auroraJobMonitor;
+							break;
+						default:
+							throw new GFacException("Unsupported monitor mode :" + monitorMode.name());
+
 					}
 				}
 			}
@@ -459,7 +483,7 @@ public abstract class Factory {
 		return jobMonitor;
 	}
 
-	public static JobMonitor getDefaultMonitorService() throws AiravataException {
+	public static JobMonitor getDefaultMonitorService() throws AiravataException, GFacException {
 		return getMonitorService(MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR);
 	}
 

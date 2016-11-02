@@ -105,6 +105,8 @@
 		<maven.replacer.plugin.version>1.5.3</maven.replacer.plugin.version>
 		<kafka-clients.version>0.8.2.2</kafka-clients.version>
 		<logback.version>1.1.6</logback.version>
+		<json.version>20160212</json.version>
+		<commons.io.version>2.4</commons.io.version>
 	</properties>
 
 	<developers>
@@ -626,7 +628,7 @@
 				<module>modules/orchestrator</module>
 				<module>modules/monitoring</module>
 				<module>modules/user-profile</module>
-				<!--<module>modules/cloud</module>-->
+				<module>modules/cloud</module>
 				<module>modules/server</module>
 				<module>modules/workflow</module>
 				<module>modules/test-suite</module>

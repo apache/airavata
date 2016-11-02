@@ -174,6 +174,13 @@ public class AppCatalogJPAUtils {
                     logger.error("Object should be a Ssh Job Submission.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Ssh Job Submission.");
                 }
+            case ClOUD_SUBMISSION:
+                if (o instanceof CloudJobSubmission) {
+                    return createCloudJobSubmission(((CloudJobSubmission) o));
+                }else {
+                    logger.error("Object should be a Cloud Job Submission.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Cloud Job Submission.");
+                }
             case SCP_DATA_MOVEMENT:
                 if (o instanceof ScpDataMovement) {
                     return createScpDataMovement((ScpDataMovement) o);
@@ -519,6 +526,10 @@ public class AppCatalogJPAUtils {
             batchQueueResource.setMaxProcessors(o.getMaxProcessors());
             batchQueueResource.setMaxNodes(o.getMaxNodes());
             batchQueueResource.setMaxMemory(o.getMaxMemory());
+            batchQueueResource.setCpuPerNode(o.getCpuPerNode());
+            batchQueueResource.setDefaultNodeCount(o.getDefaultNodeCount());
+            batchQueueResource.setDefaultCPUCount(o.getDefaultCPUCount());
+            batchQueueResource.setIsDefaultQueue(o.isDefaultQueue());
         }
         return batchQueueResource;
     }
@@ -664,6 +675,19 @@ public class AppCatalogJPAUtils {
         return sshJobSubmissionResource;
     }
 
+    private static AppCatalogResource createCloudJobSubmission(CloudJobSubmission o) {
+        CloudSubmissionResource cloudSubmissionResource = new CloudSubmissionResource();
+        if (o != null) {
+            cloudSubmissionResource.setJobSubmissionInterfaceId(o.getJobSubmissionInterfaceId());
+            cloudSubmissionResource.setSecurityProtocol(o.getSecurityProtocol());
+            cloudSubmissionResource.setExecutableType(o.getExecutableType());
+            cloudSubmissionResource.setUserAccountName(o.getUserAccountName());
+            cloudSubmissionResource.setNodeId(o.getNodeId());
+            cloudSubmissionResource.setProviderName(o.getProviderName());
+        }
+        return cloudSubmissionResource;
+    }
+
     private static AppCatalogResource createScpDataMovement(ScpDataMovement o) {
         ScpDataMovementResource scpDataMovementResource = new ScpDataMovementResource();
         if (o != null) {
@@ -755,6 +779,10 @@ public class AppCatalogJPAUtils {
             resource.setExecutablePath(o.getExecutablePath());
             resource.setGatewayId(o.getGatewayId());
             resource.setParallelism(o.getParallelism());
+            resource.setDefaultQueueName(o.getDefaultQueueName());
+            resource.setDefaultNodeCount(o.getDefaultNodeCount());
+            resource.setDefaultCPUCount(o.getDefaultCPUCount());
+            resource.setEditableByUser(o.isEditableByUser());
             resource.setModuleResource((AppModuleResource) createApplicationModule(o.getApplicationModule()));
             resource.setHostResource((ComputeResourceResource) createComputeResource(o.getComputeResource()));
             resource.setCreatedTime(o.getCreationTime());

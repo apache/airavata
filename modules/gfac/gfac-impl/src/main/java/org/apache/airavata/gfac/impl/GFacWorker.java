@@ -194,7 +194,9 @@ public class GFacWorker implements Runnable {
         }
         if (nextTaskId != null) {
             engine.continueProcess(processContext, nextTaskId);
-        }
+        }else {
+			processContext.setComplete(true);
+		}
         // checkpoint
         if (processContext.isInterrupted()) {
             return;

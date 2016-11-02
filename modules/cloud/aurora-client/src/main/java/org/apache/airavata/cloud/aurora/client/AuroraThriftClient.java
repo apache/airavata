@@ -193,7 +193,7 @@ public class AuroraThriftClient {
 	 * @return the job details
 	 * @throws Exception the exception
 	 */
-	public ResponseBean getJobDetails(JobKeyBean jobKeyBean) throws Exception {
+	public JobDetailsResponseBean getJobDetails(JobKeyBean jobKeyBean) throws Exception {
 		JobDetailsResponseBean response = null;
 		try {
 			if(jobKeyBean != null) {
