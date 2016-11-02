@@ -28,7 +28,7 @@ public class Constants {
 	public static final String AURORA_SCHEDULER_PROP_FILE = "aurora-scheduler.properties";
 	
 	/** The Constant AURORA_SCHEDULER_HOST. */
-	public static final String AURORA_SCHEDULER_HOST = "aurora.scheduler.host";
+	public static final String AURORA_SCHEDULER_HOSTS = "aurora.scheduler.hosts";
 	
 	/** The Constant AURORA_SCHEDULER_PORT. */
 	public static final String AURORA_SCHEDULER_PORT = "aurora.scheduler.port";
@@ -41,4 +41,7 @@ public class Constants {
 	
 	/** The Constant AURORA_SCHEDULER_CONNECTION_URL. */
 	public static final String AURORA_SCHEDULER_CONNECTION_URL = "http://{0}:{1}/api";
+	
+	/** The Constant AURORA_SCHEDULER_CONNECT_TIMEOUT_MS. */
+	public static final String AURORA_SCHEDULER_CONNECT_TIMEOUT_MS = "aurora.scheduler.timeoutms";
 }
