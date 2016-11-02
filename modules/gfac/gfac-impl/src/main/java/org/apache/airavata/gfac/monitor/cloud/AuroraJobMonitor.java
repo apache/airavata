@@ -40,6 +40,7 @@ import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
+import org.apache.airavata.registry.cpi.CompositeIdentifier;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.airavata.registry.cpi.RegistryException;
@@ -167,17 +168,19 @@ public class AuroraJobMonitor implements JobMonitor, Runnable {
         private void updateStatus(String jobKey, TaskContext taskContext, JobState jobState) {
             ProcessContext pc = taskContext.getParentProcessContext();
             ExperimentCatalog experimentCatalog = pc.getExperimentCatalog();
-            List<Object> objects = null;
+            Object object;
+            JobStatus prevJobStatus = null;
             try {
-                objects = experimentCatalog.get(ExperimentCatalogModelType.JOB_STATUS, taskContext.getTaskId(), jobKey);
+                CompositeIdentifier ci = new CompositeIdentifier(taskContext.getTaskId(), jobKey);
+                object = experimentCatalog.get(ExperimentCatalogModelType.JOB_STATUS, ci);
+                if (object instanceof JobStatus) {
+                    prevJobStatus = ((JobStatus) object);
+                }
             } catch (RegistryException e) {
                 log.error("Error while getting job statuses for job : {} , task : {}, process : {}", jobKey,
                         taskContext.getTaskId(), pc.getProcessId());
             }
-            List<JobState> jobStatuses = objects.stream()
-                    .map(o -> ((JobStatus) o).getJobState())
-                    .collect(Collectors.toList());
-            if (!jobStatuses.contains(jobState)) {
+            if (prevJobStatus == null || prevJobStatus.getJobState() != jobState) {
                 JobStatus jobStatus = new JobStatus(jobState);
                 jobStatus.setReason("Aurora return " + jobState.name());
                 jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
@@ -190,6 +193,7 @@ public class AuroraJobMonitor implements JobMonitor, Runnable {
                             jobState.name(), jobKey, taskContext.getTaskId(), pc.getProcessId(), pc.getExperimentId());
                 }
             }
+
         }
 
         private void processJob(String jobKey, TaskContext taskContext, JobState jobState) {
