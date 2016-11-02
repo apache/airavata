@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane prefHeight="280.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox translateY="2.0">
+         <children>
+            <HBox>
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Time:" translateX="50.0" translateY="20.0" wrappingWidth="35.5528450012207" />
+                  <TextField prefHeight="26.0" prefWidth="590.0" translateX="60.0" translateY="15.0" />
+               </children>
+            </HBox>
+            <HBox layoutX="10.0" layoutY="10.0" translateY="20.0">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Component:" translateX="12.0" translateY="20.0" wrappingWidth="78.5528450012207" />
+                  <TextField prefHeight="26.0" prefWidth="590.0" translateX="18.0" translateY="17.0" />
+               </children>
+            </HBox>
+            <HBox layoutX="10.0" layoutY="53.0" translateY="45.0">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Status:" translateX="43.0" translateY="20.0" wrappingWidth="45.5528450012207" />
+                  <TextField prefHeight="26.0" prefWidth="590.0" translateX="51.0" translateY="15.0" />
+               </children>
+            </HBox>
+            <HBox layoutX="10.0" layoutY="96.0" translateY="69.0">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Message:" translateX="32.0" translateY="28.0" wrappingWidth="60.5528450012207" />
+                  <TextField prefHeight="44.0" prefWidth="590.0" translateX="37.0" translateY="15.0" />
+               </children>
+            </HBox>
+            <HBox layoutX="10.0" layoutY="139.0" translateY="103.0">
+               <children>
+                  <Button mnemonicParsing="false" prefWidth="50.0" text="OK" translateX="246.0" translateY="10.0" />
+                  <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefWidth="135.0" text="Copy to Clipboard" translateX="290.0" translateY="10.0" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</StackPane>
