@@ -60,7 +60,9 @@ public class AuroraJobSubmission implements JobSubmissionTask{
 
     @Override
     public JobStatus cancel(TaskContext taskcontext) throws TaskException {
-        return null;
+        JobStatus jobStatus = new JobStatus();
+        jobStatus.setJobState(JobState.ACTIVE);
+        return jobStatus;
     }
 
     @Override
@@ -136,11 +138,11 @@ public class AuroraJobSubmission implements JobSubmissionTask{
 
     @Override
     public TaskStatus recover(TaskContext taskContext) {
-        return null;
+        return execute(taskContext);
     }
 
     @Override
     public TaskTypes getType() {
-        return null;
+        return TaskTypes.JOB_SUBMISSION;
     }
 }

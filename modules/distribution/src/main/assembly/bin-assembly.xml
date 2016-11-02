@@ -107,11 +107,6 @@
                 <include>persistence.xml</include>
                 <include>provenance.sql</include>
                 <include>gfac-config.yaml</include>
-                <!--<include>PBSTemplate.xslt</include>-->
-                <!--<include>SLURMTemplate.xslt</include>-->
-                <!--<include>LSFTemplate.xslt</include>-->
-                <!--<include>UGETemplate.xslt</include>-->
-                <!--<include>ForkTemplate.xslt</include>-->
                 <include>PBS_Groovy.template</include>
                 <include>SLURM_Groovy.template</include>
                 <include>LSF_Groovy.template</include>
