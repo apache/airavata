@@ -20,51 +20,51 @@
 */
 package org.apache.airavata.registry.core.repositories;
 
-import org.apache.airavata.model.data.replica.DataProductModel;
+import org.apache.airavata.model.WorkflowModel;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.GatewayApprovalStatus;
-import org.apache.airavata.registry.core.entities.replicacatalog.DataProductEntity;
+import org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowEntity;
 import org.apache.airavata.registry.core.entities.workspacecatalog.GatewayEntity;
 import org.apache.airavata.registry.core.entities.workspacecatalog.UserProfileEntity;
-import org.apache.airavata.registry.core.repositories.replicacatalog.DataProductRepository;
+import org.apache.airavata.registry.core.repositories.workflowcatalog.WorkflowRepository;
 import org.apache.airavata.registry.core.repositories.workspacecatalog.GatewayRepository;
 import org.apache.airavata.registry.core.repositories.workspacecatalog.UserProfileRepository;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ReplicaCatalogRepositoryTest {
+public class WorkflowRepositoryTest {
+    private final static Logger logger = LoggerFactory.getLogger(WorkflowRepositoryTest.class);
 
     private GatewayRepository gatewayRepository;
     private UserProfileRepository userProfileRepository;
+    private WorkflowRepository workflowRepository;
     private String gatewayId;
     private String userId;
-    private String dataProductUri;
+    private String templateId;
 
     private final String GATEWAY_DOMAIN = "test1.com";
-    private final String DATA_PRODUCT_DESCRIPTION = "testDesc";
-
+    private final String WORKFLOW_NAME = "test Workflow";
 
     @Before
-    public void setupRepository()   {
-
+    public void setupRepository() {
         gatewayRepository = new GatewayRepository(Gateway.class, GatewayEntity.class);
         userProfileRepository = new UserProfileRepository(UserProfile.class, UserProfileEntity.class);
-
-
         gatewayId = "test.com" + System.currentTimeMillis();
         userId = "testuser" + System.currentTimeMillis();
-        dataProductUri = "uri" + System.currentTimeMillis();
-
+        workflowRepository = new WorkflowRepository(WorkflowModel.class, WorkflowEntity.class);
+        templateId = "templateId" + System.currentTimeMillis();
     }
+
+
     @Test
-    public void dataProductRepositoryTest() {
+    public void workflowRepositoryTest() {
 
-        DataProductRepository dataProductRepository = new DataProductRepository(DataProductModel.class, DataProductEntity.class);
-
-        /*
-         * Creating Gateway required for UserProfile & Project creation
+		/*
+         * Creating Gateway required for UserProfile & Workflow creation
 		 */
         Gateway gateway = new Gateway();
         gateway.setGatewayApprovalStatus(GatewayApprovalStatus.ACTIVE);
@@ -74,7 +74,7 @@ public class ReplicaCatalogRepositoryTest {
         Assert.assertTrue(!gateway.getGatewayId().isEmpty());
 
 		/*
-         * UserProfile Instance creation required for Project Creation
+         * UserProfile Instance creation required for Workflow Creation
 		 */
         UserProfile userProfile = new UserProfile();
         userProfile.setAiravataInternalUserId(userId);
@@ -83,41 +83,42 @@ public class ReplicaCatalogRepositoryTest {
         Assert.assertTrue(!userProfile.getAiravataInternalUserId().isEmpty());
 
         /*
-         * DataProduct Instance creation
+         * Workflow Instance Creation
          */
-        DataProductModel dataProduct = new DataProductModel();
-        dataProduct.setProductUri(dataProductUri);
-        dataProduct.setGatewayId(gatewayId);
-        dataProduct.setOwnerName(gatewayId);
-        dataProduct.setProductName("Product1234");
+
+        WorkflowModel workflowModel = new WorkflowModel();
+        workflowModel.setTemplateId(templateId);
+        workflowModel.setCreatedUser(userId);
+        workflowModel.setGatewayId(gatewayId);
+        workflowModel.setName(WORKFLOW_NAME);
 
 
         /*
-         * Data Product Repository Insert Operation Test
+         * Workflow Repository Insert Operation Test
 		 */
-        dataProduct = dataProductRepository.create(dataProduct);
-        Assert.assertTrue(!dataProduct.getProductUri().isEmpty());
-
+        workflowModel = workflowRepository.create(workflowModel);
+        Assert.assertTrue(!workflowModel.getTemplateId().isEmpty());
 
 
         /*
-         * DataProduct Repository Update Operation Test
+         * Workflow Repository Update Operation Test
 		 */
-        dataProduct.setProductDescription(DATA_PRODUCT_DESCRIPTION);
-        dataProductRepository.update(dataProduct);
-        dataProduct = dataProductRepository.get(dataProduct.getProductUri());
-        Assert.assertEquals(dataProduct.getProductDescription(), DATA_PRODUCT_DESCRIPTION);
+        workflowModel.setGraph("test");
+        workflowRepository.update(workflowModel);
+        workflowModel = workflowRepository.get(templateId);
+        Assert.assertEquals(workflowModel.getGraph(), "test");
 
 		/*
-         * Data Product Repository Select Operation Test
+         * Workflow Repository Select Operation Test
 		 */
-        dataProduct = dataProductRepository.get(dataProductUri);
-        Assert.assertNotNull(dataProduct);
+        workflowModel = workflowRepository.get(templateId);
+        Assert.assertNotNull(workflowModel);
 
 		/*
-         * Workspace Project Repository Delete Operation
+         * Workflow Repository Delete Operation
 		 */
-        boolean deleteResult = dataProductRepository.delete(dataProductUri);
+
+        boolean deleteResult = workflowRepository.delete(templateId);
         Assert.assertTrue(deleteResult);
 
         deleteResult = userProfileRepository.delete(userId);
@@ -125,6 +126,7 @@ public class ReplicaCatalogRepositoryTest {
 
         deleteResult = gatewayRepository.delete(gatewayId);
         Assert.assertTrue(deleteResult);
+
 
     }
 }
