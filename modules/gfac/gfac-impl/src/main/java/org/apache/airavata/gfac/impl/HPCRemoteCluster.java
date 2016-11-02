@@ -86,8 +86,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	@Override
 	public JobSubmissionOutput submitBatchJob(String jobScriptFilePath, String workingDirectory) throws SSHApiException {
 		JobSubmissionOutput jsoutput = new JobSubmissionOutput();
-		copyTo(jobScriptFilePath, workingDirectory,
-				session -> SSHUtils.scpTo(jobScriptFilePath, workingDirectory, session)); // scp script file to working directory
+		copyTo(jobScriptFilePath, workingDirectory); // scp script file to working directory
 		RawCommandInfo submitCommand = jobManagerConfiguration.getSubmitCommand(workingDirectory, jobScriptFilePath);
 		submitCommand.setRawCommand("cd " + workingDirectory + "; " + submitCommand.getRawCommand());
 		StandardOutReader reader = new StandardOutReader();
@@ -113,13 +112,13 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	}
 
 	@Override
-	public void copyTo(String localFile, String remoteFile, SessionConsumer<Session> sessionConsumer) throws SSHApiException {
+	public void copyTo(String localFile, String remoteFile) throws SSHApiException {
 		int retry = 3;
 		while (retry > 0) {
 			try {
 				session = Factory.getSSHSession(authenticationInfo, serverInfo);
 				log.info("Transferring localhost:" + localFile  + " to " + serverInfo.getHost() + ":" + remoteFile);
-                sessionConsumer.consume(session);
+				SSHUtils.scpTo(localFile, remoteFile, session);
 				retry = 0;
 			} catch (Exception e) {
 				retry--;
@@ -140,13 +139,13 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	}
 
 	@Override
-	public void copyFrom(String remoteFile, String localFile, SessionConsumer<Session> sessionConsumer) throws SSHApiException {
+	public void copyFrom(String remoteFile, String localFile) throws SSHApiException {
 		int retry = 3;
 		while(retry>0) {
 			try {
 				session = Factory.getSSHSession(authenticationInfo, serverInfo);
 				log.info("Transferring " + serverInfo.getHost() + ":" + remoteFile + " To localhost:" + localFile);
-				sessionConsumer.consume(session);
+				SSHUtils.scpFrom(remoteFile, localFile, session);
 				retry=0;
 			} catch (Exception e) {
 				retry--;
@@ -191,7 +190,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	}
 
 	@Override
-	public void makeDirectory(String directoryPath, SessionConsumer<Session> sessionConsumer) throws SSHApiException {
+	public void makeDirectory(String directoryPath) throws SSHApiException {
 		int retryCount = 0;
 		try {
 			while (retryCount < MAX_RETRY_COUNT) {
@@ -199,9 +198,9 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 				session = Factory.getSSHSession(authenticationInfo, serverInfo);
 				log.info("Creating directory: " + serverInfo.getHost() + ":" + directoryPath);
 				try {
-					sessionConsumer.consume(session);
+					SSHUtils.makeDirectory(directoryPath, session);
 					break;  // Exit while loop
-				} catch (DataStagingException e) {
+				} catch (JSchException e) {
 					if (retryCount == MAX_RETRY_COUNT) {
 						log.error("Retry count " + MAX_RETRY_COUNT + " exceeded for creating directory: "
 								+ serverInfo.getHost() + ":" + directoryPath, e);
@@ -211,7 +210,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 					log.error("Issue with jsch, Retry creating directory: " + serverInfo.getHost() + ":" + directoryPath);
 				}
 			}
-		} catch (AiravataException | DataStagingException e) {
+		} catch (JSchException | AiravataException | IOException e) {
 			throw new SSHApiException("Failed to create directory " + serverInfo.getHost() + ":" + directoryPath, e);
 		}
 	}

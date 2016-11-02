@@ -43,12 +43,12 @@ public class BESRemoteCluster extends AbstractRemoteCluster{
     }
 
     @Override
-    public void copyTo(String localFile, String remoteFile, SessionConsumer<Session> sessionConsumer) throws SSHApiException {
+    public void copyTo(String localFile, String remoteFile) throws SSHApiException {
 
     }
 
     @Override
-    public void copyFrom(String remoteFile, String localFile, SessionConsumer<Session> sessionConsumer) throws SSHApiException {
+    public void copyFrom(String remoteFile, String localFile) throws SSHApiException {
 
     }
 
@@ -57,7 +57,7 @@ public class BESRemoteCluster extends AbstractRemoteCluster{
     }
 
     @Override
-    public void makeDirectory(String directoryPath, SessionConsumer<Session> sessionConsumer) throws SSHApiException {
+    public void makeDirectory(String directoryPath) throws SSHApiException {
 
     }
 

@@ -21,8 +21,10 @@
 
 package org.apache.airavata.gfac.impl.task.utils;
 
+import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.DataStagingException;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
@@ -30,6 +32,7 @@ import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.cluster.CommandInfo;
 import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
+import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.impl.Factory;
@@ -41,6 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.TimerTask;
@@ -75,23 +79,25 @@ public class StreamData extends TimerTask  {
             }
 
             // output staging should end when the job is complete
-            if (jobStatus != null && jobStatus.getJobState().equals(JobState.COMPLETE)
-                    || jobStatus.getJobState().equals(JobState.CANCELED)
-                    || jobStatus.getJobState().equals(JobState.FAILED)){
+            if (jobStatus != null && jobStatus.getJobState().equals(JobState.COMPLETE) || jobStatus.getJobState().equals(JobState.CANCELED) || jobStatus.getJobState().equals(JobState.FAILED)){
                 this.cancel();
             }
         } catch (URISyntaxException e) {
             log.error("expId: {}, processId:{}, taskId: {}:- Couldn't stage file {} , Erroneous path specified",
                     taskContext.getExperimentId(), taskContext.getProcessId(), taskContext.getTaskId(),
                     taskContext.getProcessOutput().getName());
-        } catch (AiravataException | SSHApiException e) {
+        } catch (IllegalAccessException | InstantiationException | AiravataException | IOException | JSchException | SSHApiException e) {
             log.error("expId: {}, processId:{}, taskId: {}:- Couldn't stage file {} , Error occurred while streaming data",
+                    taskContext.getExperimentId(), taskContext.getProcessId(), taskContext.getTaskId(),
+                    taskContext.getProcessOutput().getName());
+        } catch (CredentialStoreException e) {
+            log.error("expId: {}, processId:{}, taskId: {}:- Couldn't stage file {} , Error occurred while connecting with credential store",
                     taskContext.getExperimentId(), taskContext.getProcessId(), taskContext.getTaskId(),
                     taskContext.getProcessOutput().getName());
         }
     }
 
-    public void runOutputStaging() throws URISyntaxException, AiravataException,  SSHApiException {
+    public void runOutputStaging() throws URISyntaxException, IllegalAccessException, InstantiationException, CredentialStoreException, AiravataException, IOException, JSchException, SSHApiException {
         try {
 
             AuthenticationInfo authenticationInfo = null;
@@ -117,7 +123,7 @@ public class StreamData extends TimerTask  {
             String targetPath = destinationURI.getPath().substring(0, destinationURI.getPath().lastIndexOf('/'));
             SSHUtils.makeDirectory(targetPath, sshSession);
             outputDataStaging(taskContext, sshSession, sourceURI, destinationURI);
-        } catch (DataStagingException | GFacException e) {
+        } catch (GFacException e) {
             log.error("expId: {}, processId:{}, taskId: {}:- Couldn't stage file {} , Error while output staging",
                     taskContext.getExperimentId(), taskContext.getProcessId(), taskContext.getTaskId(),
                     taskContext.getProcessOutput().getName());
@@ -141,24 +147,23 @@ public class StreamData extends TimerTask  {
     }
 
     private void outputDataStaging(TaskContext taskContext, Session sshSession, URI sourceURI, URI destinationURI)
-            throws SSHApiException, GFacException {
+            throws SSHApiException, AiravataException, IOException, JSchException, GFacException {
 
         /**
          * scp third party file transfer 'from' comute resource.
          */
-        taskContext.getParentProcessContext().getDataMovementRemoteCluster().thirdPartyTransfer(
-                sourceURI.getPath(),
-                destinationURI.getPath(),
-                session -> SSHUtils.scpThirdParty(sourceURI.getPath(), session, destinationURI.getPath(), sshSession, true));
+        taskContext.getParentProcessContext().getDataMovementRemoteCluster()
+                .thirdPartyTransfer(sourceURI.getPath(), destinationURI.getPath(), session -> {
+                    try {
+                        SSHUtils.scpThirdParty(sourceURI.getPath(), session, destinationURI.getPath(), sshSession, true);
+                    } catch (Exception e) {
+                        throw new DataStagingException("Error while file staging, from " + sourceURI.getPath()
+                                + " to " + destinationURI.getPath());
+                    }
+                });
         // update output locations
-        GFacUtils.saveExperimentOutput(
-                taskContext.getParentProcessContext(),
-                taskContext.getProcessOutput().getName(),
-                destinationURI.getPath());
-        GFacUtils.saveProcessOutput(
-                taskContext.getParentProcessContext(),
-                taskContext.getProcessOutput().getName(),
-                destinationURI.getPath());
+        GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.getPath());
+        GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.getPath());
 
     }
 
