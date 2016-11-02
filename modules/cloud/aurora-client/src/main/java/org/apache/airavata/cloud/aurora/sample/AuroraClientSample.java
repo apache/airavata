@@ -19,15 +19,13 @@
  */
 package org.apache.airavata.cloud.aurora.sample;
 
-import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.apache.airavata.cloud.aurora.client.AuroraSchedulerClientFactory;
 import org.apache.airavata.cloud.aurora.client.AuroraThriftClient;
+import org.apache.airavata.cloud.aurora.client.bean.GetJobsResponseBean;
 import org.apache.airavata.cloud.aurora.client.bean.IdentityBean;
 import org.apache.airavata.cloud.aurora.client.bean.JobConfigBean;
 import org.apache.airavata.cloud.aurora.client.bean.JobKeyBean;
@@ -35,16 +33,7 @@ import org.apache.airavata.cloud.aurora.client.bean.ProcessBean;
 import org.apache.airavata.cloud.aurora.client.bean.ResourceBean;
 import org.apache.airavata.cloud.aurora.client.bean.ResponseBean;
 import org.apache.airavata.cloud.aurora.client.bean.TaskConfigBean;
-import org.apache.airavata.cloud.aurora.client.sdk.ExecutorConfig;
-import org.apache.airavata.cloud.aurora.client.sdk.GetJobsResult;
-import org.apache.airavata.cloud.aurora.client.sdk.Identity;
-import org.apache.airavata.cloud.aurora.client.sdk.JobConfiguration;
-import org.apache.airavata.cloud.aurora.client.sdk.JobKey;
-import org.apache.airavata.cloud.aurora.client.sdk.ReadOnlyScheduler;
-import org.apache.airavata.cloud.aurora.client.sdk.Response;
-import org.apache.airavata.cloud.aurora.client.sdk.TaskConfig;
 import org.apache.airavata.cloud.aurora.util.AuroraThriftClientUtil;
-import org.apache.airavata.cloud.aurora.util.Constants;
 import org.apache.thrift.TException;
 
 /**
@@ -52,35 +41,35 @@ import org.apache.thrift.TException;
  */
 public class AuroraClientSample {
 	
-	/** The aurora scheduler client. */
-	private static ReadOnlyScheduler.Client auroraSchedulerClient;
-	
-	/** The properties. */
-	private static Properties properties = new Properties();
-	
 	/**
 	 * Gets the job summary.
 	 *
 	 * @param client the client
 	 * @return the job summary
+	 * @throws Exception 
 	 */
-	public static void getJobSummary(ReadOnlyScheduler.Client client) {
+	public static void getRunningJobsList(String ownerRole) throws Exception {
 		try {
-			Response response = client.getJobs("centos");
+			AuroraThriftClient client = AuroraThriftClient.getAuroraThriftClient();
+			ResponseBean response = client.getJobList(ownerRole);
 			System.out.println("Response status: " + response.getResponseCode().name());
-			if(response.getResult().isSetGetJobsResult()) {
-				GetJobsResult result = response.getResult().getGetJobsResult();
+			if(response instanceof GetJobsResponseBean) {
+				GetJobsResponseBean result = (GetJobsResponseBean) response;
 				System.out.println(result);
-				Set<JobConfiguration> jobConfigs = result.getConfigs();
-				for(JobConfiguration jobConfig : jobConfigs) {
+				
+				Set<JobConfigBean> jobConfigs = result.getJobConfigs();
+				for(JobConfigBean jobConfig : jobConfigs) {
 					System.out.println(jobConfig);
-					JobKey jobKey = jobConfig.getKey();
-					Identity owner = jobConfig.getOwner();
-					TaskConfig taskConfig = jobConfig.getTaskConfig();
-					ExecutorConfig exeConfig = taskConfig.getExecutorConfig();
+					JobKeyBean jobKey = jobConfig.getJob();
+					IdentityBean owner = jobConfig.getOwner();
+					TaskConfigBean taskConfig = jobConfig.getTaskConfig();
+					Set<ProcessBean> processes = taskConfig.getProcesses();
 					
 					System.out.println("\n**** JOB CONFIG ****");
-						System.out.println("\t # instanceCount: " + jobConfig.getInstanceCount());
+						System.out.println("\t # cluster: " + jobConfig.getCluster());
+						System.out.println("\t # instanceCount: " + jobConfig.getInstances());
+						System.out.println("\t # isService: " + jobConfig.isService());
+						System.out.println("\t\t # priority: " + jobConfig.getPriority());
 						
 						System.out.println("\t >> Job Key <<");
 							System.out.println("\t\t # name: " + jobKey.getName());
@@ -91,15 +80,17 @@ public class AuroraClientSample {
 							System.out.println("\t\t # owner: " + owner.getUser());
 							
 						System.out.println("\t >> Task Config <<");
-							System.out.println("\t\t # numCPUs: " + taskConfig.getNumCpus());
-							System.out.println("\t\t # diskMb: " + taskConfig.getDiskMb());
-							System.out.println("\t\t # ramMb: " + taskConfig.getRamMb());
-							System.out.println("\t\t # priority: " + taskConfig.getPriority());
+							System.out.println("\t\t >> Resources <<");
+								System.out.println("\t\t\t # numCPUs: " + taskConfig.getResources().getNumCpus());
+								System.out.println("\t\t\t # diskMb: " + taskConfig.getResources().getDiskMb());
+								System.out.println("\t\t\t # ramMb: " + taskConfig.getResources().getRamMb());
 							
-							
-						System.out.println("\t >> Executor Config <<");
-							System.out.println("\t\t # name: " + exeConfig.getName());
-							System.out.println("\t\t # data: " + exeConfig.getData());
+							System.out.println("\t\t >> Processes <<");
+							for(ProcessBean process : processes) {
+								System.out.println("\t\t\t ***** PROCESS *****");
+								System.out.println("\t\t\t # name: " + process.getName());
+								System.out.println("\t\t\t # cmdline: " + process.getCmdLine());
+							}
 				}
 				
 			}
@@ -126,7 +117,7 @@ public class AuroraClientSample {
 		String executorConfigJson = AuroraThriftClientUtil.getExecutorConfigJson(jobConfig);
 		System.out.println(executorConfigJson);
 		
-		AuroraThriftClient client = AuroraThriftClient.getAuroraThriftClient(Constants.AURORA_SCHEDULER_PROP_FILE);
+		AuroraThriftClient client = AuroraThriftClient.getAuroraThriftClient();
 		ResponseBean response = client.createJob(jobConfig);
 		System.out.println(response);
 	}
@@ -156,14 +147,14 @@ public class AuroraClientSample {
 		String executorConfigJson = AuroraThriftClientUtil.getExecutorConfigJson(jobConfig);
 		System.out.println(executorConfigJson);
 		
-		AuroraThriftClient client = AuroraThriftClient.getAuroraThriftClient(Constants.AURORA_SCHEDULER_PROP_FILE);
+		AuroraThriftClient client = AuroraThriftClient.getAuroraThriftClient();
 		ResponseBean response = client.createJob(jobConfig);
 		System.out.println(response);
 	}
 	
 	public static void killTasks(String jobName) throws Exception {
 		JobKeyBean jobKey = new JobKeyBean("devel", "centos", jobName);
-		AuroraThriftClient client = AuroraThriftClient.getAuroraThriftClient(Constants.AURORA_SCHEDULER_PROP_FILE);
+		AuroraThriftClient client = AuroraThriftClient.getAuroraThriftClient();
 		ResponseBean response = client.killTasks(jobKey, new HashSet<>());
 		System.out.println(response);
 	}
@@ -175,20 +166,15 @@ public class AuroraClientSample {
 	 */
 	public static void main(String[] args) {
 		 try {
-			properties.load(AuroraClientSample.class.getClassLoader().getResourceAsStream(Constants.AURORA_SCHEDULER_PROP_FILE));
-			String auroraHost = properties.getProperty(Constants.AURORA_SCHEDULER_HOST);
-			String auroraPort = properties.getProperty(Constants.AURORA_SCHEDULER_PORT);
-			auroraSchedulerClient = AuroraSchedulerClientFactory.createReadOnlySchedulerClient(MessageFormat.format(Constants.AURORA_SCHEDULER_CONNECTION_URL, auroraHost, auroraPort));
-			
 			// create sample job
 //			AuroraClientSample.createJob();
-			AuroraClientSample.createAutoDockJob();
+//			AuroraClientSample.createAutoDockJob();
 			
 			// kill pending job
 //			AuroraClientSample.killTasks("test_autodock");
 			
 			// get jobs summary
-			AuroraClientSample.getJobSummary(auroraSchedulerClient);
+			AuroraClientSample.getRunningJobsList("centos");
 			
 //			AuroraThriftClient client = AuroraThriftClient.getAuroraThriftClient(Constants.AURORA_SCHEDULER_PROP_FILE);
 //			ResponseBean response = client.getPendingReasonForJob(new JobKeyBean("devel", "centos", "hello_pending"));

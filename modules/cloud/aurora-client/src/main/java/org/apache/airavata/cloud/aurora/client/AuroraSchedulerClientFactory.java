@@ -36,31 +36,60 @@ public class AuroraSchedulerClientFactory {
 	/** The Constant logger. */
 	private final static Logger logger = LoggerFactory.getLogger(AuroraSchedulerClientFactory.class);
 	
+	
 	/**
 	 * Creates a new AuroraSchedulerClient object.
 	 *
 	 * @param connectionUrl the connection url
+	 * @param connectionTimeout the connection timeout
 	 * @return the client
 	 * @throws Exception the exception
 	 */
-	public static ReadOnlyScheduler.Client createReadOnlySchedulerClient(String connectionUrl) throws Exception {
+	public static ReadOnlyScheduler.Client createReadOnlySchedulerClient(String connectionUrl, int connectionTimeout) throws Exception {
 		try {
-			TTransport transport = new THttpClient(connectionUrl);
-			transport.open();
-			TProtocol protocol = new TJSONProtocol(transport);
-			return new ReadOnlyScheduler.Client(protocol);
+			return new ReadOnlyScheduler.Client(
+					getTProtocol(connectionUrl, connectionTimeout));
 		} catch(Exception ex) {
 			logger.error(ex.getMessage(), ex);
 			throw ex;
 		}
 	}
 	
-	public static AuroraSchedulerManager.Client createSchedulerManagerClient(String connectionUrl) throws Exception {
+	/**
+	 * Creates a new AuroraSchedulerClient object.
+	 *
+	 * @param connectionUrl the connection url
+	 * @param connectionTimeout the connection timeout
+	 * @return the client
+	 * @throws Exception the exception
+	 */
+	public static AuroraSchedulerManager.Client createSchedulerManagerClient(String connectionUrl, int connectionTimeout) throws Exception {
 		try {
-			TTransport transport = new THttpClient(connectionUrl);
+			return new AuroraSchedulerManager.Client(
+					getTProtocol(connectionUrl, connectionTimeout));
+		} catch(Exception ex) {
+			logger.error(ex.getMessage(), ex);
+			throw ex;
+		}
+	}
+	
+	/**
+	 * Gets the t protocol.
+	 *
+	 * @param connectionUrl the connection url
+	 * @param connectionTimeout the connection timeout
+	 * @return the t protocol
+	 * @throws Exception the exception
+	 */
+	private static TProtocol getTProtocol(String connectionUrl, int connectionTimeout) throws Exception {
+		try {
+			THttpClient client = new THttpClient(connectionUrl);
+			client.setConnectTimeout(connectionTimeout);
+			
+			TTransport transport = client;
 			transport.open();
 			TProtocol protocol = new TJSONProtocol(transport);
-			return new AuroraSchedulerManager.Client(protocol);
+			return protocol;
 		} catch(Exception ex) {
 			logger.error(ex.getMessage(), ex);
 			throw ex;

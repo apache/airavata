@@ -21,7 +21,6 @@ package org.apache.airavata.cloud.aurora.client;
 
 import java.text.MessageFormat;
 import java.util.HashSet;
-import java.util.Properties;
 import java.util.Set;
 
 import org.apache.airavata.cloud.aurora.client.bean.GetJobsResponseBean;
@@ -36,10 +35,10 @@ import org.apache.airavata.cloud.aurora.client.sdk.JobKey;
 import org.apache.airavata.cloud.aurora.client.sdk.ReadOnlyScheduler;
 import org.apache.airavata.cloud.aurora.client.sdk.Response;
 import org.apache.airavata.cloud.aurora.client.sdk.TaskQuery;
-import org.apache.airavata.cloud.aurora.sample.AuroraClientSample;
 import org.apache.airavata.cloud.aurora.util.AuroraThriftClientUtil;
 import org.apache.airavata.cloud.aurora.util.Constants;
 import org.apache.airavata.cloud.aurora.util.ResponseResultType;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,9 +49,6 @@ public class AuroraThriftClient {
 	
 	/** The Constant logger. */
 	private final static Logger logger = LoggerFactory.getLogger(AuroraThriftClient.class);
-	
-	/** The properties. */
-	private static Properties properties = new Properties();
 	
 	/** The read only scheduler client. */
 	private ReadOnlyScheduler.Client readOnlySchedulerClient = null;
@@ -71,23 +67,29 @@ public class AuroraThriftClient {
 	/**
 	 * Gets the aurora thrift client.
 	 *
-	 * @param auroraSchedulerPropFile the aurora scheduler prop file
 	 * @return the aurora thrift client
 	 * @throws Exception the exception
 	 */
-	public static AuroraThriftClient getAuroraThriftClient(String auroraSchedulerPropFile) throws Exception {
+	public static AuroraThriftClient getAuroraThriftClient() throws Exception {
 		try {
 			if(thriftClient == null) {
 				thriftClient = new AuroraThriftClient();
 				
 				// construct connection url for scheduler
-				properties.load(AuroraClientSample.class.getClassLoader().getResourceAsStream(auroraSchedulerPropFile));
-				String auroraHost = properties.getProperty(Constants.AURORA_SCHEDULER_HOST);
-				String auroraPort = properties.getProperty(Constants.AURORA_SCHEDULER_PORT);
-				String connectionUrl = MessageFormat.format(Constants.AURORA_SCHEDULER_CONNECTION_URL, auroraHost, auroraPort);
+				String auroraHosts = ServerSettings.getAuroraSchedulerHosts();
+				Integer connectTimeout = ServerSettings.getAuroraSchedulerTimeout();
 				
-				thriftClient.readOnlySchedulerClient = AuroraSchedulerClientFactory.createReadOnlySchedulerClient(connectionUrl);
-				thriftClient.auroraSchedulerManagerClient = AuroraSchedulerClientFactory.createSchedulerManagerClient(connectionUrl);
+				// check reachable scheduler host
+				for(String auroraHost : auroraHosts.split(",")) {
+					String hostname = auroraHost.split(":")[0];
+					String port = auroraHost.split(":")[1];
+					String connectionUrl = MessageFormat.format(Constants.AURORA_SCHEDULER_CONNECTION_URL, hostname, port);
+					
+					if(AuroraThriftClientUtil.isSchedulerHostReachable(connectionUrl, connectTimeout)) {
+						thriftClient.readOnlySchedulerClient = AuroraSchedulerClientFactory.createReadOnlySchedulerClient(connectionUrl, connectTimeout);
+						thriftClient.auroraSchedulerManagerClient = AuroraSchedulerClientFactory.createSchedulerManagerClient(connectionUrl, connectTimeout);
+					}
+				}
 			}
 		} catch(Exception ex) {
 			logger.error(ex.getMessage(), ex);
