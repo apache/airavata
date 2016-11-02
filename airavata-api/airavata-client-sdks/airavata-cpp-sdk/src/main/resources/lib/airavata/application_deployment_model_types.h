@@ -224,7 +224,7 @@ inline std::ostream& operator<<(std::ostream& out, const ApplicationModule& obj)
 }
 
 typedef struct _ApplicationDeploymentDescription__isset {
-  _ApplicationDeploymentDescription__isset() : appDeploymentDescription(false), moduleLoadCmds(false), libPrependPaths(false), libAppendPaths(false), setEnvironment(false), preJobCommands(false), postJobCommands(false) {}
+  _ApplicationDeploymentDescription__isset() : appDeploymentDescription(false), moduleLoadCmds(false), libPrependPaths(false), libAppendPaths(false), setEnvironment(false), preJobCommands(false), postJobCommands(false), defaultQueueName(false), defaultNodeCount(false), defaultCPUCount(false), editableByUser(false) {}
   bool appDeploymentDescription :1;
   bool moduleLoadCmds :1;
   bool libPrependPaths :1;
@@ -232,6 +232,10 @@ typedef struct _ApplicationDeploymentDescription__isset {
   bool setEnvironment :1;
   bool preJobCommands :1;
   bool postJobCommands :1;
+  bool defaultQueueName :1;
+  bool defaultNodeCount :1;
+  bool defaultCPUCount :1;
+  bool editableByUser :1;
 } _ApplicationDeploymentDescription__isset;
 
 class ApplicationDeploymentDescription {
@@ -239,7 +243,7 @@ class ApplicationDeploymentDescription {
 
   ApplicationDeploymentDescription(const ApplicationDeploymentDescription&);
   ApplicationDeploymentDescription& operator=(const ApplicationDeploymentDescription&);
-  ApplicationDeploymentDescription() : appDeploymentId("DO_NOT_SET_AT_CLIENTS"), appModuleId(), computeHostId(), executablePath(), parallelism(( ::apache::airavata::model::appcatalog::parallelism::ApplicationParallelismType::type)0), appDeploymentDescription() {
+  ApplicationDeploymentDescription() : appDeploymentId("DO_NOT_SET_AT_CLIENTS"), appModuleId(), computeHostId(), executablePath(), parallelism(( ::apache::airavata::model::appcatalog::parallelism::ApplicationParallelismType::type)0), appDeploymentDescription(), defaultQueueName(), defaultNodeCount(0), defaultCPUCount(0), editableByUser(0) {
     parallelism = ( ::apache::airavata::model::appcatalog::parallelism::ApplicationParallelismType::type)0;
 
   }
@@ -257,6 +261,10 @@ class ApplicationDeploymentDescription {
   std::vector<SetEnvPaths>  setEnvironment;
   std::vector<CommandObject>  preJobCommands;
   std::vector<CommandObject>  postJobCommands;
+  std::string defaultQueueName;
+  int32_t defaultNodeCount;
+  int32_t defaultCPUCount;
+  bool editableByUser;
 
   _ApplicationDeploymentDescription__isset __isset;
 
@@ -283,6 +291,14 @@ class ApplicationDeploymentDescription {
   void __set_preJobCommands(const std::vector<CommandObject> & val);
 
   void __set_postJobCommands(const std::vector<CommandObject> & val);
+
+  void __set_defaultQueueName(const std::string& val);
+
+  void __set_defaultNodeCount(const int32_t val);
+
+  void __set_defaultCPUCount(const int32_t val);
+
+  void __set_editableByUser(const bool val);
 
   bool operator == (const ApplicationDeploymentDescription & rhs) const
   {
@@ -323,6 +339,22 @@ class ApplicationDeploymentDescription {
     if (__isset.postJobCommands != rhs.__isset.postJobCommands)
       return false;
     else if (__isset.postJobCommands && !(postJobCommands == rhs.postJobCommands))
+      return false;
+    if (__isset.defaultQueueName != rhs.__isset.defaultQueueName)
+      return false;
+    else if (__isset.defaultQueueName && !(defaultQueueName == rhs.defaultQueueName))
+      return false;
+    if (__isset.defaultNodeCount != rhs.__isset.defaultNodeCount)
+      return false;
+    else if (__isset.defaultNodeCount && !(defaultNodeCount == rhs.defaultNodeCount))
+      return false;
+    if (__isset.defaultCPUCount != rhs.__isset.defaultCPUCount)
+      return false;
+    else if (__isset.defaultCPUCount && !(defaultCPUCount == rhs.defaultCPUCount))
+      return false;
+    if (__isset.editableByUser != rhs.__isset.editableByUser)
+      return false;
+    else if (__isset.editableByUser && !(editableByUser == rhs.editableByUser))
       return false;
     return true;
   }

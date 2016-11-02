@@ -36,6 +36,10 @@ public abstract class AbstractRemoteCluster implements RemoteCluster {
 		this.serverInfo = serverInfo;
 		this.jobManagerConfiguration = jobManagerConfiguration;
 		this.authenticationInfo = authenticationInfo;
-		this.outputParser = jobManagerConfiguration.getParser();
+		if (jobManagerConfiguration != null) {
+			this.outputParser = jobManagerConfiguration.getParser();
+		}else {
+			this.outputParser = null;
+		}
 	}
 }

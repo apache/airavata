@@ -376,6 +376,10 @@ class ApplicationDeploymentDescription:
    - setEnvironment
    - preJobCommands
    - postJobCommands
+   - defaultQueueName
+   - defaultNodeCount
+   - defaultCPUCount
+   - editableByUser
   """
 
   thrift_spec = (
@@ -392,9 +396,13 @@ class ApplicationDeploymentDescription:
     (10, TType.LIST, 'setEnvironment', (TType.STRUCT,(SetEnvPaths, SetEnvPaths.thrift_spec)), None, ), # 10
     (11, TType.LIST, 'preJobCommands', (TType.STRUCT,(CommandObject, CommandObject.thrift_spec)), None, ), # 11
     (12, TType.LIST, 'postJobCommands', (TType.STRUCT,(CommandObject, CommandObject.thrift_spec)), None, ), # 12
+    (13, TType.STRING, 'defaultQueueName', None, None, ), # 13
+    (14, TType.I32, 'defaultNodeCount', None, None, ), # 14
+    (15, TType.I32, 'defaultCPUCount', None, None, ), # 15
+    (16, TType.BOOL, 'editableByUser', None, None, ), # 16
   )
 
-  def __init__(self, appDeploymentId=thrift_spec[1][4], appModuleId=None, computeHostId=None, executablePath=None, parallelism=thrift_spec[5][4], appDeploymentDescription=None, moduleLoadCmds=None, libPrependPaths=None, libAppendPaths=None, setEnvironment=None, preJobCommands=None, postJobCommands=None,):
+  def __init__(self, appDeploymentId=thrift_spec[1][4], appModuleId=None, computeHostId=None, executablePath=None, parallelism=thrift_spec[5][4], appDeploymentDescription=None, moduleLoadCmds=None, libPrependPaths=None, libAppendPaths=None, setEnvironment=None, preJobCommands=None, postJobCommands=None, defaultQueueName=None, defaultNodeCount=None, defaultCPUCount=None, editableByUser=None,):
     self.appDeploymentId = appDeploymentId
     self.appModuleId = appModuleId
     self.computeHostId = computeHostId
@@ -407,6 +415,10 @@ class ApplicationDeploymentDescription:
     self.setEnvironment = setEnvironment
     self.preJobCommands = preJobCommands
     self.postJobCommands = postJobCommands
+    self.defaultQueueName = defaultQueueName
+    self.defaultNodeCount = defaultNodeCount
+    self.defaultCPUCount = defaultCPUCount
+    self.editableByUser = editableByUser
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -513,6 +525,26 @@ class ApplicationDeploymentDescription:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
+      elif fid == 13:
+        if ftype == TType.STRING:
+          self.defaultQueueName = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 14:
+        if ftype == TType.I32:
+          self.defaultNodeCount = iprot.readI32()
+        else:
+          iprot.skip(ftype)
+      elif fid == 15:
+        if ftype == TType.I32:
+          self.defaultCPUCount = iprot.readI32()
+        else:
+          iprot.skip(ftype)
+      elif fid == 16:
+        if ftype == TType.BOOL:
+          self.editableByUser = iprot.readBool()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -589,6 +621,22 @@ class ApplicationDeploymentDescription:
         iter41.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
+    if self.defaultQueueName is not None:
+      oprot.writeFieldBegin('defaultQueueName', TType.STRING, 13)
+      oprot.writeString(self.defaultQueueName)
+      oprot.writeFieldEnd()
+    if self.defaultNodeCount is not None:
+      oprot.writeFieldBegin('defaultNodeCount', TType.I32, 14)
+      oprot.writeI32(self.defaultNodeCount)
+      oprot.writeFieldEnd()
+    if self.defaultCPUCount is not None:
+      oprot.writeFieldBegin('defaultCPUCount', TType.I32, 15)
+      oprot.writeI32(self.defaultCPUCount)
+      oprot.writeFieldEnd()
+    if self.editableByUser is not None:
+      oprot.writeFieldBegin('editableByUser', TType.BOOL, 16)
+      oprot.writeBool(self.editableByUser)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -620,6 +668,10 @@ class ApplicationDeploymentDescription:
     value = (value * 31) ^ hash(self.setEnvironment)
     value = (value * 31) ^ hash(self.preJobCommands)
     value = (value * 31) ^ hash(self.postJobCommands)
+    value = (value * 31) ^ hash(self.defaultQueueName)
+    value = (value * 31) ^ hash(self.defaultNodeCount)
+    value = (value * 31) ^ hash(self.defaultCPUCount)
+    value = (value * 31) ^ hash(self.editableByUser)
     return value
 
   def __repr__(self):

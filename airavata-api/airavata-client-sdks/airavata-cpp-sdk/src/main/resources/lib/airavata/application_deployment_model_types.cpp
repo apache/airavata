@@ -491,6 +491,26 @@ void ApplicationDeploymentDescription::__set_postJobCommands(const std::vector<C
 __isset.postJobCommands = true;
 }
 
+void ApplicationDeploymentDescription::__set_defaultQueueName(const std::string& val) {
+  this->defaultQueueName = val;
+__isset.defaultQueueName = true;
+}
+
+void ApplicationDeploymentDescription::__set_defaultNodeCount(const int32_t val) {
+  this->defaultNodeCount = val;
+__isset.defaultNodeCount = true;
+}
+
+void ApplicationDeploymentDescription::__set_defaultCPUCount(const int32_t val) {
+  this->defaultCPUCount = val;
+__isset.defaultCPUCount = true;
+}
+
+void ApplicationDeploymentDescription::__set_editableByUser(const bool val) {
+  this->editableByUser = val;
+__isset.editableByUser = true;
+}
+
 uint32_t ApplicationDeploymentDescription::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -687,6 +707,38 @@ uint32_t ApplicationDeploymentDescription::read(::apache::thrift::protocol::TPro
           xfer += iprot->skip(ftype);
         }
         break;
+      case 13:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->defaultQueueName);
+          this->__isset.defaultQueueName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 14:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->defaultNodeCount);
+          this->__isset.defaultNodeCount = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 15:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->defaultCPUCount);
+          this->__isset.defaultCPUCount = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 16:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->editableByUser);
+          this->__isset.editableByUser = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -817,6 +869,26 @@ uint32_t ApplicationDeploymentDescription::write(::apache::thrift::protocol::TPr
     }
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.defaultQueueName) {
+    xfer += oprot->writeFieldBegin("defaultQueueName", ::apache::thrift::protocol::T_STRING, 13);
+    xfer += oprot->writeString(this->defaultQueueName);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.defaultNodeCount) {
+    xfer += oprot->writeFieldBegin("defaultNodeCount", ::apache::thrift::protocol::T_I32, 14);
+    xfer += oprot->writeI32(this->defaultNodeCount);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.defaultCPUCount) {
+    xfer += oprot->writeFieldBegin("defaultCPUCount", ::apache::thrift::protocol::T_I32, 15);
+    xfer += oprot->writeI32(this->defaultCPUCount);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.editableByUser) {
+    xfer += oprot->writeFieldBegin("editableByUser", ::apache::thrift::protocol::T_BOOL, 16);
+    xfer += oprot->writeBool(this->editableByUser);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -836,6 +908,10 @@ void swap(ApplicationDeploymentDescription &a, ApplicationDeploymentDescription 
   swap(a.setEnvironment, b.setEnvironment);
   swap(a.preJobCommands, b.preJobCommands);
   swap(a.postJobCommands, b.postJobCommands);
+  swap(a.defaultQueueName, b.defaultQueueName);
+  swap(a.defaultNodeCount, b.defaultNodeCount);
+  swap(a.defaultCPUCount, b.defaultCPUCount);
+  swap(a.editableByUser, b.editableByUser);
   swap(a.__isset, b.__isset);
 }
 
@@ -852,6 +928,10 @@ ApplicationDeploymentDescription::ApplicationDeploymentDescription(const Applica
   setEnvironment = other43.setEnvironment;
   preJobCommands = other43.preJobCommands;
   postJobCommands = other43.postJobCommands;
+  defaultQueueName = other43.defaultQueueName;
+  defaultNodeCount = other43.defaultNodeCount;
+  defaultCPUCount = other43.defaultCPUCount;
+  editableByUser = other43.editableByUser;
   __isset = other43.__isset;
 }
 ApplicationDeploymentDescription& ApplicationDeploymentDescription::operator=(const ApplicationDeploymentDescription& other44) {
@@ -867,6 +947,10 @@ ApplicationDeploymentDescription& ApplicationDeploymentDescription::operator=(co
   setEnvironment = other44.setEnvironment;
   preJobCommands = other44.preJobCommands;
   postJobCommands = other44.postJobCommands;
+  defaultQueueName = other44.defaultQueueName;
+  defaultNodeCount = other44.defaultNodeCount;
+  defaultCPUCount = other44.defaultCPUCount;
+  editableByUser = other44.editableByUser;
   __isset = other44.__isset;
   return *this;
 }
@@ -885,6 +969,10 @@ void ApplicationDeploymentDescription::printTo(std::ostream& out) const {
   out << ", " << "setEnvironment="; (__isset.setEnvironment ? (out << to_string(setEnvironment)) : (out << "<null>"));
   out << ", " << "preJobCommands="; (__isset.preJobCommands ? (out << to_string(preJobCommands)) : (out << "<null>"));
   out << ", " << "postJobCommands="; (__isset.postJobCommands ? (out << to_string(postJobCommands)) : (out << "<null>"));
+  out << ", " << "defaultQueueName="; (__isset.defaultQueueName ? (out << to_string(defaultQueueName)) : (out << "<null>"));
+  out << ", " << "defaultNodeCount="; (__isset.defaultNodeCount ? (out << to_string(defaultNodeCount)) : (out << "<null>"));
+  out << ", " << "defaultCPUCount="; (__isset.defaultCPUCount ? (out << to_string(defaultCPUCount)) : (out << "<null>"));
+  out << ", " << "editableByUser="; (__isset.editableByUser ? (out << to_string(editableByUser)) : (out << "<null>"));
   out << ")";
 }
 

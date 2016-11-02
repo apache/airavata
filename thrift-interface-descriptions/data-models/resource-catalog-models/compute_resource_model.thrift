@@ -154,7 +154,11 @@ struct BatchQueue {
     4: optional i32 maxNodes,
     5: optional i32 maxProcessors,
     6: optional i32 maxJobsInQueue,
-    7: optional i32 maxMemory
+    7: optional i32 maxMemory,
+    8: optional i32 cpuPerNode,
+    9: optional i32 defaultNodeCount,
+    10: optional i32 defaultCPUCount,
+    11: optional bool isDefaultQueue
 }
 
 

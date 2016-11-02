@@ -126,4 +126,8 @@ struct ApplicationDeploymentDescription {
 	10: optional list<SetEnvPaths> setEnvironment,
 	11: optional list<CommandObject> preJobCommands,
 	12: optional list<CommandObject> postJobCommands,
+	13: optional string defaultQueueName,
+	14: optional i32 defaultNodeCount,
+	15: optional i32 defaultCPUCount,
+	16: optional bool editableByUser
 }

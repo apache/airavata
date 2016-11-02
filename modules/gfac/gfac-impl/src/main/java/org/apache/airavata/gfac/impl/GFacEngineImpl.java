@@ -615,11 +615,10 @@ public class GFacEngineImpl implements GFacEngine {
             }
             continueProcess(processContext, recoverTaskId);
         } else {
-            log.error("expId: {}, processId: {}, Error while recovering process, couldn't find recovery task",
+            log.error("expId: {}, processId: {}, couldn't find recovery task, mark this as complete ",
                     processContext.getExperimentId(), processContext.getProcessId());
+            processContext.setComplete(true);
         }
-
-
     }
 
     private void cancelJobSubmission(ProcessContext processContext, String rTaskId, String pTaskId) {
@@ -929,6 +928,8 @@ public class GFacEngineImpl implements GFacEngine {
                     (jsInterface.getJobSubmissionInterfaceId());
             processCtx.setMonitorMode(sshJobSubmission.getMonitorMode()); // fixme - Move this to populate process
             resourceJobManager = sshJobSubmission.getResourceJobManager();
+        } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.CLOUD) {
+            return null;
         } else {
             throw new GFacException("Unsupported JobSubmissionProtocol - " + jsInterface.getJobSubmissionProtocol()
                     .name());

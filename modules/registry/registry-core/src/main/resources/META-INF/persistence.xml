@@ -38,6 +38,7 @@
         <class>org.apache.airavata.registry.core.app.catalog.model.GridftpDataMovement</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.GridftpEndpoint</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.SshJobSubmission</class>
+        <class>org.apache.airavata.registry.core.app.catalog.model.CloudJobSubmission</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.ApplicationModule</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.ApplicationDeployment</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.ModuleLoadCmd</class>
