@@ -88,7 +88,7 @@ public class AuroraJobSubmission implements JobSubmissionTask{
             String workingDir = taskContext.getWorkingDir();
             ProcessBean proc1 = new ProcessBean("process_1", "mkdir -p " + workingDir, false);
             ProcessBean proc2 = new ProcessBean("process_2", "cp -rf /home/centos/efs-mount-point/autodock-vina/* " + workingDir , false);
-            ProcessBean proc3 = new ProcessBean("process_3", "cd " + workingDir + " && ./vina_screenA.sh", false);
+            ProcessBean proc3 = new ProcessBean("process_3", "cd " + workingDir + " && ./vina_screenM.sh", false);
             Set<ProcessBean> processes = new LinkedHashSet<>();
             processes.add(proc1);
             processes.add(proc2);
