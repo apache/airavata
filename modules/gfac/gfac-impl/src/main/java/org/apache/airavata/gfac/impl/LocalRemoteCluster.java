@@ -60,8 +60,7 @@ public class LocalRemoteCluster extends AbstractRemoteCluster {
     public JobSubmissionOutput submitBatchJob(String jobScriptFilePath, String workingDirectory) throws SSHApiException {
         try {
             JobSubmissionOutput jsoutput = new JobSubmissionOutput();
-            String remoteFile = workingDirectory + File.separator + new File(jobScriptFilePath).getName();
-            copyTo(jobScriptFilePath, remoteFile, session -> SSHUtils.scpTo(jobScriptFilePath, remoteFile, session)); // scp script file to working directory
+            copyTo(jobScriptFilePath, workingDirectory + File.separator + new File(jobScriptFilePath).getName()); // scp script file to working directory
             RawCommandInfo submitCommand = jobManagerConfiguration.getSubmitCommand(workingDirectory, jobScriptFilePath);
             submitCommand.setRawCommand(submitCommand.getRawCommand());
             LocalCommandOutput localCommandOutput = new LocalCommandOutput();
@@ -77,7 +76,7 @@ public class LocalRemoteCluster extends AbstractRemoteCluster {
     }
 
     @Override
-    public void copyTo(String localFile, String remoteFile, SessionConsumer<Session> sessionConsumer) throws SSHApiException {
+    public void copyTo(String localFile, String remoteFile) throws SSHApiException {
         Path sourcePath = Paths.get(localFile);
         Path targetPath = Paths.get(remoteFile);
         try {
@@ -89,7 +88,7 @@ public class LocalRemoteCluster extends AbstractRemoteCluster {
     }
 
     @Override
-    public void copyFrom(String remoteFile, String localFile, SessionConsumer<Session> sessionConsumer) throws SSHApiException {
+    public void copyFrom(String remoteFile, String localFile) throws SSHApiException {
         Path sourcePath = Paths.get(remoteFile);
         Path targetPath = Paths.get(localFile);
         try {
@@ -126,7 +125,7 @@ public class LocalRemoteCluster extends AbstractRemoteCluster {
     }
 
     @Override
-    public void makeDirectory(String directoryPath, SessionConsumer<Session> sessionConsumer) throws SSHApiException {
+    public void makeDirectory(String directoryPath) throws SSHApiException {
         Path dirPath = Paths.get(directoryPath);
         Set<PosixFilePermission> perms = new HashSet<>();
         // add permission as rwxr--r-- 744
