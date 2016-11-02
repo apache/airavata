@@ -126,13 +126,6 @@
         <class>org.apache.airavata.registry.core.entities.appcatalog.ParallelismCommandPK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.DataStoragePreferencePK</class>
 
-
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <properties>
-            <property name="openjpa.ConnectionURL" value="jdbc:mysql://localhost:3306/airavata_catalog"/>
-            <property name="openjpa.ConnectionDriverName" value="com.mysql.jdbc.Driver"/>
-            <property name="openjpa.ConnectionUserName"/>
-            <property name="openjpa.ConnectionPassword"/>
-        </properties>
     </persistence-unit>
 </persistence>
