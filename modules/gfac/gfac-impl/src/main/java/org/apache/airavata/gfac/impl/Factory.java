@@ -454,7 +454,7 @@ public abstract class Factory {
 		}
 	}
 
-	public static JobMonitor getMonitorService(MonitorMode monitorMode) throws AiravataException {
+	public static JobMonitor getMonitorService(MonitorMode monitorMode) throws AiravataException, GFacException {
 		JobMonitor jobMonitor = jobMonitorServices.get(monitorMode);
 		if (jobMonitor == null) {
 			synchronized (JobMonitor.class) {
@@ -471,6 +471,11 @@ public abstract class Factory {
 							AuroraJobMonitor auroraJobMonitor = AuroraJobMonitor.getInstance();
 							new Thread(auroraJobMonitor).start();
 							jobMonitorServices.put(MonitorMode.CLOUD_JOB_MONITOR, auroraJobMonitor);
+							jobMonitor = auroraJobMonitor;
+							break;
+						default:
+							throw new GFacException("Unsupported monitor mode :" + monitorMode.name());
+
 					}
 				}
 			}
@@ -478,7 +483,7 @@ public abstract class Factory {
 		return jobMonitor;
 	}
 
-	public static JobMonitor getDefaultMonitorService() throws AiravataException {
+	public static JobMonitor getDefaultMonitorService() throws AiravataException, GFacException {
 		return getMonitorService(MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR);
 	}
 
