@@ -23,7 +23,6 @@ package org.apache.airavata.gfac.impl;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.gfac.core.DataStagingException;
 import org.apache.airavata.gfac.core.JobManagerConfiguration;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
@@ -100,16 +99,20 @@ public class LocalRemoteCluster extends AbstractRemoteCluster {
     }
 
     @Override
-    public void thirdPartyTransfer(String sourceFile, String destinationFile, SessionConsumer<Session> sessionConsumer) throws SSHApiException {
-        int retryCount = 0;
+    public void scpThirdParty(String sourceFile, String destinationFile, Session session, DIRECTION inOrOut, boolean ignoreEmptyFile) throws SSHApiException {
+        int retryCount= 0;
         try {
             while (retryCount < MAX_RETRY_COUNT) {
                 retryCount++;
                 log.info("Transferring from:" + sourceFile + " To: " + destinationFile);
                 try {
-                    sessionConsumer.consume(null);
+                    if (inOrOut == DIRECTION.TO) {
+                        SSHUtils.scpThirdParty(sourceFile, session, destinationFile, session, ignoreEmptyFile);
+                    } else {
+                        SSHUtils.scpThirdParty(sourceFile, session, destinationFile, session, ignoreEmptyFile);
+                    }
                     break; // exit while loop
-                } catch (DataStagingException e) {
+                } catch (JSchException e) {
                     if (retryCount == MAX_RETRY_COUNT) {
                         log.error("Retry count " + MAX_RETRY_COUNT + " exceeded for  transferring from:"
                                 + sourceFile + " To: " + destinationFile, e);
@@ -118,9 +121,9 @@ public class LocalRemoteCluster extends AbstractRemoteCluster {
                     log.error("Issue with jsch, Retry transferring from:" + sourceFile + " To: " + destinationFile, e);
                 }
             }
-        } catch (DataStagingException e) {
+        } catch (IOException | JSchException e) {
             throw new SSHApiException("Failed scp file:" + sourceFile + " to remote file "
-                    + destinationFile, e);
+                    +destinationFile , e);
         }
     }
 
