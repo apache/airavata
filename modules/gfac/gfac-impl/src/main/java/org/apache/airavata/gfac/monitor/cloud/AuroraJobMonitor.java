@@ -66,7 +66,7 @@ public class AuroraJobMonitor implements JobMonitor, Runnable {
     private Map<String,TaskContext> jobMonitoringMap;
     private AuroraJobMonitor(){
         jobMonitoringMap = new ConcurrentHashMap<>();
-        timer = new Timer("Aurora status poll timer");
+        timer = new Timer("Aurora status poll timer", true);
 
     }
 
@@ -125,33 +125,41 @@ public class AuroraJobMonitor implements JobMonitor, Runnable {
         @Override
 
         public void run() {
-            JobKeyBean jobKeyBean = new JobKeyBean(AuroraUtils.ENVIRONMENT, AuroraUtils.ROLE, "dummy");
-            Iterator<Map.Entry<String, TaskContext>> iterator = jobMonitoringMap.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<String, TaskContext> currentEntry = iterator.next();
-                try {
-                    jobKeyBean.setName(currentEntry.getKey());
-                    JobDetailsResponseBean jobDetailsResponseBean = client.getJobDetails(jobKeyBean);
-                    List<ScheduledTask> tasks = jobDetailsResponseBean.getTasks();
-                    switch (tasks.get(0).getStatus()) {
-                        case FINISHED:
-                            iterator.remove();
-                            processJob(currentEntry.getKey(), currentEntry.getValue(), JobState.COMPLETE);
-                            break;
-                        case FAILED:
-                            iterator.remove();
-                            processJob(currentEntry.getKey(), currentEntry.getValue(), JobState.FAILED);
-                            break;
-                        case RUNNING:
-                            updateStatus(currentEntry.getKey(), currentEntry.getValue(), JobState.ACTIVE);
-                            break;
-                        default:
-                            log.info("Job {} is in {} state", currentEntry.getKey(), tasks.get(0).getStatus().name());
-                            break;
-                    }
-                } catch (Exception e) {
-                    log.error("Error while getting response for job : {}", currentEntry.getKey());
+            while(true){
+                JobKeyBean jobKeyBean = new JobKeyBean(AuroraUtils.ENVIRONMENT, AuroraUtils.ROLE, "dummy");
+                Iterator<Map.Entry<String, TaskContext>> iterator = jobMonitoringMap.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    Map.Entry<String, TaskContext> currentEntry = iterator.next();
+                    try {
+                        jobKeyBean.setName(currentEntry.getKey());
+                        JobDetailsResponseBean jobDetailsResponseBean = client.getJobDetails(jobKeyBean);
+                        List<ScheduledTask> tasks = jobDetailsResponseBean.getTasks();
+                        switch (tasks.get(0).getStatus()) {
+                            case FINISHED:
+                                iterator.remove();
+                                processJob(currentEntry.getKey(), currentEntry.getValue(), JobState.COMPLETE);
+                                break;
+                            case FAILED:
+                                iterator.remove();
+                                processJob(currentEntry.getKey(), currentEntry.getValue(), JobState.FAILED);
+                                break;
+                            case RUNNING:
+                                updateStatus(currentEntry.getKey(), currentEntry.getValue(), JobState.ACTIVE);
+                                break;
+                            default:
+                                log.info("Job {} is in {} state", currentEntry.getKey(), tasks.get(0).getStatus().name());
+                                break;
+                        }
+                    } catch (Exception e) {
+                        log.error("Error while getting response for job : {}", currentEntry.getKey());
 
+                    }
+                }
+
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    log.warn("Aurora Monitoring task interrupted");
                 }
             }
         }
