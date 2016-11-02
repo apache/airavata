@@ -24,92 +24,6 @@
     <artifactId>apache-airavata-distribution</artifactId>
     <name>Airavata server distribution</name>
     <packaging>pom</packaging>
-    <url>http://airavata.apache.org/</url>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.8</version>
-                <executions>
-                    <execution>
-                        <id>unpack</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.apache.airavata</groupId>
-                                    <artifactId>airavata-server-configuration</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>jar</type>
-                                </artifactItem>
-                            </artifactItems>
-                            <!--includes>**/*.war</includes -->
-                            <outputDirectory>${project.build.directory}/conf</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.5.5</version>
-                <executions>
-                    <execution>
-                        <id>distribution-package</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <tarLongFileMode>posix</tarLongFileMode>
-                            <finalName>${archieve.name}-${project.version}</finalName>
-                            <descriptors>
-                                <descriptor>src/main/assembly/bin-assembly.xml</descriptor>
-                                <!-- <descriptor>src/main/assembly/src-assembly.xml</descriptor> -->
-                            </descriptors>
-                            <attach>false</attach>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.7</version>
-                <executions>
-                    <execution>
-                        <id>attach-artifacts</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>attach-artifact</goal>
-                        </goals>
-                        <configuration>
-                            <artifacts>
-                                <artifact>
-                                    <file>${airavata.bin.zip}</file>
-                                    <type>zip</type>
-                                    <classifier>bin</classifier>
-                                </artifact>
-                                <artifact>
-                                    <file>${airavata.bin.tar.gz}</file>
-                                    <type>tar.gz</type>
-                                    <classifier>bin</classifier>
-                                </artifact>
-                            </artifacts>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.derby</groupId>
@@ -273,11 +187,11 @@
             <artifactId>airavata-gfac-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
-<!--        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-bes</artifactId>
-            <version>${project.version}</version>
-        </dependency>-->
+        <!--        <dependency>
+                    <groupId>org.apache.airavata</groupId>
+                    <artifactId>airavata-gfac-bes</artifactId>
+                    <version>${project.version}</version>
+                </dependency>-->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-gfac-core</artifactId>
@@ -288,16 +202,29 @@
             <artifactId>airavata-gfac-service</artifactId>
             <version>${project.version}</version>
         </dependency>
-<!--        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-workflow-model-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>-->
+        <!--        <dependency>
+                    <groupId>org.apache.airavata</groupId>
+                    <artifactId>airavata-workflow-model-core</artifactId>
+                    <version>${project.version}</version>
+                </dependency>-->
+
+        <!--Cloud module -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>aurora-client</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>${json.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons.io.version}</version>
+        </dependency>
+        <!-- end Cloud module -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-model-utils</artifactId>
@@ -559,6 +486,92 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
+
+    <url>http://airavata.apache.org/</url>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.8</version>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.airavata</groupId>
+                                    <artifactId>airavata-server-configuration</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                </artifactItem>
+                            </artifactItems>
+                            <!--includes>**/*.war</includes -->
+                            <outputDirectory>${project.build.directory}/conf</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.5.5</version>
+                <executions>
+                    <execution>
+                        <id>distribution-package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <tarLongFileMode>posix</tarLongFileMode>
+                            <finalName>${archieve.name}-${project.version}</finalName>
+                            <descriptors>
+                                <descriptor>src/main/assembly/bin-assembly.xml</descriptor>
+                                <!-- <descriptor>src/main/assembly/src-assembly.xml</descriptor> -->
+                            </descriptors>
+                            <attach>false</attach>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>attach-artifacts</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${airavata.bin.zip}</file>
+                                    <type>zip</type>
+                                    <classifier>bin</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>${airavata.bin.tar.gz}</file>
+                                    <type>tar.gz</type>
+                                    <classifier>bin</classifier>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 
     <properties>
