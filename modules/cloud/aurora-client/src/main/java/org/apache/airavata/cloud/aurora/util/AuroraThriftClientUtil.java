@@ -390,7 +390,7 @@ public class AuroraThriftClientUtil {
 			// host is reachable
 			isReachable = true;
 		} catch(Exception ex) {
-			logger.error("Timed-out connecting to URL: " + connectionUrl, ex);
+			logger.error("Timed-out connecting to URL: " + connectionUrl);
 		}
 		return isReachable;
 	}
