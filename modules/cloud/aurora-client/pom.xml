@@ -32,7 +32,6 @@
 	<artifactId>aurora-client</artifactId>
 	<packaging>jar</packaging>
 	<name>Thrift client for Apache Aurora</name>
-	<version>0.17-SNAPSHOT</version>
 	<url>http://airavata.apache.org/</url>
 
 	<dependencies>
@@ -47,10 +46,10 @@
 			<version>${json.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>${commons.io.version}</version>
-		</dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 	</dependencies>
 
 	<build>

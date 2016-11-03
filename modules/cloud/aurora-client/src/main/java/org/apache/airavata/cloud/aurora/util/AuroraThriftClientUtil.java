@@ -19,11 +19,12 @@
  */
 package org.apache.airavata.cloud.aurora.util;
 
-import java.nio.charset.Charset;
+import java.io.InputStream;
 import java.util.HashSet;
-import java.util.Properties;
 import java.util.Set;
 
+import org.apache.airavata.cloud.aurora.client.AuroraSchedulerClientFactory;
+import org.apache.airavata.cloud.aurora.client.bean.GetJobsResponseBean;
 import org.apache.airavata.cloud.aurora.client.bean.IdentityBean;
 import org.apache.airavata.cloud.aurora.client.bean.JobConfigBean;
 import org.apache.airavata.cloud.aurora.client.bean.JobDetailsResponseBean;
@@ -37,12 +38,13 @@ import org.apache.airavata.cloud.aurora.client.sdk.ExecutorConfig;
 import org.apache.airavata.cloud.aurora.client.sdk.Identity;
 import org.apache.airavata.cloud.aurora.client.sdk.JobConfiguration;
 import org.apache.airavata.cloud.aurora.client.sdk.JobKey;
+import org.apache.airavata.cloud.aurora.client.sdk.ReadOnlyScheduler;
 import org.apache.airavata.cloud.aurora.client.sdk.Resource;
 import org.apache.airavata.cloud.aurora.client.sdk.Response;
 import org.apache.airavata.cloud.aurora.client.sdk.TaskConfig;
-import org.apache.airavata.cloud.aurora.sample.AuroraClientSample;
-import org.apache.commons.io.IOUtils;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,9 +56,6 @@ public class AuroraThriftClientUtil {
 	/** The Constant logger. */
 	private final static Logger logger = LoggerFactory.getLogger(AuroraThriftClientUtil.class);
 	
-	/** The properties. */
-	private static Properties properties = new Properties();
-	
 	/**
 	 * Gets the executor config json.
 	 *
@@ -67,10 +66,10 @@ public class AuroraThriftClientUtil {
 	public static String getExecutorConfigJson(JobConfigBean jobConfig) throws Exception {
 		String exeConfigJson = null;
 		try {
-			String template = IOUtils.toString(AuroraThriftClientUtil.class.getClassLoader()
-					.getResourceAsStream("executor-config-template.json"), Charset.defaultCharset());
-			
-			JSONObject exeConfig = new JSONObject(template);
+			// read the executor config json template
+			InputStream resourceAsStream = AuroraThriftClientUtil.class.getClassLoader()
+					.getResourceAsStream(ServerSettings.getAuroraExecutorConfigTemplateFileName());
+			JSONObject exeConfig = new JSONObject(new JSONTokener(resourceAsStream));
 			if(exeConfig != null) {
 				exeConfig.put("environment", jobConfig.getJob().getEnvironment());
 				exeConfig.put("name", jobConfig.getJob().getName());
@@ -172,8 +171,7 @@ public class AuroraThriftClientUtil {
 		ExecutorConfig exeConfig = null;
 		
 		try {
-			properties.load(AuroraClientSample.class.getClassLoader().getResourceAsStream(Constants.AURORA_SCHEDULER_PROP_FILE));
-			String executorName = properties.getProperty(Constants.AURORA_EXECUTOR_NAME);
+			String executorName = ServerSettings.getAuroraExecutorName();
 			
 			// create the executor config
 			if(exeConfigJson != null) {
@@ -294,6 +292,8 @@ public class AuroraThriftClientUtil {
 	 */
 	public static ResponseBean getResponseBean(Response response, ResponseResultType resultType) {
 		switch (resultType) {
+			case GET_JOBS:
+				return getJobsResponseBean(response);
 			case GET_JOB_DETAILS:
 				return getJobDetailsResponseBean(response);
 			case GET_PENDING_JOB_REASON:
@@ -336,6 +336,22 @@ public class AuroraThriftClientUtil {
 	}
 	
 	/**
+	 * Gets the jobs response bean.
+	 *
+	 * @param response the response
+	 * @return the jobs response bean
+	 */
+	private static GetJobsResponseBean getJobsResponseBean(Response response) {
+		GetJobsResponseBean responseBean = null;
+		if(response != null) {
+			responseBean = new GetJobsResponseBean(getJobResponse(response));
+			//TODO: set jobconfig list in response
+		}
+		
+		return responseBean;
+	}
+	
+	/**
 	 * Gets the job response.
 	 *
 	 * @param response the response
@@ -357,12 +373,35 @@ public class AuroraThriftClientUtil {
 	}
 	
 	/**
+	 * Checks if is scheduler host reachable.
+	 *
+	 * @param connectionUrl the connection url
+	 * @param connectionTimeout the connection timeout
+	 * @return true, if is scheduler host reachable
+	 */
+	public static boolean isSchedulerHostReachable(String connectionUrl, int connectionTimeout) {
+		boolean isReachable = false;
+		ReadOnlyScheduler.Client auroraSchedulerClient = null;
+		try {
+			// connect to scheduler & run dummy command
+			auroraSchedulerClient = AuroraSchedulerClientFactory.createReadOnlySchedulerClient(connectionUrl, connectionTimeout);
+			auroraSchedulerClient.getTierConfigs();
+			
+			// host is reachable
+			isReachable = true;
+		} catch(Exception ex) {
+			logger.error("Timed-out connecting to URL: " + connectionUrl, ex);
+		}
+		return isReachable;
+	}
+	
+	/**
 	 * The main method.
 	 *
 	 * @param args the arguments
 	 * @throws Exception the exception
 	 */
-//	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception {
 //		JobKeyBean jobKey = new JobKeyBean("devel", "centos", "test_job");
 //		IdentityBean owner = new IdentityBean("centos");
 //		
@@ -379,5 +418,7 @@ public class AuroraThriftClientUtil {
 //		
 //		String executorConfigJson = getExecutorConfigJson(jobConfig);
 //		System.out.println(executorConfigJson);
-//	}
+		
+//		System.out.println(new Scanner(AuroraThriftClientUtil.class.getClassLoader().getResourceAsStream("executor-config-template.json"), "UTF-8").useDelimiter("\\A").next());
+	}
 }
