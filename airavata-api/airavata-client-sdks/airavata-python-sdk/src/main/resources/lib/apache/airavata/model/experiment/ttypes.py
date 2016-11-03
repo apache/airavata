@@ -96,6 +96,7 @@ class UserConfigurationDataModel:
    - generateCert
    - storageId
    - experimentDataDir
+   - useUserCRPref
   """
 
   thrift_spec = (
@@ -109,9 +110,10 @@ class UserConfigurationDataModel:
     (7, TType.BOOL, 'generateCert', None, False, ), # 7
     (8, TType.STRING, 'storageId', None, None, ), # 8
     (9, TType.STRING, 'experimentDataDir', None, None, ), # 9
+    (10, TType.BOOL, 'useUserCRPref', None, None, ), # 10
   )
 
-  def __init__(self, airavataAutoSchedule=thrift_spec[1][4], overrideManualScheduledParams=thrift_spec[2][4], shareExperimentPublicly=thrift_spec[3][4], computationalResourceScheduling=None, throttleResources=thrift_spec[5][4], userDN=None, generateCert=thrift_spec[7][4], storageId=None, experimentDataDir=None,):
+  def __init__(self, airavataAutoSchedule=thrift_spec[1][4], overrideManualScheduledParams=thrift_spec[2][4], shareExperimentPublicly=thrift_spec[3][4], computationalResourceScheduling=None, throttleResources=thrift_spec[5][4], userDN=None, generateCert=thrift_spec[7][4], storageId=None, experimentDataDir=None, useUserCRPref=None,):
     self.airavataAutoSchedule = airavataAutoSchedule
     self.overrideManualScheduledParams = overrideManualScheduledParams
     self.shareExperimentPublicly = shareExperimentPublicly
@@ -121,6 +123,7 @@ class UserConfigurationDataModel:
     self.generateCert = generateCert
     self.storageId = storageId
     self.experimentDataDir = experimentDataDir
+    self.useUserCRPref = useUserCRPref
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -177,6 +180,11 @@ class UserConfigurationDataModel:
           self.experimentDataDir = iprot.readString()
         else:
           iprot.skip(ftype)
+      elif fid == 10:
+        if ftype == TType.BOOL:
+          self.useUserCRPref = iprot.readBool()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -223,6 +231,10 @@ class UserConfigurationDataModel:
       oprot.writeFieldBegin('experimentDataDir', TType.STRING, 9)
       oprot.writeString(self.experimentDataDir)
       oprot.writeFieldEnd()
+    if self.useUserCRPref is not None:
+      oprot.writeFieldBegin('useUserCRPref', TType.BOOL, 10)
+      oprot.writeBool(self.useUserCRPref)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -245,6 +257,7 @@ class UserConfigurationDataModel:
     value = (value * 31) ^ hash(self.generateCert)
     value = (value * 31) ^ hash(self.storageId)
     value = (value * 31) ^ hash(self.experimentDataDir)
+    value = (value * 31) ^ hash(self.useUserCRPref)
     return value
 
   def __repr__(self):

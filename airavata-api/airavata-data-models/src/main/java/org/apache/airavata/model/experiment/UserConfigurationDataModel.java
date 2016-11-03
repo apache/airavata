@@ -69,6 +69,7 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
   private static final org.apache.thrift.protocol.TField GENERATE_CERT_FIELD_DESC = new org.apache.thrift.protocol.TField("generateCert", org.apache.thrift.protocol.TType.BOOL, (short)7);
   private static final org.apache.thrift.protocol.TField STORAGE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("storageId", org.apache.thrift.protocol.TType.STRING, (short)8);
   private static final org.apache.thrift.protocol.TField EXPERIMENT_DATA_DIR_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentDataDir", org.apache.thrift.protocol.TType.STRING, (short)9);
+  private static final org.apache.thrift.protocol.TField USE_USER_CRPREF_FIELD_DESC = new org.apache.thrift.protocol.TField("useUserCRPref", org.apache.thrift.protocol.TType.BOOL, (short)10);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -85,6 +86,7 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
   private boolean generateCert; // optional
   private String storageId; // optional
   private String experimentDataDir; // optional
+  private boolean useUserCRPref; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -96,7 +98,8 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
     USER_DN((short)6, "userDN"),
     GENERATE_CERT((short)7, "generateCert"),
     STORAGE_ID((short)8, "storageId"),
-    EXPERIMENT_DATA_DIR((short)9, "experimentDataDir");
+    EXPERIMENT_DATA_DIR((short)9, "experimentDataDir"),
+    USE_USER_CRPREF((short)10, "useUserCRPref");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -129,6 +132,8 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
           return STORAGE_ID;
         case 9: // EXPERIMENT_DATA_DIR
           return EXPERIMENT_DATA_DIR;
+        case 10: // USE_USER_CRPREF
+          return USE_USER_CRPREF;
         default:
           return null;
       }
@@ -174,8 +179,9 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
   private static final int __SHAREEXPERIMENTPUBLICLY_ISSET_ID = 2;
   private static final int __THROTTLERESOURCES_ISSET_ID = 3;
   private static final int __GENERATECERT_ISSET_ID = 4;
+  private static final int __USEUSERCRPREF_ISSET_ID = 5;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.SHARE_EXPERIMENT_PUBLICLY,_Fields.COMPUTATIONAL_RESOURCE_SCHEDULING,_Fields.THROTTLE_RESOURCES,_Fields.USER_DN,_Fields.GENERATE_CERT,_Fields.STORAGE_ID,_Fields.EXPERIMENT_DATA_DIR};
+  private static final _Fields optionals[] = {_Fields.SHARE_EXPERIMENT_PUBLICLY,_Fields.COMPUTATIONAL_RESOURCE_SCHEDULING,_Fields.THROTTLE_RESOURCES,_Fields.USER_DN,_Fields.GENERATE_CERT,_Fields.STORAGE_ID,_Fields.EXPERIMENT_DATA_DIR,_Fields.USE_USER_CRPREF};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -197,6 +203,8 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.EXPERIMENT_DATA_DIR, new org.apache.thrift.meta_data.FieldMetaData("experimentDataDir", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.USE_USER_CRPREF, new org.apache.thrift.meta_data.FieldMetaData("useUserCRPref", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(UserConfigurationDataModel.class, metaDataMap);
   }
@@ -247,6 +255,7 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
     if (other.isSetExperimentDataDir()) {
       this.experimentDataDir = other.experimentDataDir;
     }
+    this.useUserCRPref = other.useUserCRPref;
   }
 
   public UserConfigurationDataModel deepCopy() {
@@ -269,6 +278,8 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
 
     this.storageId = null;
     this.experimentDataDir = null;
+    setUseUserCRPrefIsSet(false);
+    this.useUserCRPref = false;
   }
 
   public boolean isAiravataAutoSchedule() {
@@ -473,6 +484,28 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
     }
   }
 
+  public boolean isUseUserCRPref() {
+    return this.useUserCRPref;
+  }
+
+  public void setUseUserCRPref(boolean useUserCRPref) {
+    this.useUserCRPref = useUserCRPref;
+    setUseUserCRPrefIsSet(true);
+  }
+
+  public void unsetUseUserCRPref() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __USEUSERCRPREF_ISSET_ID);
+  }
+
+  /** Returns true if field useUserCRPref is set (has been assigned a value) and false otherwise */
+  public boolean isSetUseUserCRPref() {
+    return EncodingUtils.testBit(__isset_bitfield, __USEUSERCRPREF_ISSET_ID);
+  }
+
+  public void setUseUserCRPrefIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __USEUSERCRPREF_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case AIRAVATA_AUTO_SCHEDULE:
@@ -547,6 +580,14 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       }
       break;
 
+    case USE_USER_CRPREF:
+      if (value == null) {
+        unsetUseUserCRPref();
+      } else {
+        setUseUserCRPref((Boolean)value);
+      }
+      break;
+
     }
   }
 
@@ -579,6 +620,9 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
     case EXPERIMENT_DATA_DIR:
       return getExperimentDataDir();
 
+    case USE_USER_CRPREF:
+      return isUseUserCRPref();
+
     }
     throw new IllegalStateException();
   }
@@ -608,6 +652,8 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       return isSetStorageId();
     case EXPERIMENT_DATA_DIR:
       return isSetExperimentDataDir();
+    case USE_USER_CRPREF:
+      return isSetUseUserCRPref();
     }
     throw new IllegalStateException();
   }
@@ -706,6 +752,15 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
         return false;
     }
 
+    boolean this_present_useUserCRPref = true && this.isSetUseUserCRPref();
+    boolean that_present_useUserCRPref = true && that.isSetUseUserCRPref();
+    if (this_present_useUserCRPref || that_present_useUserCRPref) {
+      if (!(this_present_useUserCRPref && that_present_useUserCRPref))
+        return false;
+      if (this.useUserCRPref != that.useUserCRPref)
+        return false;
+    }
+
     return true;
   }
 
@@ -757,6 +812,11 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
     list.add(present_experimentDataDir);
     if (present_experimentDataDir)
       list.add(experimentDataDir);
+
+    boolean present_useUserCRPref = true && (isSetUseUserCRPref());
+    list.add(present_useUserCRPref);
+    if (present_useUserCRPref)
+      list.add(useUserCRPref);
 
     return list.hashCode();
   }
@@ -859,6 +919,16 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetUseUserCRPref()).compareTo(other.isSetUseUserCRPref());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetUseUserCRPref()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.useUserCRPref, other.useUserCRPref);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -942,6 +1012,12 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       } else {
         sb.append(this.experimentDataDir);
       }
+      first = false;
+    }
+    if (isSetUseUserCRPref()) {
+      if (!first) sb.append(", ");
+      sb.append("useUserCRPref:");
+      sb.append(this.useUserCRPref);
       first = false;
     }
     sb.append(")");
@@ -1073,6 +1149,14 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 10: // USE_USER_CRPREF
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct.useUserCRPref = iprot.readBool();
+              struct.setUseUserCRPrefIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1135,6 +1219,11 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
           oprot.writeFieldEnd();
         }
       }
+      if (struct.isSetUseUserCRPref()) {
+        oprot.writeFieldBegin(USE_USER_CRPREF_FIELD_DESC);
+        oprot.writeBool(struct.useUserCRPref);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1176,7 +1265,10 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       if (struct.isSetExperimentDataDir()) {
         optionals.set(6);
       }
-      oprot.writeBitSet(optionals, 7);
+      if (struct.isSetUseUserCRPref()) {
+        optionals.set(7);
+      }
+      oprot.writeBitSet(optionals, 8);
       if (struct.isSetShareExperimentPublicly()) {
         oprot.writeBool(struct.shareExperimentPublicly);
       }
@@ -1198,6 +1290,9 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       if (struct.isSetExperimentDataDir()) {
         oprot.writeString(struct.experimentDataDir);
       }
+      if (struct.isSetUseUserCRPref()) {
+        oprot.writeBool(struct.useUserCRPref);
+      }
     }
 
     @Override
@@ -1207,7 +1302,7 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       struct.setAiravataAutoScheduleIsSet(true);
       struct.overrideManualScheduledParams = iprot.readBool();
       struct.setOverrideManualScheduledParamsIsSet(true);
-      BitSet incoming = iprot.readBitSet(7);
+      BitSet incoming = iprot.readBitSet(8);
       if (incoming.get(0)) {
         struct.shareExperimentPublicly = iprot.readBool();
         struct.setShareExperimentPubliclyIsSet(true);
@@ -1236,6 +1331,10 @@ public class UserConfigurationDataModel implements org.apache.thrift.TBase<UserC
       if (incoming.get(6)) {
         struct.experimentDataDir = iprot.readString();
         struct.setExperimentDataDirIsSet(true);
+      }
+      if (incoming.get(7)) {
+        struct.useUserCRPref = iprot.readBool();
+        struct.setUseUserCRPrefIsSet(true);
       }
     }
   }

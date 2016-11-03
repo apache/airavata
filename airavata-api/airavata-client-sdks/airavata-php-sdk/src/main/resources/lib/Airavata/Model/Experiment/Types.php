@@ -98,6 +98,10 @@ class UserConfigurationDataModel {
    * @var string
    */
   public $experimentDataDir = null;
+  /**
+   * @var bool
+   */
+  public $useUserCRPref = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -139,6 +143,10 @@ class UserConfigurationDataModel {
           'var' => 'experimentDataDir',
           'type' => TType::STRING,
           ),
+        10 => array(
+          'var' => 'useUserCRPref',
+          'type' => TType::BOOL,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -168,6 +176,9 @@ class UserConfigurationDataModel {
       }
       if (isset($vals['experimentDataDir'])) {
         $this->experimentDataDir = $vals['experimentDataDir'];
+      }
+      if (isset($vals['useUserCRPref'])) {
+        $this->useUserCRPref = $vals['useUserCRPref'];
       }
     }
   }
@@ -255,6 +266,13 @@ class UserConfigurationDataModel {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 10:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->useUserCRPref);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -314,6 +332,11 @@ class UserConfigurationDataModel {
     if ($this->experimentDataDir !== null) {
       $xfer += $output->writeFieldBegin('experimentDataDir', TType::STRING, 9);
       $xfer += $output->writeString($this->experimentDataDir);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->useUserCRPref !== null) {
+      $xfer += $output->writeFieldBegin('useUserCRPref', TType::BOOL, 10);
+      $xfer += $output->writeBool($this->useUserCRPref);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
