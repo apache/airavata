@@ -24,7 +24,6 @@ import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
-import org.apache.airavata.gfac.impl.SSHUtils;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.TaskState;
@@ -66,18 +65,14 @@ public class DataStageTask implements Task {
 					/**
 					 * copy local file to compute resource.
 					 */
-					taskContext.getParentProcessContext().getDataMovementRemoteCluster().copyTo(
-							sourceURI.getPath(),
-							destinationURI.getPath(),
-							session -> SSHUtils.scpTo(sourceURI.getPath(), destinationURI.getPath(), session));
+					taskContext.getParentProcessContext().getDataMovementRemoteCluster().copyTo(sourceURI.getPath(), destinationURI
+							.getPath());
 				} else if (processState == ProcessState.OUTPUT_DATA_STAGING) {
 					/**
 					 * copy remote file from compute resource.
 					 */
-					taskContext.getParentProcessContext().getDataMovementRemoteCluster().copyFrom(
-							sourceURI.getPath(),
-							destinationURI.getPath(),
-							session -> SSHUtils.scpFrom(sourceURI.getPath(), destinationURI.getPath(), session));
+					taskContext.getParentProcessContext().getDataMovementRemoteCluster().copyFrom(sourceURI.getPath(), destinationURI
+							.getPath());
 				}
 				status.setReason("Successfully staged data");
 			} catch (SSHApiException e) {
