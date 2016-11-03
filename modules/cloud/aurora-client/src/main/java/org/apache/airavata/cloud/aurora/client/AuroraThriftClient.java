@@ -19,7 +19,6 @@
  */
 package org.apache.airavata.cloud.aurora.client;
 
-import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -83,7 +82,8 @@ public class AuroraThriftClient {
 						Integer connectTimeout = ServerSettings.getAuroraSchedulerTimeout();
 						
 						// check reachable scheduler host
-						if(auroraHosts != null) {
+						if(auroraHosts != null && !auroraHosts.trim().isEmpty()) {
+							auroraHosts = auroraHosts.trim();
 							for(String auroraHost : auroraHosts.split(",")) {
 								// malformed host string, should be of form <host:port>
 								if(auroraHost.split(":").length != 2) {
@@ -93,7 +93,7 @@ public class AuroraThriftClient {
 								// read hostname, port & construct connection-url
 								String hostname = auroraHost.split(":")[0];
 								String port = auroraHost.split(":")[1];
-								String connectionUrl = MessageFormat.format(Constants.AURORA_SCHEDULER_CONNECTION_URL, hostname, port);
+								String connectionUrl = String.format(Constants.AURORA_SCHEDULER_CONNECTION_URL, hostname, port);
 								
 								// verify if connection succeeds
 								if(AuroraThriftClientUtil.isSchedulerHostReachable(connectionUrl, connectTimeout)) {
@@ -106,7 +106,7 @@ public class AuroraThriftClient {
 							// check if scheduler connection successful
 							if(thriftClient.auroraSchedulerManagerClient == null || 
 									thriftClient.readOnlySchedulerClient == null) {
-								throw new Exception("None of the Aurora scheduler hosts were reachable, hence connection not established!");
+								throw new Exception("None of the Aurora scheduler hosts : <" + auroraHosts + "> were reachable, hence connection not established!");
 							}
 						} else {
 							// aurora hosts not defined in the properties file
@@ -116,7 +116,7 @@ public class AuroraThriftClient {
 				}
 			}
 		} catch(Exception ex) {
-			logger.error(ex.getMessage(), ex);
+			logger.error("Couldn't initialize Aurora thrift client", ex);
 			throw ex;
 		}
 		return thriftClient;
@@ -147,7 +147,7 @@ public class AuroraThriftClient {
 					// read hostname, port & construct connection-url
 					String hostname = auroraHost.split(":")[0];
 					String port = auroraHost.split(":")[1];
-					String connectionUrl = MessageFormat.format(Constants.AURORA_SCHEDULER_CONNECTION_URL, hostname, port);
+					String connectionUrl = String.format(Constants.AURORA_SCHEDULER_CONNECTION_URL, hostname, port);
 					
 					// verify if connection succeeds
 					if(AuroraThriftClientUtil.isSchedulerHostReachable(connectionUrl, connectTimeout)) {

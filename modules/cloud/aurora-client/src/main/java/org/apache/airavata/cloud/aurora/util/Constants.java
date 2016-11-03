@@ -40,7 +40,7 @@ public class Constants {
 	public static final String MESOS_CLUSTER_NAME = "mesos.cluster.name";
 	
 	/** The Constant AURORA_SCHEDULER_CONNECTION_URL. */
-	public static final String AURORA_SCHEDULER_CONNECTION_URL = "http://{0}:{1}/api";
+	public static final String AURORA_SCHEDULER_CONNECTION_URL = "http://%s:%s/api";
 	
 	/** The Constant AURORA_SCHEDULER_CONNECT_TIMEOUT_MS. */
 	public static final String AURORA_SCHEDULER_CONNECT_TIMEOUT_MS = "aurora.scheduler.timeoutms";
