@@ -19,6 +19,7 @@
  */
 package org.apache.airavata.cloud.aurora.util;
 
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -43,6 +44,7 @@ import org.apache.airavata.cloud.aurora.client.sdk.Response;
 import org.apache.airavata.cloud.aurora.client.sdk.TaskConfig;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,11 +67,9 @@ public class AuroraThriftClientUtil {
 		String exeConfigJson = null;
 		try {
 			// read the executor config json template
-			java.net.URL url = AuroraThriftClientUtil.class.getClassLoader().getResource(ServerSettings.getAuroraExecutorConfigTemplateFileName());
-	        java.nio.file.Path resPath = java.nio.file.Paths.get(url.toURI());
-	        String template = new String(java.nio.file.Files.readAllBytes(resPath), "UTF8");
-	        
-			JSONObject exeConfig = new JSONObject(template);
+			InputStream resourceAsStream = AuroraThriftClientUtil.class.getClassLoader()
+					.getResourceAsStream(ServerSettings.getAuroraExecutorConfigTemplateFileName());
+			JSONObject exeConfig = new JSONObject(new JSONTokener(resourceAsStream));
 			if(exeConfig != null) {
 				exeConfig.put("environment", jobConfig.getJob().getEnvironment());
 				exeConfig.put("name", jobConfig.getJob().getName());
