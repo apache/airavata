@@ -64,6 +64,12 @@ public class ServerSettings extends ApplicationSettings {
     public static final String ZOOKEEPER_SERVER_CONNECTION = "zookeeper.server.connection";
     public static final String ZOOKEEPER_TIMEOUT = "zookeeper.timeout";
 
+    // Aurora Scheduler Constants
+    public static final String AURORA_SCHEDULER_HOSTS = "aurora.scheduler.hosts";
+	public static final String AURORA_EXECUTOR_NAME = "aurora.executor.name";
+	public static final String MESOS_CLUSTER_NAME = "mesos.cluster.name";
+	public static final String AURORA_SCHEDULER_CONNECT_TIMEOUT_MS = "aurora.scheduler.timeoutms";
+	public static final String AURORA_EXECUTOR_CONFIG_TEMPLATE_FILE = "aurora.executor.config.template.filename";
 
     private static final String CREDENTIAL_STORE_DB_URL = "credential.store.jdbc.url";
     private static final String CREDENTIAL_STORE_DB_USER = "credential.store.jdbc.user";
@@ -438,5 +444,25 @@ public class ServerSettings extends ApplicationSettings {
 
     public static String[] getServerRoles() {
         return listConfigurations.get(SERVER_ROLES);
+    }
+    
+    public static String getAuroraSchedulerHosts() throws ApplicationSettingsException {
+    	return getSetting(AURORA_SCHEDULER_HOSTS);
+    }
+    
+    public static String getMesosClusterName() throws ApplicationSettingsException {
+    	return getSetting(MESOS_CLUSTER_NAME);
+    }
+    
+    public static String getAuroraExecutorName() throws ApplicationSettingsException {
+    	return getSetting(AURORA_EXECUTOR_NAME);
+    }
+    
+    public static String getAuroraExecutorConfigTemplateFileName() throws ApplicationSettingsException {
+    	return getSetting(AURORA_EXECUTOR_CONFIG_TEMPLATE_FILE);
+    }
+    
+    public static int getAuroraSchedulerTimeout() throws ApplicationSettingsException {
+    	return Integer.valueOf(getSetting(AURORA_SCHEDULER_CONNECT_TIMEOUT_MS));
     }
 }

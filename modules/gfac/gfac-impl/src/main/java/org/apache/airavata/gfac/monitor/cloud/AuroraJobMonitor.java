@@ -118,7 +118,7 @@ public class AuroraJobMonitor implements JobMonitor, Runnable {
 
         AuroraThriftClient client;
         public AuroraTimer() throws Exception {
-            client = AuroraThriftClient.getAuroraThriftClient(AuroraUtils.AURORA_SCHEDULER_PROP_FILE);
+            client = AuroraThriftClient.getAuroraThriftClient();
 
         }
 

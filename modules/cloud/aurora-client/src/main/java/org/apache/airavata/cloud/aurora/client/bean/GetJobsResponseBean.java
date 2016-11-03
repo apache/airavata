@@ -29,6 +29,16 @@ public class GetJobsResponseBean extends ResponseBean {
 
 	/** The job configs. */
 	private Set<JobConfigBean> jobConfigs;
+	
+	/**
+	 * Instantiates a new gets the jobs response bean.
+	 *
+	 * @param responseBean the response bean
+	 */
+	public GetJobsResponseBean(ResponseBean responseBean) {
+		this.setResponseCode(responseBean.getResponseCode());
+		this.setServerInfo(responseBean.getServerInfo());
+	}
 
 	/**
 	 * Gets the job configs.

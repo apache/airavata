@@ -23,7 +23,6 @@ package org.apache.airavata.gfac.impl;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.gfac.core.DataStagingException;
 import org.apache.airavata.gfac.core.JobManagerConfiguration;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
@@ -60,8 +59,7 @@ public class LocalRemoteCluster extends AbstractRemoteCluster {
     public JobSubmissionOutput submitBatchJob(String jobScriptFilePath, String workingDirectory) throws SSHApiException {
         try {
             JobSubmissionOutput jsoutput = new JobSubmissionOutput();
-            String remoteFile = workingDirectory + File.separator + new File(jobScriptFilePath).getName();
-            copyTo(jobScriptFilePath, remoteFile, session -> SSHUtils.scpTo(jobScriptFilePath, remoteFile, session)); // scp script file to working directory
+            copyTo(jobScriptFilePath, workingDirectory + File.separator + new File(jobScriptFilePath).getName()); // scp script file to working directory
             RawCommandInfo submitCommand = jobManagerConfiguration.getSubmitCommand(workingDirectory, jobScriptFilePath);
             submitCommand.setRawCommand(submitCommand.getRawCommand());
             LocalCommandOutput localCommandOutput = new LocalCommandOutput();
@@ -77,7 +75,7 @@ public class LocalRemoteCluster extends AbstractRemoteCluster {
     }
 
     @Override
-    public void copyTo(String localFile, String remoteFile, SessionConsumer<Session> sessionConsumer) throws SSHApiException {
+    public void copyTo(String localFile, String remoteFile) throws SSHApiException {
         Path sourcePath = Paths.get(localFile);
         Path targetPath = Paths.get(remoteFile);
         try {
@@ -89,7 +87,7 @@ public class LocalRemoteCluster extends AbstractRemoteCluster {
     }
 
     @Override
-    public void copyFrom(String remoteFile, String localFile, SessionConsumer<Session> sessionConsumer) throws SSHApiException {
+    public void copyFrom(String remoteFile, String localFile) throws SSHApiException {
         Path sourcePath = Paths.get(remoteFile);
         Path targetPath = Paths.get(localFile);
         try {
@@ -101,16 +99,20 @@ public class LocalRemoteCluster extends AbstractRemoteCluster {
     }
 
     @Override
-    public void thirdPartyTransfer(String sourceFile, String destinationFile, SessionConsumer<Session> sessionConsumer) throws SSHApiException {
-        int retryCount = 0;
+    public void scpThirdParty(String sourceFile, String destinationFile, Session session, DIRECTION inOrOut, boolean ignoreEmptyFile) throws SSHApiException {
+        int retryCount= 0;
         try {
             while (retryCount < MAX_RETRY_COUNT) {
                 retryCount++;
                 log.info("Transferring from:" + sourceFile + " To: " + destinationFile);
                 try {
-                    sessionConsumer.consume(null);
+                    if (inOrOut == DIRECTION.TO) {
+                        SSHUtils.scpThirdParty(sourceFile, session, destinationFile, session, ignoreEmptyFile);
+                    } else {
+                        SSHUtils.scpThirdParty(sourceFile, session, destinationFile, session, ignoreEmptyFile);
+                    }
                     break; // exit while loop
-                } catch (DataStagingException e) {
+                } catch (JSchException e) {
                     if (retryCount == MAX_RETRY_COUNT) {
                         log.error("Retry count " + MAX_RETRY_COUNT + " exceeded for  transferring from:"
                                 + sourceFile + " To: " + destinationFile, e);
@@ -119,14 +121,14 @@ public class LocalRemoteCluster extends AbstractRemoteCluster {
                     log.error("Issue with jsch, Retry transferring from:" + sourceFile + " To: " + destinationFile, e);
                 }
             }
-        } catch (DataStagingException e) {
+        } catch (IOException | JSchException e) {
             throw new SSHApiException("Failed scp file:" + sourceFile + " to remote file "
-                    + destinationFile, e);
+                    +destinationFile , e);
         }
     }
 
     @Override
-    public void makeDirectory(String directoryPath, SessionConsumer<Session> sessionConsumer) throws SSHApiException {
+    public void makeDirectory(String directoryPath) throws SSHApiException {
         Path dirPath = Paths.get(directoryPath);
         Set<PosixFilePermission> perms = new HashSet<>();
         // add permission as rwxr--r-- 744
