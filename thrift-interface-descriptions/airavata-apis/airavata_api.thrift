@@ -1112,6 +1112,9 @@ service Airavata {
    *    Once an experiment is cloned, to disambiguate, the users are suggested to provide new metadata. This will again require
    *      the basic experiment metadata like the name and description, intended user, the gateway identifier and if the experiment
    *      should be shared public by default.
+   * @param newExperimentProjectId
+   *    The project in which to create the cloned experiment. This is optional and if null the experiment will be created
+   *      in the same project as the existing experiment.
    *
    * @return
    *   The server-side generated.airavata.registry.core.experiment.globally unique identifier (Experiment ID) for the newly cloned experiment.
@@ -1142,12 +1145,14 @@ service Airavata {
   */
   string cloneExperiment(1: required security_model.AuthzToken authzToken,
                          2: string existingExperimentID,
-                         3: string newExperimentName)
+                         3: string newExperimentName,
+                         4: string newExperimentProjectId)
     throws (1: airavata_errors.InvalidRequestException ire,
             2: airavata_errors.ExperimentNotFoundException enf,
             3: airavata_errors.AiravataClientException ace,
             4: airavata_errors.AiravataSystemException ase,
-            5: airavata_errors.AuthorizationException ae)
+            5: airavata_errors.AuthorizationException ae,
+            6: airavata_errors.ProjectNotFoundException pnfe)
 
   /**
    *
