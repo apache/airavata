@@ -95,6 +95,18 @@ setup() {
     mkdir -p ${BASE_TARGET_DIR}
 }
 
+<<<<<<< HEAD
+=======
+REGISTRY_USER_PROFILE_CPI_THRIFT_FILE='user-profile-crud-cpi.thrift'
+REGISTRY_USER_PROFILE_SRC_DIR='../../modules/registry/registry-cpi/src/main/java'
+
+# Initialize the thrift arguments.
+#  Since most of the Airavata API and Data Models have includes, use recursive option by default.
+#  Generate all the files in target directory
+THRIFT_ARGS="-r -o ${BASE_TARGET_DIR}"
+# Ensure the required target directories exists, if not create.
+mkdir -p ${BASE_TARGET_DIR}
+>>>>>>> Thrift CPI service Script for User Profile
 
 # The Funcation fail prints error messages on failure and quits the script.
 fail() {
@@ -193,6 +205,7 @@ do
             generate_thrift_stubs ${ORCHESTRATOR_THRIFT_FILE} ${ORCHESTRATOR_SRC_DIR}
             generate_thrift_stubs ${GFAC_THRIFT_FILE} ${GFAC_SRC_DIR}
             generate_thrift_stubs ${REGISTRY_THRIFT_FILE} ${REGISTRY_SRC_DIR}
+            generate_thrift_stubs ${REGISTRY_USER_PROFILE_CPI_THRIFT_FILE} ${REGISTRY_USER_PROFILE_SRC_DIR}
             ;;
     cs)   echo "Generating Credential Store Stubs"
             setup
@@ -205,6 +218,9 @@ do
     gfac)    echo "Generate GFac Stubs"
             setup
             generate_thrift_stubs ${GFAC_THRIFT_FILE} ${GFAC_SRC_DIR}
+            ;;
+    uprofcpi)    echo "Generate REgistry User Profile CPI"
+                generate_thrift_stubs ${REGISTRY_USER_PROFILE_CPI_THRIFT_FILE} ${REGISTRY_USER_PROFILE_SRC_DIR}
             ;;
     registry)    echo "Generate Registry Stubs"
             setup
