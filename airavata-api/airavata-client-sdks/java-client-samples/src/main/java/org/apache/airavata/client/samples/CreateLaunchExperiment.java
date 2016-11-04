@@ -866,7 +866,7 @@ public class CreateLaunchExperiment {
 
     public static String cloneExperiment(Airavata.Client client, String expId) throws TException {
         try {
-            return client.cloneExperiment(new AuthzToken(""), expId, "cloneExperiment1");
+            return client.cloneExperiment(new AuthzToken(""), expId, "cloneExperiment1", null);
         } catch (TException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new TException(e);
