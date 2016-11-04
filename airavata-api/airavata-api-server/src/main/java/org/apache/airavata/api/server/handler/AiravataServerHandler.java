@@ -1568,15 +1568,25 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public String cloneExperiment(AuthzToken authzToken, String existingExperimentID, String newExperiementName)
+    public String cloneExperiment(AuthzToken authzToken, String existingExperimentID, String newExperiementName, String newExperimentProjectId)
             throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException,
-            AuthorizationException, TException {
+            AuthorizationException, ProjectNotFoundException, TException {
         try {
             RegistryService.Client regClient = getRegistryServiceClient();
             ExperimentModel existingExperiment = regClient.getExperiment(existingExperimentID);
             if (existingExperiment == null){
                 logger.error(existingExperimentID, "Error while cloning experiment {}, experiment doesn't exist.", existingExperimentID);
                 throw new ExperimentNotFoundException("Requested experiment id " + existingExperimentID + " does not exist in the system..");
+            }
+            if (newExperimentProjectId != null) {
+
+                Project project = regClient.getProject(newExperimentProjectId);
+                if (project == null){
+                    logger.error("Error while cloning experiment {}, project {} doesn't exist.", existingExperimentID, newExperimentProjectId);
+                    throw new ProjectNotFoundException("Requested project id " + newExperimentProjectId + " does not exist in the system..");
+                }
+                // TODO: make sure user has write access to the project as well
+                existingExperiment.setProjectId(project.getProjectID());
             }
 
             String gatewayId = existingExperiment.getGatewayId();
