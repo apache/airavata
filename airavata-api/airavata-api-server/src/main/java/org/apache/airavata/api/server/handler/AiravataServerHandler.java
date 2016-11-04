@@ -572,8 +572,11 @@ public class AiravataServerHandler implements Airavata.Iface {
                 logger.debug("Airavata will retrieve all SSH pub keys summaries for gateway Id : " + gatewayId);
                 return csClient.getAllCredentialSummaryForGateway(type, gatewayId);
             } else {
-                logger.info("Summay Type"+ type.toString() + " not supported for - gateway id - " + gatewayId);
-                return null;
+                logger.info("Summay Type"+ type.toString() + " not supported by Airavata");
+                AiravataSystemException ex = new AiravataSystemException();
+                ex.setAiravataErrorType(AiravataErrorType.UNSUPPORTED_OPERATION);
+                ex.setMessage("Summay Type"+ type.toString() + " not supported by Airavata");
+                throw ex;
             }
         }catch (Exception e){
             logger.error("Error occurred while retrieving SSH public keys summaries for gateway : " + gatewayId , e);
@@ -594,8 +597,11 @@ public class AiravataServerHandler implements Airavata.Iface {
                 logger.debug("Airavata will retrieve all SSH pub keys summaries for gateway Id : " + gatewayId);
                 return csClient.getAllCredentialSummaryForUserInGateway(type, gatewayId, userId);
             } else {
-                logger.info("Summay Type"+ type.toString() + " not supported for - gateway id - " + gatewayId + " and user Id:" + userId);
-                return null;
+                logger.info("Summay Type"+ type.toString() + " not supported by Airavata");
+                AiravataSystemException ex = new AiravataSystemException();
+                ex.setAiravataErrorType(AiravataErrorType.UNSUPPORTED_OPERATION);
+                ex.setMessage("Summay Type"+ type.toString() + " not supported by Airavata");
+                throw ex;
             }
         }catch (Exception e){
             logger.error("Error occurred while retrieving SSH public keys summaries for user : " + userId , e);
