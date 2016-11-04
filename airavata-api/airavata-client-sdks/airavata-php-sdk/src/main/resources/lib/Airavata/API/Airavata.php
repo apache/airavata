@@ -1225,6 +1225,9 @@ interface AiravataIf {
    *    Once an experiment is cloned, to disambiguate, the users are suggested to provide new metadata. This will again require
    *      the basic experiment metadata like the name and description, intended user, the gateway identifier and if the experiment
    *      should be shared public by default.
+   * @param newExperimentProjectId
+   *    The project in which to create the cloned experiment. This is optional and if null the experiment will be created
+   *      in the same project as the existing experiment.
    * 
    * @return
    *   The server-side generated.airavata.registry.core.experiment.globally unique identifier (Experiment ID) for the newly cloned experiment.
@@ -1256,14 +1259,16 @@ interface AiravataIf {
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $existingExperimentID
    * @param string $newExperimentName
+   * @param string $newExperimentProjectId
    * @return string
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\ExperimentNotFoundException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
+   * @throws \Airavata\API\Error\ProjectNotFoundException
    */
-  public function cloneExperiment(\Airavata\Model\Security\AuthzToken $authzToken, $existingExperimentID, $newExperimentName);
+  public function cloneExperiment(\Airavata\Model\Security\AuthzToken $authzToken, $existingExperimentID, $newExperimentName, $newExperimentProjectId);
   /**
    * 
    * Terminate a running Experiment.
@@ -7066,18 +7071,19 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("getJobDetails failed: unknown result");
   }
 
-  public function cloneExperiment(\Airavata\Model\Security\AuthzToken $authzToken, $existingExperimentID, $newExperimentName)
+  public function cloneExperiment(\Airavata\Model\Security\AuthzToken $authzToken, $existingExperimentID, $newExperimentName, $newExperimentProjectId)
   {
-    $this->send_cloneExperiment($authzToken, $existingExperimentID, $newExperimentName);
+    $this->send_cloneExperiment($authzToken, $existingExperimentID, $newExperimentName, $newExperimentProjectId);
     return $this->recv_cloneExperiment();
   }
 
-  public function send_cloneExperiment(\Airavata\Model\Security\AuthzToken $authzToken, $existingExperimentID, $newExperimentName)
+  public function send_cloneExperiment(\Airavata\Model\Security\AuthzToken $authzToken, $existingExperimentID, $newExperimentName, $newExperimentProjectId)
   {
     $args = new \Airavata\API\Airavata_cloneExperiment_args();
     $args->authzToken = $authzToken;
     $args->existingExperimentID = $existingExperimentID;
     $args->newExperimentName = $newExperimentName;
+    $args->newExperimentProjectId = $newExperimentProjectId;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -7130,6 +7136,9 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     }
     if ($result->ae !== null) {
       throw $result->ae;
+    }
+    if ($result->pnfe !== null) {
+      throw $result->pnfe;
     }
     throw new \Exception("cloneExperiment failed: unknown result");
   }
@@ -29465,6 +29474,10 @@ class Airavata_cloneExperiment_args {
    * @var string
    */
   public $newExperimentName = null;
+  /**
+   * @var string
+   */
+  public $newExperimentProjectId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -29482,6 +29495,10 @@ class Airavata_cloneExperiment_args {
           'var' => 'newExperimentName',
           'type' => TType::STRING,
           ),
+        4 => array(
+          'var' => 'newExperimentProjectId',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -29493,6 +29510,9 @@ class Airavata_cloneExperiment_args {
       }
       if (isset($vals['newExperimentName'])) {
         $this->newExperimentName = $vals['newExperimentName'];
+      }
+      if (isset($vals['newExperimentProjectId'])) {
+        $this->newExperimentProjectId = $vals['newExperimentProjectId'];
       }
     }
   }
@@ -29538,6 +29558,13 @@ class Airavata_cloneExperiment_args {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->newExperimentProjectId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -29567,6 +29594,11 @@ class Airavata_cloneExperiment_args {
     if ($this->newExperimentName !== null) {
       $xfer += $output->writeFieldBegin('newExperimentName', TType::STRING, 3);
       $xfer += $output->writeString($this->newExperimentName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->newExperimentProjectId !== null) {
+      $xfer += $output->writeFieldBegin('newExperimentProjectId', TType::STRING, 4);
+      $xfer += $output->writeString($this->newExperimentProjectId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -29603,6 +29635,10 @@ class Airavata_cloneExperiment_result {
    * @var \Airavata\API\Error\AuthorizationException
    */
   public $ae = null;
+  /**
+   * @var \Airavata\API\Error\ProjectNotFoundException
+   */
+  public $pnfe = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -29636,6 +29672,11 @@ class Airavata_cloneExperiment_result {
           'type' => TType::STRUCT,
           'class' => '\Airavata\API\Error\AuthorizationException',
           ),
+        6 => array(
+          'var' => 'pnfe',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\ProjectNotFoundException',
+          ),
         );
     }
     if (is_array($vals)) {
@@ -29656,6 +29697,9 @@ class Airavata_cloneExperiment_result {
       }
       if (isset($vals['ae'])) {
         $this->ae = $vals['ae'];
+      }
+      if (isset($vals['pnfe'])) {
+        $this->pnfe = $vals['pnfe'];
       }
     }
   }
@@ -29726,6 +29770,14 @@ class Airavata_cloneExperiment_result {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 6:
+          if ($ftype == TType::STRUCT) {
+            $this->pnfe = new \Airavata\API\Error\ProjectNotFoundException();
+            $xfer += $this->pnfe->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -29767,6 +29819,11 @@ class Airavata_cloneExperiment_result {
     if ($this->ae !== null) {
       $xfer += $output->writeFieldBegin('ae', TType::STRUCT, 5);
       $xfer += $this->ae->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->pnfe !== null) {
+      $xfer += $output->writeFieldBegin('pnfe', TType::STRUCT, 6);
+      $xfer += $this->pnfe->write($output);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
