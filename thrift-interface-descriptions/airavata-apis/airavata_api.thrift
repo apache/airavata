@@ -36,7 +36,6 @@ include "../data-models/app-catalog-models/application_io_models.thrift"
 include "../data-models/app-catalog-models/application_deployment_model.thrift"
 include "../data-models/app-catalog-models/application_interface_model.thrift"
 include "../data-models/resource-catalog-models/compute_resource_model.thrift"
-include "../data-models/resource-catalog-models/credential_summary.thrift"
 include "../data-models/resource-catalog-models/storage_resource_model.thrift"
 include "../data-models/resource-catalog-models/gateway_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/user_resource_profile_model.thrift"
@@ -44,6 +43,7 @@ include "../data-models/resource-catalog-models/data_movement_models.thrift"
 include "../data-models/workflow-models/workflow_data_model.thrift"
 include "../data-models/replica-catalog-models/replica_catalog_models.thrift"
 include "../data-models/user-group-models/group_manager_model.thrift"
+include "../data-models/credential-store-models/credential_store_data_models.thrift"
 
 namespace java org.apache.airavata.api
 namespace php Airavata.API
@@ -385,8 +385,9 @@ service Airavata {
        * @return publicKey
        *
        **/
-  list<credential_summary.CredentialSummary> getAllGatewaySSHPubKeysSummary (1: required security_model.AuthzToken authzToken,
-                                                   2: required string gatewayId)
+  list<credential_store_data_models.CredentialSummary> getAllCredentialSummaryForGateway (1: required security_model.AuthzToken authzToken,
+                                                   2: required credential_store_data_models.SummaryType type,
+                                                   3: required string gatewayId)
                  throws (1: airavata_errors.InvalidRequestException ire,
                          2: airavata_errors.AiravataClientException ace,
                          3: airavata_errors.AiravataSystemException ase)
@@ -407,9 +408,10 @@ service Airavata {
          * @return CredentialSummary
          *
          **/
-    list<credential_summary.CredentialSummary> getAllSSHPubKeysSummaryForUserInGateway (1: required security_model.AuthzToken authzToken,
-                                                     2: required string gatewayId,
-                                                     3: required string userId)
+    list<credential_store_data_models.CredentialSummary> getAllCredentialSummaryForUsersInGateway (1: required security_model.AuthzToken authzToken,
+                                                     2: required credential_store_data_models.SummaryType type,
+                                                     3: required string gatewayId,
+                                                     4: required string userId)
                    throws (1: airavata_errors.InvalidRequestException ire,
                            2: airavata_errors.AiravataClientException ace,
                            3: airavata_errors.AiravataSystemException ase)

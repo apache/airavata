@@ -181,20 +181,20 @@ generate_java_stubs() {
     ###############################################################################
 
     #Java generation directory
-    JAVA_GEN_DIR=${BASE_TARGET_DIR}/gen-java
+    #JAVA_GEN_DIR=${BASE_TARGET_DIR}/gen-java
 
     # As a precaution  remove and previously generated files if exists
-    rm -rf ${JAVA_GEN_DIR}
+    #rm -rf ${JAVA_GEN_DIR}
 
     # Generate the credential store data models in move them to respective modules/credential-store directory
 
-     $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans ${CREDENTIAL_STORE_DATAMODEL_THRIFT_FILE} || fail unable to generate java bean thrift classes on app workflow data models
+    # $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans ${CREDENTIAL_STORE_DATAMODEL_THRIFT_FILE} || fail unable to generate java bean thrift classes on app workflow data models
 
     # For the generated java beans add the ASF V2 License header
-    add_license_header $JAVA_BEAN_GEN_DIR
+    #add_license_header $JAVA_BEAN_GEN_DIR
 
     # Compare the newly generated beans with existing sources and replace the changed ones.
-    copy_changed_files ${JAVA_BEAN_GEN_DIR}/org/apache/airavata/credential/store/datamodel} ${CREDENTIAL_DATAMODEL_SRC_DIR}
+    #copy_changed_files ${JAVA_BEAN_GEN_DIR}/org/apache/airavata/credential/store/datamodel} ${CREDENTIAL_DATAMODEL_SRC_DIR}
 
     ###############################################################################
     # Generate/Update source used by Airavata Server Skeletons & Java Client Stubs #
