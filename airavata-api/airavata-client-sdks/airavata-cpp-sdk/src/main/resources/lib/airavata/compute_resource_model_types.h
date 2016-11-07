@@ -45,7 +45,8 @@ struct ResourceJobManagerType {
     PBS = 1,
     SLURM = 2,
     LSF = 3,
-    UGE = 4
+    UGE = 4,
+    CLOUD = 5
   };
 };
 
@@ -599,12 +600,13 @@ class CloudJobSubmission {
 
   CloudJobSubmission(const CloudJobSubmission&);
   CloudJobSubmission& operator=(const CloudJobSubmission&);
-  CloudJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol(( ::apache::airavata::model::data::movement::SecurityProtocol::type)0), nodeId(), executableType(), providerName((ProviderName::type)0), userAccountName() {
+  CloudJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol(( ::apache::airavata::model::data::movement::SecurityProtocol::type)0), jobManagerType((ResourceJobManagerType::type)0), nodeId(), executableType(), providerName((ProviderName::type)0), userAccountName() {
   }
 
   virtual ~CloudJobSubmission() throw();
   std::string jobSubmissionInterfaceId;
    ::apache::airavata::model::data::movement::SecurityProtocol::type securityProtocol;
+  ResourceJobManagerType::type jobManagerType;
   std::string nodeId;
   std::string executableType;
   ProviderName::type providerName;
@@ -613,6 +615,8 @@ class CloudJobSubmission {
   void __set_jobSubmissionInterfaceId(const std::string& val);
 
   void __set_securityProtocol(const  ::apache::airavata::model::data::movement::SecurityProtocol::type val);
+
+  void __set_jobManagerType(const ResourceJobManagerType::type val);
 
   void __set_nodeId(const std::string& val);
 
@@ -627,6 +631,8 @@ class CloudJobSubmission {
     if (!(jobSubmissionInterfaceId == rhs.jobSubmissionInterfaceId))
       return false;
     if (!(securityProtocol == rhs.securityProtocol))
+      return false;
+    if (!(jobManagerType == rhs.jobManagerType))
       return false;
     if (!(nodeId == rhs.nodeId))
       return false;

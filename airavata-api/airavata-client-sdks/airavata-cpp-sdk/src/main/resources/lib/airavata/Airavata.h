@@ -978,6 +978,9 @@ class AiravataIf {
    *    Once an experiment is cloned, to disambiguate, the users are suggested to provide new metadata. This will again require
    *      the basic experiment metadata like the name and description, intended user, the gateway identifier and if the experiment
    *      should be shared public by default.
+   * @param newExperimentProjectId
+   *    The project in which to create the cloned experiment. This is optional and if null the experiment will be created
+   *      in the same project as the existing experiment.
    * 
    * @return
    *   The server-side generated.airavata.registry.core.experiment.globally unique identifier (Experiment ID) for the newly cloned experiment.
@@ -1009,8 +1012,9 @@ class AiravataIf {
    * @param authzToken
    * @param existingExperimentID
    * @param newExperimentName
+   * @param newExperimentProjectId
    */
-  virtual void cloneExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName) = 0;
+  virtual void cloneExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName, const std::string& newExperimentProjectId) = 0;
 
   /**
    * 
@@ -3057,7 +3061,7 @@ class AiravataNull : virtual public AiravataIf {
   void getJobDetails(std::vector< ::apache::airavata::model::job::JobModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataExperimentId */) {
     return;
   }
-  void cloneExperiment(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* existingExperimentID */, const std::string& /* newExperimentName */) {
+  void cloneExperiment(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* existingExperimentID */, const std::string& /* newExperimentName */, const std::string& /* newExperimentProjectId */) {
     return;
   }
   void terminateExperiment(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataExperimentId */, const std::string& /* gatewayId */) {
@@ -10178,9 +10182,10 @@ class Airavata_getJobDetails_presult {
 };
 
 typedef struct _Airavata_cloneExperiment_args__isset {
-  _Airavata_cloneExperiment_args__isset() : existingExperimentID(false), newExperimentName(false) {}
+  _Airavata_cloneExperiment_args__isset() : existingExperimentID(false), newExperimentName(false), newExperimentProjectId(false) {}
   bool existingExperimentID :1;
   bool newExperimentName :1;
+  bool newExperimentProjectId :1;
 } _Airavata_cloneExperiment_args__isset;
 
 class Airavata_cloneExperiment_args {
@@ -10188,13 +10193,14 @@ class Airavata_cloneExperiment_args {
 
   Airavata_cloneExperiment_args(const Airavata_cloneExperiment_args&);
   Airavata_cloneExperiment_args& operator=(const Airavata_cloneExperiment_args&);
-  Airavata_cloneExperiment_args() : existingExperimentID(), newExperimentName() {
+  Airavata_cloneExperiment_args() : existingExperimentID(), newExperimentName(), newExperimentProjectId() {
   }
 
   virtual ~Airavata_cloneExperiment_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
   std::string existingExperimentID;
   std::string newExperimentName;
+  std::string newExperimentProjectId;
 
   _Airavata_cloneExperiment_args__isset __isset;
 
@@ -10204,6 +10210,8 @@ class Airavata_cloneExperiment_args {
 
   void __set_newExperimentName(const std::string& val);
 
+  void __set_newExperimentProjectId(const std::string& val);
+
   bool operator == (const Airavata_cloneExperiment_args & rhs) const
   {
     if (!(authzToken == rhs.authzToken))
@@ -10211,6 +10219,8 @@ class Airavata_cloneExperiment_args {
     if (!(existingExperimentID == rhs.existingExperimentID))
       return false;
     if (!(newExperimentName == rhs.newExperimentName))
+      return false;
+    if (!(newExperimentProjectId == rhs.newExperimentProjectId))
       return false;
     return true;
   }
@@ -10234,19 +10244,21 @@ class Airavata_cloneExperiment_pargs {
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
   const std::string* existingExperimentID;
   const std::string* newExperimentName;
+  const std::string* newExperimentProjectId;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
 typedef struct _Airavata_cloneExperiment_result__isset {
-  _Airavata_cloneExperiment_result__isset() : success(false), ire(false), enf(false), ace(false), ase(false), ae(false) {}
+  _Airavata_cloneExperiment_result__isset() : success(false), ire(false), enf(false), ace(false), ase(false), ae(false), pnfe(false) {}
   bool success :1;
   bool ire :1;
   bool enf :1;
   bool ace :1;
   bool ase :1;
   bool ae :1;
+  bool pnfe :1;
 } _Airavata_cloneExperiment_result__isset;
 
 class Airavata_cloneExperiment_result {
@@ -10264,6 +10276,7 @@ class Airavata_cloneExperiment_result {
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
    ::apache::airavata::api::error::AuthorizationException ae;
+   ::apache::airavata::api::error::ProjectNotFoundException pnfe;
 
   _Airavata_cloneExperiment_result__isset __isset;
 
@@ -10279,6 +10292,8 @@ class Airavata_cloneExperiment_result {
 
   void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
 
+  void __set_pnfe(const  ::apache::airavata::api::error::ProjectNotFoundException& val);
+
   bool operator == (const Airavata_cloneExperiment_result & rhs) const
   {
     if (!(success == rhs.success))
@@ -10292,6 +10307,8 @@ class Airavata_cloneExperiment_result {
     if (!(ase == rhs.ase))
       return false;
     if (!(ae == rhs.ae))
+      return false;
+    if (!(pnfe == rhs.pnfe))
       return false;
     return true;
   }
@@ -10307,13 +10324,14 @@ class Airavata_cloneExperiment_result {
 };
 
 typedef struct _Airavata_cloneExperiment_presult__isset {
-  _Airavata_cloneExperiment_presult__isset() : success(false), ire(false), enf(false), ace(false), ase(false), ae(false) {}
+  _Airavata_cloneExperiment_presult__isset() : success(false), ire(false), enf(false), ace(false), ase(false), ae(false), pnfe(false) {}
   bool success :1;
   bool ire :1;
   bool enf :1;
   bool ace :1;
   bool ase :1;
   bool ae :1;
+  bool pnfe :1;
 } _Airavata_cloneExperiment_presult__isset;
 
 class Airavata_cloneExperiment_presult {
@@ -10327,6 +10345,7 @@ class Airavata_cloneExperiment_presult {
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
    ::apache::airavata::api::error::AuthorizationException ae;
+   ::apache::airavata::api::error::ProjectNotFoundException pnfe;
 
   _Airavata_cloneExperiment_presult__isset __isset;
 
@@ -27126,8 +27145,8 @@ class AiravataClient : virtual public AiravataIf {
   void getJobDetails(std::vector< ::apache::airavata::model::job::JobModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   void send_getJobDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   void recv_getJobDetails(std::vector< ::apache::airavata::model::job::JobModel> & _return);
-  void cloneExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName);
-  void send_cloneExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName);
+  void cloneExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName, const std::string& newExperimentProjectId);
+  void send_cloneExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName, const std::string& newExperimentProjectId);
   void recv_cloneExperiment(std::string& _return);
   void terminateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& gatewayId);
   void send_terminateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& gatewayId);
@@ -28327,13 +28346,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void cloneExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName) {
+  void cloneExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName, const std::string& newExperimentProjectId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->cloneExperiment(_return, authzToken, existingExperimentID, newExperimentName);
+      ifaces_[i]->cloneExperiment(_return, authzToken, existingExperimentID, newExperimentName, newExperimentProjectId);
     }
-    ifaces_[i]->cloneExperiment(_return, authzToken, existingExperimentID, newExperimentName);
+    ifaces_[i]->cloneExperiment(_return, authzToken, existingExperimentID, newExperimentName, newExperimentProjectId);
     return;
   }
 
@@ -29639,8 +29658,8 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void getJobDetails(std::vector< ::apache::airavata::model::job::JobModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   int32_t send_getJobDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   void recv_getJobDetails(std::vector< ::apache::airavata::model::job::JobModel> & _return, const int32_t seqid);
-  void cloneExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName);
-  int32_t send_cloneExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName);
+  void cloneExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName, const std::string& newExperimentProjectId);
+  int32_t send_cloneExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName, const std::string& newExperimentProjectId);
   void recv_cloneExperiment(std::string& _return, const int32_t seqid);
   void terminateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& gatewayId);
   int32_t send_terminateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& gatewayId);

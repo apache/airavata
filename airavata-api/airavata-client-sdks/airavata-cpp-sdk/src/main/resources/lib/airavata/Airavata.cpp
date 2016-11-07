@@ -15127,6 +15127,14 @@ uint32_t Airavata_cloneExperiment_args::read(::apache::thrift::protocol::TProtoc
           xfer += iprot->skip(ftype);
         }
         break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->newExperimentProjectId);
+          this->__isset.newExperimentProjectId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -15158,6 +15166,10 @@ uint32_t Airavata_cloneExperiment_args::write(::apache::thrift::protocol::TProto
   xfer += oprot->writeString(this->newExperimentName);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("newExperimentProjectId", ::apache::thrift::protocol::T_STRING, 4);
+  xfer += oprot->writeString(this->newExperimentProjectId);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -15183,6 +15195,10 @@ uint32_t Airavata_cloneExperiment_pargs::write(::apache::thrift::protocol::TProt
 
   xfer += oprot->writeFieldBegin("newExperimentName", ::apache::thrift::protocol::T_STRING, 3);
   xfer += oprot->writeString((*(this->newExperimentName)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("newExperimentProjectId", ::apache::thrift::protocol::T_STRING, 4);
+  xfer += oprot->writeString((*(this->newExperimentProjectId)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -15264,6 +15280,14 @@ uint32_t Airavata_cloneExperiment_result::read(::apache::thrift::protocol::TProt
           xfer += iprot->skip(ftype);
         }
         break;
+      case 6:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->pnfe.read(iprot);
+          this->__isset.pnfe = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -15305,6 +15329,10 @@ uint32_t Airavata_cloneExperiment_result::write(::apache::thrift::protocol::TPro
   } else if (this->__isset.ae) {
     xfer += oprot->writeFieldBegin("ae", ::apache::thrift::protocol::T_STRUCT, 5);
     xfer += this->ae.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.pnfe) {
+    xfer += oprot->writeFieldBegin("pnfe", ::apache::thrift::protocol::T_STRUCT, 6);
+    xfer += this->pnfe.write(oprot);
     xfer += oprot->writeFieldEnd();
   }
   xfer += oprot->writeFieldStop();
@@ -15382,6 +15410,14 @@ uint32_t Airavata_cloneExperiment_presult::read(::apache::thrift::protocol::TPro
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ae.read(iprot);
           this->__isset.ae = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 6:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->pnfe.read(iprot);
+          this->__isset.pnfe = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -55462,13 +55498,13 @@ void AiravataClient::recv_getJobDetails(std::vector< ::apache::airavata::model::
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getJobDetails failed: unknown result");
 }
 
-void AiravataClient::cloneExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName)
+void AiravataClient::cloneExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName, const std::string& newExperimentProjectId)
 {
-  send_cloneExperiment(authzToken, existingExperimentID, newExperimentName);
+  send_cloneExperiment(authzToken, existingExperimentID, newExperimentName, newExperimentProjectId);
   recv_cloneExperiment(_return);
 }
 
-void AiravataClient::send_cloneExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName)
+void AiravataClient::send_cloneExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName, const std::string& newExperimentProjectId)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("cloneExperiment", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -55477,6 +55513,7 @@ void AiravataClient::send_cloneExperiment(const  ::apache::airavata::model::secu
   args.authzToken = &authzToken;
   args.existingExperimentID = &existingExperimentID;
   args.newExperimentName = &newExperimentName;
+  args.newExperimentProjectId = &newExperimentProjectId;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -55533,6 +55570,9 @@ void AiravataClient::recv_cloneExperiment(std::string& _return)
   }
   if (result.__isset.ae) {
     throw result.ae;
+  }
+  if (result.__isset.pnfe) {
+    throw result.pnfe;
   }
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "cloneExperiment failed: unknown result");
 }
@@ -67196,7 +67236,7 @@ void AiravataProcessor::process_cloneExperiment(int32_t seqid, ::apache::thrift:
 
   Airavata_cloneExperiment_result result;
   try {
-    iface_->cloneExperiment(result.success, args.authzToken, args.existingExperimentID, args.newExperimentName);
+    iface_->cloneExperiment(result.success, args.authzToken, args.existingExperimentID, args.newExperimentName, args.newExperimentProjectId);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -67213,6 +67253,9 @@ void AiravataProcessor::process_cloneExperiment(int32_t seqid, ::apache::thrift:
   } catch ( ::apache::airavata::api::error::AuthorizationException &ae) {
     result.ae = ae;
     result.__isset.ae = true;
+  } catch ( ::apache::airavata::api::error::ProjectNotFoundException &pnfe) {
+    result.pnfe = pnfe;
+    result.__isset.pnfe = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "Airavata.cloneExperiment");
@@ -79885,13 +79928,13 @@ void AiravataConcurrentClient::recv_getJobDetails(std::vector< ::apache::airavat
   } // end while(true)
 }
 
-void AiravataConcurrentClient::cloneExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName)
+void AiravataConcurrentClient::cloneExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName, const std::string& newExperimentProjectId)
 {
-  int32_t seqid = send_cloneExperiment(authzToken, existingExperimentID, newExperimentName);
+  int32_t seqid = send_cloneExperiment(authzToken, existingExperimentID, newExperimentName, newExperimentProjectId);
   recv_cloneExperiment(_return, seqid);
 }
 
-int32_t AiravataConcurrentClient::send_cloneExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName)
+int32_t AiravataConcurrentClient::send_cloneExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName, const std::string& newExperimentProjectId)
 {
   int32_t cseqid = this->sync_.generateSeqId();
   ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
@@ -79901,6 +79944,7 @@ int32_t AiravataConcurrentClient::send_cloneExperiment(const  ::apache::airavata
   args.authzToken = &authzToken;
   args.existingExperimentID = &existingExperimentID;
   args.newExperimentName = &newExperimentName;
+  args.newExperimentProjectId = &newExperimentProjectId;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -79979,6 +80023,10 @@ void AiravataConcurrentClient::recv_cloneExperiment(std::string& _return, const 
       if (result.__isset.ae) {
         sentry.commit();
         throw result.ae;
+      }
+      if (result.__isset.pnfe) {
+        sentry.commit();
+        throw result.pnfe;
       }
       // in a bad state, don't commit
       throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "cloneExperiment failed: unknown result");

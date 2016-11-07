@@ -1086,7 +1086,7 @@ class Iface:
     """
     pass
 
-  def cloneExperiment(self, authzToken, existingExperimentID, newExperimentName):
+  def cloneExperiment(self, authzToken, existingExperimentID, newExperimentName, newExperimentProjectId):
     """
 
     Clone an Existing Experiment
@@ -1100,6 +1100,9 @@ class Iface:
        Once an experiment is cloned, to disambiguate, the users are suggested to provide new metadata. This will again require
          the basic experiment metadata like the name and description, intended user, the gateway identifier and if the experiment
          should be shared public by default.
+    @param newExperimentProjectId
+       The project in which to create the cloned experiment. This is optional and if null the experiment will be created
+         in the same project as the existing experiment.
 
     @return
       The server-side generated.airavata.registry.core.experiment.globally unique identifier (Experiment ID) for the newly cloned experiment.
@@ -1132,6 +1135,7 @@ class Iface:
      - authzToken
      - existingExperimentID
      - newExperimentName
+     - newExperimentProjectId
     """
     pass
 
@@ -6031,7 +6035,7 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getJobDetails failed: unknown result")
 
-  def cloneExperiment(self, authzToken, existingExperimentID, newExperimentName):
+  def cloneExperiment(self, authzToken, existingExperimentID, newExperimentName, newExperimentProjectId):
     """
 
     Clone an Existing Experiment
@@ -6045,6 +6049,9 @@ class Client(Iface):
        Once an experiment is cloned, to disambiguate, the users are suggested to provide new metadata. This will again require
          the basic experiment metadata like the name and description, intended user, the gateway identifier and if the experiment
          should be shared public by default.
+    @param newExperimentProjectId
+       The project in which to create the cloned experiment. This is optional and if null the experiment will be created
+         in the same project as the existing experiment.
 
     @return
       The server-side generated.airavata.registry.core.experiment.globally unique identifier (Experiment ID) for the newly cloned experiment.
@@ -6077,16 +6084,18 @@ class Client(Iface):
      - authzToken
      - existingExperimentID
      - newExperimentName
+     - newExperimentProjectId
     """
-    self.send_cloneExperiment(authzToken, existingExperimentID, newExperimentName)
+    self.send_cloneExperiment(authzToken, existingExperimentID, newExperimentName, newExperimentProjectId)
     return self.recv_cloneExperiment()
 
-  def send_cloneExperiment(self, authzToken, existingExperimentID, newExperimentName):
+  def send_cloneExperiment(self, authzToken, existingExperimentID, newExperimentName, newExperimentProjectId):
     self._oprot.writeMessageBegin('cloneExperiment', TMessageType.CALL, self._seqid)
     args = cloneExperiment_args()
     args.authzToken = authzToken
     args.existingExperimentID = existingExperimentID
     args.newExperimentName = newExperimentName
+    args.newExperimentProjectId = newExperimentProjectId
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
@@ -6114,6 +6123,8 @@ class Client(Iface):
       raise result.ase
     if result.ae is not None:
       raise result.ae
+    if result.pnfe is not None:
+      raise result.pnfe
     raise TApplicationException(TApplicationException.MISSING_RESULT, "cloneExperiment failed: unknown result")
 
   def terminateExperiment(self, authzToken, airavataExperimentId, gatewayId):
@@ -13989,7 +14000,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = cloneExperiment_result()
     try:
-      result.success = self._handler.cloneExperiment(args.authzToken, args.existingExperimentID, args.newExperimentName)
+      result.success = self._handler.cloneExperiment(args.authzToken, args.existingExperimentID, args.newExperimentName, args.newExperimentProjectId)
       msg_type = TMessageType.REPLY
     except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
       raise
@@ -14008,6 +14019,9 @@ class Processor(Iface, TProcessor):
     except apache.airavata.api.error.ttypes.AuthorizationException as ae:
       msg_type = TMessageType.REPLY
       result.ae = ae
+    except apache.airavata.api.error.ttypes.ProjectNotFoundException as pnfe:
+      msg_type = TMessageType.REPLY
+      result.pnfe = pnfe
     except Exception as ex:
       msg_type = TMessageType.EXCEPTION
       logging.exception(ex)
@@ -28093,6 +28107,7 @@ class cloneExperiment_args:
    - authzToken
    - existingExperimentID
    - newExperimentName
+   - newExperimentProjectId
   """
 
   thrift_spec = (
@@ -28100,12 +28115,14 @@ class cloneExperiment_args:
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
     (2, TType.STRING, 'existingExperimentID', None, None, ), # 2
     (3, TType.STRING, 'newExperimentName', None, None, ), # 3
+    (4, TType.STRING, 'newExperimentProjectId', None, None, ), # 4
   )
 
-  def __init__(self, authzToken=None, existingExperimentID=None, newExperimentName=None,):
+  def __init__(self, authzToken=None, existingExperimentID=None, newExperimentName=None, newExperimentProjectId=None,):
     self.authzToken = authzToken
     self.existingExperimentID = existingExperimentID
     self.newExperimentName = newExperimentName
+    self.newExperimentProjectId = newExperimentProjectId
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -28132,6 +28149,11 @@ class cloneExperiment_args:
           self.newExperimentName = iprot.readString()
         else:
           iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRING:
+          self.newExperimentProjectId = iprot.readString()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -28154,6 +28176,10 @@ class cloneExperiment_args:
       oprot.writeFieldBegin('newExperimentName', TType.STRING, 3)
       oprot.writeString(self.newExperimentName)
       oprot.writeFieldEnd()
+    if self.newExperimentProjectId is not None:
+      oprot.writeFieldBegin('newExperimentProjectId', TType.STRING, 4)
+      oprot.writeString(self.newExperimentProjectId)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -28168,6 +28194,7 @@ class cloneExperiment_args:
     value = (value * 31) ^ hash(self.authzToken)
     value = (value * 31) ^ hash(self.existingExperimentID)
     value = (value * 31) ^ hash(self.newExperimentName)
+    value = (value * 31) ^ hash(self.newExperimentProjectId)
     return value
 
   def __repr__(self):
@@ -28190,6 +28217,7 @@ class cloneExperiment_result:
    - ace
    - ase
    - ae
+   - pnfe
   """
 
   thrift_spec = (
@@ -28199,15 +28227,17 @@ class cloneExperiment_result:
     (3, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 3
     (4, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 4
     (5, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 5
+    (6, TType.STRUCT, 'pnfe', (apache.airavata.api.error.ttypes.ProjectNotFoundException, apache.airavata.api.error.ttypes.ProjectNotFoundException.thrift_spec), None, ), # 6
   )
 
-  def __init__(self, success=None, ire=None, enf=None, ace=None, ase=None, ae=None,):
+  def __init__(self, success=None, ire=None, enf=None, ace=None, ase=None, ae=None, pnfe=None,):
     self.success = success
     self.ire = ire
     self.enf = enf
     self.ace = ace
     self.ase = ase
     self.ae = ae
+    self.pnfe = pnfe
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -28253,6 +28283,12 @@ class cloneExperiment_result:
           self.ae.read(iprot)
         else:
           iprot.skip(ftype)
+      elif fid == 6:
+        if ftype == TType.STRUCT:
+          self.pnfe = apache.airavata.api.error.ttypes.ProjectNotFoundException()
+          self.pnfe.read(iprot)
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -28287,6 +28323,10 @@ class cloneExperiment_result:
       oprot.writeFieldBegin('ae', TType.STRUCT, 5)
       self.ae.write(oprot)
       oprot.writeFieldEnd()
+    if self.pnfe is not None:
+      oprot.writeFieldBegin('pnfe', TType.STRUCT, 6)
+      self.pnfe.write(oprot)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -28302,6 +28342,7 @@ class cloneExperiment_result:
     value = (value * 31) ^ hash(self.ace)
     value = (value * 31) ^ hash(self.ase)
     value = (value * 31) ^ hash(self.ae)
+    value = (value * 31) ^ hash(self.pnfe)
     return value
 
   def __repr__(self):
