@@ -52,7 +52,8 @@ enum ResourceJobManagerType {
     PBS,
     SLURM,
     LSF,
-    UGE
+    UGE,
+    CLOUD
 }
 
 /**
@@ -287,10 +288,11 @@ enum ProviderName {
 struct CloudJobSubmission {
     1: required string jobSubmissionInterfaceId = airavata_commons.DEFAULT_ID,
     2: required data_movement_models.SecurityProtocol securityProtocol,
-    3: required string nodeId,
-    4: required string executableType,
-    5: required ProviderName providerName,
-    6: required string userAccountName
+    3: required ResourceJobManagerType jobManagerType,
+    4: required string nodeId,
+    5: required string executableType,
+    6: required ProviderName providerName,
+    7: required string userAccountName
 }
 
 /**

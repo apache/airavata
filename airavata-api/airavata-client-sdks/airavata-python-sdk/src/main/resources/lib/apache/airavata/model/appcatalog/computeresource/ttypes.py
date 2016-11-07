@@ -45,6 +45,7 @@ class ResourceJobManagerType:
   SLURM = 2
   LSF = 3
   UGE = 4
+  CLOUD = 5
 
   _VALUES_TO_NAMES = {
     0: "FORK",
@@ -52,6 +53,7 @@ class ResourceJobManagerType:
     2: "SLURM",
     3: "LSF",
     4: "UGE",
+    5: "CLOUD",
   }
 
   _NAMES_TO_VALUES = {
@@ -60,6 +62,7 @@ class ResourceJobManagerType:
     "SLURM": 2,
     "LSF": 3,
     "UGE": 4,
+    "CLOUD": 5,
   }
 
 class JobManagerCommand:
@@ -1137,6 +1140,7 @@ class CloudJobSubmission:
   Attributes:
    - jobSubmissionInterfaceId
    - securityProtocol
+   - jobManagerType
    - nodeId
    - executableType
    - providerName
@@ -1147,15 +1151,17 @@ class CloudJobSubmission:
     None, # 0
     (1, TType.STRING, 'jobSubmissionInterfaceId', None, "DO_NOT_SET_AT_CLIENTS", ), # 1
     (2, TType.I32, 'securityProtocol', None, None, ), # 2
-    (3, TType.STRING, 'nodeId', None, None, ), # 3
-    (4, TType.STRING, 'executableType', None, None, ), # 4
-    (5, TType.I32, 'providerName', None, None, ), # 5
-    (6, TType.STRING, 'userAccountName', None, None, ), # 6
+    (3, TType.I32, 'jobManagerType', None, None, ), # 3
+    (4, TType.STRING, 'nodeId', None, None, ), # 4
+    (5, TType.STRING, 'executableType', None, None, ), # 5
+    (6, TType.I32, 'providerName', None, None, ), # 6
+    (7, TType.STRING, 'userAccountName', None, None, ), # 7
   )
 
-  def __init__(self, jobSubmissionInterfaceId=thrift_spec[1][4], securityProtocol=None, nodeId=None, executableType=None, providerName=None, userAccountName=None,):
+  def __init__(self, jobSubmissionInterfaceId=thrift_spec[1][4], securityProtocol=None, jobManagerType=None, nodeId=None, executableType=None, providerName=None, userAccountName=None,):
     self.jobSubmissionInterfaceId = jobSubmissionInterfaceId
     self.securityProtocol = securityProtocol
+    self.jobManagerType = jobManagerType
     self.nodeId = nodeId
     self.executableType = executableType
     self.providerName = providerName
@@ -1181,21 +1187,26 @@ class CloudJobSubmission:
         else:
           iprot.skip(ftype)
       elif fid == 3:
-        if ftype == TType.STRING:
-          self.nodeId = iprot.readString()
+        if ftype == TType.I32:
+          self.jobManagerType = iprot.readI32()
         else:
           iprot.skip(ftype)
       elif fid == 4:
         if ftype == TType.STRING:
-          self.executableType = iprot.readString()
+          self.nodeId = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 5:
+        if ftype == TType.STRING:
+          self.executableType = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 6:
         if ftype == TType.I32:
           self.providerName = iprot.readI32()
         else:
           iprot.skip(ftype)
-      elif fid == 6:
+      elif fid == 7:
         if ftype == TType.STRING:
           self.userAccountName = iprot.readString()
         else:
@@ -1218,20 +1229,24 @@ class CloudJobSubmission:
       oprot.writeFieldBegin('securityProtocol', TType.I32, 2)
       oprot.writeI32(self.securityProtocol)
       oprot.writeFieldEnd()
+    if self.jobManagerType is not None:
+      oprot.writeFieldBegin('jobManagerType', TType.I32, 3)
+      oprot.writeI32(self.jobManagerType)
+      oprot.writeFieldEnd()
     if self.nodeId is not None:
-      oprot.writeFieldBegin('nodeId', TType.STRING, 3)
+      oprot.writeFieldBegin('nodeId', TType.STRING, 4)
       oprot.writeString(self.nodeId)
       oprot.writeFieldEnd()
     if self.executableType is not None:
-      oprot.writeFieldBegin('executableType', TType.STRING, 4)
+      oprot.writeFieldBegin('executableType', TType.STRING, 5)
       oprot.writeString(self.executableType)
       oprot.writeFieldEnd()
     if self.providerName is not None:
-      oprot.writeFieldBegin('providerName', TType.I32, 5)
+      oprot.writeFieldBegin('providerName', TType.I32, 6)
       oprot.writeI32(self.providerName)
       oprot.writeFieldEnd()
     if self.userAccountName is not None:
-      oprot.writeFieldBegin('userAccountName', TType.STRING, 6)
+      oprot.writeFieldBegin('userAccountName', TType.STRING, 7)
       oprot.writeString(self.userAccountName)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -1242,6 +1257,8 @@ class CloudJobSubmission:
       raise TProtocol.TProtocolException(message='Required field jobSubmissionInterfaceId is unset!')
     if self.securityProtocol is None:
       raise TProtocol.TProtocolException(message='Required field securityProtocol is unset!')
+    if self.jobManagerType is None:
+      raise TProtocol.TProtocolException(message='Required field jobManagerType is unset!')
     if self.nodeId is None:
       raise TProtocol.TProtocolException(message='Required field nodeId is unset!')
     if self.executableType is None:
@@ -1257,6 +1274,7 @@ class CloudJobSubmission:
     value = 17
     value = (value * 31) ^ hash(self.jobSubmissionInterfaceId)
     value = (value * 31) ^ hash(self.securityProtocol)
+    value = (value * 31) ^ hash(self.jobManagerType)
     value = (value * 31) ^ hash(self.nodeId)
     value = (value * 31) ^ hash(self.executableType)
     value = (value * 31) ^ hash(self.providerName)

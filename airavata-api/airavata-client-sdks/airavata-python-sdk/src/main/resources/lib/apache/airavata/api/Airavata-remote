@@ -72,7 +72,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('   getIntermediateOutputs(AuthzToken authzToken, string airavataExperimentId)')
   print('   getJobStatuses(AuthzToken authzToken, string airavataExperimentId)')
   print('   getJobDetails(AuthzToken authzToken, string airavataExperimentId)')
-  print('  string cloneExperiment(AuthzToken authzToken, string existingExperimentID, string newExperimentName)')
+  print('  string cloneExperiment(AuthzToken authzToken, string existingExperimentID, string newExperimentName, string newExperimentProjectId)')
   print('  void terminateExperiment(AuthzToken authzToken, string airavataExperimentId, string gatewayId)')
   print('  string registerApplicationModule(AuthzToken authzToken, string gatewayId, ApplicationModule applicationModule)')
   print('  ApplicationModule getApplicationModule(AuthzToken authzToken, string appModuleId)')
@@ -536,10 +536,10 @@ elif cmd == 'getJobDetails':
   pp.pprint(client.getJobDetails(eval(args[0]),args[1],))
 
 elif cmd == 'cloneExperiment':
-  if len(args) != 3:
-    print('cloneExperiment requires 3 args')
+  if len(args) != 4:
+    print('cloneExperiment requires 4 args')
     sys.exit(1)
-  pp.pprint(client.cloneExperiment(eval(args[0]),args[1],args[2],))
+  pp.pprint(client.cloneExperiment(eval(args[0]),args[1],args[2],args[3],))
 
 elif cmd == 'terminateExperiment':
   if len(args) != 3:

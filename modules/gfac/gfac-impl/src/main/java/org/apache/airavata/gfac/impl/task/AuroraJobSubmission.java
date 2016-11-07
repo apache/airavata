@@ -37,11 +37,14 @@ import org.apache.airavata.cloud.aurora.util.AuroraThriftClientUtil;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
+import org.apache.airavata.gfac.core.GroovyMap;
+import org.apache.airavata.gfac.core.Script;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.AuroraUtils;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
@@ -82,19 +85,15 @@ public class AuroraJobSubmission implements JobSubmissionTask{
         try {
             JobKeyBean jobKey = new JobKeyBean(AuroraUtils.ENVIRONMENT, AuroraUtils.ROLE, jobIdAndName);
             IdentityBean owner = new IdentityBean(AuroraUtils.ROLE);
-            // only autodoc vina
-            String workingDir = taskContext.getWorkingDir();
-//            ProcessBean proc1 = new ProcessBean("process_1", "mkdir -p " + workingDir, false);
-//            ProcessBean proc2 = new ProcessBean("process_2", "cp -rf /home/centos/efs-mount-point/autodock-vina/* " + workingDir , false);
-            String executablePath = processContext.getApplicationDeploymentDescription().getExecutablePath();
-            ProcessBean proc3 = new ProcessBean("process_3", "cd " + workingDir + " && sh " + executablePath, false);
+            GroovyMap groovyMap = GFacUtils.createGroovyMap(processContext, taskContext);
+            groovyMap.add(Script.JOB_SUBMITTER_COMMAND, "sh");
+            String templateFileName = GFacUtils.getTemplateFileName(ResourceJobManagerType.CLOUD);
+            String script = GFacUtils.generateScript(groovyMap, templateFileName);
+            ProcessBean process_1 = new ProcessBean("process_1", script, false);
+
             Set<ProcessBean> processes = new LinkedHashSet<>();
-//            processes.add(proc1);
-//            processes.add(proc2);
-            processes.add(proc3);
-
+            processes.add(process_1);
             ResourceBean resources = new ResourceBean(1.5, 512, 512);
-
             TaskConfigBean taskConfig = new TaskConfigBean("Airavata-Aurora-" + jobIdAndName, processes, resources);
             JobConfigBean jobConfig = new JobConfigBean(jobKey, owner, taskConfig, AuroraUtils.CLUSTER);
 
@@ -115,8 +114,8 @@ public class AuroraJobSubmission implements JobSubmissionTask{
             GFacUtils.saveJobModel(processContext, jobModel);
             GFacUtils.saveJobStatus(processContext, jobModel);
             taskStatus.setReason("Successfully submitted job to Aurora");
-        } catch (Exception e) {
-            String msg = "Error occurred while submitting the job";
+        } catch (Throwable e) {
+            String msg = "Error occurred while submitting Aurora job";
             log.error(msg, e);
             taskStatus.setState(TaskState.FAILED);
             taskStatus.setReason(msg);
