@@ -55,9 +55,9 @@ import org.apache.airavata.model.task.TaskTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AuroraJobSubmission implements JobSubmissionTask{
+public class AuroraJobSubmissionTask implements JobSubmissionTask{
 
-    private static final Logger log = LoggerFactory.getLogger(AuroraJobSubmission.class);
+    private static final Logger log = LoggerFactory.getLogger(AuroraJobSubmissionTask.class);
 
     @Override
     public JobStatus cancel(TaskContext taskcontext) throws TaskException {

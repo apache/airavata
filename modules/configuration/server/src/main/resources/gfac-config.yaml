@@ -34,6 +34,8 @@ jobSubmitters:
   - submissionProtocol: LOCAL
     taskClass: org.apache.airavata.gfac.impl.task.LocalJobSubmissionTask
 
+  - submissionProtocol: CLOUD
+    taskClass: org.apache.airavata.gfac.impl.task.AuroraJobSubmissionTask
 
 # Following job subbmitters are not yet implemented.
 
