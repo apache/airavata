@@ -490,7 +490,7 @@ public class GFacUtils {
         GroovyMap groovyMap = new GroovyMap();
         try {
             ProcessModel processModel = processContext.getProcessModel();
-            ResourceJobManager resourceJobManager = getResourceJobManager(processContext);
+            ResourceJobManager resourceJobManager = processContext.getResourceJobManager();
             setMailAddresses(processContext, groovyMap); // set email options and addresses
 
             groovyMap.add(Script.INPUT_DIR, processContext.getInputDir());
@@ -611,8 +611,9 @@ public class GFacUtils {
             }
 
             ApplicationParallelismType parallelism = appDepDescription.getParallelism();
-            Map<ApplicationParallelismType, String> parallelismPrefix = processContext.getResourceJobManager().getParallelismPrefix();
-            if (parallelism != null) {
+
+            if (parallelism != null && resourceJobManager != null) {
+                Map<ApplicationParallelismType, String> parallelismPrefix = resourceJobManager.getParallelismPrefix();
                 if (parallelism != ApplicationParallelismType.SERIAL) {
                     if (parallelismPrefix != null){
                         String parallelismCommand = parallelismPrefix.get(parallelism);
