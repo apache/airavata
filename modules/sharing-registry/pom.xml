@@ -2,7 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <artifactId>airavata</artifactId>
@@ -11,16 +10,11 @@
         <version>0.17-SNAPSHOT</version>
     </parent>
 
-    <properties>
-        <global.version>0.17-SNAPSHOT</global.version>
-    </properties>
-
-    <groupId>org.apache.airavata</groupId>
+    <modelVersion>4.0.0</modelVersion>
     <artifactId>airavata-sharing-registry</artifactId>
     <packaging>pom</packaging>
-    <version>${global.version}</version>
-
-
+    <name>Airavata Sharing Registry</name>
+    <url>http://airavata.apache.org/</url>
 
     <modules>
         <module>sharing-registry-stubs</module>

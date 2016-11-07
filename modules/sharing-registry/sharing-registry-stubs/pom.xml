@@ -6,12 +6,15 @@
         <artifactId>airavata-sharing-registry</artifactId>
         <groupId>org.apache.airavata</groupId>
         <relativePath>../pom.xml</relativePath>
-        <version>${global.version}</version>
+        <version>0.17-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>airavata-sharing-registry-stubs</artifactId>
     <packaging>jar</packaging>
+    <name>Sharing Registry Stubs</name>
+    <url>http://airavata.apache.org/</url>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.thrift</groupId>
