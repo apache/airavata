@@ -34,6 +34,8 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePrefer
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
@@ -47,6 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +72,9 @@ public class ProcessContext {
 	private String outputDir;
 	private String localWorkingDir;
 	private GatewayResourceProfile gatewayResourceProfile;
+	private ComputeResourcePreference gatewayComputeResourcePreference;
+	private UserResourceProfile userResourceProfile;
+	private UserComputeResourcePreference userComputeResourcePreference;
 	private ComputeResourceDescription computeResourceDescription;
 	private ApplicationDeploymentDescription applicationDeploymentDescription;
 	private ApplicationInterfaceDescription applicationInterfaceDescription;
@@ -80,7 +86,6 @@ public class ProcessContext {
 	private JobSubmissionProtocol jobSubmissionProtocol;
 	private DataMovementProtocol dataMovementProtocol;
 	private JobModel jobModel;
-	private ComputeResourcePreference computeResourcePreference;
     private StoragePreference storagePreference;
     private StorageResourceDescription storageResource;
 	private MonitorMode monitorMode;
@@ -98,6 +103,7 @@ public class ProcessContext {
 	private boolean acknowledge;
 	private SSHKeyAuthentication sshKeyAuthentication;
 	private boolean recoveryWithCancel = false;
+	private String usageReportingGatewayId;
 
 	/**
 	 * Note: process context property use lazy loading approach. In runtime you will see some properties as null
@@ -177,9 +183,12 @@ public class ProcessContext {
 
 	public String getScratchLocation() {
 		if (scratchLocation == null) {
-			scratchLocation = processModel.getProcessResourceSchedule().getOverrideScratchLocation();
-			if(scratchLocation == null || scratchLocation.isEmpty()){
-				scratchLocation = computeResourcePreference.getScratchLocation();
+			if (processModel.isUseUserCRPref() && isValid(userComputeResourcePreference.getScratchLocation())) {
+				scratchLocation = userComputeResourcePreference.getScratchLocation();
+			} else if (isValid(processModel.getProcessResourceSchedule().getOverrideScratchLocation())) {
+				scratchLocation = processModel.getProcessResourceSchedule().getOverrideScratchLocation();
+			}else {
+				scratchLocation = gatewayComputeResourcePreference.getScratchLocation();
 			}
 		}
 		return scratchLocation;
@@ -195,6 +204,22 @@ public class ProcessContext {
 
 	public void setGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) {
 		this.gatewayResourceProfile = gatewayResourceProfile;
+	}
+
+	public UserResourceProfile getUserResourceProfile() {
+		return userResourceProfile;
+	}
+
+	public void setUserResourceProfile(UserResourceProfile userResourceProfile) {
+		this.userResourceProfile = userResourceProfile;
+	}
+
+	private UserComputeResourcePreference getUserComputeResourcePreference() {
+		return userComputeResourcePreference;
+	}
+
+	public void setUserComputeResourcePreference(UserComputeResourcePreference userComputeResourcePreference) {
+		this.userComputeResourcePreference = userComputeResourcePreference;
 	}
 
 	public RemoteCluster getJobSubmissionRemoteCluster() {
@@ -286,7 +311,7 @@ public class ProcessContext {
 
 	public JobSubmissionProtocol getJobSubmissionProtocol() {
 		if (jobSubmissionProtocol == null) {
-			jobSubmissionProtocol = computeResourcePreference.getPreferredJobSubmissionProtocol();
+			jobSubmissionProtocol = gatewayComputeResourcePreference.getPreferredJobSubmissionProtocol();
 		}
 		return jobSubmissionProtocol;
 	}
@@ -297,7 +322,7 @@ public class ProcessContext {
 
 	public DataMovementProtocol getDataMovementProtocol() {
 		if (dataMovementProtocol == null) {
-			dataMovementProtocol = computeResourcePreference.getPreferredDataMovementProtocol();
+			dataMovementProtocol = gatewayComputeResourcePreference.getPreferredDataMovementProtocol();
 		}
 		return dataMovementProtocol;
 	}
@@ -358,12 +383,12 @@ public class ProcessContext {
 		this.jobModel = jobModel;
 	}
 
-	public ComputeResourcePreference getComputeResourcePreference() {
-		return computeResourcePreference;
+	private ComputeResourcePreference getGatewayComputeResourcePreference() {
+		return gatewayComputeResourcePreference;
 	}
 
-	public void setComputeResourcePreference(ComputeResourcePreference computeResourcePreference) {
-		this.computeResourcePreference = computeResourcePreference;
+	public void setGatewayComputeResourcePreference(ComputeResourcePreference gatewayComputeResourcePreference) {
+		this.gatewayComputeResourcePreference = gatewayComputeResourcePreference;
 	}
 
 	public ProcessState getProcessState() {
@@ -391,7 +416,29 @@ public class ProcessContext {
 	}
 
 	public String getComputeResourceId() {
-		return getComputeResourceDescription().getComputeResourceId();
+		if (isUseUserCRPref()) {
+			return userComputeResourcePreference.getComputeResourceId();
+		} else {
+			return gatewayComputeResourcePreference.getComputeResourceId();
+		}
+	}
+
+	public String getCredentialToken(){
+		if (isUseUserCRPref() && isValid(userComputeResourcePreference.getResourceSpecificCredentialStoreToken())) {
+			return userComputeResourcePreference.getResourceSpecificCredentialStoreToken();
+		} else if (isValid(gatewayComputeResourcePreference.getResourceSpecificCredentialStoreToken())) {
+			return gatewayComputeResourcePreference.getResourceSpecificCredentialStoreToken();
+		} else {
+			return gatewayResourceProfile.getCredentialStoreToken();
+		}
+	}
+
+	public JobSubmissionProtocol getPreferredJobSubmissionProtocol(){
+		return gatewayComputeResourcePreference.getPreferredJobSubmissionProtocol();
+	}
+
+	public DataMovementProtocol getPreferredDataMovementProtocol() {
+		return gatewayComputeResourcePreference.getPreferredDataMovementProtocol();
 	}
 
 	public void setMonitorMode(MonitorMode monitorMode) {
@@ -529,6 +576,72 @@ public class ProcessContext {
 		this.recoveryWithCancel = recoveryWithCancel;
 	}
 
+	public boolean isUseUserCRPref() {
+		return getProcessModel().isUseUserCRPref();
+	}
 
+	public String getLoginUserName(){
+		if (isUseUserCRPref() && isValid(userComputeResourcePreference.getLoginUserName())) {
+			return userComputeResourcePreference.getLoginUserName();
+		} else if (isValid(processModel.getProcessResourceSchedule().getOverrideLoginUserName())) {
+			return processModel.getProcessResourceSchedule().getOverrideLoginUserName();
+		} else {
+			return gatewayComputeResourcePreference.getLoginUserName();
+		}
+	}
+
+	private boolean isValid(String str) {
+		return str != null && !str.trim().isEmpty();
+	}
+
+	public String getUsageReportingGatewayId() {
+		return gatewayComputeResourcePreference.getUsageReportingGatewayId();
+	}
+
+	public String getAllocationProjectNumber() {
+		return gatewayComputeResourcePreference.getAllocationProjectNumber();
+	}
+
+	public String getReservation() {
+		long start, end ;
+		String reservation = null;
+		if (isUseUserCRPref() && isValid(userComputeResourcePreference.getReservation())) {
+			reservation = userComputeResourcePreference.getReservation();
+			start = userComputeResourcePreference.getReservationStartTime();
+			end = userComputeResourcePreference.getReservationEndTime();
+		}else {
+			reservation = gatewayComputeResourcePreference.getReservation();
+			start = gatewayComputeResourcePreference.getReservationStartTime();
+			end = gatewayComputeResourcePreference.getReservationEndTime();
+		}
+		if (start > 0 && start < end) {
+			long now = Calendar.getInstance().getTimeInMillis();
+			if (now > start && now < end) {
+				return reservation;
+			}
+		} else {
+			return reservation;
+		}
+		return reservation;
+	}
+
+	public String getQualityOfService() {
+		if (isUseUserCRPref() && isValid(userComputeResourcePreference.getQualityOfService())) {
+			return userComputeResourcePreference.getQualityOfService();
+		} else {
+			return gatewayComputeResourcePreference.getQualityOfService();
+		}
+	}
+
+
+	public String getQueueName() {
+		if (isUseUserCRPref() && isValid(userComputeResourcePreference.getPreferredBatchQueue())) {
+			return userComputeResourcePreference.getPreferredBatchQueue();
+		} else if (isValid(processModel.getProcessResourceSchedule().getQueueName())) {
+			return processModel.getProcessResourceSchedule().getQueueName();
+		} else {
+			return gatewayComputeResourcePreference.getPreferredBatchQueue();
+		}
+	}
 }
 

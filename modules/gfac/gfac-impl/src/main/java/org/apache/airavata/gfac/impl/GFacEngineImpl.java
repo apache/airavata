@@ -45,6 +45,8 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePrefer
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
@@ -101,15 +103,17 @@ public class GFacEngineImpl implements GFacEngine {
                         processContext.getExperimentId(), processContext.getProcessId());
             }
 
-            GatewayResourceProfile gatewayProfile = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
-            processContext.setGatewayResourceProfile(gatewayProfile);
-            ComputeResourcePreference computeResourcePreference = appCatalog.getGatewayProfile().getComputeResourcePreference
-                    (gatewayId, processModel.getComputeResourceId());
+            setGatewayResourceProfile(gatewayId, processContext);
+            setGatewayComputeResourcePreference(gatewayId, processContext);
+            if (processModel.isUseUserCRPref()) {
+                setUserResourceProfile(gatewayId, processContext);
+                setUserComputeResourcePreference(gatewayId, processContext);
+            }
             //FIXME: Temporary revert, this needs a proper fix.
 //            String scratchLocation = Factory.getScratchLocation(processContext);
-            String scratchLocation = computeResourcePreference.getScratchLocation();
+
+            String scratchLocation = processContext.getScratchLocation();
             scratchLocation = scratchLocation + File.separator + processId + File.separator;
-            processContext.setComputeResourcePreference(computeResourcePreference);
             StoragePreference storagePreference = appCatalog.getGatewayProfile().getStoragePreference(gatewayId, processModel.getStorageResourceId());
             StorageResourceDescription storageResource = appCatalog.getStorageResource().getStorageResource(processModel.getStorageResourceId());
             if (storageResource != null){
@@ -138,7 +142,7 @@ public class GFacEngineImpl implements GFacEngine {
                 processContext.setStorageResource(storageResource);
             }*/
             processContext.setComputeResourceDescription(appCatalog.getComputeResource().getComputeResource
-                    (processContext.getComputeResourcePreference().getComputeResourceId()));
+                    (processContext.getComputeResourceId()));
             processContext.setApplicationDeploymentDescription(appCatalog.getApplicationDeployment()
                     .getApplicationDeployement(processModel.getApplicationDeploymentId()));
             ApplicationInterfaceDescription applicationInterface = appCatalog.getApplicationInterface()
@@ -146,7 +150,7 @@ public class GFacEngineImpl implements GFacEngine {
             processContext.setApplicationInterfaceDescription(applicationInterface);
             String computeResourceId = processContext.getComputeResourceDescription().getComputeResourceId();
             String hostName = Factory.getDefaultAppCatalog().getComputeResource().getComputeResource(computeResourceId).getHostName();
-            ServerInfo serverInfo = new ServerInfo(Factory.getLoginUserName(processContext), hostName);
+            ServerInfo serverInfo = new ServerInfo(processContext.getLoginUserName(), hostName);
             processContext.setServerInfo(serverInfo);
             List<OutputDataObjectType> applicationOutputs = applicationInterface.getApplicationOutputs();
             if (applicationOutputs != null && !applicationOutputs.isEmpty()) {
@@ -218,6 +222,42 @@ public class GFacEngineImpl implements GFacEngine {
             throw new GFacException(msg, e);
         }
 
+    }
+
+    private void setGatewayComputeResourcePreference(String gatewayId, ProcessContext processContext) throws AppCatalogException {
+        AppCatalog appCatalog = processContext.getAppCatalog();
+        ProcessModel processModel = processContext.getProcessModel();
+        ComputeResourcePreference computeResourcePreference =
+                appCatalog.getGatewayProfile().getComputeResourcePreference(gatewayId, processModel.getComputeResourceId());
+        processContext.setGatewayComputeResourcePreference(computeResourcePreference);
+    }
+
+    private void setGatewayResourceProfile(String gatewayId, ProcessContext processContext) throws AppCatalogException {
+        AppCatalog appCatalog = processContext.getAppCatalog();
+        GatewayResourceProfile gatewayProfile = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
+        processContext.setGatewayResourceProfile(gatewayProfile);
+    }
+
+    private void setUserResourceProfile(String gatewayId, ProcessContext processContext) throws AppCatalogException {
+        AppCatalog appCatalog = processContext.getAppCatalog();
+        ProcessModel processModel = processContext.getProcessModel();
+
+        UserResourceProfile userResourceProfile =
+                appCatalog.getUserResourceProfile()
+                        .getUserResourceProfile(processModel.getUserName(), gatewayId);
+
+        processContext.setUserResourceProfile(userResourceProfile);
+    }
+
+    private void setUserComputeResourcePreference(String gatewayId, ProcessContext processContext) throws AppCatalogException {
+        AppCatalog appCatalog = processContext.getAppCatalog();
+        ProcessModel processModel = processContext.getProcessModel();
+        UserComputeResourcePreference userComputeResourcePreference =
+                appCatalog.getUserResourceProfile().getUserComputeResourcePreference(
+                        processModel.getUserName(),
+                        gatewayId,
+                        processModel.getComputeResourceId());
+        processContext.setUserComputeResourcePreference(userComputeResourcePreference);
     }
 
     private void checkRecoveryWithCancel(ProcessContext processContext) throws Exception {
@@ -364,7 +404,7 @@ public class GFacEngineImpl implements GFacEngine {
                                         submodel.setType(DataStageType.OUPUT);
                                         submodel.setProcessOutput(output);
                                         URI source = new URI(processContext.getDataMovementProtocol().name(),
-                                                Factory.getLoginUserName(processContext),
+                                                processContext.getLoginUserName(),
                                                 processContext.getComputeResourceDescription().getHostName(),
                                                 22,
                                                 processContext.getWorkingDir() + output.getValue(), null, null);

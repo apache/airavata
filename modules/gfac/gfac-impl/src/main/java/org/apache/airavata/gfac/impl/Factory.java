@@ -262,7 +262,7 @@ public abstract class Factory {
             AuthenticationInfo authentication = remoteCluster.getAuthentication();
             if (authentication instanceof SSHKeyAuthentication){
                 SSHKeyAuthentication sshKeyAuthentication = (SSHKeyAuthentication)authentication;
-                if (!sshKeyAuthentication.getUserName().equals(getLoginUserName(processContext))){
+                if (!sshKeyAuthentication.getUserName().equals(processContext.getLoginUserName())){
                     JobManagerConfiguration jobManagerConfiguration =
 							getJobManagerConfiguration(processContext.getResourceJobManager());
                     if (jobSubmissionProtocol == JobSubmissionProtocol.SSH ||
@@ -301,7 +301,7 @@ public abstract class Factory {
             AuthenticationInfo authentication = remoteCluster.getAuthentication();
             if (authentication instanceof SSHKeyAuthentication){
                 SSHKeyAuthentication sshKeyAuthentication = (SSHKeyAuthentication)authentication;
-                if (!sshKeyAuthentication.getUserName().equals(getLoginUserName(processContext))){
+                if (!sshKeyAuthentication.getUserName().equals(processContext.getLoginUserName())){
                     JobManagerConfiguration jobManagerConfiguration =
 							getJobManagerConfiguration(processContext.getResourceJobManager());
                     dataMovementProtocol = processContext.getDataMovementProtocol();
@@ -318,13 +318,7 @@ public abstract class Factory {
 
 	public static SSHKeyAuthentication getComputerResourceSSHKeyAuthentication(ProcessContext pc) throws GFacException {
         try {
-            ComputeResourcePreference computeResourcePreference = pc.getComputeResourcePreference();
-            String loginUserName = getLoginUserName(pc);
-            String credentialStoreToken = computeResourcePreference.getResourceSpecificCredentialStoreToken();
-            if (credentialStoreToken == null || credentialStoreToken.isEmpty()) {
-                credentialStoreToken = pc.getGatewayResourceProfile().getCredentialStoreToken();
-            }
-            return getSshKeyAuthentication(pc.getGatewayId(),loginUserName, credentialStoreToken);
+            return getSshKeyAuthentication(pc.getGatewayId(),pc.getLoginUserName(), pc.getCredentialToken());
         } catch (ApplicationSettingsException | IllegalAccessException | InstantiationException | CredentialStoreException e) {
             throw new GFacException("Couldn't build ssh authentication object", e);
         }
@@ -341,40 +335,6 @@ public abstract class Factory {
             return getSshKeyAuthentication(pc.getGatewayId(), loginUserName, credentialStoreToken);
         }  catch (ApplicationSettingsException | IllegalAccessException | InstantiationException | CredentialStoreException e) {
             throw new GFacException("Couldn't build ssh authentication object", e);
-        }
-    }
-
-    public static String  getLoginUserName(ProcessContext processContext) throws GFacException {
-        try {
-            ProcessModel processModel = processContext.getProcessModel();
-            String loginUserName = null;
-            String overrideLoginUserName = processModel.getProcessResourceSchedule().getOverrideLoginUserName();
-            if (overrideLoginUserName != null && !overrideLoginUserName.equals("")) {
-                loginUserName = overrideLoginUserName;
-            } else {
-                loginUserName = processContext.getComputeResourcePreference().getLoginUserName();
-            }
-
-            return loginUserName;
-        }  catch (Exception e) {
-            throw new GFacException("Couldn't fetch loginUserName", e);
-        }
-    }
-
-    public static String  getScratchLocation(ProcessContext processContext) throws GFacException {
-        try {
-            ProcessModel processModel = processContext.getProcessModel();
-            String scratchLocation = null;
-            String overrideScratchLocation = processModel.getProcessResourceSchedule().getOverrideScratchLocation();
-            if (overrideScratchLocation != null && !overrideScratchLocation.equals("")) {
-                scratchLocation = overrideScratchLocation;
-            } else {
-                scratchLocation = processContext.getComputeResourcePreference().getScratchLocation();
-            }
-
-            return scratchLocation;
-        }  catch (Exception e) {
-            throw new GFacException("Couldn't fetch scratchLocation", e);
         }
     }
 

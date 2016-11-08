@@ -284,6 +284,7 @@ public class ExperimentRegistry {
             processResource.setGenerateCert(process.isGenerateCert());
             processResource.setExperimentDataDir(process.getExperimentDataDir());
             processResource.setUserName(process.getUserName());
+            processResource.setUseUserCRPref(process.isUseUserCRPref());
             if(process.isEnableEmailNotification()){
                 processResource.setEnableEmailNotification(true);
                 if(process.getEmailAddresses() != null){
@@ -750,6 +751,7 @@ public class ExperimentRegistry {
             processResource.setGenerateCert(process.isGenerateCert());
             processResource.setExperimentDataDir(process.getExperimentDataDir());
             processResource.setUserName(process.getUserName());
+            processResource.setUseUserCRPref(process.isUseUserCRPref());
             if(process.isEnableEmailNotification()){
                 processResource.setEnableEmailNotification(true);
                 if(process.getEmailAddresses() != null){
@@ -1074,7 +1076,7 @@ public class ExperimentRegistry {
             ExperimentResource experimentResource = new ExperimentResource();
             ProcessResource resource = experimentResource.getProcess(processId);
             if (fieldName == null) {
-                return ThriftDataModelConversion.getProcesModel(resource);
+                return ThriftDataModelConversion.getProcessModel(resource);
             } else if (fieldName.equals(Constants.FieldConstants.ProcessConstants.PROCESS_ERROR)) {
                 return ThriftDataModelConversion.getErrorModel(resource.getProcessError());
             } else if (fieldName.equals(Constants.FieldConstants.ProcessConstants.PROCESS_STATUS)) {
@@ -1214,7 +1216,7 @@ public class ExperimentRegistry {
                 experimentResource.setExperimentId((String) value);
                 List<ProcessResource> resources = experimentResource.getProcessList();
                 for (ProcessResource processResource : resources) {
-                    ProcessModel processModel = ThriftDataModelConversion.getProcesModel(processResource);
+                    ProcessModel processModel = ThriftDataModelConversion.getProcessModel(processResource);
                     processes.add(processModel);
                 }
                 return processes;

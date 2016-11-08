@@ -359,7 +359,7 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static ProcessModel getProcesModel (ProcessResource processResource) throws RegistryException {
+    public static ProcessModel getProcessModel(ProcessResource processResource) throws RegistryException {
         if (processResource != null){
             ProcessModel processModel = new ProcessModel();
             processModel.setProcessId(processResource.getProcessId());
@@ -374,6 +374,7 @@ public class ThriftDataModelConversion {
             processModel.setComputeResourceId(processResource.getComputeResourceId());
             processModel.setEnableEmailNotification(processResource.getEnableEmailNotification());
             processModel.setExperimentDataDir(processResource.getExperimentDataDir());
+            processModel.setUseUserCRPref(processResource.isUseUserCRPref());
             if (processModel.isEnableEmailNotification()){
                 String notificationEmails = processResource.getEmailAddresses();
                 processModel.setEmailAddresses(getEmailAddresses(notificationEmails.split(",")));
