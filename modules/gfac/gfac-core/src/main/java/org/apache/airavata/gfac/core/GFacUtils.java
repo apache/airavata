@@ -502,11 +502,8 @@ public class GFacUtils {
         groovyMap.add(Script.GATEWAY_USER_NAME, processContext.getProcessModel().getUserName());
         groovyMap.add(Script.APPLICATION_NAME, processContext.getApplicationInterfaceDescription().getApplicationName());
 
-        ComputeResourcePreference crp = getComputeResourcePreference(processContext);
-        if (isValid(crp.getAllocationProjectNumber())) {
-            groovyMap.add(Script.ACCOUNT_STRING, crp.getAllocationProjectNumber());
-        }
-        groovyMap.add(Script.RESERVATION, getReservation(crp));
+        groovyMap.add(Script.ACCOUNT_STRING, processContext.getAllocationProjectNumber());
+        groovyMap.add(Script.RESERVATION, processContext.getReservation());
 
         // To make job name alpha numeric
         groovyMap.add(Script.JOB_NAME, "A" + String.valueOf(generateJobName()));
@@ -544,7 +541,7 @@ public class GFacUtils {
                 groovyMap.add(Script.NODES, totalNodeCount);
             }
             // qos per queue
-            String qoS = getQoS(crp.getQualityOfService(), scheduling.getQueueName());
+            String qoS = getQoS(processContext.getQualityOfService(), processContext.getQueueName());
             if (qoS != null) {
                 groovyMap.add(Script.QUALITY_OF_SERVICE, qoS);
             }
@@ -662,21 +659,6 @@ public class GFacUtils {
             log.info("Email list: " + emailIds);
             groovyMap.add(Script.MAIL_ADDRESS, emailIds);
         }
-    }
-
-    private static String getReservation(ComputeResourcePreference crp) {
-        long start = crp.getReservationStartTime();
-        long end = crp.getReservationEndTime();
-        String reservation = null;
-        if (start > 0 && start < end) {
-            long now = Calendar.getInstance().getTimeInMillis();
-            if (now > start && now < end) {
-                reservation = crp.getReservation();
-            }
-        } else {
-            reservation = crp.getReservation();
-        }
-       return reservation;
     }
 
     private static List<String> getProcessOutputValues(List<OutputDataObjectType> processOutputs) {
@@ -825,12 +807,11 @@ public class GFacUtils {
         }
     }
 
-    public static JobSubmissionInterface getPreferredJobSubmissionInterface(ProcessContext context) throws AppCatalogException {
+    public static JobSubmissionInterface getPreferredJobSubmissionInterface(ProcessContext processContext) throws AppCatalogException {
         try {
-            String resourceHostId = context.getComputeResourceDescription().getComputeResourceId();
-            ComputeResourcePreference resourcePreference = context.getComputeResourcePreference();
-            JobSubmissionProtocol preferredJobSubmissionProtocol = resourcePreference.getPreferredJobSubmissionProtocol();
-            ComputeResourceDescription resourceDescription = context.getAppCatalog().getComputeResource().getComputeResource(resourceHostId);
+            String resourceHostId = processContext.getComputeResourceDescription().getComputeResourceId();
+            JobSubmissionProtocol preferredJobSubmissionProtocol = processContext.getPreferredJobSubmissionProtocol();
+            ComputeResourceDescription resourceDescription = processContext.getAppCatalog().getComputeResource().getComputeResource(resourceHostId);
             List<JobSubmissionInterface> jobSubmissionInterfaces = resourceDescription.getJobSubmissionInterfaces();
             Map<JobSubmissionProtocol, List<JobSubmissionInterface>> orderedInterfaces = new HashMap<>();
             List<JobSubmissionInterface> interfaces = new ArrayList<>();
@@ -879,17 +860,6 @@ public class GFacUtils {
             ComputeResourcePreference preference = gatewayProfile.getComputeResourcePreference(context.getGatewayId()
 		            , resourceHostId);
             return preference.getPreferredJobSubmissionProtocol();
-        } catch (AppCatalogException e) {
-            log.error("Error occurred while initializing app catalog", e);
-            throw new AppCatalogException("Error occurred while initializing app catalog", e);
-        }
-    }
-
-    public static ComputeResourcePreference getComputeResourcePreference(ProcessContext context) throws AppCatalogException {
-        try {
-            GwyResourceProfile gatewayProfile = context.getAppCatalog().getGatewayProfile();
-            String resourceHostId = context.getComputeResourceDescription().getComputeResourceId();
-            return gatewayProfile.getComputeResourcePreference(context.getGatewayId(), resourceHostId);
         } catch (AppCatalogException e) {
             log.error("Error occurred while initializing app catalog", e);
             throw new AppCatalogException("Error occurred while initializing app catalog", e);

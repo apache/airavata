@@ -101,8 +101,8 @@ public class JSDLGenerator implements BESConstants {
 	private static void createJobIdentification(JobDefinitionType value, ProcessContext context) {
 
 		if (context != null) {
-			if (context.getComputeResourcePreference() != null && context.getComputeResourcePreference().getAllocationProjectNumber() != null)
-				JSDLUtils.addProjectName(value, context.getComputeResourcePreference().getAllocationProjectNumber());
+			if (context.getAllocationProjectNumber() != null)
+				JSDLUtils.addProjectName(value, context.getAllocationProjectNumber());
 			
 			if (context.getApplicationInterfaceDescription() != null && context.getApplicationInterfaceDescription().getApplicationDescription() != null)
 				JSDLUtils.getOrCreateJobIdentification(value).setDescription(context.getApplicationInterfaceDescription().getApplicationDescription());
@@ -111,5 +111,6 @@ public class JSDLGenerator implements BESConstants {
 				JSDLUtils.getOrCreateJobIdentification(value).setJobName(context.getApplicationInterfaceDescription().getApplicationName());
 		}
 	}
+
 
 }
