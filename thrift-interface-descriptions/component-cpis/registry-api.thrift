@@ -2336,6 +2336,14 @@ service RegistryService {
                            3: required string userStorageId)
                      throws (1: registry_api_errors.RegistryServiceException rse)
 
+               /**
+                * Get queue statuses of all compute resources
+               **/
+               list<status_models.QueueStatusModel> getLatestQueueStatuses()
+                     throws (1: registry_api_errors.RegistryServiceException rse)
+
+               void registerQueueStatuses(1: required list<status_models.QueueStatusModel> queueStatuses)
+                                    throws (1: registry_api_errors.RegistryServiceException rse)
 
 
 

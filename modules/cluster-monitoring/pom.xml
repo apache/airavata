@@ -14,9 +14,34 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>1.3.2</version>
+            <artifactId>airavata-data-models</artifactId>
+            <groupId>org.apache.airavata</groupId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <artifactId>airavata-server-configuration</artifactId>
+            <groupId>org.apache.airavata</groupId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <artifactId>airavata-credential-store</artifactId>
+            <groupId>org.apache.airavata</groupId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <artifactId>registry-api-stubs</artifactId>
+            <groupId>org.apache.airavata</groupId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>2.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz-jobs</artifactId>
+            <version>2.2.1</version>
         </dependency>
         <dependency>
             <groupId>com.jcraft</groupId>

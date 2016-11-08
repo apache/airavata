@@ -480,7 +480,7 @@ public class GFacUtils {
     public static String getZKGfacServersParentPath() {
         return ZKPaths.makePath(ZkConstants.ZOOKEEPER_SERVERS_NODE, ZkConstants.ZOOKEEPER_GFAC_SERVER_NODE);
     }
-    public static GroovyMap createGroovyMap(ProcessContext processContext)
+    public static GroovyMap crateGroovyMap(ProcessContext processContext)
             throws ApplicationSettingsException, AppCatalogException, GFacException {
         return createGroovyMap(processContext, null);
     }
@@ -488,146 +488,140 @@ public class GFacUtils {
             throws GFacException, AppCatalogException, ApplicationSettingsException {
 
         GroovyMap groovyMap = new GroovyMap();
-        try {
-            ProcessModel processModel = processContext.getProcessModel();
-            ResourceJobManager resourceJobManager = processContext.getResourceJobManager();
-            setMailAddresses(processContext, groovyMap); // set email options and addresses
+        ProcessModel processModel = processContext.getProcessModel();
+        ResourceJobManager resourceJobManager = getResourceJobManager(processContext);
+        setMailAddresses(processContext, groovyMap); // set email options and addresses
 
-            groovyMap.add(Script.INPUT_DIR, processContext.getInputDir());
-            groovyMap.add(Script.OUTPUT_DIR, processContext.getOutputDir());
-            groovyMap.add(Script.EXECUTABLE_PATH, processContext.getApplicationDeploymentDescription().getExecutablePath());
-            groovyMap.add(Script.STANDARD_OUT_FILE, processContext.getStdoutLocation());
-            groovyMap.add(Script.STANDARD_ERROR_FILE, processContext.getStderrLocation());
-            groovyMap.add(Script.SCRATCH_LOCATION, processContext.getScratchLocation());
-            groovyMap.add(Script.GATEWAY_ID, processContext.getGatewayId());
-            groovyMap.add(Script.GATEWAY_USER_NAME, processContext.getProcessModel().getUserName());
-            groovyMap.add(Script.APPLICATION_NAME, processContext.getApplicationInterfaceDescription().getApplicationName());
+        groovyMap.add(Script.INPUT_DIR, processContext.getInputDir());
+        groovyMap.add(Script.OUTPUT_DIR, processContext.getOutputDir());
+        groovyMap.add(Script.EXECUTABLE_PATH, processContext.getApplicationDeploymentDescription().getExecutablePath());
+        groovyMap.add(Script.STANDARD_OUT_FILE, processContext.getStdoutLocation());
+        groovyMap.add(Script.STANDARD_ERROR_FILE, processContext.getStderrLocation());
+        groovyMap.add(Script.SCRATCH_LOCATION, processContext.getScratchLocation());
+        groovyMap.add(Script.GATEWAY_ID, processContext.getGatewayId());
+        groovyMap.add(Script.GATEWAY_USER_NAME, processContext.getProcessModel().getUserName());
+        groovyMap.add(Script.APPLICATION_NAME, processContext.getApplicationInterfaceDescription().getApplicationName());
 
-            ComputeResourcePreference crp = getComputeResourcePreference(processContext);
-            if (isValid(crp.getAllocationProjectNumber())) {
-                groovyMap.add(Script.ACCOUNT_STRING, crp.getAllocationProjectNumber());
-            }
-            groovyMap.add(Script.RESERVATION, getReservation(crp));
+        ComputeResourcePreference crp = getComputeResourcePreference(processContext);
+        if (isValid(crp.getAllocationProjectNumber())) {
+            groovyMap.add(Script.ACCOUNT_STRING, crp.getAllocationProjectNumber());
+        }
+        groovyMap.add(Script.RESERVATION, getReservation(crp));
 
-            // To make job name alpha numeric
-            groovyMap.add(Script.JOB_NAME, "A" + String.valueOf(generateJobName()));
-            groovyMap.add(Script.WORKING_DIR, processContext.getWorkingDir());
+        // To make job name alpha numeric
+        groovyMap.add(Script.JOB_NAME, "A" + String.valueOf(generateJobName()));
+        groovyMap.add(Script.WORKING_DIR, processContext.getWorkingDir());
 
-            List<String> inputValues = getProcessInputValues(processModel.getProcessInputs());
-            inputValues.addAll(getProcessOutputValues(processModel.getProcessOutputs()));
-            groovyMap.add(Script.INPUTS, inputValues);
+        List<String> inputValues = getProcessInputValues(processModel.getProcessInputs());
+        inputValues.addAll(getProcessOutputValues(processModel.getProcessOutputs()));
+        groovyMap.add(Script.INPUTS, inputValues);
 
-            groovyMap.add(Script.USER_NAME, processContext.getJobSubmissionRemoteCluster().getServerInfo().getUserName());
-            groovyMap.add(Script.SHELL_NAME, "/bin/bash");
-            // get walltime
-            if (taskContext != null) {
-                try {
-                    JobSubmissionTaskModel jobSubmissionTaskModel = ((JobSubmissionTaskModel) taskContext.getSubTaskModel());
-                    if (jobSubmissionTaskModel.getWallTime() > 0) {
-                        groovyMap.add(Script.MAX_WALL_TIME,
-                                GFacUtils.maxWallTimeCalculator(jobSubmissionTaskModel.getWallTime()));
-                    }
-                } catch (TException e) {
-                    log.error("Error while getting job submission sub task model", e);
-                }
-            }
-
-            // NOTE: Give precedence to data comes with experiment
-            ComputationalResourceSchedulingModel scheduling = processModel.getProcessResourceSchedule();
-            if (scheduling != null) {
-                int totalNodeCount = scheduling.getNodeCount();
-                int totalCPUCount = scheduling.getTotalCPUCount();
-
-                if (isValid(scheduling.getQueueName())) {
-                    groovyMap.add(Script.QUEUE_NAME, scheduling.getQueueName());
-                }
-                if (totalNodeCount > 0) {
-                    groovyMap.add(Script.NODES, totalNodeCount);
-                }
-                // qos per queue
-                String qoS = getQoS(crp.getQualityOfService(), scheduling.getQueueName());
-                if (qoS != null) {
-                    groovyMap.add(Script.QUALITY_OF_SERVICE, qoS);
-                }
-                if (totalCPUCount > 0) {
-                    int ppn = totalCPUCount / totalNodeCount;
-                    groovyMap.add(Script.PROCESS_PER_NODE, ppn);
-                    groovyMap.add(Script.CPU_COUNT, totalCPUCount);
-                }
-                // max wall time may be set before this level if jobsubmission task has wall time configured to this job,
-                // if so we ignore scheduling configuration.
-                if (scheduling.getWallTimeLimit() > 0 && groovyMap.get(Script.MAX_WALL_TIME) == null) {
+        groovyMap.add(Script.USER_NAME, processContext.getJobSubmissionRemoteCluster().getServerInfo().getUserName());
+        groovyMap.add(Script.SHELL_NAME, "/bin/bash");
+        // get walltime
+        if (taskContext != null) {
+            try {
+                JobSubmissionTaskModel jobSubmissionTaskModel = ((JobSubmissionTaskModel) taskContext.getSubTaskModel());
+                if (jobSubmissionTaskModel.getWallTime() > 0) {
                     groovyMap.add(Script.MAX_WALL_TIME,
-                            GFacUtils.maxWallTimeCalculator(scheduling.getWallTimeLimit()));
-                    if (resourceJobManager != null) {
-                        if (resourceJobManager.getResourceJobManagerType().equals(ResourceJobManagerType.LSF)) {
-                            groovyMap.add(Script.MAX_WALL_TIME,
-                                    GFacUtils.maxWallTimeCalculator(scheduling.getWallTimeLimit()));
-                        }
+                            GFacUtils.maxWallTimeCalculator(jobSubmissionTaskModel.getWallTime()));
+                }
+            } catch (TException e) {
+                log.error("Error while getting job submission sub task model", e);
+            }
+        }
+
+        // NOTE: Give precedence to data comes with experiment
+        ComputationalResourceSchedulingModel scheduling = processModel.getProcessResourceSchedule();
+        if (scheduling != null) {
+            int totalNodeCount = scheduling.getNodeCount();
+            int totalCPUCount = scheduling.getTotalCPUCount();
+
+            if (isValid(scheduling.getQueueName())) {
+                groovyMap.add(Script.QUEUE_NAME, scheduling.getQueueName());
+            }
+            if (totalNodeCount > 0) {
+                groovyMap.add(Script.NODES, totalNodeCount);
+            }
+            // qos per queue
+            String qoS = getQoS(crp.getQualityOfService(), scheduling.getQueueName());
+            if (qoS != null) {
+                groovyMap.add(Script.QUALITY_OF_SERVICE, qoS);
+            }
+            if (totalCPUCount > 0) {
+                int ppn = totalCPUCount / totalNodeCount;
+                groovyMap.add(Script.PROCESS_PER_NODE, ppn);
+                groovyMap.add(Script.CPU_COUNT, totalCPUCount);
+            }
+            // max wall time may be set before this level if jobsubmission task has wall time configured to this job,
+            // if so we ignore scheduling configuration.
+            if (scheduling.getWallTimeLimit() > 0 && groovyMap.get(Script.MAX_WALL_TIME) == null) {
+                groovyMap.add(Script.MAX_WALL_TIME,
+                        GFacUtils.maxWallTimeCalculator(scheduling.getWallTimeLimit()));
+                if (resourceJobManager != null) {
+                    if (resourceJobManager.getResourceJobManagerType().equals(ResourceJobManagerType.LSF)) {
+                        groovyMap.add(Script.MAX_WALL_TIME,
+                                GFacUtils.maxWallTimeCalculator(scheduling.getWallTimeLimit()));
                     }
                 }
-                if (scheduling.getTotalPhysicalMemory() > 0) {
-                    groovyMap.add(Script.USED_MEM, scheduling.getTotalPhysicalMemory());
-                }
-                if (isValid(scheduling.getOverrideLoginUserName())) {
-                    groovyMap.add(Script.USER_NAME, scheduling.getOverrideLoginUserName());
-                }
-                if (isValid(scheduling.getOverrideAllocationProjectNumber())) {
-                    groovyMap.add(Script.ACCOUNT_STRING, scheduling.getOverrideAllocationProjectNumber());
-                }
-                if (isValid(scheduling.getStaticWorkingDir())) {
-                    groovyMap.add(Script.WORKING_DIR, scheduling.getStaticWorkingDir());
-                }
-            } else {
-                log.error("Task scheduling cannot be null at this point..");
             }
-
-            ApplicationDeploymentDescription appDepDescription = processContext.getApplicationDeploymentDescription();
-            List<CommandObject> moduleCmds = appDepDescription.getModuleLoadCmds();
-            if (moduleCmds != null) {
-                List<String> modulesCmdCollect = moduleCmds.stream()
-                        .sorted((e1, e2) -> e1.getCommandOrder() - e2.getCommandOrder())
-                        .map(map -> map.getCommand())
-                        .collect(Collectors.toList());
-                groovyMap.add(Script.MODULE_COMMANDS, modulesCmdCollect);
+            if (scheduling.getTotalPhysicalMemory() > 0) {
+                groovyMap.add(Script.USED_MEM, scheduling.getTotalPhysicalMemory());
             }
-
-            List<CommandObject> preJobCommands = appDepDescription.getPreJobCommands();
-            if (preJobCommands != null) {
-                List<String> preJobCmdCollect = preJobCommands.stream()
-                        .sorted((e1, e2) -> e1.getCommandOrder() - e2.getCommandOrder())
-                        .map(map -> parseCommands(map.getCommand(), groovyMap))
-                        .collect(Collectors.toList());
-                groovyMap.add(Script.PRE_JOB_COMMANDS, preJobCmdCollect);
+            if (isValid(scheduling.getOverrideLoginUserName())) {
+                groovyMap.add(Script.USER_NAME, scheduling.getOverrideLoginUserName());
             }
-
-            List<CommandObject> postJobCommands = appDepDescription.getPostJobCommands();
-            if (postJobCommands != null) {
-                List<String> postJobCmdCollect = postJobCommands.stream()
-                        .sorted((e1, e2) -> e1.getCommandOrder() - e2.getCommandOrder())
-                        .map(map -> parseCommands(map.getCommand(), groovyMap))
-                        .collect(Collectors.toList());
-                groovyMap.add(Script.POST_JOB_COMMANDS, postJobCmdCollect);
+            if (isValid(scheduling.getOverrideAllocationProjectNumber())) {
+                groovyMap.add(Script.ACCOUNT_STRING, scheduling.getOverrideAllocationProjectNumber());
             }
+            if (isValid(scheduling.getStaticWorkingDir())) {
+                groovyMap.add(Script.WORKING_DIR, scheduling.getStaticWorkingDir());
+            }
+        } else {
+            log.error("Task scheduling cannot be null at this point..");
+        }
 
-            ApplicationParallelismType parallelism = appDepDescription.getParallelism();
+        ApplicationDeploymentDescription appDepDescription = processContext.getApplicationDeploymentDescription();
+        List<CommandObject> moduleCmds = appDepDescription.getModuleLoadCmds();
+        if (moduleCmds != null) {
+            List<String> modulesCmdCollect = moduleCmds.stream()
+                    .sorted((e1, e2) -> e1.getCommandOrder() - e2.getCommandOrder())
+                    .map(map -> map.getCommand())
+                    .collect(Collectors.toList());
+            groovyMap.add(Script.MODULE_COMMANDS, modulesCmdCollect);
+        }
 
-            if (parallelism != null && resourceJobManager != null) {
-                Map<ApplicationParallelismType, String> parallelismPrefix = resourceJobManager.getParallelismPrefix();
-                if (parallelism != ApplicationParallelismType.SERIAL) {
-                    if (parallelismPrefix != null){
-                        String parallelismCommand = parallelismPrefix.get(parallelism);
-                        if (parallelismCommand != null){
-                            groovyMap.add(Script.JOB_SUBMITTER_COMMAND, parallelismCommand);
-                        }else {
-                            throw new GFacException("Parallelism prefix is not defined for given parallelism type " + parallelism + ".. Please define the parallelism prefix at App Catalog");
-                        }
+        List<CommandObject> preJobCommands = appDepDescription.getPreJobCommands();
+        if (preJobCommands != null) {
+            List<String> preJobCmdCollect = preJobCommands.stream()
+                    .sorted((e1, e2) -> e1.getCommandOrder() - e2.getCommandOrder())
+                    .map(map -> parseCommands(map.getCommand(), groovyMap))
+                    .collect(Collectors.toList());
+            groovyMap.add(Script.PRE_JOB_COMMANDS, preJobCmdCollect);
+        }
+
+        List<CommandObject> postJobCommands = appDepDescription.getPostJobCommands();
+        if (postJobCommands != null) {
+            List<String> postJobCmdCollect = postJobCommands.stream()
+                    .sorted((e1, e2) -> e1.getCommandOrder() - e2.getCommandOrder())
+                    .map(map -> parseCommands(map.getCommand(), groovyMap))
+                    .collect(Collectors.toList());
+            groovyMap.add(Script.POST_JOB_COMMANDS, postJobCmdCollect);
+        }
+
+        ApplicationParallelismType parallelism = appDepDescription.getParallelism();
+        Map<ApplicationParallelismType, String> parallelismPrefix = processContext.getResourceJobManager().getParallelismPrefix();
+        if (parallelism != null) {
+            if (parallelism != ApplicationParallelismType.SERIAL) {
+                if (parallelismPrefix != null){
+                    String parallelismCommand = parallelismPrefix.get(parallelism);
+                    if (parallelismCommand != null){
+                        groovyMap.add(Script.JOB_SUBMITTER_COMMAND, parallelismCommand);
+                    }else {
+                        throw new GFacException("Parallelism prefix is not defined for given parallelism type " + parallelism + ".. Please define the parallelism prefix at App Catalog");
                     }
-                } // FIXME what if type if SERIAL type
+                }
             }
-        } catch (Exception e) {
-            log.error("Error while creating groovy map", e);
-            throw e;
         }
         return groovyMap;
     }
@@ -903,51 +897,26 @@ public class GFacUtils {
     }
 
     public static File createJobFile(GroovyMap groovyMap, TaskContext tc, JobManagerConfiguration jMC)
-            throws GFacException {
+            throws GFacException{
+
+        URL templateUrl = ApplicationSettings.loadFile(jMC.getJobDescriptionTemplateName());
+        if (templateUrl == null) {
+            String error = "System configuration file '" + jMC.getJobDescriptionTemplateName()
+                    + "' not found in the classpath";
+            throw new GFacException(error);
+        }
         try {
+            File template = new File(templateUrl.getPath());
+            TemplateEngine engine = new GStringTemplateEngine();
+            Writable make = engine.createTemplate(template).make(groovyMap);
+
             int number = new SecureRandom().nextInt();
             number = (number < 0 ? -number : number);
             File tempJobFile = new File(GFacUtils.getLocalDataDir(tc), "job_" + Integer.toString(number) + jMC.getScriptExtension());
-            FileUtils.writeStringToFile(tempJobFile, generateScript(groovyMap, jMC.getJobDescriptionTemplateName()));
+            FileUtils.writeStringToFile(tempJobFile, make.toString());
             return tempJobFile;
-        } catch (IOException e) {
-            throw new GFacException("Error while writing script content to temp file");
-        }
-    }
-
-    public static String generateScript(GroovyMap groovyMap, String templateName) throws GFacException {
-        URL templateUrl = ApplicationSettings.loadFile(templateName);
-        if (templateUrl == null) {
-            String error = "Template file '" + templateName + "' not found";
-            throw new GFacException(error);
-        }
-        File template = new File(templateUrl.getPath());
-        TemplateEngine engine = new GStringTemplateEngine();
-        Writable make;
-        try {
-            make = engine.createTemplate(template).make(groovyMap);
-        } catch (Exception e) {
-            throw new GFacException("Error while generating script using groovy map");
-        }
-        return make.toString();
-    }
-
-    public static String getTemplateFileName(ResourceJobManagerType resourceJobManagerType) {
-        switch (resourceJobManagerType) {
-            case FORK:
-                return "UGE_Groovy.template";
-            case PBS:
-                return "PBS_Groovy.template";
-            case SLURM:
-                return "SLURM_Groovy.template";
-            case UGE:
-                return "UGE_Groovy.template";
-            case LSF:
-                return "LSF_Groovy.template";
-            case CLOUD:
-                return "CLOUD_Groovy.template";
-            default:
-                return null;
+        } catch (ClassNotFoundException | IOException e) {
+            throw new GFacException("Error while parsing template and generating script file");
         }
     }
 

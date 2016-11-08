@@ -108,6 +108,8 @@ class TaskStatus;
 
 class JobStatus;
 
+class QueueStatusModel;
+
 typedef struct _ExperimentStatus__isset {
   _ExperimentStatus__isset() : timeOfStateChange(false), reason(false) {}
   bool timeOfStateChange :1;
@@ -347,6 +349,71 @@ class JobStatus {
 void swap(JobStatus &a, JobStatus &b);
 
 inline std::ostream& operator<<(std::ostream& out, const JobStatus& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
+
+class QueueStatusModel {
+ public:
+
+  QueueStatusModel(const QueueStatusModel&);
+  QueueStatusModel& operator=(const QueueStatusModel&);
+  QueueStatusModel() : hostName(), queueName(), queueUp(0), runningJobs(0), queuedJobs(0), time(0) {
+  }
+
+  virtual ~QueueStatusModel() throw();
+  std::string hostName;
+  std::string queueName;
+  bool queueUp;
+  int32_t runningJobs;
+  int32_t queuedJobs;
+  int64_t time;
+
+  void __set_hostName(const std::string& val);
+
+  void __set_queueName(const std::string& val);
+
+  void __set_queueUp(const bool val);
+
+  void __set_runningJobs(const int32_t val);
+
+  void __set_queuedJobs(const int32_t val);
+
+  void __set_time(const int64_t val);
+
+  bool operator == (const QueueStatusModel & rhs) const
+  {
+    if (!(hostName == rhs.hostName))
+      return false;
+    if (!(queueName == rhs.queueName))
+      return false;
+    if (!(queueUp == rhs.queueUp))
+      return false;
+    if (!(runningJobs == rhs.runningJobs))
+      return false;
+    if (!(queuedJobs == rhs.queuedJobs))
+      return false;
+    if (!(time == rhs.time))
+      return false;
+    return true;
+  }
+  bool operator != (const QueueStatusModel &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const QueueStatusModel & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(QueueStatusModel &a, QueueStatusModel &b);
+
+inline std::ostream& operator<<(std::ostream& out, const QueueStatusModel& obj)
 {
   obj.printTo(out);
   return out;

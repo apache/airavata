@@ -2831,6 +2831,7 @@ class AiravataIf {
    */
   virtual bool deleteUserStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID, const std::string& userStorageId) = 0;
   virtual void getAllWorkflows(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) = 0;
+  virtual void getLatestQueueStatuses(std::vector< ::apache::airavata::model::status::QueueStatusModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) = 0;
 
   /**
    * 
@@ -3402,6 +3403,9 @@ class AiravataNull : virtual public AiravataIf {
     return _return;
   }
   void getAllWorkflows(std::vector<std::string> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */) {
+    return;
+  }
+  void getLatestQueueStatuses(std::vector< ::apache::airavata::model::status::QueueStatusModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */) {
     return;
   }
   void getWorkflow( ::WorkflowModel& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* workflowTemplateId */) {
@@ -24331,6 +24335,136 @@ class Airavata_getAllWorkflows_presult {
 };
 
 
+class Airavata_getLatestQueueStatuses_args {
+ public:
+
+  Airavata_getLatestQueueStatuses_args(const Airavata_getLatestQueueStatuses_args&);
+  Airavata_getLatestQueueStatuses_args& operator=(const Airavata_getLatestQueueStatuses_args&);
+  Airavata_getLatestQueueStatuses_args() {
+  }
+
+  virtual ~Airavata_getLatestQueueStatuses_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  bool operator == (const Airavata_getLatestQueueStatuses_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getLatestQueueStatuses_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getLatestQueueStatuses_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getLatestQueueStatuses_pargs {
+ public:
+
+
+  virtual ~Airavata_getLatestQueueStatuses_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getLatestQueueStatuses_result__isset {
+  _Airavata_getLatestQueueStatuses_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getLatestQueueStatuses_result__isset;
+
+class Airavata_getLatestQueueStatuses_result {
+ public:
+
+  Airavata_getLatestQueueStatuses_result(const Airavata_getLatestQueueStatuses_result&);
+  Airavata_getLatestQueueStatuses_result& operator=(const Airavata_getLatestQueueStatuses_result&);
+  Airavata_getLatestQueueStatuses_result() {
+  }
+
+  virtual ~Airavata_getLatestQueueStatuses_result() throw();
+  std::vector< ::apache::airavata::model::status::QueueStatusModel>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getLatestQueueStatuses_result__isset __isset;
+
+  void __set_success(const std::vector< ::apache::airavata::model::status::QueueStatusModel> & val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_getLatestQueueStatuses_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getLatestQueueStatuses_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getLatestQueueStatuses_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getLatestQueueStatuses_presult__isset {
+  _Airavata_getLatestQueueStatuses_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getLatestQueueStatuses_presult__isset;
+
+class Airavata_getLatestQueueStatuses_presult {
+ public:
+
+
+  virtual ~Airavata_getLatestQueueStatuses_presult() throw();
+  std::vector< ::apache::airavata::model::status::QueueStatusModel> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getLatestQueueStatuses_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
 class Airavata_getWorkflow_args {
  public:
 
@@ -27445,6 +27579,9 @@ class AiravataClient : virtual public AiravataIf {
   void getAllWorkflows(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void send_getAllWorkflows(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void recv_getAllWorkflows(std::vector<std::string> & _return);
+  void getLatestQueueStatuses(std::vector< ::apache::airavata::model::status::QueueStatusModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken);
+  void send_getLatestQueueStatuses(const  ::apache::airavata::model::security::AuthzToken& authzToken);
+  void recv_getLatestQueueStatuses(std::vector< ::apache::airavata::model::status::QueueStatusModel> & _return);
   void getWorkflow( ::WorkflowModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId);
   void send_getWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId);
   void recv_getWorkflow( ::WorkflowModel& _return);
@@ -27665,6 +27802,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_deleteUserComputeResourcePreference(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteUserStoragePreference(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAllWorkflows(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getLatestQueueStatuses(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getWorkflow(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteWorkflow(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_registerWorkflow(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -27835,6 +27973,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["deleteUserComputeResourcePreference"] = &AiravataProcessor::process_deleteUserComputeResourcePreference;
     processMap_["deleteUserStoragePreference"] = &AiravataProcessor::process_deleteUserStoragePreference;
     processMap_["getAllWorkflows"] = &AiravataProcessor::process_getAllWorkflows;
+    processMap_["getLatestQueueStatuses"] = &AiravataProcessor::process_getLatestQueueStatuses;
     processMap_["getWorkflow"] = &AiravataProcessor::process_getWorkflow;
     processMap_["deleteWorkflow"] = &AiravataProcessor::process_deleteWorkflow;
     processMap_["registerWorkflow"] = &AiravataProcessor::process_registerWorkflow;
@@ -29302,6 +29441,16 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
+  void getLatestQueueStatuses(std::vector< ::apache::airavata::model::status::QueueStatusModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getLatestQueueStatuses(_return, authzToken);
+    }
+    ifaces_[i]->getLatestQueueStatuses(_return, authzToken);
+    return;
+  }
+
   void getWorkflow( ::WorkflowModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
@@ -29958,6 +30107,9 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void getAllWorkflows(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   int32_t send_getAllWorkflows(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void recv_getAllWorkflows(std::vector<std::string> & _return, const int32_t seqid);
+  void getLatestQueueStatuses(std::vector< ::apache::airavata::model::status::QueueStatusModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken);
+  int32_t send_getLatestQueueStatuses(const  ::apache::airavata::model::security::AuthzToken& authzToken);
+  void recv_getLatestQueueStatuses(std::vector< ::apache::airavata::model::status::QueueStatusModel> & _return, const int32_t seqid);
   void getWorkflow( ::WorkflowModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId);
   int32_t send_getWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId);
   void recv_getWorkflow( ::WorkflowModel& _return, const int32_t seqid);

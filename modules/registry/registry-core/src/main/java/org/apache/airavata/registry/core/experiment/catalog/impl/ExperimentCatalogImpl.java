@@ -32,10 +32,7 @@ import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.status.ExperimentStatus;
-import org.apache.airavata.model.status.JobStatus;
-import org.apache.airavata.model.status.ProcessStatus;
-import org.apache.airavata.model.status.TaskStatus;
+import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Notification;
@@ -50,6 +47,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ExperimentCatalogImpl implements ExperimentCatalog {
     private GatewayResource gatewayResource;
@@ -129,6 +127,8 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     return gatewayRegistry.addGateway((Gateway)newObjectToAdd);
                 case NOTIFICATION:
                     return notificationRegistry.createNotification((Notification)newObjectToAdd);
+                case QUEUE_STATUS:
+                    return experimentRegistry.createQueueStatuses((List<QueueStatusModel>) newObjectToAdd);
                 default:
                     logger.error("Unsupported top level type..", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
@@ -466,16 +466,16 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                 case PROJECT:
                     List<Project> projectList = projectRegistry
                             .getProjectList(fieldName, value, limit, offset, orderByIdentifier, resultOrderType);
-                    for (Project project : projectList ){
-                        result.add(project);
-                    }
+                    result.addAll(projectList.stream().collect(Collectors.toList()));
                     return result;
                 case EXPERIMENT:
                     List<ExperimentModel> experimentList = experimentRegistry.getExperimentList(fieldName, value,
                             limit, offset, orderByIdentifier, resultOrderType);
-                    for (ExperimentModel experiment : experimentList) {
-                        result.add(experiment);
-                    }
+                    result.addAll(experimentList.stream().collect(Collectors.toList()));
+                    return result;
+                case QUEUE_STATUS:
+                    List<QueueStatusModel> queueStatusModelsList = experimentRegistry.getLatestQueueStatuses();
+                    result.addAll(queueStatusModelsList.stream().collect(Collectors.toList()));
                     return result;
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
