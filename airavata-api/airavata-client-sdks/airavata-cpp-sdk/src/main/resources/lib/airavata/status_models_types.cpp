@@ -666,4 +666,205 @@ void JobStatus::printTo(std::ostream& out) const {
   out << ")";
 }
 
+
+QueueStatusModel::~QueueStatusModel() throw() {
+}
+
+
+void QueueStatusModel::__set_hostName(const std::string& val) {
+  this->hostName = val;
+}
+
+void QueueStatusModel::__set_queueName(const std::string& val) {
+  this->queueName = val;
+}
+
+void QueueStatusModel::__set_queueUp(const bool val) {
+  this->queueUp = val;
+}
+
+void QueueStatusModel::__set_runningJobs(const int32_t val) {
+  this->runningJobs = val;
+}
+
+void QueueStatusModel::__set_queuedJobs(const int32_t val) {
+  this->queuedJobs = val;
+}
+
+void QueueStatusModel::__set_time(const int64_t val) {
+  this->time = val;
+}
+
+uint32_t QueueStatusModel::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_hostName = false;
+  bool isset_queueName = false;
+  bool isset_queueUp = false;
+  bool isset_runningJobs = false;
+  bool isset_queuedJobs = false;
+  bool isset_time = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->hostName);
+          isset_hostName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->queueName);
+          isset_queueName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->queueUp);
+          isset_queueUp = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->runningJobs);
+          isset_runningJobs = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 5:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->queuedJobs);
+          isset_queuedJobs = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 6:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->time);
+          isset_time = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_hostName)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_queueName)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_queueUp)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_runningJobs)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_queuedJobs)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_time)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t QueueStatusModel::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("QueueStatusModel");
+
+  xfer += oprot->writeFieldBegin("hostName", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->hostName);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("queueName", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->queueName);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("queueUp", ::apache::thrift::protocol::T_BOOL, 3);
+  xfer += oprot->writeBool(this->queueUp);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("runningJobs", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32(this->runningJobs);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("queuedJobs", ::apache::thrift::protocol::T_I32, 5);
+  xfer += oprot->writeI32(this->queuedJobs);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("time", ::apache::thrift::protocol::T_I64, 6);
+  xfer += oprot->writeI64(this->time);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(QueueStatusModel &a, QueueStatusModel &b) {
+  using ::std::swap;
+  swap(a.hostName, b.hostName);
+  swap(a.queueName, b.queueName);
+  swap(a.queueUp, b.queueUp);
+  swap(a.runningJobs, b.runningJobs);
+  swap(a.queuedJobs, b.queuedJobs);
+  swap(a.time, b.time);
+}
+
+QueueStatusModel::QueueStatusModel(const QueueStatusModel& other12) {
+  hostName = other12.hostName;
+  queueName = other12.queueName;
+  queueUp = other12.queueUp;
+  runningJobs = other12.runningJobs;
+  queuedJobs = other12.queuedJobs;
+  time = other12.time;
+}
+QueueStatusModel& QueueStatusModel::operator=(const QueueStatusModel& other13) {
+  hostName = other13.hostName;
+  queueName = other13.queueName;
+  queueUp = other13.queueUp;
+  runningJobs = other13.runningJobs;
+  queuedJobs = other13.queuedJobs;
+  time = other13.time;
+  return *this;
+}
+void QueueStatusModel::printTo(std::ostream& out) const {
+  using ::apache::thrift::to_string;
+  out << "QueueStatusModel(";
+  out << "hostName=" << to_string(hostName);
+  out << ", " << "queueName=" << to_string(queueName);
+  out << ", " << "queueUp=" << to_string(queueUp);
+  out << ", " << "runningJobs=" << to_string(runningJobs);
+  out << ", " << "queuedJobs=" << to_string(queuedJobs);
+  out << ", " << "time=" << to_string(time);
+  out << ")";
+}
+
 }}}} // namespace

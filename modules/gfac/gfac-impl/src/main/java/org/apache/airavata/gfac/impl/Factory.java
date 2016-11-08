@@ -199,25 +199,22 @@ public abstract class Factory {
 					.getResourceJobManagerType().name());
 		}
 
-		String templateFileName = GFacUtils.getTemplateFileName(resourceJobManager.getResourceJobManagerType());
-
 		switch (resourceJobManager.getResourceJobManagerType()) {
 			case PBS:
-				return new PBSJobConfiguration(templateFileName, ".pbs", resourceJobManager.getJobManagerBinPath(),
+				return new PBSJobConfiguration("PBS_Groovy.template", ".pbs", resourceJobManager.getJobManagerBinPath(),
 						resourceJobManager.getJobManagerCommands(), outputParser);
 			case SLURM:
-				return new SlurmJobConfiguration(templateFileName, ".slurm", resourceJobManager
+				return new SlurmJobConfiguration("SLURM_Groovy.template", ".slurm", resourceJobManager
 						.getJobManagerBinPath(), resourceJobManager.getJobManagerCommands(), outputParser);
 			case LSF:
-				return new LSFJobConfiguration(templateFileName, ".lsf", resourceJobManager.getJobManagerBinPath(),
+				return new LSFJobConfiguration("LSF_Groovy.template", ".lsf", resourceJobManager.getJobManagerBinPath(),
 						resourceJobManager.getJobManagerCommands(), outputParser);
 			case UGE:
-				return new UGEJobConfiguration(templateFileName, ".pbs", resourceJobManager.getJobManagerBinPath(),
+				return new UGEJobConfiguration("UGE_Groovy.template", ".pbs", resourceJobManager.getJobManagerBinPath(),
 						resourceJobManager.getJobManagerCommands(), outputParser);
 			case FORK:
-				return new ForkJobConfiguration(templateFileName, ".sh", resourceJobManager.getJobManagerBinPath(),
+				return new ForkJobConfiguration("FORK_Groovy.template", ".sh", resourceJobManager.getJobManagerBinPath(),
 						resourceJobManager.getJobManagerCommands(), outputParser);
-            // We don't have a job configuration manager for CLOUD type
 			default:
 				return null;
 		}

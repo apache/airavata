@@ -42,14 +42,12 @@ final class ResourceJobManagerType {
   const SLURM = 2;
   const LSF = 3;
   const UGE = 4;
-  const CLOUD = 5;
   static public $__names = array(
     0 => 'FORK',
     1 => 'PBS',
     2 => 'SLURM',
     3 => 'LSF',
     4 => 'UGE',
-    5 => 'CLOUD',
   );
 }
 
@@ -1486,10 +1484,6 @@ class CloudJobSubmission {
    */
   public $securityProtocol = null;
   /**
-   * @var int
-   */
-  public $jobManagerType = null;
-  /**
    * @var string
    */
   public $nodeId = null;
@@ -1518,22 +1512,18 @@ class CloudJobSubmission {
           'type' => TType::I32,
           ),
         3 => array(
-          'var' => 'jobManagerType',
-          'type' => TType::I32,
-          ),
-        4 => array(
           'var' => 'nodeId',
           'type' => TType::STRING,
           ),
-        5 => array(
+        4 => array(
           'var' => 'executableType',
           'type' => TType::STRING,
           ),
-        6 => array(
+        5 => array(
           'var' => 'providerName',
           'type' => TType::I32,
           ),
-        7 => array(
+        6 => array(
           'var' => 'userAccountName',
           'type' => TType::STRING,
           ),
@@ -1545,9 +1535,6 @@ class CloudJobSubmission {
       }
       if (isset($vals['securityProtocol'])) {
         $this->securityProtocol = $vals['securityProtocol'];
-      }
-      if (isset($vals['jobManagerType'])) {
-        $this->jobManagerType = $vals['jobManagerType'];
       }
       if (isset($vals['nodeId'])) {
         $this->nodeId = $vals['nodeId'];
@@ -1598,34 +1585,27 @@ class CloudJobSubmission {
           }
           break;
         case 3:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->jobManagerType);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 4:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->nodeId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 5:
+        case 4:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->executableType);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 6:
+        case 5:
           if ($ftype == TType::I32) {
             $xfer += $input->readI32($this->providerName);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 7:
+        case 6:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->userAccountName);
           } else {
@@ -1655,28 +1635,23 @@ class CloudJobSubmission {
       $xfer += $output->writeI32($this->securityProtocol);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->jobManagerType !== null) {
-      $xfer += $output->writeFieldBegin('jobManagerType', TType::I32, 3);
-      $xfer += $output->writeI32($this->jobManagerType);
-      $xfer += $output->writeFieldEnd();
-    }
     if ($this->nodeId !== null) {
-      $xfer += $output->writeFieldBegin('nodeId', TType::STRING, 4);
+      $xfer += $output->writeFieldBegin('nodeId', TType::STRING, 3);
       $xfer += $output->writeString($this->nodeId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->executableType !== null) {
-      $xfer += $output->writeFieldBegin('executableType', TType::STRING, 5);
+      $xfer += $output->writeFieldBegin('executableType', TType::STRING, 4);
       $xfer += $output->writeString($this->executableType);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->providerName !== null) {
-      $xfer += $output->writeFieldBegin('providerName', TType::I32, 6);
+      $xfer += $output->writeFieldBegin('providerName', TType::I32, 5);
       $xfer += $output->writeI32($this->providerName);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->userAccountName !== null) {
-      $xfer += $output->writeFieldBegin('userAccountName', TType::STRING, 7);
+      $xfer += $output->writeFieldBegin('userAccountName', TType::STRING, 6);
       $xfer += $output->writeString($this->userAccountName);
       $xfer += $output->writeFieldEnd();
     }

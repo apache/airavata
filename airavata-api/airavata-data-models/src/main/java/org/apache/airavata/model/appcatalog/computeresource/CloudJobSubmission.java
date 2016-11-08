@@ -62,11 +62,10 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
 
   private static final org.apache.thrift.protocol.TField JOB_SUBMISSION_INTERFACE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("jobSubmissionInterfaceId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField SECURITY_PROTOCOL_FIELD_DESC = new org.apache.thrift.protocol.TField("securityProtocol", org.apache.thrift.protocol.TType.I32, (short)2);
-  private static final org.apache.thrift.protocol.TField JOB_MANAGER_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("jobManagerType", org.apache.thrift.protocol.TType.I32, (short)3);
-  private static final org.apache.thrift.protocol.TField NODE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("nodeId", org.apache.thrift.protocol.TType.STRING, (short)4);
-  private static final org.apache.thrift.protocol.TField EXECUTABLE_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("executableType", org.apache.thrift.protocol.TType.STRING, (short)5);
-  private static final org.apache.thrift.protocol.TField PROVIDER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("providerName", org.apache.thrift.protocol.TType.I32, (short)6);
-  private static final org.apache.thrift.protocol.TField USER_ACCOUNT_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userAccountName", org.apache.thrift.protocol.TType.STRING, (short)7);
+  private static final org.apache.thrift.protocol.TField NODE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("nodeId", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField EXECUTABLE_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("executableType", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField PROVIDER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("providerName", org.apache.thrift.protocol.TType.I32, (short)5);
+  private static final org.apache.thrift.protocol.TField USER_ACCOUNT_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userAccountName", org.apache.thrift.protocol.TType.STRING, (short)6);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -76,7 +75,6 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
 
   private String jobSubmissionInterfaceId; // required
   private org.apache.airavata.model.data.movement.SecurityProtocol securityProtocol; // required
-  private ResourceJobManagerType jobManagerType; // required
   private String nodeId; // required
   private String executableType; // required
   private ProviderName providerName; // required
@@ -90,19 +88,14 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
      * @see org.apache.airavata.model.data.movement.SecurityProtocol
      */
     SECURITY_PROTOCOL((short)2, "securityProtocol"),
-    /**
-     * 
-     * @see ResourceJobManagerType
-     */
-    JOB_MANAGER_TYPE((short)3, "jobManagerType"),
-    NODE_ID((short)4, "nodeId"),
-    EXECUTABLE_TYPE((short)5, "executableType"),
+    NODE_ID((short)3, "nodeId"),
+    EXECUTABLE_TYPE((short)4, "executableType"),
     /**
      * 
      * @see ProviderName
      */
-    PROVIDER_NAME((short)6, "providerName"),
-    USER_ACCOUNT_NAME((short)7, "userAccountName");
+    PROVIDER_NAME((short)5, "providerName"),
+    USER_ACCOUNT_NAME((short)6, "userAccountName");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -121,15 +114,13 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
           return JOB_SUBMISSION_INTERFACE_ID;
         case 2: // SECURITY_PROTOCOL
           return SECURITY_PROTOCOL;
-        case 3: // JOB_MANAGER_TYPE
-          return JOB_MANAGER_TYPE;
-        case 4: // NODE_ID
+        case 3: // NODE_ID
           return NODE_ID;
-        case 5: // EXECUTABLE_TYPE
+        case 4: // EXECUTABLE_TYPE
           return EXECUTABLE_TYPE;
-        case 6: // PROVIDER_NAME
+        case 5: // PROVIDER_NAME
           return PROVIDER_NAME;
-        case 7: // USER_ACCOUNT_NAME
+        case 6: // USER_ACCOUNT_NAME
           return USER_ACCOUNT_NAME;
         default:
           return null;
@@ -178,8 +169,6 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.SECURITY_PROTOCOL, new org.apache.thrift.meta_data.FieldMetaData("securityProtocol", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, org.apache.airavata.model.data.movement.SecurityProtocol.class)));
-    tmpMap.put(_Fields.JOB_MANAGER_TYPE, new org.apache.thrift.meta_data.FieldMetaData("jobManagerType", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ResourceJobManagerType.class)));
     tmpMap.put(_Fields.NODE_ID, new org.apache.thrift.meta_data.FieldMetaData("nodeId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.EXECUTABLE_TYPE, new org.apache.thrift.meta_data.FieldMetaData("executableType", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -200,7 +189,6 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
   public CloudJobSubmission(
     String jobSubmissionInterfaceId,
     org.apache.airavata.model.data.movement.SecurityProtocol securityProtocol,
-    ResourceJobManagerType jobManagerType,
     String nodeId,
     String executableType,
     ProviderName providerName,
@@ -209,7 +197,6 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
     this();
     this.jobSubmissionInterfaceId = jobSubmissionInterfaceId;
     this.securityProtocol = securityProtocol;
-    this.jobManagerType = jobManagerType;
     this.nodeId = nodeId;
     this.executableType = executableType;
     this.providerName = providerName;
@@ -225,9 +212,6 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
     }
     if (other.isSetSecurityProtocol()) {
       this.securityProtocol = other.securityProtocol;
-    }
-    if (other.isSetJobManagerType()) {
-      this.jobManagerType = other.jobManagerType;
     }
     if (other.isSetNodeId()) {
       this.nodeId = other.nodeId;
@@ -252,7 +236,6 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
     this.jobSubmissionInterfaceId = "DO_NOT_SET_AT_CLIENTS";
 
     this.securityProtocol = null;
-    this.jobManagerType = null;
     this.nodeId = null;
     this.executableType = null;
     this.providerName = null;
@@ -310,37 +293,6 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
   public void setSecurityProtocolIsSet(boolean value) {
     if (!value) {
       this.securityProtocol = null;
-    }
-  }
-
-  /**
-   * 
-   * @see ResourceJobManagerType
-   */
-  public ResourceJobManagerType getJobManagerType() {
-    return this.jobManagerType;
-  }
-
-  /**
-   * 
-   * @see ResourceJobManagerType
-   */
-  public void setJobManagerType(ResourceJobManagerType jobManagerType) {
-    this.jobManagerType = jobManagerType;
-  }
-
-  public void unsetJobManagerType() {
-    this.jobManagerType = null;
-  }
-
-  /** Returns true if field jobManagerType is set (has been assigned a value) and false otherwise */
-  public boolean isSetJobManagerType() {
-    return this.jobManagerType != null;
-  }
-
-  public void setJobManagerTypeIsSet(boolean value) {
-    if (!value) {
-      this.jobManagerType = null;
     }
   }
 
@@ -462,14 +414,6 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
       }
       break;
 
-    case JOB_MANAGER_TYPE:
-      if (value == null) {
-        unsetJobManagerType();
-      } else {
-        setJobManagerType((ResourceJobManagerType)value);
-      }
-      break;
-
     case NODE_ID:
       if (value == null) {
         unsetNodeId();
@@ -513,9 +457,6 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
     case SECURITY_PROTOCOL:
       return getSecurityProtocol();
 
-    case JOB_MANAGER_TYPE:
-      return getJobManagerType();
-
     case NODE_ID:
       return getNodeId();
 
@@ -543,8 +484,6 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
       return isSetJobSubmissionInterfaceId();
     case SECURITY_PROTOCOL:
       return isSetSecurityProtocol();
-    case JOB_MANAGER_TYPE:
-      return isSetJobManagerType();
     case NODE_ID:
       return isSetNodeId();
     case EXECUTABLE_TYPE:
@@ -585,15 +524,6 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
       if (!(this_present_securityProtocol && that_present_securityProtocol))
         return false;
       if (!this.securityProtocol.equals(that.securityProtocol))
-        return false;
-    }
-
-    boolean this_present_jobManagerType = true && this.isSetJobManagerType();
-    boolean that_present_jobManagerType = true && that.isSetJobManagerType();
-    if (this_present_jobManagerType || that_present_jobManagerType) {
-      if (!(this_present_jobManagerType && that_present_jobManagerType))
-        return false;
-      if (!this.jobManagerType.equals(that.jobManagerType))
         return false;
     }
 
@@ -650,11 +580,6 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
     if (present_securityProtocol)
       list.add(securityProtocol.getValue());
 
-    boolean present_jobManagerType = true && (isSetJobManagerType());
-    list.add(present_jobManagerType);
-    if (present_jobManagerType)
-      list.add(jobManagerType.getValue());
-
     boolean present_nodeId = true && (isSetNodeId());
     list.add(present_nodeId);
     if (present_nodeId)
@@ -702,16 +627,6 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
     }
     if (isSetSecurityProtocol()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.securityProtocol, other.securityProtocol);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetJobManagerType()).compareTo(other.isSetJobManagerType());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetJobManagerType()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.jobManagerType, other.jobManagerType);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -792,14 +707,6 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("jobManagerType:");
-    if (this.jobManagerType == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.jobManagerType);
-    }
-    first = false;
-    if (!first) sb.append(", ");
     sb.append("nodeId:");
     if (this.nodeId == null) {
       sb.append("null");
@@ -843,10 +750,6 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
 
     if (!isSetSecurityProtocol()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'securityProtocol' is unset! Struct:" + toString());
-    }
-
-    if (!isSetJobManagerType()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'jobManagerType' is unset! Struct:" + toString());
     }
 
     if (!isSetNodeId()) {
@@ -918,15 +821,7 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // JOB_MANAGER_TYPE
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.jobManagerType = org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType.findByValue(iprot.readI32());
-              struct.setJobManagerTypeIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 4: // NODE_ID
+          case 3: // NODE_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.nodeId = iprot.readString();
               struct.setNodeIdIsSet(true);
@@ -934,7 +829,7 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // EXECUTABLE_TYPE
+          case 4: // EXECUTABLE_TYPE
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.executableType = iprot.readString();
               struct.setExecutableTypeIsSet(true);
@@ -942,7 +837,7 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // PROVIDER_NAME
+          case 5: // PROVIDER_NAME
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.providerName = org.apache.airavata.model.appcatalog.computeresource.ProviderName.findByValue(iprot.readI32());
               struct.setProviderNameIsSet(true);
@@ -950,7 +845,7 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // USER_ACCOUNT_NAME
+          case 6: // USER_ACCOUNT_NAME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.userAccountName = iprot.readString();
               struct.setUserAccountNameIsSet(true);
@@ -979,11 +874,6 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
       if (struct.securityProtocol != null) {
         oprot.writeFieldBegin(SECURITY_PROTOCOL_FIELD_DESC);
         oprot.writeI32(struct.securityProtocol.getValue());
-        oprot.writeFieldEnd();
-      }
-      if (struct.jobManagerType != null) {
-        oprot.writeFieldBegin(JOB_MANAGER_TYPE_FIELD_DESC);
-        oprot.writeI32(struct.jobManagerType.getValue());
         oprot.writeFieldEnd();
       }
       if (struct.nodeId != null) {
@@ -1025,7 +915,6 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeString(struct.jobSubmissionInterfaceId);
       oprot.writeI32(struct.securityProtocol.getValue());
-      oprot.writeI32(struct.jobManagerType.getValue());
       oprot.writeString(struct.nodeId);
       oprot.writeString(struct.executableType);
       oprot.writeI32(struct.providerName.getValue());
@@ -1039,8 +928,6 @@ public class CloudJobSubmission implements org.apache.thrift.TBase<CloudJobSubmi
       struct.setJobSubmissionInterfaceIdIsSet(true);
       struct.securityProtocol = org.apache.airavata.model.data.movement.SecurityProtocol.findByValue(iprot.readI32());
       struct.setSecurityProtocolIsSet(true);
-      struct.jobManagerType = org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType.findByValue(iprot.readI32());
-      struct.setJobManagerTypeIsSet(true);
       struct.nodeId = iprot.readString();
       struct.setNodeIdIsSet(true);
       struct.executableType = iprot.readString();

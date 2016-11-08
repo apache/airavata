@@ -6,15 +6,12 @@
         <artifactId>airavata-sharing-registry</artifactId>
         <groupId>org.apache.airavata</groupId>
         <relativePath>../pom.xml</relativePath>
-        <version>0.17-SNAPSHOT</version>
+        <version>${global.version}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>airavata-sharing-registry-server</artifactId>
     <packaging>jar</packaging>
-    <name>Sharing Registry Server</name>
-    <url>http://airavata.apache.org/</url>
-
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -24,17 +21,17 @@
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-sharing-registry-stubs</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-server-configuration</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-commons</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>net.sf.dozer</groupId>

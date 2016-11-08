@@ -63,15 +63,6 @@ public class GroovyMap extends HashMap<String, Object> {
         return get(script.name);
     }
 
-    public String getStringValue(Script script) {
-        Object obj = get(script);
-        if (obj instanceof String) {
-            return ((String) obj);
-        }else {
-            throw new ClassCastException("Value is not type for String");
-        }
-    }
-
     private void addDefaultValues() {
         this.add(Script.SHELL_NAME, null)
                 .add(Script.QUEUE_NAME, null)
