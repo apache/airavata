@@ -148,6 +148,11 @@ void ProcessModel::__set_userName(const std::string& val) {
 __isset.userName = true;
 }
 
+void ProcessModel::__set_useUserCRPref(const bool val) {
+  this->useUserCRPref = val;
+__isset.useUserCRPref = true;
+}
+
 uint32_t ProcessModel::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -427,6 +432,14 @@ uint32_t ProcessModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 24:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->useUserCRPref);
+          this->__isset.useUserCRPref = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -609,6 +622,11 @@ uint32_t ProcessModel::write(::apache::thrift::protocol::TProtocol* oprot) const
     xfer += oprot->writeString(this->userName);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.useUserCRPref) {
+    xfer += oprot->writeFieldBegin("useUserCRPref", ::apache::thrift::protocol::T_BOOL, 24);
+    xfer += oprot->writeBool(this->useUserCRPref);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -639,6 +657,7 @@ void swap(ProcessModel &a, ProcessModel &b) {
   swap(a.generateCert, b.generateCert);
   swap(a.experimentDataDir, b.experimentDataDir);
   swap(a.userName, b.userName);
+  swap(a.useUserCRPref, b.useUserCRPref);
   swap(a.__isset, b.__isset);
 }
 
@@ -666,6 +685,7 @@ ProcessModel::ProcessModel(const ProcessModel& other36) {
   generateCert = other36.generateCert;
   experimentDataDir = other36.experimentDataDir;
   userName = other36.userName;
+  useUserCRPref = other36.useUserCRPref;
   __isset = other36.__isset;
 }
 ProcessModel& ProcessModel::operator=(const ProcessModel& other37) {
@@ -692,6 +712,7 @@ ProcessModel& ProcessModel::operator=(const ProcessModel& other37) {
   generateCert = other37.generateCert;
   experimentDataDir = other37.experimentDataDir;
   userName = other37.userName;
+  useUserCRPref = other37.useUserCRPref;
   __isset = other37.__isset;
   return *this;
 }
@@ -721,6 +742,7 @@ void ProcessModel::printTo(std::ostream& out) const {
   out << ", " << "generateCert="; (__isset.generateCert ? (out << to_string(generateCert)) : (out << "<null>"));
   out << ", " << "experimentDataDir="; (__isset.experimentDataDir ? (out << to_string(experimentDataDir)) : (out << "<null>"));
   out << ", " << "userName="; (__isset.userName ? (out << to_string(userName)) : (out << "<null>"));
+  out << ", " << "useUserCRPref="; (__isset.useUserCRPref ? (out << to_string(useUserCRPref)) : (out << "<null>"));
   out << ")";
 }
 

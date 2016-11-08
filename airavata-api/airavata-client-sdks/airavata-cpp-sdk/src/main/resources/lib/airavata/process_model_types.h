@@ -44,7 +44,7 @@ namespace apache { namespace airavata { namespace model { namespace process {
 class ProcessModel;
 
 typedef struct _ProcessModel__isset {
-  _ProcessModel__isset() : creationTime(false), lastUpdateTime(false), processStatuses(false), processDetail(false), applicationInterfaceId(false), applicationDeploymentId(false), computeResourceId(false), processInputs(false), processOutputs(false), processResourceSchedule(false), tasks(false), taskDag(false), processErrors(false), gatewayExecutionId(false), enableEmailNotification(false), emailAddresses(false), storageResourceId(false), userDn(false), generateCert(true), experimentDataDir(false), userName(false) {}
+  _ProcessModel__isset() : creationTime(false), lastUpdateTime(false), processStatuses(false), processDetail(false), applicationInterfaceId(false), applicationDeploymentId(false), computeResourceId(false), processInputs(false), processOutputs(false), processResourceSchedule(false), tasks(false), taskDag(false), processErrors(false), gatewayExecutionId(false), enableEmailNotification(false), emailAddresses(false), storageResourceId(false), userDn(false), generateCert(true), experimentDataDir(false), userName(false), useUserCRPref(false) {}
   bool creationTime :1;
   bool lastUpdateTime :1;
   bool processStatuses :1;
@@ -66,6 +66,7 @@ typedef struct _ProcessModel__isset {
   bool generateCert :1;
   bool experimentDataDir :1;
   bool userName :1;
+  bool useUserCRPref :1;
 } _ProcessModel__isset;
 
 class ProcessModel {
@@ -73,7 +74,7 @@ class ProcessModel {
 
   ProcessModel(const ProcessModel&);
   ProcessModel& operator=(const ProcessModel&);
-  ProcessModel() : processId("DO_NOT_SET_AT_CLIENTS"), experimentId(), creationTime(0), lastUpdateTime(0), processDetail(), applicationInterfaceId(), applicationDeploymentId(), computeResourceId(), taskDag(), gatewayExecutionId(), enableEmailNotification(0), storageResourceId(), userDn(), generateCert(false), experimentDataDir(), userName() {
+  ProcessModel() : processId("DO_NOT_SET_AT_CLIENTS"), experimentId(), creationTime(0), lastUpdateTime(0), processDetail(), applicationInterfaceId(), applicationDeploymentId(), computeResourceId(), taskDag(), gatewayExecutionId(), enableEmailNotification(0), storageResourceId(), userDn(), generateCert(false), experimentDataDir(), userName(), useUserCRPref(0) {
   }
 
   virtual ~ProcessModel() throw();
@@ -100,6 +101,7 @@ class ProcessModel {
   bool generateCert;
   std::string experimentDataDir;
   std::string userName;
+  bool useUserCRPref;
 
   _ProcessModel__isset __isset;
 
@@ -148,6 +150,8 @@ class ProcessModel {
   void __set_experimentDataDir(const std::string& val);
 
   void __set_userName(const std::string& val);
+
+  void __set_useUserCRPref(const bool val);
 
   bool operator == (const ProcessModel & rhs) const
   {
@@ -238,6 +242,10 @@ class ProcessModel {
     if (__isset.userName != rhs.__isset.userName)
       return false;
     else if (__isset.userName && !(userName == rhs.userName))
+      return false;
+    if (__isset.useUserCRPref != rhs.__isset.useUserCRPref)
+      return false;
+    else if (__isset.useUserCRPref && !(useUserCRPref == rhs.useUserCRPref))
       return false;
     return true;
   }
