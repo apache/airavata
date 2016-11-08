@@ -26,7 +26,8 @@ public enum ExpCatParentDataType {
     PROJECT,
     EXPERIMENT,
     GATEWAY,
-    NOTIFICATION
+    NOTIFICATION,
+    QUEUE_STATUS
 }
 
 

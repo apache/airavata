@@ -107,3 +107,12 @@ struct JobStatus {
     2: optional i64 timeOfStateChange,
     3: optional string reason
 }
+
+struct QueueStatusModel {
+    1: required string hostName;
+    2: required string queueName;
+    3: required bool queueUp;
+    4: required i32 runningJobs;
+    5: required i32 queuedJobs;
+    6: required i64 time;
+}

@@ -73,6 +73,7 @@ import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.model.status.JobStatus;
+import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
@@ -3676,6 +3677,19 @@ public class AiravataServerHandler implements Airavata.Iface {
             return getRegistryServiceClient().getAllWorkflows(gatewayId);
         } catch (ApplicationSettingsException | RegistryServiceException e) {
             String msg = "Error in retrieving all workflow template Ids.";
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public List<QueueStatusModel> getLatestQueueStatuses(AuthzToken authzToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            return getRegistryServiceClient().getLatestQueueStatuses();
+        } catch (ApplicationSettingsException | RegistryServiceException e) {
+            String msg = "Error in retrieving queue statuses";
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(msg+" More info : " + e.getMessage());

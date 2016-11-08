@@ -35,6 +35,7 @@ import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
+import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.resources.*;
 import org.apache.airavata.registry.core.experiment.catalog.utils.ThriftDataModelConversion;
@@ -1685,6 +1686,38 @@ public class ExperimentRegistry {
             logger.error("Error while retrieving job.....", e);
             throw new RegistryException(e);
         }
+    }
+
+    public boolean createQueueStatuses(List<QueueStatusModel> queueStatusModels) throws RegistryException {
+        for(QueueStatusModel qModel : queueStatusModels){
+            QueueStatusResource queueStatusResource = new QueueStatusResource();
+            queueStatusResource.setHostName(qModel.getHostName());
+            queueStatusResource.setQueueName(qModel.getQueueName());
+            queueStatusResource.setTime(qModel.getTime());
+            queueStatusResource.setQueueUp(qModel.isQueueUp());
+            queueStatusResource.setRunningJobs(qModel.getRunningJobs());
+            queueStatusResource.setQueuedJobs(qModel.getQueuedJobs());
+
+            queueStatusResource.save();
+        }
+        return true;
+    }
+
+    public List<QueueStatusModel> getLatestQueueStatuses() throws RegistryException {
+        List<QueueStatusModel> queueStatusModels = new ArrayList<>();
+        List<ExperimentCatResource> queueStatusResources =  (new QueueStatusResource()).get(ResourceType.QUEUE_STATUS);
+        for(ExperimentCatResource r : queueStatusResources){
+            QueueStatusResource qResource = (QueueStatusResource) r;
+            QueueStatusModel queueStatusModel = new QueueStatusModel();
+            queueStatusModel.setHostName(qResource.getHostName());
+            queueStatusModel.setQueueName(qResource.getQueueName());
+            queueStatusModel.setTime(qResource.getTime());
+            queueStatusModel.setQueueUp(qResource.getQueueUp());
+            queueStatusModel.setRunningJobs(qResource.getRunningJobs());
+            queueStatusModel.setQueuedJobs(qResource.getQueuedJobs());
+            queueStatusModels.add(queueStatusModel);
+        }
+        return queueStatusModels;
     }
 
     public String getStatusID(String parentId) {

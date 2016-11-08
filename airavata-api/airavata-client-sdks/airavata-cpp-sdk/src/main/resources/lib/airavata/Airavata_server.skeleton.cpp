@@ -3289,6 +3289,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getAllWorkflows\n");
   }
 
+  void getLatestQueueStatuses(std::vector< ::apache::airavata::model::status::QueueStatusModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) {
+    // Your implementation goes here
+    printf("getLatestQueueStatuses\n");
+  }
+
   /**
    * 
    * API Methods Related for Work-Flow Submission Features.
