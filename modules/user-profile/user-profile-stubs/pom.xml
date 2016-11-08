@@ -17,7 +17,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>user-profile-cpi</artifactId>
+    <artifactId>user-profile-stubs</artifactId>
 
 
     <dependencies>
