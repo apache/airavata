@@ -24,24 +24,35 @@
 */
 
 include "../data-models/user-group-models/user_profile_model.thrift"
+include "registry_api_errors.thrift"
 
 
 namespace java org.apache.airavata.userprofile.crude.cpi
 
-const string CS_CPI_VERSION = "0.16.0"
+const string USER_PROFILE_CPI_VERSION = "0.16.0"
 
 service UserProfileCrudeService {
 
   string addUserProfile (1: required user_profile_model.UserProfile userProfile)
                         throws (1:registry_api_errors.RegistryServiceException registryException);
 
-  string updateUserProfile (1: required user_profile_model.UserProfile userProfile)
+  bool updateUserProfile (1: required user_profile_model.UserProfile userProfile)
                           throws (1:registry_api_errors.RegistryServiceException registryException);
 
-  user_profile_model.UserProfile getUserProfile(1: required string userId)
+  user_profile_model.UserProfile getUserProfileById(1: required string userId, 2: required string gatewayId)
                                                 throws (1:registry_api_errors.RegistryServiceException registryException);
 
   bool deleteUserProfile(1: required string userId)
                                                   throws (1:registry_api_errors.RegistryServiceException registryException);
+
+  list<user_profile_model.UserProfile> getAllUserProfilesInGateway (1: required string gatewayId)
+                          throws (1:registry_api_errors.RegistryServiceException registryException);
+
+ user_profile_model.UserProfile getUserProfileByName(1: required string userName, 2: required string gatewayId)
+                                                throws (1:registry_api_errors.RegistryServiceException registryException);
+
+   bool doesUserExist(1: required string userName, 2: required string gatewayId)
+                                                   throws (1:registry_api_errors.RegistryServiceException registryException);
+
 
 }
