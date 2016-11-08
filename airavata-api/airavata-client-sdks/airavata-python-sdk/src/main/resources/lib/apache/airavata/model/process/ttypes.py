@@ -57,6 +57,7 @@ class ProcessModel:
    - generateCert
    - experimentDataDir
    - userName
+   - useUserCRPref
   """
 
   thrift_spec = (
@@ -84,9 +85,10 @@ class ProcessModel:
     (21, TType.BOOL, 'generateCert', None, False, ), # 21
     (22, TType.STRING, 'experimentDataDir', None, None, ), # 22
     (23, TType.STRING, 'userName', None, None, ), # 23
+    (24, TType.BOOL, 'useUserCRPref', None, None, ), # 24
   )
 
-  def __init__(self, processId=thrift_spec[1][4], experimentId=None, creationTime=None, lastUpdateTime=None, processStatuses=None, processDetail=None, applicationInterfaceId=None, applicationDeploymentId=None, computeResourceId=None, processInputs=None, processOutputs=None, processResourceSchedule=None, tasks=None, taskDag=None, processErrors=None, gatewayExecutionId=None, enableEmailNotification=None, emailAddresses=None, storageResourceId=None, userDn=None, generateCert=thrift_spec[21][4], experimentDataDir=None, userName=None,):
+  def __init__(self, processId=thrift_spec[1][4], experimentId=None, creationTime=None, lastUpdateTime=None, processStatuses=None, processDetail=None, applicationInterfaceId=None, applicationDeploymentId=None, computeResourceId=None, processInputs=None, processOutputs=None, processResourceSchedule=None, tasks=None, taskDag=None, processErrors=None, gatewayExecutionId=None, enableEmailNotification=None, emailAddresses=None, storageResourceId=None, userDn=None, generateCert=thrift_spec[21][4], experimentDataDir=None, userName=None, useUserCRPref=None,):
     self.processId = processId
     self.experimentId = experimentId
     self.creationTime = creationTime
@@ -110,6 +112,7 @@ class ProcessModel:
     self.generateCert = generateCert
     self.experimentDataDir = experimentDataDir
     self.userName = userName
+    self.useUserCRPref = useUserCRPref
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -271,6 +274,11 @@ class ProcessModel:
           self.userName = iprot.readString()
         else:
           iprot.skip(ftype)
+      elif fid == 24:
+        if ftype == TType.BOOL:
+          self.useUserCRPref = iprot.readBool()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -391,6 +399,10 @@ class ProcessModel:
       oprot.writeFieldBegin('userName', TType.STRING, 23)
       oprot.writeString(self.userName)
       oprot.writeFieldEnd()
+    if self.useUserCRPref is not None:
+      oprot.writeFieldBegin('useUserCRPref', TType.BOOL, 24)
+      oprot.writeBool(self.useUserCRPref)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -427,6 +439,7 @@ class ProcessModel:
     value = (value * 31) ^ hash(self.generateCert)
     value = (value * 31) ^ hash(self.experimentDataDir)
     value = (value * 31) ^ hash(self.userName)
+    value = (value * 31) ^ hash(self.useUserCRPref)
     return value
 
   def __repr__(self):

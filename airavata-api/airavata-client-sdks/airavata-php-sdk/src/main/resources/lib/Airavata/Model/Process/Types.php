@@ -121,6 +121,10 @@ class ProcessModel {
    * @var string
    */
   public $userName = null;
+  /**
+   * @var bool
+   */
+  public $useUserCRPref = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -247,6 +251,10 @@ class ProcessModel {
           'var' => 'userName',
           'type' => TType::STRING,
           ),
+        24 => array(
+          'var' => 'useUserCRPref',
+          'type' => TType::BOOL,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -318,6 +326,9 @@ class ProcessModel {
       }
       if (isset($vals['userName'])) {
         $this->userName = $vals['userName'];
+      }
+      if (isset($vals['useUserCRPref'])) {
+        $this->useUserCRPref = $vals['useUserCRPref'];
       }
     }
   }
@@ -568,6 +579,13 @@ class ProcessModel {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 24:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->useUserCRPref);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -769,6 +787,11 @@ class ProcessModel {
     if ($this->userName !== null) {
       $xfer += $output->writeFieldBegin('userName', TType::STRING, 23);
       $xfer += $output->writeString($this->userName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->useUserCRPref !== null) {
+      $xfer += $output->writeFieldBegin('useUserCRPref', TType::BOOL, 24);
+      $xfer += $output->writeBool($this->useUserCRPref);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
