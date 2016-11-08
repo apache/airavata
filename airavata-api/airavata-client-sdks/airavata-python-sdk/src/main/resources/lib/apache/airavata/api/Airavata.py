@@ -3179,6 +3179,13 @@ class Iface:
     """
     pass
 
+  def getLatestQueueStatuses(self, authzToken):
+    """
+    Parameters:
+     - authzToken
+    """
+    pass
+
   def getWorkflow(self, authzToken, workflowTemplateId):
     """
 
@@ -11517,6 +11524,45 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllWorkflows failed: unknown result")
 
+  def getLatestQueueStatuses(self, authzToken):
+    """
+    Parameters:
+     - authzToken
+    """
+    self.send_getLatestQueueStatuses(authzToken)
+    return self.recv_getLatestQueueStatuses()
+
+  def send_getLatestQueueStatuses(self, authzToken):
+    self._oprot.writeMessageBegin('getLatestQueueStatuses', TMessageType.CALL, self._seqid)
+    args = getLatestQueueStatuses_args()
+    args.authzToken = authzToken
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_getLatestQueueStatuses(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = getLatestQueueStatuses_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getLatestQueueStatuses failed: unknown result")
+
   def getWorkflow(self, authzToken, workflowTemplateId):
     """
 
@@ -12477,6 +12523,7 @@ class Processor(Iface, TProcessor):
     self._processMap["deleteUserComputeResourcePreference"] = Processor.process_deleteUserComputeResourcePreference
     self._processMap["deleteUserStoragePreference"] = Processor.process_deleteUserStoragePreference
     self._processMap["getAllWorkflows"] = Processor.process_getAllWorkflows
+    self._processMap["getLatestQueueStatuses"] = Processor.process_getLatestQueueStatuses
     self._processMap["getWorkflow"] = Processor.process_getWorkflow
     self._processMap["deleteWorkflow"] = Processor.process_deleteWorkflow
     self._processMap["registerWorkflow"] = Processor.process_registerWorkflow
@@ -17099,6 +17146,37 @@ class Processor(Iface, TProcessor):
       logging.exception(ex)
       result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
     oprot.writeMessageBegin("getAllWorkflows", msg_type, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_getLatestQueueStatuses(self, seqid, iprot, oprot):
+    args = getLatestQueueStatuses_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = getLatestQueueStatuses_result()
+    try:
+      result.success = self._handler.getLatestQueueStatuses(args.authzToken)
+      msg_type = TMessageType.REPLY
+    except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+      raise
+    except apache.airavata.api.error.ttypes.InvalidRequestException as ire:
+      msg_type = TMessageType.REPLY
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException as ace:
+      msg_type = TMessageType.REPLY
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException as ase:
+      msg_type = TMessageType.REPLY
+      result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException as ae:
+      msg_type = TMessageType.REPLY
+      result.ae = ae
+    except Exception as ex:
+      msg_type = TMessageType.EXCEPTION
+      logging.exception(ex)
+      result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+    oprot.writeMessageBegin("getLatestQueueStatuses", msg_type, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -49926,6 +50004,203 @@ class getAllWorkflows_result:
   def __ne__(self, other):
     return not (self == other)
 
+class getLatestQueueStatuses_args:
+  """
+  Attributes:
+   - authzToken
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, authzToken=None,):
+    self.authzToken = authzToken
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getLatestQueueStatuses_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getLatestQueueStatuses_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.status.ttypes.QueueStatusModel, apache.airavata.model.status.ttypes.QueueStatusModel.thrift_spec)), None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.LIST:
+          self.success = []
+          (_etype284, _size281) = iprot.readListBegin()
+          for _i285 in xrange(_size281):
+            _elem286 = apache.airavata.model.status.ttypes.QueueStatusModel()
+            _elem286.read(iprot)
+            self.success.append(_elem286)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getLatestQueueStatuses_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.LIST, 0)
+      oprot.writeListBegin(TType.STRUCT, len(self.success))
+      for iter287 in self.success:
+        iter287.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
 class getWorkflow_args:
   """
   Attributes:
@@ -52089,11 +52364,11 @@ class getChildDataProducts_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype284, _size281) = iprot.readListBegin()
-          for _i285 in xrange(_size281):
-            _elem286 = apache.airavata.model.data.replica.ttypes.DataProductModel()
-            _elem286.read(iprot)
-            self.success.append(_elem286)
+          (_etype291, _size288) = iprot.readListBegin()
+          for _i292 in xrange(_size288):
+            _elem293 = apache.airavata.model.data.replica.ttypes.DataProductModel()
+            _elem293.read(iprot)
+            self.success.append(_elem293)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -52134,8 +52409,8 @@ class getChildDataProducts_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter287 in self.success:
-        iter287.write(oprot)
+      for iter294 in self.success:
+        iter294.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -52232,11 +52507,11 @@ class shareResourceWithUsers_args:
       elif fid == 4:
         if ftype == TType.MAP:
           self.userPermissionList = {}
-          (_ktype289, _vtype290, _size288 ) = iprot.readMapBegin()
-          for _i292 in xrange(_size288):
-            _key293 = iprot.readString()
-            _val294 = iprot.readI32()
-            self.userPermissionList[_key293] = _val294
+          (_ktype296, _vtype297, _size295 ) = iprot.readMapBegin()
+          for _i299 in xrange(_size295):
+            _key300 = iprot.readString()
+            _val301 = iprot.readI32()
+            self.userPermissionList[_key300] = _val301
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -52265,9 +52540,9 @@ class shareResourceWithUsers_args:
     if self.userPermissionList is not None:
       oprot.writeFieldBegin('userPermissionList', TType.MAP, 4)
       oprot.writeMapBegin(TType.STRING, TType.I32, len(self.userPermissionList))
-      for kiter295,viter296 in self.userPermissionList.items():
-        oprot.writeString(kiter295)
-        oprot.writeI32(viter296)
+      for kiter302,viter303 in self.userPermissionList.items():
+        oprot.writeString(kiter302)
+        oprot.writeI32(viter303)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -52473,11 +52748,11 @@ class revokeSharingOfResourceFromUsers_args:
       elif fid == 4:
         if ftype == TType.MAP:
           self.userPermissionList = {}
-          (_ktype298, _vtype299, _size297 ) = iprot.readMapBegin()
-          for _i301 in xrange(_size297):
-            _key302 = iprot.readString()
-            _val303 = iprot.readI32()
-            self.userPermissionList[_key302] = _val303
+          (_ktype305, _vtype306, _size304 ) = iprot.readMapBegin()
+          for _i308 in xrange(_size304):
+            _key309 = iprot.readString()
+            _val310 = iprot.readI32()
+            self.userPermissionList[_key309] = _val310
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -52506,9 +52781,9 @@ class revokeSharingOfResourceFromUsers_args:
     if self.userPermissionList is not None:
       oprot.writeFieldBegin('userPermissionList', TType.MAP, 4)
       oprot.writeMapBegin(TType.STRING, TType.I32, len(self.userPermissionList))
-      for kiter304,viter305 in self.userPermissionList.items():
-        oprot.writeString(kiter304)
-        oprot.writeI32(viter305)
+      for kiter311,viter312 in self.userPermissionList.items():
+        oprot.writeString(kiter311)
+        oprot.writeI32(viter312)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -52813,10 +53088,10 @@ class getAllAccessibleUsers_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype309, _size306) = iprot.readListBegin()
-          for _i310 in xrange(_size306):
-            _elem311 = iprot.readString()
-            self.success.append(_elem311)
+          (_etype316, _size313) = iprot.readListBegin()
+          for _i317 in xrange(_size313):
+            _elem318 = iprot.readString()
+            self.success.append(_elem318)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -52857,8 +53132,8 @@ class getAllAccessibleUsers_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRING, len(self.success))
-      for iter312 in self.success:
-        oprot.writeString(iter312)
+      for iter319 in self.success:
+        oprot.writeString(iter319)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -53884,11 +54159,11 @@ class getAllGroupsUserBelongs_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype316, _size313) = iprot.readListBegin()
-          for _i317 in xrange(_size313):
-            _elem318 = apache.airavata.model.group.ttypes.GroupModel()
-            _elem318.read(iprot)
-            self.success.append(_elem318)
+          (_etype323, _size320) = iprot.readListBegin()
+          for _i324 in xrange(_size320):
+            _elem325 = apache.airavata.model.group.ttypes.GroupModel()
+            _elem325.read(iprot)
+            self.success.append(_elem325)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -53929,8 +54204,8 @@ class getAllGroupsUserBelongs_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter319 in self.success:
-        iter319.write(oprot)
+      for iter326 in self.success:
+        iter326.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:

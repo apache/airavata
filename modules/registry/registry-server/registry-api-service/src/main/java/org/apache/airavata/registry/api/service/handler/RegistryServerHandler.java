@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.registry.api.service.handler;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.WorkflowModel;
@@ -30,10 +31,10 @@ import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.data.movement.DMType;
@@ -48,6 +49,7 @@ import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.model.status.JobStatus;
+import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Notification;
@@ -65,7 +67,6 @@ import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 import java.util.*;
 
@@ -4142,6 +4143,41 @@ public class RegistryServerHandler implements RegistryService.Iface {
             logger.error(userId, "Error while retrieving user resource profile...", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while retrieving user resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * * Get queue statuses of all compute resources
+     * *
+     */
+    @Override
+    public List<QueueStatusModel> getLatestQueueStatuses() throws RegistryServiceException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getExperimentCatalog(ServerSettings.getDefaultUserGateway());
+            List<Object> temp = experimentCatalog.get(ExperimentCatalogModelType.QUEUE_STATUS, null, null, -1, 0, null, null);
+            List<QueueStatusModel> queueStatusModels = new ArrayList<>();
+            temp.stream().forEach(t->{
+                queueStatusModels.add((QueueStatusModel)t);
+            });
+            return queueStatusModels;
+        } catch (RegistryException | ApplicationSettingsException e) {
+            logger.error("Error while reading queue status models....", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while reading queue status models.... : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public void registerQueueStatuses(List<QueueStatusModel> queueStatuses) throws RegistryServiceException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getExperimentCatalog(ServerSettings.getDefaultUserGateway());
+            experimentCatalog.add(ExpCatParentDataType.QUEUE_STATUS, queueStatuses, null);
+        } catch (RegistryException | ApplicationSettingsException e) {
+            logger.error("Error while storing queue status models....", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while storing queue status models.... : " + e.getMessage());
             throw exception;
         }
     }

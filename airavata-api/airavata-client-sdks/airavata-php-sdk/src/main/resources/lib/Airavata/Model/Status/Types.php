@@ -606,4 +606,194 @@ class JobStatus {
 
 }
 
+class QueueStatusModel {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $hostName = null;
+  /**
+   * @var string
+   */
+  public $queueName = null;
+  /**
+   * @var bool
+   */
+  public $queueUp = null;
+  /**
+   * @var int
+   */
+  public $runningJobs = null;
+  /**
+   * @var int
+   */
+  public $queuedJobs = null;
+  /**
+   * @var int
+   */
+  public $time = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'hostName',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'queueName',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'queueUp',
+          'type' => TType::BOOL,
+          ),
+        4 => array(
+          'var' => 'runningJobs',
+          'type' => TType::I32,
+          ),
+        5 => array(
+          'var' => 'queuedJobs',
+          'type' => TType::I32,
+          ),
+        6 => array(
+          'var' => 'time',
+          'type' => TType::I64,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['hostName'])) {
+        $this->hostName = $vals['hostName'];
+      }
+      if (isset($vals['queueName'])) {
+        $this->queueName = $vals['queueName'];
+      }
+      if (isset($vals['queueUp'])) {
+        $this->queueUp = $vals['queueUp'];
+      }
+      if (isset($vals['runningJobs'])) {
+        $this->runningJobs = $vals['runningJobs'];
+      }
+      if (isset($vals['queuedJobs'])) {
+        $this->queuedJobs = $vals['queuedJobs'];
+      }
+      if (isset($vals['time'])) {
+        $this->time = $vals['time'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'QueueStatusModel';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->hostName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->queueName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->queueUp);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->runningJobs);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->queuedJobs);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 6:
+          if ($ftype == TType::I64) {
+            $xfer += $input->readI64($this->time);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('QueueStatusModel');
+    if ($this->hostName !== null) {
+      $xfer += $output->writeFieldBegin('hostName', TType::STRING, 1);
+      $xfer += $output->writeString($this->hostName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->queueName !== null) {
+      $xfer += $output->writeFieldBegin('queueName', TType::STRING, 2);
+      $xfer += $output->writeString($this->queueName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->queueUp !== null) {
+      $xfer += $output->writeFieldBegin('queueUp', TType::BOOL, 3);
+      $xfer += $output->writeBool($this->queueUp);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->runningJobs !== null) {
+      $xfer += $output->writeFieldBegin('runningJobs', TType::I32, 4);
+      $xfer += $output->writeI32($this->runningJobs);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->queuedJobs !== null) {
+      $xfer += $output->writeFieldBegin('queuedJobs', TType::I32, 5);
+      $xfer += $output->writeI32($this->queuedJobs);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->time !== null) {
+      $xfer += $output->writeFieldBegin('time', TType::I64, 6);
+      $xfer += $output->writeI64($this->time);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 

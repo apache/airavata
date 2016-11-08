@@ -112,7 +112,6 @@
                 <include>LSF_Groovy.template</include>
                 <include>UGE_Groovy.template</include>
                 <include>FORK_Groovy.template</include>
-                <include>CLOUD_Groovy.template</include>
                 <include>gsissh.properties</include>
                 <include>airavata.jks</include>
                 <include>client_truststore.jks</include>

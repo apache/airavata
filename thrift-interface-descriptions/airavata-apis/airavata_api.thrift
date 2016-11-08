@@ -3230,6 +3230,11 @@ service Airavata {
                   3: airavata_errors.AiravataSystemException ase,
                   4: airavata_errors.AuthorizationException ae)
 
+  list<status_models.QueueStatusModel> getLatestQueueStatuses(1: required security_model.AuthzToken authzToken)
+        throws (1: airavata_errors.InvalidRequestException ire,
+                        2: airavata_errors.AiravataClientException ace,
+                        3: airavata_errors.AiravataSystemException ase,
+                        4: airavata_errors.AuthorizationException ae)
   /**
    *
    * API Methods Related for Work-Flow Submission Features.
