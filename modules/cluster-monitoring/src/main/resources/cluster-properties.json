@@ -1,0 +1,53 @@
+[
+  {
+    "hostName": "stampede.tacc.xsede.org",
+    "userName": "scigap",
+    "port": 22,
+    "queueNames": [
+      "normal",
+      "development",
+      "gpu"
+    ],
+    "resourceManagerType": "SLURM"
+  },
+  {
+    "hostName": "comet.sdsc.edu",
+    "userName": "scigap",
+    "port": 22,
+    "queueNames": [
+      "compute",
+      "shared",
+      "gpu"
+    ],
+    "resourceManagerType": "SLURM"
+  },
+  {
+    "hostName": "bigred2.uits.iu.edu",
+    "userName": "cgateway",
+    "port": 22,
+    "queueNames": [
+      "gpu",
+      "cpu",
+      "serial"
+    ],
+    "resourceManagerType": "PBS"
+  },
+  {
+    "hostName": "gordon.sdsc.edu",
+    "userName": "ogce",
+    "port": 22,
+    "queueNames": [
+      "normal"
+    ],
+    "resourceManagerType": "PBS"
+  },
+  {
+    "hostName": "karst.uits.iu.edu",
+    "userName": "seagrid",
+    "port": 22,
+    "queueNames": [
+      "batch"
+    ],
+    "resourceManagerType": "PBS"
+  }
+]
