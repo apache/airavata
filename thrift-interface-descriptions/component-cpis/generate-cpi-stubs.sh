@@ -74,7 +74,7 @@ REGISTRY_THRIFT_FILE='registry-api.thrift'
 REGISTRY_SRC_DIR='../../modules/registry/registry-server/registry-api-stubs/src/main/java/'
 
 REGISTRY_USER_PROFILE_CPI_THRIFT_FILE='user-profile-crud-cpi.thrift'
-REGISTRY_USER_PROFILE_SRC_DIR='../../modules/registry/registry-cpi/src/main/java'
+REGISTRY_USER_PROFILE_SRC_DIR='../../modules/user-profile/user-profile-cpi/src/main/java'
 
 # Initialize the thrift arguments.
 #  Since most of the Airavata API and Data Models have includes, use recursive option by default.
@@ -190,7 +190,7 @@ do
     gfac)    echo "Generate GFac Stubs"
             generate_thrift_stubs ${GFAC_THRIFT_FILE} ${GFAC_SRC_DIR}
             ;;
-    uprofcpi)    echo "Generate REgistry User Profile CPI"
+    uprofcpi)    echo "Generate Registry User Profile CPI"
                 generate_thrift_stubs ${REGISTRY_USER_PROFILE_CPI_THRIFT_FILE} ${REGISTRY_USER_PROFILE_SRC_DIR}
             ;;
     registry)    echo "Generate Registry Stubs"
