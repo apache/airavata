@@ -607,9 +607,9 @@ public class GFacUtils {
         }
 
         ApplicationParallelismType parallelism = appDepDescription.getParallelism();
-        Map<ApplicationParallelismType, String> parallelismPrefix = processContext.getResourceJobManager().getParallelismPrefix();
         if (parallelism != null) {
             if (parallelism != ApplicationParallelismType.SERIAL) {
+                Map<ApplicationParallelismType, String> parallelismPrefix = processContext.getResourceJobManager().getParallelismPrefix();
                 if (parallelismPrefix != null){
                     String parallelismCommand = parallelismPrefix.get(parallelism);
                     if (parallelismCommand != null){
