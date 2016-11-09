@@ -59,4 +59,13 @@ public class GFacUtilsTest {
         Assert.assertNotNull(value);
         Assert.assertEquals("mkdir -p /my/scratch/seagrid/John/gaussian", value);
     }
+
+    @Test
+    public void parserCommandTestWithEscapeChar() throws Exception {
+        String command = "abq_job=\\${baseinp%.*}";
+        GroovyMap groovyMap = new GroovyMap();
+        String value = GFacUtils.parseCommands(command, groovyMap);
+        Assert.assertNotNull(value);
+        Assert.assertEquals("abq_job=${baseinp%.*}", value);
+    }
 }

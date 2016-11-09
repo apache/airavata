@@ -42,12 +42,14 @@ final class ResourceJobManagerType {
   const SLURM = 2;
   const LSF = 3;
   const UGE = 4;
+  const CLOUD = 5;
   static public $__names = array(
     0 => 'FORK',
     1 => 'PBS',
     2 => 'SLURM',
     3 => 'LSF',
     4 => 'UGE',
+    5 => 'CLOUD',
   );
 }
 

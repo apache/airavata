@@ -115,7 +115,6 @@ public class ProcessContext {
 		this.tokenId = tokenId;
 	}
 
-
 	public ExperimentCatalog getExperimentCatalog() {
 		return experimentCatalog;
 	}

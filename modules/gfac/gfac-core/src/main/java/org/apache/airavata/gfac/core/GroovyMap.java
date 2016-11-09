@@ -39,6 +39,7 @@ package org.apache.airavata.gfac.core;/*
  */
 
 import java.util.HashMap;
+import java.util.Optional;
 
 public class GroovyMap extends HashMap<String, Object> {
 
@@ -61,6 +62,17 @@ public class GroovyMap extends HashMap<String, Object> {
 
     public Object get(Script script) {
         return get(script.name);
+    }
+
+    public Optional<String> getStringValue(Script script) {
+        Object obj = get(script);
+        if (obj instanceof String) {
+            return Optional.of((String) obj);
+        } else if (obj == null) {
+            return Optional.empty();
+        } else {
+            throw new IllegalArgumentException("Value is not String type");
+        }
     }
 
     private void addDefaultValues() {

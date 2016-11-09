@@ -73,7 +73,8 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 		    jobModel.setTaskId(taskContext.getTaskId());
 		    RemoteCluster remoteCluster = processContext.getJobSubmissionRemoteCluster();
 			GroovyMap groovyMap = GFacUtils.createGroovyMap(processContext, taskContext);
-			jobModel.setJobName(groovyMap.get(Script.JOB_NAME).toString());
+			groovyMap.getStringValue(Script.JOB_NAME).
+					ifPresent(jobName -> jobModel.setJobName(jobName));
 			ResourceJobManager resourceJobManager = GFacUtils.getResourceJobManager(processContext);
 		    JobManagerConfiguration jConfig = null;
 		    if (resourceJobManager != null) {
@@ -278,8 +279,16 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 		    errorModel.setActualErrorMessage(e.getMessage());
 		    errorModel.setUserFriendlyMessage(msg);
 		    taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
-	    } catch (RegistryException e) {
-            e.printStackTrace();
+		} catch (Throwable e) {
+			String msg = "JobSubmission failed";
+			log.error(msg, e);
+			taskStatus.setState(TaskState.FAILED);
+			taskStatus.setReason(msg);
+			taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+			ErrorModel errorModel = new ErrorModel();
+			errorModel.setActualErrorMessage(e.getMessage());
+			errorModel.setUserFriendlyMessage(msg);
+			taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         }
 
         taskContext.setTaskStatus(taskStatus);
