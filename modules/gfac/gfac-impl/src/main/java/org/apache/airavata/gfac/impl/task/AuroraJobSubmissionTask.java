@@ -90,11 +90,20 @@ public class AuroraJobSubmissionTask implements JobSubmissionTask{
             String templateFileName = GFacUtils.getTemplateFileName(ResourceJobManagerType.CLOUD);
             String script = GFacUtils.generateScript(groovyMap, templateFileName);
             Set<ProcessBean> processes = new LinkedHashSet<>();
-            ProcessBean process_1 = new ProcessBean("process_1", script, false);
+            ProcessBean process_1 = new ProcessBean("main_process", script, false);
             processes.add(process_1);
 
-            ProcessBean stdOutProcess = new ProcessBean("stdout_copy_process", "pwd", false);
-            processes.add(stdOutProcess);
+            groovyMap.getStringValue(Script.STANDARD_OUT_FILE)
+                    .ifPresent(stdout -> {
+                        ProcessBean stdOutProcess = new ProcessBean("stdout_copy_process", "cp .logs/main_process/0/stdout " + stdout, false);
+                        processes.add(stdOutProcess);
+                    });
+
+            groovyMap.getStringValue(Script.STANDARD_ERROR_FILE)
+                    .ifPresent(stderr -> {
+                        ProcessBean stdErrProcess = new ProcessBean("stderr_copy_process", "cp .logs/main_process/0/stderr " + stderr, false);
+                        processes.add(stdErrProcess);
+                    });
 
             ResourceBean resources = new ResourceBean(1.5, 512, 512);
 
