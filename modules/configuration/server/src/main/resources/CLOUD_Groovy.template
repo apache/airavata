@@ -1,0 +1,7 @@
+<%
+   if (workingDirectory != null)  out.print 'cd ' + workingDirectory +' && '
+   if (jobSubmitterCommand != null)  out.print jobSubmitterCommand + ' '
+   if (executablePath != null)  out.print  executablePath + ' '
+   if (inputs != null) for(input in inputs)  out.print input + ' '
+   out.print '\n'
+%>

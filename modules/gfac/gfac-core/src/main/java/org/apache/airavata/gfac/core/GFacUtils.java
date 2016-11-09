@@ -529,6 +529,11 @@ public class GFacUtils {
         }
 
         // NOTE: Give precedence to data comes with experiment
+        // qos per queue
+        String qoS = getQoS(processContext.getQualityOfService(), processContext.getQueueName());
+        if (qoS != null) {
+            groovyMap.add(Script.QUALITY_OF_SERVICE, qoS);
+        }
         ComputationalResourceSchedulingModel scheduling = processModel.getProcessResourceSchedule();
         if (scheduling != null) {
             int totalNodeCount = scheduling.getNodeCount();
@@ -539,11 +544,6 @@ public class GFacUtils {
             }
             if (totalNodeCount > 0) {
                 groovyMap.add(Script.NODES, totalNodeCount);
-            }
-            // qos per queue
-            String qoS = getQoS(processContext.getQualityOfService(), processContext.getQueueName());
-            if (qoS != null) {
-                groovyMap.add(Script.QUALITY_OF_SERVICE, qoS);
             }
             if (totalCPUCount > 0) {
                 int ppn = totalCPUCount / totalNodeCount;
@@ -867,26 +867,51 @@ public class GFacUtils {
     }
 
     public static File createJobFile(GroovyMap groovyMap, TaskContext tc, JobManagerConfiguration jMC)
-            throws GFacException{
-
-        URL templateUrl = ApplicationSettings.loadFile(jMC.getJobDescriptionTemplateName());
-        if (templateUrl == null) {
-            String error = "System configuration file '" + jMC.getJobDescriptionTemplateName()
-                    + "' not found in the classpath";
-            throw new GFacException(error);
-        }
+            throws GFacException {
         try {
-            File template = new File(templateUrl.getPath());
-            TemplateEngine engine = new GStringTemplateEngine();
-            Writable make = engine.createTemplate(template).make(groovyMap);
-
             int number = new SecureRandom().nextInt();
             number = (number < 0 ? -number : number);
             File tempJobFile = new File(GFacUtils.getLocalDataDir(tc), "job_" + Integer.toString(number) + jMC.getScriptExtension());
-            FileUtils.writeStringToFile(tempJobFile, make.toString());
+            FileUtils.writeStringToFile(tempJobFile, generateScript(groovyMap, jMC.getJobDescriptionTemplateName()));
             return tempJobFile;
-        } catch (ClassNotFoundException | IOException e) {
-            throw new GFacException("Error while parsing template and generating script file");
+        } catch (IOException e) {
+            throw new GFacException("Error while writing script content to temp file");
+        }
+    }
+
+    public static String generateScript(GroovyMap groovyMap, String templateName) throws GFacException {
+        URL templateUrl = ApplicationSettings.loadFile(templateName);
+        if (templateUrl == null) {
+            String error = "Template file '" + templateName + "' not found";
+            throw new GFacException(error);
+        }
+        File template = new File(templateUrl.getPath());
+        TemplateEngine engine = new GStringTemplateEngine();
+        Writable make;
+        try {
+            make = engine.createTemplate(template).make(groovyMap);
+        } catch (Exception e) {
+            throw new GFacException("Error while generating script using groovy map");
+        }
+        return make.toString();
+    }
+
+    public static String getTemplateFileName(ResourceJobManagerType resourceJobManagerType) {
+        switch (resourceJobManagerType) {
+            case FORK:
+                return "UGE_Groovy.template";
+            case PBS:
+                return "PBS_Groovy.template";
+            case SLURM:
+                return "SLURM_Groovy.template";
+            case UGE:
+                return "UGE_Groovy.template";
+            case LSF:
+                return "LSF_Groovy.template";
+            case CLOUD:
+                return "CLOUD_Groovy.template";
+            default:
+                return null;
         }
     }
 

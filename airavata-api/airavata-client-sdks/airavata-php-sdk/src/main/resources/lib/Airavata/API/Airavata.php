@@ -3027,7 +3027,7 @@ interface AiravataIf {
    * @param computeResourceId
    *   Preferences related to a particular compute resource
    * 
-   * @param gatewayComputeResourcePreference
+   * @param computeResourcePreference
    *   The ComputeResourcePreference object to be added to the resource profile.
    * 
    * @return status
@@ -3038,14 +3038,14 @@ interface AiravataIf {
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $gatewayID
    * @param string $computeResourceId
-   * @param \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference $gatewayComputeResourcePreference
+   * @param \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference $computeResourcePreference
    * @return bool
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function addGatewayComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayID, $computeResourceId, \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference $gatewayComputeResourcePreference);
+  public function addGatewayComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayID, $computeResourceId, \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference $computeResourcePreference);
   /**
    * Add a Storage Resource Preference to a registered gateway profile.
    * 
@@ -3055,7 +3055,7 @@ interface AiravataIf {
    * @param storageResourceId
    *   Preferences related to a particular compute resource
    * 
-   * @param gatewayComputeResourcePreference
+   * @param computeResourcePreference
    *   The ComputeResourcePreference object to be added to the resource profile.
    * 
    * @return status
@@ -3084,7 +3084,7 @@ interface AiravataIf {
    * @param computeResourceId
    *   Preferences related to a particular compute resource
    * 
-   * @return gatewayComputeResourcePreference
+   * @return computeResourcePreference
    *   Returns the ComputeResourcePreference object.
    * 
    * 
@@ -3161,7 +3161,7 @@ interface AiravataIf {
    * @param gatewayID
    *   The identifier for the gateway profile to be requested
    * 
-   * @return gatewayComputeResourcePreference
+   * @return computeResourcePreference
    *   Returns the ComputeResourcePreference object.
    * 
    * 
@@ -3219,7 +3219,7 @@ interface AiravataIf {
    * @param computeResourceId
    *   Preferences related to a particular compute resource
    * 
-   * @param gatewayComputeResourcePreference
+   * @param computeResourcePreference
    *   The ComputeResourcePreference object to be updated to the resource profile.
    * 
    * @return status
@@ -3229,14 +3229,14 @@ interface AiravataIf {
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $gatewayID
    * @param string $computeResourceId
-   * @param \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference $gatewayComputeResourcePreference
+   * @param \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference $computeResourcePreference
    * @return bool
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function updateGatewayComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayID, $computeResourceId, \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference $gatewayComputeResourcePreference);
+  public function updateGatewayComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayID, $computeResourceId, \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference $computeResourcePreference);
   /**
    * Update a Storage Resource Preference of a registered gateway profile.
    * 
@@ -3437,7 +3437,7 @@ interface AiravataIf {
    * @param computeResourceId
    *   Preferences related to a particular compute resource
    * 
-   * @param gatewayComputeResourcePreference
+   * @param computeResourcePreference
    *   The ComputeResourcePreference object to be added to the resource profile.
    * 
    * @return status
@@ -3469,7 +3469,7 @@ interface AiravataIf {
    * @param storageResourceId
    *   Preferences related to a particular compute resource
    * 
-   * @param gatewayComputeResourcePreference
+   * @param computeResourcePreference
    *   The ComputeResourcePreference object to be added to the resource profile.
    * 
    * @return status
@@ -3502,7 +3502,7 @@ interface AiravataIf {
    * @param userComputeResourceId
    *   Preferences related to a particular compute resource
    * 
-   * @return gatewayComputeResourcePreference
+   * @return computeResourcePreference
    *   Returns the ComputeResourcePreference object.
    * 
    * 
@@ -3580,7 +3580,7 @@ interface AiravataIf {
    * @param gatewayID
    *   The identifier for the gateway profile to be requested
    * 
-   * @return gatewayComputeResourcePreference
+   * @return computeResourcePreference
    *   Returns the ComputeResourcePreference object.
    * 
    * 
@@ -11807,19 +11807,19 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("deleteGatewayResourceProfile failed: unknown result");
   }
 
-  public function addGatewayComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayID, $computeResourceId, \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference $gatewayComputeResourcePreference)
+  public function addGatewayComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayID, $computeResourceId, \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference $computeResourcePreference)
   {
-    $this->send_addGatewayComputeResourcePreference($authzToken, $gatewayID, $computeResourceId, $gatewayComputeResourcePreference);
+    $this->send_addGatewayComputeResourcePreference($authzToken, $gatewayID, $computeResourceId, $computeResourcePreference);
     return $this->recv_addGatewayComputeResourcePreference();
   }
 
-  public function send_addGatewayComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayID, $computeResourceId, \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference $gatewayComputeResourcePreference)
+  public function send_addGatewayComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayID, $computeResourceId, \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference $computeResourcePreference)
   {
     $args = new \Airavata\API\Airavata_addGatewayComputeResourcePreference_args();
     $args->authzToken = $authzToken;
     $args->gatewayID = $gatewayID;
     $args->computeResourceId = $computeResourceId;
-    $args->gatewayComputeResourcePreference = $gatewayComputeResourcePreference;
+    $args->computeResourcePreference = $computeResourcePreference;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -12260,19 +12260,19 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("getAllGatewayResourceProfiles failed: unknown result");
   }
 
-  public function updateGatewayComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayID, $computeResourceId, \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference $gatewayComputeResourcePreference)
+  public function updateGatewayComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayID, $computeResourceId, \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference $computeResourcePreference)
   {
-    $this->send_updateGatewayComputeResourcePreference($authzToken, $gatewayID, $computeResourceId, $gatewayComputeResourcePreference);
+    $this->send_updateGatewayComputeResourcePreference($authzToken, $gatewayID, $computeResourceId, $computeResourcePreference);
     return $this->recv_updateGatewayComputeResourcePreference();
   }
 
-  public function send_updateGatewayComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayID, $computeResourceId, \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference $gatewayComputeResourcePreference)
+  public function send_updateGatewayComputeResourcePreference(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayID, $computeResourceId, \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference $computeResourcePreference)
   {
     $args = new \Airavata\API\Airavata_updateGatewayComputeResourcePreference_args();
     $args->authzToken = $authzToken;
     $args->gatewayID = $gatewayID;
     $args->computeResourceId = $computeResourceId;
-    $args->gatewayComputeResourcePreference = $gatewayComputeResourcePreference;
+    $args->computeResourcePreference = $computeResourcePreference;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -51622,7 +51622,7 @@ class Airavata_addGatewayComputeResourcePreference_args {
   /**
    * @var \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference
    */
-  public $gatewayComputeResourcePreference = null;
+  public $computeResourcePreference = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -51641,7 +51641,7 @@ class Airavata_addGatewayComputeResourcePreference_args {
           'type' => TType::STRING,
           ),
         4 => array(
-          'var' => 'gatewayComputeResourcePreference',
+          'var' => 'computeResourcePreference',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference',
           ),
@@ -51657,8 +51657,8 @@ class Airavata_addGatewayComputeResourcePreference_args {
       if (isset($vals['computeResourceId'])) {
         $this->computeResourceId = $vals['computeResourceId'];
       }
-      if (isset($vals['gatewayComputeResourcePreference'])) {
-        $this->gatewayComputeResourcePreference = $vals['gatewayComputeResourcePreference'];
+      if (isset($vals['computeResourcePreference'])) {
+        $this->computeResourcePreference = $vals['computeResourcePreference'];
       }
     }
   }
@@ -51706,8 +51706,8 @@ class Airavata_addGatewayComputeResourcePreference_args {
           break;
         case 4:
           if ($ftype == TType::STRUCT) {
-            $this->gatewayComputeResourcePreference = new \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference();
-            $xfer += $this->gatewayComputeResourcePreference->read($input);
+            $this->computeResourcePreference = new \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference();
+            $xfer += $this->computeResourcePreference->read($input);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -51743,12 +51743,12 @@ class Airavata_addGatewayComputeResourcePreference_args {
       $xfer += $output->writeString($this->computeResourceId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->gatewayComputeResourcePreference !== null) {
-      if (!is_object($this->gatewayComputeResourcePreference)) {
+    if ($this->computeResourcePreference !== null) {
+      if (!is_object($this->computeResourcePreference)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('gatewayComputeResourcePreference', TType::STRUCT, 4);
-      $xfer += $this->gatewayComputeResourcePreference->write($output);
+      $xfer += $output->writeFieldBegin('computeResourcePreference', TType::STRUCT, 4);
+      $xfer += $this->computeResourcePreference->write($output);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -53787,7 +53787,7 @@ class Airavata_updateGatewayComputeResourcePreference_args {
   /**
    * @var \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference
    */
-  public $gatewayComputeResourcePreference = null;
+  public $computeResourcePreference = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -53806,7 +53806,7 @@ class Airavata_updateGatewayComputeResourcePreference_args {
           'type' => TType::STRING,
           ),
         4 => array(
-          'var' => 'gatewayComputeResourcePreference',
+          'var' => 'computeResourcePreference',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference',
           ),
@@ -53822,8 +53822,8 @@ class Airavata_updateGatewayComputeResourcePreference_args {
       if (isset($vals['computeResourceId'])) {
         $this->computeResourceId = $vals['computeResourceId'];
       }
-      if (isset($vals['gatewayComputeResourcePreference'])) {
-        $this->gatewayComputeResourcePreference = $vals['gatewayComputeResourcePreference'];
+      if (isset($vals['computeResourcePreference'])) {
+        $this->computeResourcePreference = $vals['computeResourcePreference'];
       }
     }
   }
@@ -53871,8 +53871,8 @@ class Airavata_updateGatewayComputeResourcePreference_args {
           break;
         case 4:
           if ($ftype == TType::STRUCT) {
-            $this->gatewayComputeResourcePreference = new \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference();
-            $xfer += $this->gatewayComputeResourcePreference->read($input);
+            $this->computeResourcePreference = new \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference();
+            $xfer += $this->computeResourcePreference->read($input);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -53908,12 +53908,12 @@ class Airavata_updateGatewayComputeResourcePreference_args {
       $xfer += $output->writeString($this->computeResourceId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->gatewayComputeResourcePreference !== null) {
-      if (!is_object($this->gatewayComputeResourcePreference)) {
+    if ($this->computeResourcePreference !== null) {
+      if (!is_object($this->computeResourcePreference)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('gatewayComputeResourcePreference', TType::STRUCT, 4);
-      $xfer += $this->gatewayComputeResourcePreference->write($output);
+      $xfer += $output->writeFieldBegin('computeResourcePreference', TType::STRUCT, 4);
+      $xfer += $this->computeResourcePreference->write($output);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
