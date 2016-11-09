@@ -5,18 +5,19 @@
     <parent>
         <artifactId>airavata-sharing-registry</artifactId>
         <groupId>org.apache.airavata</groupId>
-        <version>${global.version}</version>
+        <version>0.17-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
+    <modelVersion>4.0.0</modelVersion>
     <artifactId>airavata-sharing-data-migrator</artifactId>
     <packaging>jar</packaging>
+    <name>Sharing Data Migrator</name>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-sharing-registry-server</artifactId>
-            <version>${project.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
     </dependencies>
 </project>
