@@ -21,7 +21,6 @@
     <artifactId>user-profile</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>user-profile-core</module>
         <module>user-profile-stubs</module>
     </modules>
 
