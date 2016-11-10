@@ -1557,7 +1557,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *    This is the experiment identifier that already exists in the system. Will use this experimentID to retrieve
      *    user configuration which is used with the clone experiment.
      *
-     * @param newExperiementName
+     * @param newExperimentName
      *   experiment name that should be used in the cloned experiment
      *
      * @return
@@ -1588,77 +1588,17 @@ public class AiravataServerHandler implements Airavata.Iface {
      *
      *
      * @param existingExperimentID
-     * @param newExperiementName
+     * @param newExperimentName
      */
     @Override
     @SecurityCheck
-    public String cloneExperiment(AuthzToken authzToken, String existingExperimentID, String newExperiementName, String newExperimentProjectId)
+    public String cloneExperiment(AuthzToken authzToken, String existingExperimentID, String newExperimentName, String newExperimentProjectId)
             throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException,
             AuthorizationException, ProjectNotFoundException, TException {
         try {
-            RegistryService.Client regClient = getRegistryServiceClient();
-            ExperimentModel existingExperiment = regClient.getExperiment(existingExperimentID);
-            if (existingExperiment == null){
-                logger.error(existingExperimentID, "Error while cloning experiment {}, experiment doesn't exist.", existingExperimentID);
-                throw new ExperimentNotFoundException("Requested experiment id " + existingExperimentID + " does not exist in the system..");
-            }
-            if (newExperimentProjectId != null) {
-
-                Project project = regClient.getProject(newExperimentProjectId);
-                if (project == null){
-                    logger.error("Error while cloning experiment {}, project {} doesn't exist.", existingExperimentID, newExperimentProjectId);
-                    throw new ProjectNotFoundException("Requested project id " + newExperimentProjectId + " does not exist in the system..");
-                }
-                existingExperiment.setProjectId(project.getProjectID());
-            }
-
-            // make sure user has write access to the project
-            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-            if(!sharingRegistryServerHandler.userHasAccess(gatewayId, userId + "@" + gatewayId,
-                    existingExperiment.getProjectId(), gatewayId + ":WRITE")){
-                logger.error("Error while cloning experiment {}, user doesn't have write access to project {}", existingExperimentID, existingExperiment.getProjectId());
-                throw new AuthorizationException("User does not have permission to clone an experiment in this project");
-            }
-
-            existingExperiment.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
-            if (existingExperiment.getExecutionId() != null){
-                List<OutputDataObjectType> applicationOutputs = regClient.getApplicationOutputs(existingExperiment.getExecutionId());
-                existingExperiment.setExperimentOutputs(applicationOutputs);
-            }
-            if (validateString(newExperiementName)){
-                existingExperiment.setExperimentName(newExperiementName);
-            }
-            if (existingExperiment.getErrors() != null ){
-                existingExperiment.getErrors().clear();
-            }
-            if(existingExperiment.getUserConfigurationData() != null && existingExperiment.getUserConfigurationData()
-                    .getComputationalResourceScheduling() != null){
-                String compResourceId = existingExperiment.getUserConfigurationData()
-                        .getComputationalResourceScheduling().getResourceHostId();
-
-                ComputeResourceDescription computeResourceDescription = regClient.getComputeResource(compResourceId);
-                if(!computeResourceDescription.isEnabled()){
-                    existingExperiment.getUserConfigurationData().setComputationalResourceScheduling(null);
-                }
-            }
-            logger.debug("Airavata cloned experiment with experiment id : " + existingExperimentID);
-            existingExperiment.setUserName(userId);
-            String expId = regClient.createExperiment(gatewayId, existingExperiment);
-
-            if(ServerSettings.isEnableSharing()){
-                Entity entity = new Entity();
-                entity.setEntityId(expId);
-                entity.setDomainId(existingExperiment.getGatewayId());
-                entity.setEntityTypeId(existingExperiment.getGatewayId()+":"+"EXPERIMENT");
-                entity.setOwnerId(existingExperiment.getUserName() + "@" + existingExperiment.getGatewayId());
-                entity.setName(existingExperiment.getExperimentName());
-                entity.setDescription(existingExperiment.getDescription());
-
-                sharingRegistryServerHandler.createEntity(entity);
-            }
-
-            return expId;
+            // getExperiment will apply sharing permissions
+            ExperimentModel existingExperiment = this.getExperiment(authzToken, existingExperimentID);
+            return cloneExperimentInternal(authzToken, existingExperimentID, newExperimentName, newExperimentProjectId, existingExperiment);
         } catch (Exception e) {
             logger.error(existingExperimentID, "Error while cloning the experiment with existing configuration...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -1666,6 +1606,92 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setMessage("Error while cloning the experiment with existing configuration. More info : " + e.getMessage());
             throw exception;
         }
+    }
+
+    @Override
+    @SecurityCheck
+    public String cloneExperimentByAdmin(AuthzToken authzToken, String existingExperimentID, String newExperimentName, String newExperimentProjectId)
+            throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException,
+            AuthorizationException, ProjectNotFoundException, TException {
+        try {
+            // get existing experiment by bypassing normal sharing permissions for the admin user
+            ExperimentModel existingExperiment = this.getExperimentByAdmin(authzToken, existingExperimentID);
+            return cloneExperimentInternal(authzToken, existingExperimentID, newExperimentName, newExperimentProjectId, existingExperiment);
+        } catch (Exception e) {
+            logger.error(existingExperimentID, "Error while cloning the experiment with existing configuration...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while cloning the experiment with existing configuration. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    private String cloneExperimentInternal(AuthzToken authzToken, String existingExperimentID, String newExperimentName, String newExperimentProjectId, ExperimentModel existingExperiment)
+            throws ExperimentNotFoundException, ProjectNotFoundException, TException, AuthorizationException, ApplicationSettingsException {
+
+        RegistryService.Client regClient = getRegistryServiceClient();
+        if (existingExperiment == null){
+            logger.error(existingExperimentID, "Error while cloning experiment {}, experiment doesn't exist.", existingExperimentID);
+            throw new ExperimentNotFoundException("Requested experiment id " + existingExperimentID + " does not exist in the system..");
+        }
+        if (newExperimentProjectId != null) {
+
+            // getProject will apply sharing permissions
+            Project project = this.getProject(authzToken, newExperimentProjectId);
+            if (project == null){
+                logger.error("Error while cloning experiment {}, project {} doesn't exist.", existingExperimentID, newExperimentProjectId);
+                throw new ProjectNotFoundException("Requested project id " + newExperimentProjectId + " does not exist in the system..");
+            }
+            existingExperiment.setProjectId(project.getProjectID());
+        }
+
+        // make sure user has write access to the project
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+        if(!sharingRegistryServerHandler.userHasAccess(gatewayId, userId + "@" + gatewayId,
+                existingExperiment.getProjectId(), gatewayId + ":WRITE")){
+            logger.error("Error while cloning experiment {}, user doesn't have write access to project {}", existingExperimentID, existingExperiment.getProjectId());
+            throw new AuthorizationException("User does not have permission to clone an experiment in this project");
+        }
+
+        existingExperiment.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
+        if (existingExperiment.getExecutionId() != null){
+            List<OutputDataObjectType> applicationOutputs = regClient.getApplicationOutputs(existingExperiment.getExecutionId());
+            existingExperiment.setExperimentOutputs(applicationOutputs);
+        }
+        if (validateString(newExperimentName)){
+            existingExperiment.setExperimentName(newExperimentName);
+        }
+        if (existingExperiment.getErrors() != null ){
+            existingExperiment.getErrors().clear();
+        }
+        if(existingExperiment.getUserConfigurationData() != null && existingExperiment.getUserConfigurationData()
+                .getComputationalResourceScheduling() != null){
+            String compResourceId = existingExperiment.getUserConfigurationData()
+                    .getComputationalResourceScheduling().getResourceHostId();
+
+            ComputeResourceDescription computeResourceDescription = regClient.getComputeResource(compResourceId);
+            if(!computeResourceDescription.isEnabled()){
+                existingExperiment.getUserConfigurationData().setComputationalResourceScheduling(null);
+            }
+        }
+        logger.debug("Airavata cloned experiment with experiment id : " + existingExperimentID);
+        existingExperiment.setUserName(userId);
+        String expId = regClient.createExperiment(gatewayId, existingExperiment);
+
+        if(ServerSettings.isEnableSharing()){
+            Entity entity = new Entity();
+            entity.setEntityId(expId);
+            entity.setDomainId(existingExperiment.getGatewayId());
+            entity.setEntityTypeId(existingExperiment.getGatewayId()+":"+"EXPERIMENT");
+            entity.setOwnerId(existingExperiment.getUserName() + "@" + existingExperiment.getGatewayId());
+            entity.setName(existingExperiment.getExperimentName());
+            entity.setDescription(existingExperiment.getDescription());
+
+            sharingRegistryServerHandler.createEntity(entity);
+        }
+
+        return expId;
     }
 
     /**

@@ -81,6 +81,7 @@
 /airavata/getJobStatuses|
 /airavata/getJobDetails|
 /airavata/cloneExperiment|
+/airavata/cloneExperimentByAdmin|
 /airavata/terminateExperiment|
 /airavata/getApplicationInterface|
 /airavata/getAllApplicationInterfaceNames|
