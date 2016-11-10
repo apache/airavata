@@ -63,7 +63,7 @@ public class JPAUtils {
     @PersistenceContext(unitName = PERSISTENCE_UNIT_NAME)
     private static EntityManager entityManager;
 
-    public  EntityManager getEntityManager() throws SharingRegistryException {
+    private   EntityManager getEntityManager() throws SharingRegistryException {
         if (factory == null) {
             String connectionProperties = "DriverClassName=" + readServerProperties(SHARING_REG_JDBC_DRIVER) + "," +
                     "Url=" + readServerProperties(SHARING_REG_JDBC_URL) + "?autoReconnect=true," +
