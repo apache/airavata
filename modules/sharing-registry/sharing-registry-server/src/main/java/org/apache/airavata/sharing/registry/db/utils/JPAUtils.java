@@ -58,6 +58,11 @@ public class JPAUtils {
     private static String jdbcUser;
     private static String jdbcPassword;
 
+    private static final ThreadLocal<EntityManager> threadLocal;
+    static {
+        threadLocal = new ThreadLocal<EntityManager>();
+    }
+
 
     @PersistenceUnit(unitName = PERSISTENCE_UNIT_NAME)
     protected static EntityManagerFactory factory;
@@ -96,7 +101,12 @@ public class JPAUtils {
             properties.put("openjpa.RuntimeUnenhancedClasses", "warn");
             factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
         }
-        entityManager = factory.createEntityManager();
+
+        entityManager = threadLocal.get();
+        if(entityManager == null){
+            entityManager = factory.createEntityManager();
+            threadLocal.set(entityManager);
+        }
         return entityManager;
     }
 
