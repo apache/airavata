@@ -58,18 +58,12 @@ public class JPAUtils {
     private static String jdbcUser;
     private static String jdbcPassword;
 
-    private static final ThreadLocal<EntityManager> threadLocal;
-    static {
-        threadLocal = new ThreadLocal<EntityManager>();
-    }
-
-
     @PersistenceUnit(unitName = PERSISTENCE_UNIT_NAME)
     protected static EntityManagerFactory factory;
     @PersistenceContext(unitName = PERSISTENCE_UNIT_NAME)
     private static EntityManager entityManager;
 
-    public static EntityManager getEntityManager() throws SharingRegistryException {
+    public  EntityManager getEntityManager() throws SharingRegistryException {
         if (factory == null) {
             String connectionProperties = "DriverClassName=" + readServerProperties(SHARING_REG_JDBC_DRIVER) + "," +
                     "Url=" + readServerProperties(SHARING_REG_JDBC_URL) + "?autoReconnect=true," +
@@ -102,16 +96,12 @@ public class JPAUtils {
             factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
         }
 
-        entityManager = threadLocal.get();
-        if(entityManager == null){
-            entityManager = factory.createEntityManager();
-            threadLocal.set(entityManager);
-        }
+        entityManager = factory.createEntityManager();
         return entityManager;
     }
 
-    public static <R> R execute(Committer<EntityManager, R> committer) throws SharingRegistryException {
-        EntityManager entityManager = JPAUtils.getEntityManager();
+    public  <R> R execute(Committer<EntityManager, R> committer) throws SharingRegistryException {
+        EntityManager entityManager = (new JPAUtils()).getEntityManager();
         try {
             entityManager.getTransaction().begin();
             R r = committer.commit(entityManager);
