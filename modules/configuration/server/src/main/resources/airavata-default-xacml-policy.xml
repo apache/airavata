@@ -68,6 +68,7 @@
 /airavata/createExperiment|
 /airavata/deleteExperiment|
 /airavata/getExperiment|
+/airavata/getExperimentByAdmin|
 /airavata/getDetailedExperimentTree|
 /airavata/updateExperiment|
 /airavata/updateExperimentConfiguration|
