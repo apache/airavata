@@ -54,7 +54,7 @@ public abstract class AbstractRepository<T, E, Id> {
     public  T update(T t) throws SharingRegistryException {
         Mapper mapper = ObjectMapperSingleton.getInstance();
         E entity = mapper.map(t, dbEntityGenericClass);
-        E persistedCopy = JPAUtils.execute(entityManager -> entityManager.merge(entity));
+        E persistedCopy = (new JPAUtils()).execute(entityManager -> entityManager.merge(entity));
         return mapper.map(persistedCopy, thriftGenericClass);
     }
 
@@ -66,11 +66,11 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public boolean delete(Id id) throws SharingRegistryException {
-        JPAUtils.execute(entityManager -> {
-            E entity = entityManager.find(dbEntityGenericClass, id);
-            entityManager.remove(entity);
-            return entity;
-        });
+        (new JPAUtils()).execute(entityManager -> {
+             E entity = entityManager.find(dbEntityGenericClass, id);
+             entityManager.remove(entity);
+             return entity;
+         });
         return true;
     }
 
@@ -81,7 +81,7 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public T get(Id id) throws SharingRegistryException {
-        E entity = JPAUtils.execute(entityManager -> entityManager
+        E entity =  (new JPAUtils()).execute(entityManager -> entityManager
                 .find(dbEntityGenericClass, id));
         Mapper mapper = ObjectMapperSingleton.getInstance();
         if(entity == null)
@@ -103,7 +103,7 @@ public abstract class AbstractRepository<T, E, Id> {
     public List<T> select(Map<String, String> filters, int offset, int limit) throws SharingRegistryException {
         String queryString = getSelectQuery(filters);
         int newLimit = limit < 0 ? DBConstants.SELECT_MAX_ROWS: limit;
-        List resultSet = JPAUtils.execute(entityManager -> entityManager.createQuery(queryString).setFirstResult(offset)
+        List resultSet =  (new JPAUtils()).execute(entityManager -> entityManager.createQuery(queryString).setFirstResult(offset)
                 .setMaxResults(newLimit).getResultList());
         Mapper mapper = ObjectMapperSingleton.getInstance();
         List<T> gatewayList = new ArrayList<>();
@@ -113,7 +113,7 @@ public abstract class AbstractRepository<T, E, Id> {
 
     public List<T> select(String queryString, int offset, int limit) throws SharingRegistryException {
         int newLimit = limit < 0 ? DBConstants.SELECT_MAX_ROWS: limit;
-        List resultSet = JPAUtils.execute(entityManager -> entityManager.createQuery(queryString).setFirstResult(offset)
+        List resultSet = (new JPAUtils()).execute(entityManager -> entityManager.createQuery(queryString).setFirstResult(offset)
                 .setMaxResults(newLimit).getResultList());
         Mapper mapper = ObjectMapperSingleton.getInstance();
         List<T> gatewayList = new ArrayList<>();
