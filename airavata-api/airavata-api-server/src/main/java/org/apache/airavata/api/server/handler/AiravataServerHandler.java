@@ -1074,6 +1074,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 entity.setOwnerId(experiment.getUserName() + "@" + experiment.getGatewayId());
                 entity.setName(experiment.getExperimentName());
                 entity.setDescription(experiment.getDescription());
+                entity.setParentEntityId(experiment.getProjectId());
 
                 sharingRegistryServerHandler.createEntity(entity);
             }
