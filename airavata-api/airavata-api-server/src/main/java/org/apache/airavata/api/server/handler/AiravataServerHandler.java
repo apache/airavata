@@ -1200,6 +1200,29 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    @Override
+    @SecurityCheck
+    public ExperimentModel getExperimentByAdmin(AuthzToken authzToken, String airavataExperimentId)
+            throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+
+        ExperimentModel experimentModel = null;
+        try {
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            experimentModel = getRegistryServiceClient().getExperiment(airavataExperimentId);
+            if(gatewayId.equals(experimentModel.getGatewayId())){
+                return experimentModel;
+            } else {
+                throw new AuthorizationException("User does not have permission to access this resource");
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Error while getting the experiment", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while getting the experiment. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
     /**
      * Fetch the completed nested tree structue of previously created experiment metadata which includes processes ->
      * tasks -> jobs information.
