@@ -622,7 +622,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
 
             //Assigning global permission for the owner
             Sharing newSharing = new Sharing();
-            newSharing.setPermissionTypeId(permissionTypeRepository.getGlobalPermissionTypeIdForDomain(entity.domainId));
+            newSharing.setPermissionTypeId(permissionTypeRepository.getOwnerPermissionTypeIdForDomain(entity.domainId));
             newSharing.setEntityId(entity.entityId);
             newSharing.setGroupId(entity.ownerId);
             newSharing.setSharingType(SharingType.DIRECT_CASCADING);
@@ -769,8 +769,8 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
 
     private boolean shareEntity(String domainId, String entityId, List<String> groupOrUserList, String permissionTypeId, boolean cascadePermission)  throws SharingRegistryException, TException {
         try{
-            if(permissionTypeId.equals(permissionTypeRepository.getGlobalPermissionTypeIdForDomain(domainId))){
-                throw new SharingRegistryException(OWNER_PERMISSION_NAME + " permission cannot be assigned");
+            if(permissionTypeId.equals(permissionTypeRepository.getOwnerPermissionTypeIdForDomain(domainId))){
+                throw new SharingRegistryException(OWNER_PERMISSION_NAME + " permission cannot be assigned or removed");
             }
 
             //Adding permission for the specified users/groups for the specified entity
@@ -825,6 +825,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     @Override
     public boolean revokeEntitySharingFromUsers(String domainId, String entityId, List<String> userList, String permissionTypeId) throws SharingRegistryException, TException {
         try{
+            if(permissionTypeId.equals(permissionTypeRepository.getOwnerPermissionTypeIdForDomain(domainId))){
+                throw new SharingRegistryException(OWNER_PERMISSION_NAME + " permission cannot be assigned or removed");
+            }
             return revokeEntitySharing(domainId, entityId, userList, permissionTypeId);
         }catch (SharingRegistryException ex) {
             logger.error(ex.getMessage(), ex);
@@ -836,6 +839,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     @Override
     public boolean revokeEntitySharingFromGroups(String domainId, String entityId, List<String> groupList, String permissionTypeId) throws SharingRegistryException, TException {
         try{
+            if(permissionTypeId.equals(permissionTypeRepository.getOwnerPermissionTypeIdForDomain(domainId))){
+                throw new SharingRegistryException(OWNER_PERMISSION_NAME + " permission cannot be assigned or removed");
+            }
             return revokeEntitySharing(domainId, entityId, groupList, permissionTypeId);
         }catch (SharingRegistryException ex) {
             logger.error(ex.getMessage(), ex);
@@ -852,7 +858,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             parentMemberships.stream().forEach(pm->groupIds.add(pm.parentId));
             groupIds.add(userId);
             return sharingRepository.hasAccess(domainId, entityId, groupIds, Arrays.asList(permissionTypeId,
-                    permissionTypeRepository.getGlobalPermissionTypeIdForDomain(domainId)));
+                    permissionTypeRepository.getOwnerPermissionTypeIdForDomain(domainId)));
         }catch (SharingRegistryException ex) {
             logger.error(ex.getMessage(), ex);
             throw ex;
@@ -861,7 +867,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
 
     public boolean revokeEntitySharing(String domainId, String entityId, List<String> groupOrUserList, String permissionTypeId) throws SharingRegistryException {
         try{
-            if(permissionTypeId.equals(permissionTypeRepository.getGlobalPermissionTypeIdForDomain(domainId))){
+            if(permissionTypeId.equals(permissionTypeRepository.getOwnerPermissionTypeIdForDomain(domainId))){
                 throw new SharingRegistryException(OWNER_PERMISSION_NAME + " permission cannot be removed");
             }
 

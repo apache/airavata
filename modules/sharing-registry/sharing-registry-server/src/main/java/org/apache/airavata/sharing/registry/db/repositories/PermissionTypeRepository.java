@@ -39,7 +39,7 @@ public class PermissionTypeRepository extends AbstractRepository<PermissionType,
         super(PermissionType.class, PermissionTypeEntity.class);
     }
 
-    public String getGlobalPermissionTypeIdForDomain(String domainId) throws SharingRegistryException {
+    public String getOwnerPermissionTypeIdForDomain(String domainId) throws SharingRegistryException {
         HashMap<String, String> filters = new HashMap<>();
         filters.put(DBConstants.PermissionTypeTable.DOMAIN_ID, domainId);
         filters.put(DBConstants.PermissionTypeTable.NAME, SharingRegistryServerHandler.OWNER_PERMISSION_NAME);
