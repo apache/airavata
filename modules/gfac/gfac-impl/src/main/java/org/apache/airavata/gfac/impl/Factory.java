@@ -242,7 +242,11 @@ public abstract class Factory {
 
         String computeResourceId = processContext.getComputeResourceId();
         JobSubmissionProtocol jobSubmissionProtocol = processContext.getJobSubmissionProtocol();
-        String key = jobSubmissionProtocol.name() + ":" + computeResourceId;
+		String key = new StringBuilder(processContext.getLoginUserName())
+				.append(':')
+				.append(jobSubmissionProtocol.name())
+				.append(':')
+				.append(computeResourceId).toString();
 		RemoteCluster remoteCluster = remoteClusterMap.get(key);
         if (remoteCluster == null) {
             JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
