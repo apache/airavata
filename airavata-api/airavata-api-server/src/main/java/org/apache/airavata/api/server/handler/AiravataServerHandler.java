@@ -731,6 +731,12 @@ public class AiravataServerHandler implements Airavata.Iface {
                     throw new AuthorizationException("User does not have permission to access this resource");
                 }
             }
+            if(!updatedProject.getOwner().equals(existingProject.getOwner())){
+                throw new InvalidRequestException("Owner of a project cannot be changed");
+            }
+            if(!updatedProject.getGatewayId().equals(existingProject.getGatewayId())){
+                throw new InvalidRequestException("Gateway ID of a project cannot be changed");
+            }
             regClient.updateProject(projectId, updatedProject);
             logger.debug("Airavata updated project with project Id : " + projectId );
         } catch (RegistryServiceException | ApplicationSettingsException e) {
