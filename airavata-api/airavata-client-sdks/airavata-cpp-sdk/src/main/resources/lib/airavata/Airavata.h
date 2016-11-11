@@ -713,6 +713,48 @@ class AiravataIf {
   virtual void getExperiment( ::apache::airavata::model::experiment::ExperimentModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) = 0;
 
   /**
+   *   *
+   *   * Get Experiment by an admin user
+   *   *
+   *   * Used by an admin user to fetch previously created experiment metadata.
+   *   *
+   *   * @param airavataExperimentId
+   *   *    The unique identifier of the requested experiment. This ID is returned during the create experiment step.
+   *   *
+   *   * @return ExperimentModel
+   *   *   This method will return the previously stored experiment metadata.
+   *   *
+   *   * @throws org.apache.airavata.model.error.InvalidRequestException
+   *   *    For any incorrect forming of the request itself.
+   *   *
+   *   * @throws org.apache.airavata.model.error.ExperimentNotFoundException
+   *   *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+   *   *
+   *   * @throws org.apache.airavata.model.error.AiravataClientException
+   *   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   *   *
+   *   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+   *   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
+   *   *         gateway registration steps and retry this request.
+   *   *
+   *   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+   *   *         For now this is a place holder.
+   *   *
+   *   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+   *   *         is implemented, the authorization will be more substantial.
+   *   *
+   *   * @throws org.apache.airavata.model.error.AiravataSystemException
+   *   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+   *   *       rather an Airavata Administrator will be notified to take corrective action.
+   *   *
+   * *
+   * 
+   * @param authzToken
+   * @param airavataExperimentId
+   */
+  virtual void getExperimentByAdmin( ::apache::airavata::model::experiment::ExperimentModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) = 0;
+
+  /**
    * 
    * Get Complete Experiment Details
    * Fetch the completed nested tree structue of previously created experiment metadata which includes processes ->
@@ -1015,6 +1057,57 @@ class AiravataIf {
    * @param newExperimentProjectId
    */
   virtual void cloneExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName, const std::string& newExperimentProjectId) = 0;
+
+  /**
+   * 
+   * Clone an Existing Experiment by an admin user
+   * Existing specified experiment is cloned and a new name is provided. A copy of the experiment configuration is made and is persisted with new metadata.
+   *   The client has to subsequently update this configuration if needed and launch the cloned experiment.
+   * 
+   * @param newExperimentName
+   *    experiment name that should be used in the cloned experiment
+   * 
+   * @param updatedExperiment
+   *    Once an experiment is cloned, to disambiguate, the users are suggested to provide new metadata. This will again require
+   *      the basic experiment metadata like the name and description, intended user, the gateway identifier and if the experiment
+   *      should be shared public by default.
+   * @param newExperimentProjectId
+   *    The project in which to create the cloned experiment. This is optional and if null the experiment will be created
+   *      in the same project as the existing experiment.
+   * 
+   * @return
+   *   The server-side generated.airavata.registry.core.experiment.globally unique identifier (Experiment ID) for the newly cloned experiment.
+   * 
+   * @throws org.apache.airavata.model.error.InvalidRequestException
+   *    For any incorrect forming of the request itself.
+   * 
+   * @throws org.apache.airavata.model.error.ExperimentNotFoundException
+   *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+   * 
+   * @throws org.apache.airavata.model.error.AiravataClientException
+   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   * 
+   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
+   *         gateway registration steps and retry this request.
+   * 
+   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+   *         For now this is a place holder.
+   * 
+   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+   *         is implemented, the authorization will be more substantial.
+   * 
+   * @throws org.apache.airavata.model.error.AiravataSystemException
+   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+   *       rather an Airavata Administrator will be notified to take corrective action.
+   * 
+   * 
+   * @param authzToken
+   * @param existingExperimentID
+   * @param newExperimentName
+   * @param newExperimentProjectId
+   */
+  virtual void cloneExperimentByAdmin(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName, const std::string& newExperimentProjectId) = 0;
 
   /**
    * 
@@ -3028,6 +3121,9 @@ class AiravataNull : virtual public AiravataIf {
   void getExperiment( ::apache::airavata::model::experiment::ExperimentModel& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataExperimentId */) {
     return;
   }
+  void getExperimentByAdmin( ::apache::airavata::model::experiment::ExperimentModel& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataExperimentId */) {
+    return;
+  }
   void getDetailedExperimentTree( ::apache::airavata::model::experiment::ExperimentModel& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataExperimentId */) {
     return;
   }
@@ -3063,6 +3159,9 @@ class AiravataNull : virtual public AiravataIf {
     return;
   }
   void cloneExperiment(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* existingExperimentID */, const std::string& /* newExperimentName */, const std::string& /* newExperimentProjectId */) {
+    return;
+  }
+  void cloneExperimentByAdmin(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* existingExperimentID */, const std::string& /* newExperimentName */, const std::string& /* newExperimentProjectId */) {
     return;
   }
   void terminateExperiment(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* airavataExperimentId */, const std::string& /* gatewayId */) {
@@ -8674,6 +8773,150 @@ class Airavata_getExperiment_presult {
 };
 
 
+class Airavata_getExperimentByAdmin_args {
+ public:
+
+  Airavata_getExperimentByAdmin_args(const Airavata_getExperimentByAdmin_args&);
+  Airavata_getExperimentByAdmin_args& operator=(const Airavata_getExperimentByAdmin_args&);
+  Airavata_getExperimentByAdmin_args() : airavataExperimentId() {
+  }
+
+  virtual ~Airavata_getExperimentByAdmin_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string airavataExperimentId;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_airavataExperimentId(const std::string& val);
+
+  bool operator == (const Airavata_getExperimentByAdmin_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(airavataExperimentId == rhs.airavataExperimentId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getExperimentByAdmin_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getExperimentByAdmin_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getExperimentByAdmin_pargs {
+ public:
+
+
+  virtual ~Airavata_getExperimentByAdmin_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* airavataExperimentId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getExperimentByAdmin_result__isset {
+  _Airavata_getExperimentByAdmin_result__isset() : success(false), ire(false), enf(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool enf :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getExperimentByAdmin_result__isset;
+
+class Airavata_getExperimentByAdmin_result {
+ public:
+
+  Airavata_getExperimentByAdmin_result(const Airavata_getExperimentByAdmin_result&);
+  Airavata_getExperimentByAdmin_result& operator=(const Airavata_getExperimentByAdmin_result&);
+  Airavata_getExperimentByAdmin_result() {
+  }
+
+  virtual ~Airavata_getExperimentByAdmin_result() throw();
+   ::apache::airavata::model::experiment::ExperimentModel success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getExperimentByAdmin_result__isset __isset;
+
+  void __set_success(const  ::apache::airavata::model::experiment::ExperimentModel& val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_enf(const  ::apache::airavata::api::error::ExperimentNotFoundException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  bool operator == (const Airavata_getExperimentByAdmin_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(enf == rhs.enf))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getExperimentByAdmin_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getExperimentByAdmin_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getExperimentByAdmin_presult__isset {
+  _Airavata_getExperimentByAdmin_presult__isset() : success(false), ire(false), enf(false), ace(false), ase(false), ae(false) {}
+  bool success :1;
+  bool ire :1;
+  bool enf :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+} _Airavata_getExperimentByAdmin_presult__isset;
+
+class Airavata_getExperimentByAdmin_presult {
+ public:
+
+
+  virtual ~Airavata_getExperimentByAdmin_presult() throw();
+   ::apache::airavata::model::experiment::ExperimentModel* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+
+  _Airavata_getExperimentByAdmin_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
 class Airavata_getDetailedExperimentTree_args {
  public:
 
@@ -10352,6 +10595,178 @@ class Airavata_cloneExperiment_presult {
    ::apache::airavata::api::error::ProjectNotFoundException pnfe;
 
   _Airavata_cloneExperiment_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _Airavata_cloneExperimentByAdmin_args__isset {
+  _Airavata_cloneExperimentByAdmin_args__isset() : existingExperimentID(false), newExperimentName(false), newExperimentProjectId(false) {}
+  bool existingExperimentID :1;
+  bool newExperimentName :1;
+  bool newExperimentProjectId :1;
+} _Airavata_cloneExperimentByAdmin_args__isset;
+
+class Airavata_cloneExperimentByAdmin_args {
+ public:
+
+  Airavata_cloneExperimentByAdmin_args(const Airavata_cloneExperimentByAdmin_args&);
+  Airavata_cloneExperimentByAdmin_args& operator=(const Airavata_cloneExperimentByAdmin_args&);
+  Airavata_cloneExperimentByAdmin_args() : existingExperimentID(), newExperimentName(), newExperimentProjectId() {
+  }
+
+  virtual ~Airavata_cloneExperimentByAdmin_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
+  std::string existingExperimentID;
+  std::string newExperimentName;
+  std::string newExperimentProjectId;
+
+  _Airavata_cloneExperimentByAdmin_args__isset __isset;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  void __set_existingExperimentID(const std::string& val);
+
+  void __set_newExperimentName(const std::string& val);
+
+  void __set_newExperimentProjectId(const std::string& val);
+
+  bool operator == (const Airavata_cloneExperimentByAdmin_args & rhs) const
+  {
+    if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(existingExperimentID == rhs.existingExperimentID))
+      return false;
+    if (!(newExperimentName == rhs.newExperimentName))
+      return false;
+    if (!(newExperimentProjectId == rhs.newExperimentProjectId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_cloneExperimentByAdmin_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_cloneExperimentByAdmin_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_cloneExperimentByAdmin_pargs {
+ public:
+
+
+  virtual ~Airavata_cloneExperimentByAdmin_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const std::string* existingExperimentID;
+  const std::string* newExperimentName;
+  const std::string* newExperimentProjectId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_cloneExperimentByAdmin_result__isset {
+  _Airavata_cloneExperimentByAdmin_result__isset() : success(false), ire(false), enf(false), ace(false), ase(false), ae(false), pnfe(false) {}
+  bool success :1;
+  bool ire :1;
+  bool enf :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+  bool pnfe :1;
+} _Airavata_cloneExperimentByAdmin_result__isset;
+
+class Airavata_cloneExperimentByAdmin_result {
+ public:
+
+  Airavata_cloneExperimentByAdmin_result(const Airavata_cloneExperimentByAdmin_result&);
+  Airavata_cloneExperimentByAdmin_result& operator=(const Airavata_cloneExperimentByAdmin_result&);
+  Airavata_cloneExperimentByAdmin_result() : success() {
+  }
+
+  virtual ~Airavata_cloneExperimentByAdmin_result() throw();
+  std::string success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+   ::apache::airavata::api::error::ProjectNotFoundException pnfe;
+
+  _Airavata_cloneExperimentByAdmin_result__isset __isset;
+
+  void __set_success(const std::string& val);
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
+
+  void __set_enf(const  ::apache::airavata::api::error::ExperimentNotFoundException& val);
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
+
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
+  void __set_pnfe(const  ::apache::airavata::api::error::ProjectNotFoundException& val);
+
+  bool operator == (const Airavata_cloneExperimentByAdmin_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(enf == rhs.enf))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
+      return false;
+    if (!(pnfe == rhs.pnfe))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_cloneExperimentByAdmin_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_cloneExperimentByAdmin_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_cloneExperimentByAdmin_presult__isset {
+  _Airavata_cloneExperimentByAdmin_presult__isset() : success(false), ire(false), enf(false), ace(false), ase(false), ae(false), pnfe(false) {}
+  bool success :1;
+  bool ire :1;
+  bool enf :1;
+  bool ace :1;
+  bool ase :1;
+  bool ae :1;
+  bool pnfe :1;
+} _Airavata_cloneExperimentByAdmin_presult__isset;
+
+class Airavata_cloneExperimentByAdmin_presult {
+ public:
+
+
+  virtual ~Airavata_cloneExperimentByAdmin_presult() throw();
+  std::string* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
+   ::apache::airavata::api::error::ProjectNotFoundException pnfe;
+
+  _Airavata_cloneExperimentByAdmin_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -27246,6 +27661,9 @@ class AiravataClient : virtual public AiravataIf {
   void getExperiment( ::apache::airavata::model::experiment::ExperimentModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   void send_getExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   void recv_getExperiment( ::apache::airavata::model::experiment::ExperimentModel& _return);
+  void getExperimentByAdmin( ::apache::airavata::model::experiment::ExperimentModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
+  void send_getExperimentByAdmin(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
+  void recv_getExperimentByAdmin( ::apache::airavata::model::experiment::ExperimentModel& _return);
   void getDetailedExperimentTree( ::apache::airavata::model::experiment::ExperimentModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   void send_getDetailedExperimentTree(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   void recv_getDetailedExperimentTree( ::apache::airavata::model::experiment::ExperimentModel& _return);
@@ -27282,6 +27700,9 @@ class AiravataClient : virtual public AiravataIf {
   void cloneExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName, const std::string& newExperimentProjectId);
   void send_cloneExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName, const std::string& newExperimentProjectId);
   void recv_cloneExperiment(std::string& _return);
+  void cloneExperimentByAdmin(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName, const std::string& newExperimentProjectId);
+  void send_cloneExperimentByAdmin(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName, const std::string& newExperimentProjectId);
+  void recv_cloneExperimentByAdmin(std::string& _return);
   void terminateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& gatewayId);
   void send_terminateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& gatewayId);
   void recv_terminateExperiment();
@@ -27691,6 +28112,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_createExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getExperimentByAdmin(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getDetailedExperimentTree(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateExperimentConfiguration(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -27703,6 +28125,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_getJobStatuses(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getJobDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_cloneExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_cloneExperimentByAdmin(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_terminateExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_registerApplicationModule(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getApplicationModule(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -27862,6 +28285,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["createExperiment"] = &AiravataProcessor::process_createExperiment;
     processMap_["deleteExperiment"] = &AiravataProcessor::process_deleteExperiment;
     processMap_["getExperiment"] = &AiravataProcessor::process_getExperiment;
+    processMap_["getExperimentByAdmin"] = &AiravataProcessor::process_getExperimentByAdmin;
     processMap_["getDetailedExperimentTree"] = &AiravataProcessor::process_getDetailedExperimentTree;
     processMap_["updateExperiment"] = &AiravataProcessor::process_updateExperiment;
     processMap_["updateExperimentConfiguration"] = &AiravataProcessor::process_updateExperimentConfiguration;
@@ -27874,6 +28298,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["getJobStatuses"] = &AiravataProcessor::process_getJobStatuses;
     processMap_["getJobDetails"] = &AiravataProcessor::process_getJobDetails;
     processMap_["cloneExperiment"] = &AiravataProcessor::process_cloneExperiment;
+    processMap_["cloneExperimentByAdmin"] = &AiravataProcessor::process_cloneExperimentByAdmin;
     processMap_["terminateExperiment"] = &AiravataProcessor::process_terminateExperiment;
     processMap_["registerApplicationModule"] = &AiravataProcessor::process_registerApplicationModule;
     processMap_["getApplicationModule"] = &AiravataProcessor::process_getApplicationModule;
@@ -28380,6 +28805,16 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
+  void getExperimentByAdmin( ::apache::airavata::model::experiment::ExperimentModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getExperimentByAdmin(_return, authzToken, airavataExperimentId);
+    }
+    ifaces_[i]->getExperimentByAdmin(_return, authzToken, airavataExperimentId);
+    return;
+  }
+
   void getDetailedExperimentTree( ::apache::airavata::model::experiment::ExperimentModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
@@ -28492,6 +28927,16 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->cloneExperiment(_return, authzToken, existingExperimentID, newExperimentName, newExperimentProjectId);
     }
     ifaces_[i]->cloneExperiment(_return, authzToken, existingExperimentID, newExperimentName, newExperimentProjectId);
+    return;
+  }
+
+  void cloneExperimentByAdmin(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName, const std::string& newExperimentProjectId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->cloneExperimentByAdmin(_return, authzToken, existingExperimentID, newExperimentName, newExperimentProjectId);
+    }
+    ifaces_[i]->cloneExperimentByAdmin(_return, authzToken, existingExperimentID, newExperimentName, newExperimentProjectId);
     return;
   }
 
@@ -29774,6 +30219,9 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void getExperiment( ::apache::airavata::model::experiment::ExperimentModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   int32_t send_getExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   void recv_getExperiment( ::apache::airavata::model::experiment::ExperimentModel& _return, const int32_t seqid);
+  void getExperimentByAdmin( ::apache::airavata::model::experiment::ExperimentModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
+  int32_t send_getExperimentByAdmin(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
+  void recv_getExperimentByAdmin( ::apache::airavata::model::experiment::ExperimentModel& _return, const int32_t seqid);
   void getDetailedExperimentTree( ::apache::airavata::model::experiment::ExperimentModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   int32_t send_getDetailedExperimentTree(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId);
   void recv_getDetailedExperimentTree( ::apache::airavata::model::experiment::ExperimentModel& _return, const int32_t seqid);
@@ -29810,6 +30258,9 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void cloneExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName, const std::string& newExperimentProjectId);
   int32_t send_cloneExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName, const std::string& newExperimentProjectId);
   void recv_cloneExperiment(std::string& _return, const int32_t seqid);
+  void cloneExperimentByAdmin(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName, const std::string& newExperimentProjectId);
+  int32_t send_cloneExperimentByAdmin(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName, const std::string& newExperimentProjectId);
+  void recv_cloneExperimentByAdmin(std::string& _return, const int32_t seqid);
   void terminateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& gatewayId);
   int32_t send_terminateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& gatewayId);
   void recv_terminateExperiment(const int32_t seqid);

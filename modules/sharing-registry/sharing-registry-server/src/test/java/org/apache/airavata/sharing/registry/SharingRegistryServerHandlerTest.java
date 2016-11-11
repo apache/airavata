@@ -272,6 +272,8 @@ public class SharingRegistryServerHandlerTest {
         Assert.assertNotNull(sharingRegistryServerHandler.getListOfSharedUsers(domainId, entityId1, permissionTypeId1));
         Assert.assertNotNull(sharingRegistryServerHandler.getListOfSharedGroups(domainId, entityId1, permissionTypeId1));
 
+        Assert.assertTrue(sharingRegistryServerHandler.getListOfSharedUsers(domainId, entityId1, "OWNER").size()==1);
+
 //        sharingRegistryServerHandler.revokeEntitySharingFromUsers(entityId1, Arrays.asList(userId2), permissionTypeId1);
 //        sharingRegistryServerHandler.revokeEntitySharingFromGroups(entityId3, Arrays.asList(groupId2), permissionTypeId1);
     }

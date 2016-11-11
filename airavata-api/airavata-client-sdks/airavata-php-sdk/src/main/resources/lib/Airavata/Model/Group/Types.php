@@ -33,9 +33,11 @@ final class ResourceType {
 final class ResourcePermissionType {
   const WRITE = 0;
   const READ = 1;
+  const OWNER = 2;
   static public $__names = array(
     0 => 'WRITE',
     1 => 'READ',
+    2 => 'OWNER',
   );
 }
 
