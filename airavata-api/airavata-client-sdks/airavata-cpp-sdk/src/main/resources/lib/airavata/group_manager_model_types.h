@@ -51,7 +51,8 @@ extern const std::map<int, const char*> _ResourceType_VALUES_TO_NAMES;
 struct ResourcePermissionType {
   enum type {
     WRITE = 0,
-    READ = 1
+    READ = 1,
+    OWNER = 2
   };
 };
 

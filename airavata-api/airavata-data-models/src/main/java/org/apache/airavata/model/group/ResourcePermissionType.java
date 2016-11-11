@@ -30,7 +30,8 @@ import org.apache.thrift.TEnum;
 
 public enum ResourcePermissionType implements org.apache.thrift.TEnum {
   WRITE(0),
-  READ(1);
+  READ(1),
+  OWNER(2);
 
   private final int value;
 
@@ -55,6 +56,8 @@ public enum ResourcePermissionType implements org.apache.thrift.TEnum {
         return WRITE;
       case 1:
         return READ;
+      case 2:
+        return OWNER;
       default:
         return null;
     }

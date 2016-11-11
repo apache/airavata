@@ -3989,6 +3989,10 @@ public class AiravataServerHandler implements Airavata.Iface {
                 sharingRegistryServerHandler.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
                                 + ":READ").stream().forEach(u->accessibleUsers.add(u.userId));
+            else if(permissionType.equals(ResourcePermissionType.OWNER))
+                sharingRegistryServerHandler.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                        resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
+                                + ":OWNER").stream().forEach(u->accessibleUsers.add(u.userId));
             return accessibleUsers;
         } catch (Exception e) {
             String msg = "Error in getting all accessible users for resource. Resource ID : " + resourceId + " Resource Type : " + resourceType.toString() ;

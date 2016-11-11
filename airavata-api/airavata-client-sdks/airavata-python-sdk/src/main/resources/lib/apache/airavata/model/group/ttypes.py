@@ -41,15 +41,18 @@ class ResourceType:
 class ResourcePermissionType:
   WRITE = 0
   READ = 1
+  OWNER = 2
 
   _VALUES_TO_NAMES = {
     0: "WRITE",
     1: "READ",
+    2: "OWNER",
   }
 
   _NAMES_TO_VALUES = {
     "WRITE": 0,
     "READ": 1,
+    "OWNER": 2,
   }
 
 
