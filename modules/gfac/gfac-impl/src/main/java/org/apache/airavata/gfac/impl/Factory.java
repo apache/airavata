@@ -284,8 +284,13 @@ public abstract class Factory {
 
         String computeResourceId = processContext.getComputeResourceId();
         DataMovementProtocol dataMovementProtocol = processContext.getDataMovementProtocol();
-        String key = dataMovementProtocol.name() + ":" + computeResourceId;
-        RemoteCluster remoteCluster = remoteClusterMap.get(key);
+		String key = new StringBuilder(processContext.getLoginUserName())
+				.append(':')
+				.append(dataMovementProtocol.name())
+				.append(':')
+				.append(computeResourceId).toString();
+
+		RemoteCluster remoteCluster = remoteClusterMap.get(key);
         if (remoteCluster == null) {
             JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
             if (dataMovementProtocol == DataMovementProtocol.LOCAL) {
