@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.orchestrator.cpi.impl;
 
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.gfac.core.task.TaskException;
@@ -93,15 +94,18 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         }
     }
 
-    public ValidationResults validateExperiment(ExperimentModel experiment) throws OrchestratorException,LaunchValidationException {
-        org.apache.airavata.model.error.ValidationResults validationResults = new org.apache.airavata.model.error.ValidationResults();
+    public ValidationResults validateExperiment(ExperimentModel experiment)
+            throws OrchestratorException,LaunchValidationException {
+        org.apache.airavata.model.error.ValidationResults validationResults =
+                new org.apache.airavata.model.error.ValidationResults();
         validationResults.setValidationState(true); // initially making it to success, if atleast one failed them simply mark it failed.
         String errorMsg = "Validation Errors : ";
         if (this.orchestratorConfiguration.isEnableValidation()) {
             List<String> validatorClasses = this.orchestratorContext.getOrchestratorConfiguration().getValidatorClasses();
             for (String validator : validatorClasses) {
                 try {
-                    Class<? extends JobMetadataValidator> vClass = Class.forName(validator.trim()).asSubclass(JobMetadataValidator.class);
+                    Class<? extends JobMetadataValidator> vClass =
+                            Class.forName(validator.trim()).asSubclass(JobMetadataValidator.class);
                     JobMetadataValidator jobMetadataValidator = vClass.newInstance();
                     validationResults = jobMetadataValidator.validate(experiment, null);
                     if (validationResults.isValidationState()) {
@@ -116,14 +120,15 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                                 }
                             }
                         }
-                        logger.error("Validation of " + validator + " for experiment Id " + experiment.getExperimentId() + " is FAILED:[error]. " + errorMsg);
+                        logger.error("Validation of " + validator + " for experiment Id " +
+                                experiment.getExperimentId() + " is FAILED:[error]. " + errorMsg);
                         validationResults.setValidationState(false);
                         try {
                             ErrorModel details = new ErrorModel();
                             details.setActualErrorMessage(errorMsg);
                             details.setCreationTime(Calendar.getInstance().getTimeInMillis());
-                            orchestratorContext.getRegistry().getExperimentCatalog().add(ExpCatChildDataType.EXPERIMENT_ERROR, details,
-                                    experiment.getExperimentId());
+                            orchestratorContext.getRegistry().getExperimentCatalog()
+                                    .add(ExpCatChildDataType.EXPERIMENT_ERROR, details, experiment.getExperimentId());
                         } catch (RegistryException e) {
                             logger.error("Error while saving error details to registry", e);
                         }
@@ -147,12 +152,15 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             //atleast one validation has failed, so we throw an exception
             LaunchValidationException launchValidationException = new LaunchValidationException();
             launchValidationException.setValidationResult(validationResults);
-            launchValidationException.setErrorMessage("Validation failed refer the validationResults list for detail error. Validation errors : " + errorMsg);
+            launchValidationException.setErrorMessage("Validation failed refer the validationResults list for " +
+                    "detail error. Validation errors : " + errorMsg);
             throw launchValidationException;
         }
     }
 
-    public ValidationResults validateProcess(ExperimentModel experiment, ProcessModel processModel) throws OrchestratorException,LaunchValidationException {
+    public ValidationResults validateProcess(ExperimentModel experiment, ProcessModel processModel)
+            throws OrchestratorException, LaunchValidationException {
+
         org.apache.airavata.model.error.ValidationResults validationResults = new org.apache.airavata.model.error.ValidationResults();
         validationResults.setValidationState(true); // initially making it to success, if atleast one failed them simply mark it failed.
         String errorMsg = "Validation Errors : ";
@@ -167,46 +175,42 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                         logger.info("Validation of " + validator + " is SUCCESSFUL");
                     } else {
                         List<ValidatorResult> validationResultList = validationResults.getValidationResultList();
-                        for (ValidatorResult result : validationResultList){
-                            if (!result.isResult()){
+                        for (ValidatorResult result : validationResultList) {
+                            if (!result.isResult()) {
                                 String validationError = result.getErrorDetails();
-                                if (validationError != null){
+                                if (validationError != null) {
                                     errorMsg += validationError + " ";
                                 }
                             }
                         }
-                        logger.error("Validation of " + validator + " for experiment Id " + experiment.getExperimentId() + " is FAILED:[error]. " + errorMsg);
+                        logger.error("Validation of " + validator + " for experiment Id " +
+                                experiment.getExperimentId() + " is FAILED:[error]. " + errorMsg);
                         validationResults.setValidationState(false);
                         try {
                             ErrorModel details = new ErrorModel();
                             details.setActualErrorMessage(errorMsg);
                             details.setCreationTime(Calendar.getInstance().getTimeInMillis());
-                            orchestratorContext.getRegistry().getExperimentCatalog().add(ExpCatChildDataType.PROCESS_ERROR, details,
-                                    processModel.getProcessId());
+                            orchestratorContext.getRegistry().getExperimentCatalog()
+                                    .add(ExpCatChildDataType.PROCESS_ERROR, details, processModel.getProcessId());
                         } catch (RegistryException e) {
                             logger.error("Error while saving error details to registry", e);
                         }
                         break;
                     }
-                } catch (ClassNotFoundException e) {
-                    logger.error("Error loading the validation class: ", validator, e);
-                    validationResults.setValidationState(false);
-                } catch (InstantiationException e) {
-                    logger.error("Error loading the validation class: ", validator, e);
-                    validationResults.setValidationState(false);
-                } catch (IllegalAccessException e) {
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                     logger.error("Error loading the validation class: ", validator, e);
                     validationResults.setValidationState(false);
                 }
             }
         }
-        if(validationResults.isValidationState()){
+        if (validationResults.isValidationState()) {
             return validationResults;
-        }else {
+        } else {
             //atleast one validation has failed, so we throw an exception
             LaunchValidationException launchValidationException = new LaunchValidationException();
             launchValidationException.setValidationResult(validationResults);
-            launchValidationException.setErrorMessage("Validation failed refer the validationResults list for detail error. Validation errors : " + errorMsg);
+            launchValidationException.setErrorMessage("Validation failed refer the validationResults " +
+                    "list for detail error. Validation errors : " + errorMsg);
             throw launchValidationException;
         }
     }
@@ -253,7 +257,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         try {
             Registry registry = orchestratorContext.getRegistry();
             ExperimentModel experimentModel = (ExperimentModel)registry.getExperimentCatalog().get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
-            List<Object> processList = registry.getExperimentCatalog().get(ExperimentCatalogModelType.PROCESS, Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, experimentId);
+            List<Object> processList = registry.getExperimentCatalog()
+                    .get(ExperimentCatalogModelType.PROCESS, Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, experimentId);
             if (processList != null && !processList.isEmpty()) {
                 for (Object processObject : processList) {
                     ProcessModel processModel = (ProcessModel)processObject;
@@ -283,8 +288,10 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 throw new OrchestratorException("Compute Resource Id cannot be null at this point");
             }
             ComputeResourceDescription computeResource = appCatalog.getComputeResource().getComputeResource(resourceHostId);
-            JobSubmissionInterface preferredJobSubmissionInterface = OrchestratorUtils.getPreferredJobSubmissionInterface(orchestratorContext, processModel, gatewayId);
-            ComputeResourcePreference resourcePreference = OrchestratorUtils.getComputeResourcePreference(orchestratorContext, processModel, gatewayId);
+            JobSubmissionInterface preferredJobSubmissionInterface =
+                    OrchestratorUtils.getPreferredJobSubmissionInterface(orchestratorContext, processModel, gatewayId);
+            ComputeResourcePreference resourcePreference =
+                    OrchestratorUtils.getComputeResourcePreference(orchestratorContext, processModel, gatewayId);
             List<String> taskIdList = new ArrayList<>();
 
             if (resourcePreference.getPreferredJobSubmissionProtocol() == JobSubmissionProtocol.UNICORE) {
@@ -303,19 +310,22 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                                 // need to create more job submissions
                                 int numOfMaxWallTimeJobs = ((int) Math.floor(userGivenWallTime / maxRunTime));
                                 for (int i = 1; i <= numOfMaxWallTimeJobs; i++) {
-                                    taskIdList.addAll(createAndSaveSubmissionTasks(gatewayId,preferredJobSubmissionInterface, processModel, maxRunTime));
+                                    taskIdList.addAll(
+                                            createAndSaveSubmissionTasks(gatewayId, preferredJobSubmissionInterface, processModel, maxRunTime));
                                 }
                                 int leftWallTime = userGivenWallTime % maxRunTime;
                                 if (leftWallTime != 0) {
-                                    taskIdList.addAll(createAndSaveSubmissionTasks(gatewayId,preferredJobSubmissionInterface, processModel, leftWallTime));
+                                    taskIdList.addAll(
+                                            createAndSaveSubmissionTasks(gatewayId, preferredJobSubmissionInterface, processModel, leftWallTime));
                                 }
                             } else {
-                                taskIdList.addAll(createAndSaveSubmissionTasks(gatewayId,preferredJobSubmissionInterface, processModel, userGivenWallTime));
+                                taskIdList.addAll(
+                                        createAndSaveSubmissionTasks(gatewayId, preferredJobSubmissionInterface, processModel, userGivenWallTime));
                             }
                         }
                     }
                 } else {
-                    taskIdList.addAll(createAndSaveSubmissionTasks(gatewayId,preferredJobSubmissionInterface, processModel, userGivenWallTime));
+                    taskIdList.addAll(createAndSaveSubmissionTasks(gatewayId, preferredJobSubmissionInterface, processModel, userGivenWallTime));
                 }
                 taskIdList.addAll(createAndSaveOutputDataStagingTasks(processModel, gatewayId));
             }
@@ -342,7 +352,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
     private List<String> createAndSaveEnvSetupTask(String gatewayId,
                                                    ProcessModel processModel,
                                                    ExperimentCatalog experimentCatalog)
-            throws RegistryException, TException {
+            throws RegistryException, TException, AiravataException {
         List<String> envTaskIds = new ArrayList<>();
         TaskModel envSetupTask = new TaskModel();
         envSetupTask.setTaskType(TaskTypes.ENV_SETUP);
@@ -363,7 +373,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         return envTaskIds;
     }
 
-    public List<String> createAndSaveInputDataStagingTasks(ProcessModel processModel, String gatewayId) throws RegistryException {
+    public List<String> createAndSaveInputDataStagingTasks(ProcessModel processModel, String gatewayId)
+            throws RegistryException, AiravataException {
+
         List<String> dataStagingTaskIds = new ArrayList<>();
         List<InputDataObjectType> processInputs = processModel.getProcessInputs();
 
@@ -380,8 +392,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                     case URI_COLLECTION:
                         try {
                             TaskModel inputDataStagingTask = getInputDataStagingTask(processModel, processInput, gatewayId);
-                            String taskId = (String) orchestratorContext.getRegistry().getExperimentCatalog().add(ExpCatChildDataType.TASK, inputDataStagingTask,
-                                    processModel.getProcessId());
+                            String taskId = (String) orchestratorContext.getRegistry().getExperimentCatalog()
+                                    .add(ExpCatChildDataType.TASK, inputDataStagingTask, processModel.getProcessId());
                             inputDataStagingTask.setTaskId(taskId);
                             dataStagingTaskIds.add(inputDataStagingTask.getTaskId());
                         } catch (TException | AppCatalogException | TaskException e) {
@@ -397,7 +409,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         return dataStagingTaskIds;
     }
 
-    public List<String> createAndSaveOutputDataStagingTasks(ProcessModel processModel, String gatewayId) throws RegistryException {
+    public List<String> createAndSaveOutputDataStagingTasks(ProcessModel processModel, String gatewayId)
+            throws RegistryException, AiravataException {
+
         List<String> dataStagingTaskIds = new ArrayList<>();
         List<OutputDataObjectType> processOutputs = processModel.getProcessOutputs();
         String appName = OrchestratorUtils.getApplicationInterfaceName(orchestratorContext, processModel);
@@ -405,14 +419,14 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             for (OutputDataObjectType processOutput : processOutputs) {
                 DataType type = processOutput.getType();
                 switch (type) {
-                    case STDOUT :
-                        if(null == processOutput.getValue() || processOutput.getValue().trim().isEmpty()){
+                    case STDOUT:
+                        if (null == processOutput.getValue() || processOutput.getValue().trim().isEmpty()) {
                             processOutput.setValue(appName + ".stdout");
                         }
                         createOutputDataSatagingTasks(processModel, gatewayId, dataStagingTaskIds, processOutput);
                         break;
                     case STDERR:
-                        if(null == processOutput.getValue() || processOutput.getValue().trim().isEmpty()){
+                        if (null == processOutput.getValue() || processOutput.getValue().trim().isEmpty()) {
                             processOutput.setValue(appName + ".stderr");
                         }
                         createOutputDataSatagingTasks(processModel, gatewayId, dataStagingTaskIds, processOutput);
@@ -439,29 +453,35 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
 
     private boolean isArchive(ProcessModel processModel, String gatewayId) throws AppCatalogException {
         AppCatalog appCatalog = RegistryFactory.getAppCatalog();
-        ApplicationInterfaceDescription appInterface = appCatalog.getApplicationInterface().getApplicationInterface(processModel.getApplicationInterfaceId());
+        ApplicationInterfaceDescription appInterface = appCatalog.getApplicationInterface()
+                .getApplicationInterface(processModel.getApplicationInterfaceId());
         return appInterface.isArchiveWorkingDirectory();
     }
 
-    private void createArchiveDataStatgingTask(ProcessModel processModel, String gatewayId, List<String> dataStagingTaskIds) throws RegistryException {
+    private void createArchiveDataStatgingTask(ProcessModel processModel,
+                                               String gatewayId,
+                                               List<String> dataStagingTaskIds) throws RegistryException, AiravataException {
         TaskModel archiveTask = null;
         try {
             archiveTask = getOutputDataStagingTask(processModel, null, gatewayId);
         } catch (TException e) {
             throw new RegistryException("Error! DataStaging sub task serialization failed");
         }
-        String taskId = (String) orchestratorContext.getRegistry().getExperimentCatalog().add(ExpCatChildDataType.TASK, archiveTask,
-                processModel.getProcessId());
+        String taskId = (String) orchestratorContext.getRegistry().getExperimentCatalog()
+                .add(ExpCatChildDataType.TASK, archiveTask, processModel.getProcessId());
         archiveTask.setTaskId(taskId);
         dataStagingTaskIds.add(archiveTask.getTaskId());
 
     }
 
-    private void createOutputDataSatagingTasks(ProcessModel processModel, String gatewayId, List<String> dataStagingTaskIds, OutputDataObjectType processOutput) throws RegistryException {
+    private void createOutputDataSatagingTasks(ProcessModel processModel,
+                                               String gatewayId,
+                                               List<String> dataStagingTaskIds,
+                                               OutputDataObjectType processOutput) throws RegistryException, AiravataException {
         try {
             TaskModel outputDataStagingTask = getOutputDataStagingTask(processModel, processOutput, gatewayId);
-            String taskId = (String) orchestratorContext.getRegistry().getExperimentCatalog().add(ExpCatChildDataType.TASK, outputDataStagingTask,
-                    processModel.getProcessId());
+            String taskId = (String) orchestratorContext.getRegistry().getExperimentCatalog()
+                    .add(ExpCatChildDataType.TASK, outputDataStagingTask, processModel.getProcessId());
             outputDataStagingTask.setTaskId(taskId);
             dataStagingTaskIds.add(outputDataStagingTask.getTaskId());
         } catch (TException e) {
@@ -469,7 +489,10 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         }
     }
 
-    private List<String> createAndSaveSubmissionTasks(String gatewayId, JobSubmissionInterface jobSubmissionInterface, ProcessModel processModel, int wallTime)
+    private List<String> createAndSaveSubmissionTasks(String gatewayId,
+                                                      JobSubmissionInterface jobSubmissionInterface,
+                                                      ProcessModel processModel,
+                                                      int wallTime)
             throws TException, RegistryException, OrchestratorException {
 
         JobSubmissionProtocol jobSubmissionProtocol = jobSubmissionInterface.getJobSubmissionProtocol();
@@ -539,7 +562,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         });
     }
 
-    private TaskModel getInputDataStagingTask(ProcessModel processModel, InputDataObjectType processInput, String gatewayId) throws RegistryException, TException, AppCatalogException, TaskException {
+    private TaskModel getInputDataStagingTask(ProcessModel processModel, InputDataObjectType processInput, String gatewayId) throws RegistryException, TException, AppCatalogException, TaskException, AiravataException {
         // create new task model for this task
         TaskModel taskModel = new TaskModel();
         taskModel.setParentProcessId(processModel.getProcessId());
@@ -551,19 +574,20 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         taskModel.setTaskType(TaskTypes.DATA_STAGING);
         // create data staging sub task model
         DataStagingTaskModel submodel = new DataStagingTaskModel();
-        ComputeResourcePreference computeResourcePreference = OrchestratorUtils.getComputeResourcePreference(orchestratorContext, processModel, gatewayId);
-        ComputeResourceDescription computeResource = orchestratorContext.getRegistry().getAppCatalog().getComputeResource().getComputeResource(processModel.getComputeResourceId());
-        String remoteOutputDir = OrchestratorUtils.getScratchLocation(orchestratorContext,processModel, gatewayId) + File.separator + processModel.getProcessId();
-        remoteOutputDir = remoteOutputDir.endsWith("/") ? remoteOutputDir : remoteOutputDir + "/";
+        ComputeResourceDescription computeResource = orchestratorContext.getRegistry().getAppCatalog()
+                .getComputeResource().getComputeResource(processModel.getComputeResourceId());
+        String workingDir = OrchestratorUtils.getScratchLocation(orchestratorContext,processModel, gatewayId) +
+                File.separator + processModel.getProcessId() + File.separator;
         URI destination = null;
         try {
-            DataMovementProtocol dataMovementProtocol = OrchestratorUtils.getPreferredDataMovementProtocol(orchestratorContext, processModel, gatewayId);
+            DataMovementProtocol dataMovementProtocol =
+                    OrchestratorUtils.getPreferredDataMovementProtocol(orchestratorContext, processModel, gatewayId);
             String loginUserName = OrchestratorUtils.getLoginUserName(orchestratorContext, processModel, gatewayId);
             destination = new URI(dataMovementProtocol.name(),
                     loginUserName,
                     computeResource.getHostName(),
                     OrchestratorUtils.getDataMovementPort(orchestratorContext, processModel, gatewayId),
-                    remoteOutputDir , null, null);
+                    workingDir , null, null);
         } catch (URISyntaxException e) {
             throw new TaskException("Error while constructing destination file URI");
         }
@@ -575,7 +599,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         return taskModel;
     }
 
-    private TaskModel getOutputDataStagingTask(ProcessModel processModel, OutputDataObjectType processOutput, String gatewayId) throws RegistryException, TException {
+    private TaskModel getOutputDataStagingTask(ProcessModel processModel, OutputDataObjectType processOutput, String gatewayId) throws RegistryException, TException, AiravataException {
         try {
 
             // create new task model for this task
@@ -587,11 +611,11 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             taskModel.setTaskStatuses(Arrays.asList(taskStatus));
             taskModel.setTaskType(TaskTypes.DATA_STAGING);
-            ComputeResourcePreference computeResourcePreference = OrchestratorUtils.getComputeResourcePreference(orchestratorContext, processModel, gatewayId);
-            ComputeResourceDescription computeResource = orchestratorContext.getRegistry().getAppCatalog().getComputeResource().getComputeResource(processModel.getComputeResourceId());
+            ComputeResourceDescription computeResource = orchestratorContext.getRegistry().getAppCatalog()
+                    .getComputeResource().getComputeResource(processModel.getComputeResourceId());
 
-            String remoteOutputDir = OrchestratorUtils.getScratchLocation(orchestratorContext,processModel, gatewayId) + File.separator + processModel.getProcessId();
-            remoteOutputDir = remoteOutputDir.endsWith("/") ? remoteOutputDir : remoteOutputDir + "/";
+            String workingDir = OrchestratorUtils.getScratchLocation(orchestratorContext,processModel, gatewayId)
+                    + File.separator + processModel.getProcessId() + File.separator;
             DataStagingTaskModel submodel = new DataStagingTaskModel();
             DataMovementProtocol dataMovementProtocol = OrchestratorUtils.getPreferredDataMovementProtocol(orchestratorContext, processModel, gatewayId);
             URI source = null;
@@ -604,7 +628,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                             loginUserName,
                             computeResource.getHostName(),
                             OrchestratorUtils.getDataMovementPort(orchestratorContext, processModel, gatewayId),
-                            remoteOutputDir + processOutput.getValue(), null, null);
+                            workingDir + processOutput.getValue(), null, null);
                 } else {
                     // archive
                     submodel.setType(DataStageType.ARCHIVE_OUTPUT);
@@ -612,7 +636,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                             loginUserName,
                             computeResource.getHostName(),
                             OrchestratorUtils.getDataMovementPort(orchestratorContext, processModel, gatewayId),
-                            remoteOutputDir, null, null);
+                            workingDir, null, null);
                 }
             } catch (URISyntaxException e) {
                 throw new TaskException("Error while constructing source file URI");
