@@ -425,6 +425,6 @@ public class OrchestratorUtils {
     }
 
     private static boolean isValid(String str) {
-        return (str != null && str.trim().isEmpty());
+        return (str != null && !str.trim().isEmpty());
     }
 }

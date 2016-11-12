@@ -333,7 +333,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processModel.getProcessId());
             return getTaskDag(taskIdList);
         } catch (Exception e) {
-            throw new OrchestratorException("Error during creating process");
+            throw new OrchestratorException("Error during creating process", e);
         }
     }
 
