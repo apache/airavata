@@ -184,6 +184,7 @@ public class ClusterStatusMonitorJob implements Job {
                     }
                     session.disconnect();
                 } catch (Exception ex) {
+                    logger.error("Failed to get cluster status from " + computeResourceProfile.getHostName());
                     logger.error(ex.getMessage(), ex);
                 }
             }
