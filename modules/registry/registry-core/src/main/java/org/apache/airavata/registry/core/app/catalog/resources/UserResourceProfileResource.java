@@ -355,7 +355,8 @@ public class UserResourceProfileResource extends AppCatAbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            UserResourceProfile existingUserResourceProfile = em.find(UserResourceProfile.class, userId);
+            CompositeIdentifier primaryKey = new CompositeIdentifier(userId,gatewayID);
+            UserResourceProfile existingUserResourceProfile = em.find(UserResourceProfile.class, primaryKey);
             if (em.isOpen()) {
                 if (em.getTransaction().isActive()){
                     em.getTransaction().rollback();
