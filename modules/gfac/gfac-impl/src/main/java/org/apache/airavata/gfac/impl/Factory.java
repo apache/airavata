@@ -54,30 +54,20 @@ import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.watcher.CancelRequestWatcher;
 import org.apache.airavata.gfac.core.watcher.RedeliveryRequestWatcher;
-import org.apache.airavata.gfac.impl.job.ForkJobConfiguration;
-import org.apache.airavata.gfac.impl.job.LSFJobConfiguration;
-import org.apache.airavata.gfac.impl.job.PBSJobConfiguration;
-import org.apache.airavata.gfac.impl.job.SlurmJobConfiguration;
-import org.apache.airavata.gfac.impl.job.UGEJobConfiguration;
+import org.apache.airavata.gfac.impl.job.*;
 import org.apache.airavata.gfac.impl.task.ArchiveTask;
 import org.apache.airavata.gfac.impl.watcher.CancelRequestWatcherImpl;
 import org.apache.airavata.gfac.impl.watcher.RedeliveryRequestWatcherImpl;
 import org.apache.airavata.gfac.monitor.cloud.AuroraJobMonitor;
 import org.apache.airavata.gfac.monitor.email.EmailBasedMonitor;
-import org.apache.airavata.messaging.core.MessageHandler;
-import org.apache.airavata.messaging.core.MessagingFactory;
-import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.messaging.core.Subscriber;
-import org.apache.airavata.messaging.core.Type;
+import org.apache.airavata.messaging.core.*;
 import org.apache.airavata.messaging.core.impl.RabbitMQPublisher;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
-import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
@@ -91,11 +81,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public abstract class Factory {
 
@@ -510,6 +496,12 @@ public abstract class Factory {
 				session.connect(); // 0 connection timeout
 				sessionMap.put(key, session);
 			} catch (JSchException e) {
+				log.error("----------------------------SSH Exception------------------------------");
+				log.error("username: " + serverInfo.getUserName());
+				log.error("private key: " + authentication.getPrivateKey());
+				log.error("public key: " + authentication.getPublicKey());
+				log.error("passphrase: " + authentication.getPassphrase());
+				log.error("----------------------------SSH Exception------------------------------");
 				throw new AiravataException("JSch initialization error ", e);
 			}
 		} else {
