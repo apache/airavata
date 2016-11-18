@@ -496,12 +496,6 @@ public abstract class Factory {
 				session.connect(); // 0 connection timeout
 				sessionMap.put(key, session);
 			} catch (JSchException e) {
-				log.error("----------------------------SSH Exception------------------------------");
-				log.error("username: " + serverInfo.getUserName());
-				log.error("private key: " + authentication.getPrivateKey());
-				log.error("public key: " + authentication.getPublicKey());
-				log.error("passphrase: " + authentication.getPassphrase());
-				log.error("----------------------------SSH Exception------------------------------");
 				throw new AiravataException("JSch initialization error ", e);
 			}
 		} else {
