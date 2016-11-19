@@ -43,6 +43,19 @@
             <artifactId>airavata-data-models</artifactId>
             <version>${project.version}</version>
         </dependency>
+<<<<<<< HEAD
+=======
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${org.slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-data-models</artifactId>
+            <version>0.17-SNAPSHOT</version>
+        </dependency>
+>>>>>>> User Profile CPI Server
 
     </dependencies>
 
