@@ -23,10 +23,13 @@ package org.apache.airavata.registry.core.repositories.workspacecatalog;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.registry.core.entities.workspacecatalog.UserProfileEntity;
 import org.apache.airavata.registry.core.repositories.AbstractRepository;
+import org.apache.airavata.registry.core.utils.QueryConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class UserProfileRepository extends AbstractRepository<UserProfile, UserProfileEntity, String> {
     private final static Logger logger = LoggerFactory.getLogger(UserProfileRepository.class);
@@ -39,5 +42,47 @@ public class UserProfileRepository extends AbstractRepository<UserProfile, UserP
     public List<UserProfile> select(String query, int offset, int limit) {
         throw new UnsupportedOperationException("Due to performance overheads this method is not supported. Instead use" +
                 " UserProfileSummaryRepository");
+    }
+
+    public UserProfile getUserProfileByIdAndGateWay(String userId, String gatewayId)   {
+
+        UserProfile userProfile = null;
+
+        Map<String, Object> queryParam = new HashMap<String, Object>();
+        queryParam.put(UserProfile._Fields.USER_ID.getFieldName(), userId);
+        queryParam.put(UserProfile._Fields.GATEWAY_ID.getFieldName(), gatewayId);
+        List<UserProfile> resultList = select(QueryConstants.FIND_USER_PROFILE_BY_USER_ID, 0, 1, queryParam);
+
+        if (resultList != null && resultList.size() > 0)
+            userProfile =  resultList.get(0);
+
+
+        return userProfile;
+    }
+
+    public List<UserProfile> getAllUserProfilesInGateway(String gatewayId)  {
+
+        Map<String, Object> queryParam = new HashMap<String, Object>();
+        queryParam.put(UserProfile._Fields.GATEWAY_ID.getFieldName(), gatewayId);
+
+        List<UserProfile> resultList = select(QueryConstants.FIND_ALL_USER_PROFILES_BY_GATEWAY_ID, 0, 1, queryParam);
+
+        return  resultList;
+    }
+
+    public UserProfile getUserProfileByNameAndGateWay(String name, String gatewayId)   {
+
+        UserProfile userProfile = null;
+
+        Map<String, Object> queryParam = new HashMap<String, Object>();
+        queryParam.put(UserProfile._Fields.USER_NAME.getFieldName(), name);
+        queryParam.put(UserProfile._Fields.GATEWAY_ID.getFieldName(), gatewayId);
+        List<UserProfile> resultList = select(QueryConstants.FIND_USER_PROFILE_BY_USER_NAME, 0, 1, queryParam);
+
+        if (resultList != null && resultList.size() > 0)
+            userProfile =  resultList.get(0);
+
+
+        return userProfile;
     }
 }

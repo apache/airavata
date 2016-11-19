@@ -22,6 +22,8 @@
     <packaging>pom</packaging>
     <modules>
         <module>user-profile-stubs</module>
+        <module>user-profile-service</module>
+
     </modules>
 
 

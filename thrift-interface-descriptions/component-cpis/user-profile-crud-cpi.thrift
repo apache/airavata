@@ -45,7 +45,7 @@ service UserProfileCrudeService {
   bool deleteUserProfile(1: required string userId)
                                                   throws (1:registry_api_errors.RegistryServiceException registryException);
 
-  list<user_profile_model.UserProfile> getAllUserProfilesInGateway (1: required string gatewayId)
+  list<user_profile_model.UserProfile> getAllUserProfilesInGateway (1: required string gatewayId, 2: required i32 offset, 3: required i32 limit)
                           throws (1:registry_api_errors.RegistryServiceException registryException);
 
  user_profile_model.UserProfile getUserProfileByName(1: required string userName, 2: required string gatewayId)
