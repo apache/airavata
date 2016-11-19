@@ -23,20 +23,20 @@ import java.util.Calendar;
 import java.util.Date;
 
 public interface IServer {
-	public enum ServerStatus{
-		STOPING,
-		STOPPED,
-		STARTING,
-		STARTED,
-		FAILED;
-		public void updateTime(){
-			now=Calendar.getInstance().getTime();
+		public enum ServerStatus{
+			STOPING,
+			STOPPED,
+			STARTING,
+			STARTED,
+			FAILED;
+			public void updateTime(){
+				now=Calendar.getInstance().getTime();
+			}
+			private Date now;
+			public Date getTime(){
+				return now;
+			}
 		}
-		private Date now;
-		public Date getTime(){
-			return now;
-		}
-	}
 	public String getName();
 	public String getVersion();
 	public void start() throws Exception;

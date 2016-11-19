@@ -360,8 +360,16 @@ public class ApplicationSettings {
         return getSetting("credential.store.server.host");
     }
 
+    public static String getUserProfileServerHost() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.USER_PROFILE_SERVER_HOST);
+    }
+
     public static String getCredentialStoreServerPort() throws ApplicationSettingsException {
         return getSetting("credential.store.server.port");
+    }
+
+    public static String getUserProfileServerPort() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.USER_PROFILE_SERVER_PORT);
     }
     public static String getCredentialStoreNotifierEnabled() throws ApplicationSettingsException {
         return getSetting("notifier.enabled");
