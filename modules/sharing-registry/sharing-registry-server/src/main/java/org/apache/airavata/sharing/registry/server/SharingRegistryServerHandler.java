@@ -78,7 +78,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
 
             //create the global permission for the domain
             PermissionType permissionType = new PermissionType();
-            permissionType.setPermissionTypeId(OWNER_PERMISSION_NAME);
+            permissionType.setPermissionTypeId(domain.domainId + ":" + OWNER_PERMISSION_NAME);
             permissionType.setDomainId(domain.domainId);
             permissionType.setName(OWNER_PERMISSION_NAME);
             permissionType.setDescription("GLOBAL permission to " + domain.domainId);
