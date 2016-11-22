@@ -63,7 +63,7 @@ public class JPAUtils {
     @PersistenceContext(unitName = PERSISTENCE_UNIT_NAME)
     private static EntityManager entityManager;
 
-    private   EntityManager getEntityManager() throws SharingRegistryException {
+    private EntityManager getEntityManager() throws SharingRegistryException {
         if (factory == null) {
             String connectionProperties = "DriverClassName=" + readServerProperties(SHARING_REG_JDBC_DRIVER) + "," +
                     "Url=" + readServerProperties(SHARING_REG_JDBC_URL) + "?autoReconnect=true," +
@@ -87,9 +87,10 @@ public class JPAUtils {
 //            properties.put("openjpa.DataCache","" + readServerProperties(JPA_CACHE_ENABLED) + "(CacheSize=" + Integer.valueOf(readServerProperties(JPA_CACHE_SIZE)) + ", SoftReferenceSize=0)");
 //            properties.put("openjpa.QueryCache","" + readServerProperties(JPA_CACHE_ENABLED) + "(CacheSize=" + Integer.valueOf(readServerProperties(JPA_CACHE_SIZE)) + ", SoftReferenceSize=0)");
             properties.put("openjpa.RemoteCommitProvider", "sjvm");
-            properties.put("openjpa.Log", "DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
+            properties.put("openjpa.Log", "DefaultLevel=INFO, Runtime=TRACE, Tool=INFO, SQL=INFO");
             properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
             properties.put("openjpa.jdbc.QuerySQLCache", "false");
+            properties.put("openjpa.Multithreaded", "true");
             properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72," +
                     " PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=31536000,  autoReconnect=true");
             properties.put("openjpa.RuntimeUnenhancedClasses", "warn");
@@ -100,19 +101,20 @@ public class JPAUtils {
         return entityManager;
     }
 
-    public  <R> R execute(Committer<EntityManager, R> committer) throws SharingRegistryException {
-        EntityManager entityManager = (new JPAUtils()).getEntityManager();
+    public <R> R execute(Committer<EntityManager, R> committer) throws SharingRegistryException {
+        EntityManager entityManager = getEntityManager();
         try {
             entityManager.getTransaction().begin();
             R r = committer.commit(entityManager);
             entityManager.getTransaction().commit();
             return  r;
         }finally {
-            if (entityManager != null && entityManager.isOpen()) {
-                if (entityManager.getTransaction().isActive()) {
+            if (entityManager != null) {
+                if (entityManager.isOpen() && entityManager.getTransaction().isActive()) {
                     entityManager.getTransaction().rollback();
                 }
-                entityManager.close();
+                if(entityManager.isOpen())
+                    entityManager.close();
             }
         }
     }
