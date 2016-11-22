@@ -94,30 +94,20 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	}
 
 	public OrchestratorServerHandler() throws OrchestratorException{
-		try {
-	        publisher = MessagingFactory.getPublisher(Type.STATUS);
-			List<String> routingKeys = new ArrayList<>();
-			routingKeys.add(ServerSettings.getRabbitmqExperimentLaunchQueueName());
-			experimentSubscriber = MessagingFactory.getSubscriber(new ExperimentHandler(), routingKeys, Type.EXPERIMENT_LAUNCH);
-			setAiravataUserName(ServerSettings.getDefaultUser());
-		} catch (AiravataException e) {
-            log.error(e.getMessage(), e);
-            throw new OrchestratorException("Error while initializing orchestrator service", e);
-		}
 		// orchestrator init
 		try {
 			// first constructing the monitorManager and orchestrator, then fill
 			// the required properties
+			setAiravataUserName(ServerSettings.getDefaultUser());
 			orchestrator = new SimpleOrchestratorImpl();
 			experimentCatalog = RegistryFactory.getDefaultExpCatalog();
 			appCatalog = RegistryFactory.getAppCatalog();
+
+			publisher = MessagingFactory.getPublisher(Type.STATUS);
 			orchestrator.initialize();
 			orchestrator.getOrchestratorContext().setPublisher(this.publisher);
-			List<String> routingKeys = new ArrayList<>();
-//			routingKeys.add("*"); // listen for gateway level messages
-//			routingKeys.add("*.*"); // listen for gateway/experiment level messages
-			routingKeys.add("*.*.*"); // listen for gateway/experiment/process level messages
-			statusSubscribe = MessagingFactory.getSubscriber(new ProcessStatusHandler(),routingKeys, Type.STATUS);
+			statusSubscribe = getStatusSubscriber();
+			experimentSubscriber  = getExperimentSubscriber();
 			startCurator();
 		} catch (OrchestratorException | RegistryException | AppCatalogException | AiravataException e) {
 			log.error(e.getMessage(), e);
@@ -125,7 +115,21 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 		}
 	}
 
-    /**
+	private Subscriber getStatusSubscriber() throws AiravataException {
+		List<String> routingKeys = new ArrayList<>();
+//			routingKeys.add("*"); // listen for gateway level messages
+//			routingKeys.add("*.*"); // listen for gateway/experiment level messages
+		routingKeys.add("*.*.*"); // listen for gateway/experiment/process level messages
+		return MessagingFactory.getSubscriber(new ProcessStatusHandler(),routingKeys, Type.STATUS);
+	}
+
+	private Subscriber getExperimentSubscriber() throws AiravataException {
+		List<String> routingKeys = new ArrayList<>();
+		routingKeys.add(ServerSettings.getRabbitmqExperimentLaunchQueueName());
+		return MessagingFactory.getSubscriber(new ExperimentHandler(), routingKeys, Type.EXPERIMENT_LAUNCH);
+	}
+
+	/**
 	 * * After creating the experiment Data user have the * experimentID as the
 	 * handler to the experiment, during the launchProcess * We just have to
 	 * give the experimentID * * @param experimentID * @return sucess/failure *
