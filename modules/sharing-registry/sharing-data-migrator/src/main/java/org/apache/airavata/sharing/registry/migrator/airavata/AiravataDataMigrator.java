@@ -24,8 +24,6 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
 import org.apache.thrift.TException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -35,7 +33,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AiravataDataMigrator {
-    private final static Logger logger = LoggerFactory.getLogger(AiravataDataMigrator.class);
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException, TException, ApplicationSettingsException {
         Connection expCatConnection = ConnectionFactory.getInstance().getExpCatConnection();
@@ -47,49 +44,53 @@ public class AiravataDataMigrator {
         ResultSet rs = statement.executeQuery(query);
 
         while (rs.next()) {
-            //Creating domain entries
-            Domain domain = new Domain();
-            domain.setName(rs.getString("GATEWAY_ID"));
-            domain.setDescription("Domain entry for " + domain.name);
+            try{
+                //Creating domain entries
+                Domain domain = new Domain();
+                domain.setName(rs.getString("GATEWAY_ID"));
+                domain.setDescription("Domain entry for " + domain.name);
 
-            govRegistryServerHandler.createDomain(domain);
+                govRegistryServerHandler.createDomain(domain);
 
-            //Creating Entity Types for each domain
-            EntityType entityType = new EntityType();
-            entityType.setEntityTypeId(domain.domainId+":PROJECT");
-            entityType.setDomainId(domain.domainId);
-            entityType.setName("PROJECT");
-            entityType.setDescription("Project entity type");
-            govRegistryServerHandler.createEntityType(entityType);
+                //Creating Entity Types for each domain
+                EntityType entityType = new EntityType();
+                entityType.setEntityTypeId(domain.domainId+":PROJECT");
+                entityType.setDomainId(domain.domainId);
+                entityType.setName("PROJECT");
+                entityType.setDescription("Project entity type");
+                govRegistryServerHandler.createEntityType(entityType);
 
-            entityType = new EntityType();
-            entityType.setEntityTypeId(domain.domainId+":EXPERIMENT");
-            entityType.setDomainId(domain.domainId);
-            entityType.setName("EXPERIMENT");
-            entityType.setDescription("Experiment entity type");
-            govRegistryServerHandler.createEntityType(entityType);
+                entityType = new EntityType();
+                entityType.setEntityTypeId(domain.domainId+":EXPERIMENT");
+                entityType.setDomainId(domain.domainId);
+                entityType.setName("EXPERIMENT");
+                entityType.setDescription("Experiment entity type");
+                govRegistryServerHandler.createEntityType(entityType);
 
-            entityType = new EntityType();
-            entityType.setEntityTypeId(domain.domainId+":FILE");
-            entityType.setDomainId(domain.domainId);
-            entityType.setName("FILE");
-            entityType.setDescription("File entity type");
-            govRegistryServerHandler.createEntityType(entityType);
+                entityType = new EntityType();
+                entityType.setEntityTypeId(domain.domainId+":FILE");
+                entityType.setDomainId(domain.domainId);
+                entityType.setName("FILE");
+                entityType.setDescription("File entity type");
+                govRegistryServerHandler.createEntityType(entityType);
 
-            //Creating Permission Types for each domain
-            PermissionType permissionType = new PermissionType();
-            permissionType.setPermissionTypeId(domain.domainId+":READ");
-            permissionType.setDomainId(domain.domainId);
-            permissionType.setName("READ");
-            permissionType.setDescription("Read permission type");
-            govRegistryServerHandler.createPermissionType(permissionType);
+                //Creating Permission Types for each domain
+                PermissionType permissionType = new PermissionType();
+                permissionType.setPermissionTypeId(domain.domainId+":READ");
+                permissionType.setDomainId(domain.domainId);
+                permissionType.setName("READ");
+                permissionType.setDescription("Read permission type");
+                govRegistryServerHandler.createPermissionType(permissionType);
 
-            permissionType = new PermissionType();
-            permissionType.setPermissionTypeId(domain.domainId+":WRITE");
-            permissionType.setDomainId(domain.domainId);
-            permissionType.setName("WRITE");
-            permissionType.setDescription("Write permission type");
-            govRegistryServerHandler.createPermissionType(permissionType);
+                permissionType = new PermissionType();
+                permissionType.setPermissionTypeId(domain.domainId+":WRITE");
+                permissionType.setDomainId(domain.domainId);
+                permissionType.setName("WRITE");
+                permissionType.setDescription("Write permission type");
+                govRegistryServerHandler.createPermissionType(permissionType);
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
         }
 
         //Creating user entries
@@ -97,12 +98,17 @@ public class AiravataDataMigrator {
         statement = expCatConnection.createStatement();
         rs = statement.executeQuery(query);
         while(rs.next()){
-            User user = new User();
-            user.setUserId(rs.getString("AIRAVATA_INTERNAL_USER_ID"));
-            user.setDomainId(rs.getString("GATEWAY_ID"));
-            user.setUserName(rs.getString("USER_NAME"));
+            try{
+                User user = new User();
+                user.setUserId(rs.getString("AIRAVATA_INTERNAL_USER_ID"));
+                user.setDomainId(rs.getString("GATEWAY_ID"));
+                user.setUserName(rs.getString("USER_NAME"));
 
-            govRegistryServerHandler.createUser(user);
+                govRegistryServerHandler.createUser(user);
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
+
         }
 
         //Creating project entries
@@ -110,21 +116,26 @@ public class AiravataDataMigrator {
         statement = expCatConnection.createStatement();
         rs = statement.executeQuery(query);
         while(rs.next()){
-            Entity entity = new Entity();
-            entity.setEntityId(rs.getString("PROJECT_ID"));
-            entity.setDomainId(rs.getString("GATEWAY_ID"));
-            entity.setEntityTypeId(rs.getString("GATEWAY_ID") + ":PROJECT");
-            entity.setOwnerId(rs.getString("USER_NAME") + "@" + rs.getString("GATEWAY_ID"));
-            entity.setName(rs.getString("PROJECT_NAME"));
-            entity.setDescription(rs.getString("DESCRIPTION"));
-            if(entity.getDescription() == null)
-                entity.setFullText(entity.getName());
-            else
-                entity.setFullText(entity.getName() + " " + entity.getDescription());
-            Map<String, String> metadata = new HashMap<>();
-            metadata.put("CREATION_TIME", rs.getDate("CREATION_TIME").toString());
+            try{
+                Entity entity = new Entity();
+                entity.setEntityId(rs.getString("PROJECT_ID"));
+                entity.setDomainId(rs.getString("GATEWAY_ID"));
+                entity.setEntityTypeId(rs.getString("GATEWAY_ID") + ":PROJECT");
+                entity.setOwnerId(rs.getString("USER_NAME") + "@" + rs.getString("GATEWAY_ID"));
+                entity.setName(rs.getString("PROJECT_NAME"));
+                entity.setDescription(rs.getString("DESCRIPTION"));
+                if(entity.getDescription() == null)
+                    entity.setFullText(entity.getName());
+                else
+                    entity.setFullText(entity.getName() + " " + entity.getDescription());
+                Map<String, String> metadata = new HashMap<>();
+                metadata.put("CREATION_TIME", rs.getDate("CREATION_TIME").toString());
 
-            govRegistryServerHandler.createEntity(entity);
+                govRegistryServerHandler.createEntity(entity);
+            }catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
         }
 
         //Creating experiment entries
@@ -132,29 +143,33 @@ public class AiravataDataMigrator {
         statement = expCatConnection.createStatement();
         rs = statement.executeQuery(query);
         while(rs.next()){
-            Entity entity = new Entity();
-            entity.setEntityId(rs.getString("EXPERIMENT_ID"));
-            entity.setDomainId(rs.getString("GATEWAY_ID"));
-            entity.setEntityTypeId(rs.getString("GATEWAY_ID") + ":EXPERIMENT");
-            entity.setOwnerId(rs.getString("USER_NAME") + "@" + rs.getString("GATEWAY_ID"));
-            entity.setParentEntityId(rs.getString("PROJECT_ID"));
-            entity.setName(rs.getString("EXPERIMENT_NAME"));
-            entity.setDescription(rs.getString("DESCRIPTION"));
-            if(entity.getDescription() == null)
-                entity.setFullText(entity.getName());
-            else
-                entity.setFullText(entity.getName() + " " + entity.getDescription());
-            Map<String, String> metadata = new HashMap<>();
-            metadata.put("CREATION_TIME", rs.getDate("CREATION_TIME").toString());
-            metadata.put("EXPERIMENT_TYPE", rs.getString("EXPERIMENT_TYPE"));
-            metadata.put("EXECUTION_ID", rs.getString("EXECUTION_ID"));
-            metadata.put("GATEWAY_EXECUTION_ID", rs.getString("GATEWAY_EXECUTION_ID"));
-            metadata.put("ENABLE_EMAIL_NOTIFICATION", rs.getString("ENABLE_EMAIL_NOTIFICATION"));
-            metadata.put("EMAIL_ADDRESSES", rs.getString("EMAIL_ADDRESSES"));
-            metadata.put("GATEWAY_INSTANCE_ID", rs.getString("GATEWAY_INSTANCE_ID"));
-            metadata.put("ARCHIVE", rs.getString("ARCHIVE"));
+            try {
+                Entity entity = new Entity();
+                entity.setEntityId(rs.getString("EXPERIMENT_ID"));
+                entity.setDomainId(rs.getString("GATEWAY_ID"));
+                entity.setEntityTypeId(rs.getString("GATEWAY_ID") + ":EXPERIMENT");
+                entity.setOwnerId(rs.getString("USER_NAME") + "@" + rs.getString("GATEWAY_ID"));
+                entity.setParentEntityId(rs.getString("PROJECT_ID"));
+                entity.setName(rs.getString("EXPERIMENT_NAME"));
+                entity.setDescription(rs.getString("DESCRIPTION"));
+                if(entity.getDescription() == null)
+                    entity.setFullText(entity.getName());
+                else
+                    entity.setFullText(entity.getName() + " " + entity.getDescription());
+                Map<String, String> metadata = new HashMap<>();
+                metadata.put("CREATION_TIME", rs.getDate("CREATION_TIME").toString());
+                metadata.put("EXPERIMENT_TYPE", rs.getString("EXPERIMENT_TYPE"));
+                metadata.put("EXECUTION_ID", rs.getString("EXECUTION_ID"));
+                metadata.put("GATEWAY_EXECUTION_ID", rs.getString("GATEWAY_EXECUTION_ID"));
+                metadata.put("ENABLE_EMAIL_NOTIFICATION", rs.getString("ENABLE_EMAIL_NOTIFICATION"));
+                metadata.put("EMAIL_ADDRESSES", rs.getString("EMAIL_ADDRESSES"));
+                metadata.put("GATEWAY_INSTANCE_ID", rs.getString("GATEWAY_INSTANCE_ID"));
+                metadata.put("ARCHIVE", rs.getString("ARCHIVE"));
 
-            govRegistryServerHandler.createEntity(entity);
+                govRegistryServerHandler.createEntity(entity);
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
         }
 
         expCatConnection.close();
