@@ -62,12 +62,12 @@ import java.util.Map;
         return userProfile;
     }
 
-    public List<UserProfile> getAllUserProfilesInGateway(String gatewayId)  {
+    public List<UserProfile> getAllUserProfilesInGateway(String gatewayId, int offset, int limit)  {
 
         Map<String, Object> queryParam = new HashMap<String, Object>();
         queryParam.put(UserProfile._Fields.GATEWAY_ID.getFieldName(), gatewayId);
 
-        List<UserProfile> resultList = select(QueryConstants.FIND_ALL_USER_PROFILES_BY_GATEWAY_ID, 0, 1, queryParam);
+        List<UserProfile> resultList = select(QueryConstants.FIND_ALL_USER_PROFILES_BY_GATEWAY_ID, limit, offset, queryParam);
 
         return  resultList;
     }
