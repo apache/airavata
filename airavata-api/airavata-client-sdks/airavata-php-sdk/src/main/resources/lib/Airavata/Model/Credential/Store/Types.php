@@ -17,6 +17,15 @@ use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
 
 
+final class CredentialOwnerType {
+  const GATEWAY = 0;
+  const USER = 1;
+  static public $__names = array(
+    0 => 'GATEWAY',
+    1 => 'USER',
+  );
+}
+
 class SSHCredential {
   static $_TSPEC;
 
@@ -52,6 +61,10 @@ class SSHCredential {
    * @var string
    */
   public $description = null;
+  /**
+   * @var int
+   */
+  public $credentialOwnerType =   0;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -88,6 +101,10 @@ class SSHCredential {
           'var' => 'description',
           'type' => TType::STRING,
           ),
+        9 => array(
+          'var' => 'credentialOwnerType',
+          'type' => TType::I32,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -114,6 +131,9 @@ class SSHCredential {
       }
       if (isset($vals['description'])) {
         $this->description = $vals['description'];
+      }
+      if (isset($vals['credentialOwnerType'])) {
+        $this->credentialOwnerType = $vals['credentialOwnerType'];
       }
     }
   }
@@ -193,6 +213,13 @@ class SSHCredential {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 9:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->credentialOwnerType);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -244,6 +271,11 @@ class SSHCredential {
     if ($this->description !== null) {
       $xfer += $output->writeFieldBegin('description', TType::STRING, 8);
       $xfer += $output->writeString($this->description);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->credentialOwnerType !== null) {
+      $xfer += $output->writeFieldBegin('credentialOwnerType', TType::I32, 9);
+      $xfer += $output->writeI32($this->credentialOwnerType);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

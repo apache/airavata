@@ -27,6 +27,7 @@
 include "airavata_errors.thrift"
 include "security_model.thrift"
 include "../data-models/airavata_data_models.thrift"
+include "../data-models/credential-store-models/credential_store_data_models.thrift"
 include "../data-models/experiment-catalog-models/status_models.thrift"
 include "../data-models/experiment-catalog-models/job_model.thrift"
 include "../data-models/experiment-catalog-models/experiment_model.thrift"
@@ -266,6 +267,12 @@ service Airavata {
    *    The User for which the credential should be registered. For community accounts, this user is the name of the
    *    community user name. For computational resources, this user name need not be the same user name on resoruces.
    *
+   * @param description
+   *    The description field for a credential type, all type of credential can have a description.
+   *
+   * @param credentialOwnerType
+   *    The type of owner of this credential. Two possible values: GATEWAY (default) and USER
+   *
    * @return airavataCredStoreToken
    *   An SSH Key pair is generated and stored in the credential store and associated with users or community account
    *   belonging to a Gateway.
@@ -273,37 +280,12 @@ service Airavata {
    **/
    string generateAndRegisterSSHKeys (1: required security_model.AuthzToken authzToken,
                     2: required string gatewayId,
-                    3: required string userName)
+                    3: required string userName,
+                    4: string description,
+                    5: credential_store_data_models.CredentialOwnerType credentialOwnerType)
            throws (1: airavata_errors.InvalidRequestException ire,
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase)
-
-  /**
-     * Generate and Register SSH Key Pair with Airavata Credential Store.
-     *
-     * @param gatewayId
-     *    The identifier for the requested Gateway.
-     *
-     * @param userName
-     *    The User for which the credential should be registered. For community accounts, this user is the name of the
-     *    community user name. For computational resources, this user name need not be the same user name on resoruces.
-     *
-     * @param description
-     *    The description field for a credential type, all type of credential can have a description.
-     *
-     * @return airavataCredStoreToken
-     *   An SSH Key pair is generated and stored in the credential store and associated with users or community account
-     *   belonging to a Gateway.
-     *
-     **/
-     string generateAndRegisterSSHKeysWithDescription (1: required security_model.AuthzToken authzToken,
-                      2: required string gatewayId,
-                      3: required string userName,
-                      4: required string description)
-             throws (1: airavata_errors.InvalidRequestException ire,
-                     2: airavata_errors.AiravataClientException ace,
-                     3: airavata_errors.AiravataSystemException ase)
-
 
  /**
    * Generate and Register Username PWD Pair with Airavata Credential Store.

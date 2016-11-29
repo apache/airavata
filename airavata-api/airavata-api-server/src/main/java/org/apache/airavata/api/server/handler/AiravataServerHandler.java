@@ -31,6 +31,7 @@ import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
+import org.apache.airavata.credential.store.datamodel.CredentialOwnerType;
 import org.apache.airavata.credential.store.datamodel.PasswordCredential;
 import org.apache.airavata.credential.store.datamodel.SSHCredential;
 import org.apache.airavata.credential.store.datamodel.SSHCredentialSummary;
@@ -441,7 +442,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public String generateAndRegisterSSHKeys(AuthzToken authzToken, String gatewayId, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public String generateAndRegisterSSHKeys(AuthzToken authzToken, String gatewayId, String userName, String description, CredentialOwnerType credentialOwnerType) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             if (csClient == null){
                 csClient = getCredentialStoreServiceClient();
@@ -449,29 +450,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             SSHCredential sshCredential = new SSHCredential();
             sshCredential.setUsername(userName);
             sshCredential.setGatewayId(gatewayId);
-            String key = csClient.addSSHCredential(sshCredential);
-            logger.debug("Airavata generated SSH keys for gateway : " + gatewayId + " and for user : " + userName);
-            return key;
-        }catch (Exception e){
-            logger.error("Error occurred while registering SSH Credential", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while registering SSH Credential. More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    public String generateAndRegisterSSHKeysWithDescription(AuthzToken authzToken, String gatewayId, String userName, String desc) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        try {
-            if (csClient == null){
-                csClient = getCredentialStoreServiceClient();
+            sshCredential.setDescription(description);
+            if (credentialOwnerType != null) {
+                sshCredential.setCredentialOwnerType(credentialOwnerType);
             }
-            SSHCredential sshCredential = new SSHCredential();
-            sshCredential.setUsername(userName);
-            sshCredential.setGatewayId(gatewayId);
-            sshCredential.setDescription(desc);
             String key = csClient.addSSHCredential(sshCredential);
             logger.debug("Airavata generated SSH keys for gateway : " + gatewayId + " and for user : " + userName);
             return key;
