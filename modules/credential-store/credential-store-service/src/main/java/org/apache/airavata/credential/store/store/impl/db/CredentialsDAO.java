@@ -25,6 +25,7 @@ import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.KeyStorePasswordCallback;
 import org.apache.airavata.common.utils.SecurityUtil;
 import org.apache.airavata.credential.store.credential.Credential;
+import org.apache.airavata.credential.store.credential.CredentialOwnerType;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 
 import java.io.*;
@@ -86,7 +87,7 @@ public class CredentialsDAO extends ParentDAO {
     public void addCredentials(String gatewayId, Credential credential, Connection connection)
             throws CredentialStoreException {
 
-        String sql = "INSERT INTO CREDENTIALS VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO CREDENTIALS VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement preparedStatement = null;
 
@@ -107,6 +108,8 @@ public class CredentialsDAO extends ParentDAO {
             preparedStatement.setTimestamp(5, timestamp);
 
             preparedStatement.setString(6,credential.getDescription());
+
+            preparedStatement.setString(7, credential.getCredentialOwnerType().toString());
 
             preparedStatement.executeUpdate();
 
@@ -163,7 +166,7 @@ public class CredentialsDAO extends ParentDAO {
     public void updateCredentials(String gatewayId, Credential credential, Connection connection)
             throws CredentialStoreException {
 
-        String sql = "UPDATE CREDENTIALS set CREDENTIAL = ?, PORTAL_USER_ID = ?, TIME_PERSISTED = ?, DESCRIPTION = ? where GATEWAY_ID = ? and TOKEN_ID = ?";
+        String sql = "UPDATE CREDENTIALS set CREDENTIAL = ?, PORTAL_USER_ID = ?, TIME_PERSISTED = ?, DESCRIPTION = ?, CREDENTIAL_OWNER_TYPE = ? where GATEWAY_ID = ? and TOKEN_ID = ?";
 
         PreparedStatement preparedStatement = null;
 
@@ -177,8 +180,9 @@ public class CredentialsDAO extends ParentDAO {
 
             preparedStatement.setTimestamp(3, new Timestamp(new java.util.Date().getTime()));
             preparedStatement.setString(4, credential.getDescription());
-            preparedStatement.setString(5, gatewayId);
-            preparedStatement.setString(6, credential.getToken());
+            preparedStatement.setString(5, credential.getCredentialOwnerType().toString());
+            preparedStatement.setString(6, gatewayId);
+            preparedStatement.setString(7, credential.getToken());
 
 
             preparedStatement.executeUpdate();
@@ -232,6 +236,7 @@ public class CredentialsDAO extends ParentDAO {
                 certificateCredential.setPortalUserName(resultSet.getString("PORTAL_USER_ID"));
                 certificateCredential.setCertificateRequestedTime(resultSet.getTimestamp("TIME_PERSISTED"));
                 certificateCredential.setDescription(resultSet.getString("DESCRIPTION"));
+                certificateCredential.setCredentialOwnerType(CredentialOwnerType.valueOf(resultSet.getString("CREDENTIAL_OWNER_TYPE")));
 
                 return certificateCredential;
             }
@@ -320,6 +325,7 @@ public class CredentialsDAO extends ParentDAO {
                 certificateCredential.setPortalUserName(resultSet.getString("PORTAL_USER_ID"));
                 certificateCredential.setCertificateRequestedTime(resultSet.getTimestamp("TIME_PERSISTED"));
                 certificateCredential.setDescription(resultSet.getString("DESCRIPTION"));
+                certificateCredential.setCredentialOwnerType(CredentialOwnerType.valueOf(resultSet.getString("CREDENTIAL_OWNER_TYPE")));
 
                 credentialList.add(certificateCredential);
             }
@@ -370,6 +376,7 @@ public class CredentialsDAO extends ParentDAO {
                 certificateCredential.setPortalUserName(resultSet.getString("PORTAL_USER_ID"));
                 certificateCredential.setCertificateRequestedTime(resultSet.getTimestamp("TIME_PERSISTED"));
                 certificateCredential.setDescription(resultSet.getString("DESCRIPTION"));
+                certificateCredential.setCredentialOwnerType(CredentialOwnerType.valueOf(resultSet.getString("CREDENTIAL_OWNER_TYPE")));
 
                 credentialList.add(certificateCredential);
             }

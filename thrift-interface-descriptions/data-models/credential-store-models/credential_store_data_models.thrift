@@ -24,6 +24,11 @@ namespace php Airavata.Model.Credential.Store
 
 const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 
+enum CredentialOwnerType {
+    GATEWAY,
+    USER
+}
+
 struct SSHCredential {
     1: required string gatewayId,
     2: required string username,
@@ -32,7 +37,8 @@ struct SSHCredential {
     5: optional string privateKey,
     6: optional i64 persistedTime,
     7: optional string token,
-    8: optional string description
+    8: optional string description,
+    9: optional CredentialOwnerType credentialOwnerType = CredentialOwnerType.GATEWAY
 }
 
 struct SSHCredentialSummary {
