@@ -60,11 +60,12 @@ public class UserProfileHandler implements UserProfileCrudeService.Iface {
         return deleteResult;
     }
 
-    public List<UserProfile> getAllUserProfilesInGateway(String gatewayId) throws RegistryServiceException, TException {
+    public List<UserProfile> getAllUserProfilesInGateway(String gatewayId, int offset, int limit) throws RegistryServiceException, TException {
 
-        List<UserProfile> usersInGateway = userProfileRepository.getAllUserProfilesInGateway(gatewayId);
+        List<UserProfile> usersInGateway = userProfileRepository.getAllUserProfilesInGateway(gatewayId, offset, limit);
         return usersInGateway;
     }
+
 
     public UserProfile getUserProfileByName(String userName, String gatewayId) throws RegistryServiceException, TException {
 
@@ -76,8 +77,8 @@ public class UserProfileHandler implements UserProfileCrudeService.Iface {
 
         UserProfile userProfile = userProfileRepository.getUserProfileByNameAndGateWay(userName, gatewayId);
 
-                if(null != userProfile)
-                    return true;
+        if (null != userProfile)
+            return true;
         return false;
     }
 }
