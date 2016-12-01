@@ -21,22 +21,20 @@
 
 package org.apache.airavata.registry.core.app.catalog.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Entity
 @Table(name = "USER_RESOURCE_PROFILE")
-public class UserResourceProfile implements Serializable {
+@IdClass(UserResourceProfilePK.class)
+public class UserResourceProfile {
 
     @Id
     @Column(name = "USER_ID")
     private String userId;
 
-
+    @Id
     @Column(name = "GATEWAY_ID")
     private String gatewayID;
 
