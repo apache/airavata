@@ -22,6 +22,7 @@ package org.apache.airavata.registry.core.app.catalog.resources;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.core.app.catalog.model.UserResourceProfile;
+import org.apache.airavata.registry.core.app.catalog.model.UserResourceProfilePK;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogJPAUtils;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogQueryGenerator;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogResourceType;
@@ -355,8 +356,7 @@ public class UserResourceProfileResource extends AppCatAbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            CompositeIdentifier primaryKey = new CompositeIdentifier(userId,gatewayID);
-            UserResourceProfile existingUserResourceProfile = em.find(UserResourceProfile.class, primaryKey);
+            UserResourceProfile existingUserResourceProfile = em.find(UserResourceProfile.class, new UserResourceProfilePK(userId,gatewayID));
             if (em.isOpen()) {
                 if (em.getTransaction().isActive()){
                     em.getTransaction().rollback();
