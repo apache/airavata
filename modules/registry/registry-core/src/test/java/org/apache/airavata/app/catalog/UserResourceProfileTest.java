@@ -116,6 +116,39 @@ public class UserResourceProfileTest {
 
         String gwId = userProfile.addUserResourceProfile(uf);
         UserResourceProfile retrievedProfile = null;
+
+
+        // This test is to check whether an existing user can add more compute preferences - AIRAVATA-2245
+
+        System.out.println("*********Start Airavata-2245************");
+
+        ComputeResource computeRs1 = appcatalog.getComputeResource();
+        ComputeResourceDescription cm12 = new ComputeResourceDescription();
+        cm12.setHostName("localhost123");
+        cm12.setResourceDescription("test compute host");
+        String hostId12 = computeRs1.addComputeResource(cm12);
+
+        UserComputeResourcePreference preference12 = new UserComputeResourcePreference();
+        preference12.setComputeResourceId(hostId12);
+        preference12.setPreferredBatchQueue("queue112");
+        preference12.setScratchLocation("/tmp21");
+        preference12.setAllocationProjectNumber("project12");
+
+        List<UserComputeResourcePreference> list12 = new ArrayList<UserComputeResourcePreference>();
+        list12.add(preference12);
+
+        UserResourceProfile uf12 = new UserResourceProfile();
+        uf12.setUserComputeResourcePreferences(list12);
+        uf12.setGatewayID("airavataPGA");
+        uf12.setUserId("Anuj");
+
+        String gwId12 = userProfile.addUserResourceProfile(uf12);
+
+        System.out.println("*******End Airavata-2245******* : success");
+
+        // End of test for AIRAVATA-2245
+
+
         //retrievedProfile = userProfile.getUserResourceProfile("hello",uf.getGatewayID());
         if (userProfile.isUserResourceProfileExists(uf.getUserId(),uf.getGatewayID())){
             retrievedProfile = userProfile.getUserResourceProfile(uf.getUserId(),uf.getGatewayID());
