@@ -22,10 +22,7 @@
 package org.apache.airavata.registry.core.app.catalog.resources;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.registry.core.app.catalog.model.ComputeResource;
-import org.apache.airavata.registry.core.app.catalog.model.UserComputeResourcePreference;
-import org.apache.airavata.registry.core.app.catalog.model.UserComputeResourcePreferencePK;
-import org.apache.airavata.registry.core.app.catalog.model.UserResourceProfile;
+import org.apache.airavata.registry.core.app.catalog.model.*;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogJPAUtils;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogQueryGenerator;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogResourceType;
@@ -365,7 +362,7 @@ public class UserComputeHostPreferenceResource extends AppCatAbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             ComputeResource computeResource = em.find(ComputeResource.class, resourceId);
-            UserResourceProfile userResourceProfile = em.find(UserResourceProfile.class, userId);
+            UserResourceProfile userResourceProfile = em.find(UserResourceProfile.class, new UserResourceProfilePK(userId,gatewayID));
             if (existingPreference != null) {
                 existingPreference.setResourceId(resourceId);
                 existingPreference.setUserId(userId);

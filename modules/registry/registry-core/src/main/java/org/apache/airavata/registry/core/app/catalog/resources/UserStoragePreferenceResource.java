@@ -23,6 +23,7 @@ package org.apache.airavata.registry.core.app.catalog.resources;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.registry.core.app.catalog.model.UserResourceProfile;
+import org.apache.airavata.registry.core.app.catalog.model.UserResourceProfilePK;
 import org.apache.airavata.registry.core.app.catalog.model.UserStoragePreference;
 import org.apache.airavata.registry.core.app.catalog.model.UserStoragePreferencePK;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogJPAUtils;
@@ -299,7 +300,7 @@ public class UserStoragePreferenceResource extends AppCatAbstractResource {
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            UserResourceProfile userResourceProfile = em.find(UserResourceProfile.class, userId);
+            UserResourceProfile userResourceProfile = em.find(UserResourceProfile.class, new UserResourceProfilePK(userId,gatewayID));
             if (existingPreference != null) {
                 existingPreference.setStorageResourceId(storageResourceId);
                 existingPreference.setUserId(userId);
