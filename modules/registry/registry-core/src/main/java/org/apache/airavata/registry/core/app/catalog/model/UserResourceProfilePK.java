@@ -21,6 +21,9 @@
 
 package org.apache.airavata.registry.core.app.catalog.model;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import java.io.Serializable;
 
 public class UserResourceProfilePK implements Serializable {
@@ -39,12 +42,21 @@ public class UserResourceProfilePK implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UserResourceProfilePK that = (UserResourceProfilePK) o;
+
+        if (!getUserId().equals(that.getUserId())) return false;
+        return getGatewayID().equals(that.getGatewayID());
+
     }
 
     @Override
     public int hashCode() {
-        return 1;
+        int result = getUserId().hashCode();
+        result = 31 * result + getGatewayID().hashCode();
+        return result;
     }
 
     public String getUserId() {
