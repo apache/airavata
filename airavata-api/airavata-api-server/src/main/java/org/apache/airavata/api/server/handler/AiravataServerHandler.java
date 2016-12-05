@@ -375,8 +375,8 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    // No security check
     @Override
-    @SecurityCheck
     public List<Notification> getAllNotifications(AuthzToken authzToken, String gatewayId) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
