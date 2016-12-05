@@ -60,7 +60,12 @@ public class ClusterStatusMonitorJob implements Job {
             String superTenantGatewayId = ServerSettings.getSuperTenantGatewayId();
             RegistryService.Client registryClient = getRegistryClient();
             List<ComputeResourceProfile> computeResourceProfiles = new ArrayList<>();
-            List<ComputeResourcePreference> computeResourcePreferences = registryClient.getAllGatewayComputeResourcePreferences(superTenantGatewayId);
+            List<ComputeResourcePreference> computeResourcePreferences = null;
+            try{
+                computeResourcePreferences = registryClient.getAllGatewayComputeResourcePreferences(superTenantGatewayId);
+            }catch (Exception ex){
+                logger.warn("Could not find super tenant compute resources preferences for cluster status monitoring...");
+            }
             if (computeResourcePreferences != null && computeResourcePreferences.size() > 0) {
                 computeResourcePreferences.stream().forEach(p -> {
                     try {
@@ -188,8 +193,9 @@ public class ClusterStatusMonitorJob implements Job {
                     logger.error(ex.getMessage(), ex);
                 }
             }
-
-            registryClient.registerQueueStatuses(queueStatuses);
+            if(queueStatuses != null && queueStatuses.size() > 0){
+                registryClient.registerQueueStatuses(queueStatuses);
+            }
         }catch (Exception e){
             throw new JobExecutionException(e);
         }
