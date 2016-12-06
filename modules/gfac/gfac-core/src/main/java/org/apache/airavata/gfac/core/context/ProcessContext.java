@@ -602,30 +602,30 @@ public class ProcessContext {
 	}
 
 	public String getReservation() {
-		long start, end ;
+		long start = 0, end = 0;
 		String reservation = null;
-		if (isUseUserCRPref() && isValid(userComputeResourcePreference.getReservation())) {
-			reservation = userComputeResourcePreference.getReservation();
-			start = userComputeResourcePreference.getReservationStartTime();
-			end = userComputeResourcePreference.getReservationEndTime();
-		}else {
+		if (isUseUserCRPref() && isValid(userComputeResourcePreference.getLoginUserName())) {
+			if (isValid(userComputeResourcePreference.getReservation())) {
+				reservation = userComputeResourcePreference.getReservation();
+				start = userComputeResourcePreference.getReservationStartTime();
+				end = userComputeResourcePreference.getReservationEndTime();
+			}
+		} else {
 			reservation = gatewayComputeResourcePreference.getReservation();
 			start = gatewayComputeResourcePreference.getReservationStartTime();
 			end = gatewayComputeResourcePreference.getReservationEndTime();
 		}
-		if (start > 0 && start < end) {
+		if (reservation != null && start > 0 && start < end) {
 			long now = Calendar.getInstance().getTimeInMillis();
 			if (now > start && now < end) {
 				return reservation;
 			}
-		} else {
-			return reservation;
 		}
-		return reservation;
+		return null;
 	}
 
 	public String getQualityOfService() {
-		if (isUseUserCRPref() && isValid(userComputeResourcePreference.getQualityOfService())) {
+		if (isUseUserCRPref() && isValid(userComputeResourcePreference.getLoginUserName())) {
 			return userComputeResourcePreference.getQualityOfService();
 		} else {
 			return gatewayComputeResourcePreference.getQualityOfService();
