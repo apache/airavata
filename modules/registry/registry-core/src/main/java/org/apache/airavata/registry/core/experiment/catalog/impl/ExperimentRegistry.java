@@ -599,7 +599,15 @@ public class ExperimentRegistry {
             existingExperiment.setCreationTime(AiravataUtils.getTime(experiment.getCreationTime()));
             existingExperiment.setDescription(experiment.getDescription());
             existingExperiment.setExecutionId(experiment.getExecutionId());
-            existingExperiment.setEnableEmailNotification(experiment.isEnableEmailNotification());
+
+            if(experiment.isEnableEmailNotification()){
+                existingExperiment.setEnableEmailNotification(true);
+                if(experiment.getEmailAddresses() != null){
+                    existingExperiment.setEmailAddresses(StringUtils.join(experiment.getEmailAddresses(), ","));
+                }
+            }else{
+                existingExperiment.setEnableEmailNotification(false);
+            }
 
             existingExperiment.save();
 
