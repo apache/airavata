@@ -635,6 +635,7 @@
                 <module>modules/test-suite</module>
                 <module>modules/sharing-registry</module>
                 <module>modules/cluster-monitoring</module>
+                <module>modules/registry-refactoring</module>
                 <!-- Deprecated Modules-->
                 <!--<module>modules/integration-tests</module>-->
                 <!--<module>modules/workflow-model</module>-->
