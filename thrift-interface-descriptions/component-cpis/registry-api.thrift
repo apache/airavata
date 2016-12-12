@@ -347,11 +347,15 @@ service RegistryService {
              *
              * @param toTime
              *       Ending data time.
+             * TODO update docs
              *
              **/
             experiment_model.ExperimentStatistics getExperimentStatistics(1: required string gatewayId,
                                     2: required i64 fromTime,
-                                    3: required i64 toTime)
+                                    3: required i64 toTime,
+                                    4: string userName,
+                                    5: string applicationName,
+                                    6: string resourceHostName)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 
 
