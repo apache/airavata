@@ -28,10 +28,10 @@ import org.apache.airavata.credential.store.cpi.credential_store_cpiConstants;
 import org.apache.airavata.credential.store.credential.CommunityUser;
 import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.credential.CredentialOwnerType;
-import org.apache.airavata.credential.store.datamodel.CertificateCredential;
-import org.apache.airavata.credential.store.datamodel.PasswordCredential;
-import org.apache.airavata.credential.store.datamodel.SSHCredential;
-import org.apache.airavata.credential.store.datamodel.SSHCredentialSummary;
+import org.apache.airavata.model.credential.store.CertificateCredential;
+import org.apache.airavata.model.credential.store.PasswordCredential;
+import org.apache.airavata.model.credential.store.SSHCredential;
+import org.apache.airavata.model.credential.store.SSHCredentialSummary;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.credential.store.store.impl.CertificateCredentialWriter;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
@@ -223,7 +223,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
             if (credential instanceof org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential) {
                 org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential credential1 = (org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential) credential;
                 CertificateCredential certificateCredential = new CertificateCredential();
-                org.apache.airavata.credential.store.datamodel.CommunityUser communityUser = new org.apache.airavata.credential.store.datamodel.CommunityUser();
+                org.apache.airavata.model.credential.store.CommunityUser communityUser = new org.apache.airavata.model.credential.store.CommunityUser();
                 communityUser.setGatewayName(credential1.getCommunityUser().getGatewayName());
                 communityUser.setUsername(credential1.getCommunityUser().getUserName());
                 communityUser.setUserEmail(credential1.getCommunityUser().getUserEmail());

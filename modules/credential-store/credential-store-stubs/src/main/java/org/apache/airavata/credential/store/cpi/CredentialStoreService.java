@@ -66,27 +66,27 @@ public class CredentialStoreService {
      * 
      * @param sshCredential
      */
-    public String addSSHCredential(org.apache.airavata.credential.store.datamodel.SSHCredential sshCredential) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
+    public String addSSHCredential(org.apache.airavata.model.credential.store.SSHCredential sshCredential) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
 
-    public String addCertificateCredential(org.apache.airavata.credential.store.datamodel.CertificateCredential certificateCredential) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
+    public String addCertificateCredential(org.apache.airavata.model.credential.store.CertificateCredential certificateCredential) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
 
-    public String addPasswordCredential(org.apache.airavata.credential.store.datamodel.PasswordCredential passwordCredential) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
+    public String addPasswordCredential(org.apache.airavata.model.credential.store.PasswordCredential passwordCredential) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
 
-    public org.apache.airavata.credential.store.datamodel.SSHCredential getSSHCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
+    public org.apache.airavata.model.credential.store.SSHCredential getSSHCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
 
-    public org.apache.airavata.credential.store.datamodel.SSHCredentialSummary getSSHCredentialSummary(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
+    public org.apache.airavata.model.credential.store.SSHCredentialSummary getSSHCredentialSummary(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
 
-    public org.apache.airavata.credential.store.datamodel.CertificateCredential getCertificateCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
+    public org.apache.airavata.model.credential.store.CertificateCredential getCertificateCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
 
-    public org.apache.airavata.credential.store.datamodel.PasswordCredential getPasswordCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
+    public org.apache.airavata.model.credential.store.PasswordCredential getPasswordCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
 
     public Map<String,String> getAllSSHKeysForUser(String username) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
 
     public Map<String,String> getAllSSHKeysForGateway(String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
 
-    public List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> getAllGatewaySSHCredentialSummary(String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
+    public List<org.apache.airavata.model.credential.store.SSHCredentialSummary> getAllGatewaySSHCredentialSummary(String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
 
-    public List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> getAllSSHCredentialSummaryForUserInGateway(String gatewayId, String userId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
+    public List<org.apache.airavata.model.credential.store.SSHCredentialSummary> getAllSSHCredentialSummaryForUserInGateway(String gatewayId, String userId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
 
     public Map<String,String> getAllPWDCredentialsForGateway(String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
 
@@ -100,11 +100,11 @@ public class CredentialStoreService {
 
     public void getCSServiceVersion(org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void addSSHCredential(org.apache.airavata.credential.store.datamodel.SSHCredential sshCredential, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void addSSHCredential(org.apache.airavata.model.credential.store.SSHCredential sshCredential, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void addCertificateCredential(org.apache.airavata.credential.store.datamodel.CertificateCredential certificateCredential, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void addCertificateCredential(org.apache.airavata.model.credential.store.CertificateCredential certificateCredential, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void addPasswordCredential(org.apache.airavata.credential.store.datamodel.PasswordCredential passwordCredential, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void addPasswordCredential(org.apache.airavata.model.credential.store.PasswordCredential passwordCredential, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void getSSHCredential(String tokenId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -172,13 +172,13 @@ public class CredentialStoreService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getCSServiceVersion failed: unknown result");
     }
 
-    public String addSSHCredential(org.apache.airavata.credential.store.datamodel.SSHCredential sshCredential) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
+    public String addSSHCredential(org.apache.airavata.model.credential.store.SSHCredential sshCredential) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       send_addSSHCredential(sshCredential);
       return recv_addSSHCredential();
     }
 
-    public void send_addSSHCredential(org.apache.airavata.credential.store.datamodel.SSHCredential sshCredential) throws org.apache.thrift.TException
+    public void send_addSSHCredential(org.apache.airavata.model.credential.store.SSHCredential sshCredential) throws org.apache.thrift.TException
     {
       addSSHCredential_args args = new addSSHCredential_args();
       args.setSshCredential(sshCredential);
@@ -198,13 +198,13 @@ public class CredentialStoreService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "addSSHCredential failed: unknown result");
     }
 
-    public String addCertificateCredential(org.apache.airavata.credential.store.datamodel.CertificateCredential certificateCredential) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
+    public String addCertificateCredential(org.apache.airavata.model.credential.store.CertificateCredential certificateCredential) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       send_addCertificateCredential(certificateCredential);
       return recv_addCertificateCredential();
     }
 
-    public void send_addCertificateCredential(org.apache.airavata.credential.store.datamodel.CertificateCredential certificateCredential) throws org.apache.thrift.TException
+    public void send_addCertificateCredential(org.apache.airavata.model.credential.store.CertificateCredential certificateCredential) throws org.apache.thrift.TException
     {
       addCertificateCredential_args args = new addCertificateCredential_args();
       args.setCertificateCredential(certificateCredential);
@@ -224,13 +224,13 @@ public class CredentialStoreService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "addCertificateCredential failed: unknown result");
     }
 
-    public String addPasswordCredential(org.apache.airavata.credential.store.datamodel.PasswordCredential passwordCredential) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
+    public String addPasswordCredential(org.apache.airavata.model.credential.store.PasswordCredential passwordCredential) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       send_addPasswordCredential(passwordCredential);
       return recv_addPasswordCredential();
     }
 
-    public void send_addPasswordCredential(org.apache.airavata.credential.store.datamodel.PasswordCredential passwordCredential) throws org.apache.thrift.TException
+    public void send_addPasswordCredential(org.apache.airavata.model.credential.store.PasswordCredential passwordCredential) throws org.apache.thrift.TException
     {
       addPasswordCredential_args args = new addPasswordCredential_args();
       args.setPasswordCredential(passwordCredential);
@@ -250,7 +250,7 @@ public class CredentialStoreService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "addPasswordCredential failed: unknown result");
     }
 
-    public org.apache.airavata.credential.store.datamodel.SSHCredential getSSHCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
+    public org.apache.airavata.model.credential.store.SSHCredential getSSHCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       send_getSSHCredential(tokenId, gatewayId);
       return recv_getSSHCredential();
@@ -264,7 +264,7 @@ public class CredentialStoreService {
       sendBase("getSSHCredential", args);
     }
 
-    public org.apache.airavata.credential.store.datamodel.SSHCredential recv_getSSHCredential() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
+    public org.apache.airavata.model.credential.store.SSHCredential recv_getSSHCredential() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       getSSHCredential_result result = new getSSHCredential_result();
       receiveBase(result, "getSSHCredential");
@@ -277,7 +277,7 @@ public class CredentialStoreService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getSSHCredential failed: unknown result");
     }
 
-    public org.apache.airavata.credential.store.datamodel.SSHCredentialSummary getSSHCredentialSummary(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
+    public org.apache.airavata.model.credential.store.SSHCredentialSummary getSSHCredentialSummary(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       send_getSSHCredentialSummary(tokenId, gatewayId);
       return recv_getSSHCredentialSummary();
@@ -291,7 +291,7 @@ public class CredentialStoreService {
       sendBase("getSSHCredentialSummary", args);
     }
 
-    public org.apache.airavata.credential.store.datamodel.SSHCredentialSummary recv_getSSHCredentialSummary() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
+    public org.apache.airavata.model.credential.store.SSHCredentialSummary recv_getSSHCredentialSummary() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       getSSHCredentialSummary_result result = new getSSHCredentialSummary_result();
       receiveBase(result, "getSSHCredentialSummary");
@@ -304,7 +304,7 @@ public class CredentialStoreService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getSSHCredentialSummary failed: unknown result");
     }
 
-    public org.apache.airavata.credential.store.datamodel.CertificateCredential getCertificateCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
+    public org.apache.airavata.model.credential.store.CertificateCredential getCertificateCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       send_getCertificateCredential(tokenId, gatewayId);
       return recv_getCertificateCredential();
@@ -318,7 +318,7 @@ public class CredentialStoreService {
       sendBase("getCertificateCredential", args);
     }
 
-    public org.apache.airavata.credential.store.datamodel.CertificateCredential recv_getCertificateCredential() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
+    public org.apache.airavata.model.credential.store.CertificateCredential recv_getCertificateCredential() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       getCertificateCredential_result result = new getCertificateCredential_result();
       receiveBase(result, "getCertificateCredential");
@@ -331,7 +331,7 @@ public class CredentialStoreService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getCertificateCredential failed: unknown result");
     }
 
-    public org.apache.airavata.credential.store.datamodel.PasswordCredential getPasswordCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
+    public org.apache.airavata.model.credential.store.PasswordCredential getPasswordCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       send_getPasswordCredential(tokenId, gatewayId);
       return recv_getPasswordCredential();
@@ -345,7 +345,7 @@ public class CredentialStoreService {
       sendBase("getPasswordCredential", args);
     }
 
-    public org.apache.airavata.credential.store.datamodel.PasswordCredential recv_getPasswordCredential() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
+    public org.apache.airavata.model.credential.store.PasswordCredential recv_getPasswordCredential() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       getPasswordCredential_result result = new getPasswordCredential_result();
       receiveBase(result, "getPasswordCredential");
@@ -410,7 +410,7 @@ public class CredentialStoreService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getAllSSHKeysForGateway failed: unknown result");
     }
 
-    public List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> getAllGatewaySSHCredentialSummary(String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
+    public List<org.apache.airavata.model.credential.store.SSHCredentialSummary> getAllGatewaySSHCredentialSummary(String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       send_getAllGatewaySSHCredentialSummary(gatewayId);
       return recv_getAllGatewaySSHCredentialSummary();
@@ -423,7 +423,7 @@ public class CredentialStoreService {
       sendBase("getAllGatewaySSHCredentialSummary", args);
     }
 
-    public List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> recv_getAllGatewaySSHCredentialSummary() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
+    public List<org.apache.airavata.model.credential.store.SSHCredentialSummary> recv_getAllGatewaySSHCredentialSummary() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       getAllGatewaySSHCredentialSummary_result result = new getAllGatewaySSHCredentialSummary_result();
       receiveBase(result, "getAllGatewaySSHCredentialSummary");
@@ -436,7 +436,7 @@ public class CredentialStoreService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getAllGatewaySSHCredentialSummary failed: unknown result");
     }
 
-    public List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> getAllSSHCredentialSummaryForUserInGateway(String gatewayId, String userId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
+    public List<org.apache.airavata.model.credential.store.SSHCredentialSummary> getAllSSHCredentialSummaryForUserInGateway(String gatewayId, String userId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       send_getAllSSHCredentialSummaryForUserInGateway(gatewayId, userId);
       return recv_getAllSSHCredentialSummaryForUserInGateway();
@@ -450,7 +450,7 @@ public class CredentialStoreService {
       sendBase("getAllSSHCredentialSummaryForUserInGateway", args);
     }
 
-    public List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> recv_getAllSSHCredentialSummaryForUserInGateway() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
+    public List<org.apache.airavata.model.credential.store.SSHCredentialSummary> recv_getAllSSHCredentialSummaryForUserInGateway() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       getAllSSHCredentialSummaryForUserInGateway_result result = new getAllSSHCredentialSummaryForUserInGateway_result();
       receiveBase(result, "getAllSSHCredentialSummaryForUserInGateway");
@@ -590,7 +590,7 @@ public class CredentialStoreService {
       }
     }
 
-    public void addSSHCredential(org.apache.airavata.credential.store.datamodel.SSHCredential sshCredential, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void addSSHCredential(org.apache.airavata.model.credential.store.SSHCredential sshCredential, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
       addSSHCredential_call method_call = new addSSHCredential_call(sshCredential, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
@@ -598,8 +598,8 @@ public class CredentialStoreService {
     }
 
     public static class addSSHCredential_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private org.apache.airavata.credential.store.datamodel.SSHCredential sshCredential;
-      public addSSHCredential_call(org.apache.airavata.credential.store.datamodel.SSHCredential sshCredential, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private org.apache.airavata.model.credential.store.SSHCredential sshCredential;
+      public addSSHCredential_call(org.apache.airavata.model.credential.store.SSHCredential sshCredential, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.sshCredential = sshCredential;
       }
@@ -622,7 +622,7 @@ public class CredentialStoreService {
       }
     }
 
-    public void addCertificateCredential(org.apache.airavata.credential.store.datamodel.CertificateCredential certificateCredential, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void addCertificateCredential(org.apache.airavata.model.credential.store.CertificateCredential certificateCredential, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
       addCertificateCredential_call method_call = new addCertificateCredential_call(certificateCredential, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
@@ -630,8 +630,8 @@ public class CredentialStoreService {
     }
 
     public static class addCertificateCredential_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private org.apache.airavata.credential.store.datamodel.CertificateCredential certificateCredential;
-      public addCertificateCredential_call(org.apache.airavata.credential.store.datamodel.CertificateCredential certificateCredential, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private org.apache.airavata.model.credential.store.CertificateCredential certificateCredential;
+      public addCertificateCredential_call(org.apache.airavata.model.credential.store.CertificateCredential certificateCredential, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.certificateCredential = certificateCredential;
       }
@@ -654,7 +654,7 @@ public class CredentialStoreService {
       }
     }
 
-    public void addPasswordCredential(org.apache.airavata.credential.store.datamodel.PasswordCredential passwordCredential, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void addPasswordCredential(org.apache.airavata.model.credential.store.PasswordCredential passwordCredential, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
       addPasswordCredential_call method_call = new addPasswordCredential_call(passwordCredential, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
@@ -662,8 +662,8 @@ public class CredentialStoreService {
     }
 
     public static class addPasswordCredential_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private org.apache.airavata.credential.store.datamodel.PasswordCredential passwordCredential;
-      public addPasswordCredential_call(org.apache.airavata.credential.store.datamodel.PasswordCredential passwordCredential, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private org.apache.airavata.model.credential.store.PasswordCredential passwordCredential;
+      public addPasswordCredential_call(org.apache.airavata.model.credential.store.PasswordCredential passwordCredential, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.passwordCredential = passwordCredential;
       }
@@ -711,7 +711,7 @@ public class CredentialStoreService {
         prot.writeMessageEnd();
       }
 
-      public org.apache.airavata.credential.store.datamodel.SSHCredential getResult() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException {
+      public org.apache.airavata.model.credential.store.SSHCredential getResult() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -746,7 +746,7 @@ public class CredentialStoreService {
         prot.writeMessageEnd();
       }
 
-      public org.apache.airavata.credential.store.datamodel.SSHCredentialSummary getResult() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException {
+      public org.apache.airavata.model.credential.store.SSHCredentialSummary getResult() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -781,7 +781,7 @@ public class CredentialStoreService {
         prot.writeMessageEnd();
       }
 
-      public org.apache.airavata.credential.store.datamodel.CertificateCredential getResult() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException {
+      public org.apache.airavata.model.credential.store.CertificateCredential getResult() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -816,7 +816,7 @@ public class CredentialStoreService {
         prot.writeMessageEnd();
       }
 
-      public org.apache.airavata.credential.store.datamodel.PasswordCredential getResult() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException {
+      public org.apache.airavata.model.credential.store.PasswordCredential getResult() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -912,7 +912,7 @@ public class CredentialStoreService {
         prot.writeMessageEnd();
       }
 
-      public List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> getResult() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException {
+      public List<org.apache.airavata.model.credential.store.SSHCredentialSummary> getResult() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -947,7 +947,7 @@ public class CredentialStoreService {
         prot.writeMessageEnd();
       }
 
-      public List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> getResult() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException {
+      public List<org.apache.airavata.model.credential.store.SSHCredentialSummary> getResult() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1701,7 +1701,7 @@ public class CredentialStoreService {
       }
     }
 
-    public static class getSSHCredential<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getSSHCredential_args, org.apache.airavata.credential.store.datamodel.SSHCredential> {
+    public static class getSSHCredential<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getSSHCredential_args, org.apache.airavata.model.credential.store.SSHCredential> {
       public getSSHCredential() {
         super("getSSHCredential");
       }
@@ -1710,10 +1710,10 @@ public class CredentialStoreService {
         return new getSSHCredential_args();
       }
 
-      public AsyncMethodCallback<org.apache.airavata.credential.store.datamodel.SSHCredential> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<org.apache.airavata.model.credential.store.SSHCredential> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<org.apache.airavata.credential.store.datamodel.SSHCredential>() { 
-          public void onComplete(org.apache.airavata.credential.store.datamodel.SSHCredential o) {
+        return new AsyncMethodCallback<org.apache.airavata.model.credential.store.SSHCredential>() { 
+          public void onComplete(org.apache.airavata.model.credential.store.SSHCredential o) {
             getSSHCredential_result result = new getSSHCredential_result();
             result.success = o;
             try {
@@ -1753,12 +1753,12 @@ public class CredentialStoreService {
         return false;
       }
 
-      public void start(I iface, getSSHCredential_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.credential.store.datamodel.SSHCredential> resultHandler) throws TException {
+      public void start(I iface, getSSHCredential_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.credential.store.SSHCredential> resultHandler) throws TException {
         iface.getSSHCredential(args.tokenId, args.gatewayId,resultHandler);
       }
     }
 
-    public static class getSSHCredentialSummary<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getSSHCredentialSummary_args, org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> {
+    public static class getSSHCredentialSummary<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getSSHCredentialSummary_args, org.apache.airavata.model.credential.store.SSHCredentialSummary> {
       public getSSHCredentialSummary() {
         super("getSSHCredentialSummary");
       }
@@ -1767,10 +1767,10 @@ public class CredentialStoreService {
         return new getSSHCredentialSummary_args();
       }
 
-      public AsyncMethodCallback<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<org.apache.airavata.model.credential.store.SSHCredentialSummary> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary>() { 
-          public void onComplete(org.apache.airavata.credential.store.datamodel.SSHCredentialSummary o) {
+        return new AsyncMethodCallback<org.apache.airavata.model.credential.store.SSHCredentialSummary>() { 
+          public void onComplete(org.apache.airavata.model.credential.store.SSHCredentialSummary o) {
             getSSHCredentialSummary_result result = new getSSHCredentialSummary_result();
             result.success = o;
             try {
@@ -1810,12 +1810,12 @@ public class CredentialStoreService {
         return false;
       }
 
-      public void start(I iface, getSSHCredentialSummary_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> resultHandler) throws TException {
+      public void start(I iface, getSSHCredentialSummary_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.credential.store.SSHCredentialSummary> resultHandler) throws TException {
         iface.getSSHCredentialSummary(args.tokenId, args.gatewayId,resultHandler);
       }
     }
 
-    public static class getCertificateCredential<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getCertificateCredential_args, org.apache.airavata.credential.store.datamodel.CertificateCredential> {
+    public static class getCertificateCredential<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getCertificateCredential_args, org.apache.airavata.model.credential.store.CertificateCredential> {
       public getCertificateCredential() {
         super("getCertificateCredential");
       }
@@ -1824,10 +1824,10 @@ public class CredentialStoreService {
         return new getCertificateCredential_args();
       }
 
-      public AsyncMethodCallback<org.apache.airavata.credential.store.datamodel.CertificateCredential> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<org.apache.airavata.model.credential.store.CertificateCredential> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<org.apache.airavata.credential.store.datamodel.CertificateCredential>() { 
-          public void onComplete(org.apache.airavata.credential.store.datamodel.CertificateCredential o) {
+        return new AsyncMethodCallback<org.apache.airavata.model.credential.store.CertificateCredential>() { 
+          public void onComplete(org.apache.airavata.model.credential.store.CertificateCredential o) {
             getCertificateCredential_result result = new getCertificateCredential_result();
             result.success = o;
             try {
@@ -1867,12 +1867,12 @@ public class CredentialStoreService {
         return false;
       }
 
-      public void start(I iface, getCertificateCredential_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.credential.store.datamodel.CertificateCredential> resultHandler) throws TException {
+      public void start(I iface, getCertificateCredential_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.credential.store.CertificateCredential> resultHandler) throws TException {
         iface.getCertificateCredential(args.tokenId, args.gatewayId,resultHandler);
       }
     }
 
-    public static class getPasswordCredential<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getPasswordCredential_args, org.apache.airavata.credential.store.datamodel.PasswordCredential> {
+    public static class getPasswordCredential<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getPasswordCredential_args, org.apache.airavata.model.credential.store.PasswordCredential> {
       public getPasswordCredential() {
         super("getPasswordCredential");
       }
@@ -1881,10 +1881,10 @@ public class CredentialStoreService {
         return new getPasswordCredential_args();
       }
 
-      public AsyncMethodCallback<org.apache.airavata.credential.store.datamodel.PasswordCredential> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<org.apache.airavata.model.credential.store.PasswordCredential> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<org.apache.airavata.credential.store.datamodel.PasswordCredential>() { 
-          public void onComplete(org.apache.airavata.credential.store.datamodel.PasswordCredential o) {
+        return new AsyncMethodCallback<org.apache.airavata.model.credential.store.PasswordCredential>() { 
+          public void onComplete(org.apache.airavata.model.credential.store.PasswordCredential o) {
             getPasswordCredential_result result = new getPasswordCredential_result();
             result.success = o;
             try {
@@ -1924,7 +1924,7 @@ public class CredentialStoreService {
         return false;
       }
 
-      public void start(I iface, getPasswordCredential_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.credential.store.datamodel.PasswordCredential> resultHandler) throws TException {
+      public void start(I iface, getPasswordCredential_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.credential.store.PasswordCredential> resultHandler) throws TException {
         iface.getPasswordCredential(args.tokenId, args.gatewayId,resultHandler);
       }
     }
@@ -2043,7 +2043,7 @@ public class CredentialStoreService {
       }
     }
 
-    public static class getAllGatewaySSHCredentialSummary<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getAllGatewaySSHCredentialSummary_args, List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary>> {
+    public static class getAllGatewaySSHCredentialSummary<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getAllGatewaySSHCredentialSummary_args, List<org.apache.airavata.model.credential.store.SSHCredentialSummary>> {
       public getAllGatewaySSHCredentialSummary() {
         super("getAllGatewaySSHCredentialSummary");
       }
@@ -2052,10 +2052,10 @@ public class CredentialStoreService {
         return new getAllGatewaySSHCredentialSummary_args();
       }
 
-      public AsyncMethodCallback<List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary>> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<List<org.apache.airavata.model.credential.store.SSHCredentialSummary>> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary>>() { 
-          public void onComplete(List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> o) {
+        return new AsyncMethodCallback<List<org.apache.airavata.model.credential.store.SSHCredentialSummary>>() { 
+          public void onComplete(List<org.apache.airavata.model.credential.store.SSHCredentialSummary> o) {
             getAllGatewaySSHCredentialSummary_result result = new getAllGatewaySSHCredentialSummary_result();
             result.success = o;
             try {
@@ -2095,12 +2095,12 @@ public class CredentialStoreService {
         return false;
       }
 
-      public void start(I iface, getAllGatewaySSHCredentialSummary_args args, org.apache.thrift.async.AsyncMethodCallback<List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary>> resultHandler) throws TException {
+      public void start(I iface, getAllGatewaySSHCredentialSummary_args args, org.apache.thrift.async.AsyncMethodCallback<List<org.apache.airavata.model.credential.store.SSHCredentialSummary>> resultHandler) throws TException {
         iface.getAllGatewaySSHCredentialSummary(args.gatewayId,resultHandler);
       }
     }
 
-    public static class getAllSSHCredentialSummaryForUserInGateway<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getAllSSHCredentialSummaryForUserInGateway_args, List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary>> {
+    public static class getAllSSHCredentialSummaryForUserInGateway<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getAllSSHCredentialSummaryForUserInGateway_args, List<org.apache.airavata.model.credential.store.SSHCredentialSummary>> {
       public getAllSSHCredentialSummaryForUserInGateway() {
         super("getAllSSHCredentialSummaryForUserInGateway");
       }
@@ -2109,10 +2109,10 @@ public class CredentialStoreService {
         return new getAllSSHCredentialSummaryForUserInGateway_args();
       }
 
-      public AsyncMethodCallback<List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary>> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<List<org.apache.airavata.model.credential.store.SSHCredentialSummary>> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary>>() { 
-          public void onComplete(List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> o) {
+        return new AsyncMethodCallback<List<org.apache.airavata.model.credential.store.SSHCredentialSummary>>() { 
+          public void onComplete(List<org.apache.airavata.model.credential.store.SSHCredentialSummary> o) {
             getAllSSHCredentialSummaryForUserInGateway_result result = new getAllSSHCredentialSummaryForUserInGateway_result();
             result.success = o;
             try {
@@ -2152,7 +2152,7 @@ public class CredentialStoreService {
         return false;
       }
 
-      public void start(I iface, getAllSSHCredentialSummaryForUserInGateway_args args, org.apache.thrift.async.AsyncMethodCallback<List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary>> resultHandler) throws TException {
+      public void start(I iface, getAllSSHCredentialSummaryForUserInGateway_args args, org.apache.thrift.async.AsyncMethodCallback<List<org.apache.airavata.model.credential.store.SSHCredentialSummary>> resultHandler) throws TException {
         iface.getAllSSHCredentialSummaryForUserInGateway(args.gatewayId, args.userId,resultHandler);
       }
     }
@@ -2952,7 +2952,7 @@ public class CredentialStoreService {
       schemes.put(TupleScheme.class, new addSSHCredential_argsTupleSchemeFactory());
     }
 
-    public org.apache.airavata.credential.store.datamodel.SSHCredential sshCredential; // required
+    public org.apache.airavata.model.credential.store.SSHCredential sshCredential; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -3017,7 +3017,7 @@ public class CredentialStoreService {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SSH_CREDENTIAL, new org.apache.thrift.meta_data.FieldMetaData("sshCredential", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.credential.store.datamodel.SSHCredential.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.credential.store.SSHCredential.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(addSSHCredential_args.class, metaDataMap);
     }
@@ -3026,7 +3026,7 @@ public class CredentialStoreService {
     }
 
     public addSSHCredential_args(
-      org.apache.airavata.credential.store.datamodel.SSHCredential sshCredential)
+      org.apache.airavata.model.credential.store.SSHCredential sshCredential)
     {
       this();
       this.sshCredential = sshCredential;
@@ -3037,7 +3037,7 @@ public class CredentialStoreService {
      */
     public addSSHCredential_args(addSSHCredential_args other) {
       if (other.isSetSshCredential()) {
-        this.sshCredential = new org.apache.airavata.credential.store.datamodel.SSHCredential(other.sshCredential);
+        this.sshCredential = new org.apache.airavata.model.credential.store.SSHCredential(other.sshCredential);
       }
     }
 
@@ -3050,11 +3050,11 @@ public class CredentialStoreService {
       this.sshCredential = null;
     }
 
-    public org.apache.airavata.credential.store.datamodel.SSHCredential getSshCredential() {
+    public org.apache.airavata.model.credential.store.SSHCredential getSshCredential() {
       return this.sshCredential;
     }
 
-    public addSSHCredential_args setSshCredential(org.apache.airavata.credential.store.datamodel.SSHCredential sshCredential) {
+    public addSSHCredential_args setSshCredential(org.apache.airavata.model.credential.store.SSHCredential sshCredential) {
       this.sshCredential = sshCredential;
       return this;
     }
@@ -3080,7 +3080,7 @@ public class CredentialStoreService {
         if (value == null) {
           unsetSshCredential();
         } else {
-          setSshCredential((org.apache.airavata.credential.store.datamodel.SSHCredential)value);
+          setSshCredential((org.apache.airavata.model.credential.store.SSHCredential)value);
         }
         break;
 
@@ -3242,7 +3242,7 @@ public class CredentialStoreService {
           switch (schemeField.id) {
             case 1: // SSH_CREDENTIAL
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.sshCredential = new org.apache.airavata.credential.store.datamodel.SSHCredential();
+                struct.sshCredential = new org.apache.airavata.model.credential.store.SSHCredential();
                 struct.sshCredential.read(iprot);
                 struct.setSshCredentialIsSet(true);
               } else { 
@@ -3292,7 +3292,7 @@ public class CredentialStoreService {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, addSSHCredential_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        struct.sshCredential = new org.apache.airavata.credential.store.datamodel.SSHCredential();
+        struct.sshCredential = new org.apache.airavata.model.credential.store.SSHCredential();
         struct.sshCredential.read(iprot);
         struct.setSshCredentialIsSet(true);
       }
@@ -3779,7 +3779,7 @@ public class CredentialStoreService {
       schemes.put(TupleScheme.class, new addCertificateCredential_argsTupleSchemeFactory());
     }
 
-    public org.apache.airavata.credential.store.datamodel.CertificateCredential certificateCredential; // required
+    public org.apache.airavata.model.credential.store.CertificateCredential certificateCredential; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -3844,7 +3844,7 @@ public class CredentialStoreService {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.CERTIFICATE_CREDENTIAL, new org.apache.thrift.meta_data.FieldMetaData("certificateCredential", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.credential.store.datamodel.CertificateCredential.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.credential.store.CertificateCredential.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(addCertificateCredential_args.class, metaDataMap);
     }
@@ -3853,7 +3853,7 @@ public class CredentialStoreService {
     }
 
     public addCertificateCredential_args(
-      org.apache.airavata.credential.store.datamodel.CertificateCredential certificateCredential)
+      org.apache.airavata.model.credential.store.CertificateCredential certificateCredential)
     {
       this();
       this.certificateCredential = certificateCredential;
@@ -3864,7 +3864,7 @@ public class CredentialStoreService {
      */
     public addCertificateCredential_args(addCertificateCredential_args other) {
       if (other.isSetCertificateCredential()) {
-        this.certificateCredential = new org.apache.airavata.credential.store.datamodel.CertificateCredential(other.certificateCredential);
+        this.certificateCredential = new org.apache.airavata.model.credential.store.CertificateCredential(other.certificateCredential);
       }
     }
 
@@ -3877,11 +3877,11 @@ public class CredentialStoreService {
       this.certificateCredential = null;
     }
 
-    public org.apache.airavata.credential.store.datamodel.CertificateCredential getCertificateCredential() {
+    public org.apache.airavata.model.credential.store.CertificateCredential getCertificateCredential() {
       return this.certificateCredential;
     }
 
-    public addCertificateCredential_args setCertificateCredential(org.apache.airavata.credential.store.datamodel.CertificateCredential certificateCredential) {
+    public addCertificateCredential_args setCertificateCredential(org.apache.airavata.model.credential.store.CertificateCredential certificateCredential) {
       this.certificateCredential = certificateCredential;
       return this;
     }
@@ -3907,7 +3907,7 @@ public class CredentialStoreService {
         if (value == null) {
           unsetCertificateCredential();
         } else {
-          setCertificateCredential((org.apache.airavata.credential.store.datamodel.CertificateCredential)value);
+          setCertificateCredential((org.apache.airavata.model.credential.store.CertificateCredential)value);
         }
         break;
 
@@ -4069,7 +4069,7 @@ public class CredentialStoreService {
           switch (schemeField.id) {
             case 1: // CERTIFICATE_CREDENTIAL
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.certificateCredential = new org.apache.airavata.credential.store.datamodel.CertificateCredential();
+                struct.certificateCredential = new org.apache.airavata.model.credential.store.CertificateCredential();
                 struct.certificateCredential.read(iprot);
                 struct.setCertificateCredentialIsSet(true);
               } else { 
@@ -4119,7 +4119,7 @@ public class CredentialStoreService {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, addCertificateCredential_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        struct.certificateCredential = new org.apache.airavata.credential.store.datamodel.CertificateCredential();
+        struct.certificateCredential = new org.apache.airavata.model.credential.store.CertificateCredential();
         struct.certificateCredential.read(iprot);
         struct.setCertificateCredentialIsSet(true);
       }
@@ -4606,7 +4606,7 @@ public class CredentialStoreService {
       schemes.put(TupleScheme.class, new addPasswordCredential_argsTupleSchemeFactory());
     }
 
-    public org.apache.airavata.credential.store.datamodel.PasswordCredential passwordCredential; // required
+    public org.apache.airavata.model.credential.store.PasswordCredential passwordCredential; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -4671,7 +4671,7 @@ public class CredentialStoreService {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.PASSWORD_CREDENTIAL, new org.apache.thrift.meta_data.FieldMetaData("passwordCredential", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.credential.store.datamodel.PasswordCredential.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.credential.store.PasswordCredential.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(addPasswordCredential_args.class, metaDataMap);
     }
@@ -4680,7 +4680,7 @@ public class CredentialStoreService {
     }
 
     public addPasswordCredential_args(
-      org.apache.airavata.credential.store.datamodel.PasswordCredential passwordCredential)
+      org.apache.airavata.model.credential.store.PasswordCredential passwordCredential)
     {
       this();
       this.passwordCredential = passwordCredential;
@@ -4691,7 +4691,7 @@ public class CredentialStoreService {
      */
     public addPasswordCredential_args(addPasswordCredential_args other) {
       if (other.isSetPasswordCredential()) {
-        this.passwordCredential = new org.apache.airavata.credential.store.datamodel.PasswordCredential(other.passwordCredential);
+        this.passwordCredential = new org.apache.airavata.model.credential.store.PasswordCredential(other.passwordCredential);
       }
     }
 
@@ -4704,11 +4704,11 @@ public class CredentialStoreService {
       this.passwordCredential = null;
     }
 
-    public org.apache.airavata.credential.store.datamodel.PasswordCredential getPasswordCredential() {
+    public org.apache.airavata.model.credential.store.PasswordCredential getPasswordCredential() {
       return this.passwordCredential;
     }
 
-    public addPasswordCredential_args setPasswordCredential(org.apache.airavata.credential.store.datamodel.PasswordCredential passwordCredential) {
+    public addPasswordCredential_args setPasswordCredential(org.apache.airavata.model.credential.store.PasswordCredential passwordCredential) {
       this.passwordCredential = passwordCredential;
       return this;
     }
@@ -4734,7 +4734,7 @@ public class CredentialStoreService {
         if (value == null) {
           unsetPasswordCredential();
         } else {
-          setPasswordCredential((org.apache.airavata.credential.store.datamodel.PasswordCredential)value);
+          setPasswordCredential((org.apache.airavata.model.credential.store.PasswordCredential)value);
         }
         break;
 
@@ -4896,7 +4896,7 @@ public class CredentialStoreService {
           switch (schemeField.id) {
             case 1: // PASSWORD_CREDENTIAL
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.passwordCredential = new org.apache.airavata.credential.store.datamodel.PasswordCredential();
+                struct.passwordCredential = new org.apache.airavata.model.credential.store.PasswordCredential();
                 struct.passwordCredential.read(iprot);
                 struct.setPasswordCredentialIsSet(true);
               } else { 
@@ -4946,7 +4946,7 @@ public class CredentialStoreService {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, addPasswordCredential_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        struct.passwordCredential = new org.apache.airavata.credential.store.datamodel.PasswordCredential();
+        struct.passwordCredential = new org.apache.airavata.model.credential.store.PasswordCredential();
         struct.passwordCredential.read(iprot);
         struct.setPasswordCredentialIsSet(true);
       }
@@ -5889,7 +5889,7 @@ public class CredentialStoreService {
       schemes.put(TupleScheme.class, new getSSHCredential_resultTupleSchemeFactory());
     }
 
-    public org.apache.airavata.credential.store.datamodel.SSHCredential success; // required
+    public org.apache.airavata.model.credential.store.SSHCredential success; // required
     public org.apache.airavata.credential.store.exception.CredentialStoreException csException; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -5958,7 +5958,7 @@ public class CredentialStoreService {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.credential.store.datamodel.SSHCredential.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.credential.store.SSHCredential.class)));
       tmpMap.put(_Fields.CS_EXCEPTION, new org.apache.thrift.meta_data.FieldMetaData("csException", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -5969,7 +5969,7 @@ public class CredentialStoreService {
     }
 
     public getSSHCredential_result(
-      org.apache.airavata.credential.store.datamodel.SSHCredential success,
+      org.apache.airavata.model.credential.store.SSHCredential success,
       org.apache.airavata.credential.store.exception.CredentialStoreException csException)
     {
       this();
@@ -5982,7 +5982,7 @@ public class CredentialStoreService {
      */
     public getSSHCredential_result(getSSHCredential_result other) {
       if (other.isSetSuccess()) {
-        this.success = new org.apache.airavata.credential.store.datamodel.SSHCredential(other.success);
+        this.success = new org.apache.airavata.model.credential.store.SSHCredential(other.success);
       }
       if (other.isSetCsException()) {
         this.csException = new org.apache.airavata.credential.store.exception.CredentialStoreException(other.csException);
@@ -5999,11 +5999,11 @@ public class CredentialStoreService {
       this.csException = null;
     }
 
-    public org.apache.airavata.credential.store.datamodel.SSHCredential getSuccess() {
+    public org.apache.airavata.model.credential.store.SSHCredential getSuccess() {
       return this.success;
     }
 
-    public getSSHCredential_result setSuccess(org.apache.airavata.credential.store.datamodel.SSHCredential success) {
+    public getSSHCredential_result setSuccess(org.apache.airavata.model.credential.store.SSHCredential success) {
       this.success = success;
       return this;
     }
@@ -6053,7 +6053,7 @@ public class CredentialStoreService {
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((org.apache.airavata.credential.store.datamodel.SSHCredential)value);
+          setSuccess((org.apache.airavata.model.credential.store.SSHCredential)value);
         }
         break;
 
@@ -6257,7 +6257,7 @@ public class CredentialStoreService {
           switch (schemeField.id) {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.success = new org.apache.airavata.credential.store.datamodel.SSHCredential();
+                struct.success = new org.apache.airavata.model.credential.store.SSHCredential();
                 struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
               } else { 
@@ -6336,7 +6336,7 @@ public class CredentialStoreService {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
-          struct.success = new org.apache.airavata.credential.store.datamodel.SSHCredential();
+          struct.success = new org.apache.airavata.model.credential.store.SSHCredential();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
@@ -6817,7 +6817,7 @@ public class CredentialStoreService {
       schemes.put(TupleScheme.class, new getSSHCredentialSummary_resultTupleSchemeFactory());
     }
 
-    public org.apache.airavata.credential.store.datamodel.SSHCredentialSummary success; // required
+    public org.apache.airavata.model.credential.store.SSHCredentialSummary success; // required
     public org.apache.airavata.credential.store.exception.CredentialStoreException csException; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -6886,7 +6886,7 @@ public class CredentialStoreService {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.credential.store.datamodel.SSHCredentialSummary.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.credential.store.SSHCredentialSummary.class)));
       tmpMap.put(_Fields.CS_EXCEPTION, new org.apache.thrift.meta_data.FieldMetaData("csException", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -6897,7 +6897,7 @@ public class CredentialStoreService {
     }
 
     public getSSHCredentialSummary_result(
-      org.apache.airavata.credential.store.datamodel.SSHCredentialSummary success,
+      org.apache.airavata.model.credential.store.SSHCredentialSummary success,
       org.apache.airavata.credential.store.exception.CredentialStoreException csException)
     {
       this();
@@ -6910,7 +6910,7 @@ public class CredentialStoreService {
      */
     public getSSHCredentialSummary_result(getSSHCredentialSummary_result other) {
       if (other.isSetSuccess()) {
-        this.success = new org.apache.airavata.credential.store.datamodel.SSHCredentialSummary(other.success);
+        this.success = new org.apache.airavata.model.credential.store.SSHCredentialSummary(other.success);
       }
       if (other.isSetCsException()) {
         this.csException = new org.apache.airavata.credential.store.exception.CredentialStoreException(other.csException);
@@ -6927,11 +6927,11 @@ public class CredentialStoreService {
       this.csException = null;
     }
 
-    public org.apache.airavata.credential.store.datamodel.SSHCredentialSummary getSuccess() {
+    public org.apache.airavata.model.credential.store.SSHCredentialSummary getSuccess() {
       return this.success;
     }
 
-    public getSSHCredentialSummary_result setSuccess(org.apache.airavata.credential.store.datamodel.SSHCredentialSummary success) {
+    public getSSHCredentialSummary_result setSuccess(org.apache.airavata.model.credential.store.SSHCredentialSummary success) {
       this.success = success;
       return this;
     }
@@ -6981,7 +6981,7 @@ public class CredentialStoreService {
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((org.apache.airavata.credential.store.datamodel.SSHCredentialSummary)value);
+          setSuccess((org.apache.airavata.model.credential.store.SSHCredentialSummary)value);
         }
         break;
 
@@ -7185,7 +7185,7 @@ public class CredentialStoreService {
           switch (schemeField.id) {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.success = new org.apache.airavata.credential.store.datamodel.SSHCredentialSummary();
+                struct.success = new org.apache.airavata.model.credential.store.SSHCredentialSummary();
                 struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
               } else { 
@@ -7264,7 +7264,7 @@ public class CredentialStoreService {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
-          struct.success = new org.apache.airavata.credential.store.datamodel.SSHCredentialSummary();
+          struct.success = new org.apache.airavata.model.credential.store.SSHCredentialSummary();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
@@ -7745,7 +7745,7 @@ public class CredentialStoreService {
       schemes.put(TupleScheme.class, new getCertificateCredential_resultTupleSchemeFactory());
     }
 
-    public org.apache.airavata.credential.store.datamodel.CertificateCredential success; // required
+    public org.apache.airavata.model.credential.store.CertificateCredential success; // required
     public org.apache.airavata.credential.store.exception.CredentialStoreException csException; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -7814,7 +7814,7 @@ public class CredentialStoreService {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.credential.store.datamodel.CertificateCredential.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.credential.store.CertificateCredential.class)));
       tmpMap.put(_Fields.CS_EXCEPTION, new org.apache.thrift.meta_data.FieldMetaData("csException", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -7825,7 +7825,7 @@ public class CredentialStoreService {
     }
 
     public getCertificateCredential_result(
-      org.apache.airavata.credential.store.datamodel.CertificateCredential success,
+      org.apache.airavata.model.credential.store.CertificateCredential success,
       org.apache.airavata.credential.store.exception.CredentialStoreException csException)
     {
       this();
@@ -7838,7 +7838,7 @@ public class CredentialStoreService {
      */
     public getCertificateCredential_result(getCertificateCredential_result other) {
       if (other.isSetSuccess()) {
-        this.success = new org.apache.airavata.credential.store.datamodel.CertificateCredential(other.success);
+        this.success = new org.apache.airavata.model.credential.store.CertificateCredential(other.success);
       }
       if (other.isSetCsException()) {
         this.csException = new org.apache.airavata.credential.store.exception.CredentialStoreException(other.csException);
@@ -7855,11 +7855,11 @@ public class CredentialStoreService {
       this.csException = null;
     }
 
-    public org.apache.airavata.credential.store.datamodel.CertificateCredential getSuccess() {
+    public org.apache.airavata.model.credential.store.CertificateCredential getSuccess() {
       return this.success;
     }
 
-    public getCertificateCredential_result setSuccess(org.apache.airavata.credential.store.datamodel.CertificateCredential success) {
+    public getCertificateCredential_result setSuccess(org.apache.airavata.model.credential.store.CertificateCredential success) {
       this.success = success;
       return this;
     }
@@ -7909,7 +7909,7 @@ public class CredentialStoreService {
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((org.apache.airavata.credential.store.datamodel.CertificateCredential)value);
+          setSuccess((org.apache.airavata.model.credential.store.CertificateCredential)value);
         }
         break;
 
@@ -8113,7 +8113,7 @@ public class CredentialStoreService {
           switch (schemeField.id) {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.success = new org.apache.airavata.credential.store.datamodel.CertificateCredential();
+                struct.success = new org.apache.airavata.model.credential.store.CertificateCredential();
                 struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
               } else { 
@@ -8192,7 +8192,7 @@ public class CredentialStoreService {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
-          struct.success = new org.apache.airavata.credential.store.datamodel.CertificateCredential();
+          struct.success = new org.apache.airavata.model.credential.store.CertificateCredential();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
@@ -8673,7 +8673,7 @@ public class CredentialStoreService {
       schemes.put(TupleScheme.class, new getPasswordCredential_resultTupleSchemeFactory());
     }
 
-    public org.apache.airavata.credential.store.datamodel.PasswordCredential success; // required
+    public org.apache.airavata.model.credential.store.PasswordCredential success; // required
     public org.apache.airavata.credential.store.exception.CredentialStoreException csException; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -8742,7 +8742,7 @@ public class CredentialStoreService {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.credential.store.datamodel.PasswordCredential.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.credential.store.PasswordCredential.class)));
       tmpMap.put(_Fields.CS_EXCEPTION, new org.apache.thrift.meta_data.FieldMetaData("csException", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -8753,7 +8753,7 @@ public class CredentialStoreService {
     }
 
     public getPasswordCredential_result(
-      org.apache.airavata.credential.store.datamodel.PasswordCredential success,
+      org.apache.airavata.model.credential.store.PasswordCredential success,
       org.apache.airavata.credential.store.exception.CredentialStoreException csException)
     {
       this();
@@ -8766,7 +8766,7 @@ public class CredentialStoreService {
      */
     public getPasswordCredential_result(getPasswordCredential_result other) {
       if (other.isSetSuccess()) {
-        this.success = new org.apache.airavata.credential.store.datamodel.PasswordCredential(other.success);
+        this.success = new org.apache.airavata.model.credential.store.PasswordCredential(other.success);
       }
       if (other.isSetCsException()) {
         this.csException = new org.apache.airavata.credential.store.exception.CredentialStoreException(other.csException);
@@ -8783,11 +8783,11 @@ public class CredentialStoreService {
       this.csException = null;
     }
 
-    public org.apache.airavata.credential.store.datamodel.PasswordCredential getSuccess() {
+    public org.apache.airavata.model.credential.store.PasswordCredential getSuccess() {
       return this.success;
     }
 
-    public getPasswordCredential_result setSuccess(org.apache.airavata.credential.store.datamodel.PasswordCredential success) {
+    public getPasswordCredential_result setSuccess(org.apache.airavata.model.credential.store.PasswordCredential success) {
       this.success = success;
       return this;
     }
@@ -8837,7 +8837,7 @@ public class CredentialStoreService {
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((org.apache.airavata.credential.store.datamodel.PasswordCredential)value);
+          setSuccess((org.apache.airavata.model.credential.store.PasswordCredential)value);
         }
         break;
 
@@ -9041,7 +9041,7 @@ public class CredentialStoreService {
           switch (schemeField.id) {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.success = new org.apache.airavata.credential.store.datamodel.PasswordCredential();
+                struct.success = new org.apache.airavata.model.credential.store.PasswordCredential();
                 struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
               } else { 
@@ -9120,7 +9120,7 @@ public class CredentialStoreService {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
-          struct.success = new org.apache.airavata.credential.store.datamodel.PasswordCredential();
+          struct.success = new org.apache.airavata.model.credential.store.PasswordCredential();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
@@ -11248,7 +11248,7 @@ public class CredentialStoreService {
       schemes.put(TupleScheme.class, new getAllGatewaySSHCredentialSummary_resultTupleSchemeFactory());
     }
 
-    public List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> success; // required
+    public List<org.apache.airavata.model.credential.store.SSHCredentialSummary> success; // required
     public org.apache.airavata.credential.store.exception.CredentialStoreException csException; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -11318,7 +11318,7 @@ public class CredentialStoreService {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-              new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.credential.store.datamodel.SSHCredentialSummary.class))));
+              new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.credential.store.SSHCredentialSummary.class))));
       tmpMap.put(_Fields.CS_EXCEPTION, new org.apache.thrift.meta_data.FieldMetaData("csException", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -11329,7 +11329,7 @@ public class CredentialStoreService {
     }
 
     public getAllGatewaySSHCredentialSummary_result(
-      List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> success,
+      List<org.apache.airavata.model.credential.store.SSHCredentialSummary> success,
       org.apache.airavata.credential.store.exception.CredentialStoreException csException)
     {
       this();
@@ -11342,9 +11342,9 @@ public class CredentialStoreService {
      */
     public getAllGatewaySSHCredentialSummary_result(getAllGatewaySSHCredentialSummary_result other) {
       if (other.isSetSuccess()) {
-        List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> __this__success = new ArrayList<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary>(other.success.size());
-        for (org.apache.airavata.credential.store.datamodel.SSHCredentialSummary other_element : other.success) {
-          __this__success.add(new org.apache.airavata.credential.store.datamodel.SSHCredentialSummary(other_element));
+        List<org.apache.airavata.model.credential.store.SSHCredentialSummary> __this__success = new ArrayList<org.apache.airavata.model.credential.store.SSHCredentialSummary>(other.success.size());
+        for (org.apache.airavata.model.credential.store.SSHCredentialSummary other_element : other.success) {
+          __this__success.add(new org.apache.airavata.model.credential.store.SSHCredentialSummary(other_element));
         }
         this.success = __this__success;
       }
@@ -11367,22 +11367,22 @@ public class CredentialStoreService {
       return (this.success == null) ? 0 : this.success.size();
     }
 
-    public java.util.Iterator<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> getSuccessIterator() {
+    public java.util.Iterator<org.apache.airavata.model.credential.store.SSHCredentialSummary> getSuccessIterator() {
       return (this.success == null) ? null : this.success.iterator();
     }
 
-    public void addToSuccess(org.apache.airavata.credential.store.datamodel.SSHCredentialSummary elem) {
+    public void addToSuccess(org.apache.airavata.model.credential.store.SSHCredentialSummary elem) {
       if (this.success == null) {
-        this.success = new ArrayList<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary>();
+        this.success = new ArrayList<org.apache.airavata.model.credential.store.SSHCredentialSummary>();
       }
       this.success.add(elem);
     }
 
-    public List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> getSuccess() {
+    public List<org.apache.airavata.model.credential.store.SSHCredentialSummary> getSuccess() {
       return this.success;
     }
 
-    public getAllGatewaySSHCredentialSummary_result setSuccess(List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> success) {
+    public getAllGatewaySSHCredentialSummary_result setSuccess(List<org.apache.airavata.model.credential.store.SSHCredentialSummary> success) {
       this.success = success;
       return this;
     }
@@ -11432,7 +11432,7 @@ public class CredentialStoreService {
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary>)value);
+          setSuccess((List<org.apache.airavata.model.credential.store.SSHCredentialSummary>)value);
         }
         break;
 
@@ -11635,11 +11635,11 @@ public class CredentialStoreService {
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
                   org.apache.thrift.protocol.TList _list20 = iprot.readListBegin();
-                  struct.success = new ArrayList<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary>(_list20.size);
-                  org.apache.airavata.credential.store.datamodel.SSHCredentialSummary _elem21;
+                  struct.success = new ArrayList<org.apache.airavata.model.credential.store.SSHCredentialSummary>(_list20.size);
+                  org.apache.airavata.model.credential.store.SSHCredentialSummary _elem21;
                   for (int _i22 = 0; _i22 < _list20.size; ++_i22)
                   {
-                    _elem21 = new org.apache.airavata.credential.store.datamodel.SSHCredentialSummary();
+                    _elem21 = new org.apache.airavata.model.credential.store.SSHCredentialSummary();
                     _elem21.read(iprot);
                     struct.success.add(_elem21);
                   }
@@ -11678,7 +11678,7 @@ public class CredentialStoreService {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (org.apache.airavata.credential.store.datamodel.SSHCredentialSummary _iter23 : struct.success)
+            for (org.apache.airavata.model.credential.store.SSHCredentialSummary _iter23 : struct.success)
             {
               _iter23.write(oprot);
             }
@@ -11719,7 +11719,7 @@ public class CredentialStoreService {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (org.apache.airavata.credential.store.datamodel.SSHCredentialSummary _iter24 : struct.success)
+            for (org.apache.airavata.model.credential.store.SSHCredentialSummary _iter24 : struct.success)
             {
               _iter24.write(oprot);
             }
@@ -11737,11 +11737,11 @@ public class CredentialStoreService {
         if (incoming.get(0)) {
           {
             org.apache.thrift.protocol.TList _list25 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary>(_list25.size);
-            org.apache.airavata.credential.store.datamodel.SSHCredentialSummary _elem26;
+            struct.success = new ArrayList<org.apache.airavata.model.credential.store.SSHCredentialSummary>(_list25.size);
+            org.apache.airavata.model.credential.store.SSHCredentialSummary _elem26;
             for (int _i27 = 0; _i27 < _list25.size; ++_i27)
             {
-              _elem26 = new org.apache.airavata.credential.store.datamodel.SSHCredentialSummary();
+              _elem26 = new org.apache.airavata.model.credential.store.SSHCredentialSummary();
               _elem26.read(iprot);
               struct.success.add(_elem26);
             }
@@ -12225,7 +12225,7 @@ public class CredentialStoreService {
       schemes.put(TupleScheme.class, new getAllSSHCredentialSummaryForUserInGateway_resultTupleSchemeFactory());
     }
 
-    public List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> success; // required
+    public List<org.apache.airavata.model.credential.store.SSHCredentialSummary> success; // required
     public org.apache.airavata.credential.store.exception.CredentialStoreException csException; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -12295,7 +12295,7 @@ public class CredentialStoreService {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-              new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.credential.store.datamodel.SSHCredentialSummary.class))));
+              new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.credential.store.SSHCredentialSummary.class))));
       tmpMap.put(_Fields.CS_EXCEPTION, new org.apache.thrift.meta_data.FieldMetaData("csException", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -12306,7 +12306,7 @@ public class CredentialStoreService {
     }
 
     public getAllSSHCredentialSummaryForUserInGateway_result(
-      List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> success,
+      List<org.apache.airavata.model.credential.store.SSHCredentialSummary> success,
       org.apache.airavata.credential.store.exception.CredentialStoreException csException)
     {
       this();
@@ -12319,9 +12319,9 @@ public class CredentialStoreService {
      */
     public getAllSSHCredentialSummaryForUserInGateway_result(getAllSSHCredentialSummaryForUserInGateway_result other) {
       if (other.isSetSuccess()) {
-        List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> __this__success = new ArrayList<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary>(other.success.size());
-        for (org.apache.airavata.credential.store.datamodel.SSHCredentialSummary other_element : other.success) {
-          __this__success.add(new org.apache.airavata.credential.store.datamodel.SSHCredentialSummary(other_element));
+        List<org.apache.airavata.model.credential.store.SSHCredentialSummary> __this__success = new ArrayList<org.apache.airavata.model.credential.store.SSHCredentialSummary>(other.success.size());
+        for (org.apache.airavata.model.credential.store.SSHCredentialSummary other_element : other.success) {
+          __this__success.add(new org.apache.airavata.model.credential.store.SSHCredentialSummary(other_element));
         }
         this.success = __this__success;
       }
@@ -12344,22 +12344,22 @@ public class CredentialStoreService {
       return (this.success == null) ? 0 : this.success.size();
     }
 
-    public java.util.Iterator<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> getSuccessIterator() {
+    public java.util.Iterator<org.apache.airavata.model.credential.store.SSHCredentialSummary> getSuccessIterator() {
       return (this.success == null) ? null : this.success.iterator();
     }
 
-    public void addToSuccess(org.apache.airavata.credential.store.datamodel.SSHCredentialSummary elem) {
+    public void addToSuccess(org.apache.airavata.model.credential.store.SSHCredentialSummary elem) {
       if (this.success == null) {
-        this.success = new ArrayList<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary>();
+        this.success = new ArrayList<org.apache.airavata.model.credential.store.SSHCredentialSummary>();
       }
       this.success.add(elem);
     }
 
-    public List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> getSuccess() {
+    public List<org.apache.airavata.model.credential.store.SSHCredentialSummary> getSuccess() {
       return this.success;
     }
 
-    public getAllSSHCredentialSummaryForUserInGateway_result setSuccess(List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary> success) {
+    public getAllSSHCredentialSummaryForUserInGateway_result setSuccess(List<org.apache.airavata.model.credential.store.SSHCredentialSummary> success) {
       this.success = success;
       return this;
     }
@@ -12409,7 +12409,7 @@ public class CredentialStoreService {
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((List<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary>)value);
+          setSuccess((List<org.apache.airavata.model.credential.store.SSHCredentialSummary>)value);
         }
         break;
 
@@ -12612,11 +12612,11 @@ public class CredentialStoreService {
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
                   org.apache.thrift.protocol.TList _list28 = iprot.readListBegin();
-                  struct.success = new ArrayList<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary>(_list28.size);
-                  org.apache.airavata.credential.store.datamodel.SSHCredentialSummary _elem29;
+                  struct.success = new ArrayList<org.apache.airavata.model.credential.store.SSHCredentialSummary>(_list28.size);
+                  org.apache.airavata.model.credential.store.SSHCredentialSummary _elem29;
                   for (int _i30 = 0; _i30 < _list28.size; ++_i30)
                   {
-                    _elem29 = new org.apache.airavata.credential.store.datamodel.SSHCredentialSummary();
+                    _elem29 = new org.apache.airavata.model.credential.store.SSHCredentialSummary();
                     _elem29.read(iprot);
                     struct.success.add(_elem29);
                   }
@@ -12655,7 +12655,7 @@ public class CredentialStoreService {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (org.apache.airavata.credential.store.datamodel.SSHCredentialSummary _iter31 : struct.success)
+            for (org.apache.airavata.model.credential.store.SSHCredentialSummary _iter31 : struct.success)
             {
               _iter31.write(oprot);
             }
@@ -12696,7 +12696,7 @@ public class CredentialStoreService {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (org.apache.airavata.credential.store.datamodel.SSHCredentialSummary _iter32 : struct.success)
+            for (org.apache.airavata.model.credential.store.SSHCredentialSummary _iter32 : struct.success)
             {
               _iter32.write(oprot);
             }
@@ -12714,11 +12714,11 @@ public class CredentialStoreService {
         if (incoming.get(0)) {
           {
             org.apache.thrift.protocol.TList _list33 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<org.apache.airavata.credential.store.datamodel.SSHCredentialSummary>(_list33.size);
-            org.apache.airavata.credential.store.datamodel.SSHCredentialSummary _elem34;
+            struct.success = new ArrayList<org.apache.airavata.model.credential.store.SSHCredentialSummary>(_list33.size);
+            org.apache.airavata.model.credential.store.SSHCredentialSummary _elem34;
             for (int _i35 = 0; _i35 < _list33.size; ++_i35)
             {
-              _elem34 = new org.apache.airavata.credential.store.datamodel.SSHCredentialSummary();
+              _elem34 = new org.apache.airavata.model.credential.store.SSHCredentialSummary();
               _elem34.read(iprot);
               struct.success.add(_elem34);
             }
