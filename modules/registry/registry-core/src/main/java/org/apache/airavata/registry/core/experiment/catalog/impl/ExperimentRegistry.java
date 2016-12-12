@@ -1444,7 +1444,10 @@ public class ExperimentRegistry {
             ExperimentStatisticsResource experimentStatisticsResource = workerResource.getExperimentStatistics(
                     filters.get(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID),
                     new Timestamp(Long.parseLong(filters.get(Constants.FieldConstants.ExperimentConstants.FROM_DATE))),
-                    new Timestamp(Long.parseLong(filters.get(Constants.FieldConstants.ExperimentConstants.TO_DATE)))
+                    new Timestamp(Long.parseLong(filters.get(Constants.FieldConstants.ExperimentConstants.TO_DATE))),
+                    filters.get(Constants.FieldConstants.ExperimentConstants.USER_NAME),
+                    filters.get(Constants.FieldConstants.ExperimentConstants.EXECUTION_ID),
+                    filters.get(Constants.FieldConstants.ExperimentConstants.RESOURCE_HOST_ID)
             );
 
             experimentStatistics.setAllExperimentCount(experimentStatisticsResource.getAllExperimentCount());
