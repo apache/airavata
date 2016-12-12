@@ -31,10 +31,10 @@ import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.datamodel.CredentialOwnerType;
-import org.apache.airavata.credential.store.datamodel.PasswordCredential;
-import org.apache.airavata.credential.store.datamodel.SSHCredential;
-import org.apache.airavata.credential.store.datamodel.SSHCredentialSummary;
+import org.apache.airavata.model.credential.store.CredentialOwnerType;
+import org.apache.airavata.model.credential.store.PasswordCredential;
+import org.apache.airavata.model.credential.store.SSHCredential;
+import org.apache.airavata.model.credential.store.SSHCredentialSummary;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
@@ -3401,7 +3401,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     /**
      * Register a User Resource Profile.
      *
-     * @param UserResourceProfile User Resource Profile Object.
+     * @param userResourceProfile User Resource Profile Object.
      *   The userId should be obtained from Airavata user profile registration and passed to register a corresponding
      *      resource profile.
      * @return status.

@@ -19,7 +19,7 @@
  */
 
 
-namespace java org.apache.airavata.credential.store.datamodel
+namespace java org.apache.airavata.model.credential.store
 namespace php Airavata.Model.Credential.Store
 
 const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
