@@ -122,6 +122,11 @@ public class ServerSettings extends ApplicationSettings {
     private static final String KAFKA_TOPIC_PREFIX = "kafka.topic.prefix";
     private static final String SERVER_ROLES = "server.roles";
 
+    //User Profile onstants
+
+    public static final String USER_PROFILE_SERVER_HOST = "user.profile.server.host";
+    public static final String USER_PROFILE_SERVER_PORT = "user.profile.server.port";
+
     // todo until AIRAVATA-2066 is finished, keep server side list configurations here.
     private static Map<String, String[]> listConfigurations = new HashMap<>();
 

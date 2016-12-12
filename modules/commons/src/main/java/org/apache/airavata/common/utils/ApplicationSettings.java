@@ -413,6 +413,14 @@ public class ApplicationSettings {
         return getSetting("cluster.status.monitoring.repeat.time");
     }
 
+    public static String getUserProfileServerHost() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.USER_PROFILE_SERVER_HOST);
+    }
+
+    public static String getUserProfileServerPort() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.USER_PROFILE_SERVER_PORT);
+    }
+
     /**
      * @deprecated use {{@link #getSetting(String)}}
      * @return
