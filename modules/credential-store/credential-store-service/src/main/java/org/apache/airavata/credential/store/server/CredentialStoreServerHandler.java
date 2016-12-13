@@ -196,6 +196,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
                 if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) {
                     org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential credential1 = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
                     CredentialSummary sshCredentialSummary = new CredentialSummary();
+                    sshCredentialSummary.setType(SummaryType.SSH);
                     sshCredentialSummary.setUsername(credential1.getPortalUserName());
                     sshCredentialSummary.setGatewayId(credential1.getGateway());
                     sshCredentialSummary.setPublicKey(new String(credential1.getPublicKey()));
@@ -344,6 +345,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
                         if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) {
                             org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredential = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
                             CredentialSummary sshCredentialSummary = new CredentialSummary();
+                            sshCredentialSummary.setType(SummaryType.SSH);
                             sshCredentialSummary.setToken(sshCredential.getToken());
                             sshCredentialSummary.setUsername(sshCredential.getPortalUserName());
                             sshCredentialSummary.setGatewayId(sshCredential.getGateway());
@@ -381,6 +383,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
                                 if (portalUserName.equals(userId) && gateway.equals(gatewayId)) {
                                     org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredentialKey = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
                                     CredentialSummary sshCredentialSummary = new CredentialSummary();
+                                    sshCredentialSummary.setType(SummaryType.SSH);
                                     sshCredentialSummary.setToken(sshCredentialKey.getToken());
                                     sshCredentialSummary.setUsername(sshCredentialKey.getPortalUserName());
                                     sshCredentialSummary.setGatewayId(sshCredentialKey.getGateway());

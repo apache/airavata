@@ -354,32 +354,39 @@ interface AiravataIf {
   public function getAllGatewaySSHPubKeys(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId);
   /**
    * 
-   * Get all Public Keys of the Gateway
+   * Get all Credential summaries for the Gateway
    * 
    * @param CredStoreToken
    *    Credential Store Token which you want to find the Public Key for.
+   * 
+   * @param credential_store_data_models.SummaryType
+   *    Summary type : SSH,PASSWD or CERT
    * 
    * @param gatewayId
    *    This is the unique identifier of your gateway where the token and public key was generated from.
    * 
-   * @return publicKey
+   * @return List of Credential Summary Objects
    * 
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
+   * @param int $type
    * @param string $gatewayId
-   * @return \Airavata\Model\AppCatalog\CredetialSummary\CredentialSummary[]
+   * @return \Airavata\Model\Credential\Store\CredentialSummary[]
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    */
-  public function getAllGatewaySSHPubKeysSummary(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId);
+  public function getAllCredentialSummaryForGateway(\Airavata\Model\Security\AuthzToken $authzToken, $type, $gatewayId);
   /**
    * 
-   * Get all Public Key summaries for user in a Gateway
+   * Get all Credential summaries for user in a Gateway
    * 
    * @param CredStoreToken
    *    Credential Store Token which you want to find the Public Key for.
+   * 
+   * @param credential_store_data_models.SummaryType
+   *    Summary type : SSH,PASSWD or CERT
    * 
    * @param gatewayId
    *    This is the unique identifier of your gateway where the token and public key was generated from.
@@ -392,14 +399,15 @@ interface AiravataIf {
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
+   * @param int $type
    * @param string $gatewayId
    * @param string $userId
-   * @return \Airavata\Model\AppCatalog\CredetialSummary\CredentialSummary[]
+   * @return \Airavata\Model\Credential\Store\CredentialSummary[]
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    */
-  public function getAllSSHPubKeysSummaryForUserInGateway(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $userId);
+  public function getAllCredentialSummaryForUsersInGateway(\Airavata\Model\Security\AuthzToken $authzToken, $type, $gatewayId, $userId);
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $gatewayId
@@ -5238,35 +5246,36 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("getAllGatewaySSHPubKeys failed: unknown result");
   }
 
-  public function getAllGatewaySSHPubKeysSummary(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId)
+  public function getAllCredentialSummaryForGateway(\Airavata\Model\Security\AuthzToken $authzToken, $type, $gatewayId)
   {
-    $this->send_getAllGatewaySSHPubKeysSummary($authzToken, $gatewayId);
-    return $this->recv_getAllGatewaySSHPubKeysSummary();
+    $this->send_getAllCredentialSummaryForGateway($authzToken, $type, $gatewayId);
+    return $this->recv_getAllCredentialSummaryForGateway();
   }
 
-  public function send_getAllGatewaySSHPubKeysSummary(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId)
+  public function send_getAllCredentialSummaryForGateway(\Airavata\Model\Security\AuthzToken $authzToken, $type, $gatewayId)
   {
-    $args = new \Airavata\API\Airavata_getAllGatewaySSHPubKeysSummary_args();
+    $args = new \Airavata\API\Airavata_getAllCredentialSummaryForGateway_args();
     $args->authzToken = $authzToken;
+    $args->type = $type;
     $args->gatewayId = $gatewayId;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
-      thrift_protocol_write_binary($this->output_, 'getAllGatewaySSHPubKeysSummary', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+      thrift_protocol_write_binary($this->output_, 'getAllCredentialSummaryForGateway', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
     }
     else
     {
-      $this->output_->writeMessageBegin('getAllGatewaySSHPubKeysSummary', TMessageType::CALL, $this->seqid_);
+      $this->output_->writeMessageBegin('getAllCredentialSummaryForGateway', TMessageType::CALL, $this->seqid_);
       $args->write($this->output_);
       $this->output_->writeMessageEnd();
       $this->output_->getTransport()->flush();
     }
   }
 
-  public function recv_getAllGatewaySSHPubKeysSummary()
+  public function recv_getAllCredentialSummaryForGateway()
   {
     $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
-    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_getAllGatewaySSHPubKeysSummary_result', $this->input_->isStrictRead());
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_getAllCredentialSummaryForGateway_result', $this->input_->isStrictRead());
     else
     {
       $rseqid = 0;
@@ -5280,7 +5289,7 @@ class AiravataClient implements \Airavata\API\AiravataIf {
         $this->input_->readMessageEnd();
         throw $x;
       }
-      $result = new \Airavata\API\Airavata_getAllGatewaySSHPubKeysSummary_result();
+      $result = new \Airavata\API\Airavata_getAllCredentialSummaryForGateway_result();
       $result->read($this->input_);
       $this->input_->readMessageEnd();
     }
@@ -5296,39 +5305,40 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     if ($result->ase !== null) {
       throw $result->ase;
     }
-    throw new \Exception("getAllGatewaySSHPubKeysSummary failed: unknown result");
+    throw new \Exception("getAllCredentialSummaryForGateway failed: unknown result");
   }
 
-  public function getAllSSHPubKeysSummaryForUserInGateway(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $userId)
+  public function getAllCredentialSummaryForUsersInGateway(\Airavata\Model\Security\AuthzToken $authzToken, $type, $gatewayId, $userId)
   {
-    $this->send_getAllSSHPubKeysSummaryForUserInGateway($authzToken, $gatewayId, $userId);
-    return $this->recv_getAllSSHPubKeysSummaryForUserInGateway();
+    $this->send_getAllCredentialSummaryForUsersInGateway($authzToken, $type, $gatewayId, $userId);
+    return $this->recv_getAllCredentialSummaryForUsersInGateway();
   }
 
-  public function send_getAllSSHPubKeysSummaryForUserInGateway(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $userId)
+  public function send_getAllCredentialSummaryForUsersInGateway(\Airavata\Model\Security\AuthzToken $authzToken, $type, $gatewayId, $userId)
   {
-    $args = new \Airavata\API\Airavata_getAllSSHPubKeysSummaryForUserInGateway_args();
+    $args = new \Airavata\API\Airavata_getAllCredentialSummaryForUsersInGateway_args();
     $args->authzToken = $authzToken;
+    $args->type = $type;
     $args->gatewayId = $gatewayId;
     $args->userId = $userId;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
-      thrift_protocol_write_binary($this->output_, 'getAllSSHPubKeysSummaryForUserInGateway', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+      thrift_protocol_write_binary($this->output_, 'getAllCredentialSummaryForUsersInGateway', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
     }
     else
     {
-      $this->output_->writeMessageBegin('getAllSSHPubKeysSummaryForUserInGateway', TMessageType::CALL, $this->seqid_);
+      $this->output_->writeMessageBegin('getAllCredentialSummaryForUsersInGateway', TMessageType::CALL, $this->seqid_);
       $args->write($this->output_);
       $this->output_->writeMessageEnd();
       $this->output_->getTransport()->flush();
     }
   }
 
-  public function recv_getAllSSHPubKeysSummaryForUserInGateway()
+  public function recv_getAllCredentialSummaryForUsersInGateway()
   {
     $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
-    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_getAllSSHPubKeysSummaryForUserInGateway_result', $this->input_->isStrictRead());
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_getAllCredentialSummaryForUsersInGateway_result', $this->input_->isStrictRead());
     else
     {
       $rseqid = 0;
@@ -5342,7 +5352,7 @@ class AiravataClient implements \Airavata\API\AiravataIf {
         $this->input_->readMessageEnd();
         throw $x;
       }
-      $result = new \Airavata\API\Airavata_getAllSSHPubKeysSummaryForUserInGateway_result();
+      $result = new \Airavata\API\Airavata_getAllCredentialSummaryForUsersInGateway_result();
       $result->read($this->input_);
       $this->input_->readMessageEnd();
     }
@@ -5358,7 +5368,7 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     if ($result->ase !== null) {
       throw $result->ase;
     }
-    throw new \Exception("getAllSSHPubKeysSummaryForUserInGateway failed: unknown result");
+    throw new \Exception("getAllCredentialSummaryForUsersInGateway failed: unknown result");
   }
 
   public function getAllGatewayPWDCredentials(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId)
@@ -20314,13 +20324,17 @@ class Airavata_getAllGatewaySSHPubKeys_result {
 
 }
 
-class Airavata_getAllGatewaySSHPubKeysSummary_args {
+class Airavata_getAllCredentialSummaryForGateway_args {
   static $_TSPEC;
 
   /**
    * @var \Airavata\Model\Security\AuthzToken
    */
   public $authzToken = null;
+  /**
+   * @var int
+   */
+  public $type = null;
   /**
    * @var string
    */
@@ -20335,6 +20349,10 @@ class Airavata_getAllGatewaySSHPubKeysSummary_args {
           'class' => '\Airavata\Model\Security\AuthzToken',
           ),
         2 => array(
+          'var' => 'type',
+          'type' => TType::I32,
+          ),
+        3 => array(
           'var' => 'gatewayId',
           'type' => TType::STRING,
           ),
@@ -20344,6 +20362,9 @@ class Airavata_getAllGatewaySSHPubKeysSummary_args {
       if (isset($vals['authzToken'])) {
         $this->authzToken = $vals['authzToken'];
       }
+      if (isset($vals['type'])) {
+        $this->type = $vals['type'];
+      }
       if (isset($vals['gatewayId'])) {
         $this->gatewayId = $vals['gatewayId'];
       }
@@ -20351,7 +20372,7 @@ class Airavata_getAllGatewaySSHPubKeysSummary_args {
   }
 
   public function getName() {
-    return 'Airavata_getAllGatewaySSHPubKeysSummary_args';
+    return 'Airavata_getAllCredentialSummaryForGateway_args';
   }
 
   public function read($input)
@@ -20378,6 +20399,13 @@ class Airavata_getAllGatewaySSHPubKeysSummary_args {
           }
           break;
         case 2:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->type);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->gatewayId);
           } else {
@@ -20396,7 +20424,7 @@ class Airavata_getAllGatewaySSHPubKeysSummary_args {
 
   public function write($output) {
     $xfer = 0;
-    $xfer += $output->writeStructBegin('Airavata_getAllGatewaySSHPubKeysSummary_args');
+    $xfer += $output->writeStructBegin('Airavata_getAllCredentialSummaryForGateway_args');
     if ($this->authzToken !== null) {
       if (!is_object($this->authzToken)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
@@ -20405,8 +20433,13 @@ class Airavata_getAllGatewaySSHPubKeysSummary_args {
       $xfer += $this->authzToken->write($output);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->type !== null) {
+      $xfer += $output->writeFieldBegin('type', TType::I32, 2);
+      $xfer += $output->writeI32($this->type);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->gatewayId !== null) {
-      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 2);
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 3);
       $xfer += $output->writeString($this->gatewayId);
       $xfer += $output->writeFieldEnd();
     }
@@ -20417,11 +20450,11 @@ class Airavata_getAllGatewaySSHPubKeysSummary_args {
 
 }
 
-class Airavata_getAllGatewaySSHPubKeysSummary_result {
+class Airavata_getAllCredentialSummaryForGateway_result {
   static $_TSPEC;
 
   /**
-   * @var \Airavata\Model\AppCatalog\CredetialSummary\CredentialSummary[]
+   * @var \Airavata\Model\Credential\Store\CredentialSummary[]
    */
   public $success = null;
   /**
@@ -20446,7 +20479,7 @@ class Airavata_getAllGatewaySSHPubKeysSummary_result {
           'etype' => TType::STRUCT,
           'elem' => array(
             'type' => TType::STRUCT,
-            'class' => '\Airavata\Model\AppCatalog\CredetialSummary\CredentialSummary',
+            'class' => '\Airavata\Model\Credential\Store\CredentialSummary',
             ),
           ),
         1 => array(
@@ -20483,7 +20516,7 @@ class Airavata_getAllGatewaySSHPubKeysSummary_result {
   }
 
   public function getName() {
-    return 'Airavata_getAllGatewaySSHPubKeysSummary_result';
+    return 'Airavata_getAllCredentialSummaryForGateway_result';
   }
 
   public function read($input)
@@ -20510,7 +20543,7 @@ class Airavata_getAllGatewaySSHPubKeysSummary_result {
             for ($_i34 = 0; $_i34 < $_size30; ++$_i34)
             {
               $elem35 = null;
-              $elem35 = new \Airavata\Model\AppCatalog\CredetialSummary\CredentialSummary();
+              $elem35 = new \Airavata\Model\Credential\Store\CredentialSummary();
               $xfer += $elem35->read($input);
               $this->success []= $elem35;
             }
@@ -20555,7 +20588,7 @@ class Airavata_getAllGatewaySSHPubKeysSummary_result {
 
   public function write($output) {
     $xfer = 0;
-    $xfer += $output->writeStructBegin('Airavata_getAllGatewaySSHPubKeysSummary_result');
+    $xfer += $output->writeStructBegin('Airavata_getAllCredentialSummaryForGateway_result');
     if ($this->success !== null) {
       if (!is_array($this->success)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
@@ -20595,13 +20628,17 @@ class Airavata_getAllGatewaySSHPubKeysSummary_result {
 
 }
 
-class Airavata_getAllSSHPubKeysSummaryForUserInGateway_args {
+class Airavata_getAllCredentialSummaryForUsersInGateway_args {
   static $_TSPEC;
 
   /**
    * @var \Airavata\Model\Security\AuthzToken
    */
   public $authzToken = null;
+  /**
+   * @var int
+   */
+  public $type = null;
   /**
    * @var string
    */
@@ -20620,10 +20657,14 @@ class Airavata_getAllSSHPubKeysSummaryForUserInGateway_args {
           'class' => '\Airavata\Model\Security\AuthzToken',
           ),
         2 => array(
+          'var' => 'type',
+          'type' => TType::I32,
+          ),
+        3 => array(
           'var' => 'gatewayId',
           'type' => TType::STRING,
           ),
-        3 => array(
+        4 => array(
           'var' => 'userId',
           'type' => TType::STRING,
           ),
@@ -20632,6 +20673,9 @@ class Airavata_getAllSSHPubKeysSummaryForUserInGateway_args {
     if (is_array($vals)) {
       if (isset($vals['authzToken'])) {
         $this->authzToken = $vals['authzToken'];
+      }
+      if (isset($vals['type'])) {
+        $this->type = $vals['type'];
       }
       if (isset($vals['gatewayId'])) {
         $this->gatewayId = $vals['gatewayId'];
@@ -20643,7 +20687,7 @@ class Airavata_getAllSSHPubKeysSummaryForUserInGateway_args {
   }
 
   public function getName() {
-    return 'Airavata_getAllSSHPubKeysSummaryForUserInGateway_args';
+    return 'Airavata_getAllCredentialSummaryForUsersInGateway_args';
   }
 
   public function read($input)
@@ -20670,13 +20714,20 @@ class Airavata_getAllSSHPubKeysSummaryForUserInGateway_args {
           }
           break;
         case 2:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->type);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->gatewayId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 3:
+        case 4:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->userId);
           } else {
@@ -20695,7 +20746,7 @@ class Airavata_getAllSSHPubKeysSummaryForUserInGateway_args {
 
   public function write($output) {
     $xfer = 0;
-    $xfer += $output->writeStructBegin('Airavata_getAllSSHPubKeysSummaryForUserInGateway_args');
+    $xfer += $output->writeStructBegin('Airavata_getAllCredentialSummaryForUsersInGateway_args');
     if ($this->authzToken !== null) {
       if (!is_object($this->authzToken)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
@@ -20704,13 +20755,18 @@ class Airavata_getAllSSHPubKeysSummaryForUserInGateway_args {
       $xfer += $this->authzToken->write($output);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->type !== null) {
+      $xfer += $output->writeFieldBegin('type', TType::I32, 2);
+      $xfer += $output->writeI32($this->type);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->gatewayId !== null) {
-      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 2);
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 3);
       $xfer += $output->writeString($this->gatewayId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->userId !== null) {
-      $xfer += $output->writeFieldBegin('userId', TType::STRING, 3);
+      $xfer += $output->writeFieldBegin('userId', TType::STRING, 4);
       $xfer += $output->writeString($this->userId);
       $xfer += $output->writeFieldEnd();
     }
@@ -20721,11 +20777,11 @@ class Airavata_getAllSSHPubKeysSummaryForUserInGateway_args {
 
 }
 
-class Airavata_getAllSSHPubKeysSummaryForUserInGateway_result {
+class Airavata_getAllCredentialSummaryForUsersInGateway_result {
   static $_TSPEC;
 
   /**
-   * @var \Airavata\Model\AppCatalog\CredetialSummary\CredentialSummary[]
+   * @var \Airavata\Model\Credential\Store\CredentialSummary[]
    */
   public $success = null;
   /**
@@ -20750,7 +20806,7 @@ class Airavata_getAllSSHPubKeysSummaryForUserInGateway_result {
           'etype' => TType::STRUCT,
           'elem' => array(
             'type' => TType::STRUCT,
-            'class' => '\Airavata\Model\AppCatalog\CredetialSummary\CredentialSummary',
+            'class' => '\Airavata\Model\Credential\Store\CredentialSummary',
             ),
           ),
         1 => array(
@@ -20787,7 +20843,7 @@ class Airavata_getAllSSHPubKeysSummaryForUserInGateway_result {
   }
 
   public function getName() {
-    return 'Airavata_getAllSSHPubKeysSummaryForUserInGateway_result';
+    return 'Airavata_getAllCredentialSummaryForUsersInGateway_result';
   }
 
   public function read($input)
@@ -20814,7 +20870,7 @@ class Airavata_getAllSSHPubKeysSummaryForUserInGateway_result {
             for ($_i41 = 0; $_i41 < $_size37; ++$_i41)
             {
               $elem42 = null;
-              $elem42 = new \Airavata\Model\AppCatalog\CredetialSummary\CredentialSummary();
+              $elem42 = new \Airavata\Model\Credential\Store\CredentialSummary();
               $xfer += $elem42->read($input);
               $this->success []= $elem42;
             }
@@ -20859,7 +20915,7 @@ class Airavata_getAllSSHPubKeysSummaryForUserInGateway_result {
 
   public function write($output) {
     $xfer = 0;
-    $xfer += $output->writeStructBegin('Airavata_getAllSSHPubKeysSummaryForUserInGateway_result');
+    $xfer += $output->writeStructBegin('Airavata_getAllCredentialSummaryForUsersInGateway_result');
     if ($this->success !== null) {
       if (!is_array($this->success)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
