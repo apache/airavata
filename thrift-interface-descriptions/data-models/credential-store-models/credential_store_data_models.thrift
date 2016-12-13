@@ -19,7 +19,7 @@
  */
 
 
-namespace java org.apache.airavata.credential.store.datamodel
+namespace java org.apache.airavata.model.credential.store
 namespace php Airavata.Model.Credential.Store
 
 const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
@@ -41,13 +41,24 @@ struct SSHCredential {
     9: optional CredentialOwnerType credentialOwnerType = CredentialOwnerType.GATEWAY
 }
 
-struct SSHCredentialSummary {
-    1: required string gatewayId,
-    2: required string username,
-    3: optional string publicKey,
-    4: optional i64 persistedTime,
-    5: required string token,
-    6: optional string description
+/**
+ * Data Types supported in Airavata. The primitive data types
+ *
+*/
+enum SummaryType{
+	SSH,
+	PASSWD,
+	CERT
+}
+
+struct CredentialSummary {
+    1: required SummaryType type,
+    2: required string gatewayId,
+    3: required string username,
+    4: optional string publicKey,
+    5: optional i64 persistedTime,
+    6: required string token,
+    7: optional string description
 }
 
 struct CommunityUser {
