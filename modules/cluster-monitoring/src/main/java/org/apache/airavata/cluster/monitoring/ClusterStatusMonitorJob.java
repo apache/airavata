@@ -27,7 +27,7 @@ import com.jcraft.jsch.Session;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.datamodel.SSHCredential;
+import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
