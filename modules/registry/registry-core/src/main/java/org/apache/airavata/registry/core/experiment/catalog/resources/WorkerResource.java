@@ -745,8 +745,16 @@ public class WorkerResource extends AbstractExpCatResource {
             query += "e.creationTime > '" + fromTime + "' " + "AND e.creationTime <'" + toTime + "' AND ";
             query += "e." + ExperimentConstants.GATEWAY_ID + "= '" + gatewayId + "' ";
             if (userName != null) {
-                query += "AND e.userName = :userName ";
-                queryParameters.put("userName", userName);
+                query += "AND e.userName LIKE :userName ";
+                queryParameters.put("userName", "%" + userName + "%");
+            }
+            if (applicationName != null) {
+                query += "AND e.executionId LIKE :applicationName ";
+                queryParameters.put("applicationName", "%" + applicationName + "%");
+            }
+            if (resourceHostName != null) {
+                query += "AND e.resourceHostId LIKE :resourceHostName ";
+                queryParameters.put("resourceHostName", "%" + resourceHostName + "%");
             }
             query += "ORDER BY e.creationTime DESC";
 
