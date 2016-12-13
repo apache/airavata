@@ -651,7 +651,15 @@ interface AiravataIf {
    * @param toTime
    *       Ending data time.
    * 
-   * TODO update docs
+   * @param userName
+   *       Gateway username substring with which to further filter statistics.
+   * 
+   * @param applicationName
+   *       Application id substring with which to further filter statistics.
+   * 
+   * @param resourceHostName
+   *       Hostname id substring with which to further filter statistics.
+   * 
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken

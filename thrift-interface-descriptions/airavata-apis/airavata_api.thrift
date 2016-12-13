@@ -620,7 +620,15 @@ service Airavata {
      * @param toTime
      *       Ending data time.
      *
-     * TODO update docs
+     * @param userName
+     *       Gateway username substring with which to further filter statistics.
+     *
+     * @param applicationName
+     *       Application id substring with which to further filter statistics.
+     *
+     * @param resourceHostName
+     *       Hostname id substring with which to further filter statistics.
+     *
      **/
     experiment_model.ExperimentStatistics getExperimentStatistics(1: required security_model.AuthzToken authzToken,
                             2: required string gatewayId,
