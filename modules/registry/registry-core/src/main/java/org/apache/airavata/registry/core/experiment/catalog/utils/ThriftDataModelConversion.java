@@ -60,6 +60,7 @@ public class ThriftDataModelConversion {
 			}
 			project.setDescription(pr.getDescription());
             project.setOwner(pr.getWorker().getUser());
+            project.setGatewayId(pr.getGatewayId());
             List<ProjectUserResource> projectUserList = pr.getProjectUserList();
             List<String> sharedUsers = new ArrayList<String>();
             if (projectUserList != null && !projectUserList.isEmpty()){
@@ -84,11 +85,18 @@ public class ThriftDataModelConversion {
         gateway.setGatewayURL(resource.getGatewayUrl());
         gateway.setGatewayPublicAbstract(resource.getGatewayPublicAbstract());
         gateway.setReviewProposalDescription(resource.getReviewProposalDescription());
+        gateway.setDeclinedReason(resource.getDeclinedReason());
         gateway.setGatewayAdminFirstName(resource.getGatewayAdminFirstName());
         gateway.setGatewayAdminLastName(resource.getGetGatewayAdminLastName());
         gateway.setGatewayAdminEmail(resource.getGatewayAdminEmail());
         gateway.setIdentityServerUserName(resource.getIdentityServerUserName());
         gateway.setIdentityServerPasswordToken(resource.getIdentityServerPasswordToken());
+        gateway.setOauthClientId(resource.getOauthClientId());
+        gateway.setOauthClientSecret(resource.getOauthClientSecret());
+        if (resource.getRequestCreationTime() != null) {
+            gateway.setRequestCreationTime(resource.getRequestCreationTime().getTime());
+        }
+        gateway.setRequesterUsername(resource.getRequesterUsername());
         return gateway;
     }
 
@@ -143,7 +151,9 @@ public class ThriftDataModelConversion {
             experiment.setExperimentOutputs(getExpOutputs(experimentOutputs));
             ExperimentStatusResource experimentStatus = experimentResource.getExperimentStatus();
             if (experimentStatus != null){
-                experiment.setExperimentStatus(getExperimentStatus(experimentStatus));
+                List<ExperimentStatus> experimentStatuses = new ArrayList<>();
+                experimentStatuses.add(getExperimentStatus(experimentStatus));
+                experiment.setExperimentStatus(experimentStatuses);
             }
             List<ExperimentErrorResource> errorDetails = experimentResource.getExperimentErrors();
             if (errorDetails!= null && !errorDetails.isEmpty()){
@@ -374,16 +384,20 @@ public class ThriftDataModelConversion {
 
             ErrorModel errorModel = getErrorModel(processResource.getProcessError());
             if (errorModel != null){
-                processModel.setProcessError(errorModel);
+                List<ErrorModel> errorModels = new ArrayList<>();
+                errorModels.add(errorModel);
+                processModel.setProcessErrors(errorModels);
             }
             ProcessStatus processStatus = getProcessStatus(processResource.getProcessStatus());
             if (processStatus != null){
-                processModel.setProcessStatus(processStatus);
+                List<ProcessStatus> statuses = new ArrayList<>();
+                statuses.add(processStatus);
+                processModel.setProcessStatuses(statuses);
             }
 
             ComputationalResourceSchedulingModel schedule = getProcessResourceSchedule(processResource.getProcessResourceSchedule());
             if (schedule != null){
-                processModel.setResourceSchedule(schedule);
+                processModel.setProcessResourceSchedule(schedule);
             }
             processModel.setTasks(getTaskModelList(processResource.getTaskList()));
             processModel.setStorageResourceId(processResource.getStorageResourceId());
@@ -417,11 +431,15 @@ public class ThriftDataModelConversion {
 
         TaskStatus taskStatus = getTaskStatus(taskResource.getTaskStatus());
         if (taskStatus != null){
-            model.setTaskStatus(taskStatus);
+            List<TaskStatus> taskStatuses = new ArrayList<>();
+            taskStatuses.add(taskStatus);
+            model.setTaskStatuses(taskStatuses);
         }
         ErrorModel errorModel = getErrorModel(taskResource.getTaskError());
         if (errorModel != null) {
-            model.setTaskError(errorModel);
+            List<ErrorModel> errors = new ArrayList<>();
+            errors.add(errorModel);
+            model.setTaskErrors(errors);
         }
 
         return model;
@@ -439,7 +457,9 @@ public class ThriftDataModelConversion {
         model.setWorkingDir(jobResource.getWorkingDir());
         JobStatus jobStatus = getJobStatus(jobResource.getJobStatus());
         if (jobStatus != null){
-            model.setJobStatus(jobStatus);
+            List<JobStatus> jobStatuses = new ArrayList<>();
+            jobStatuses.add(jobStatus);
+            model.setJobStatuses(jobStatuses);
         }
         model.setExitCode(jobResource.getExitCode());
         model.setStdOut(jobResource.getStdOut());

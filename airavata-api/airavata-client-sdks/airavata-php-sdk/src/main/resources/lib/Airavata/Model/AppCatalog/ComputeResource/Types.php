@@ -174,11 +174,13 @@ final class MonitorMode {
   const JOB_EMAIL_NOTIFICATION_MONITOR = 1;
   const XSEDE_AMQP_SUBSCRIBE = 2;
   const FORK = 3;
+  const LOCAL = 4;
   static public $__names = array(
     0 => 'POLL_JOB_MANAGER',
     1 => 'JOB_EMAIL_NOTIFICATION_MONITOR',
     2 => 'XSEDE_AMQP_SUBSCRIBE',
     3 => 'FORK',
+    4 => 'LOCAL',
   );
 }
 

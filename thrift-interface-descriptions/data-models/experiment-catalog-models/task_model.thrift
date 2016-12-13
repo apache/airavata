@@ -58,10 +58,10 @@ struct TaskModel {
     3: required string parentProcessId,
     4: required i64 creationTime,
     5: required i64 lastUpdateTime,
-    6: required status_models.TaskStatus taskStatus,
+    6: required list<status_models.TaskStatus> taskStatuses,
     7: optional string taskDetail,
     8: optional binary subTaskModel,
-    9: optional airavata_commons.ErrorModel taskError,
+    9: optional list<airavata_commons.ErrorModel> taskErrors,
     10: optional list<job_model.JobModel> jobs
 }
 

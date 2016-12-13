@@ -25,7 +25,6 @@ import org.apache.airavata.model.error.ValidatorResult;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ExperimentState;
-import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +41,8 @@ public class ExperimentStatusValidator implements JobMetadataValidator {
         validationResults.setValidationState(true);
         ValidatorResult validatorResult = new ValidatorResult();
         List<ValidatorResult> validatorResultList = new ArrayList<ValidatorResult>();
-        if (!experiment.getExperimentStatus().getState().equals(ExperimentState.CREATED)) {
-            error += experiment.getExperimentStatus().getState().toString();
+        if (!experiment.getExperimentStatus().get(0).getState().equals(ExperimentState.CREATED)) {
+            error += experiment.getExperimentStatus().get(0).getState().toString();
             log.error(error);
             validatorResult.setErrorDetails(error);
             validatorResult.setResult(false);

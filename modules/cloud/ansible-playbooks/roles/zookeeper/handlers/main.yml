@@ -1,0 +1,15 @@
+---
+- name: start zookeeper
+  command: bin/zkServer.sh start
+  args:
+    chdir: "{{zookeeper_dir}}"
+
+- name: restart zookeeper
+  command: bin/zkServer.sh restart
+  args:
+    chdir: "{{zookeeper_dir}}"
+
+- name: stop zookeeper
+  command: bin/zkServer.sh stop
+  args:
+    chdir: "{{zookeeper_dir}}"

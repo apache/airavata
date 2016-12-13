@@ -1,0 +1,28 @@
+---
+#Tasks file can include smaller files if wanted
+#All commons tasks goes here
+- name: Create a new user group "{{ group }}"
+  group: name={{ group }}
+  become: yes
+
+- name: Create a new user "{{ user }}"
+  user: name={{ user }} group={{ group }}
+  become: yes
+
+- name: Install Firewalld
+  yum: name=firewalld state=latest update_cache=yes
+  become: yes
+
+  # TODO: stop iptables service, can't have both iptables and firewalld on same host
+  # if we try to stop non existing service ansible fails.
+# - name: Stop iptables, ip6tables services
+#   service: name="{{ item }}" state=stopped
+#   with_items:
+#     - iptables
+#     - ip6tables
+
+- name: Start firewalld service
+  service: name=firewalld state=started
+  become: yes
+
+...

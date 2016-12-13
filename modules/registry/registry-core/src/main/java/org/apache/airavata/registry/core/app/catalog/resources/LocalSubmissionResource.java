@@ -44,6 +44,7 @@ public class LocalSubmissionResource extends AppCatAbstractResource {
 	private String resourceJobManagerId;
 	private ResourceJobManagerResource resourceJobManagerResource;
 	private String jobSubmissionInterfaceId;
+	private String securityProtocol;
     private Timestamp createdTime;
     private Timestamp updatedTime;
 
@@ -261,6 +262,7 @@ public class LocalSubmissionResource extends AppCatAbstractResource {
 			ResourceJobManager resourceJobManager = em.find(ResourceJobManager.class, getResourceJobManagerId());
 			localSubmission.setResourceJobManager(resourceJobManager);
 			localSubmission.setJobSubmissionInterfaceId(getJobSubmissionInterfaceId());
+			localSubmission.setSecurityProtocol(getSecurityProtocol());
 			if (existingLocalSubmission == null) {
 				em.persist(localSubmission);
 			} else {
@@ -323,7 +325,11 @@ public class LocalSubmissionResource extends AppCatAbstractResource {
 	public String getJobSubmissionInterfaceId() {
 		return jobSubmissionInterfaceId;
 	}
-	
+
+	public String getSecurityProtocol() {
+		return securityProtocol;
+	}
+
 	public void setResourceJobManagerId(String resourceJobManagerId) {
 		this.resourceJobManagerId=resourceJobManagerId;
 	}
@@ -334,5 +340,9 @@ public class LocalSubmissionResource extends AppCatAbstractResource {
 	
 	public void setJobSubmissionInterfaceId(String jobSubmissionInterfaceId) {
 		this.jobSubmissionInterfaceId=jobSubmissionInterfaceId;
+	}
+
+	public void setSecurityProtocol(String securityProtocol) {
+		this.securityProtocol=securityProtocol;
 	}
 }

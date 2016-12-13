@@ -19,6 +19,10 @@
  */
 package org.apache.airavata.gfac.core;
 
+import groovy.lang.Writable;
+import groovy.text.GStringTemplateEngine;
+import groovy.text.SimpleTemplateEngine;
+import groovy.text.TemplateEngine;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.*;
 import org.apache.airavata.credential.store.store.CredentialReader;
@@ -61,9 +65,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.xml.transform.*;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.*;
 import java.io.*;
 import java.net.InetAddress;
@@ -75,6 +76,7 @@ import java.security.SecureRandom;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 //import org.apache.airavata.commons.gfac.type.ActualParameter;
 
@@ -210,9 +212,14 @@ public class GFacUtils {
 	public static void saveJobStatus(ProcessContext processContext, JobModel jobModel) throws GFacException {
 		try {
             // first we save job jobModel to the registry for sa and then save the job status.
-			JobStatus jobStatus = jobModel.getJobStatus();
+            JobStatus jobStatus = null;
+            if(jobModel.getJobStatuses() != null)
+			    jobStatus = jobModel.getJobStatuses().get(0);
+
             ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
-            jobModel.setJobStatus(jobStatus);
+            List<JobStatus> statuses = new ArrayList<>();
+            statuses.add(jobStatus);
+            jobModel.setJobStatuses(statuses);
             if (jobStatus.getTimeOfStateChange() == 0 || jobStatus.getTimeOfStateChange() > 0 ){
                 jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             }else {
@@ -407,78 +414,102 @@ public class GFacUtils {
     public static String getZKGfacServersParentPath() {
         return ZKPaths.makePath(ZkConstants.ZOOKEEPER_SERVERS_NODE, ZkConstants.ZOOKEEPER_GFAC_SERVER_NODE);
     }
-
-    public static JobDescriptor createJobDescriptor(ProcessContext processContext, TaskContext taskContext)
+    public static GroovyMap crateGroovyMap(ProcessContext processContext)
+            throws ApplicationSettingsException, AppCatalogException, GFacException {
+        return createGroovyMap(processContext, null);
+    }
+    public static GroovyMap createGroovyMap(ProcessContext processContext, TaskContext taskContext)
             throws GFacException, AppCatalogException, ApplicationSettingsException {
 
-        JobDescriptor jobDescriptor = new JobDescriptor();
+        GroovyMap groovyMap = new GroovyMap();
         ProcessModel processModel = processContext.getProcessModel();
         ResourceJobManager resourceJobManager = getResourceJobManager(processContext);
-        setMailAddresses(processContext, jobDescriptor); // set email options and addresses
+        setMailAddresses(processContext, groovyMap); // set email options and addresses
 
-        jobDescriptor.setInputDirectory(processContext.getInputDir());
-        jobDescriptor.setOutputDirectory(processContext.getOutputDir());
-        jobDescriptor.setExecutablePath(processContext.getApplicationDeploymentDescription().getExecutablePath());
-        jobDescriptor.setStandardOutFile(processContext.getStdoutLocation());
-        jobDescriptor.setStandardErrorFile(processContext.getStderrLocation());
+        groovyMap.add(Script.INPUT_DIR, processContext.getInputDir());
+        groovyMap.add(Script.OUTPUT_DIR, processContext.getOutputDir());
+        groovyMap.add(Script.EXECUTABLE_PATH, processContext.getApplicationDeploymentDescription().getExecutablePath());
+        groovyMap.add(Script.STANDARD_OUT_FILE, processContext.getStdoutLocation());
+        groovyMap.add(Script.STANDARD_ERROR_FILE, processContext.getStderrLocation());
+        groovyMap.add(Script.SCRATCH_LOCATION, processContext.getScratchLocation());
+        groovyMap.add(Script.GATEWAY_ID, processContext.getGatewayId());
+        groovyMap.add(Script.GATEWAY_USER_NAME, processContext.getProcessModel().getUserName());
+        groovyMap.add(Script.APPLICATION_NAME, processContext.getApplicationInterfaceDescription().getApplicationName());
+
         ComputeResourcePreference crp = getComputeResourcePreference(processContext);
-        if (crp.getAllocationProjectNumber() != null) {
-            jobDescriptor.setAcountString(crp.getAllocationProjectNumber());
+        if (isValid(crp.getAllocationProjectNumber())) {
+            groovyMap.add(Script.ACCOUNT_STRING, crp.getAllocationProjectNumber());
         }
-        jobDescriptor.setReservation(getReservation(crp));
+        groovyMap.add(Script.RESERVATION, getReservation(crp));
 
         // To make job name alpha numeric
-        jobDescriptor.setJobName("A" + String.valueOf(generateJobName()));
-        jobDescriptor.setWorkingDirectory(processContext.getWorkingDir());
+        groovyMap.add(Script.JOB_NAME, "A" + String.valueOf(generateJobName()));
+        groovyMap.add(Script.WORKING_DIR, processContext.getWorkingDir());
 
         List<String> inputValues = getProcessInputValues(processModel.getProcessInputs());
         inputValues.addAll(getProcessOutputValues(processModel.getProcessOutputs()));
-        jobDescriptor.setInputValues(inputValues);
+        groovyMap.add(Script.INPUTS, inputValues);
 
-        jobDescriptor.setUserName(processContext.getJobSubmissionRemoteCluster().getServerInfo().getUserName());
-        jobDescriptor.setShellName("/bin/bash");
-        jobDescriptor.setAllEnvExport(true);
-        jobDescriptor.setOwner(processContext.getJobSubmissionRemoteCluster().getServerInfo().getUserName());
+        groovyMap.add(Script.USER_NAME, processContext.getJobSubmissionRemoteCluster().getServerInfo().getUserName());
+        groovyMap.add(Script.SHELL_NAME, "/bin/bash");
         // get walltime
-        try {
-            JobSubmissionTaskModel jobSubmissionTaskModel = ((JobSubmissionTaskModel) taskContext.getSubTaskModel());
-            if (jobSubmissionTaskModel.getWallTime() > 0) {
-                jobDescriptor.setMaxWallTime(jobSubmissionTaskModel.getWallTime() + "");
+        if (taskContext != null) {
+            try {
+                JobSubmissionTaskModel jobSubmissionTaskModel = ((JobSubmissionTaskModel) taskContext.getSubTaskModel());
+                if (jobSubmissionTaskModel.getWallTime() > 0) {
+                    groovyMap.add(Script.MAX_WALL_TIME,
+                            GFacUtils.maxWallTimeCalculator(jobSubmissionTaskModel.getWallTime()));
+                }
+            } catch (TException e) {
+                log.error("Error while getting job submission sub task model", e);
             }
-        } catch (TException e) {
-            log.error("Error while getting job submissiont sub task model", e);
         }
 
-        ComputationalResourceSchedulingModel scheduling = processModel.getResourceSchedule();
+        // NOTE: Give precedence to data comes with experiment
+        ComputationalResourceSchedulingModel scheduling = processModel.getProcessResourceSchedule();
         if (scheduling != null) {
             int totalNodeCount = scheduling.getNodeCount();
             int totalCPUCount = scheduling.getTotalCPUCount();
 
-            if (scheduling.getQueueName() != null) {
-                jobDescriptor.setQueueName(scheduling.getQueueName());
+            if (isValid(scheduling.getQueueName())) {
+                groovyMap.add(Script.QUEUE_NAME, scheduling.getQueueName());
             }
             if (totalNodeCount > 0) {
-                jobDescriptor.setNodes(totalNodeCount);
+                groovyMap.add(Script.NODES, totalNodeCount);
             }
             // qos per queue
-            jobDescriptor.setQoS(getQoS(crp.getQualityOfService(), scheduling.getQueueName()));
+            String qoS = getQoS(crp.getQualityOfService(), scheduling.getQueueName());
+            if (qoS != null) {
+                groovyMap.add(Script.QUALITY_OF_SERVICE, qoS);
+            }
             if (totalCPUCount > 0) {
                 int ppn = totalCPUCount / totalNodeCount;
-                jobDescriptor.setProcessesPerNode(ppn);
-                jobDescriptor.setCPUCount(totalCPUCount);
+                groovyMap.add(Script.PROCESS_PER_NODE, ppn);
+                groovyMap.add(Script.CPU_COUNT, totalCPUCount);
             }
             // max wall time may be set before this level if jobsubmission task has wall time configured to this job,
             // if so we ignore scheduling configuration.
-            if (scheduling.getWallTimeLimit() > 0 && jobDescriptor.getMaxWallTime() == null) {
-                jobDescriptor.setMaxWallTime(String.valueOf(scheduling.getWallTimeLimit()));
+            if (scheduling.getWallTimeLimit() > 0 && groovyMap.get(Script.MAX_WALL_TIME) == null) {
+                groovyMap.add(Script.MAX_WALL_TIME,
+                        GFacUtils.maxWallTimeCalculator(scheduling.getWallTimeLimit()));
                 if (resourceJobManager != null) {
                     if (resourceJobManager.getResourceJobManagerType().equals(ResourceJobManagerType.LSF)) {
-                        jobDescriptor.setMaxWallTimeForLSF(String.valueOf(scheduling.getWallTimeLimit()));
+                        groovyMap.add(Script.MAX_WALL_TIME,
+                                GFacUtils.maxWallTimeCalculator(scheduling.getWallTimeLimit()));
                     }
                 }
             }
             if (scheduling.getTotalPhysicalMemory() > 0) {
-                jobDescriptor.setUsedMemory(scheduling.getTotalPhysicalMemory() + "");
+                groovyMap.add(Script.USED_MEM, scheduling.getTotalPhysicalMemory());
+            }
+            if (isValid(scheduling.getOverrideLoginUserName())) {
+                groovyMap.add(Script.USER_NAME, scheduling.getOverrideLoginUserName());
+            }
+            if (isValid(scheduling.getOverrideAllocationProjectNumber())) {
+                groovyMap.add(Script.ACCOUNT_STRING, scheduling.getOverrideAllocationProjectNumber());
+            }
+            if (isValid(scheduling.getStaticWorkingDir())) {
+                groovyMap.add(Script.WORKING_DIR, scheduling.getStaticWorkingDir());
             }
         } else {
             log.error("Task scheduling cannot be null at this point..");
@@ -487,28 +518,29 @@ public class GFacUtils {
         ApplicationDeploymentDescription appDepDescription = processContext.getApplicationDeploymentDescription();
         List<CommandObject> moduleCmds = appDepDescription.getModuleLoadCmds();
         if (moduleCmds != null) {
-            Collections.sort(moduleCmds,
-                    (o1, o2) -> ((CommandObject) o1).getCommandOrder() - ((CommandObject) o2).getCommandOrder());
-            for (CommandObject moduleCmd : moduleCmds) {
-                jobDescriptor.addModuleLoadCommands(moduleCmd.getCommand());
-            }
+            List<String> modulesCmdCollect = moduleCmds.stream()
+                    .sorted((e1, e2) -> e1.getCommandOrder() - e2.getCommandOrder())
+                    .map(map -> map.getCommand())
+                    .collect(Collectors.toList());
+            groovyMap.add(Script.MODULE_COMMANDS, modulesCmdCollect);
         }
+
         List<CommandObject> preJobCommands = appDepDescription.getPreJobCommands();
         if (preJobCommands != null) {
-            Collections.sort(preJobCommands,
-                    (o1, o2) -> ((CommandObject) o1).getCommandOrder() - ((CommandObject) o2).getCommandOrder());
-            for (CommandObject preJobCommand : preJobCommands) {
-                jobDescriptor.addPreJobCommand(parseCommand(preJobCommand.getCommand(), processContext));
-            }
+            List<String> preJobCmdCollect = preJobCommands.stream()
+                    .sorted((e1, e2) -> e1.getCommandOrder() - e2.getCommandOrder())
+                    .map(map -> parseCommands(map.getCommand(), groovyMap))
+                    .collect(Collectors.toList());
+            groovyMap.add(Script.PRE_JOB_COMMANDS, preJobCmdCollect);
         }
 
         List<CommandObject> postJobCommands = appDepDescription.getPostJobCommands();
         if (postJobCommands != null) {
-            Collections.sort(postJobCommands,
-                    (o1, o2) -> ((CommandObject) o1).getCommandOrder() - ((CommandObject) o2).getCommandOrder());
-            for (CommandObject postJobCommand : postJobCommands) {
-                jobDescriptor.addPostJobCommand(parseCommand(postJobCommand.getCommand(), processContext));
-            }
+            List<String> postJobCmdCollect = postJobCommands.stream()
+                    .sorted((e1, e2) -> e1.getCommandOrder() - e2.getCommandOrder())
+                    .map(map -> parseCommands(map.getCommand(), groovyMap))
+                    .collect(Collectors.toList());
+            groovyMap.add(Script.POST_JOB_COMMANDS, postJobCmdCollect);
         }
 
         ApplicationParallelismType parallelism = appDepDescription.getParallelism();
@@ -518,17 +550,20 @@ public class GFacUtils {
                 if (parallelismPrefix != null){
                     String parallelismCommand = parallelismPrefix.get(parallelism);
                     if (parallelismCommand != null){
-                        jobDescriptor.setJobSubmitter(parallelismCommand);
+                        groovyMap.add(Script.JOB_SUBMITTER_COMMAND, parallelismCommand);
                     }else {
                         throw new GFacException("Parallelism prefix is not defined for given parallelism type " + parallelism + ".. Please define the parallelism prefix at App Catalog");
                     }
                 }
             }
         }
-        return jobDescriptor;
+        return groovyMap;
     }
 
-    private static void setMailAddresses(ProcessContext processContext, JobDescriptor jobDescriptor)
+    private static boolean isValid(String str) {
+        return str != null && !str.isEmpty();
+    }
+    private static void setMailAddresses(ProcessContext processContext, GroovyMap groovyMap)
             throws GFacException, AppCatalogException, ApplicationSettingsException {
 
         ProcessModel processModel =  processContext.getProcessModel();
@@ -537,12 +572,6 @@ public class GFacUtils {
             emailIds = ServerSettings.getEmailBasedMonitorAddress();
         }
         if (ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_ENABLE).equalsIgnoreCase("true")) {
-            String flags = ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_FLAGS);
-            if (flags != null && processContext.getComputeResourceDescription().getHostName().equals("stampede.tacc.xsede.org")) {
-                flags = "ALL";
-            }
-            jobDescriptor.setMailOptions(flags);
-
             String userJobNotifEmailIds = ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_EMAILIDS);
             if (userJobNotifEmailIds != null && !userJobNotifEmailIds.isEmpty()) {
                 if (emailIds != null && !emailIds.isEmpty()) {
@@ -565,7 +594,7 @@ public class GFacUtils {
         }
         if (emailIds != null && !emailIds.isEmpty()) {
             log.info("Email list: " + emailIds);
-            jobDescriptor.setMailAddress(emailIds);
+            groovyMap.add(Script.MAIL_ADDRESS, emailIds);
         }
     }
 
@@ -659,13 +688,13 @@ public class GFacUtils {
         return inputValues;
     }
 
-    private static String getQoS(String qualityOfService, String preferredBatchQueue) {
+    static String getQoS(String qualityOfService, String preferredBatchQueue) {
         if(preferredBatchQueue == null  || preferredBatchQueue.isEmpty()
                 ||  qualityOfService == null  || qualityOfService.isEmpty()) return null;
         final String qos = "qos";
         Pattern pattern = Pattern.compile(preferredBatchQueue + "=(?<" + qos + ">[^,]*)");
         Matcher matcher = pattern.matcher(qualityOfService);
-        if (matcher.matches()) {
+        if (matcher.find()) {
             return matcher.group(qos);
         }
         return null;
@@ -681,11 +710,14 @@ public class GFacUtils {
         return i;
     }
 
-    private static String parseCommand(String value, ProcessContext context) {
-        String parsedValue = value.replaceAll("\\$workingDir", context.getWorkingDir());
-        parsedValue = parsedValue.replaceAll("\\$inputDir", context.getInputDir());
-        parsedValue = parsedValue.replaceAll("\\$outputDir", context.getOutputDir());
-        return parsedValue;
+    static String parseCommands(String value, GroovyMap bindMap) {
+        TemplateEngine templateEngine = new GStringTemplateEngine();
+        try {
+            return templateEngine.createTemplate(value).make(bindMap).toString();
+        } catch (ClassNotFoundException | IOException e) {
+            throw new IllegalArgumentException("Error while parsing command " + value
+                    + " , Invalid command or incomplete bind map");
+        }
     }
 
     public static ResourceJobManager getResourceJobManager(ProcessContext processContext) {
@@ -798,45 +830,30 @@ public class GFacUtils {
         }
     }
 
-    public static File createJobFile(TaskContext taskContext, JobDescriptor jobDescriptor, JobManagerConfiguration jobManagerConfiguration) throws GFacException {
+    public static File createJobFile(GroovyMap groovyMap, TaskContext tc, JobManagerConfiguration jMC)
+            throws GFacException{
+
+        URL templateUrl = ApplicationSettings.loadFile(jMC.getJobDescriptionTemplateName());
+        if (templateUrl == null) {
+            String error = "System configuration file '" + jMC.getJobDescriptionTemplateName()
+                    + "' not found in the classpath";
+            throw new GFacException(error);
+        }
         try {
-            TransformerFactory factory = TransformerFactory.newInstance();
-            URL resource = GFacUtils.class.getClassLoader().getResource(jobManagerConfiguration.getJobDescriptionTemplateName());
+            File template = new File(templateUrl.getPath());
+            TemplateEngine engine = new GStringTemplateEngine();
+            Writable make = engine.createTemplate(template).make(groovyMap);
 
-            if (resource == null) {
-                String error = "System configuration file '" + jobManagerConfiguration.getJobDescriptionTemplateName()
-                        + "' not found in the classpath";
-                throw new GFacException(error);
-            }
-
-            Source xslt = new StreamSource(new File(resource.getPath()));
-            Transformer transformer;
-            StringWriter results = new StringWriter();
-            File tempJobFile = null;
-            // generate the pbs script using xslt
-            transformer = factory.newTransformer(xslt);
-            Source text = new StreamSource(new ByteArrayInputStream(jobDescriptor.toXML().getBytes()));
-            transformer.transform(text, new StreamResult(results));
-            String scriptContent = results.toString().replaceAll("^[ |\t]*\n$", "");
-            if (scriptContent.startsWith("\n")) {
-                scriptContent = scriptContent.substring(1);
-            }
-            // creating a temporary file using pbs script generated above
             int number = new SecureRandom().nextInt();
             number = (number < 0 ? -number : number);
-
-	        tempJobFile = new File(GFacUtils.getLocalDataDir(taskContext), "job_" + Integer.toString(number) +
-			        jobManagerConfiguration.getScriptExtension());
-	        FileUtils.writeStringToFile(tempJobFile, scriptContent);
+            File tempJobFile = new File(GFacUtils.getLocalDataDir(tc), "job_" + Integer.toString(number) + jMC.getScriptExtension());
+            FileUtils.writeStringToFile(tempJobFile, make.toString());
             return tempJobFile;
-        } catch (IOException e) {
-            throw new GFacException("Error occurred while creating the temp job script file", e);
-        } catch (TransformerConfigurationException e) {
-            throw new GFacException("Error occurred while creating the temp job script file", e);
-        } catch (TransformerException e) {
-            throw new GFacException("Error occurred while creating the temp job script file", e);
+        } catch (ClassNotFoundException | IOException e) {
+            throw new GFacException("Error while parsing template and generating script file");
         }
     }
+
 
 	public static File getLocalDataDir(TaskContext taskContext) {
 		String outputPath = ServerSettings.getLocalDataLocation();

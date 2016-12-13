@@ -100,7 +100,7 @@ struct ExperimentModel {
     14: optional UserConfigurationDataModel userConfigurationData,
     15: optional list<application_io_models.InputDataObjectType> experimentInputs,
     16: optional list<application_io_models.OutputDataObjectType> experimentOutputs,
-    17: optional status_models.ExperimentStatus experimentStatus,
+    17: optional list<status_models.ExperimentStatus> experimentStatus,
     18: optional list<airavata_commons.ErrorModel> errors,
     19: optional list<process_model.ProcessModel> processes
     }

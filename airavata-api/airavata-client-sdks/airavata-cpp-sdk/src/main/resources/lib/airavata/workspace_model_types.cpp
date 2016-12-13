@@ -34,15 +34,21 @@ int _kGatewayApprovalStatusValues[] = {
   GatewayApprovalStatus::REQUESTED,
   GatewayApprovalStatus::APPROVED,
   GatewayApprovalStatus::ACTIVE,
-  GatewayApprovalStatus::DEACTIVATED
+  GatewayApprovalStatus::DEACTIVATED,
+  GatewayApprovalStatus::CANCELLED,
+  GatewayApprovalStatus::DENIED,
+  GatewayApprovalStatus::CREATED
 };
 const char* _kGatewayApprovalStatusNames[] = {
   "REQUESTED",
   "APPROVED",
   "ACTIVE",
-  "DEACTIVATED"
+  "DEACTIVATED",
+  "CANCELLED",
+  "DENIED",
+  "CREATED"
 };
-const std::map<int, const char*> _GatewayApprovalStatus_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(4, _kGatewayApprovalStatusValues, _kGatewayApprovalStatusNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _GatewayApprovalStatus_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(7, _kGatewayApprovalStatusValues, _kGatewayApprovalStatusNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kNotificationPriorityValues[] = {
   NotificationPriority::LOW,
@@ -180,6 +186,10 @@ void Project::__set_owner(const std::string& val) {
   this->owner = val;
 }
 
+void Project::__set_gatewayId(const std::string& val) {
+  this->gatewayId = val;
+}
+
 void Project::__set_name(const std::string& val) {
   this->name = val;
 }
@@ -218,6 +228,7 @@ uint32_t Project::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   bool isset_projectID = false;
   bool isset_owner = false;
+  bool isset_gatewayId = false;
   bool isset_name = false;
 
   while (true)
@@ -246,13 +257,21 @@ uint32_t Project::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 3:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->name);
           isset_name = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 4:
+      case 5:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->description);
           this->__isset.description = true;
@@ -260,7 +279,7 @@ uint32_t Project::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 5:
+      case 6:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->creationTime);
           this->__isset.creationTime = true;
@@ -268,7 +287,7 @@ uint32_t Project::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 6:
+      case 7:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->sharedUsers.clear();
@@ -288,7 +307,7 @@ uint32_t Project::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 7:
+      case 8:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->sharedGroups.clear();
@@ -321,6 +340,8 @@ uint32_t Project::read(::apache::thrift::protocol::TProtocol* iprot) {
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_owner)
     throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_name)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
@@ -339,22 +360,26 @@ uint32_t Project::write(::apache::thrift::protocol::TProtocol* oprot) const {
   xfer += oprot->writeString(this->owner);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("name", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("name", ::apache::thrift::protocol::T_STRING, 4);
   xfer += oprot->writeString(this->name);
   xfer += oprot->writeFieldEnd();
 
   if (this->__isset.description) {
-    xfer += oprot->writeFieldBegin("description", ::apache::thrift::protocol::T_STRING, 4);
+    xfer += oprot->writeFieldBegin("description", ::apache::thrift::protocol::T_STRING, 5);
     xfer += oprot->writeString(this->description);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.creationTime) {
-    xfer += oprot->writeFieldBegin("creationTime", ::apache::thrift::protocol::T_I64, 5);
+    xfer += oprot->writeFieldBegin("creationTime", ::apache::thrift::protocol::T_I64, 6);
     xfer += oprot->writeI64(this->creationTime);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.sharedUsers) {
-    xfer += oprot->writeFieldBegin("sharedUsers", ::apache::thrift::protocol::T_LIST, 6);
+    xfer += oprot->writeFieldBegin("sharedUsers", ::apache::thrift::protocol::T_LIST, 7);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->sharedUsers.size()));
       std::vector<std::string> ::const_iterator _iter12;
@@ -367,7 +392,7 @@ uint32_t Project::write(::apache::thrift::protocol::TProtocol* oprot) const {
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.sharedGroups) {
-    xfer += oprot->writeFieldBegin("sharedGroups", ::apache::thrift::protocol::T_LIST, 7);
+    xfer += oprot->writeFieldBegin("sharedGroups", ::apache::thrift::protocol::T_LIST, 8);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->sharedGroups.size()));
       std::vector<std::string> ::const_iterator _iter13;
@@ -388,6 +413,7 @@ void swap(Project &a, Project &b) {
   using ::std::swap;
   swap(a.projectID, b.projectID);
   swap(a.owner, b.owner);
+  swap(a.gatewayId, b.gatewayId);
   swap(a.name, b.name);
   swap(a.description, b.description);
   swap(a.creationTime, b.creationTime);
@@ -399,6 +425,7 @@ void swap(Project &a, Project &b) {
 Project::Project(const Project& other14) {
   projectID = other14.projectID;
   owner = other14.owner;
+  gatewayId = other14.gatewayId;
   name = other14.name;
   description = other14.description;
   creationTime = other14.creationTime;
@@ -409,6 +436,7 @@ Project::Project(const Project& other14) {
 Project& Project::operator=(const Project& other15) {
   projectID = other15.projectID;
   owner = other15.owner;
+  gatewayId = other15.gatewayId;
   name = other15.name;
   description = other15.description;
   creationTime = other15.creationTime;
@@ -422,6 +450,7 @@ void Project::printTo(std::ostream& out) const {
   out << "Project(";
   out << "projectID=" << to_string(projectID);
   out << ", " << "owner=" << to_string(owner);
+  out << ", " << "gatewayId=" << to_string(gatewayId);
   out << ", " << "name=" << to_string(name);
   out << ", " << "description="; (__isset.description ? (out << to_string(description)) : (out << "<null>"));
   out << ", " << "creationTime="; (__isset.creationTime ? (out << to_string(creationTime)) : (out << "<null>"));
@@ -435,13 +464,32 @@ User::~User() throw() {
 }
 
 
-void User::__set_userName(const std::string& val) {
-  this->userName = val;
+void User::__set_airavataInternalUserId(const std::string& val) {
+  this->airavataInternalUserId = val;
 }
 
-void User::__set_groupList(const std::vector<Group> & val) {
-  this->groupList = val;
-__isset.groupList = true;
+void User::__set_userName(const std::string& val) {
+  this->userName = val;
+__isset.userName = true;
+}
+
+void User::__set_gatewayId(const std::string& val) {
+  this->gatewayId = val;
+}
+
+void User::__set_firstName(const std::string& val) {
+  this->firstName = val;
+__isset.firstName = true;
+}
+
+void User::__set_lastName(const std::string& val) {
+  this->lastName = val;
+__isset.lastName = true;
+}
+
+void User::__set_email(const std::string& val) {
+  this->email = val;
+__isset.email = true;
 }
 
 uint32_t User::read(::apache::thrift::protocol::TProtocol* iprot) {
@@ -456,7 +504,8 @@ uint32_t User::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   using ::apache::thrift::protocol::TProtocolException;
 
-  bool isset_userName = false;
+  bool isset_airavataInternalUserId = false;
+  bool isset_gatewayId = false;
 
   while (true)
   {
@@ -468,28 +517,48 @@ uint32_t User::read(::apache::thrift::protocol::TProtocol* iprot) {
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->userName);
-          isset_userName = true;
+          xfer += iprot->readString(this->airavataInternalUserId);
+          isset_airavataInternalUserId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 2:
-        if (ftype == ::apache::thrift::protocol::T_LIST) {
-          {
-            this->groupList.clear();
-            uint32_t _size16;
-            ::apache::thrift::protocol::TType _etype19;
-            xfer += iprot->readListBegin(_etype19, _size16);
-            this->groupList.resize(_size16);
-            uint32_t _i20;
-            for (_i20 = 0; _i20 < _size16; ++_i20)
-            {
-              xfer += this->groupList[_i20].read(iprot);
-            }
-            xfer += iprot->readListEnd();
-          }
-          this->__isset.groupList = true;
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->userName);
+          this->__isset.userName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->firstName);
+          this->__isset.firstName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 5:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->lastName);
+          this->__isset.lastName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 6:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->email);
+          this->__isset.email = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -503,7 +572,9 @@ uint32_t User::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   xfer += iprot->readStructEnd();
 
-  if (!isset_userName)
+  if (!isset_airavataInternalUserId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_gatewayId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -513,21 +584,32 @@ uint32_t User::write(::apache::thrift::protocol::TProtocol* oprot) const {
   apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
   xfer += oprot->writeStructBegin("User");
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString(this->userName);
+  xfer += oprot->writeFieldBegin("airavataInternalUserId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->airavataInternalUserId);
   xfer += oprot->writeFieldEnd();
 
-  if (this->__isset.groupList) {
-    xfer += oprot->writeFieldBegin("groupList", ::apache::thrift::protocol::T_LIST, 2);
-    {
-      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->groupList.size()));
-      std::vector<Group> ::const_iterator _iter21;
-      for (_iter21 = this->groupList.begin(); _iter21 != this->groupList.end(); ++_iter21)
-      {
-        xfer += (*_iter21).write(oprot);
-      }
-      xfer += oprot->writeListEnd();
-    }
+  if (this->__isset.userName) {
+    xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
+    xfer += oprot->writeString(this->userName);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  if (this->__isset.firstName) {
+    xfer += oprot->writeFieldBegin("firstName", ::apache::thrift::protocol::T_STRING, 4);
+    xfer += oprot->writeString(this->firstName);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.lastName) {
+    xfer += oprot->writeFieldBegin("lastName", ::apache::thrift::protocol::T_STRING, 5);
+    xfer += oprot->writeString(this->lastName);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.email) {
+    xfer += oprot->writeFieldBegin("email", ::apache::thrift::protocol::T_STRING, 6);
+    xfer += oprot->writeString(this->email);
     xfer += oprot->writeFieldEnd();
   }
   xfer += oprot->writeFieldStop();
@@ -537,27 +619,43 @@ uint32_t User::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
 void swap(User &a, User &b) {
   using ::std::swap;
+  swap(a.airavataInternalUserId, b.airavataInternalUserId);
   swap(a.userName, b.userName);
-  swap(a.groupList, b.groupList);
+  swap(a.gatewayId, b.gatewayId);
+  swap(a.firstName, b.firstName);
+  swap(a.lastName, b.lastName);
+  swap(a.email, b.email);
   swap(a.__isset, b.__isset);
 }
 
-User::User(const User& other22) {
-  userName = other22.userName;
-  groupList = other22.groupList;
-  __isset = other22.__isset;
+User::User(const User& other16) {
+  airavataInternalUserId = other16.airavataInternalUserId;
+  userName = other16.userName;
+  gatewayId = other16.gatewayId;
+  firstName = other16.firstName;
+  lastName = other16.lastName;
+  email = other16.email;
+  __isset = other16.__isset;
 }
-User& User::operator=(const User& other23) {
-  userName = other23.userName;
-  groupList = other23.groupList;
-  __isset = other23.__isset;
+User& User::operator=(const User& other17) {
+  airavataInternalUserId = other17.airavataInternalUserId;
+  userName = other17.userName;
+  gatewayId = other17.gatewayId;
+  firstName = other17.firstName;
+  lastName = other17.lastName;
+  email = other17.email;
+  __isset = other17.__isset;
   return *this;
 }
 void User::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
   out << "User(";
-  out << "userName=" << to_string(userName);
-  out << ", " << "groupList="; (__isset.groupList ? (out << to_string(groupList)) : (out << "<null>"));
+  out << "airavataInternalUserId=" << to_string(airavataInternalUserId);
+  out << ", " << "userName="; (__isset.userName ? (out << to_string(userName)) : (out << "<null>"));
+  out << ", " << "gatewayId=" << to_string(gatewayId);
+  out << ", " << "firstName="; (__isset.firstName ? (out << to_string(firstName)) : (out << "<null>"));
+  out << ", " << "lastName="; (__isset.lastName ? (out << to_string(lastName)) : (out << "<null>"));
+  out << ", " << "email="; (__isset.email ? (out << to_string(email)) : (out << "<null>"));
   out << ")";
 }
 
@@ -634,6 +732,31 @@ void Gateway::__set_identityServerPasswordToken(const std::string& val) {
 __isset.identityServerPasswordToken = true;
 }
 
+void Gateway::__set_declinedReason(const std::string& val) {
+  this->declinedReason = val;
+__isset.declinedReason = true;
+}
+
+void Gateway::__set_oauthClientId(const std::string& val) {
+  this->oauthClientId = val;
+__isset.oauthClientId = true;
+}
+
+void Gateway::__set_oauthClientSecret(const std::string& val) {
+  this->oauthClientSecret = val;
+__isset.oauthClientSecret = true;
+}
+
+void Gateway::__set_requestCreationTime(const int64_t val) {
+  this->requestCreationTime = val;
+__isset.requestCreationTime = true;
+}
+
+void Gateway::__set_requesterUsername(const std::string& val) {
+  this->requesterUsername = val;
+__isset.requesterUsername = true;
+}
+
 uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -667,9 +790,9 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast24;
-          xfer += iprot->readI32(ecast24);
-          this->gatewayApprovalStatus = (GatewayApprovalStatus::type)ecast24;
+          int32_t ecast18;
+          xfer += iprot->readI32(ecast18);
+          this->gatewayApprovalStatus = (GatewayApprovalStatus::type)ecast18;
           isset_gatewayApprovalStatus = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -771,6 +894,46 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 15:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->declinedReason);
+          this->__isset.declinedReason = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 16:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->oauthClientId);
+          this->__isset.oauthClientId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 17:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->oauthClientSecret);
+          this->__isset.oauthClientSecret = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 18:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->requestCreationTime);
+          this->__isset.requestCreationTime = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 19:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->requesterUsername);
+          this->__isset.requesterUsername = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -860,6 +1023,31 @@ uint32_t Gateway::write(::apache::thrift::protocol::TProtocol* oprot) const {
     xfer += oprot->writeString(this->identityServerPasswordToken);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.declinedReason) {
+    xfer += oprot->writeFieldBegin("declinedReason", ::apache::thrift::protocol::T_STRING, 15);
+    xfer += oprot->writeString(this->declinedReason);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.oauthClientId) {
+    xfer += oprot->writeFieldBegin("oauthClientId", ::apache::thrift::protocol::T_STRING, 16);
+    xfer += oprot->writeString(this->oauthClientId);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.oauthClientSecret) {
+    xfer += oprot->writeFieldBegin("oauthClientSecret", ::apache::thrift::protocol::T_STRING, 17);
+    xfer += oprot->writeString(this->oauthClientSecret);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.requestCreationTime) {
+    xfer += oprot->writeFieldBegin("requestCreationTime", ::apache::thrift::protocol::T_I64, 18);
+    xfer += oprot->writeI64(this->requestCreationTime);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.requesterUsername) {
+    xfer += oprot->writeFieldBegin("requesterUsername", ::apache::thrift::protocol::T_STRING, 19);
+    xfer += oprot->writeString(this->requesterUsername);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -881,42 +1069,57 @@ void swap(Gateway &a, Gateway &b) {
   swap(a.gatewayAdminEmail, b.gatewayAdminEmail);
   swap(a.identityServerUserName, b.identityServerUserName);
   swap(a.identityServerPasswordToken, b.identityServerPasswordToken);
+  swap(a.declinedReason, b.declinedReason);
+  swap(a.oauthClientId, b.oauthClientId);
+  swap(a.oauthClientSecret, b.oauthClientSecret);
+  swap(a.requestCreationTime, b.requestCreationTime);
+  swap(a.requesterUsername, b.requesterUsername);
   swap(a.__isset, b.__isset);
 }
 
-Gateway::Gateway(const Gateway& other25) {
-  gatewayId = other25.gatewayId;
-  gatewayApprovalStatus = other25.gatewayApprovalStatus;
-  gatewayName = other25.gatewayName;
-  domain = other25.domain;
-  emailAddress = other25.emailAddress;
-  gatewayAcronym = other25.gatewayAcronym;
-  gatewayURL = other25.gatewayURL;
-  gatewayPublicAbstract = other25.gatewayPublicAbstract;
-  reviewProposalDescription = other25.reviewProposalDescription;
-  gatewayAdminFirstName = other25.gatewayAdminFirstName;
-  gatewayAdminLastName = other25.gatewayAdminLastName;
-  gatewayAdminEmail = other25.gatewayAdminEmail;
-  identityServerUserName = other25.identityServerUserName;
-  identityServerPasswordToken = other25.identityServerPasswordToken;
-  __isset = other25.__isset;
+Gateway::Gateway(const Gateway& other19) {
+  gatewayId = other19.gatewayId;
+  gatewayApprovalStatus = other19.gatewayApprovalStatus;
+  gatewayName = other19.gatewayName;
+  domain = other19.domain;
+  emailAddress = other19.emailAddress;
+  gatewayAcronym = other19.gatewayAcronym;
+  gatewayURL = other19.gatewayURL;
+  gatewayPublicAbstract = other19.gatewayPublicAbstract;
+  reviewProposalDescription = other19.reviewProposalDescription;
+  gatewayAdminFirstName = other19.gatewayAdminFirstName;
+  gatewayAdminLastName = other19.gatewayAdminLastName;
+  gatewayAdminEmail = other19.gatewayAdminEmail;
+  identityServerUserName = other19.identityServerUserName;
+  identityServerPasswordToken = other19.identityServerPasswordToken;
+  declinedReason = other19.declinedReason;
+  oauthClientId = other19.oauthClientId;
+  oauthClientSecret = other19.oauthClientSecret;
+  requestCreationTime = other19.requestCreationTime;
+  requesterUsername = other19.requesterUsername;
+  __isset = other19.__isset;
 }
-Gateway& Gateway::operator=(const Gateway& other26) {
-  gatewayId = other26.gatewayId;
-  gatewayApprovalStatus = other26.gatewayApprovalStatus;
-  gatewayName = other26.gatewayName;
-  domain = other26.domain;
-  emailAddress = other26.emailAddress;
-  gatewayAcronym = other26.gatewayAcronym;
-  gatewayURL = other26.gatewayURL;
-  gatewayPublicAbstract = other26.gatewayPublicAbstract;
-  reviewProposalDescription = other26.reviewProposalDescription;
-  gatewayAdminFirstName = other26.gatewayAdminFirstName;
-  gatewayAdminLastName = other26.gatewayAdminLastName;
-  gatewayAdminEmail = other26.gatewayAdminEmail;
-  identityServerUserName = other26.identityServerUserName;
-  identityServerPasswordToken = other26.identityServerPasswordToken;
-  __isset = other26.__isset;
+Gateway& Gateway::operator=(const Gateway& other20) {
+  gatewayId = other20.gatewayId;
+  gatewayApprovalStatus = other20.gatewayApprovalStatus;
+  gatewayName = other20.gatewayName;
+  domain = other20.domain;
+  emailAddress = other20.emailAddress;
+  gatewayAcronym = other20.gatewayAcronym;
+  gatewayURL = other20.gatewayURL;
+  gatewayPublicAbstract = other20.gatewayPublicAbstract;
+  reviewProposalDescription = other20.reviewProposalDescription;
+  gatewayAdminFirstName = other20.gatewayAdminFirstName;
+  gatewayAdminLastName = other20.gatewayAdminLastName;
+  gatewayAdminEmail = other20.gatewayAdminEmail;
+  identityServerUserName = other20.identityServerUserName;
+  identityServerPasswordToken = other20.identityServerPasswordToken;
+  declinedReason = other20.declinedReason;
+  oauthClientId = other20.oauthClientId;
+  oauthClientSecret = other20.oauthClientSecret;
+  requestCreationTime = other20.requestCreationTime;
+  requesterUsername = other20.requesterUsername;
+  __isset = other20.__isset;
   return *this;
 }
 void Gateway::printTo(std::ostream& out) const {
@@ -936,6 +1139,11 @@ void Gateway::printTo(std::ostream& out) const {
   out << ", " << "gatewayAdminEmail="; (__isset.gatewayAdminEmail ? (out << to_string(gatewayAdminEmail)) : (out << "<null>"));
   out << ", " << "identityServerUserName="; (__isset.identityServerUserName ? (out << to_string(identityServerUserName)) : (out << "<null>"));
   out << ", " << "identityServerPasswordToken="; (__isset.identityServerPasswordToken ? (out << to_string(identityServerPasswordToken)) : (out << "<null>"));
+  out << ", " << "declinedReason="; (__isset.declinedReason ? (out << to_string(declinedReason)) : (out << "<null>"));
+  out << ", " << "oauthClientId="; (__isset.oauthClientId ? (out << to_string(oauthClientId)) : (out << "<null>"));
+  out << ", " << "oauthClientSecret="; (__isset.oauthClientSecret ? (out << to_string(oauthClientSecret)) : (out << "<null>"));
+  out << ", " << "requestCreationTime="; (__isset.requestCreationTime ? (out << to_string(requestCreationTime)) : (out << "<null>"));
+  out << ", " << "requesterUsername="; (__isset.requesterUsername ? (out << to_string(requesterUsername)) : (out << "<null>"));
   out << ")";
 }
 
@@ -1063,9 +1271,9 @@ uint32_t Notification::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 8:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast27;
-          xfer += iprot->readI32(ecast27);
-          this->priority = (NotificationPriority::type)ecast27;
+          int32_t ecast21;
+          xfer += iprot->readI32(ecast21);
+          this->priority = (NotificationPriority::type)ecast21;
           this->__isset.priority = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -1149,27 +1357,27 @@ void swap(Notification &a, Notification &b) {
   swap(a.__isset, b.__isset);
 }
 
-Notification::Notification(const Notification& other28) {
-  notificationId = other28.notificationId;
-  gatewayId = other28.gatewayId;
-  title = other28.title;
-  notificationMessage = other28.notificationMessage;
-  creationTime = other28.creationTime;
-  publishedTime = other28.publishedTime;
-  expirationTime = other28.expirationTime;
-  priority = other28.priority;
-  __isset = other28.__isset;
+Notification::Notification(const Notification& other22) {
+  notificationId = other22.notificationId;
+  gatewayId = other22.gatewayId;
+  title = other22.title;
+  notificationMessage = other22.notificationMessage;
+  creationTime = other22.creationTime;
+  publishedTime = other22.publishedTime;
+  expirationTime = other22.expirationTime;
+  priority = other22.priority;
+  __isset = other22.__isset;
 }
-Notification& Notification::operator=(const Notification& other29) {
-  notificationId = other29.notificationId;
-  gatewayId = other29.gatewayId;
-  title = other29.title;
-  notificationMessage = other29.notificationMessage;
-  creationTime = other29.creationTime;
-  publishedTime = other29.publishedTime;
-  expirationTime = other29.expirationTime;
-  priority = other29.priority;
-  __isset = other29.__isset;
+Notification& Notification::operator=(const Notification& other23) {
+  notificationId = other23.notificationId;
+  gatewayId = other23.gatewayId;
+  title = other23.title;
+  notificationMessage = other23.notificationMessage;
+  creationTime = other23.creationTime;
+  publishedTime = other23.publishedTime;
+  expirationTime = other23.expirationTime;
+  priority = other23.priority;
+  __isset = other23.__isset;
   return *this;
 }
 void Notification::printTo(std::ostream& out) const {

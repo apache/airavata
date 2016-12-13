@@ -1,0 +1,14 @@
+---
+
+# Api server, Orchestrator related handlers
+- name: start api-orch
+  command: ./bin/airavata-server-start.sh api-orch -d
+           chdir="{{ api_orch_dir }}/{{ airavata_dist }}/"
+           creates="{{ api_orch_dir }}/{{ airavata_dist }}/bin/server_start_*"
+
+- name: stop api-orch
+  command: ./bin/airavata-server-stop.sh -f
+           chdir="{{ api_orch_dir }}/{{ airavata_dist }}/"
+           removes="{{ api_orch_dir }}/{{ airavata_dist }}/bin/server_start_*"
+
+...

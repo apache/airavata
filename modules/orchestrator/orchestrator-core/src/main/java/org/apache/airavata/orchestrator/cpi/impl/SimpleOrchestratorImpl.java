@@ -217,7 +217,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         // FIXME
 //        List<JobDetails> jobDetailsList = task.getJobDetailsList();
 //        for(JobDetails jobDetails:jobDetailsList) {
-//            JobState jobState = jobDetails.getJobStatus().getJobState();
+//            JobState jobState = jobDetails.getJobStatuses().getJobState();
 //            if (jobState.getValue() > 4){
 //                logger.error("Cannot cancel the job, because current job state is : " + jobState.toString() +
 //                "jobId: " + jobDetails.getJobID() + " Job Name: " + jobDetails.getJobName());
@@ -275,7 +275,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         try {
             ExperimentCatalog experimentCatalog = orchestratorContext.getRegistry().getExperimentCatalog();
             AppCatalog appCatalog = orchestratorContext.getRegistry().getAppCatalog();
-            ComputationalResourceSchedulingModel resourceSchedule = processModel.getResourceSchedule();
+            ComputationalResourceSchedulingModel resourceSchedule = processModel.getProcessResourceSchedule();
             String userGivenQueueName = resourceSchedule.getQueueName();
             int userGivenWallTime = resourceSchedule.getWallTimeLimit();
             String resourceHostId = resourceSchedule.getResourceHostId();
@@ -346,7 +346,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         List<String> envTaskIds = new ArrayList<>();
         TaskModel envSetupTask = new TaskModel();
         envSetupTask.setTaskType(TaskTypes.ENV_SETUP);
-        envSetupTask.setTaskStatus(new TaskStatus(TaskState.CREATED));
+        envSetupTask.setTaskStatuses(Arrays.asList(new TaskStatus(TaskState.CREATED)));
         envSetupTask.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
         envSetupTask.setParentProcessId(processModel.getProcessId());
         EnvironmentSetupTaskModel envSetupSubModel = new EnvironmentSetupTaskModel();
@@ -406,11 +406,15 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 DataType type = processOutput.getType();
                 switch (type) {
                     case STDOUT :
-                        processOutput.setValue(appName + ".stdout");
+                        if(null == processOutput.getValue() || processOutput.getValue().trim().isEmpty()){
+                            processOutput.setValue(appName + ".stdout");
+                        }
                         createOutputDataSatagingTasks(processModel, gatewayId, dataStagingTaskIds, processOutput);
                         break;
                     case STDERR:
-                        processOutput.setValue(appName + ".stderr");
+                        if(null == processOutput.getValue() || processOutput.getValue().trim().isEmpty()){
+                            processOutput.setValue(appName + ".stderr");
+                        }
                         createOutputDataSatagingTasks(processModel, gatewayId, dataStagingTaskIds, processOutput);
                         break;
                     case URI:
@@ -475,7 +479,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             monitorMode = sshJobSubmission.getMonitorMode();
         } else if (jobSubmissionProtocol == JobSubmissionProtocol.UNICORE) {
             monitorMode = MonitorMode.FORK;
-        } else {
+        } else if(jobSubmissionProtocol == JobSubmissionProtocol.LOCAL){
+            monitorMode = MonitorMode.LOCAL;
+        }else {
             logger.error("expId : {}, processId : {} :- Unsupported Job submission protocol {}.",
                     processModel.getExperimentId(), processModel.getProcessId(), jobSubmissionProtocol.name());
             throw new OrchestratorException("Unsupported Job Submission Protocol " + jobSubmissionProtocol.name());
@@ -487,7 +493,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         taskModel.setLastUpdateTime(taskModel.getCreationTime());
         TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-        taskModel.setTaskStatus(taskStatus);
+        taskModel.setTaskStatuses(Arrays.asList(taskStatus));
         taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
         JobSubmissionTaskModel submissionSubTask = new JobSubmissionTaskModel();
         submissionSubTask.setMonitorMode(monitorMode);
@@ -508,7 +514,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             monitorTaskModel.setLastUpdateTime(monitorTaskModel.getCreationTime());
             TaskStatus monitorTaskStatus = new TaskStatus(TaskState.CREATED);
             monitorTaskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-            monitorTaskModel.setTaskStatus(monitorTaskStatus);
+            monitorTaskModel.setTaskStatuses(Arrays.asList(monitorTaskStatus));
             monitorTaskModel.setTaskType(TaskTypes.MONITORING);
             MonitorTaskModel monitorSubTaskModel = new MonitorTaskModel();
             monitorSubTaskModel.setMonitorMode(monitorMode);
@@ -538,7 +544,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         taskModel.setLastUpdateTime(taskModel.getCreationTime());
         TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-        taskModel.setTaskStatus(taskStatus);
+        taskModel.setTaskStatuses(Arrays.asList(taskStatus));
         taskModel.setTaskType(TaskTypes.DATA_STAGING);
         // create data staging sub task model
         DataStagingTaskModel submodel = new DataStagingTaskModel();
@@ -576,7 +582,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             taskModel.setLastUpdateTime(taskModel.getCreationTime());
             TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
             taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-            taskModel.setTaskStatus(taskStatus);
+            taskModel.setTaskStatuses(Arrays.asList(taskStatus));
             taskModel.setTaskType(TaskTypes.DATA_STAGING);
             ComputeResourcePreference computeResourcePreference = OrchestratorUtils.getComputeResourcePreference(orchestratorContext, processModel, gatewayId);
             ComputeResourceDescription computeResource = orchestratorContext.getRegistry().getAppCatalog().getComputeResource().getComputeResource(processModel.getComputeResourceId());

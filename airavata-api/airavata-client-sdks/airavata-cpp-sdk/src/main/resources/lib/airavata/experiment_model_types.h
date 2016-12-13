@@ -231,7 +231,7 @@ class ExperimentModel {
   UserConfigurationDataModel userConfigurationData;
   std::vector< ::apache::airavata::model::application::io::InputDataObjectType>  experimentInputs;
   std::vector< ::apache::airavata::model::application::io::OutputDataObjectType>  experimentOutputs;
-   ::apache::airavata::model::status::ExperimentStatus experimentStatus;
+  std::vector< ::apache::airavata::model::status::ExperimentStatus>  experimentStatus;
   std::vector< ::apache::airavata::model::commons::ErrorModel>  errors;
   std::vector< ::apache::airavata::model::process::ProcessModel>  processes;
 
@@ -269,7 +269,7 @@ class ExperimentModel {
 
   void __set_experimentOutputs(const std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & val);
 
-  void __set_experimentStatus(const  ::apache::airavata::model::status::ExperimentStatus& val);
+  void __set_experimentStatus(const std::vector< ::apache::airavata::model::status::ExperimentStatus> & val);
 
   void __set_errors(const std::vector< ::apache::airavata::model::commons::ErrorModel> & val);
 

@@ -76,10 +76,10 @@ class JobSubmissionTaskModel;
 class MonitorTaskModel;
 
 typedef struct _TaskModel__isset {
-  _TaskModel__isset() : taskDetail(false), subTaskModel(false), taskError(false), jobs(false) {}
+  _TaskModel__isset() : taskDetail(false), subTaskModel(false), taskErrors(false), jobs(false) {}
   bool taskDetail :1;
   bool subTaskModel :1;
-  bool taskError :1;
+  bool taskErrors :1;
   bool jobs :1;
 } _TaskModel__isset;
 
@@ -97,10 +97,10 @@ class TaskModel {
   std::string parentProcessId;
   int64_t creationTime;
   int64_t lastUpdateTime;
-   ::apache::airavata::model::status::TaskStatus taskStatus;
+  std::vector< ::apache::airavata::model::status::TaskStatus>  taskStatuses;
   std::string taskDetail;
   std::string subTaskModel;
-   ::apache::airavata::model::commons::ErrorModel taskError;
+  std::vector< ::apache::airavata::model::commons::ErrorModel>  taskErrors;
   std::vector< ::apache::airavata::model::job::JobModel>  jobs;
 
   _TaskModel__isset __isset;
@@ -115,13 +115,13 @@ class TaskModel {
 
   void __set_lastUpdateTime(const int64_t val);
 
-  void __set_taskStatus(const  ::apache::airavata::model::status::TaskStatus& val);
+  void __set_taskStatuses(const std::vector< ::apache::airavata::model::status::TaskStatus> & val);
 
   void __set_taskDetail(const std::string& val);
 
   void __set_subTaskModel(const std::string& val);
 
-  void __set_taskError(const  ::apache::airavata::model::commons::ErrorModel& val);
+  void __set_taskErrors(const std::vector< ::apache::airavata::model::commons::ErrorModel> & val);
 
   void __set_jobs(const std::vector< ::apache::airavata::model::job::JobModel> & val);
 
@@ -137,7 +137,7 @@ class TaskModel {
       return false;
     if (!(lastUpdateTime == rhs.lastUpdateTime))
       return false;
-    if (!(taskStatus == rhs.taskStatus))
+    if (!(taskStatuses == rhs.taskStatuses))
       return false;
     if (__isset.taskDetail != rhs.__isset.taskDetail)
       return false;
@@ -147,9 +147,9 @@ class TaskModel {
       return false;
     else if (__isset.subTaskModel && !(subTaskModel == rhs.subTaskModel))
       return false;
-    if (__isset.taskError != rhs.__isset.taskError)
+    if (__isset.taskErrors != rhs.__isset.taskErrors)
       return false;
-    else if (__isset.taskError && !(taskError == rhs.taskError))
+    else if (__isset.taskErrors && !(taskErrors == rhs.taskErrors))
       return false;
     if (__isset.jobs != rhs.__isset.jobs)
       return false;
