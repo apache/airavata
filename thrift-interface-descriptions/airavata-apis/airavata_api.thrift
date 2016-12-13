@@ -628,11 +628,23 @@ service Airavata {
      * @param toTime
      *       Ending data time.
      *
+     * @param userName
+     *       Gateway username substring with which to further filter statistics.
+     *
+     * @param applicationName
+     *       Application id substring with which to further filter statistics.
+     *
+     * @param resourceHostName
+     *       Hostname id substring with which to further filter statistics.
+     *
      **/
     experiment_model.ExperimentStatistics getExperimentStatistics(1: required security_model.AuthzToken authzToken,
                             2: required string gatewayId,
                             3: required i64 fromTime,
-                            4: required i64 toTime)
+                            4: required i64 toTime,
+                            5: string userName,
+                            6: string applicationName,
+                            7: string resourceHostName)
                 throws (1: airavata_errors.InvalidRequestException ire,
                         2: airavata_errors.AiravataClientException ace,
                         3: airavata_errors.AiravataSystemException ase,

@@ -659,19 +659,31 @@ interface AiravataIf {
    * @param toTime
    *       Ending data time.
    * 
+   * @param userName
+   *       Gateway username substring with which to further filter statistics.
+   * 
+   * @param applicationName
+   *       Application id substring with which to further filter statistics.
+   * 
+   * @param resourceHostName
+   *       Hostname id substring with which to further filter statistics.
+   * 
    * 
    * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $gatewayId
    * @param int $fromTime
    * @param int $toTime
+   * @param string $userName
+   * @param string $applicationName
+   * @param string $resourceHostName
    * @return \Airavata\Model\Experiment\ExperimentStatistics
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function getExperimentStatistics(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $fromTime, $toTime);
+  public function getExperimentStatistics(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $fromTime, $toTime, $userName, $applicationName, $resourceHostName);
   /**
    * 
    * Get All Experiments of the Project
@@ -6023,19 +6035,22 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("searchExperiments failed: unknown result");
   }
 
-  public function getExperimentStatistics(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $fromTime, $toTime)
+  public function getExperimentStatistics(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $fromTime, $toTime, $userName, $applicationName, $resourceHostName)
   {
-    $this->send_getExperimentStatistics($authzToken, $gatewayId, $fromTime, $toTime);
+    $this->send_getExperimentStatistics($authzToken, $gatewayId, $fromTime, $toTime, $userName, $applicationName, $resourceHostName);
     return $this->recv_getExperimentStatistics();
   }
 
-  public function send_getExperimentStatistics(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $fromTime, $toTime)
+  public function send_getExperimentStatistics(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $fromTime, $toTime, $userName, $applicationName, $resourceHostName)
   {
     $args = new \Airavata\API\Airavata_getExperimentStatistics_args();
     $args->authzToken = $authzToken;
     $args->gatewayId = $gatewayId;
     $args->fromTime = $fromTime;
     $args->toTime = $toTime;
+    $args->userName = $userName;
+    $args->applicationName = $applicationName;
+    $args->resourceHostName = $resourceHostName;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -24277,6 +24292,18 @@ class Airavata_getExperimentStatistics_args {
    * @var int
    */
   public $toTime = null;
+  /**
+   * @var string
+   */
+  public $userName = null;
+  /**
+   * @var string
+   */
+  public $applicationName = null;
+  /**
+   * @var string
+   */
+  public $resourceHostName = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -24298,6 +24325,18 @@ class Airavata_getExperimentStatistics_args {
           'var' => 'toTime',
           'type' => TType::I64,
           ),
+        5 => array(
+          'var' => 'userName',
+          'type' => TType::STRING,
+          ),
+        6 => array(
+          'var' => 'applicationName',
+          'type' => TType::STRING,
+          ),
+        7 => array(
+          'var' => 'resourceHostName',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -24312,6 +24351,15 @@ class Airavata_getExperimentStatistics_args {
       }
       if (isset($vals['toTime'])) {
         $this->toTime = $vals['toTime'];
+      }
+      if (isset($vals['userName'])) {
+        $this->userName = $vals['userName'];
+      }
+      if (isset($vals['applicationName'])) {
+        $this->applicationName = $vals['applicationName'];
+      }
+      if (isset($vals['resourceHostName'])) {
+        $this->resourceHostName = $vals['resourceHostName'];
       }
     }
   }
@@ -24364,6 +24412,27 @@ class Airavata_getExperimentStatistics_args {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 5:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->userName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 6:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->applicationName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 7:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->resourceHostName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -24398,6 +24467,21 @@ class Airavata_getExperimentStatistics_args {
     if ($this->toTime !== null) {
       $xfer += $output->writeFieldBegin('toTime', TType::I64, 4);
       $xfer += $output->writeI64($this->toTime);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->userName !== null) {
+      $xfer += $output->writeFieldBegin('userName', TType::STRING, 5);
+      $xfer += $output->writeString($this->userName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->applicationName !== null) {
+      $xfer += $output->writeFieldBegin('applicationName', TType::STRING, 6);
+      $xfer += $output->writeString($this->applicationName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->resourceHostName !== null) {
+      $xfer += $output->writeFieldBegin('resourceHostName', TType::STRING, 7);
+      $xfer += $output->writeString($this->resourceHostName);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
