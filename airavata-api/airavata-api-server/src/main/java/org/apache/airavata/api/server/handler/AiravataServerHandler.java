@@ -930,10 +930,11 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public ExperimentStatistics getExperimentStatistics(AuthzToken authzToken, String gatewayId, long fromTime, long toTime)
+    public ExperimentStatistics getExperimentStatistics(AuthzToken authzToken, String gatewayId, long fromTime, long toTime,
+                                                        String userName, String applicationName, String resourceHostName)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
-            return getRegistryServiceClient().getExperimentStatistics(gatewayId, fromTime, toTime);
+            return getRegistryServiceClient().getExperimentStatistics(gatewayId, fromTime, toTime, userName, applicationName, resourceHostName);
         }catch (Exception e) {
             logger.error("Error while retrieving experiments", e);
             AiravataSystemException exception = new AiravataSystemException();

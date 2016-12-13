@@ -52,6 +52,7 @@ public class Constants {
             public static final String USER_CONFIGURATION_DATA = "userConfigurationData";
             public static final String FROM_DATE = "fromDate";
             public static final String TO_DATE = "toDate";
+            public static final String RESOURCE_HOST_ID = "resourceHostId";
         }
 
         public final class UserConfigurationDataConstants {
