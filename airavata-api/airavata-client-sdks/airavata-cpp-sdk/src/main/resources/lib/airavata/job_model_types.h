@@ -40,9 +40,9 @@ namespace apache { namespace airavata { namespace model { namespace job {
 class JobModel;
 
 typedef struct _JobModel__isset {
-  _JobModel__isset() : creationTime(false), jobStatus(false), computeResourceConsumed(false), jobName(false), workingDir(false), stdOut(false), stdErr(false), exitCode(false) {}
+  _JobModel__isset() : creationTime(false), jobStatuses(false), computeResourceConsumed(false), jobName(false), workingDir(false), stdOut(false), stdErr(false), exitCode(false) {}
   bool creationTime :1;
-  bool jobStatus :1;
+  bool jobStatuses :1;
   bool computeResourceConsumed :1;
   bool jobName :1;
   bool workingDir :1;
@@ -65,7 +65,7 @@ class JobModel {
   std::string processId;
   std::string jobDescription;
   int64_t creationTime;
-   ::apache::airavata::model::status::JobStatus jobStatus;
+  std::vector< ::apache::airavata::model::status::JobStatus>  jobStatuses;
   std::string computeResourceConsumed;
   std::string jobName;
   std::string workingDir;
@@ -85,7 +85,7 @@ class JobModel {
 
   void __set_creationTime(const int64_t val);
 
-  void __set_jobStatus(const  ::apache::airavata::model::status::JobStatus& val);
+  void __set_jobStatuses(const std::vector< ::apache::airavata::model::status::JobStatus> & val);
 
   void __set_computeResourceConsumed(const std::string& val);
 
@@ -113,9 +113,9 @@ class JobModel {
       return false;
     else if (__isset.creationTime && !(creationTime == rhs.creationTime))
       return false;
-    if (__isset.jobStatus != rhs.__isset.jobStatus)
+    if (__isset.jobStatuses != rhs.__isset.jobStatuses)
       return false;
-    else if (__isset.jobStatus && !(jobStatus == rhs.jobStatus))
+    else if (__isset.jobStatuses && !(jobStatuses == rhs.jobStatuses))
       return false;
     if (__isset.computeResourceConsumed != rhs.__isset.computeResourceConsumed)
       return false;

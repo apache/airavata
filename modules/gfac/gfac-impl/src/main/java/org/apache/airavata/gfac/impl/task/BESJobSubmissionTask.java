@@ -31,11 +31,11 @@ import de.fzj.unicore.wsrflite.xmlbeans.WSUtilities;
 import eu.unicore.util.httpclient.DefaultClientConfiguration;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.gfac.core.DataStagingException;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
-import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
 import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.context.TaskContext;
@@ -73,6 +73,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -151,10 +152,9 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             jobDetails.setProcessId(taskContext.getProcessId());
             FactoryClient factory = new FactoryClient(eprt, secProperties);
 
-            log.info(String.format("Activity Submitting to %s ... \n",
-                    factoryUrl));
+            log.info("Activity Submitting to {} ... \n", factoryUrl);
             CreateActivityResponseDocument response = factory.createActivity(cad);
-            log.info(String.format("Activity Submitted to %s \n", factoryUrl));
+            log.info("Activity Submitted to {} ... \n", factoryUrl);
 
             EndpointReferenceType activityEpr = response.getCreateActivityResponse().getActivityIdentifier();
 
@@ -169,7 +169,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             log.info("JobID: " + jobId);
             jobDetails.setJobId(jobId);
             jobDetails.setJobDescription(activityEpr.toString());
-            jobDetails.setJobStatus(new JobStatus(JobState.SUBMITTED));
+            jobDetails.setJobStatuses(Arrays.asList(new JobStatus(JobState.SUBMITTED)));
             processContext.setJobModel(jobDetails);
             GFacUtils.saveJobModel(processContext, jobDetails);
             GFacUtils.saveJobStatus(processContext, jobDetails);
@@ -198,7 +198,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
                 log.error(error);
 
                 JobState applicationJobStatus = JobState.FAILED;
-                jobDetails.setJobStatus(new JobStatus(applicationJobStatus));
+                jobDetails.setJobStatuses(Arrays.asList(new JobStatus(applicationJobStatus)));
                 sendNotification(processContext, jobDetails);
                 try {Thread.sleep(5000);} catch (InterruptedException e) {}
 
@@ -208,7 +208,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
 
             } else if (activityStatus.getState() == ActivityStateEnumeration.CANCELLED) {
                 JobState applicationJobStatus = JobState.CANCELED;
-                jobDetails.setJobStatus(new JobStatus(applicationJobStatus));
+                jobDetails.setJobStatuses(Arrays.asList(new JobStatus(applicationJobStatus)));
                 GFacUtils.saveJobStatus(processContext, jobDetails);
                 throw new GFacException(
                         processContext.getExperimentId() + "Job Canceled");
@@ -218,7 +218,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
                 } catch (InterruptedException ignored) {
                 }
                 JobState applicationJobStatus = JobState.COMPLETE;
-                jobDetails.setJobStatus(new JobStatus(applicationJobStatus));
+                jobDetails.setJobStatuses(Arrays.asList(new JobStatus(applicationJobStatus)));
                 GFacUtils.saveJobStatus(processContext, jobDetails);
                 log.info("Job Id: {}, exit code: {}, exit status: {}", jobDetails.getJobId(),
                         activityStatus.getExitCode(), ActivityStateEnumeration.FINISHED.toString());
@@ -274,7 +274,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
                         break;
                 }
             }
-        } catch (IOException | JSchException | AiravataException | SSHApiException | URISyntaxException e) {
+        } catch (DataStagingException | AiravataException | URISyntaxException e) {
             log.error("Error while coping local file " + localFilePath + " to remote " + remoteFilePath, e);
             throw new GFacException("Error while scp output files to remote storage file location", e);
         }
@@ -318,7 +318,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
                     input.setValue("file:/" + localFilePath);
                 }
             }
-        } catch (IOException | JSchException | AiravataException | SSHApiException | URISyntaxException e) {
+        } catch ( AiravataException | DataStagingException| URISyntaxException e) {
             log.error("Error while coping remote file " + remoteFilePath + " to local " + localFilePath, e);
             throw new GFacException("Error while scp input files to local file location", e);
         }

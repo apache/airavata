@@ -108,7 +108,7 @@ public class ApplicationProcessor {
                 	// do nothing
                 }
                 
-                int totalThreadCount = context.getProcessModel().getResourceSchedule().getNumberOfThreads();
+                int totalThreadCount = context.getProcessModel().getProcessResourceSchedule().getNumberOfThreads();
                 // we take it as threads per processes
                 if(totalThreadCount > 0){
 					ThreadsPerProcessType tpp = ThreadsPerProcessType.Factory.newInstance();

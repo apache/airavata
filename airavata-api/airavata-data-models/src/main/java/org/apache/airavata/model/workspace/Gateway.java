@@ -69,6 +69,11 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
   private static final org.apache.thrift.protocol.TField GATEWAY_ADMIN_EMAIL_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayAdminEmail", org.apache.thrift.protocol.TType.STRING, (short)12);
   private static final org.apache.thrift.protocol.TField IDENTITY_SERVER_USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("identityServerUserName", org.apache.thrift.protocol.TType.STRING, (short)13);
   private static final org.apache.thrift.protocol.TField IDENTITY_SERVER_PASSWORD_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("identityServerPasswordToken", org.apache.thrift.protocol.TType.STRING, (short)14);
+  private static final org.apache.thrift.protocol.TField DECLINED_REASON_FIELD_DESC = new org.apache.thrift.protocol.TField("declinedReason", org.apache.thrift.protocol.TType.STRING, (short)15);
+  private static final org.apache.thrift.protocol.TField OAUTH_CLIENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("oauthClientId", org.apache.thrift.protocol.TType.STRING, (short)16);
+  private static final org.apache.thrift.protocol.TField OAUTH_CLIENT_SECRET_FIELD_DESC = new org.apache.thrift.protocol.TField("oauthClientSecret", org.apache.thrift.protocol.TType.STRING, (short)17);
+  private static final org.apache.thrift.protocol.TField REQUEST_CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("requestCreationTime", org.apache.thrift.protocol.TType.I64, (short)18);
+  private static final org.apache.thrift.protocol.TField REQUESTER_USERNAME_FIELD_DESC = new org.apache.thrift.protocol.TField("requesterUsername", org.apache.thrift.protocol.TType.STRING, (short)19);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -90,6 +95,11 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
   private String gatewayAdminEmail; // optional
   private String identityServerUserName; // optional
   private String identityServerPasswordToken; // optional
+  private String declinedReason; // optional
+  private String oauthClientId; // optional
+  private String oauthClientSecret; // optional
+  private long requestCreationTime; // optional
+  private String requesterUsername; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -110,7 +120,12 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     GATEWAY_ADMIN_LAST_NAME((short)11, "gatewayAdminLastName"),
     GATEWAY_ADMIN_EMAIL((short)12, "gatewayAdminEmail"),
     IDENTITY_SERVER_USER_NAME((short)13, "identityServerUserName"),
-    IDENTITY_SERVER_PASSWORD_TOKEN((short)14, "identityServerPasswordToken");
+    IDENTITY_SERVER_PASSWORD_TOKEN((short)14, "identityServerPasswordToken"),
+    DECLINED_REASON((short)15, "declinedReason"),
+    OAUTH_CLIENT_ID((short)16, "oauthClientId"),
+    OAUTH_CLIENT_SECRET((short)17, "oauthClientSecret"),
+    REQUEST_CREATION_TIME((short)18, "requestCreationTime"),
+    REQUESTER_USERNAME((short)19, "requesterUsername");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -153,6 +168,16 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
           return IDENTITY_SERVER_USER_NAME;
         case 14: // IDENTITY_SERVER_PASSWORD_TOKEN
           return IDENTITY_SERVER_PASSWORD_TOKEN;
+        case 15: // DECLINED_REASON
+          return DECLINED_REASON;
+        case 16: // OAUTH_CLIENT_ID
+          return OAUTH_CLIENT_ID;
+        case 17: // OAUTH_CLIENT_SECRET
+          return OAUTH_CLIENT_SECRET;
+        case 18: // REQUEST_CREATION_TIME
+          return REQUEST_CREATION_TIME;
+        case 19: // REQUESTER_USERNAME
+          return REQUESTER_USERNAME;
         default:
           return null;
       }
@@ -193,7 +218,9 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
   }
 
   // isset id assignments
-  private static final _Fields optionals[] = {_Fields.GATEWAY_NAME,_Fields.DOMAIN,_Fields.EMAIL_ADDRESS,_Fields.GATEWAY_ACRONYM,_Fields.GATEWAY_URL,_Fields.GATEWAY_PUBLIC_ABSTRACT,_Fields.REVIEW_PROPOSAL_DESCRIPTION,_Fields.GATEWAY_ADMIN_FIRST_NAME,_Fields.GATEWAY_ADMIN_LAST_NAME,_Fields.GATEWAY_ADMIN_EMAIL,_Fields.IDENTITY_SERVER_USER_NAME,_Fields.IDENTITY_SERVER_PASSWORD_TOKEN};
+  private static final int __REQUESTCREATIONTIME_ISSET_ID = 0;
+  private byte __isset_bitfield = 0;
+  private static final _Fields optionals[] = {_Fields.GATEWAY_NAME,_Fields.DOMAIN,_Fields.EMAIL_ADDRESS,_Fields.GATEWAY_ACRONYM,_Fields.GATEWAY_URL,_Fields.GATEWAY_PUBLIC_ABSTRACT,_Fields.REVIEW_PROPOSAL_DESCRIPTION,_Fields.GATEWAY_ADMIN_FIRST_NAME,_Fields.GATEWAY_ADMIN_LAST_NAME,_Fields.GATEWAY_ADMIN_EMAIL,_Fields.IDENTITY_SERVER_USER_NAME,_Fields.IDENTITY_SERVER_PASSWORD_TOKEN,_Fields.DECLINED_REASON,_Fields.OAUTH_CLIENT_ID,_Fields.OAUTH_CLIENT_SECRET,_Fields.REQUEST_CREATION_TIME,_Fields.REQUESTER_USERNAME};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -225,6 +252,16 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.IDENTITY_SERVER_PASSWORD_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("identityServerPasswordToken", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.DECLINED_REASON, new org.apache.thrift.meta_data.FieldMetaData("declinedReason", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.OAUTH_CLIENT_ID, new org.apache.thrift.meta_data.FieldMetaData("oauthClientId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.OAUTH_CLIENT_SECRET, new org.apache.thrift.meta_data.FieldMetaData("oauthClientSecret", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.REQUEST_CREATION_TIME, new org.apache.thrift.meta_data.FieldMetaData("requestCreationTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
+    tmpMap.put(_Fields.REQUESTER_USERNAME, new org.apache.thrift.meta_data.FieldMetaData("requesterUsername", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Gateway.class, metaDataMap);
   }
@@ -245,6 +282,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
    * Performs a deep copy on <i>other</i>.
    */
   public Gateway(Gateway other) {
+    __isset_bitfield = other.__isset_bitfield;
     if (other.isSetGatewayId()) {
       this.gatewayId = other.gatewayId;
     }
@@ -287,6 +325,19 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     if (other.isSetIdentityServerPasswordToken()) {
       this.identityServerPasswordToken = other.identityServerPasswordToken;
     }
+    if (other.isSetDeclinedReason()) {
+      this.declinedReason = other.declinedReason;
+    }
+    if (other.isSetOauthClientId()) {
+      this.oauthClientId = other.oauthClientId;
+    }
+    if (other.isSetOauthClientSecret()) {
+      this.oauthClientSecret = other.oauthClientSecret;
+    }
+    this.requestCreationTime = other.requestCreationTime;
+    if (other.isSetRequesterUsername()) {
+      this.requesterUsername = other.requesterUsername;
+    }
   }
 
   public Gateway deepCopy() {
@@ -309,6 +360,12 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     this.gatewayAdminEmail = null;
     this.identityServerUserName = null;
     this.identityServerPasswordToken = null;
+    this.declinedReason = null;
+    this.oauthClientId = null;
+    this.oauthClientSecret = null;
+    setRequestCreationTimeIsSet(false);
+    this.requestCreationTime = 0;
+    this.requesterUsername = null;
   }
 
   public String getGatewayId() {
@@ -641,6 +698,120 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     }
   }
 
+  public String getDeclinedReason() {
+    return this.declinedReason;
+  }
+
+  public void setDeclinedReason(String declinedReason) {
+    this.declinedReason = declinedReason;
+  }
+
+  public void unsetDeclinedReason() {
+    this.declinedReason = null;
+  }
+
+  /** Returns true if field declinedReason is set (has been assigned a value) and false otherwise */
+  public boolean isSetDeclinedReason() {
+    return this.declinedReason != null;
+  }
+
+  public void setDeclinedReasonIsSet(boolean value) {
+    if (!value) {
+      this.declinedReason = null;
+    }
+  }
+
+  public String getOauthClientId() {
+    return this.oauthClientId;
+  }
+
+  public void setOauthClientId(String oauthClientId) {
+    this.oauthClientId = oauthClientId;
+  }
+
+  public void unsetOauthClientId() {
+    this.oauthClientId = null;
+  }
+
+  /** Returns true if field oauthClientId is set (has been assigned a value) and false otherwise */
+  public boolean isSetOauthClientId() {
+    return this.oauthClientId != null;
+  }
+
+  public void setOauthClientIdIsSet(boolean value) {
+    if (!value) {
+      this.oauthClientId = null;
+    }
+  }
+
+  public String getOauthClientSecret() {
+    return this.oauthClientSecret;
+  }
+
+  public void setOauthClientSecret(String oauthClientSecret) {
+    this.oauthClientSecret = oauthClientSecret;
+  }
+
+  public void unsetOauthClientSecret() {
+    this.oauthClientSecret = null;
+  }
+
+  /** Returns true if field oauthClientSecret is set (has been assigned a value) and false otherwise */
+  public boolean isSetOauthClientSecret() {
+    return this.oauthClientSecret != null;
+  }
+
+  public void setOauthClientSecretIsSet(boolean value) {
+    if (!value) {
+      this.oauthClientSecret = null;
+    }
+  }
+
+  public long getRequestCreationTime() {
+    return this.requestCreationTime;
+  }
+
+  public void setRequestCreationTime(long requestCreationTime) {
+    this.requestCreationTime = requestCreationTime;
+    setRequestCreationTimeIsSet(true);
+  }
+
+  public void unsetRequestCreationTime() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __REQUESTCREATIONTIME_ISSET_ID);
+  }
+
+  /** Returns true if field requestCreationTime is set (has been assigned a value) and false otherwise */
+  public boolean isSetRequestCreationTime() {
+    return EncodingUtils.testBit(__isset_bitfield, __REQUESTCREATIONTIME_ISSET_ID);
+  }
+
+  public void setRequestCreationTimeIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __REQUESTCREATIONTIME_ISSET_ID, value);
+  }
+
+  public String getRequesterUsername() {
+    return this.requesterUsername;
+  }
+
+  public void setRequesterUsername(String requesterUsername) {
+    this.requesterUsername = requesterUsername;
+  }
+
+  public void unsetRequesterUsername() {
+    this.requesterUsername = null;
+  }
+
+  /** Returns true if field requesterUsername is set (has been assigned a value) and false otherwise */
+  public boolean isSetRequesterUsername() {
+    return this.requesterUsername != null;
+  }
+
+  public void setRequesterUsernameIsSet(boolean value) {
+    if (!value) {
+      this.requesterUsername = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case GATEWAY_ID:
@@ -755,6 +926,46 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       }
       break;
 
+    case DECLINED_REASON:
+      if (value == null) {
+        unsetDeclinedReason();
+      } else {
+        setDeclinedReason((String)value);
+      }
+      break;
+
+    case OAUTH_CLIENT_ID:
+      if (value == null) {
+        unsetOauthClientId();
+      } else {
+        setOauthClientId((String)value);
+      }
+      break;
+
+    case OAUTH_CLIENT_SECRET:
+      if (value == null) {
+        unsetOauthClientSecret();
+      } else {
+        setOauthClientSecret((String)value);
+      }
+      break;
+
+    case REQUEST_CREATION_TIME:
+      if (value == null) {
+        unsetRequestCreationTime();
+      } else {
+        setRequestCreationTime((Long)value);
+      }
+      break;
+
+    case REQUESTER_USERNAME:
+      if (value == null) {
+        unsetRequesterUsername();
+      } else {
+        setRequesterUsername((String)value);
+      }
+      break;
+
     }
   }
 
@@ -802,6 +1013,21 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     case IDENTITY_SERVER_PASSWORD_TOKEN:
       return getIdentityServerPasswordToken();
 
+    case DECLINED_REASON:
+      return getDeclinedReason();
+
+    case OAUTH_CLIENT_ID:
+      return getOauthClientId();
+
+    case OAUTH_CLIENT_SECRET:
+      return getOauthClientSecret();
+
+    case REQUEST_CREATION_TIME:
+      return getRequestCreationTime();
+
+    case REQUESTER_USERNAME:
+      return getRequesterUsername();
+
     }
     throw new IllegalStateException();
   }
@@ -841,6 +1067,16 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       return isSetIdentityServerUserName();
     case IDENTITY_SERVER_PASSWORD_TOKEN:
       return isSetIdentityServerPasswordToken();
+    case DECLINED_REASON:
+      return isSetDeclinedReason();
+    case OAUTH_CLIENT_ID:
+      return isSetOauthClientId();
+    case OAUTH_CLIENT_SECRET:
+      return isSetOauthClientSecret();
+    case REQUEST_CREATION_TIME:
+      return isSetRequestCreationTime();
+    case REQUESTER_USERNAME:
+      return isSetRequesterUsername();
     }
     throw new IllegalStateException();
   }
@@ -984,6 +1220,51 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
         return false;
     }
 
+    boolean this_present_declinedReason = true && this.isSetDeclinedReason();
+    boolean that_present_declinedReason = true && that.isSetDeclinedReason();
+    if (this_present_declinedReason || that_present_declinedReason) {
+      if (!(this_present_declinedReason && that_present_declinedReason))
+        return false;
+      if (!this.declinedReason.equals(that.declinedReason))
+        return false;
+    }
+
+    boolean this_present_oauthClientId = true && this.isSetOauthClientId();
+    boolean that_present_oauthClientId = true && that.isSetOauthClientId();
+    if (this_present_oauthClientId || that_present_oauthClientId) {
+      if (!(this_present_oauthClientId && that_present_oauthClientId))
+        return false;
+      if (!this.oauthClientId.equals(that.oauthClientId))
+        return false;
+    }
+
+    boolean this_present_oauthClientSecret = true && this.isSetOauthClientSecret();
+    boolean that_present_oauthClientSecret = true && that.isSetOauthClientSecret();
+    if (this_present_oauthClientSecret || that_present_oauthClientSecret) {
+      if (!(this_present_oauthClientSecret && that_present_oauthClientSecret))
+        return false;
+      if (!this.oauthClientSecret.equals(that.oauthClientSecret))
+        return false;
+    }
+
+    boolean this_present_requestCreationTime = true && this.isSetRequestCreationTime();
+    boolean that_present_requestCreationTime = true && that.isSetRequestCreationTime();
+    if (this_present_requestCreationTime || that_present_requestCreationTime) {
+      if (!(this_present_requestCreationTime && that_present_requestCreationTime))
+        return false;
+      if (this.requestCreationTime != that.requestCreationTime)
+        return false;
+    }
+
+    boolean this_present_requesterUsername = true && this.isSetRequesterUsername();
+    boolean that_present_requesterUsername = true && that.isSetRequesterUsername();
+    if (this_present_requesterUsername || that_present_requesterUsername) {
+      if (!(this_present_requesterUsername && that_present_requesterUsername))
+        return false;
+      if (!this.requesterUsername.equals(that.requesterUsername))
+        return false;
+    }
+
     return true;
   }
 
@@ -1060,6 +1341,31 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     list.add(present_identityServerPasswordToken);
     if (present_identityServerPasswordToken)
       list.add(identityServerPasswordToken);
+
+    boolean present_declinedReason = true && (isSetDeclinedReason());
+    list.add(present_declinedReason);
+    if (present_declinedReason)
+      list.add(declinedReason);
+
+    boolean present_oauthClientId = true && (isSetOauthClientId());
+    list.add(present_oauthClientId);
+    if (present_oauthClientId)
+      list.add(oauthClientId);
+
+    boolean present_oauthClientSecret = true && (isSetOauthClientSecret());
+    list.add(present_oauthClientSecret);
+    if (present_oauthClientSecret)
+      list.add(oauthClientSecret);
+
+    boolean present_requestCreationTime = true && (isSetRequestCreationTime());
+    list.add(present_requestCreationTime);
+    if (present_requestCreationTime)
+      list.add(requestCreationTime);
+
+    boolean present_requesterUsername = true && (isSetRequesterUsername());
+    list.add(present_requesterUsername);
+    if (present_requesterUsername)
+      list.add(requesterUsername);
 
     return list.hashCode();
   }
@@ -1208,6 +1514,56 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     }
     if (isSetIdentityServerPasswordToken()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.identityServerPasswordToken, other.identityServerPasswordToken);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetDeclinedReason()).compareTo(other.isSetDeclinedReason());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDeclinedReason()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.declinedReason, other.declinedReason);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetOauthClientId()).compareTo(other.isSetOauthClientId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetOauthClientId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.oauthClientId, other.oauthClientId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetOauthClientSecret()).compareTo(other.isSetOauthClientSecret());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetOauthClientSecret()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.oauthClientSecret, other.oauthClientSecret);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetRequestCreationTime()).compareTo(other.isSetRequestCreationTime());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetRequestCreationTime()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.requestCreationTime, other.requestCreationTime);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetRequesterUsername()).compareTo(other.isSetRequesterUsername());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetRequesterUsername()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.requesterUsername, other.requesterUsername);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1367,6 +1723,52 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       }
       first = false;
     }
+    if (isSetDeclinedReason()) {
+      if (!first) sb.append(", ");
+      sb.append("declinedReason:");
+      if (this.declinedReason == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.declinedReason);
+      }
+      first = false;
+    }
+    if (isSetOauthClientId()) {
+      if (!first) sb.append(", ");
+      sb.append("oauthClientId:");
+      if (this.oauthClientId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.oauthClientId);
+      }
+      first = false;
+    }
+    if (isSetOauthClientSecret()) {
+      if (!first) sb.append(", ");
+      sb.append("oauthClientSecret:");
+      if (this.oauthClientSecret == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.oauthClientSecret);
+      }
+      first = false;
+    }
+    if (isSetRequestCreationTime()) {
+      if (!first) sb.append(", ");
+      sb.append("requestCreationTime:");
+      sb.append(this.requestCreationTime);
+      first = false;
+    }
+    if (isSetRequesterUsername()) {
+      if (!first) sb.append(", ");
+      sb.append("requesterUsername:");
+      if (this.requesterUsername == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.requesterUsername);
+      }
+      first = false;
+    }
     sb.append(")");
     return sb.toString();
   }
@@ -1394,6 +1796,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
 
   private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
     try {
+      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+      __isset_bitfield = 0;
       read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
     } catch (org.apache.thrift.TException te) {
       throw new java.io.IOException(te);
@@ -1530,6 +1934,46 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 15: // DECLINED_REASON
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.declinedReason = iprot.readString();
+              struct.setDeclinedReasonIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 16: // OAUTH_CLIENT_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.oauthClientId = iprot.readString();
+              struct.setOauthClientIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 17: // OAUTH_CLIENT_SECRET
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.oauthClientSecret = iprot.readString();
+              struct.setOauthClientSecretIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 18: // REQUEST_CREATION_TIME
+            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+              struct.requestCreationTime = iprot.readI64();
+              struct.setRequestCreationTimeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 19: // REQUESTER_USERNAME
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.requesterUsername = iprot.readString();
+              struct.setRequesterUsernameIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1637,6 +2081,39 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
           oprot.writeFieldEnd();
         }
       }
+      if (struct.declinedReason != null) {
+        if (struct.isSetDeclinedReason()) {
+          oprot.writeFieldBegin(DECLINED_REASON_FIELD_DESC);
+          oprot.writeString(struct.declinedReason);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.oauthClientId != null) {
+        if (struct.isSetOauthClientId()) {
+          oprot.writeFieldBegin(OAUTH_CLIENT_ID_FIELD_DESC);
+          oprot.writeString(struct.oauthClientId);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.oauthClientSecret != null) {
+        if (struct.isSetOauthClientSecret()) {
+          oprot.writeFieldBegin(OAUTH_CLIENT_SECRET_FIELD_DESC);
+          oprot.writeString(struct.oauthClientSecret);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.isSetRequestCreationTime()) {
+        oprot.writeFieldBegin(REQUEST_CREATION_TIME_FIELD_DESC);
+        oprot.writeI64(struct.requestCreationTime);
+        oprot.writeFieldEnd();
+      }
+      if (struct.requesterUsername != null) {
+        if (struct.isSetRequesterUsername()) {
+          oprot.writeFieldBegin(REQUESTER_USERNAME_FIELD_DESC);
+          oprot.writeString(struct.requesterUsername);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1693,7 +2170,22 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       if (struct.isSetIdentityServerPasswordToken()) {
         optionals.set(11);
       }
-      oprot.writeBitSet(optionals, 12);
+      if (struct.isSetDeclinedReason()) {
+        optionals.set(12);
+      }
+      if (struct.isSetOauthClientId()) {
+        optionals.set(13);
+      }
+      if (struct.isSetOauthClientSecret()) {
+        optionals.set(14);
+      }
+      if (struct.isSetRequestCreationTime()) {
+        optionals.set(15);
+      }
+      if (struct.isSetRequesterUsername()) {
+        optionals.set(16);
+      }
+      oprot.writeBitSet(optionals, 17);
       if (struct.isSetGatewayName()) {
         oprot.writeString(struct.gatewayName);
       }
@@ -1730,6 +2222,21 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       if (struct.isSetIdentityServerPasswordToken()) {
         oprot.writeString(struct.identityServerPasswordToken);
       }
+      if (struct.isSetDeclinedReason()) {
+        oprot.writeString(struct.declinedReason);
+      }
+      if (struct.isSetOauthClientId()) {
+        oprot.writeString(struct.oauthClientId);
+      }
+      if (struct.isSetOauthClientSecret()) {
+        oprot.writeString(struct.oauthClientSecret);
+      }
+      if (struct.isSetRequestCreationTime()) {
+        oprot.writeI64(struct.requestCreationTime);
+      }
+      if (struct.isSetRequesterUsername()) {
+        oprot.writeString(struct.requesterUsername);
+      }
     }
 
     @Override
@@ -1739,7 +2246,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       struct.setGatewayIdIsSet(true);
       struct.gatewayApprovalStatus = org.apache.airavata.model.workspace.GatewayApprovalStatus.findByValue(iprot.readI32());
       struct.setGatewayApprovalStatusIsSet(true);
-      BitSet incoming = iprot.readBitSet(12);
+      BitSet incoming = iprot.readBitSet(17);
       if (incoming.get(0)) {
         struct.gatewayName = iprot.readString();
         struct.setGatewayNameIsSet(true);
@@ -1787,6 +2294,26 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       if (incoming.get(11)) {
         struct.identityServerPasswordToken = iprot.readString();
         struct.setIdentityServerPasswordTokenIsSet(true);
+      }
+      if (incoming.get(12)) {
+        struct.declinedReason = iprot.readString();
+        struct.setDeclinedReasonIsSet(true);
+      }
+      if (incoming.get(13)) {
+        struct.oauthClientId = iprot.readString();
+        struct.setOauthClientIdIsSet(true);
+      }
+      if (incoming.get(14)) {
+        struct.oauthClientSecret = iprot.readString();
+        struct.setOauthClientSecretIsSet(true);
+      }
+      if (incoming.get(15)) {
+        struct.requestCreationTime = iprot.readI64();
+        struct.setRequestCreationTimeIsSet(true);
+      }
+      if (incoming.get(16)) {
+        struct.requesterUsername = iprot.readString();
+        struct.setRequesterUsernameIsSet(true);
       }
     }
   }

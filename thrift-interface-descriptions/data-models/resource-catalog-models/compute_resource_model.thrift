@@ -193,9 +193,11 @@ enum JobSubmissionProtocol {
 **/
 enum MonitorMode {
    POLL_JOB_MANAGER,
+   CLOUD_JOB_MONITOR,
    JOB_EMAIL_NOTIFICATION_MONITOR,
    XSEDE_AMQP_SUBSCRIBE,
-   FORK
+   FORK,
+   LOCAL
 }
 
 enum DMType {
@@ -215,7 +217,7 @@ enum DMType {
 struct LOCALSubmission {
     1: required string jobSubmissionInterfaceId = airavata_commons.DEFAULT_ID,
     2: required ResourceJobManager resourceJobManager,
-    3: optional data_movement_models.SecurityProtocol securityProtocol
+    3: required data_movement_models.SecurityProtocol securityProtocol
 }
 
 /**

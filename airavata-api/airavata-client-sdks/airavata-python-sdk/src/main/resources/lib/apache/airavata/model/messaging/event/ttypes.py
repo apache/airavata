@@ -42,31 +42,34 @@ class MessageLevel:
 
 class MessageType:
   EXPERIMENT = 0
-  TASK = 1
-  PROCESS = 2
-  JOB = 3
-  LAUNCHPROCESS = 4
-  TERMINATEPROCESS = 5
-  PROCESSOUTPUT = 6
+  EXPERIMENT_CANCEL = 1
+  TASK = 2
+  PROCESS = 3
+  JOB = 4
+  LAUNCHPROCESS = 5
+  TERMINATEPROCESS = 6
+  PROCESSOUTPUT = 7
 
   _VALUES_TO_NAMES = {
     0: "EXPERIMENT",
-    1: "TASK",
-    2: "PROCESS",
-    3: "JOB",
-    4: "LAUNCHPROCESS",
-    5: "TERMINATEPROCESS",
-    6: "PROCESSOUTPUT",
+    1: "EXPERIMENT_CANCEL",
+    2: "TASK",
+    3: "PROCESS",
+    4: "JOB",
+    5: "LAUNCHPROCESS",
+    6: "TERMINATEPROCESS",
+    7: "PROCESSOUTPUT",
   }
 
   _NAMES_TO_VALUES = {
     "EXPERIMENT": 0,
-    "TASK": 1,
-    "PROCESS": 2,
-    "JOB": 3,
-    "LAUNCHPROCESS": 4,
-    "TERMINATEPROCESS": 5,
-    "PROCESSOUTPUT": 6,
+    "EXPERIMENT_CANCEL": 1,
+    "TASK": 2,
+    "PROCESS": 3,
+    "JOB": 4,
+    "LAUNCHPROCESS": 5,
+    "TERMINATEPROCESS": 6,
+    "PROCESSOUTPUT": 7,
   }
 
 
@@ -912,6 +915,88 @@ class JobIdentifier:
     value = (value * 31) ^ hash(self.jobId)
     value = (value * 31) ^ hash(self.taskId)
     value = (value * 31) ^ hash(self.processId)
+    value = (value * 31) ^ hash(self.experimentId)
+    value = (value * 31) ^ hash(self.gatewayId)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class ExperimentSubmitEvent:
+  """
+  Attributes:
+   - experimentId
+   - gatewayId
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'experimentId', None, None, ), # 1
+    (2, TType.STRING, 'gatewayId', None, None, ), # 2
+  )
+
+  def __init__(self, experimentId=None, gatewayId=None,):
+    self.experimentId = experimentId
+    self.gatewayId = gatewayId
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.experimentId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.gatewayId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('ExperimentSubmitEvent')
+    if self.experimentId is not None:
+      oprot.writeFieldBegin('experimentId', TType.STRING, 1)
+      oprot.writeString(self.experimentId)
+      oprot.writeFieldEnd()
+    if self.gatewayId is not None:
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
+      oprot.writeString(self.gatewayId)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.experimentId is None:
+      raise TProtocol.TProtocolException(message='Required field experimentId is unset!')
+    if self.gatewayId is None:
+      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
     value = (value * 31) ^ hash(self.experimentId)
     value = (value * 31) ^ hash(self.gatewayId)
     return value

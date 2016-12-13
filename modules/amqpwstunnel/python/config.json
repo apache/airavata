@@ -1,0 +1,10 @@
+{
+    "rabbitmq_url": "amqp://airavata:airavata@gw56.iu.xsede.org:5672/messaging",
+    "exchange_name": "simstream",
+    "queue_name": "test",
+    "exchange_type": "direct",
+    "oauth_client_key": "y7xgdnNUx6ifOswJTPcqtzw4aOEa",
+    "oauth_client_secret": "CgfbuupAPhaOBSBPSScZUWHNANwa",
+    "oauth_grant_type": "password",
+    "maximum_cookie_age": 1
+}

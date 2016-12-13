@@ -293,8 +293,8 @@ public class ExperimentRegistry {
 
             processResource.save();
 
-            if(process.getResourceSchedule() != null) {
-                addProcessResourceSchedule(process.getResourceSchedule(), process.getProcessId());
+            if(process.getProcessResourceSchedule() != null) {
+                addProcessResourceSchedule(process.getProcessResourceSchedule(), process.getProcessId());
             }
             if(process.getProcessInputs() !=  null && process.getProcessInputs().size() > 0) {
                 addProcessInputs(process.getProcessInputs(), process.getProcessId());
@@ -305,10 +305,12 @@ public class ExperimentRegistry {
 
             ProcessStatus processStatus = new ProcessStatus();
             processStatus.setState(ProcessState.CREATED);
-            addProcessStatus(processStatus, process.getProcessId());
+            List<ProcessStatus> processStatuses = new ArrayList<>();
+            processStatuses.add(processStatus);
+            addProcessStatus(processStatuses.get(0), process.getProcessId());
 
-            if(process.getProcessError() != null) {
-                addProcessError(process.getProcessError(), process.getProcessId());
+            if(process.getProcessErrors() != null) {
+                addProcessError(process.getProcessErrors().get(0), process.getProcessId());
             }
         } catch (Exception e) {
             logger.error(expId, "Error while adding process...", e);
@@ -329,6 +331,10 @@ public class ExperimentRegistry {
             processResourceSchedule.setQueueName(resourceSchedule.getQueueName());
             processResourceSchedule.setWallTimeLimit(resourceSchedule.getWallTimeLimit());
             processResourceSchedule.setTotalPhysicalMemory(resourceSchedule.getTotalPhysicalMemory());
+            processResourceSchedule.setOverrideAllocationProjectNumber(resourceSchedule.getOverrideAllocationProjectNumber());
+            processResourceSchedule.setOverrideLoginUserName(resourceSchedule.getOverrideLoginUserName());
+            processResourceSchedule.setOverrideScratchLocation(resourceSchedule.getOverrideScratchLocation());
+            processResourceSchedule.setStaticWorkingDir(resourceSchedule.getStaticWorkingDir());
             processResourceSchedule.save();
         } catch (Exception e) {
             logger.error("Unable to save user config data", e);
@@ -391,27 +397,27 @@ public class ExperimentRegistry {
 
     public String addProcessStatus(ProcessStatus processStatus, String processID) throws RegistryException {
         try {
-            ProcessResource processResource = new ProcessResource();
-            processResource.setProcessId(processID);
-            ProcessStatusResource status = processResource.getProcessStatus();
-            ProcessState newState = processStatus.getState();
-            if (status == null) {
-                status = (ProcessStatusResource) processResource.create(ResourceType.PROCESS_STATUS);
-                status.setStatusId(getStatusID("PROCESS_STATE"));
-            }else {
-                String state = status.getState();
-                if (newState != null && !state.equals(newState.toString())){
+                ProcessResource processResource = new ProcessResource();
+                processResource.setProcessId(processID);
+                ProcessStatusResource status = processResource.getProcessStatus();
+                ProcessState newState = processStatus.getState();
+                if (status == null) {
+                    status = (ProcessStatusResource) processResource.create(ResourceType.PROCESS_STATUS);
                     status.setStatusId(getStatusID("PROCESS_STATE"));
+                }else {
+                    String state = status.getState();
+                    if (newState != null && !state.equals(newState.toString())){
+                        status.setStatusId(getStatusID("PROCESS_STATE"));
+                    }
                 }
-            }
-            status.setProcessId(processID);
-            status.setTimeOfStateChange(AiravataUtils.getTime(processStatus.getTimeOfStateChange()));
-            if (newState != null){
-                status.setState(newState.toString());
-            }
-            status.setReason(processStatus.getReason());
-            status.save();
-            logger.debug(processID, "Added process {} status to {}.", processID, processStatus.toString());
+                status.setProcessId(processID);
+                status.setTimeOfStateChange(AiravataUtils.getTime(processStatus.getTimeOfStateChange()));
+                if (newState != null){
+                    status.setState(newState.toString());
+                }
+                status.setReason(processStatus.getReason());
+                status.save();
+                logger.debug(processID, "Added process {} status to {}.", processID, processStatus.toString());
         } catch (Exception e) {
             logger.error(processID, "Error while adding process status...", e);
             throw new RegistryException(e);
@@ -461,8 +467,8 @@ public class ExperimentRegistry {
             taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 	        addTaskStatus(taskStatus, task.getTaskId());
 
-            if(task.getTaskError() != null) {
-                addTaskError(task.getTaskError(), task.getTaskId());
+            if(task.getTaskErrors() != null) {
+                addTaskError(task.getTaskErrors().get(0), task.getTaskId());
             }
         } catch (Exception e) {
             logger.error(processID, "Error while adding task...", e);
@@ -608,7 +614,7 @@ public class ExperimentRegistry {
             if (experimentOutputs != null && !experimentOutputs.isEmpty()) {
                 updateExpOutputs(experimentOutputs, expId);
             }
-            ExperimentStatus experimentStatus = experiment.getExperimentStatus();
+            ExperimentStatus experimentStatus = experiment.getExperimentStatus().get(0);
             if (experimentStatus != null) {
                 updateExperimentStatus(experimentStatus, expId);
             }
@@ -752,8 +758,8 @@ public class ExperimentRegistry {
 
             processResource.save();
 
-            if(process.getResourceSchedule() != null) {
-                updateProcessResourceSchedule(process.getResourceSchedule(), process.getProcessId());
+            if(process.getProcessResourceSchedule() != null) {
+                updateProcessResourceSchedule(process.getProcessResourceSchedule(), process.getProcessId());
             }
             if(process.getProcessInputs() !=  null && process.getProcessInputs().size() > 0) {
                 updateProcessInputs(process.getProcessInputs(), process.getProcessId());
@@ -761,11 +767,11 @@ public class ExperimentRegistry {
             if(process.getProcessOutputs() != null && process.getProcessOutputs().size() > 0) {
                 updateProcessOutputs(process.getProcessOutputs(), process.getProcessId());
             }
-            if(process.getProcessStatus() != null) {
-                updateProcessStatus(process.getProcessStatus(), process.getProcessId());
+            if(process.getProcessStatuses() != null) {
+                updateProcessStatus(process.getProcessStatuses().get(0), process.getProcessId());
             }
-            if(process.getProcessError() != null) {
-                updateProcessError(process.getProcessError(), process.getProcessId());
+            if(process.getProcessErrors() != null) {
+                updateProcessError(process.getProcessErrors().get(0), process.getProcessId());
             }
             if(process.getTasks() != null && process.getTasks().size() > 0){
                 for(TaskModel task : process.getTasks()){
@@ -791,6 +797,10 @@ public class ExperimentRegistry {
             processResourceSchedule.setQueueName(resourceSchedule.getQueueName());
             processResourceSchedule.setWallTimeLimit(resourceSchedule.getWallTimeLimit());
             processResourceSchedule.setTotalPhysicalMemory(resourceSchedule.getTotalPhysicalMemory());
+            processResourceSchedule.setOverrideAllocationProjectNumber(resourceSchedule.getOverrideAllocationProjectNumber());
+            processResourceSchedule.setOverrideLoginUserName(resourceSchedule.getOverrideLoginUserName());
+            processResourceSchedule.setOverrideScratchLocation(resourceSchedule.getOverrideScratchLocation());
+            processResourceSchedule.setStaticWorkingDir(resourceSchedule.getStaticWorkingDir());
             processResourceSchedule.save();
         } catch (Exception e) {
             logger.error("Unable to save process resource schedule data", e);
@@ -864,8 +874,8 @@ public class ExperimentRegistry {
         return addProcessStatus(processStatus, processID);
     }
 
-    public String updateProcessError(ErrorModel processError, String processID) throws RegistryException {
-        return addProcessError(processError, processID);
+    public String updateProcessError(ErrorModel processErrors, String processID) throws RegistryException {
+        return addProcessError(processErrors, processID);
     }
 
     public String updateTask(TaskModel task, String taskID) throws RegistryException {
@@ -881,11 +891,11 @@ public class ExperimentRegistry {
             taskResource.setSubTaskModel(task.getSubTaskModel());
             taskResource.save();
 
-            if(task.getTaskError() != null) {
-                updateTaskError(task.getTaskError(), task.getTaskId());
+            if(task.getTaskErrors() != null) {
+                updateTaskError(task.getTaskErrors().get(0), task.getTaskId());
             }
-            if(task.getTaskError() != null) {
-                updateTaskError(task.getTaskError(), task.getTaskId());
+            if(task.getTaskErrors() != null) {
+                updateTaskError(task.getTaskErrors().get(0), task.getTaskId());
             }
         } catch (Exception e) {
             logger.error(taskID, "Error while adding task...", e);
@@ -1250,7 +1260,9 @@ public class ExperimentRegistry {
 	                if (latestSR != null) {
 		                JobStatus jobStatus = new JobStatus(JobState.valueOf(latestSR.getState()));
 		                jobStatus.setReason(latestSR.getReason());
-		                jobModel.setJobStatus(jobStatus);
+                        List<JobStatus> statuses = new ArrayList<>();
+                        statuses.add(jobStatus);
+		                jobModel.setJobStatuses(statuses);
 	                }
 	                jobs.add(jobModel);
                 }
@@ -1265,7 +1277,9 @@ public class ExperimentRegistry {
                     if (latestSR != null) {
                         JobStatus jobStatus = new JobStatus(JobState.valueOf(latestSR.getState()));
                         jobStatus.setReason(latestSR.getReason());
-                        jobModel.setJobStatus(jobStatus);
+                        List<JobStatus> statuses = new ArrayList<>();
+                        statuses.add(jobStatus);
+                        jobModel.setJobStatuses(statuses);
                     }
                     jobs.add(jobModel);
                 }
@@ -1346,11 +1360,63 @@ public class ExperimentRegistry {
                 }
                 List<ExperimentSummaryResource> experimentSummaryResources;
                 if (fromTime != 0 && toTime != 0) {
-                    experimentSummaryResources = workerResource.searchExperiments(new Timestamp(fromTime), new Timestamp(toTime), fil
+                    experimentSummaryResources = workerResource.searchExperiments(null, new Timestamp(fromTime), new Timestamp(toTime), fil
                             ,limit , offset, orderByIdentifier, resultOrderType);
                 } else {
                     experimentSummaryResources = workerResource
-                            .searchExperiments(null, null, fil, limit, offset, orderByIdentifier, resultOrderType);
+                            .searchExperiments(null, null, null, fil, limit, offset, orderByIdentifier, resultOrderType);
+                }
+                if (experimentSummaryResources != null && !experimentSummaryResources.isEmpty()) {
+                    for (ExperimentSummaryResource ex : experimentSummaryResources) {
+                        experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
+                    }
+                }
+                return experimentSummaries;
+
+            } catch (Exception e) {
+                logger.error("Error while retrieving experiment summary from registry", e);
+                throw new RegistryException(e);
+            }
+        }
+        return null;
+    }
+
+    public List<ExperimentSummaryModel> searchAllAccessibleExperiments(List<String> accessibleIds, Map<String, String> filters, int limit,
+                                                          int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
+        Map<String, String> fil = new HashMap<String, String>();
+        if (filters != null && filters.size() != 0) {
+            List<ExperimentSummaryModel> experimentSummaries = new ArrayList<>();
+            long fromTime = 0;
+            long toTime = 0;
+            try {
+                for (String field : filters.keySet()) {
+                    if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME)) {
+                        fil.put(AbstractExpCatResource.ExperimentConstants.EXPERIMENT_NAME, filters.get(field));
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
+                        fil.put(AbstractExpCatResource.ExperimentConstants.USER_NAME, filters.get(field));
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_ID)) {
+                        fil.put(AbstractExpCatResource.ExperimentConstants.PROJECT_ID, filters.get(field));
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID)) {
+                        fil.put(AbstractExpCatResource.ExperimentConstants.GATEWAY_ID, filters.get(field));
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.DESCRIPTION)) {
+                        fil.put(AbstractExpCatResource.ExperimentConstants.DESCRIPTION, filters.get(field));
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.EXECUTION_ID)) {
+                        fil.put(AbstractExpCatResource.ExperimentConstants.EXECUTION_ID, filters.get(field));
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS)) {
+                        fil.put(AbstractExpCatResource.ExperimentStatusConstants.STATE, filters.get(field));
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.FROM_DATE)) {
+                        fromTime = Long.parseLong(filters.get(field));
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.TO_DATE)) {
+                        toTime = Long.parseLong(filters.get(field));
+                    }
+                }
+                List<ExperimentSummaryResource> experimentSummaryResources;
+                if (fromTime != 0 && toTime != 0) {
+                    experimentSummaryResources = workerResource.searchExperiments(accessibleIds, new Timestamp(fromTime), new Timestamp(toTime), fil
+                            ,limit , offset, orderByIdentifier, resultOrderType);
+                } else {
+                    experimentSummaryResources = workerResource
+                            .searchExperiments(accessibleIds, null, null, fil, limit, offset, orderByIdentifier, resultOrderType);
                 }
                 if (experimentSummaryResources != null && !experimentSummaryResources.isEmpty()) {
                     for (ExperimentSummaryResource ex : experimentSummaryResources) {

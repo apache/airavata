@@ -24,7 +24,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.gfac.core.DataStagingException;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.SSHApiException;
@@ -57,6 +57,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -179,9 +180,9 @@ public class SCPDataStageTask implements Task {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
             return status;
-        } catch (ApplicationSettingsException | FileNotFoundException e) {
+        } catch (ApplicationSettingsException e) {
             String msg = "Failed while reading credentials";
             log.error(msg, e);
             status.setState(TaskState.FAILED);
@@ -189,7 +190,7 @@ public class SCPDataStageTask implements Task {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         } catch (URISyntaxException e) {
             String msg = "Source or destination uri is not correct source : " + subTaskModel.getSource() + ", " +
                     "destination : " + subTaskModel.getDestination();
@@ -199,7 +200,7 @@ public class SCPDataStageTask implements Task {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         } catch (SSHApiException e) {
             String msg = e.getMessage();
             log.error(msg, e);
@@ -208,7 +209,7 @@ public class SCPDataStageTask implements Task {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         } catch (AiravataException e) {
             String msg = "Error while creating ssh session with client";
             log.error(msg, e);
@@ -217,8 +218,8 @@ public class SCPDataStageTask implements Task {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
-        } catch (JSchException | IOException e) {
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
+        } catch (DataStagingException e) {
             String msg = "Failed to do scp with client";
             log.error(msg, e);
             status.setState(TaskState.FAILED);
@@ -226,7 +227,7 @@ public class SCPDataStageTask implements Task {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         } catch (GFacException e) {
             String msg = "Failed update experiment and process inputs and outputs";
             log.error(msg, e);
@@ -235,7 +236,7 @@ public class SCPDataStageTask implements Task {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         }
         return status;
     }
@@ -248,25 +249,35 @@ public class SCPDataStageTask implements Task {
     }
 
     private void inputDataStaging(TaskContext taskContext, Session sshSession, URI sourceURI, URI
-            destinationURI) throws SSHApiException, IOException, JSchException {
+            destinationURI) throws SSHApiException {
         /**
          * scp third party file transfer 'to' compute resource.
          */
-        taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(),
-                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.TO, false);
+        taskContext.getParentProcessContext().getDataMovementRemoteCluster().thirdPartyTransfer(
+                sourceURI.getPath(),
+                destinationURI.getPath(),
+                session -> SSHUtils.scpThirdParty(sourceURI.getPath(), sshSession, destinationURI.getPath(), session, false));
     }
 
     private void outputDataStaging(TaskContext taskContext, Session sshSession, URI sourceURI, URI destinationURI)
-            throws SSHApiException, AiravataException, IOException, JSchException, GFacException {
+            throws SSHApiException, AiravataException, GFacException {
 
         /**
          * scp third party file transfer 'from' comute resource.
          */
-        taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(),
-                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.FROM, true);
+        taskContext.getParentProcessContext().getDataMovementRemoteCluster().thirdPartyTransfer(
+                sourceURI.getPath(),
+                destinationURI.getPath(),
+                session -> SSHUtils.scpThirdParty(sourceURI.getPath(), session, destinationURI.getPath(), sshSession, true));
         // update output locations
-        GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.toString());
-        GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.toString());
+        GFacUtils.saveExperimentOutput(
+                taskContext.getParentProcessContext(),
+                taskContext.getProcessOutput().getName(),
+                destinationURI.toString());
+        GFacUtils.saveProcessOutput(
+                taskContext.getParentProcessContext(),
+                taskContext.getProcessOutput().getName(),
+                destinationURI.toString());
 
     }
 

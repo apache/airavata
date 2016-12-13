@@ -76,7 +76,7 @@ public class DataStreamingTask implements Task {
                 if (processOutput != null) {
                     if (processOutput.isOutputStreaming()) {
                         // stream output periodically
-                        ComputationalResourceSchedulingModel resourceSchedule = taskContext.getParentProcessContext().getProcessModel().getResourceSchedule();
+                        ComputationalResourceSchedulingModel resourceSchedule = taskContext.getParentProcessContext().getProcessModel().getProcessResourceSchedule();
                         int wallTimeLimit = resourceSchedule.getWallTimeLimit();
                         if (wallTimeLimit > 10) {
                             int period = wallTimeLimit / 10;

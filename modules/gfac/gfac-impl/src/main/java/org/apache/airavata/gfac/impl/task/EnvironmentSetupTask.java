@@ -25,6 +25,7 @@ import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
+import org.apache.airavata.gfac.impl.SSHUtils;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
@@ -32,6 +33,7 @@ import org.apache.airavata.model.task.TaskTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.Map;
 
 public class EnvironmentSetupTask implements Task {
@@ -47,7 +49,8 @@ public class EnvironmentSetupTask implements Task {
 		TaskStatus status = new TaskStatus(TaskState.COMPLETED);
 		try {
 			RemoteCluster remoteCluster = taskContext.getParentProcessContext().getJobSubmissionRemoteCluster();
-			remoteCluster.makeDirectory(taskContext.getParentProcessContext().getWorkingDir());
+			String workingDir = taskContext.getParentProcessContext().getWorkingDir();
+			remoteCluster.makeDirectory(workingDir, session -> SSHUtils.makeDirectory(workingDir, session));
 			status.setReason("Successfully created environment");
 		} catch (SSHApiException e) {
 			String msg = "Error while environment setup";
@@ -57,7 +60,7 @@ public class EnvironmentSetupTask implements Task {
 			ErrorModel errorModel = new ErrorModel();
 			errorModel.setActualErrorMessage(e.getMessage());
 			errorModel.setUserFriendlyMessage(msg);
-			taskContext.getTaskModel().setTaskError(errorModel);
+			taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
 		}
 		return status;
 	}

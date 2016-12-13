@@ -68,17 +68,17 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
   private static final org.apache.thrift.protocol.TField EXPERIMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentId", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("creationTime", org.apache.thrift.protocol.TType.I64, (short)3);
   private static final org.apache.thrift.protocol.TField LAST_UPDATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("lastUpdateTime", org.apache.thrift.protocol.TType.I64, (short)4);
-  private static final org.apache.thrift.protocol.TField PROCESS_STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("processStatus", org.apache.thrift.protocol.TType.STRUCT, (short)5);
+  private static final org.apache.thrift.protocol.TField PROCESS_STATUSES_FIELD_DESC = new org.apache.thrift.protocol.TField("processStatuses", org.apache.thrift.protocol.TType.LIST, (short)5);
   private static final org.apache.thrift.protocol.TField PROCESS_DETAIL_FIELD_DESC = new org.apache.thrift.protocol.TField("processDetail", org.apache.thrift.protocol.TType.STRING, (short)6);
   private static final org.apache.thrift.protocol.TField APPLICATION_INTERFACE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationInterfaceId", org.apache.thrift.protocol.TType.STRING, (short)7);
   private static final org.apache.thrift.protocol.TField APPLICATION_DEPLOYMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationDeploymentId", org.apache.thrift.protocol.TType.STRING, (short)8);
   private static final org.apache.thrift.protocol.TField COMPUTE_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("computeResourceId", org.apache.thrift.protocol.TType.STRING, (short)9);
   private static final org.apache.thrift.protocol.TField PROCESS_INPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("processInputs", org.apache.thrift.protocol.TType.LIST, (short)10);
   private static final org.apache.thrift.protocol.TField PROCESS_OUTPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("processOutputs", org.apache.thrift.protocol.TType.LIST, (short)11);
-  private static final org.apache.thrift.protocol.TField RESOURCE_SCHEDULE_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceSchedule", org.apache.thrift.protocol.TType.STRUCT, (short)12);
+  private static final org.apache.thrift.protocol.TField PROCESS_RESOURCE_SCHEDULE_FIELD_DESC = new org.apache.thrift.protocol.TField("processResourceSchedule", org.apache.thrift.protocol.TType.STRUCT, (short)12);
   private static final org.apache.thrift.protocol.TField TASKS_FIELD_DESC = new org.apache.thrift.protocol.TField("tasks", org.apache.thrift.protocol.TType.LIST, (short)13);
   private static final org.apache.thrift.protocol.TField TASK_DAG_FIELD_DESC = new org.apache.thrift.protocol.TField("taskDag", org.apache.thrift.protocol.TType.STRING, (short)14);
-  private static final org.apache.thrift.protocol.TField PROCESS_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("processError", org.apache.thrift.protocol.TType.STRUCT, (short)15);
+  private static final org.apache.thrift.protocol.TField PROCESS_ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("processErrors", org.apache.thrift.protocol.TType.LIST, (short)15);
   private static final org.apache.thrift.protocol.TField GATEWAY_EXECUTION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayExecutionId", org.apache.thrift.protocol.TType.STRING, (short)16);
   private static final org.apache.thrift.protocol.TField ENABLE_EMAIL_NOTIFICATION_FIELD_DESC = new org.apache.thrift.protocol.TField("enableEmailNotification", org.apache.thrift.protocol.TType.BOOL, (short)17);
   private static final org.apache.thrift.protocol.TField EMAIL_ADDRESSES_FIELD_DESC = new org.apache.thrift.protocol.TField("emailAddresses", org.apache.thrift.protocol.TType.LIST, (short)18);
@@ -98,17 +98,17 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
   private String experimentId; // required
   private long creationTime; // optional
   private long lastUpdateTime; // optional
-  private org.apache.airavata.model.status.ProcessStatus processStatus; // optional
+  private List<org.apache.airavata.model.status.ProcessStatus> processStatuses; // optional
   private String processDetail; // optional
   private String applicationInterfaceId; // optional
   private String applicationDeploymentId; // optional
   private String computeResourceId; // optional
   private List<org.apache.airavata.model.application.io.InputDataObjectType> processInputs; // optional
   private List<org.apache.airavata.model.application.io.OutputDataObjectType> processOutputs; // optional
-  private org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel resourceSchedule; // optional
+  private org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel processResourceSchedule; // optional
   private List<org.apache.airavata.model.task.TaskModel> tasks; // optional
   private String taskDag; // optional
-  private org.apache.airavata.model.commons.ErrorModel processError; // optional
+  private List<org.apache.airavata.model.commons.ErrorModel> processErrors; // optional
   private String gatewayExecutionId; // optional
   private boolean enableEmailNotification; // optional
   private List<String> emailAddresses; // optional
@@ -124,17 +124,17 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     EXPERIMENT_ID((short)2, "experimentId"),
     CREATION_TIME((short)3, "creationTime"),
     LAST_UPDATE_TIME((short)4, "lastUpdateTime"),
-    PROCESS_STATUS((short)5, "processStatus"),
+    PROCESS_STATUSES((short)5, "processStatuses"),
     PROCESS_DETAIL((short)6, "processDetail"),
     APPLICATION_INTERFACE_ID((short)7, "applicationInterfaceId"),
     APPLICATION_DEPLOYMENT_ID((short)8, "applicationDeploymentId"),
     COMPUTE_RESOURCE_ID((short)9, "computeResourceId"),
     PROCESS_INPUTS((short)10, "processInputs"),
     PROCESS_OUTPUTS((short)11, "processOutputs"),
-    RESOURCE_SCHEDULE((short)12, "resourceSchedule"),
+    PROCESS_RESOURCE_SCHEDULE((short)12, "processResourceSchedule"),
     TASKS((short)13, "tasks"),
     TASK_DAG((short)14, "taskDag"),
-    PROCESS_ERROR((short)15, "processError"),
+    PROCESS_ERRORS((short)15, "processErrors"),
     GATEWAY_EXECUTION_ID((short)16, "gatewayExecutionId"),
     ENABLE_EMAIL_NOTIFICATION((short)17, "enableEmailNotification"),
     EMAIL_ADDRESSES((short)18, "emailAddresses"),
@@ -165,8 +165,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           return CREATION_TIME;
         case 4: // LAST_UPDATE_TIME
           return LAST_UPDATE_TIME;
-        case 5: // PROCESS_STATUS
-          return PROCESS_STATUS;
+        case 5: // PROCESS_STATUSES
+          return PROCESS_STATUSES;
         case 6: // PROCESS_DETAIL
           return PROCESS_DETAIL;
         case 7: // APPLICATION_INTERFACE_ID
@@ -179,14 +179,14 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           return PROCESS_INPUTS;
         case 11: // PROCESS_OUTPUTS
           return PROCESS_OUTPUTS;
-        case 12: // RESOURCE_SCHEDULE
-          return RESOURCE_SCHEDULE;
+        case 12: // PROCESS_RESOURCE_SCHEDULE
+          return PROCESS_RESOURCE_SCHEDULE;
         case 13: // TASKS
           return TASKS;
         case 14: // TASK_DAG
           return TASK_DAG;
-        case 15: // PROCESS_ERROR
-          return PROCESS_ERROR;
+        case 15: // PROCESS_ERRORS
+          return PROCESS_ERRORS;
         case 16: // GATEWAY_EXECUTION_ID
           return GATEWAY_EXECUTION_ID;
         case 17: // ENABLE_EMAIL_NOTIFICATION
@@ -248,7 +248,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
   private static final int __ENABLEEMAILNOTIFICATION_ISSET_ID = 2;
   private static final int __GENERATECERT_ISSET_ID = 3;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.LAST_UPDATE_TIME,_Fields.PROCESS_STATUS,_Fields.PROCESS_DETAIL,_Fields.APPLICATION_INTERFACE_ID,_Fields.APPLICATION_DEPLOYMENT_ID,_Fields.COMPUTE_RESOURCE_ID,_Fields.PROCESS_INPUTS,_Fields.PROCESS_OUTPUTS,_Fields.RESOURCE_SCHEDULE,_Fields.TASKS,_Fields.TASK_DAG,_Fields.PROCESS_ERROR,_Fields.GATEWAY_EXECUTION_ID,_Fields.ENABLE_EMAIL_NOTIFICATION,_Fields.EMAIL_ADDRESSES,_Fields.STORAGE_RESOURCE_ID,_Fields.USER_DN,_Fields.GENERATE_CERT,_Fields.EXPERIMENT_DATA_DIR,_Fields.USER_NAME};
+  private static final _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.LAST_UPDATE_TIME,_Fields.PROCESS_STATUSES,_Fields.PROCESS_DETAIL,_Fields.APPLICATION_INTERFACE_ID,_Fields.APPLICATION_DEPLOYMENT_ID,_Fields.COMPUTE_RESOURCE_ID,_Fields.PROCESS_INPUTS,_Fields.PROCESS_OUTPUTS,_Fields.PROCESS_RESOURCE_SCHEDULE,_Fields.TASKS,_Fields.TASK_DAG,_Fields.PROCESS_ERRORS,_Fields.GATEWAY_EXECUTION_ID,_Fields.ENABLE_EMAIL_NOTIFICATION,_Fields.EMAIL_ADDRESSES,_Fields.STORAGE_RESOURCE_ID,_Fields.USER_DN,_Fields.GENERATE_CERT,_Fields.EXPERIMENT_DATA_DIR,_Fields.USER_NAME};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -260,8 +260,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     tmpMap.put(_Fields.LAST_UPDATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("lastUpdateTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
-    tmpMap.put(_Fields.PROCESS_STATUS, new org.apache.thrift.meta_data.FieldMetaData("processStatus", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.status.ProcessStatus.class)));
+    tmpMap.put(_Fields.PROCESS_STATUSES, new org.apache.thrift.meta_data.FieldMetaData("processStatuses", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.status.ProcessStatus.class))));
     tmpMap.put(_Fields.PROCESS_DETAIL, new org.apache.thrift.meta_data.FieldMetaData("processDetail", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.APPLICATION_INTERFACE_ID, new org.apache.thrift.meta_data.FieldMetaData("applicationInterfaceId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -276,15 +277,16 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     tmpMap.put(_Fields.PROCESS_OUTPUTS, new org.apache.thrift.meta_data.FieldMetaData("processOutputs", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.application.io.OutputDataObjectType.class))));
-    tmpMap.put(_Fields.RESOURCE_SCHEDULE, new org.apache.thrift.meta_data.FieldMetaData("resourceSchedule", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.PROCESS_RESOURCE_SCHEDULE, new org.apache.thrift.meta_data.FieldMetaData("processResourceSchedule", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel.class)));
     tmpMap.put(_Fields.TASKS, new org.apache.thrift.meta_data.FieldMetaData("tasks", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.task.TaskModel.class))));
     tmpMap.put(_Fields.TASK_DAG, new org.apache.thrift.meta_data.FieldMetaData("taskDag", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.PROCESS_ERROR, new org.apache.thrift.meta_data.FieldMetaData("processError", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.commons.ErrorModel.class)));
+    tmpMap.put(_Fields.PROCESS_ERRORS, new org.apache.thrift.meta_data.FieldMetaData("processErrors", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.commons.ErrorModel.class))));
     tmpMap.put(_Fields.GATEWAY_EXECUTION_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayExecutionId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.ENABLE_EMAIL_NOTIFICATION, new org.apache.thrift.meta_data.FieldMetaData("enableEmailNotification", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -335,8 +337,12 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     }
     this.creationTime = other.creationTime;
     this.lastUpdateTime = other.lastUpdateTime;
-    if (other.isSetProcessStatus()) {
-      this.processStatus = new org.apache.airavata.model.status.ProcessStatus(other.processStatus);
+    if (other.isSetProcessStatuses()) {
+      List<org.apache.airavata.model.status.ProcessStatus> __this__processStatuses = new ArrayList<org.apache.airavata.model.status.ProcessStatus>(other.processStatuses.size());
+      for (org.apache.airavata.model.status.ProcessStatus other_element : other.processStatuses) {
+        __this__processStatuses.add(new org.apache.airavata.model.status.ProcessStatus(other_element));
+      }
+      this.processStatuses = __this__processStatuses;
     }
     if (other.isSetProcessDetail()) {
       this.processDetail = other.processDetail;
@@ -364,8 +370,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       }
       this.processOutputs = __this__processOutputs;
     }
-    if (other.isSetResourceSchedule()) {
-      this.resourceSchedule = new org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel(other.resourceSchedule);
+    if (other.isSetProcessResourceSchedule()) {
+      this.processResourceSchedule = new org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel(other.processResourceSchedule);
     }
     if (other.isSetTasks()) {
       List<org.apache.airavata.model.task.TaskModel> __this__tasks = new ArrayList<org.apache.airavata.model.task.TaskModel>(other.tasks.size());
@@ -377,8 +383,12 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     if (other.isSetTaskDag()) {
       this.taskDag = other.taskDag;
     }
-    if (other.isSetProcessError()) {
-      this.processError = new org.apache.airavata.model.commons.ErrorModel(other.processError);
+    if (other.isSetProcessErrors()) {
+      List<org.apache.airavata.model.commons.ErrorModel> __this__processErrors = new ArrayList<org.apache.airavata.model.commons.ErrorModel>(other.processErrors.size());
+      for (org.apache.airavata.model.commons.ErrorModel other_element : other.processErrors) {
+        __this__processErrors.add(new org.apache.airavata.model.commons.ErrorModel(other_element));
+      }
+      this.processErrors = __this__processErrors;
     }
     if (other.isSetGatewayExecutionId()) {
       this.gatewayExecutionId = other.gatewayExecutionId;
@@ -416,17 +426,17 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     this.creationTime = 0;
     setLastUpdateTimeIsSet(false);
     this.lastUpdateTime = 0;
-    this.processStatus = null;
+    this.processStatuses = null;
     this.processDetail = null;
     this.applicationInterfaceId = null;
     this.applicationDeploymentId = null;
     this.computeResourceId = null;
     this.processInputs = null;
     this.processOutputs = null;
-    this.resourceSchedule = null;
+    this.processResourceSchedule = null;
     this.tasks = null;
     this.taskDag = null;
-    this.processError = null;
+    this.processErrors = null;
     this.gatewayExecutionId = null;
     setEnableEmailNotificationIsSet(false);
     this.enableEmailNotification = false;
@@ -529,26 +539,41 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __LASTUPDATETIME_ISSET_ID, value);
   }
 
-  public org.apache.airavata.model.status.ProcessStatus getProcessStatus() {
-    return this.processStatus;
+  public int getProcessStatusesSize() {
+    return (this.processStatuses == null) ? 0 : this.processStatuses.size();
   }
 
-  public void setProcessStatus(org.apache.airavata.model.status.ProcessStatus processStatus) {
-    this.processStatus = processStatus;
+  public java.util.Iterator<org.apache.airavata.model.status.ProcessStatus> getProcessStatusesIterator() {
+    return (this.processStatuses == null) ? null : this.processStatuses.iterator();
   }
 
-  public void unsetProcessStatus() {
-    this.processStatus = null;
+  public void addToProcessStatuses(org.apache.airavata.model.status.ProcessStatus elem) {
+    if (this.processStatuses == null) {
+      this.processStatuses = new ArrayList<org.apache.airavata.model.status.ProcessStatus>();
+    }
+    this.processStatuses.add(elem);
   }
 
-  /** Returns true if field processStatus is set (has been assigned a value) and false otherwise */
-  public boolean isSetProcessStatus() {
-    return this.processStatus != null;
+  public List<org.apache.airavata.model.status.ProcessStatus> getProcessStatuses() {
+    return this.processStatuses;
   }
 
-  public void setProcessStatusIsSet(boolean value) {
+  public void setProcessStatuses(List<org.apache.airavata.model.status.ProcessStatus> processStatuses) {
+    this.processStatuses = processStatuses;
+  }
+
+  public void unsetProcessStatuses() {
+    this.processStatuses = null;
+  }
+
+  /** Returns true if field processStatuses is set (has been assigned a value) and false otherwise */
+  public boolean isSetProcessStatuses() {
+    return this.processStatuses != null;
+  }
+
+  public void setProcessStatusesIsSet(boolean value) {
     if (!value) {
-      this.processStatus = null;
+      this.processStatuses = null;
     }
   }
 
@@ -720,26 +745,26 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     }
   }
 
-  public org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel getResourceSchedule() {
-    return this.resourceSchedule;
+  public org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel getProcessResourceSchedule() {
+    return this.processResourceSchedule;
   }
 
-  public void setResourceSchedule(org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel resourceSchedule) {
-    this.resourceSchedule = resourceSchedule;
+  public void setProcessResourceSchedule(org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel processResourceSchedule) {
+    this.processResourceSchedule = processResourceSchedule;
   }
 
-  public void unsetResourceSchedule() {
-    this.resourceSchedule = null;
+  public void unsetProcessResourceSchedule() {
+    this.processResourceSchedule = null;
   }
 
-  /** Returns true if field resourceSchedule is set (has been assigned a value) and false otherwise */
-  public boolean isSetResourceSchedule() {
-    return this.resourceSchedule != null;
+  /** Returns true if field processResourceSchedule is set (has been assigned a value) and false otherwise */
+  public boolean isSetProcessResourceSchedule() {
+    return this.processResourceSchedule != null;
   }
 
-  public void setResourceScheduleIsSet(boolean value) {
+  public void setProcessResourceScheduleIsSet(boolean value) {
     if (!value) {
-      this.resourceSchedule = null;
+      this.processResourceSchedule = null;
     }
   }
 
@@ -804,26 +829,41 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     }
   }
 
-  public org.apache.airavata.model.commons.ErrorModel getProcessError() {
-    return this.processError;
+  public int getProcessErrorsSize() {
+    return (this.processErrors == null) ? 0 : this.processErrors.size();
   }
 
-  public void setProcessError(org.apache.airavata.model.commons.ErrorModel processError) {
-    this.processError = processError;
+  public java.util.Iterator<org.apache.airavata.model.commons.ErrorModel> getProcessErrorsIterator() {
+    return (this.processErrors == null) ? null : this.processErrors.iterator();
   }
 
-  public void unsetProcessError() {
-    this.processError = null;
+  public void addToProcessErrors(org.apache.airavata.model.commons.ErrorModel elem) {
+    if (this.processErrors == null) {
+      this.processErrors = new ArrayList<org.apache.airavata.model.commons.ErrorModel>();
+    }
+    this.processErrors.add(elem);
   }
 
-  /** Returns true if field processError is set (has been assigned a value) and false otherwise */
-  public boolean isSetProcessError() {
-    return this.processError != null;
+  public List<org.apache.airavata.model.commons.ErrorModel> getProcessErrors() {
+    return this.processErrors;
   }
 
-  public void setProcessErrorIsSet(boolean value) {
+  public void setProcessErrors(List<org.apache.airavata.model.commons.ErrorModel> processErrors) {
+    this.processErrors = processErrors;
+  }
+
+  public void unsetProcessErrors() {
+    this.processErrors = null;
+  }
+
+  /** Returns true if field processErrors is set (has been assigned a value) and false otherwise */
+  public boolean isSetProcessErrors() {
+    return this.processErrors != null;
+  }
+
+  public void setProcessErrorsIsSet(boolean value) {
     if (!value) {
-      this.processError = null;
+      this.processErrors = null;
     }
   }
 
@@ -1058,11 +1098,11 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       }
       break;
 
-    case PROCESS_STATUS:
+    case PROCESS_STATUSES:
       if (value == null) {
-        unsetProcessStatus();
+        unsetProcessStatuses();
       } else {
-        setProcessStatus((org.apache.airavata.model.status.ProcessStatus)value);
+        setProcessStatuses((List<org.apache.airavata.model.status.ProcessStatus>)value);
       }
       break;
 
@@ -1114,11 +1154,11 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       }
       break;
 
-    case RESOURCE_SCHEDULE:
+    case PROCESS_RESOURCE_SCHEDULE:
       if (value == null) {
-        unsetResourceSchedule();
+        unsetProcessResourceSchedule();
       } else {
-        setResourceSchedule((org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel)value);
+        setProcessResourceSchedule((org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel)value);
       }
       break;
 
@@ -1138,11 +1178,11 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       }
       break;
 
-    case PROCESS_ERROR:
+    case PROCESS_ERRORS:
       if (value == null) {
-        unsetProcessError();
+        unsetProcessErrors();
       } else {
-        setProcessError((org.apache.airavata.model.commons.ErrorModel)value);
+        setProcessErrors((List<org.apache.airavata.model.commons.ErrorModel>)value);
       }
       break;
 
@@ -1227,8 +1267,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     case LAST_UPDATE_TIME:
       return getLastUpdateTime();
 
-    case PROCESS_STATUS:
-      return getProcessStatus();
+    case PROCESS_STATUSES:
+      return getProcessStatuses();
 
     case PROCESS_DETAIL:
       return getProcessDetail();
@@ -1248,8 +1288,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     case PROCESS_OUTPUTS:
       return getProcessOutputs();
 
-    case RESOURCE_SCHEDULE:
-      return getResourceSchedule();
+    case PROCESS_RESOURCE_SCHEDULE:
+      return getProcessResourceSchedule();
 
     case TASKS:
       return getTasks();
@@ -1257,8 +1297,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     case TASK_DAG:
       return getTaskDag();
 
-    case PROCESS_ERROR:
-      return getProcessError();
+    case PROCESS_ERRORS:
+      return getProcessErrors();
 
     case GATEWAY_EXECUTION_ID:
       return getGatewayExecutionId();
@@ -1303,8 +1343,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       return isSetCreationTime();
     case LAST_UPDATE_TIME:
       return isSetLastUpdateTime();
-    case PROCESS_STATUS:
-      return isSetProcessStatus();
+    case PROCESS_STATUSES:
+      return isSetProcessStatuses();
     case PROCESS_DETAIL:
       return isSetProcessDetail();
     case APPLICATION_INTERFACE_ID:
@@ -1317,14 +1357,14 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       return isSetProcessInputs();
     case PROCESS_OUTPUTS:
       return isSetProcessOutputs();
-    case RESOURCE_SCHEDULE:
-      return isSetResourceSchedule();
+    case PROCESS_RESOURCE_SCHEDULE:
+      return isSetProcessResourceSchedule();
     case TASKS:
       return isSetTasks();
     case TASK_DAG:
       return isSetTaskDag();
-    case PROCESS_ERROR:
-      return isSetProcessError();
+    case PROCESS_ERRORS:
+      return isSetProcessErrors();
     case GATEWAY_EXECUTION_ID:
       return isSetGatewayExecutionId();
     case ENABLE_EMAIL_NOTIFICATION:
@@ -1394,12 +1434,12 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         return false;
     }
 
-    boolean this_present_processStatus = true && this.isSetProcessStatus();
-    boolean that_present_processStatus = true && that.isSetProcessStatus();
-    if (this_present_processStatus || that_present_processStatus) {
-      if (!(this_present_processStatus && that_present_processStatus))
+    boolean this_present_processStatuses = true && this.isSetProcessStatuses();
+    boolean that_present_processStatuses = true && that.isSetProcessStatuses();
+    if (this_present_processStatuses || that_present_processStatuses) {
+      if (!(this_present_processStatuses && that_present_processStatuses))
         return false;
-      if (!this.processStatus.equals(that.processStatus))
+      if (!this.processStatuses.equals(that.processStatuses))
         return false;
     }
 
@@ -1457,12 +1497,12 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         return false;
     }
 
-    boolean this_present_resourceSchedule = true && this.isSetResourceSchedule();
-    boolean that_present_resourceSchedule = true && that.isSetResourceSchedule();
-    if (this_present_resourceSchedule || that_present_resourceSchedule) {
-      if (!(this_present_resourceSchedule && that_present_resourceSchedule))
+    boolean this_present_processResourceSchedule = true && this.isSetProcessResourceSchedule();
+    boolean that_present_processResourceSchedule = true && that.isSetProcessResourceSchedule();
+    if (this_present_processResourceSchedule || that_present_processResourceSchedule) {
+      if (!(this_present_processResourceSchedule && that_present_processResourceSchedule))
         return false;
-      if (!this.resourceSchedule.equals(that.resourceSchedule))
+      if (!this.processResourceSchedule.equals(that.processResourceSchedule))
         return false;
     }
 
@@ -1484,12 +1524,12 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         return false;
     }
 
-    boolean this_present_processError = true && this.isSetProcessError();
-    boolean that_present_processError = true && that.isSetProcessError();
-    if (this_present_processError || that_present_processError) {
-      if (!(this_present_processError && that_present_processError))
+    boolean this_present_processErrors = true && this.isSetProcessErrors();
+    boolean that_present_processErrors = true && that.isSetProcessErrors();
+    if (this_present_processErrors || that_present_processErrors) {
+      if (!(this_present_processErrors && that_present_processErrors))
         return false;
-      if (!this.processError.equals(that.processError))
+      if (!this.processErrors.equals(that.processErrors))
         return false;
     }
 
@@ -1592,10 +1632,10 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     if (present_lastUpdateTime)
       list.add(lastUpdateTime);
 
-    boolean present_processStatus = true && (isSetProcessStatus());
-    list.add(present_processStatus);
-    if (present_processStatus)
-      list.add(processStatus);
+    boolean present_processStatuses = true && (isSetProcessStatuses());
+    list.add(present_processStatuses);
+    if (present_processStatuses)
+      list.add(processStatuses);
 
     boolean present_processDetail = true && (isSetProcessDetail());
     list.add(present_processDetail);
@@ -1627,10 +1667,10 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     if (present_processOutputs)
       list.add(processOutputs);
 
-    boolean present_resourceSchedule = true && (isSetResourceSchedule());
-    list.add(present_resourceSchedule);
-    if (present_resourceSchedule)
-      list.add(resourceSchedule);
+    boolean present_processResourceSchedule = true && (isSetProcessResourceSchedule());
+    list.add(present_processResourceSchedule);
+    if (present_processResourceSchedule)
+      list.add(processResourceSchedule);
 
     boolean present_tasks = true && (isSetTasks());
     list.add(present_tasks);
@@ -1642,10 +1682,10 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     if (present_taskDag)
       list.add(taskDag);
 
-    boolean present_processError = true && (isSetProcessError());
-    list.add(present_processError);
-    if (present_processError)
-      list.add(processError);
+    boolean present_processErrors = true && (isSetProcessErrors());
+    list.add(present_processErrors);
+    if (present_processErrors)
+      list.add(processErrors);
 
     boolean present_gatewayExecutionId = true && (isSetGatewayExecutionId());
     list.add(present_gatewayExecutionId);
@@ -1738,12 +1778,12 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetProcessStatus()).compareTo(other.isSetProcessStatus());
+    lastComparison = Boolean.valueOf(isSetProcessStatuses()).compareTo(other.isSetProcessStatuses());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetProcessStatus()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.processStatus, other.processStatus);
+    if (isSetProcessStatuses()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.processStatuses, other.processStatuses);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1808,12 +1848,12 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetResourceSchedule()).compareTo(other.isSetResourceSchedule());
+    lastComparison = Boolean.valueOf(isSetProcessResourceSchedule()).compareTo(other.isSetProcessResourceSchedule());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetResourceSchedule()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.resourceSchedule, other.resourceSchedule);
+    if (isSetProcessResourceSchedule()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.processResourceSchedule, other.processResourceSchedule);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1838,12 +1878,12 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetProcessError()).compareTo(other.isSetProcessError());
+    lastComparison = Boolean.valueOf(isSetProcessErrors()).compareTo(other.isSetProcessErrors());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetProcessError()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.processError, other.processError);
+    if (isSetProcessErrors()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.processErrors, other.processErrors);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1975,13 +2015,13 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       sb.append(this.lastUpdateTime);
       first = false;
     }
-    if (isSetProcessStatus()) {
+    if (isSetProcessStatuses()) {
       if (!first) sb.append(", ");
-      sb.append("processStatus:");
-      if (this.processStatus == null) {
+      sb.append("processStatuses:");
+      if (this.processStatuses == null) {
         sb.append("null");
       } else {
-        sb.append(this.processStatus);
+        sb.append(this.processStatuses);
       }
       first = false;
     }
@@ -2045,13 +2085,13 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       }
       first = false;
     }
-    if (isSetResourceSchedule()) {
+    if (isSetProcessResourceSchedule()) {
       if (!first) sb.append(", ");
-      sb.append("resourceSchedule:");
-      if (this.resourceSchedule == null) {
+      sb.append("processResourceSchedule:");
+      if (this.processResourceSchedule == null) {
         sb.append("null");
       } else {
-        sb.append(this.resourceSchedule);
+        sb.append(this.processResourceSchedule);
       }
       first = false;
     }
@@ -2075,13 +2115,13 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       }
       first = false;
     }
-    if (isSetProcessError()) {
+    if (isSetProcessErrors()) {
       if (!first) sb.append(", ");
-      sb.append("processError:");
-      if (this.processError == null) {
+      sb.append("processErrors:");
+      if (this.processErrors == null) {
         sb.append("null");
       } else {
-        sb.append(this.processError);
+        sb.append(this.processErrors);
       }
       first = false;
     }
@@ -2172,14 +2212,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     }
 
     // check for sub-struct validity
-    if (processStatus != null) {
-      processStatus.validate();
-    }
-    if (resourceSchedule != null) {
-      resourceSchedule.validate();
-    }
-    if (processError != null) {
-      processError.validate();
+    if (processResourceSchedule != null) {
+      processResourceSchedule.validate();
     }
   }
 
@@ -2251,11 +2285,21 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // PROCESS_STATUS
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-              struct.processStatus = new org.apache.airavata.model.status.ProcessStatus();
-              struct.processStatus.read(iprot);
-              struct.setProcessStatusIsSet(true);
+          case 5: // PROCESS_STATUSES
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
+                struct.processStatuses = new ArrayList<org.apache.airavata.model.status.ProcessStatus>(_list0.size);
+                org.apache.airavata.model.status.ProcessStatus _elem1;
+                for (int _i2 = 0; _i2 < _list0.size; ++_i2)
+                {
+                  _elem1 = new org.apache.airavata.model.status.ProcessStatus();
+                  _elem1.read(iprot);
+                  struct.processStatuses.add(_elem1);
+                }
+                iprot.readListEnd();
+              }
+              struct.setProcessStatusesIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -2295,14 +2339,14 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           case 10: // PROCESS_INPUTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
-                struct.processInputs = new ArrayList<org.apache.airavata.model.application.io.InputDataObjectType>(_list0.size);
-                org.apache.airavata.model.application.io.InputDataObjectType _elem1;
-                for (int _i2 = 0; _i2 < _list0.size; ++_i2)
+                org.apache.thrift.protocol.TList _list3 = iprot.readListBegin();
+                struct.processInputs = new ArrayList<org.apache.airavata.model.application.io.InputDataObjectType>(_list3.size);
+                org.apache.airavata.model.application.io.InputDataObjectType _elem4;
+                for (int _i5 = 0; _i5 < _list3.size; ++_i5)
                 {
-                  _elem1 = new org.apache.airavata.model.application.io.InputDataObjectType();
-                  _elem1.read(iprot);
-                  struct.processInputs.add(_elem1);
+                  _elem4 = new org.apache.airavata.model.application.io.InputDataObjectType();
+                  _elem4.read(iprot);
+                  struct.processInputs.add(_elem4);
                 }
                 iprot.readListEnd();
               }
@@ -2314,14 +2358,14 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           case 11: // PROCESS_OUTPUTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list3 = iprot.readListBegin();
-                struct.processOutputs = new ArrayList<org.apache.airavata.model.application.io.OutputDataObjectType>(_list3.size);
-                org.apache.airavata.model.application.io.OutputDataObjectType _elem4;
-                for (int _i5 = 0; _i5 < _list3.size; ++_i5)
+                org.apache.thrift.protocol.TList _list6 = iprot.readListBegin();
+                struct.processOutputs = new ArrayList<org.apache.airavata.model.application.io.OutputDataObjectType>(_list6.size);
+                org.apache.airavata.model.application.io.OutputDataObjectType _elem7;
+                for (int _i8 = 0; _i8 < _list6.size; ++_i8)
                 {
-                  _elem4 = new org.apache.airavata.model.application.io.OutputDataObjectType();
-                  _elem4.read(iprot);
-                  struct.processOutputs.add(_elem4);
+                  _elem7 = new org.apache.airavata.model.application.io.OutputDataObjectType();
+                  _elem7.read(iprot);
+                  struct.processOutputs.add(_elem7);
                 }
                 iprot.readListEnd();
               }
@@ -2330,11 +2374,11 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 12: // RESOURCE_SCHEDULE
+          case 12: // PROCESS_RESOURCE_SCHEDULE
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-              struct.resourceSchedule = new org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel();
-              struct.resourceSchedule.read(iprot);
-              struct.setResourceScheduleIsSet(true);
+              struct.processResourceSchedule = new org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel();
+              struct.processResourceSchedule.read(iprot);
+              struct.setProcessResourceScheduleIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -2342,14 +2386,14 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           case 13: // TASKS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list6 = iprot.readListBegin();
-                struct.tasks = new ArrayList<org.apache.airavata.model.task.TaskModel>(_list6.size);
-                org.apache.airavata.model.task.TaskModel _elem7;
-                for (int _i8 = 0; _i8 < _list6.size; ++_i8)
+                org.apache.thrift.protocol.TList _list9 = iprot.readListBegin();
+                struct.tasks = new ArrayList<org.apache.airavata.model.task.TaskModel>(_list9.size);
+                org.apache.airavata.model.task.TaskModel _elem10;
+                for (int _i11 = 0; _i11 < _list9.size; ++_i11)
                 {
-                  _elem7 = new org.apache.airavata.model.task.TaskModel();
-                  _elem7.read(iprot);
-                  struct.tasks.add(_elem7);
+                  _elem10 = new org.apache.airavata.model.task.TaskModel();
+                  _elem10.read(iprot);
+                  struct.tasks.add(_elem10);
                 }
                 iprot.readListEnd();
               }
@@ -2366,11 +2410,21 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 15: // PROCESS_ERROR
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-              struct.processError = new org.apache.airavata.model.commons.ErrorModel();
-              struct.processError.read(iprot);
-              struct.setProcessErrorIsSet(true);
+          case 15: // PROCESS_ERRORS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list12 = iprot.readListBegin();
+                struct.processErrors = new ArrayList<org.apache.airavata.model.commons.ErrorModel>(_list12.size);
+                org.apache.airavata.model.commons.ErrorModel _elem13;
+                for (int _i14 = 0; _i14 < _list12.size; ++_i14)
+                {
+                  _elem13 = new org.apache.airavata.model.commons.ErrorModel();
+                  _elem13.read(iprot);
+                  struct.processErrors.add(_elem13);
+                }
+                iprot.readListEnd();
+              }
+              struct.setProcessErrorsIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -2394,13 +2448,13 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           case 18: // EMAIL_ADDRESSES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list9 = iprot.readListBegin();
-                struct.emailAddresses = new ArrayList<String>(_list9.size);
-                String _elem10;
-                for (int _i11 = 0; _i11 < _list9.size; ++_i11)
+                org.apache.thrift.protocol.TList _list15 = iprot.readListBegin();
+                struct.emailAddresses = new ArrayList<String>(_list15.size);
+                String _elem16;
+                for (int _i17 = 0; _i17 < _list15.size; ++_i17)
                 {
-                  _elem10 = iprot.readString();
-                  struct.emailAddresses.add(_elem10);
+                  _elem16 = iprot.readString();
+                  struct.emailAddresses.add(_elem16);
                 }
                 iprot.readListEnd();
               }
@@ -2482,10 +2536,17 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         oprot.writeI64(struct.lastUpdateTime);
         oprot.writeFieldEnd();
       }
-      if (struct.processStatus != null) {
-        if (struct.isSetProcessStatus()) {
-          oprot.writeFieldBegin(PROCESS_STATUS_FIELD_DESC);
-          struct.processStatus.write(oprot);
+      if (struct.processStatuses != null) {
+        if (struct.isSetProcessStatuses()) {
+          oprot.writeFieldBegin(PROCESS_STATUSES_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.processStatuses.size()));
+            for (org.apache.airavata.model.status.ProcessStatus _iter18 : struct.processStatuses)
+            {
+              _iter18.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
           oprot.writeFieldEnd();
         }
       }
@@ -2522,9 +2583,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           oprot.writeFieldBegin(PROCESS_INPUTS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.processInputs.size()));
-            for (org.apache.airavata.model.application.io.InputDataObjectType _iter12 : struct.processInputs)
+            for (org.apache.airavata.model.application.io.InputDataObjectType _iter19 : struct.processInputs)
             {
-              _iter12.write(oprot);
+              _iter19.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -2536,19 +2597,19 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           oprot.writeFieldBegin(PROCESS_OUTPUTS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.processOutputs.size()));
-            for (org.apache.airavata.model.application.io.OutputDataObjectType _iter13 : struct.processOutputs)
+            for (org.apache.airavata.model.application.io.OutputDataObjectType _iter20 : struct.processOutputs)
             {
-              _iter13.write(oprot);
+              _iter20.write(oprot);
             }
             oprot.writeListEnd();
           }
           oprot.writeFieldEnd();
         }
       }
-      if (struct.resourceSchedule != null) {
-        if (struct.isSetResourceSchedule()) {
-          oprot.writeFieldBegin(RESOURCE_SCHEDULE_FIELD_DESC);
-          struct.resourceSchedule.write(oprot);
+      if (struct.processResourceSchedule != null) {
+        if (struct.isSetProcessResourceSchedule()) {
+          oprot.writeFieldBegin(PROCESS_RESOURCE_SCHEDULE_FIELD_DESC);
+          struct.processResourceSchedule.write(oprot);
           oprot.writeFieldEnd();
         }
       }
@@ -2557,9 +2618,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           oprot.writeFieldBegin(TASKS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.tasks.size()));
-            for (org.apache.airavata.model.task.TaskModel _iter14 : struct.tasks)
+            for (org.apache.airavata.model.task.TaskModel _iter21 : struct.tasks)
             {
-              _iter14.write(oprot);
+              _iter21.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -2573,10 +2634,17 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           oprot.writeFieldEnd();
         }
       }
-      if (struct.processError != null) {
-        if (struct.isSetProcessError()) {
-          oprot.writeFieldBegin(PROCESS_ERROR_FIELD_DESC);
-          struct.processError.write(oprot);
+      if (struct.processErrors != null) {
+        if (struct.isSetProcessErrors()) {
+          oprot.writeFieldBegin(PROCESS_ERRORS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.processErrors.size()));
+            for (org.apache.airavata.model.commons.ErrorModel _iter22 : struct.processErrors)
+            {
+              _iter22.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
           oprot.writeFieldEnd();
         }
       }
@@ -2597,9 +2665,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           oprot.writeFieldBegin(EMAIL_ADDRESSES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.emailAddresses.size()));
-            for (String _iter15 : struct.emailAddresses)
+            for (String _iter23 : struct.emailAddresses)
             {
-              oprot.writeString(_iter15);
+              oprot.writeString(_iter23);
             }
             oprot.writeListEnd();
           }
@@ -2665,7 +2733,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (struct.isSetLastUpdateTime()) {
         optionals.set(1);
       }
-      if (struct.isSetProcessStatus()) {
+      if (struct.isSetProcessStatuses()) {
         optionals.set(2);
       }
       if (struct.isSetProcessDetail()) {
@@ -2686,7 +2754,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (struct.isSetProcessOutputs()) {
         optionals.set(8);
       }
-      if (struct.isSetResourceSchedule()) {
+      if (struct.isSetProcessResourceSchedule()) {
         optionals.set(9);
       }
       if (struct.isSetTasks()) {
@@ -2695,7 +2763,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (struct.isSetTaskDag()) {
         optionals.set(11);
       }
-      if (struct.isSetProcessError()) {
+      if (struct.isSetProcessErrors()) {
         optionals.set(12);
       }
       if (struct.isSetGatewayExecutionId()) {
@@ -2729,8 +2797,14 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (struct.isSetLastUpdateTime()) {
         oprot.writeI64(struct.lastUpdateTime);
       }
-      if (struct.isSetProcessStatus()) {
-        struct.processStatus.write(oprot);
+      if (struct.isSetProcessStatuses()) {
+        {
+          oprot.writeI32(struct.processStatuses.size());
+          for (org.apache.airavata.model.status.ProcessStatus _iter24 : struct.processStatuses)
+          {
+            _iter24.write(oprot);
+          }
+        }
       }
       if (struct.isSetProcessDetail()) {
         oprot.writeString(struct.processDetail);
@@ -2747,38 +2821,44 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (struct.isSetProcessInputs()) {
         {
           oprot.writeI32(struct.processInputs.size());
-          for (org.apache.airavata.model.application.io.InputDataObjectType _iter16 : struct.processInputs)
+          for (org.apache.airavata.model.application.io.InputDataObjectType _iter25 : struct.processInputs)
           {
-            _iter16.write(oprot);
+            _iter25.write(oprot);
           }
         }
       }
       if (struct.isSetProcessOutputs()) {
         {
           oprot.writeI32(struct.processOutputs.size());
-          for (org.apache.airavata.model.application.io.OutputDataObjectType _iter17 : struct.processOutputs)
+          for (org.apache.airavata.model.application.io.OutputDataObjectType _iter26 : struct.processOutputs)
           {
-            _iter17.write(oprot);
+            _iter26.write(oprot);
           }
         }
       }
-      if (struct.isSetResourceSchedule()) {
-        struct.resourceSchedule.write(oprot);
+      if (struct.isSetProcessResourceSchedule()) {
+        struct.processResourceSchedule.write(oprot);
       }
       if (struct.isSetTasks()) {
         {
           oprot.writeI32(struct.tasks.size());
-          for (org.apache.airavata.model.task.TaskModel _iter18 : struct.tasks)
+          for (org.apache.airavata.model.task.TaskModel _iter27 : struct.tasks)
           {
-            _iter18.write(oprot);
+            _iter27.write(oprot);
           }
         }
       }
       if (struct.isSetTaskDag()) {
         oprot.writeString(struct.taskDag);
       }
-      if (struct.isSetProcessError()) {
-        struct.processError.write(oprot);
+      if (struct.isSetProcessErrors()) {
+        {
+          oprot.writeI32(struct.processErrors.size());
+          for (org.apache.airavata.model.commons.ErrorModel _iter28 : struct.processErrors)
+          {
+            _iter28.write(oprot);
+          }
+        }
       }
       if (struct.isSetGatewayExecutionId()) {
         oprot.writeString(struct.gatewayExecutionId);
@@ -2789,9 +2869,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (struct.isSetEmailAddresses()) {
         {
           oprot.writeI32(struct.emailAddresses.size());
-          for (String _iter19 : struct.emailAddresses)
+          for (String _iter29 : struct.emailAddresses)
           {
-            oprot.writeString(_iter19);
+            oprot.writeString(_iter29);
           }
         }
       }
@@ -2829,9 +2909,18 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         struct.setLastUpdateTimeIsSet(true);
       }
       if (incoming.get(2)) {
-        struct.processStatus = new org.apache.airavata.model.status.ProcessStatus();
-        struct.processStatus.read(iprot);
-        struct.setProcessStatusIsSet(true);
+        {
+          org.apache.thrift.protocol.TList _list30 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.processStatuses = new ArrayList<org.apache.airavata.model.status.ProcessStatus>(_list30.size);
+          org.apache.airavata.model.status.ProcessStatus _elem31;
+          for (int _i32 = 0; _i32 < _list30.size; ++_i32)
+          {
+            _elem31 = new org.apache.airavata.model.status.ProcessStatus();
+            _elem31.read(iprot);
+            struct.processStatuses.add(_elem31);
+          }
+        }
+        struct.setProcessStatusesIsSet(true);
       }
       if (incoming.get(3)) {
         struct.processDetail = iprot.readString();
@@ -2851,47 +2940,47 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       }
       if (incoming.get(7)) {
         {
-          org.apache.thrift.protocol.TList _list20 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.processInputs = new ArrayList<org.apache.airavata.model.application.io.InputDataObjectType>(_list20.size);
-          org.apache.airavata.model.application.io.InputDataObjectType _elem21;
-          for (int _i22 = 0; _i22 < _list20.size; ++_i22)
+          org.apache.thrift.protocol.TList _list33 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.processInputs = new ArrayList<org.apache.airavata.model.application.io.InputDataObjectType>(_list33.size);
+          org.apache.airavata.model.application.io.InputDataObjectType _elem34;
+          for (int _i35 = 0; _i35 < _list33.size; ++_i35)
           {
-            _elem21 = new org.apache.airavata.model.application.io.InputDataObjectType();
-            _elem21.read(iprot);
-            struct.processInputs.add(_elem21);
+            _elem34 = new org.apache.airavata.model.application.io.InputDataObjectType();
+            _elem34.read(iprot);
+            struct.processInputs.add(_elem34);
           }
         }
         struct.setProcessInputsIsSet(true);
       }
       if (incoming.get(8)) {
         {
-          org.apache.thrift.protocol.TList _list23 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.processOutputs = new ArrayList<org.apache.airavata.model.application.io.OutputDataObjectType>(_list23.size);
-          org.apache.airavata.model.application.io.OutputDataObjectType _elem24;
-          for (int _i25 = 0; _i25 < _list23.size; ++_i25)
+          org.apache.thrift.protocol.TList _list36 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.processOutputs = new ArrayList<org.apache.airavata.model.application.io.OutputDataObjectType>(_list36.size);
+          org.apache.airavata.model.application.io.OutputDataObjectType _elem37;
+          for (int _i38 = 0; _i38 < _list36.size; ++_i38)
           {
-            _elem24 = new org.apache.airavata.model.application.io.OutputDataObjectType();
-            _elem24.read(iprot);
-            struct.processOutputs.add(_elem24);
+            _elem37 = new org.apache.airavata.model.application.io.OutputDataObjectType();
+            _elem37.read(iprot);
+            struct.processOutputs.add(_elem37);
           }
         }
         struct.setProcessOutputsIsSet(true);
       }
       if (incoming.get(9)) {
-        struct.resourceSchedule = new org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel();
-        struct.resourceSchedule.read(iprot);
-        struct.setResourceScheduleIsSet(true);
+        struct.processResourceSchedule = new org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel();
+        struct.processResourceSchedule.read(iprot);
+        struct.setProcessResourceScheduleIsSet(true);
       }
       if (incoming.get(10)) {
         {
-          org.apache.thrift.protocol.TList _list26 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.tasks = new ArrayList<org.apache.airavata.model.task.TaskModel>(_list26.size);
-          org.apache.airavata.model.task.TaskModel _elem27;
-          for (int _i28 = 0; _i28 < _list26.size; ++_i28)
+          org.apache.thrift.protocol.TList _list39 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.tasks = new ArrayList<org.apache.airavata.model.task.TaskModel>(_list39.size);
+          org.apache.airavata.model.task.TaskModel _elem40;
+          for (int _i41 = 0; _i41 < _list39.size; ++_i41)
           {
-            _elem27 = new org.apache.airavata.model.task.TaskModel();
-            _elem27.read(iprot);
-            struct.tasks.add(_elem27);
+            _elem40 = new org.apache.airavata.model.task.TaskModel();
+            _elem40.read(iprot);
+            struct.tasks.add(_elem40);
           }
         }
         struct.setTasksIsSet(true);
@@ -2901,9 +2990,18 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         struct.setTaskDagIsSet(true);
       }
       if (incoming.get(12)) {
-        struct.processError = new org.apache.airavata.model.commons.ErrorModel();
-        struct.processError.read(iprot);
-        struct.setProcessErrorIsSet(true);
+        {
+          org.apache.thrift.protocol.TList _list42 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.processErrors = new ArrayList<org.apache.airavata.model.commons.ErrorModel>(_list42.size);
+          org.apache.airavata.model.commons.ErrorModel _elem43;
+          for (int _i44 = 0; _i44 < _list42.size; ++_i44)
+          {
+            _elem43 = new org.apache.airavata.model.commons.ErrorModel();
+            _elem43.read(iprot);
+            struct.processErrors.add(_elem43);
+          }
+        }
+        struct.setProcessErrorsIsSet(true);
       }
       if (incoming.get(13)) {
         struct.gatewayExecutionId = iprot.readString();
@@ -2915,13 +3013,13 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       }
       if (incoming.get(15)) {
         {
-          org.apache.thrift.protocol.TList _list29 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.emailAddresses = new ArrayList<String>(_list29.size);
-          String _elem30;
-          for (int _i31 = 0; _i31 < _list29.size; ++_i31)
+          org.apache.thrift.protocol.TList _list45 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.emailAddresses = new ArrayList<String>(_list45.size);
+          String _elem46;
+          for (int _i47 = 0; _i47 < _list45.size; ++_i47)
           {
-            _elem30 = iprot.readString();
-            struct.emailAddresses.add(_elem30);
+            _elem46 = iprot.readString();
+            struct.emailAddresses.add(_elem46);
           }
         }
         struct.setEmailAddressesIsSet(true);

@@ -46,6 +46,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +64,7 @@ public class ProcessContext {
 	private final String tokenId;
 	private ProcessModel processModel;
 	private String workingDir;
+	private String scratchLocation;
 	private String inputDir;
 	private String outputDir;
 	private String localWorkingDir;
@@ -162,21 +164,25 @@ public class ProcessContext {
 
 	public String getWorkingDir() {
 		if (workingDir == null) {
-            if (processModel.getResourceSchedule().getStaticWorkingDir() != null){
-                workingDir = processModel.getResourceSchedule().getStaticWorkingDir();
+            if (processModel.getProcessResourceSchedule().getStaticWorkingDir() != null){
+                workingDir = processModel.getProcessResourceSchedule().getStaticWorkingDir();
             }else {
-                String scratchLocation = null;
-				String overrideScratchLocation = processModel.getResourceSchedule().getOverrideScratchLocation();
-                if (overrideScratchLocation != null && !overrideScratchLocation.equals("")) {
-					scratchLocation = overrideScratchLocation;
-				} else {
-					scratchLocation = computeResourcePreference.getScratchLocation();
-				}
+                String scratchLocation = getScratchLocation();
                 workingDir = (scratchLocation.endsWith("/") ? scratchLocation + processId : scratchLocation + "/" +
                         processId);
             }
 		}
 		return workingDir;
+	}
+
+	public String getScratchLocation() {
+		if (scratchLocation == null) {
+			scratchLocation = processModel.getProcessResourceSchedule().getOverrideScratchLocation();
+			if(scratchLocation == null || scratchLocation.isEmpty()){
+				scratchLocation = computeResourcePreference.getScratchLocation();
+			}
+		}
+		return scratchLocation;
 	}
 
 	public void setWorkingDir(String workingDir) {
@@ -361,19 +367,27 @@ public class ProcessContext {
 	}
 
 	public ProcessState getProcessState() {
-		return processModel.getProcessStatus().getState();
+		if(processModel.getProcessStatuses() != null && processModel.getProcessStatuses().size() > 0)
+			return processModel.getProcessStatuses().get(0).getState();
+		else
+			return null;
 	}
 
 	public void setProcessStatus(ProcessStatus status) {
 		if (status != null) {
 			log.info("expId: {}, processId: {} :- Process status changed {} -> {}", getExperimentId(), processId,
 					getProcessState().name(), status.getState().name());
-			processModel.setProcessStatus(status);
+			List<ProcessStatus> processStatuses = new ArrayList<>();
+			processStatuses.add(status);
+			processModel.setProcessStatuses(processStatuses);
 		}
 	}
 
 	public ProcessStatus getProcessStatus(){
-		return processModel.getProcessStatus();
+		if(processModel.getProcessStatuses() != null)
+			return processModel.getProcessStatuses().get(0);
+		else
+			return null;
 	}
 
 	public String getComputeResourceId() {
@@ -514,6 +528,7 @@ public class ProcessContext {
 	public void setRecoveryWithCancel(boolean recoveryWithCancel) {
 		this.recoveryWithCancel = recoveryWithCancel;
 	}
+
 
 }
 

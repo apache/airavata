@@ -29,6 +29,8 @@
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-regexp-match">
                         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">^(?:(?!
+/airavata/getAllGateways|
+/airavata/getGateway|
 /airavata/getSSHPubKey|
 /airavata/getAllGatewaySSHPubKeys|
 /airavata/getAllGatewayPWDCredentials|
@@ -90,6 +92,10 @@
 /airavata/getWorkflow|
 /airavata/getWorkflowTemplateId|
 /airavata/isWorkflowExistWithName|
+/airavata/getAllUsersInGateway|
+/airavata/shareResourceWithUsers|
+/airavata/revokeSharingOfResourceFromUsers|
+/airavata/getAllAccessibleUsers|
 /airavata/registerDataProduct|
 /airavata/getDataProduct|
 /airavata/registerReplicaLocation|
@@ -119,6 +125,8 @@
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-regexp-match">
                         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">^(?:(?!
 /airavata/getAPIVersion|
+/airavata/getAllGateways|
+/airavata/getGateway|
 /airavata/getNotification|
 /airavata/getAllNotifications|
 /airavata/createProject|
@@ -128,13 +136,11 @@
 /airavata/getUserProjects|
 /airavata/searchsearchProjects|
 /airavata/searchExperiments|
-/airavata/getExperimentStatistics|
 /airavata/getExperimentsInProject|
 /airavata/getUserExperiments|
 /airavata/createExperiment|
 /airavata/deleteExperiment|
 /airavata/getExperiment|
-/airavata/getDetailedExperimentTree|
 /airavata/updateExperiment|
 /airavata/updateExperimentConfiguration|
 /airavata/updateResourceScheduleing|
@@ -159,6 +165,9 @@
 /airavata/getWorkflowTemplateId|
 /airavata/isWorkflowExistWithName|
 /airavata/getAllUsersInGateway|
+/airavata/shareResourceWithUsers|
+/airavata/revokeSharingOfResourceFromUsers|
+/airavata/getAllAccessibleUsers|
 /airavata/registerDataProduct|
 /airavata/getDataProduct|
 /airavata/registerReplicaLocation|

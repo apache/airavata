@@ -46,6 +46,7 @@ const std::map<int, const char*> _MessageLevel_VALUES_TO_NAMES(::apache::thrift:
 
 int _kMessageTypeValues[] = {
   MessageType::EXPERIMENT,
+  MessageType::EXPERIMENT_CANCEL,
   MessageType::TASK,
   MessageType::PROCESS,
   MessageType::JOB,
@@ -55,6 +56,7 @@ int _kMessageTypeValues[] = {
 };
 const char* _kMessageTypeNames[] = {
   "EXPERIMENT",
+  "EXPERIMENT_CANCEL",
   "TASK",
   "PROCESS",
   "JOB",
@@ -62,7 +64,7 @@ const char* _kMessageTypeNames[] = {
   "TERMINATEPROCESS",
   "PROCESSOUTPUT"
 };
-const std::map<int, const char*> _MessageType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(7, _kMessageTypeValues, _kMessageTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _MessageType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(8, _kMessageTypeValues, _kMessageTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 
 ExperimentStatusChangeEvent::~ExperimentStatusChangeEvent() throw() {
@@ -1237,6 +1239,115 @@ void JobIdentifier::printTo(std::ostream& out) const {
 }
 
 
+ExperimentSubmitEvent::~ExperimentSubmitEvent() throw() {
+}
+
+
+void ExperimentSubmitEvent::__set_experimentId(const std::string& val) {
+  this->experimentId = val;
+}
+
+void ExperimentSubmitEvent::__set_gatewayId(const std::string& val) {
+  this->gatewayId = val;
+}
+
+uint32_t ExperimentSubmitEvent::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_experimentId = false;
+  bool isset_gatewayId = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->experimentId);
+          isset_experimentId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_experimentId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t ExperimentSubmitEvent::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("ExperimentSubmitEvent");
+
+  xfer += oprot->writeFieldBegin("experimentId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->experimentId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(ExperimentSubmitEvent &a, ExperimentSubmitEvent &b) {
+  using ::std::swap;
+  swap(a.experimentId, b.experimentId);
+  swap(a.gatewayId, b.gatewayId);
+}
+
+ExperimentSubmitEvent::ExperimentSubmitEvent(const ExperimentSubmitEvent& other29) {
+  experimentId = other29.experimentId;
+  gatewayId = other29.gatewayId;
+}
+ExperimentSubmitEvent& ExperimentSubmitEvent::operator=(const ExperimentSubmitEvent& other30) {
+  experimentId = other30.experimentId;
+  gatewayId = other30.gatewayId;
+  return *this;
+}
+void ExperimentSubmitEvent::printTo(std::ostream& out) const {
+  using ::apache::thrift::to_string;
+  out << "ExperimentSubmitEvent(";
+  out << "experimentId=" << to_string(experimentId);
+  out << ", " << "gatewayId=" << to_string(gatewayId);
+  out << ")";
+}
+
+
 ProcessSubmitEvent::~ProcessSubmitEvent() throw() {
 }
 
@@ -1368,17 +1479,17 @@ void swap(ProcessSubmitEvent &a, ProcessSubmitEvent &b) {
   swap(a.tokenId, b.tokenId);
 }
 
-ProcessSubmitEvent::ProcessSubmitEvent(const ProcessSubmitEvent& other29) {
-  processId = other29.processId;
-  gatewayId = other29.gatewayId;
-  experimentId = other29.experimentId;
-  tokenId = other29.tokenId;
+ProcessSubmitEvent::ProcessSubmitEvent(const ProcessSubmitEvent& other31) {
+  processId = other31.processId;
+  gatewayId = other31.gatewayId;
+  experimentId = other31.experimentId;
+  tokenId = other31.tokenId;
 }
-ProcessSubmitEvent& ProcessSubmitEvent::operator=(const ProcessSubmitEvent& other30) {
-  processId = other30.processId;
-  gatewayId = other30.gatewayId;
-  experimentId = other30.experimentId;
-  tokenId = other30.tokenId;
+ProcessSubmitEvent& ProcessSubmitEvent::operator=(const ProcessSubmitEvent& other32) {
+  processId = other32.processId;
+  gatewayId = other32.gatewayId;
+  experimentId = other32.experimentId;
+  tokenId = other32.tokenId;
   return *this;
 }
 void ProcessSubmitEvent::printTo(std::ostream& out) const {
@@ -1503,15 +1614,15 @@ void swap(ProcessTerminateEvent &a, ProcessTerminateEvent &b) {
   swap(a.tokenId, b.tokenId);
 }
 
-ProcessTerminateEvent::ProcessTerminateEvent(const ProcessTerminateEvent& other31) {
-  processId = other31.processId;
-  gatewayId = other31.gatewayId;
-  tokenId = other31.tokenId;
+ProcessTerminateEvent::ProcessTerminateEvent(const ProcessTerminateEvent& other33) {
+  processId = other33.processId;
+  gatewayId = other33.gatewayId;
+  tokenId = other33.tokenId;
 }
-ProcessTerminateEvent& ProcessTerminateEvent::operator=(const ProcessTerminateEvent& other32) {
-  processId = other32.processId;
-  gatewayId = other32.gatewayId;
-  tokenId = other32.tokenId;
+ProcessTerminateEvent& ProcessTerminateEvent::operator=(const ProcessTerminateEvent& other34) {
+  processId = other34.processId;
+  gatewayId = other34.gatewayId;
+  tokenId = other34.tokenId;
   return *this;
 }
 void ProcessTerminateEvent::printTo(std::ostream& out) const {
@@ -1561,9 +1672,9 @@ uint32_t JobStatusChangeEvent::read(::apache::thrift::protocol::TProtocol* iprot
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast33;
-          xfer += iprot->readI32(ecast33);
-          this->state = ( ::apache::airavata::model::status::JobState::type)ecast33;
+          int32_t ecast35;
+          xfer += iprot->readI32(ecast35);
+          this->state = ( ::apache::airavata::model::status::JobState::type)ecast35;
           isset_state = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -1617,13 +1728,13 @@ void swap(JobStatusChangeEvent &a, JobStatusChangeEvent &b) {
   swap(a.jobIdentity, b.jobIdentity);
 }
 
-JobStatusChangeEvent::JobStatusChangeEvent(const JobStatusChangeEvent& other34) {
-  state = other34.state;
-  jobIdentity = other34.jobIdentity;
+JobStatusChangeEvent::JobStatusChangeEvent(const JobStatusChangeEvent& other36) {
+  state = other36.state;
+  jobIdentity = other36.jobIdentity;
 }
-JobStatusChangeEvent& JobStatusChangeEvent::operator=(const JobStatusChangeEvent& other35) {
-  state = other35.state;
-  jobIdentity = other35.jobIdentity;
+JobStatusChangeEvent& JobStatusChangeEvent::operator=(const JobStatusChangeEvent& other37) {
+  state = other37.state;
+  jobIdentity = other37.jobIdentity;
   return *this;
 }
 void JobStatusChangeEvent::printTo(std::ostream& out) const {
@@ -1672,9 +1783,9 @@ uint32_t JobStatusChangeRequestEvent::read(::apache::thrift::protocol::TProtocol
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast36;
-          xfer += iprot->readI32(ecast36);
-          this->state = ( ::apache::airavata::model::status::JobState::type)ecast36;
+          int32_t ecast38;
+          xfer += iprot->readI32(ecast38);
+          this->state = ( ::apache::airavata::model::status::JobState::type)ecast38;
           isset_state = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -1728,13 +1839,13 @@ void swap(JobStatusChangeRequestEvent &a, JobStatusChangeRequestEvent &b) {
   swap(a.jobIdentity, b.jobIdentity);
 }
 
-JobStatusChangeRequestEvent::JobStatusChangeRequestEvent(const JobStatusChangeRequestEvent& other37) {
-  state = other37.state;
-  jobIdentity = other37.jobIdentity;
+JobStatusChangeRequestEvent::JobStatusChangeRequestEvent(const JobStatusChangeRequestEvent& other39) {
+  state = other39.state;
+  jobIdentity = other39.jobIdentity;
 }
-JobStatusChangeRequestEvent& JobStatusChangeRequestEvent::operator=(const JobStatusChangeRequestEvent& other38) {
-  state = other38.state;
-  jobIdentity = other38.jobIdentity;
+JobStatusChangeRequestEvent& JobStatusChangeRequestEvent::operator=(const JobStatusChangeRequestEvent& other40) {
+  state = other40.state;
+  jobIdentity = other40.jobIdentity;
   return *this;
 }
 void JobStatusChangeRequestEvent::printTo(std::ostream& out) const {
@@ -1814,9 +1925,9 @@ uint32_t Message::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 3:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast39;
-          xfer += iprot->readI32(ecast39);
-          this->messageType = (MessageType::type)ecast39;
+          int32_t ecast41;
+          xfer += iprot->readI32(ecast41);
+          this->messageType = (MessageType::type)ecast41;
           isset_messageType = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -1832,9 +1943,9 @@ uint32_t Message::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 5:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast40;
-          xfer += iprot->readI32(ecast40);
-          this->messageLevel = (MessageLevel::type)ecast40;
+          int32_t ecast42;
+          xfer += iprot->readI32(ecast42);
+          this->messageLevel = (MessageLevel::type)ecast42;
           this->__isset.messageLevel = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -1900,21 +2011,21 @@ void swap(Message &a, Message &b) {
   swap(a.__isset, b.__isset);
 }
 
-Message::Message(const Message& other41) {
-  event = other41.event;
-  messageId = other41.messageId;
-  messageType = other41.messageType;
-  updatedTime = other41.updatedTime;
-  messageLevel = other41.messageLevel;
-  __isset = other41.__isset;
+Message::Message(const Message& other43) {
+  event = other43.event;
+  messageId = other43.messageId;
+  messageType = other43.messageType;
+  updatedTime = other43.updatedTime;
+  messageLevel = other43.messageLevel;
+  __isset = other43.__isset;
 }
-Message& Message::operator=(const Message& other42) {
-  event = other42.event;
-  messageId = other42.messageId;
-  messageType = other42.messageType;
-  updatedTime = other42.updatedTime;
-  messageLevel = other42.messageLevel;
-  __isset = other42.__isset;
+Message& Message::operator=(const Message& other44) {
+  event = other44.event;
+  messageId = other44.messageId;
+  messageType = other44.messageType;
+  updatedTime = other44.updatedTime;
+  messageLevel = other44.messageLevel;
+  __isset = other44.__isset;
   return *this;
 }
 void Message::printTo(std::ostream& out) const {

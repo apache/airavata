@@ -1,0 +1,48 @@
+{
+	"environment": "{{environment}}",
+	"health_check_config": {
+		"initial_interval_secs": 15.0,
+		"health_checker": {
+			"http": {
+				"expected_response_code": 0,
+				"endpoint": "/health",
+				"expected_response": "ok"
+			}
+		},
+		"interval_secs": 10.0,
+		"timeout_secs": 1.0,
+		"max_consecutive_failures": 0
+	},
+	"name": "{{job_name}}",
+	"service": false,
+	"max_task_failures": 1,
+	"cron_collision_policy": "KILL_EXISTING",
+	"enable_hooks": false,
+	"cluster": "{{cluster}}",
+	"task": {
+		"processes": [],
+		"name": "{{task_name}}",
+		"finalization_wait": 30,
+		"max_failures": 1,
+		"max_concurrency": 0,
+		"resources": {
+			"gpu": 0,
+			"disk": 0,
+			"ram": 0,
+			"cpu": 0.0
+		},
+		"constraints": [{
+			"order": []
+		}]
+	},
+	"production": false,
+	"role": "{{role}}",
+	"lifecycle": {
+		"http": {
+			"graceful_shutdown_endpoint": "/quitquitquit",
+			"port": "health",
+			"shutdown_endpoint": "/abortabortabort"
+		}
+	},
+	"priority": 0
+}

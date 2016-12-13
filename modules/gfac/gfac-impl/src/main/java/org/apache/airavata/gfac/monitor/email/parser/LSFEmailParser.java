@@ -44,21 +44,26 @@ public class LSFEmailParser implements EmailParser {
     public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException {
         JobStatusResult jobStatusResult = new JobStatusResult();
         try {
-            String content = ((String) message.getContent());
-            Pattern pattern = Pattern.compile(LONESTAR_REGEX);
-            Matcher matcher = pattern.matcher(content);
-            if (matcher.find()) {
-                jobStatusResult.setJobId(matcher.group(JOBID));
-                String status = matcher.group(STATUS);
-                jobStatusResult.setState(getJobState(status, content));
-                return jobStatusResult;
-            } else {
-                log.error("[EJM]: No matched found for content => \n" + content);
-            }
+            parseContent(((String) message.getContent()), jobStatusResult);
         } catch (IOException e) {
             throw new AiravataException("i[EJM]: Error while reading content of the email message");
         }
         return jobStatusResult;
+    }
+
+    private boolean parseContent(String content, JobStatusResult jobStatusResult) throws IOException, MessagingException {
+        content = content.replaceAll("[^\\x00-\\x7F]", "");
+        Pattern pattern = Pattern.compile(LONESTAR_REGEX);
+        Matcher matcher = pattern.matcher(content);
+        if (matcher.find()) {
+            jobStatusResult.setJobId(matcher.group(JOBID));
+            String status = matcher.group(STATUS);
+            jobStatusResult.setState(getJobState(status, content));
+            return true;
+        } else {
+            log.error("[EJM]: No matched found for content => \n" + content);
+        }
+        return false;
     }
 
     private JobState getJobState(String status, String content) {

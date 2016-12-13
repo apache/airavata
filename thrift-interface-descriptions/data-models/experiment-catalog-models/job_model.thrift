@@ -31,7 +31,7 @@ struct JobModel {
     3: required string processId,
     4: required string jobDescription,
     5: optional i64 creationTime,
-    6: optional status_models.JobStatus jobStatus,
+    6: optional list<status_models.JobStatus> jobStatuses,
     7: optional string computeResourceConsumed,
     8: optional string jobName,
     9: optional string workingDir,

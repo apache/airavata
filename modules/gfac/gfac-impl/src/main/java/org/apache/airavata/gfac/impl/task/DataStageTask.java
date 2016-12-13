@@ -20,11 +20,11 @@
  */
 package org.apache.airavata.gfac.impl.task;
 
-import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
+import org.apache.airavata.gfac.impl.SSHUtils;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.TaskState;
@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Map;
 
 public class DataStageTask implements Task {
@@ -65,14 +66,18 @@ public class DataStageTask implements Task {
 					/**
 					 * copy local file to compute resource.
 					 */
-					taskContext.getParentProcessContext().getDataMovementRemoteCluster().copyTo(sourceURI.getPath(), destinationURI
-							.getPath());
+					taskContext.getParentProcessContext().getDataMovementRemoteCluster().copyTo(
+							sourceURI.getPath(),
+							destinationURI.getPath(),
+							session -> SSHUtils.scpTo(sourceURI.getPath(), destinationURI.getPath(), session));
 				} else if (processState == ProcessState.OUTPUT_DATA_STAGING) {
 					/**
 					 * copy remote file from compute resource.
 					 */
-					taskContext.getParentProcessContext().getDataMovementRemoteCluster().copyFrom(sourceURI.getPath(), destinationURI
-							.getPath());
+					taskContext.getParentProcessContext().getDataMovementRemoteCluster().copyFrom(
+							sourceURI.getPath(),
+							destinationURI.getPath(),
+							session -> SSHUtils.scpFrom(sourceURI.getPath(), destinationURI.getPath(), session));
 				}
 				status.setReason("Successfully staged data");
 			} catch (SSHApiException e) {
@@ -83,7 +88,7 @@ public class DataStageTask implements Task {
 				ErrorModel errorModel = new ErrorModel();
 				errorModel.setActualErrorMessage(e.getMessage());
 				errorModel.setUserFriendlyMessage(msg);
-				taskContext.getTaskModel().setTaskError(errorModel);
+				taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
 			} catch (TException e) {
 				String msg = "Invalid task invocation";
 				log.error(msg, e);
@@ -92,7 +97,7 @@ public class DataStageTask implements Task {
 				ErrorModel errorModel = new ErrorModel();
 				errorModel.setActualErrorMessage(e.getMessage());
 				errorModel.setUserFriendlyMessage(msg);
-				taskContext.getTaskModel().setTaskError(errorModel);
+				taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
 			} catch (URISyntaxException e) {
 				String msg = "source or destination is not a valid URI";
 				log.error(msg, e);
@@ -101,7 +106,7 @@ public class DataStageTask implements Task {
 				ErrorModel errorModel = new ErrorModel();
 				errorModel.setActualErrorMessage(e.getMessage());
 				errorModel.setUserFriendlyMessage(msg);
-				taskContext.getTaskModel().setTaskError(errorModel);
+				taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
 			}
 		}
 		return status;
