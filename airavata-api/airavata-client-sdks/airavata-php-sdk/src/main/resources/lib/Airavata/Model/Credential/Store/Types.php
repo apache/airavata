@@ -26,6 +26,21 @@ final class CredentialOwnerType {
   );
 }
 
+/**
+ * Data Types supported in Airavata. The primitive data types
+ * 
+ */
+final class SummaryType {
+  const SSH = 0;
+  const PASSWD = 1;
+  const CERT = 2;
+  static public $__names = array(
+    0 => 'SSH',
+    1 => 'PASSWD',
+    2 => 'CERT',
+  );
+}
+
 class SSHCredential {
   static $_TSPEC;
 
@@ -285,9 +300,13 @@ class SSHCredential {
 
 }
 
-class SSHCredentialSummary {
+class CredentialSummary {
   static $_TSPEC;
 
+  /**
+   * @var int
+   */
+  public $type = null;
   /**
    * @var string
    */
@@ -317,32 +336,39 @@ class SSHCredentialSummary {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
+          'var' => 'type',
+          'type' => TType::I32,
+          ),
+        2 => array(
           'var' => 'gatewayId',
           'type' => TType::STRING,
           ),
-        2 => array(
+        3 => array(
           'var' => 'username',
           'type' => TType::STRING,
           ),
-        3 => array(
+        4 => array(
           'var' => 'publicKey',
           'type' => TType::STRING,
           ),
-        4 => array(
+        5 => array(
           'var' => 'persistedTime',
           'type' => TType::I64,
           ),
-        5 => array(
+        6 => array(
           'var' => 'token',
           'type' => TType::STRING,
           ),
-        6 => array(
+        7 => array(
           'var' => 'description',
           'type' => TType::STRING,
           ),
         );
     }
     if (is_array($vals)) {
+      if (isset($vals['type'])) {
+        $this->type = $vals['type'];
+      }
       if (isset($vals['gatewayId'])) {
         $this->gatewayId = $vals['gatewayId'];
       }
@@ -365,7 +391,7 @@ class SSHCredentialSummary {
   }
 
   public function getName() {
-    return 'SSHCredentialSummary';
+    return 'CredentialSummary';
   }
 
   public function read($input)
@@ -384,41 +410,48 @@ class SSHCredentialSummary {
       switch ($fid)
       {
         case 1:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->gatewayId);
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->type);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 2:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->username);
+            $xfer += $input->readString($this->gatewayId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 3:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->publicKey);
+            $xfer += $input->readString($this->username);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->publicKey);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
           if ($ftype == TType::I64) {
             $xfer += $input->readI64($this->persistedTime);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 5:
+        case 6:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->token);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 6:
+        case 7:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->description);
           } else {
@@ -437,34 +470,39 @@ class SSHCredentialSummary {
 
   public function write($output) {
     $xfer = 0;
-    $xfer += $output->writeStructBegin('SSHCredentialSummary');
+    $xfer += $output->writeStructBegin('CredentialSummary');
+    if ($this->type !== null) {
+      $xfer += $output->writeFieldBegin('type', TType::I32, 1);
+      $xfer += $output->writeI32($this->type);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->gatewayId !== null) {
-      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 1);
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 2);
       $xfer += $output->writeString($this->gatewayId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->username !== null) {
-      $xfer += $output->writeFieldBegin('username', TType::STRING, 2);
+      $xfer += $output->writeFieldBegin('username', TType::STRING, 3);
       $xfer += $output->writeString($this->username);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->publicKey !== null) {
-      $xfer += $output->writeFieldBegin('publicKey', TType::STRING, 3);
+      $xfer += $output->writeFieldBegin('publicKey', TType::STRING, 4);
       $xfer += $output->writeString($this->publicKey);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->persistedTime !== null) {
-      $xfer += $output->writeFieldBegin('persistedTime', TType::I64, 4);
+      $xfer += $output->writeFieldBegin('persistedTime', TType::I64, 5);
       $xfer += $output->writeI64($this->persistedTime);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->token !== null) {
-      $xfer += $output->writeFieldBegin('token', TType::STRING, 5);
+      $xfer += $output->writeFieldBegin('token', TType::STRING, 6);
       $xfer += $output->writeString($this->token);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->description !== null) {
-      $xfer += $output->writeFieldBegin('description', TType::STRING, 6);
+      $xfer += $output->writeFieldBegin('description', TType::STRING, 7);
       $xfer += $output->writeString($this->description);
       $xfer += $output->writeFieldEnd();
     }
