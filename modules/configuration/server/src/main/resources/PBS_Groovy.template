@@ -12,7 +12,7 @@
         out.print '#PBS -l gres=ccm \n'
    if (standardOutFile != null && standardOutFile != "") out.print '#PBS -o ' + standardOutFile + '\n'
    if (standardErrorFile != null && standardErrorFile != "") out.print '#PBS -e ' + standardErrorFile + '\n'
-   if (usedMem != null && usedMem != "") out.print '#PBS -l mem=' + usedMem + '\n'
+   if (usedMem != null && usedMem != "") out.print '#PBS -l vmem=' + usedMem + 'M\n'
    if (nodes != null && nodes != "" && processPerNode != null && processPerNode != "")
         out.print '#PBS -l nodes=' + nodes + ':ppn=' + processPerNode + '\n'
 %>
