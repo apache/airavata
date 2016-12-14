@@ -23,7 +23,7 @@ package org.apache.airavata.registry.core.entities.workspacecatalog;
 import javax.persistence.*;
 
 @Entity
-@Table(name="WORKSPACE_GATEWAY")
+@Table(name="GATEWAY")//FIXME removing WORKSPACE prefix so that we can use the Gateway table in exp catalog
 public class GatewayEntity {
     private String gatewayId;
     private String gatewayName;
