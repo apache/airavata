@@ -36,12 +36,13 @@ public class JPAUtils {
     private static EntityManager entityManager;
 
     public static EntityManager getEntityManager(){
+
         if (factory == null) {
             //FIXME
-            String connectionProperties = "DriverClassName=com.mysql.jdbc.Driver," +
-                    "Url=jdbc:mysql://localhost:3306/airavata_catalog," +
-                    "Username=root," +
-                    "Password=root";
+            String connectionProperties = Utils.getJDBCDriver()+ "," +
+                    Utils.getJDBCURL()+"," +
+                    Utils.getJDBCUser()+"," +
+                    Utils.getJDBCPassword();
             logger.info(connectionProperties);
             Map<String, String> properties = new HashMap<String, String>();
             properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");
