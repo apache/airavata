@@ -39,10 +39,10 @@ public class JPAUtils {
 
         if (factory == null) {
             //FIXME
-            String connectionProperties = Utils.getJDBCDriver()+ "," +
-                    Utils.getJDBCURL()+"," +
-                    Utils.getJDBCUser()+"," +
-                    Utils.getJDBCPassword();
+            String connectionProperties = "DriverClassName=" + Utils.getJDBCDriver() + "," + "Url=" +
+                    Utils.getJDBCURL() + "?autoReconnect=true," +
+                    "Username=" + Utils.getJDBCUser() + "," + "Password=" + Utils.getJDBCPassword() +
+                    ",validationQuery=" + Utils.getValidationQuery();
             logger.info(connectionProperties);
             Map<String, String> properties = new HashMap<String, String>();
             properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");
