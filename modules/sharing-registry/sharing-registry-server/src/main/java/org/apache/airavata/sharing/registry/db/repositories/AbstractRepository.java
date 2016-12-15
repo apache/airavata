@@ -101,10 +101,29 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public List<T> select(Map<String, String> filters, int offset, int limit) throws SharingRegistryException {
-        String queryString = getSelectQuery(filters);
+        String query = "SELECT DISTINCT p from " + dbEntityGenericClass.getSimpleName() + " as p";
+        ArrayList<String> parameters = new ArrayList<>();
+        int parameterCount = 1;
+        if (filters != null && filters.size() != 0) {
+            query += " WHERE ";
+            for (String k : filters.keySet()) {
+                query += "p." + k + " = ?" + parameterCount + " AND ";
+                parameters.add(filters.get(k));
+                parameterCount++;
+            }
+            query = query.substring(0, query.length() - 5);
+        }
+
+        query += " ORDER BY p.createdTime DESC";
+        String queryString = query;
         int newLimit = limit < 0 ? DBConstants.SELECT_MAX_ROWS: limit;
-        List resultSet =  (new JPAUtils()).execute(entityManager -> entityManager.createQuery(queryString).setFirstResult(offset)
-                .setMaxResults(newLimit).getResultList());
+        List resultSet = (new JPAUtils()).execute(entityManager -> {
+            javax.persistence.Query q = entityManager.createQuery(queryString);
+            for (int i = 0; i < parameters.size(); i++) {
+                q.setParameter(i + 1, parameters.get(i));
+            }
+            return q.setFirstResult(offset).setMaxResults(newLimit).getResultList();
+        });
         Mapper mapper = ObjectMapperSingleton.getInstance();
         List<T> gatewayList = new ArrayList<>();
         resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
@@ -119,20 +138,5 @@ public abstract class AbstractRepository<T, E, Id> {
         List<T> gatewayList = new ArrayList<>();
         resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
         return gatewayList;
-    }
-
-    public String getSelectQuery(Map<String, String> filters){
-        String query = "SELECT DISTINCT p from " + dbEntityGenericClass.getSimpleName() + " as p";
-        if(filters != null && filters.size() != 0){
-            query += " WHERE ";
-            for(String k : filters.keySet()){
-                query += "p." + k + " = '" + filters.get(k).replaceAll("'", "''") + "' AND ";
-            }
-            query = query.substring(0, query.length()-5);
-        }
-
-        query += " ORDER BY p.createdTime DESC";
-
-        return query;
     }
 }
