@@ -49,6 +49,7 @@
 #include "data_movement_models_types.h"
 #include "workflow_data_model_types.h"
 #include "replica_catalog_models_types.h"
+#include "group_manager_model_types.h"
 
 
 namespace apache { namespace airavata { namespace api {

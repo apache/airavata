@@ -30,12 +30,13 @@ import org.apache.thrift.TEnum;
 
 public enum MessageType implements org.apache.thrift.TEnum {
   EXPERIMENT(0),
-  TASK(1),
-  PROCESS(2),
-  JOB(3),
-  LAUNCHPROCESS(4),
-  TERMINATEPROCESS(5),
-  PROCESSOUTPUT(6);
+  EXPERIMENT_CANCEL(1),
+  TASK(2),
+  PROCESS(3),
+  JOB(4),
+  LAUNCHPROCESS(5),
+  TERMINATEPROCESS(6),
+  PROCESSOUTPUT(7);
 
   private final int value;
 
@@ -59,16 +60,18 @@ public enum MessageType implements org.apache.thrift.TEnum {
       case 0:
         return EXPERIMENT;
       case 1:
-        return TASK;
+        return EXPERIMENT_CANCEL;
       case 2:
-        return PROCESS;
+        return TASK;
       case 3:
-        return JOB;
+        return PROCESS;
       case 4:
-        return LAUNCHPROCESS;
+        return JOB;
       case 5:
-        return TERMINATEPROCESS;
+        return LAUNCHPROCESS;
       case 6:
+        return TERMINATEPROCESS;
+      case 7:
         return PROCESSOUTPUT;
       default:
         return null;

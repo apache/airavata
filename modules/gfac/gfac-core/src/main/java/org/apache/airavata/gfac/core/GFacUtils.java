@@ -210,9 +210,14 @@ public class GFacUtils {
 	public static void saveJobStatus(ProcessContext processContext, JobModel jobModel) throws GFacException {
 		try {
             // first we save job jobModel to the registry for sa and then save the job status.
-			JobStatus jobStatus = jobModel.getJobStatus();
+            JobStatus jobStatus = null;
+            if(jobModel.getJobStatuses() != null)
+			    jobStatus = jobModel.getJobStatuses().get(0);
+
             ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
-            jobModel.setJobStatus(jobStatus);
+            List<JobStatus> statuses = new ArrayList<>();
+            statuses.add(jobStatus);
+            jobModel.setJobStatuses(statuses);
             if (jobStatus.getTimeOfStateChange() == 0 || jobStatus.getTimeOfStateChange() > 0 ){
                 jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             }else {
@@ -449,7 +454,7 @@ public class GFacUtils {
             log.error("Error while getting job submissiont sub task model", e);
         }
 
-        ComputationalResourceSchedulingModel scheduling = processModel.getResourceSchedule();
+        ComputationalResourceSchedulingModel scheduling = processModel.getProcessResourceSchedule();
         if (scheduling != null) {
             int totalNodeCount = scheduling.getNodeCount();
             int totalCPUCount = scheduling.getTotalCPUCount();
@@ -461,7 +466,10 @@ public class GFacUtils {
                 jobDescriptor.setNodes(totalNodeCount);
             }
             // qos per queue
-            jobDescriptor.setQoS(getQoS(crp.getQualityOfService(), scheduling.getQueueName()));
+            String qoS = getQoS(crp.getQualityOfService(), scheduling.getQueueName());
+            if (qoS != null) {
+                jobDescriptor.setQoS(qoS);
+            }
             if (totalCPUCount > 0) {
                 int ppn = totalCPUCount / totalNodeCount;
                 jobDescriptor.setProcessesPerNode(ppn);
@@ -659,13 +667,13 @@ public class GFacUtils {
         return inputValues;
     }
 
-    private static String getQoS(String qualityOfService, String preferredBatchQueue) {
+    static String getQoS(String qualityOfService, String preferredBatchQueue) {
         if(preferredBatchQueue == null  || preferredBatchQueue.isEmpty()
                 ||  qualityOfService == null  || qualityOfService.isEmpty()) return null;
         final String qos = "qos";
         Pattern pattern = Pattern.compile(preferredBatchQueue + "=(?<" + qos + ">[^,]*)");
         Matcher matcher = pattern.matcher(qualityOfService);
-        if (matcher.matches()) {
+        if (matcher.find()) {
             return matcher.group(qos);
         }
         return null;
@@ -801,7 +809,7 @@ public class GFacUtils {
     public static File createJobFile(TaskContext taskContext, JobDescriptor jobDescriptor, JobManagerConfiguration jobManagerConfiguration) throws GFacException {
         try {
             TransformerFactory factory = TransformerFactory.newInstance();
-            URL resource = GFacUtils.class.getClassLoader().getResource(jobManagerConfiguration.getJobDescriptionTemplateName());
+            URL resource = ApplicationSettings.loadFile(jobManagerConfiguration.getJobDescriptionTemplateName());
 
             if (resource == null) {
                 String error = "System configuration file '" + jobManagerConfiguration.getJobDescriptionTemplateName()

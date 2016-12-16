@@ -29,7 +29,6 @@ import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
-import org.apache.airavata.registry.core.experiment.catalog.model.Process;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -240,7 +239,7 @@ public class GFacWorker implements Runnable {
 			try {
                 long processDeliveryTag = GFacUtils.getProcessDeliveryTag(processContext.getCuratorClient(),
                         processContext.getExperimentId(), processId);
-                Factory.getProcessLaunchConsumer().sendAck(processDeliveryTag);
+                Factory.getProcessLaunchSubscriber().sendAck(processDeliveryTag);
                 processContext.setAcknowledge(true);
                 log.info("expId: {}, processId: {} :- Sent ack for deliveryTag {}", processContext.getExperimentId(),
                         processId, processDeliveryTag);

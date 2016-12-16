@@ -103,7 +103,7 @@ public class ExperimentModelUtil {
             processModel.setUserDn(configData.getUserDN());
             ComputationalResourceSchedulingModel scheduling = configData.getComputationalResourceScheduling();
             if (scheduling != null){
-                processModel.setResourceSchedule(scheduling);
+                processModel.setProcessResourceSchedule(scheduling);
                 processModel.setComputeResourceId(scheduling.getResourceHostId());
             }
         }

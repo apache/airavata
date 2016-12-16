@@ -1,0 +1,875 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    Copyright 2014 Internet2
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<!--
+Grouper's subject resolver configuration
+$Id: sources.example.xml,v 1.8 2009-08-11 20:18:09 mchyzer Exp $
+-->
+
+<sources>
+
+  <!-- Group Subject Resolver -->
+  
+  <!-- 
+     You can flag a source as not throwing exception on a findAll (general search) i.e. if it is
+     ok if it is down.  Generally you probably won't want to do this.  It defaults to true if omitted.
+  
+     <init-param>
+       <param-name>throwErrorOnFindAllFailure</param-name>
+       <param-value>false</param-value>
+     </init-param>
+   -->
+  
+  <!-- 
+      You can make virtual attributes (attributes with formatting or based on other attributes) like this:
+      init-param name is subjectVirtualAttribute_<index>_<name> where index is the order to be processed
+      if some depend on others (0 to 99).  The value is the jexl expression language.  You can use subjectUtils
+      methods (aliased with "subjectUtils", or you can register your own class (must have default constructor).
+      Here are examples:
+  
+     <init-param>
+       <param-name>subjectVirtualAttribute_0_loginIdLfName</param-name>
+       <param-value>Hey ${subject.getAttributeValue('LOGINID')} and ${subject.getAttributeValue('LFNAME')}</param-value>
+     </init-param>
+     <init-param>
+       <param-name>subjectVirtualAttribute_1_loginIdLfNameLoginId</param-name>
+       <param-value>${subject.getAttributeValue('loginIdLfName')} Hey ${subject.getAttributeValue('LOGINID')} and ${subject.getAttributeValue('LFNAME')}</param-value>
+     </init-param>
+     <init-param>
+       <param-name>subjectVirtualAttributeVariable_JDBCSourceAdapterTest</param-name>
+       <param-value>edu.internet2.middleware.subject.provider.JDBCSourceAdapterTest</param-value>
+     </init-param>
+     <init-param>
+       <param-name>subjectVirtualAttribute_2_loginIdSquared</param-name>
+       <param-value>${JDBCSourceAdapterTest.appendToSelf(subject.getAttributeValue('LOGINID'))}</param-value>
+     </init-param>
+  
+    The first virtual attribute is accessible via: subject.getAttributeValue("loginIdLfNameLoginId");
+
+    you can set these c3p0 settings: maxConnectionAge (seconds), testConnectionOnCheckout (true|false), 
+       preferredTestQuery (e.g. select 1 from dual), idleConnectionTestPeriod (seconds)
+
+
+     <init-param> 
+       <param-name>findSubjectByIdOnCheckConfig</param-name> 
+       <param-value>true|false</param-value> 
+     </init-param> 
+     <init-param> 
+       <param-name>subjectIdToFindOnCheckConfig</param-name> 
+       <param-value>someSubjectIdWhichMightExistOrWhatever</param-value> 
+     </init-param> 
+
+     <init-param> 
+       <param-name>findSubjectByIdentifiedOnCheckConfig</param-name> 
+       <param-value>true|false</param-value> 
+     </init-param> 
+     <init-param> 
+       <param-name>subjectIdentifierToFindOnCheckConfig</param-name> 
+       <param-value>someSubjectIdentifierWhichMightExistOrWhatever</param-value> 
+     </init-param> 
+
+     <init-param> 
+       <param-name>findSubjectByStringOnCheckConfig</param-name> 
+       <param-value>true|false</param-value> 
+     </init-param> 
+     <init-param> 
+       <param-name>stringToFindOnCheckConfig</param-name> 
+       <param-value>someStringWhichMightExistOrWhatever</param-value> 
+     </init-param>
+   -->
+  
+  <!-- 
+    NOTE: It is recommended that you **not** change the default
+          values for this source adapter.
+  -->
+  <source adapterClass="edu.internet2.middleware.grouper.GrouperSourceAdapter">
+    <id>g:gsa</id>
+    <name>Grouper: Group Source Adapter</name>
+    <type>group</type>
+
+    <init-param>
+      <param-name>subjectVirtualAttribute_0_searchAttribute0</param-name>
+      <param-value>${subject.getAttributeValue('name')},${subject.getAttributeValue('displayName')},${subject.getAttributeValue('alternateName')}</param-value>
+    </init-param>
+    <init-param>
+      <param-name>sortAttribute0</param-name>
+      <param-value>displayExtension</param-value>
+    </init-param>
+    <init-param>
+      <param-name>searchAttribute0</param-name>
+      <param-value>searchAttribute0</param-value>
+    </init-param>
+    <!-- on a findPage() this is the most results returned --> 
+    <init-param>
+      <param-name>maxPageSize</param-name>
+      <param-value>100</param-value>
+    </init-param>
+    <internal-attribute>searchAttribute0</internal-attribute>
+  </source>
+  <!-- Group Subject Resolver -->
+
+  <!-- 
+    NOTE: It is recommended that you **not** change the default
+          values for this source adapter.
+  -->
+  <source adapterClass="edu.internet2.middleware.grouper.entity.EntitySourceAdapter">
+    <id>grouperEntities</id>
+    <name>Grouper: Entity Source Adapter</name>
+    <type>application</type>
+
+    <init-param>
+      <param-name>subjectVirtualAttribute_0_searchAttribute0</param-name>
+      <!-- TODO add attribute for subject identifier -->
+      <param-value>${subject.getAttributeValue('name')},${subject.getAttributeValue('displayName')},${subject.getAttributeValue('alternateName')}</param-value>
+    </init-param>
+    <init-param>
+      <param-name>sortAttribute0</param-name>
+      <param-value>name</param-value>
+    </init-param>
+    <init-param>
+      <param-name>searchAttribute0</param-name>
+      <param-value>searchAttribute0</param-value>
+    </init-param>
+    <internal-attribute>searchAttribute0</internal-attribute>
+  </source>
+  <!-- Entity Subject Resolver -->
+
+ <source adapterClass="edu.internet2.middleware.grouper.subj.GrouperJdbcSourceAdapter">
+    <id>jdbc</id>
+    <name>Example JDBC Source Adapter</name>
+     <type>person</type>
+     
+     <!-- edu.internet2.middleware.subject.provider.C3p0JdbcConnectionProvider (default)
+          edu.internet2.middleware.subject.provider.DbcpJdbcConnectionProvider (legacy) 
+          edu.internet2.middleware.grouper.subj.GrouperJdbcConnectionProvider 
+            (same settings as grouper.hibernate.properties, the driver, url, pass, maxActive, maxIdle, maxWait are forbidden -->
+     <init-param>
+       <param-name>jdbcConnectionProvider</param-name>
+       <param-value>edu.internet2.middleware.grouper.subj.GrouperJdbcConnectionProvider </param-value>
+     </init-param>
+     
+     <!-- If using emails and need email addresses in sources, set which attribute has the email address in this source -->
+     <init-param>
+       <param-name>emailAttributeName</param-name>
+       <param-value>email</param-value>
+     </init-param>
+     
+     <!-- if more than this many results are returned, then throw a too many subjects exception -->
+     <init-param>
+       <param-name>maxResults</param-name>
+       <param-value>1000</param-value>
+     </init-param>
+
+    <!-- on a findPage() this is the most results returned --> 
+    <init-param>
+      <param-name>maxPageSize</param-name>
+      <param-value>100</param-value>
+    </init-param>
+
+     <!-- note: again, if you use GrouperJdbcConnectionProvider, then you should not fill out maxActive, maxIdle,
+       maxWait, dbDriver, dbUrl, dbUser, dbPwd, since it will use the grouper.hibernate.properties db settings -->
+
+     <!--   init-param>
+       <param-name>maxActive</param-name>
+       <param-value>16</param-value>
+     </init-param>
+     <init-param>
+       <param-name>maxIdle</param-name>
+       <param-value>16</param-value>
+     </init-param>
+     <init-param>
+       <param-name>maxWait</param-name>
+       <param-value>-1</param-value>
+     </init-param -->
+     
+     <!--      
+       e.g. mysql:           com.mysql.jdbc.Driver
+       e.g. p6spy (log sql): com.p6spy.engine.spy.P6SpyDriver
+         for p6spy, put the underlying driver in spy.properties
+       e.g. oracle:          oracle.jdbc.driver.OracleDriver
+       e.g. hsqldb:          org.hsqldb.jdbcDriver
+       e.g. postgres:        org.postgresql.Driver -->
+
+     <!-- init-param>
+       <param-name>dbDriver</param-name>
+       <param-value>org.hsqldb.jdbcDriver</param-value>
+     </init-param -->
+     
+     <!-- 
+       e.g. mysql:           jdbc:mysql://localhost:3306/grouper
+       e.g. p6spy (log sql): [use the URL that your DB requires]
+       e.g. oracle:          jdbc:oracle:thin:@server.school.edu:1521:sid
+       e.g. hsqldb (a):      jdbc:hsqldb:dist/run/grouper;create=true
+       e.g. hsqldb (b):      jdbc:hsqldb:hsql://localhost:9001
+       e.g. postgres:        jdbc:postgresql:grouper -->
+     
+     <!-- init-param>
+       <param-name>dbUrl</param-name>
+       <param-value>jdbc:hsqldb:C:/projects/GrouperI2MI_1-2/grouper/dist/run/grouper</param-value>
+     </init-param>
+     <init-param>
+       <param-name>dbUser</param-name>
+       <param-value>sa</param-value>
+     </init-param>
+     <init-param>
+       <param-name>dbPwd</param-name>
+       <param-value></param-value>
+     </init-param -->
+     
+      <init-param>
+       <param-name>SubjectID_AttributeType</param-name>
+       <param-value>id</param-value>
+     </init-param>
+     <init-param>
+       <param-name>Name_AttributeType</param-name>
+       <param-value>name</param-value>
+     </init-param>
+     <init-param>
+       <param-name>Description_AttributeType</param-name>
+       <param-value>description</param-value>
+     </init-param>
+     <init-param>
+       <param-name>subjectVirtualAttribute_0_searchAttribute0</param-name>
+       <param-value>${subject.name},${subjectUtils.defaultIfBlank(subject.getAttributeValue('LFNAME'), "")},${subjectUtils.defaultIfBlank(subject.getAttributeValue('LOGINID'), "")},${subjectUtils.defaultIfBlank(subject.description, "")},${subjectUtils.defaultIfBlank(subject.getAttributeValue('EMAIL'), "")}</param-value>
+     </init-param>
+     <init-param>
+       <param-name>sortAttribute0</param-name>
+       <param-value>LFNAME</param-value>
+     </init-param>
+     <init-param>
+       <param-name>sortAttribute1</param-name>
+       <param-value>LOGINID</param-value>
+     </init-param>
+     <init-param>
+       <param-name>searchAttribute0</param-name>
+       <param-value>searchAttribute0</param-value>
+     </init-param>
+     <internal-attribute>searchAttribute0</internal-attribute>
+     
+     <!-- if you are going to use the inclause attribute
+       on the search to make the queries batchable when searching
+       by id or identifier -->
+     <init-param>
+       <param-name>useInClauseForIdAndIdentifier</param-name>
+       <param-value>true</param-value>
+     </init-param>
+     
+     <!-- comma separate the identifiers for this row, this is for the findByIdentifiers if using an in clause -->
+     <init-param>
+       <param-name>identifierAttributes</param-name>
+       <param-value>LOGINID</param-value>
+     </init-param>
+
+     <!-- subject identifier to store in grouper's member table -->
+     <init-param>
+       <param-name>subjectIdentifierAttribute0</param-name>
+       <param-value>LOGINID</param-value>
+     </init-param>
+
+     <search>
+         <searchType>searchSubject</searchType>
+         <param>
+             <param-name>sql</param-name>
+             <param-value>
+select
+   s.subjectid as id, s.name as name,
+   (select sa2.value from subjectattribute sa2 where name='name' and sa2.SUBJECTID = s.subjectid) as lfname,
+   (select sa3.value from subjectattribute sa3 where name='loginid' and sa3.SUBJECTID = s.subjectid) as loginid,
+   (select sa4.value from subjectattribute sa4 where name='description' and sa4.SUBJECTID = s.subjectid) as description,
+   (select sa5.value from subjectattribute sa5 where name='email' and sa5.SUBJECTID = s.subjectid) as email
+from
+   subject s
+where
+   {inclause}
+            </param-value>
+         </param>
+         <param>
+             <param-name>inclause</param-name>
+             <param-value>
+s.subjectid = ?
+            </param-value>
+         </param>
+     </search>
+     <search>
+         <searchType>searchSubjectByIdentifier</searchType>
+         <param>
+             <param-name>sql</param-name>
+             <param-value>
+select
+   s.subjectid as id, s.name as name,
+   (select sa2.value from subjectattribute sa2 where name='name' and sa2.SUBJECTID = s.subjectid) as lfname,
+   (select sa3.value from subjectattribute sa3 where name='loginid' and sa3.SUBJECTID = s.subjectid) as loginid,
+   (select sa4.value from subjectattribute sa4 where name='description' and sa4.SUBJECTID = s.subjectid) as description,
+   (select sa5.value from subjectattribute sa5 where name='email' and sa5.SUBJECTID = s.subjectid) as email
+from
+   subject s, subjectattribute a
+where
+   a.name='loginid' and s.subjectid = a.subjectid and {inclause}
+             </param-value>
+         </param>
+         <param>
+             <param-name>inclause</param-name>
+             <param-value>
+   a.value = ? 
+            </param-value>
+         </param>
+     </search>
+     <search>
+        <searchType>search</searchType>
+         <param>
+             <param-name>sql</param-name>
+             
+             <!--  for postgres, use this query since no concat() exists:
+             
+             select
+   subject.subjectid as id, subject.name as name,
+   lfnamet.lfname as lfname, loginidt.loginid as loginid,
+   desct.description as description, emailt.email as email
+from
+   subject
+   left join (select subjectid, value as lfname from subjectattribute
+     where name='name') lfnamet
+     on subject.subjectid=lfnamet.subjectid
+   left join (select subjectid, value as loginid from subjectattribute
+     where name='loginid') loginidt
+     on subject.subjectid=loginidt.subjectid
+   left join (select subjectid, value as description from subjectattribute
+      where name='description') desct
+     on subject.subjectid=desct.subjectid
+   left join (select subjectid, value as email from subjectattribute
+      where name='email') emailt
+     on subject.subjectid=emailt.subjectid
+where
+   (lower(name) like '%' || ? || '%')
+   or (lower(lfnamet.lfname) like '%' || ? || '%')
+   or (lower(loginidt.loginid) like '%' || ? || '%')
+   or (lower(desct.description) like '%' || ? || '%')
+   or (lower(emailt.email) like '%' || ? || '%')
+             
+for SQL-server:
+
+select
+   subject.subjectid as id, subject.name as name,
+   lfnamet.lfname as lfname, loginidt.loginid as loginid,
+   desct.description as description, emailt.email as email
+from
+   subject
+   left join (select subjectid, value as lfname from subjectattribute
+     where name='name') lfnamet
+     on subject.subjectid=lfnamet.subjectid
+   left join (select subjectid, value as loginid from subjectattribute
+     where name='loginid') loginidt
+     on subject.subjectid=loginidt.subjectid
+   left join (select subjectid, value as description from subjectattribute
+      where name='description') desct
+     on subject.subjectid=desct.subjectid
+   left join (select subjectid, value as email from subjectattribute
+      where name='email') emailt
+     on subject.subjectid=emailt.subjectid
+where
+   (lower(name) like '%' + ? + '%')
+   or (lower(lfnamet.lfname) like '%' + ? + '%')
+   or (lower(loginidt.loginid) like '%' + ? + '%')
+   or (lower(desct.description) like '%' + ? + '%')
+   or (lower(emailt.email) like '%' + ? + '%')
+
+              -->
+             
+             <param-value>
+select
+   s.subjectid as id, s.name as name,
+   (select sa2.value from subjectattribute sa2 where name='name' and sa2.SUBJECTID = s.subjectid) as lfname,
+   (select sa3.value from subjectattribute sa3 where name='loginid' and sa3.SUBJECTID = s.subjectid) as loginid,
+   (select sa4.value from subjectattribute sa4 where name='description' and sa4.SUBJECTID = s.subjectid) as description,
+   (select sa5.value from subjectattribute sa5 where name='email' and sa5.SUBJECTID = s.subjectid) as email
+from 
+   subject s
+where
+   s.subjectid in (
+      select subjectid from subject where lower(name) like concat('%',concat(?,'%')) union
+      select subjectid from subjectattribute where searchvalue like concat('%',concat(?,'%'))
+   )
+             </param-value>
+         </param>
+     </search>
+   </source>
+   
+   <!--  
+    <!- - This is an alternate jdbc source which allows for more complex searches, assumes 
+      all data is in one table or view, and that all attributes are single valued.  There are
+      not queries to configure in sources.xml - - >
+    <source adapterClass="edu.internet2.middleware.grouper.subj.GrouperJdbcSourceAdapter2">
+    <id>sourceId</id>
+    <name>Source name</name>
+     <type>person</type>
+     <init-param>
+       <param-name>jdbcConnectionProvider</param-name>
+       <param-value>edu.internet2.middleware.grouper.subj.GrouperJdbcConnectionProvider</param-value>
+     </init-param>
+
+     <init-param>
+       <param-name>maxResults</param-name>
+       <param-value>1000</param-value>
+     </init-param>
+
+      <init-param>
+       <param-name>dbTableOrView</param-name>
+       <param-value>person_source_v</param-value>
+     </init-param>
+      <init-param>
+       <param-name>subjectIdCol</param-name>
+       <param-value>some_id</param-value>
+     </init-param>
+     <init-param>
+       <param-name>nameCol</param-name>
+       <param-value>name</param-value>
+     </init-param>
+     <init-param>
+       <param-name>descriptionCol</param-name>
+       <param-value>description</param-value>
+     </init-param>
+     <init-param>
+       <!- - search col where general searches take place, lower case - - >
+       <param-name>lowerSearchCol</param-name>
+       <param-value>description_lower</param-value>
+     </init-param>
+     <init-param>
+       <!- - optional col if you want the search results sorted in the API (note, UI might override) - - >
+       <param-name>defaultSortCol</param-name>
+       <param-value>description</param-value>
+     </init-param>
+     <init-param>
+       <!- - col which identifies the row, perhaps not subjectId, add multiple by incrementing the 0 index - - >
+       <param-name>subjectIdentifierCol0</param-name>
+       <param-value>pennname</param-value>
+     </init-param>
+     <init-param>
+       <!- - col which identifies the row, perhaps not subjectId, add multiple by incrementing the 0 index - - >
+       <param-name>subjectIdentifierCol1</param-name>
+       <param-value>penn_id</param-value>
+     </init-param>
+     <!- - now you can count up from 0 to N of attributes for various cols.  
+          The name is how to reference in subject.getAttribute() - - >
+     <init-param>
+       <param-name>subjectAttributeCol0</param-name>
+       <param-value>pennname</param-value>
+     </init-param>
+     <init-param>
+       <param-name>subjectAttributeName0</param-name>
+       <param-value>PENNNAME</param-value>
+     </init-param>
+     <init-param>
+       <param-name>subjectAttributeCol1</param-name>
+       <param-value>description_lower</param-value>
+     </init-param>
+     <init-param>
+       <param-name>subjectAttributeName1</param-name>
+       <param-value>searchAttribute0</param-value>
+     </init-param>
+     <init-param>
+       <param-name>sortAttribute0</param-name>
+       <param-value>description</param-value>
+     </init-param>
+     <init-param>
+       <param-name>searchAttribute0</param-name>
+       <param-value>searchAttribute0</param-value>
+     </init-param>
+     <internal-attribute>searchAttribute0</internal-attribute>
+     <!- - ##########################  STATUS SECTION for searches to filter out inactives and allow
+                                                     the user to filter by status with e.g. status=all
+                                                     this is optional, and advanced - -> 
+     <!- - column or attribute which represents the status - - >
+     <!- -
+     <init-param>
+       <param-name>statusDatastoreFieldName</param-name>
+       <param-value>status</param-value>
+     </init-param> - - >
+     <!- - search string from user which represents the status.  e.g. status=active - - >
+     <!- -
+     <init-param>
+       <param-name>statusLabel</param-name>
+       <param-value>status</param-value>
+     </init-param> - - >
+     <!- - available statuses from screen (if not specified, any will be allowed). comma separated list.
+          Note, this is optional and you probably dont want to configure it, it is mostly necessary
+          when you have multiple sources with statuses...  if someone types an invalid status
+          and you have this configured, it will not filter by it - - >
+     <!- - 
+     <init-param>
+       <param-name>statusesFromUser<param-name>
+       <param-value>Active, Inactive, Pending, All</param-value>
+     </init-param> - - >
+     <!- - all label from the user - - >
+     <!- -
+     <init-param>
+       <param-name>statusAllFromUser</param-name>
+       <param-value>All</param-value>
+     </init-param> - - >
+     <!- - if no status is specified, this will be used (e.g. for active only).  Note, the value should be of the
+          form the user would type in - - >
+     <!- - 
+     <init-param>
+       <param-name>statusSearchDefault</param-name>
+       <param-value>status=active</param-value>
+     </init-param> - - >
+     <!- - translate between screen values of status, and the data store value.  Increment the 0 to 1, 2, etc for more translations.
+          so the user could enter: status=active, and that could translate to status_col=A.  The 'user' is what the user types in,
+          the 'datastore' is what is in the datastore.  The user part is not case-sensitive.  Note, this could be a many to one - - >
+     <!- -
+     <init-param>
+       <param-name>statusTranslateUser0</param-name>
+       <param-value>active</param-value>
+     </init-param>
+     <init-param>
+       <param-name>statusTranslateDatastore0</param-name>
+       <param-value>A</param-value>
+     </init-param> - - >
+     <!- - ########################## END STATUS SECTION - - > 
+   </source>
+   -->
+   
+   <!--
+  <source adapterClass="edu.internet2.middleware.grouper.subj.GrouperJndiSourceAdapter">
+    <id>example</id>
+    <name>Example Edu</name>
+    <type>person</type>
+    <init-param>
+      <param-name>INITIAL_CONTEXT_FACTORY</param-name>
+      <param-value>com.sun.jndi.ldap.LdapCtxFactory</param-value>
+    </init-param>
+    <init-param>
+      <param-name>PROVIDER_URL</param-name>
+      <param-value>ldap://localhost:389</param-value>
+    </init-param>
+    <init-param>
+      <param-name>SECURITY_AUTHENTICATION</param-name>
+      <param-value>simple</param-value>
+    </init-param>
+    <init-param>
+      <param-name>SECURITY_PRINCIPAL</param-name>
+      <param-value>cn=Manager,dc=example,dc=edu</param-value>
+    </init-param>
+    <init-param>
+      <param-name>SECURITY_CREDENTIALS</param-name>
+      <param-value>secret</param-value>
+    </init-param>
+     <init-param>
+      <param-name>SubjectID_AttributeType</param-name>
+      <param-value>exampleEduRegID</param-value>
+    </init-param>
+     <init-param>
+      <param-name>SubjectID_formatToLowerCase</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <init-param>
+      <param-name>Name_AttributeType</param-name>
+      <param-value>cn</param-value>
+    </init-param>
+    <init-param>
+      <param-name>Description_AttributeType</param-name>
+      <param-value>description</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>VTLDAP_VALIDATOR</param-name>
+      <param-value>ConnectLdapValidator|CompareLdapValidator</param-value>
+    </init-param>
+    <init-param>
+      <param-name>VTLDAP_VALIDATOR_COMPARE_DN</param-name>
+      <param-value>ou=People,dc=vt,dc=edu</param-value>
+    </init-param>
+    <init-param>
+      <param-name>VTLDAP_VALIDATOR_COMPARE_SEARCH_FILTER_STRING</param-name>
+      <param-value>ou=People</param-value>
+    </init-param>
+    
+    /// Scope Values can be: OBJECT_SCOPE, ONELEVEL_SCOPE, SUBTREE_SCOPE 
+    /// For filter use 
+    
+    <search>
+        <searchType>searchSubject</searchType>
+        <param>
+            <param-name>filter</param-name>
+            <param-value>
+                (&amp; (exampleEduRegId=%TERM%) (objectclass=exampleEduPerson))
+            </param-value>
+        </param>
+        <param>
+            <param-name>scope</param-name>
+            <param-value>
+                SUBTREE_SCOPE            
+            </param-value>
+        </param>
+        <param>
+            <param-name>base</param-name>
+            <param-value>
+                ou=people,dc=example,dc=edu
+            </param-value>
+        </param>
+         
+    </search>
+    <search>
+        <searchType>searchSubjectByIdentifier</searchType>
+        <param>
+            <param-name>filter</param-name>
+            <param-value>
+                (&amp; (uid=%TERM%) (objectclass=exampleEduPerson))
+            </param-value>
+        </param>
+        <param>
+            <param-name>scope</param-name>
+            <param-value>
+                SUBTREE_SCOPE            
+            </param-value>
+        </param>
+        <param>
+            <param-name>base</param-name>
+            <param-value>
+                ou=people,dc=example,dc=edu
+            </param-value>
+        </param>
+    </search>
+    
+    <search>
+       <searchType>search</searchType>
+         <param>
+            <param-name>filter</param-name>
+            <param-value>
+                (&amp; (|(|(uid=%TERM%)(cn=*%TERM%*))(exampleEduRegId=%TERM%))(objectclass=exampleEduPerson))
+            </param-value>
+        </param>
+        <param>
+            <param-name>scope</param-name>
+            <param-value>
+                SUBTREE_SCOPE            
+            </param-value>
+        </param>
+         <param>
+            <param-name>base</param-name>
+            <param-value>
+                ou=people,dc=example,dc=edu
+            </param-value>
+        </param>
+    </search>
+    <init-param>
+      <param-name>subjectVirtualAttribute_0_searchAttribute0</param-name>
+      <param-value>${subjectUtils.defaultIfBlank(subject.getAttributeValueOrCommaSeparated('uid'), "")},${subjectUtils.defaultIfBlank(subject.getAttributeValueOrCommaSeparated('cn'), "")},${subjectUtils.defaultIfBlank(subject.getAttributeValueOrCommaSeparated('exampleEduRegId'), "")}</param-value>
+    </init-param>
+    <init-param>
+      <param-name>sortAttribute0</param-name>
+      <param-value>cn</param-value>
+    </init-param>
+    <init-param>
+      <param-name>searchAttribute0</param-name>
+      <param-value>searchAttribute0</param-value>
+    </init-param>
+
+     <!- - ##########################  STATUS SECTION for searches to filter out inactives and allow
+                                                     the user to filter by status with e.g. status=all
+                                                     this is optional, and advanced - -> 
+     <!- - column or attribute which represents the status - - >
+     <!- -
+     <init-param>
+       <param-name>statusDatastoreFieldName</param-name>
+       <param-value>status</param-value>
+     </init-param> - - >
+     <!- - search string from user which represents the status.  e.g. status=active - - >
+     <!- -
+     <init-param>
+       <param-name>statusLabel</param-name>
+       <param-value>status</param-value>
+     </init-param> - - >
+     <!- - available statuses from screen (if not specified, any will be allowed). comma separated list.
+          Note, this is optional and you probably dont want to configure it, it is mostly necessary
+          when you have multiple sources with statuses...  if someone types an invalid status
+          and you have this configured, it will not filter by it - - >
+     <!- - 
+     <init-param>
+       <param-name>statusesFromUser<param-name>
+       <param-value>Active, Inactive, Pending, All</param-value>
+     </init-param> - - >
+     <!- - all label from the user - - >
+     <!- -
+     <init-param>
+       <param-name>statusAllFromUser</param-name>
+       <param-value>All</param-value>
+     </init-param> - - >
+     <!- - if no status is specified, this will be used (e.g. for active only).  Note, the value should be of the
+          form the user would type in - - >
+     <!- - 
+     <init-param>
+       <param-name>statusSearchDefault</param-name>
+       <param-value>status=active</param-value>
+     </init-param> - - >
+     <!- - translate between screen values of status, and the data store value.  Increment the 0 to 1, 2, etc for more translations.
+          so the user could enter: status=active, and that could translate to status_col=A.  The 'user' is what the user types in,
+          the 'datastore' is what is in the datastore.  The user part is not case-sensitive.  Note, this could be a many to one - - >
+     <!- -
+     <init-param>
+       <param-name>statusTranslateUser0</param-name>
+       <param-value>active</param-value>
+     </init-param>
+     <init-param>
+       <param-name>statusTranslateDatastore0</param-name>
+       <param-value>A</param-value>
+     </init-param> - - >
+     <!- - ########################## END STATUS SECTION - - > 
+
+
+    <internal-attribute>searchAttribute0</internal-attribute>
+
+    ///Attributes you would like to display when doing a search 
+    <attribute>cn</attribute>
+    <attribute>sn</attribute>
+    <attribute>uid</attribute>
+    <attribute>department</attribute>
+    <attribute>exampleEduRegId</attribute>
+
+    <!- - subject identifier to store in grouper's member table - - >
+    <init-param>
+      <param-name>subjectIdentifierAttribute0</param-name>
+      <param-value>uid</param-value>
+    </init-param>
+   
+  </source>
+-->
+
+	<source adapterClass="edu.internet2.middleware.grouper.subj.GrouperJdbcSourceAdapter2">
+        <id>AIRAVATA_SUBJECT_SOURCE</id>
+        <name>AIRAVATA_SUBJECT_SOURCE</name>
+         <type>person</type> 
+         <init-param>
+           <param-name>jdbcConnectionProvider</param-name>
+           <param-value>edu.internet2.middleware.subject.provider.C3p0JdbcConnectionProvider</param-value>
+         </init-param>
+         
+         <init-param>
+            <param-name>dbDriver</param-name>
+            <param-value>com.mysql.jdbc.Driver</param-value>
+         </init-param>
+         
+         <init-param>
+            <param-name>dbUrl</param-name>
+            <param-value>jdbc:mysql://gw62.iu.xsede.org:3306/dev_expcatalog_gw56</param-value>
+        </init-param>
+        
+        <init-param>
+            <param-name>dbUser</param-name>
+            <param-value></param-value>
+        </init-param>
+        
+        <init-param>
+            <param-name>dbPwd</param-name>
+            <param-value></param-value>
+        </init-param>
+    
+         <init-param>
+           <param-name>maxResults</param-name>
+           <param-value>1000</param-value>
+         </init-param>
+    
+          <init-param>
+           <param-name>dbTableOrView</param-name>
+           <param-value>USERS</param-value>
+         </init-param>
+         
+          <init-param>
+           <param-name>subjectIdCol</param-name>
+           <param-value>AIRAVATA_INTERNAL_USER_ID</param-value>
+         </init-param>
+         <init-param>
+           <param-name>nameCol</param-name>
+           <param-value>AIRAVATA_INTERNAL_USER_ID</param-value>
+         </init-param>
+         <init-param>
+           <param-name>descriptionCol</param-name>
+           <param-value>AIRAVATA_INTERNAL_USER_ID</param-value>
+         </init-param>
+         
+         <init-param>
+           <param-name>lowerSearchCol</param-name>
+           <param-value>AIRAVATA_INTERNAL_USER_ID</param-value>
+         </init-param>
+         
+         <init-param>
+           <param-name>defaultSortCol</param-name>
+           <param-value>AIRAVATA_INTERNAL_USER_ID</param-value>
+         </init-param>
+        
+		<!--  <init-param>
+           <param-name>subjectIdentifierCol0</param-name>
+           <param-value>subject_identifier</param-value>
+         </init-param> -->
+        
+         <!-- <init-param>
+           <param-name>subjectAttributeCol0</param-name>
+           <param-value>description</param-value>
+         </init-param>
+         <init-param>
+           <param-name>subjectAttributeName0</param-name>
+           <param-value>description</param-value>
+         </init-param> -->
+        
+         <init-param>
+           <param-name>sortAttribute0</param-name>
+           <param-value>AIRAVATA_INTERNAL_USER_ID</param-value>
+         </init-param>
+          <init-param>
+           <param-name>searchAttribute0</param-name>
+           <param-value>AIRAVATA_INTERNAL_USER_ID</param-value>
+         </init-param>
+         <!-- <internal-attribute>searchAttribute0</internal-attribute> -->
+         
+         <!-- <init-param>
+           <param-name>statusDatastoreFieldName</param-name>
+           <param-value>status</param-value>
+         </init-param>
+         
+         <init-param>
+           <param-name>statusLabel</param-name>
+           <param-value>status</param-value>
+         </init-param> -->
+        
+         
+         <!-- <init-param>
+           <param-name>statusesFromUser</param-name>
+           <param-value>Active, Inactive, Pending, All</param-value>
+         </init-param>
+         
+         <init-param>
+           <param-name>statusAllFromUser</param-name>
+           <param-value>All</param-value>
+         </init-param>
+         
+         <init-param>
+           <param-name>statusSearchDefault</param-name>
+           <param-value>status=active</param-value>
+         </init-param>
+         
+         <init-param>
+           <param-name>statusTranslateUser0</param-name>
+           <param-value>active</param-value>
+         </init-param>
+         <init-param>
+           <param-name>statusTranslateDatastore0</param-name>
+           <param-value>A</param-value>
+         </init-param> -->
+       </source> 
+
+</sources>
+

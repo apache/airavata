@@ -37,7 +37,6 @@ import org.apache.airavata.gfac.core.monitor.JobMonitor;
 import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
-import org.apache.airavata.gfac.impl.task.DataStageTask;
 import org.apache.airavata.gfac.impl.task.DataStreamingTask;
 import org.apache.airavata.gfac.impl.task.EnvironmentSetupTask;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
@@ -53,19 +52,9 @@ import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.data.movement.SecurityProtocol;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.status.JobState;
-import org.apache.airavata.model.status.JobStatus;
-import org.apache.airavata.model.status.ProcessState;
-import org.apache.airavata.model.status.ProcessStatus;
-import org.apache.airavata.model.status.TaskState;
-import org.apache.airavata.model.status.TaskStatus;
+import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.*;
-import org.apache.airavata.registry.cpi.AppCatalog;
-import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.airavata.registry.cpi.ExpCatChildDataType;
-import org.apache.airavata.registry.cpi.ExperimentCatalog;
-import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
-import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.utils.ZKPaths;
@@ -351,7 +340,7 @@ public class GFacEngineImpl implements GFacEngine {
                     executeJobSubmission(taskContext, processContext.isRecovery());
                     // Don't put any checkpoint in between JobSubmission and Monitoring tasks
 
-                    JobStatus jobStatus = processContext.getJobModel().getJobStatus();
+                    JobStatus jobStatus = processContext.getJobModel().getJobStatuses().get(0);
                     if (jobStatus != null && (jobStatus.getJobState() == JobState.SUBMITTED
                             || jobStatus.getJobState() == JobState.QUEUED || jobStatus.getJobState() == JobState.ACTIVE)) {
 
@@ -362,7 +351,7 @@ public class GFacEngineImpl implements GFacEngine {
                                     if (output.isOutputStreaming()){
                                         TaskModel streamingTaskModel = new TaskModel();
                                         streamingTaskModel.setTaskType(TaskTypes.OUTPUT_FETCHING);
-                                        streamingTaskModel.setTaskStatus(new TaskStatus(TaskState.CREATED));
+                                        streamingTaskModel.setTaskStatuses(Arrays.asList(new TaskStatus(TaskState.CREATED)));
                                         streamingTaskModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
                                         streamingTaskModel.setParentProcessId(processContext.getProcessId());
                                         TaskContext streamingTaskContext = getTaskContext(processContext);
@@ -601,7 +590,7 @@ public class GFacEngineImpl implements GFacEngine {
         TaskModel taskModel = null;
         for (String taskId : taskExecutionOrder) {
             taskModel = taskMap.get(taskId);
-            TaskState state = taskModel.getTaskStatus().getState();
+            TaskState state = taskModel.getTaskStatuses().get(0).getState();
             if (state == TaskState.CREATED || state == TaskState.EXECUTING) {
                 recoverTaskId = taskId;
                 break;
@@ -798,7 +787,7 @@ public class GFacEngineImpl implements GFacEngine {
         taskModel.setLastUpdateTime(taskModel.getCreationTime());
         TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-        taskModel.setTaskStatus(taskStatus);
+        taskModel.setTaskStatuses(Arrays.asList(taskStatus));
         taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
         taskCtx.setTaskModel(taskModel);
         return taskCtx;
@@ -815,7 +804,7 @@ public class GFacEngineImpl implements GFacEngine {
         taskModel.setLastUpdateTime(taskModel.getCreationTime());
         TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-        taskModel.setTaskStatus(taskStatus);
+        taskModel.setTaskStatuses(Arrays.asList(taskStatus));
         taskModel.setTaskType(TaskTypes.DATA_STAGING);
         // create data staging sub task model
         String remoteOutputDir = processContext.getOutputDir();

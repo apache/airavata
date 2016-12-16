@@ -95,6 +95,7 @@
     </persistence-unit>
     <persistence-unit name="replicacatalog_data">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+        <class>org.apache.airavata.registry.core.replica.catalog.model.Configuration</class>
         <class>org.apache.airavata.registry.core.replica.catalog.model.DataProduct</class>
         <class>org.apache.airavata.registry.core.replica.catalog.model.DataReplicaLocation</class>
         <class>org.apache.airavata.registry.core.replica.catalog.model.DataProductMetaData</class>

@@ -20,6 +20,21 @@
  */
 package org.apache.airavata.server;
 
+import ch.qos.logback.classic.LoggerContext;
+import org.apache.airavata.api.Airavata;
+import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.logging.kafka.KafkaAppender;
+import org.apache.airavata.common.utils.*;
+import org.apache.airavata.common.utils.ApplicationSettings.ShutdownStrategy;
+import org.apache.airavata.common.utils.IServer.ServerStatus;
+import org.apache.airavata.common.utils.StringUtil.CommandLineParameters;
+import org.apache.commons.cli.ParseException;
+import org.apache.zookeeper.server.ServerCnxnFactory;
+import org.slf4j.ILoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,16 +42,6 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.*;
-import org.apache.airavata.common.utils.ApplicationSettings.ShutdownStrategy;
-import org.apache.airavata.common.utils.IServer.ServerStatus;
-import org.apache.airavata.common.utils.StringUtil.CommandLineParameters;
-import org.apache.commons.cli.ParseException;
-import org.apache.zookeeper.server.ServerCnxnFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ServerMain {
 	private static List<IServer> servers;
@@ -55,6 +60,7 @@ public class ServerMain {
 	// server names
 	private static final String API_SERVER = "apiserver";
 	private static final String CREDENTIAL_STORE = "credentialstore";
+	private static final String REGISTRY_SERVER = "regserver";
 	private static final String GFAC_SERVER = "gfac";
 	private static final String ORCHESTRATOR = "orchestrator";
 
@@ -106,6 +112,7 @@ public class ServerMain {
 		List<String> serverList = new ArrayList<>(Arrays.asList(serverNames.split(",")));
 		if (serverList.indexOf(ALL_IN_ONE) > -1) {
 			serverList.clear();
+			serverList.add(REGISTRY_SERVER);  // registry server should start before everything
 			serverList.add(CREDENTIAL_STORE); // credential store should start before api server
 			serverList.add(API_SERVER);
 			serverList.add(ORCHESTRATOR);
@@ -119,11 +126,20 @@ public class ServerMain {
 			serverList.clear();
 			serverList.add(GFAC_SERVER);
 		} else {
+			// registry server should start before everything
+			int regPos = serverList.indexOf(REGISTRY_SERVER);
+			if (regPos > 0) {
+				String temp = serverList.get(0);
+				serverList.set(0, serverList.get(regPos));
+				serverList.set(regPos, temp);
+			}
+
 			// credential store should start before api server
 			int credPos = serverList.indexOf(CREDENTIAL_STORE);
-			if (credPos > 0) { // neither absent nor credentialstore is first element
-				String temp = serverList.get(0);
-				serverList.set(0, serverList.get(credPos));
+			int apiPos = serverList.indexOf(API_SERVER);
+			if (credPos >= 0 && apiPos >= 0 && (credPos > apiPos)) {
+				String temp = serverList.get(apiPos);
+				serverList.set(apiPos, serverList.get(credPos));
 				serverList.set(credPos, temp);
 			}
 		}
@@ -143,15 +159,41 @@ public class ServerMain {
 //		});
 //	}
 	
-	public static void main(String args[]) throws ParseException, IOException {
-        CommandLineParameters commandLineParameters = StringUtil.getCommandLineParser(args);
+	public static void main(String args[]) throws ParseException, IOException, AiravataException {
+		ServerSettings.mergeSettingsCommandLineArgs(args);
+		ServerSettings.setServerRoles(ApplicationSettings.getSetting(SERVERS_KEY, "all").split(","));
+
+		if (ServerSettings.isEnabledKafkaLogging()) {
+			final ILoggerFactory iLoggerFactory = LoggerFactory.getILoggerFactory();
+			if (iLoggerFactory instanceof LoggerContext) {
+				final KafkaAppender kafkaAppender = new KafkaAppender(ServerSettings.getKafkaBrokerList(),
+						ServerSettings.getKafkaTopicPrefix());
+				kafkaAppender.setContext((LoggerContext) iLoggerFactory);
+				kafkaAppender.setName("kafka-appender");
+				kafkaAppender.clearAllFilters();
+				kafkaAppender.start();
+				// Until AIRAVATA-2073 filter org.apache.kafka logs
+				((LoggerContext) iLoggerFactory).getLogger("org.apache.airavata").addAppender(kafkaAppender);
+				((LoggerContext) iLoggerFactory).getLogger("org.apache.zookeeper").addAppender(kafkaAppender);
+				((LoggerContext) iLoggerFactory).getLogger("org.apache.derby").addAppender(kafkaAppender);
+				((LoggerContext) iLoggerFactory).getLogger("org.apache.commons").addAppender(kafkaAppender);
+				((LoggerContext) iLoggerFactory).getLogger("org.apache.thrift").addAppender(kafkaAppender);
+				((LoggerContext) iLoggerFactory).getLogger("com").addAppender(kafkaAppender);
+			} else {
+				logger.warn("Kafka logging is enabled but cannot find logback LoggerContext, found", iLoggerFactory.getClass().toString());
+				throw new AiravataException("Kafka logging is enabled but cannot find logback LoggerContext");
+			}
+		} else {
+			logger.info("Kafka logging is disabled in airavata server configurations");
+		}
+
+		CommandLineParameters commandLineParameters = StringUtil.getCommandLineParser(args);
         if (commandLineParameters.getArguments().contains(STOP_COMMAND_STR)){
             performServerStopRequest(commandLineParameters);
         }else{
             AiravataZKUtils.startEmbeddedZK(cnxnFactory);
             performServerStart(args);
 		}
-
     }
 
 
@@ -162,7 +204,6 @@ public class ServerMain {
 		for (String string : args) {
 			logger.info("Server Arguments: " + string);
 		}
-		ServerSettings.mergeSettingsCommandLineArgs(args);
 		String serverNames;
 		try {
 			serverNames = ApplicationSettings.getSetting(SERVERS_KEY);

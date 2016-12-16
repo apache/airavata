@@ -1,0 +1,13 @@
+---
+# inventory fie: production
+#[localhost]
+127.0.0.1
+
+[mesos-master]
+52.87.208.230 my_id=1
+54.172.21.138 my_id=2
+54.196.170.54 my_id=3
+
+
+[mesos-slave]
+54.175.143.203

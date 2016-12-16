@@ -41,7 +41,7 @@ class JobModel {
    */
   public $creationTime = null;
   /**
-   * @var \Airavata\Model\Status\JobStatus
+   * @var \Airavata\Model\Status\JobStatus[]
    */
   public $jobStatus = null;
   /**
@@ -94,8 +94,12 @@ class JobModel {
           ),
         6 => array(
           'var' => 'jobStatus',
-          'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\Status\JobStatus',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\Status\JobStatus',
+            ),
           ),
         7 => array(
           'var' => 'computeResourceConsumed',
@@ -218,9 +222,19 @@ class JobModel {
           }
           break;
         case 6:
-          if ($ftype == TType::STRUCT) {
-            $this->jobStatus = new \Airavata\Model\Status\JobStatus();
-            $xfer += $this->jobStatus->read($input);
+          if ($ftype == TType::LST) {
+            $this->jobStatus = array();
+            $_size0 = 0;
+            $_etype3 = 0;
+            $xfer += $input->readListBegin($_etype3, $_size0);
+            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
+            {
+              $elem5 = null;
+              $elem5 = new \Airavata\Model\Status\JobStatus();
+              $xfer += $elem5->read($input);
+              $this->jobStatus []= $elem5;
+            }
+            $xfer += $input->readListEnd();
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -306,11 +320,20 @@ class JobModel {
       $xfer += $output->writeFieldEnd();
     }
     if ($this->jobStatus !== null) {
-      if (!is_object($this->jobStatus)) {
+      if (!is_array($this->jobStatus)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('jobStatus', TType::STRUCT, 6);
-      $xfer += $this->jobStatus->write($output);
+      $xfer += $output->writeFieldBegin('jobStatus', TType::LST, 6);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->jobStatus));
+        {
+          foreach ($this->jobStatus as $iter6)
+          {
+            $xfer += $iter6->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
       $xfer += $output->writeFieldEnd();
     }
     if ($this->computeResourceConsumed !== null) {

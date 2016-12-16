@@ -20,10 +20,6 @@
  */
 package org.apache.airavata.client.samples;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.client.tools.RegisterSampleApplications;
@@ -36,22 +32,21 @@ import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.data.movement.SecurityProtocol;
-import org.apache.airavata.model.error.AiravataClientException;
-import org.apache.airavata.model.error.AiravataErrorType;
-import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.model.error.ExperimentNotFoundException;
-import org.apache.airavata.model.error.InvalidRequestException;
-import org.apache.airavata.model.experiment.ExperimentSummaryModel;
+import org.apache.airavata.model.error.*;
+import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class CreateLaunchBES {
  
@@ -167,7 +162,7 @@ public class CreateLaunchBES {
             Thread.sleep(10000);
             for (String exId : experimentIds) {
                 ExperimentModel experiment = airavataClient.getExperiment(new AuthzToken(""), exId);
-                System.out.println(experiment.getExperimentId() + " " + experiment.getExperimentStatus().getState().name());
+                System.out.println(experiment.getExperimentId() + " " + experiment.getExperimentStatus().get(0).getState().name());
             }
 
 

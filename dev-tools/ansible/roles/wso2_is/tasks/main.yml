@@ -1,0 +1,41 @@
+---
+- name: install role pre-requireties
+  yum: name=unzip state=latest update_cache=yes
+  become: yes
+
+# downlaod wso2 is
+# extract it
+# - name: Download and unarchive wso2 is
+#   unarchive: src="{{ zookeeper_url }}" dest="{{ user_home }}" copy=no owner="{{ user }}" group="{{ group }}"
+# for now wso2is from localhost
+
+- name: copy WSO2 IS
+  unarchive: >
+    src="{{ wso2_is_dist }}"
+    dest="{{ user_home }}/"
+    owner="{{ user }}"
+    group="{{ group }}"
+    creates="{{ user_home }}/{{ wso2_is_dir }}/bin/wso2server.sh"
+
+- name: copy carbon.xml
+  template: >
+    src=carbon.xml.j2
+    dest="{{ user_home }}/{{ wso2_is_dir }}/repository/conf/carbon.xml"
+    owner="{{ user }}"
+    group="{{ group }}"
+    mode="u=rw,g=r,o=r"
+
+- name: open carabon management console port
+  firewalld: port=9443/tcp zone=public permanent=true state=enabled immediate=yes
+  become: yes
+
+# start wso2 is server
+- name: start wso2 is
+  command: ./bin/wso2server.sh start chdir="{{ user_home }}/{{ wso2_is_dir }}/" creates="{{ user_home }}/{{ wso2_is_dir }}/wso2carbon.pid"
+  environment:
+    JAVA_HOME: "{{ java_home }}"
+
+# - name: stop wso2 is
+  # command: ./bin/airavata-server-stop.sh -f chdir="{{ gfac_dir }}/{{ airavata_dist }}/" removes="{{ gfac_dir }}/{{ airavata_dist }}/bin/server_start_*"
+
+...

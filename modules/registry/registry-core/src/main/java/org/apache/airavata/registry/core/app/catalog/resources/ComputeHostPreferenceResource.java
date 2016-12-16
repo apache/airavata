@@ -142,6 +142,10 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
         this.gatewayProfile = gatewayProfile;
     }
 
+    public void setUserResourceProfile(GatewayProfileResource gatewayProfile) {
+        this.gatewayProfile = gatewayProfile;
+    }
+
     public ComputeResourceResource getComputeHostResource() {
         return computeHostResource;
     }

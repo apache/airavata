@@ -37,7 +37,6 @@ import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.JobManagerConfiguration;
-import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
 import org.apache.airavata.gfac.core.cluster.OutputParser;
@@ -55,15 +54,25 @@ import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.watcher.CancelRequestWatcher;
 import org.apache.airavata.gfac.core.watcher.RedeliveryRequestWatcher;
-import org.apache.airavata.gfac.impl.job.*;
+import org.apache.airavata.gfac.impl.job.ForkJobConfiguration;
+import org.apache.airavata.gfac.impl.job.LSFJobConfiguration;
+import org.apache.airavata.gfac.impl.job.PBSJobConfiguration;
+import org.apache.airavata.gfac.impl.job.SlurmJobConfiguration;
+import org.apache.airavata.gfac.impl.job.UGEJobConfiguration;
 import org.apache.airavata.gfac.impl.task.ArchiveTask;
 import org.apache.airavata.gfac.impl.watcher.CancelRequestWatcherImpl;
 import org.apache.airavata.gfac.impl.watcher.RedeliveryRequestWatcherImpl;
 import org.apache.airavata.gfac.monitor.email.EmailBasedMonitor;
+import org.apache.airavata.messaging.core.MessageHandler;
+import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.messaging.core.impl.RabbitMQProcessLaunchConsumer;
-import org.apache.airavata.messaging.core.impl.RabbitMQStatusPublisher;
-import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.messaging.core.Subscriber;
+import org.apache.airavata.messaging.core.Type;
+import org.apache.airavata.messaging.core.impl.RabbitMQPublisher;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
@@ -81,7 +90,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -106,7 +117,7 @@ public abstract class Factory {
 	private static Map<DataMovementProtocol, Task> dataMovementTask = new HashMap<>();
 	private static Map<ResourceJobManagerType, ResourceConfig> resources = new HashMap<>();
 	private static Map<MonitorMode, JobMonitor> jobMonitorServices = new HashMap<>();
-	private static RabbitMQProcessLaunchConsumer processLaunchConsumer;
+	private static Subscriber processLaunchSubscriber;
 	private static Map<String, Session> sessionMap = new HashMap<>();
 
 	public static GFacEngine getGFacEngine() throws GFacException {
@@ -137,9 +148,9 @@ public abstract class Factory {
 
 	public static Publisher getStatusPublisher() throws AiravataException {
 		if (statusPublisher == null) {
-			synchronized (RabbitMQStatusPublisher.class) {
+			synchronized (RabbitMQPublisher.class) {
 				if (statusPublisher == null) {
-					statusPublisher = new RabbitMQStatusPublisher();
+					statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
 				}
 			}
 		}
@@ -159,11 +170,17 @@ public abstract class Factory {
 		return curatorClient;
 	}
 
-	public static RabbitMQProcessLaunchConsumer getProcessLaunchConsumer() throws AiravataException {
-		if (processLaunchConsumer == null) {
-			processLaunchConsumer = new RabbitMQProcessLaunchConsumer();
-		}
-		return processLaunchConsumer;
+	public static synchronized void initPrcessLaunchSubscriber(MessageHandler processMessageHandler) throws AiravataException {
+	    if(getProcessLaunchSubscriber() != null)
+			throw new AiravataException("Process launch Subscriber is already initialized");
+
+		List<String> routingKeys = new ArrayList<>();
+		routingKeys.add(ServerSettings.getRabbitmqProcessExchangeName());
+		 processLaunchSubscriber = MessagingFactory.getSubscriber(processMessageHandler, routingKeys, Type.PROCESS_LAUNCH);
+	}
+
+	public static synchronized  Subscriber getProcessLaunchSubscriber() throws AiravataException {
+		return processLaunchSubscriber;
 	}
 
 	public static JobManagerConfiguration getJobManagerConfiguration(ResourceJobManager resourceJobManager) throws GFacException {
@@ -318,7 +335,7 @@ public abstract class Factory {
         try {
             ProcessModel processModel = processContext.getProcessModel();
             String loginUserName = null;
-            String overrideLoginUserName = processModel.getResourceSchedule().getOverrideLoginUserName();
+            String overrideLoginUserName = processModel.getProcessResourceSchedule().getOverrideLoginUserName();
             if (overrideLoginUserName != null && !overrideLoginUserName.equals("")) {
                 loginUserName = overrideLoginUserName;
             } else {
@@ -335,7 +352,7 @@ public abstract class Factory {
         try {
             ProcessModel processModel = processContext.getProcessModel();
             String scratchLocation = null;
-            String overrideScratchLocation = processModel.getResourceSchedule().getOverrideScratchLocation();
+            String overrideScratchLocation = processModel.getProcessResourceSchedule().getOverrideScratchLocation();
             if (overrideScratchLocation != null && !overrideScratchLocation.equals("")) {
                 scratchLocation = overrideScratchLocation;
             } else {

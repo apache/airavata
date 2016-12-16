@@ -1,0 +1,18 @@
+---
+#Variables associated with this role
+# Oracle Java 8
+java_dir_source: "/usr/local/src"
+
+java_version: 8
+java_version_update: 91
+java_version_build: '14'
+java_version_string: "1.{{ java_version }}.0_{{ java_version_update }}"
+java_home: "/usr/java/jdk1.{{ java_version }}.0_{{ java_version_update }}"
+
+java_rpm_filename: "jdk-{{ java_version }}u{{ java_version_update }}-linux-x64.rpm"
+java_rpm_url: "http://download.oracle.com/otn-pub/java/jdk/{{ java_version }}u{{ java_version_update }}-b{{ java_version_build }}/{{ java_rpm_filename }}"
+
+wso2_is_rul: http://wso2.com/products/identity-server/#download
+wso2_is_dist: wso2is-5.1.0.zip
+wso2_is_dir: wso2is-5.1.0
+...

@@ -91,7 +91,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
         properties = new Properties();
         properties.put("mail.store.protocol", storeProtocol);
         timer = new Timer("CancelJobHandler", true);
-        long period = 1000*60*5; // five minute delay between successive task executions.
+        long period = 1000 * 60 * 5; // five minute delay between successive task executions.
         timer.schedule(new CancelTimerTask(), 0 , period);
     }
 
@@ -117,7 +117,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 	}
 	@Override
 	public void monitor(String jobId, TaskContext taskContext) {
-		log.info("[EJM]: Added monitor Id : " + jobId + " to email based monitor map");
+		log.info("[EJM]: Added monitor Id : {} to email based monitor map", jobId);
 		jobMonitorMap.put(jobId, taskContext);
         taskContext.getParentProcessContext().setPauseTaskExecution(true);
 	}
@@ -135,7 +135,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
                     newJobStatus.setReason("Moving job status to cancel, as we didn't see any email from this job " +
                             "for a while after execute job cancel command. This may happen if job was in queued state " +
                             "when we run the cancel command");
-                    jobModel.setJobStatus(newJobStatus);
+                    jobModel.setJobStatuses(Arrays.asList(newJobStatus));
                     GFacUtils.saveJobStatus(pc, jobModel);
                 }
                 ProcessStatus pStatus = new ProcessStatus(ProcessState.CANCELLING);
@@ -203,7 +203,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 					    continue;
 				    } else {
                         quite = false;
-					    log.info("[EJM]: " + jobMonitorMap.size() + " job/s in job monitor map");
+					    log.info("[EJM]: {} job/s in job monitor map", jobMonitorMap.size());
 				    }
 				    if (!store.isConnected()) {
 					    store.connect();
@@ -374,7 +374,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
         }
 	    if (jobStatus.getJobState() != null) {
 		    try {
-			    jobModel.setJobStatus(jobStatus);
+			    jobModel.setJobStatuses(Arrays.asList(jobStatus));
 			    log.info("[EJM]: Publishing status changes to amqp. " + jobDetails);
 			    GFacUtils.saveJobStatus(parentProcessContext, jobModel);
 		    } catch (GFacException e) {

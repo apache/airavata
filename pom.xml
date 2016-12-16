@@ -101,6 +101,8 @@
         <snakeyaml.version>1.15</snakeyaml.version>
 		<maven.javadoc.failOnError>false</maven.javadoc.failOnError>
 		<maven.replacer.plugin.version>1.5.3</maven.replacer.plugin.version>
+		<kafka-clients.version>0.8.2.2</kafka-clients.version>
+		<logback.version>1.1.6</logback.version>
 	</properties>
 
 	<developers>
@@ -434,6 +436,16 @@
 				<artifactId>curator-framework</artifactId>
 				<version>${curator.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.apache.kafka</groupId>
+				<artifactId>kafka-clients</artifactId>
+				<version>${kafka-clients.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${logback.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -479,6 +491,39 @@
 			<id>default</id>
 			<build>
 				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>templating-maven-plugin</artifactId>
+						<version>1.0.0</version>
+						<executions>
+							<execution>
+								<id>filtering-java-templates</id>
+								<goals>
+									<goal>filter-sources</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>com.lukegb.mojo</groupId>
+						<artifactId>gitdescribe-maven-plugin</artifactId>
+						<version>3.0</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>gitdescribe</goal>
+								</goals>
+								<id>git-describe</id>
+								<phase>initialize</phase>
+								<configuration>
+									<extraArguments>
+										<param>--tags</param>
+									</extraArguments>
+									<descriptionProperty>git-describe</descriptionProperty>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-remote-resources-plugin</artifactId>
@@ -542,6 +587,26 @@
 							</excludes>
 						</configuration>
 					</plugin>
+					<plugin>
+						<groupId>com.lukegb.mojo</groupId>
+						<artifactId>gitdescribe-maven-plugin</artifactId>
+						<version>3.0</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>gitdescribe</goal>
+								</goals>
+								<id>git-describe</id>
+								<phase>initialize</phase>
+								<configuration>
+									<extraArguments>
+										<param>--tags</param>
+									</extraArguments>
+									<descriptionProperty>git-describe</descriptionProperty>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
 				</plugins>
 			</build>
 			<activation>
@@ -551,7 +616,7 @@
 				<module>modules/configuration</module>
 				<module>airavata-api</module>
 				<module>modules/commons</module>
-                <module>modules/messaging</module>
+                		<module>modules/messaging</module>
 				<module>modules/gfac</module>
 				<module>modules/registry</module>
 				<module>modules/security</module>
@@ -563,109 +628,15 @@
 				<module>modules/server</module>
 				<module>modules/workflow</module>
 				<module>modules/test-suite</module>
+				<module>modules/group-manager</module>
 				<!-- Deprecated Modules-->
 				<!--<module>modules/integration-tests</module>-->
 				<!--<module>modules/workflow-model</module>-->
 				<!--<module>modules/workflow</module>-->
 				<!--<module>modules/xbaya-gui</module>-->
-                <module>distribution</module>
+                		<module>modules/distribution</module>
             </modules>
 		</profile>
-        <profile>
-            <id>jenkins</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-remote-resources-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>process</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <version>2.5</version>
-                        <executions>
-                            <execution>
-                                <id>copy-resources</id>
-                                <!-- here the phase you need -->
-                                <phase>validate</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${basedir}/target/classes/META-INF</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>${basedir}/src/main/assembly/dist</directory>
-                                            <filtering>true</filtering>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <version>3.1</version>
-                        <configuration>
-                            <source>1.8</source>
-                            <target>1.8</target>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>${surefire.version}</version>
-                        <configuration>
-                            <failIfNoTests>false</failIfNoTests>
-                            <skipTests>${skipTests}</skipTests>
-                            <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
-                            <!-- making sure that the sure-fire plugin doesn't run the integration
-                                tests -->
-                            <!-- Integration tests are run using the fail-safe plugin in the module
-                                pom -->
-                            <excludes>
-                                <exclude>**/IT.java</exclude>
-                                <exclude>**/*TestWithMyProxyAuth.java</exclude>
-                                <exclude>**/*TestWithSSHAuth.java</exclude>
-                                <exclude>**/*TestWithEC2Auth.java</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <modules>
-                <module>modules/configuration</module>
-                <module>airavata-api</module>
-                <module>modules/commons</module>
-                <module>modules/messaging</module>
-                <module>modules/gfac</module>
-                <module>modules/registry</module>
-                <module>modules/security</module>
-                <module>modules/credential-store</module>
-                <module>modules/orchestrator</module>
-                <module>modules/monitoring</module>
-                <module>modules/user-profile</module>
-                <!--<module>modules/cloud</module>-->
-                <module>modules/server</module>
-                <module>modules/workflow</module>
-                <module>modules/test-suite</module>
-                <!-- Deprecated Modules-->
-                <!--<module>modules/integration-tests</module>-->
-                <!--<module>modules/workflow-model</module>-->
-                <!--<module>modules/workflow</module>-->
-                <!--<module>modules/xbaya-gui</module>-->
-            </modules>
-        </profile>
 		<profile>
 			<id>pedantic</id>
 			<build>

@@ -1,0 +1,3 @@
+- debug: msg="ding {{ inventory_hostname }}"
+
+- debug: msg="{{ inventory }}"
