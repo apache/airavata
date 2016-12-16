@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.sharing.registry.db.repositories;
 
+import org.apache.airavata.sharing.registry.db.utils.Committer;
 import org.apache.airavata.sharing.registry.db.utils.DBConstants;
 import org.apache.airavata.sharing.registry.db.utils.JPAUtils;
 import org.apache.airavata.sharing.registry.db.utils.ObjectMapperSingleton;
@@ -28,6 +29,7 @@ import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +56,7 @@ public abstract class AbstractRepository<T, E, Id> {
     public  T update(T t) throws SharingRegistryException {
         Mapper mapper = ObjectMapperSingleton.getInstance();
         E entity = mapper.map(t, dbEntityGenericClass);
-        E persistedCopy = (new JPAUtils()).execute(entityManager -> entityManager.merge(entity));
+        E persistedCopy = execute(entityManager -> entityManager.merge(entity));
         return mapper.map(persistedCopy, thriftGenericClass);
     }
 
@@ -66,7 +68,7 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public boolean delete(Id id) throws SharingRegistryException {
-        (new JPAUtils()).execute(entityManager -> {
+        execute(entityManager -> {
              E entity = entityManager.find(dbEntityGenericClass, id);
              entityManager.remove(entity);
              return entity;
@@ -81,7 +83,7 @@ public abstract class AbstractRepository<T, E, Id> {
     }
 
     public T get(Id id) throws SharingRegistryException {
-        E entity =  (new JPAUtils()).execute(entityManager -> entityManager
+        E entity = execute(entityManager -> entityManager
                 .find(dbEntityGenericClass, id));
         Mapper mapper = ObjectMapperSingleton.getInstance();
         if(entity == null)
@@ -117,7 +119,7 @@ public abstract class AbstractRepository<T, E, Id> {
         query += " ORDER BY p.createdTime DESC";
         String queryString = query;
         int newLimit = limit < 0 ? DBConstants.SELECT_MAX_ROWS: limit;
-        List resultSet = (new JPAUtils()).execute(entityManager -> {
+        List resultSet = execute(entityManager -> {
             javax.persistence.Query q = entityManager.createQuery(queryString);
             for (int i = 0; i < parameters.size(); i++) {
                 q.setParameter(i + 1, parameters.get(i));
@@ -132,11 +134,23 @@ public abstract class AbstractRepository<T, E, Id> {
 
     public List<T> select(String queryString, int offset, int limit) throws SharingRegistryException {
         int newLimit = limit < 0 ? DBConstants.SELECT_MAX_ROWS: limit;
-        List resultSet = (new JPAUtils()).execute(entityManager -> entityManager.createQuery(queryString).setFirstResult(offset)
+        List resultSet = execute(entityManager -> entityManager.createQuery(queryString).setFirstResult(offset)
                 .setMaxResults(newLimit).getResultList());
         Mapper mapper = ObjectMapperSingleton.getInstance();
         List<T> gatewayList = new ArrayList<>();
         resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
         return gatewayList;
+    }
+
+    public <R> R execute(Committer<EntityManager, R> committer) throws SharingRegistryException {
+        EntityManager entityManager = JPAUtils.getEntityManager();
+        try {
+            entityManager.getTransaction().begin();
+            R r = committer.commit(entityManager);
+            entityManager.getTransaction().commit();
+            return r;
+        } finally {
+            entityManager.close();
+        }
     }
 }
