@@ -63,14 +63,13 @@ public class JPAUtils {
     @PersistenceContext(unitName = PERSISTENCE_UNIT_NAME)
     private static EntityManager entityManager;
 
-    private EntityManager getEntityManager() throws SharingRegistryException {
+    public synchronized static EntityManager getEntityManager() throws SharingRegistryException {
         if (factory == null) {
             String connectionProperties = "DriverClassName=" + readServerProperties(SHARING_REG_JDBC_DRIVER) + "," +
                     "Url=" + readServerProperties(SHARING_REG_JDBC_URL) + "?autoReconnect=true," +
                     "Username=" + readServerProperties(SHARING_REG_JDBC_USER) + "," +
                     "Password=" + readServerProperties(SHARING_REG_JDBC_PWD) +
                     ",validationQuery=" + readServerProperties(SHARING_REG_VALIDATION_QUERY);
-//
 
 //            String connectionProperties = "DriverClassName=com.mysql.jdbc.Driver," +
 //                    "Url=jdbc:mysql://localhost:3306/airavata_sharing_catalog?autoReconnect=true," +
@@ -99,24 +98,6 @@ public class JPAUtils {
 
         entityManager = factory.createEntityManager();
         return entityManager;
-    }
-
-    public <R> R execute(Committer<EntityManager, R> committer) throws SharingRegistryException {
-        EntityManager entityManager = getEntityManager();
-        try {
-            entityManager.getTransaction().begin();
-            R r = committer.commit(entityManager);
-            entityManager.getTransaction().commit();
-            return  r;
-        }finally {
-            if (entityManager != null) {
-                if (entityManager.isOpen() && entityManager.getTransaction().isActive()) {
-                    entityManager.getTransaction().rollback();
-                }
-                if(entityManager.isOpen())
-                    entityManager.close();
-            }
-        }
     }
 
     public static void initializeDB() throws SharingRegistryException {

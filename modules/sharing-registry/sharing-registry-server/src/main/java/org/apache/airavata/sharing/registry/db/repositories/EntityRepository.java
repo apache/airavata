@@ -107,7 +107,7 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
         final String nativeQuery = query;
         int newLimit = limit < 0 ? DBConstants.SELECT_MAX_ROWS: limit;
 
-        List<Object[]> temp = (new JPAUtils()).execute(entityManager -> entityManager.createNativeQuery(nativeQuery).setFirstResult(offset)
+        List<Object[]> temp = execute(entityManager -> entityManager.createNativeQuery(nativeQuery).setFirstResult(offset)
                 .setMaxResults(newLimit).getResultList());
         List<Entity> resultSet = new ArrayList<>();
 
