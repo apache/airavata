@@ -87,7 +87,7 @@ public class JPAUtils {
 //            properties.put("openjpa.DataCache","" + readServerProperties(JPA_CACHE_ENABLED) + "(CacheSize=" + Integer.valueOf(readServerProperties(JPA_CACHE_SIZE)) + ", SoftReferenceSize=0)");
 //            properties.put("openjpa.QueryCache","" + readServerProperties(JPA_CACHE_ENABLED) + "(CacheSize=" + Integer.valueOf(readServerProperties(JPA_CACHE_SIZE)) + ", SoftReferenceSize=0)");
             properties.put("openjpa.RemoteCommitProvider", "sjvm");
-            properties.put("openjpa.Log", "DefaultLevel=INFO, Runtime=TRACE, Tool=INFO, SQL=INFO");
+            properties.put("openjpa.Log", "DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
             properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
             properties.put("openjpa.jdbc.QuerySQLCache", "false");
 //            properties.put("openjpa.Multithreaded", "true");
