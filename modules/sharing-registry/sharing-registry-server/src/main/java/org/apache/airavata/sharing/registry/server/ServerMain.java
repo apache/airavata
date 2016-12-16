@@ -66,7 +66,8 @@ public class ServerMain {
         if(SHARING_REGISTRY_HOME==null)
             SHARING_REGISTRY_HOME = "/tmp";
         else
-            SHARING_REGISTRY_HOME = SHARING_REGISTRY_HOME + "bin";
+            SHARING_REGISTRY_HOME = SHARING_REGISTRY_HOME + "/bin";
+        logger.info(SHARING_REGISTRY_HOME);
         return new File(SHARING_REGISTRY_HOME, serverStartedFileNamePrefix + "_" + Integer.toString(serverPID)).toString();
     }
 
