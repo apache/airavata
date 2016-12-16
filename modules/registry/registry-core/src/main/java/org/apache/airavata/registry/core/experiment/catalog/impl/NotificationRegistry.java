@@ -80,7 +80,7 @@ public class NotificationRegistry {
                 notifications.add(ThriftDataModelConversion.getNotification((NotificationResource) e));
             }
         }
-        Collections.sort(notifications, (o1, o2) -> (int) (o2.getCreationTime() - o1.getCreationTime()));
+        Collections.sort(notifications, (o1, o2) -> (o2.getCreationTime() - o1.getCreationTime()) > 0 ? 1 : -1);
         return notifications;
     }
 
