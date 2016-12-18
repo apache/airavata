@@ -23,6 +23,6 @@ package org.apache.airavata.testsuite.multitenantedairavata.utils;
 
 
 public enum PropertyFileType {
-    AIRAVATA_CLIENT
+    AIRAVATA_SERVER
 //    TEST_FRAMEWORK
 }
