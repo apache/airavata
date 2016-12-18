@@ -36,13 +36,13 @@ public class PropertyReader {
     public PropertyReader() {
         try {
             loadProperties();
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Unable to read properties files", e);
         }
     }
 
     protected void loadProperties() throws IOException {
-        URL airavataURL = ApplicationSettings.loadFile(TestFrameworkConstants.AIRAVATA_CLIENT_PROPERTIES);
+        URL airavataURL = ApplicationSettings.loadFile(TestFrameworkConstants.AIRAVATA_SERVER_PROPERTIES);
         if (airavataURL != null){
             airavataClientProperties.load(airavataURL.openStream());
         }
@@ -50,7 +50,7 @@ public class PropertyReader {
 
     public String readProperty (String propertyName, PropertyFileType type){
         switch (type){
-            case AIRAVATA_CLIENT:
+            case AIRAVATA_SERVER:
                 return airavataClientProperties.getProperty(propertyName);
         }
         return null;

@@ -35,7 +35,6 @@ public class TestFrameworkProps {
     private String sshUsername;
     private String tokenFileLoc;
     private String resultFileLoc;
-    private String skippedGateways;
     private boolean injectErrors;
     private Resource[] resources;
     private Application[] applications;
@@ -142,13 +141,6 @@ public class TestFrameworkProps {
         this.resultFileLoc = resultFileLoc;
     }
 
-    public String getSkippedGateways() {
-        return skippedGateways;
-    }
-
-    public void setSkippedGateways(String skippedGateways) {
-        this.skippedGateways = skippedGateways;
-    }
 
     public Resource[] getResources() {
         return resources;
