@@ -44,7 +44,7 @@ public class TaskUtils {
             filePath = inputPath + taskContext.getParentProcessContext().getProcessId() + File.separator + fileName;
         }
         //FIXME
-        return new URI("file", taskContext.getParentProcessContext().getStoragePreference().getLoginUserName(), hostName, 22, filePath, null, null);
+        return new URI("file", taskContext.getParentProcessContext().getStorageResourceLoginUserName(), hostName, 22, filePath, null, null);
 
     }
 }

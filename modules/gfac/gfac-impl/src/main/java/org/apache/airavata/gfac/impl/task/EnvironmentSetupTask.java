@@ -20,6 +20,7 @@
  */
 package org.apache.airavata.gfac.impl.task;
 
+import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.TaskContext;
@@ -50,7 +51,7 @@ public class EnvironmentSetupTask implements Task {
 			RemoteCluster remoteCluster = taskContext.getParentProcessContext().getJobSubmissionRemoteCluster();
 			remoteCluster.makeDirectory(taskContext.getParentProcessContext().getWorkingDir());
 			status.setReason("Successfully created environment");
-		} catch (SSHApiException e) {
+		} catch (GFacException e) {
 			String msg = "Error while environment setup";
 			log.error(msg, e);
 			status.setState(TaskState.FAILED);

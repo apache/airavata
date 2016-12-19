@@ -31,8 +31,10 @@ public abstract class AbstractRemoteCluster implements RemoteCluster {
 	protected final ServerInfo serverInfo;
 	protected final JobManagerConfiguration jobManagerConfiguration;
 
-	public AbstractRemoteCluster(ServerInfo serverInfo, JobManagerConfiguration jobManagerConfiguration, AuthenticationInfo
-			authenticationInfo) {
+	public AbstractRemoteCluster(ServerInfo serverInfo,
+								 JobManagerConfiguration jobManagerConfiguration,
+								 AuthenticationInfo authenticationInfo) {
+
 		this.serverInfo = serverInfo;
 		this.jobManagerConfiguration = jobManagerConfiguration;
 		this.authenticationInfo = authenticationInfo;

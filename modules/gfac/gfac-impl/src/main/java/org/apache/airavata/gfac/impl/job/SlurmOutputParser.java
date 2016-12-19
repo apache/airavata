@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.gfac.impl.job;
 
+import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.cluster.OutputParser;
 import org.apache.airavata.model.status.JobState;
@@ -46,7 +47,7 @@ public class SlurmOutputParser implements OutputParser {
      * @param rawOutput
      * @return
      */
-    public String parseJobSubmission(String rawOutput) throws SSHApiException {
+    public String parseJobSubmission(String rawOutput) throws GFacException {
 	    log.info(rawOutput);
 	    Pattern pattern = Pattern.compile("Submitted batch job (?<" + JOBID + ">[^\\s]*)");
 	    Matcher matcher = pattern.matcher(rawOutput);
@@ -63,7 +64,7 @@ public class SlurmOutputParser implements OutputParser {
         return matcher.find();
     }
 
-    public JobStatus parseJobStatus(String jobID, String rawOutput) throws SSHApiException {
+    public JobStatus parseJobStatus(String jobID, String rawOutput) throws GFacException {
         log.info(rawOutput);
         Pattern pattern = Pattern.compile(jobID + "(?=\\s+\\S+\\s+\\S+\\s+\\S+\\s+(?<" + STATUS + ">\\w+))");
         Matcher matcher = pattern.matcher(rawOutput);
@@ -73,7 +74,7 @@ public class SlurmOutputParser implements OutputParser {
         return null;
     }
 
-    public void parseJobStatuses(String userName, Map<String, JobStatus> statusMap, String rawOutput) throws SSHApiException {
+    public void parseJobStatuses(String userName, Map<String, JobStatus> statusMap, String rawOutput) throws GFacException {
         log.debug(rawOutput);
         String[] info = rawOutput.split("\n");
         String lastString = info[info.length - 1];
@@ -114,7 +115,7 @@ public class SlurmOutputParser implements OutputParser {
     }
 
     @Override
-    public String parseJobId(String jobName, String rawOutput) throws SSHApiException {
+    public String parseJobId(String jobName, String rawOutput) throws GFacException {
         String regJobId = "jobId";
         if (jobName == null) {
             return null;

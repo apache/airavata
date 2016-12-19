@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.gfac.impl.job;
 
+import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.cluster.OutputParser;
 import org.apache.airavata.model.status.JobState;
@@ -95,7 +96,7 @@ public class UGEOutputParser implements OutputParser {
     }
 
     @Override
-    public String parseJobId(String jobName, String rawOutput) throws SSHApiException {
+    public String parseJobId(String jobName, String rawOutput) throws GFacException {
         if (jobName.length() > 10) {
             jobName = jobName.substring(0, 10);
         }

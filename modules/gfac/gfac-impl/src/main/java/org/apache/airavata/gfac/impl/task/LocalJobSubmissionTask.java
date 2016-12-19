@@ -129,7 +129,7 @@ public class LocalJobSubmissionTask implements JobSubmissionTask{
                 }
             }
 
-        } catch (GFacException | IOException | AppCatalogException | ApplicationSettingsException | SSHApiException e) {
+        } catch (GFacException | IOException | AppCatalogException | ApplicationSettingsException e) {
             String msg = "Error occurred while submitting a local job";
             log.error(msg, e);
             taskStatus.setReason(msg);
