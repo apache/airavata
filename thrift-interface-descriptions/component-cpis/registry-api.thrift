@@ -39,6 +39,7 @@ include "../data-models/resource-catalog-models/user_resource_profile_model.thri
 include "../data-models/resource-catalog-models/data_movement_models.thrift"
 include "../data-models/workflow-models/workflow_data_model.thrift"
 include "../data-models/replica-catalog-models/replica_catalog_models.thrift"
+include "../airavata-apis/airavata_errors.thrift"
 
 include "registry_api_errors.thrift"
 
@@ -210,7 +211,8 @@ service RegistryService {
          **/
         void updateProject (1: required string projectId,
                             2: required workspace_model.Project updatedProject)
-            throws (1: registry_api_errors.RegistryServiceException rse)
+            throws (1: registry_api_errors.RegistryServiceException rse,
+                    2: airavata_errors.ProjectNotFoundException pnfe)
 
          /**
          *
@@ -225,7 +227,8 @@ service RegistryService {
          *
          **/
         workspace_model.Project getProject (1: required string projectId)
-              throws (1: registry_api_errors.RegistryServiceException rse)
+              throws (1: registry_api_errors.RegistryServiceException rse,
+                      2: airavata_errors.ProjectNotFoundException pnfe)
 
          /**
          *
@@ -242,7 +245,8 @@ service RegistryService {
          *
          **/
         bool deleteProject (1: required string projectId)
-                throws (1: registry_api_errors.RegistryServiceException rse)
+                throws (1: registry_api_errors.RegistryServiceException rse,
+                        2: airavata_errors.ProjectNotFoundException pnfe)
 
          /**
          *
@@ -385,7 +389,8 @@ service RegistryService {
           list<experiment_model.ExperimentModel> getExperimentsInProject(1: required string projectId,
                           2: required i32 limit,
                           3: required i32 offset)
-                  throws (1: registry_api_errors.RegistryServiceException rse)
+                  throws (1: registry_api_errors.RegistryServiceException rse,
+                          2: airavata_errors.ProjectNotFoundException pnfe)
 
            /**
            *
@@ -509,7 +514,8 @@ service RegistryService {
            *
          **/
           experiment_model.ExperimentModel getExperiment(1: required string airavataExperimentId)
-            throws (1: registry_api_errors.RegistryServiceException rse)
+            throws (1: registry_api_errors.RegistryServiceException rse,
+                    2: airavata_errors.ExperimentNotFoundException enf)
 
 
           /**
@@ -550,7 +556,8 @@ service RegistryService {
            *
           */
           experiment_model.ExperimentModel getDetailedExperimentTree(1: required string airavataExperimentId)
-              throws (1: registry_api_errors.RegistryServiceException rse)
+              throws (1: registry_api_errors.RegistryServiceException rse,
+                      2: airavata_errors.ExperimentNotFoundException enf)
 
 
           /**
@@ -595,7 +602,8 @@ service RegistryService {
           */
           void updateExperiment(1: required string airavataExperimentId,
                                 2: required experiment_model.ExperimentModel experiment)
-            throws (1: registry_api_errors.RegistryServiceException rse)
+            throws (1: registry_api_errors.RegistryServiceException rse,
+                    2: airavata_errors.ExperimentNotFoundException enf)
 
           void updateExperimentConfiguration(1: required string airavataExperimentId,
                                              2: required experiment_model.UserConfigurationDataModel userConfiguration)
@@ -622,7 +630,8 @@ service RegistryService {
            *
            **/
             status_models.ExperimentStatus getExperimentStatus(1: required string airavataExperimentId)
-               throws (1: registry_api_errors.RegistryServiceException rse)
+               throws (1: registry_api_errors.RegistryServiceException rse,
+                       2: airavata_errors.ExperimentNotFoundException enf)
 
            /**
            *
@@ -639,7 +648,8 @@ service RegistryService {
            *
            **/
            list<application_io_models.OutputDataObjectType> getExperimentOutputs (1: required string airavataExperimentId)
-               throws (1: registry_api_errors.RegistryServiceException rse)
+               throws (1: registry_api_errors.RegistryServiceException rse,
+                       2: airavata_errors.ExperimentNotFoundException enf)
 
            /**
            *
@@ -656,7 +666,8 @@ service RegistryService {
            *
            **/
             list<application_io_models.OutputDataObjectType> getIntermediateOutputs (1: required string airavataExperimentId)
-                 throws (1: registry_api_errors.RegistryServiceException rse)
+                 throws (1: registry_api_errors.RegistryServiceException rse,
+                         2: airavata_errors.ExperimentNotFoundException enf)
 
            /**
            *
@@ -673,7 +684,8 @@ service RegistryService {
            *
            **/
            map<string, status_models.JobStatus> getJobStatuses(1: required string airavataExperimentId)
-                       throws (1: registry_api_errors.RegistryServiceException rse)
+                       throws (1: registry_api_errors.RegistryServiceException rse,
+                               2: airavata_errors.ExperimentNotFoundException enf)
 
            /**
            *
@@ -690,7 +702,8 @@ service RegistryService {
            *
            **/
            list<job_model.JobModel> getJobDetails(1: required string airavataExperimentId)
-                         throws (1: registry_api_errors.RegistryServiceException rse)
+                         throws (1: registry_api_errors.RegistryServiceException rse,
+                                 2: airavata_errors.ExperimentNotFoundException enf)
 
 
           /*
