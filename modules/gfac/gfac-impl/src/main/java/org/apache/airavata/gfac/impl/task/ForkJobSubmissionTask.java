@@ -136,15 +136,6 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         } catch (GFacException e) {
-            String msg = "Error occurred while creating job descriptor";
-            log.error(msg, e);
-            taskStatus.setState(TaskState.FAILED);
-            taskStatus.setReason(msg);
-            ErrorModel errorModel = new ErrorModel();
-            errorModel.setActualErrorMessage(e.getMessage());
-            errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
-        } catch (SSHApiException e) {
             String msg = "Error occurred while submitting the job";
             log.error(msg, e);
             taskStatus.setState(TaskState.FAILED);

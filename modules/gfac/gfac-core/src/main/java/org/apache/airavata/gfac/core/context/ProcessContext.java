@@ -20,6 +20,7 @@
 package org.apache.airavata.gfac.core.context;
 
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.cluster.ServerInfo;
@@ -36,9 +37,11 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.task.TaskModel;
@@ -73,8 +76,10 @@ public class ProcessContext {
 	private String localWorkingDir;
 	private GatewayResourceProfile gatewayResourceProfile;
 	private ComputeResourcePreference gatewayComputeResourcePreference;
+	private StoragePreference gatewayStorageResourcePreference;
 	private UserResourceProfile userResourceProfile;
 	private UserComputeResourcePreference userComputeResourcePreference;
+	private UserStoragePreference userStoragePreference;
 	private ComputeResourceDescription computeResourceDescription;
 	private ApplicationDeploymentDescription applicationDeploymentDescription;
 	private ApplicationInterfaceDescription applicationInterfaceDescription;
@@ -86,7 +91,6 @@ public class ProcessContext {
 	private JobSubmissionProtocol jobSubmissionProtocol;
 	private DataMovementProtocol dataMovementProtocol;
 	private JobModel jobModel;
-    private StoragePreference storagePreference;
     private StorageResourceDescription storageResource;
 	private MonitorMode monitorMode;
 	private ResourceJobManager resourceJobManager;
@@ -109,7 +113,7 @@ public class ProcessContext {
 	 * Note: process context property use lazy loading approach. In runtime you will see some properties as null
 	 * unless you have access it previously. Once that property access using the api,it will be set to correct value.
 	 */
-	public ProcessContext(String processId, String gatewayId, String tokenId) {
+	private ProcessContext(String processId, String gatewayId, String tokenId) {
 		this.processId = processId;
 		this.gatewayId = gatewayId;
 		this.tokenId = tokenId;
@@ -219,6 +223,22 @@ public class ProcessContext {
 
 	public void setUserComputeResourcePreference(UserComputeResourcePreference userComputeResourcePreference) {
 		this.userComputeResourcePreference = userComputeResourcePreference;
+	}
+
+	public UserStoragePreference getUserStoragePreference() {
+		return userStoragePreference;
+	}
+
+	public void setUserStoragePreference(UserStoragePreference userStoragePreference) {
+		this.userStoragePreference = userStoragePreference;
+	}
+
+	public StoragePreference getGatewayStorageResourcePreference() {
+		return gatewayStorageResourcePreference;
+	}
+
+	public void setGatewayStorageResourcePreference(StoragePreference gatewayStorageResourcePreference) {
+		this.gatewayStorageResourcePreference = gatewayStorageResourcePreference;
 	}
 
 	public RemoteCluster getJobSubmissionRemoteCluster() {
@@ -422,13 +442,21 @@ public class ProcessContext {
 		}
 	}
 
-	public String getCredentialToken(){
+	public String getComputeResourceCredentialToken(){
 		if (isUseUserCRPref() && isValid(userComputeResourcePreference.getResourceSpecificCredentialStoreToken())) {
 			return userComputeResourcePreference.getResourceSpecificCredentialStoreToken();
 		} else if (isValid(gatewayComputeResourcePreference.getResourceSpecificCredentialStoreToken())) {
 			return gatewayComputeResourcePreference.getResourceSpecificCredentialStoreToken();
 		} else {
 			return gatewayResourceProfile.getCredentialStoreToken();
+		}
+	}
+
+	public String getStorageResourceCredentialToken(){
+		if (isUseUserCRPref() && isValid(userStoragePreference.getResourceSpecificCredentialStoreToken())) {
+			return userStoragePreference.getResourceSpecificCredentialStoreToken();
+		}else {
+			return gatewayStorageResourcePreference.getResourceSpecificCredentialStoreToken();
 		}
 	}
 
@@ -488,14 +516,6 @@ public class ProcessContext {
 		return this.cancel || this.handOver;
 	}
 
-    public void setServerInfo(ServerInfo serverInfo) {
-        this.serverInfo = serverInfo;
-    }
-
-    public ServerInfo getServerInfo() {
-        return serverInfo;
-    }
-
     public String getCurrentExecutingTaskId() {
         if (currentExecutingTaskModel != null) {
             return currentExecutingTaskModel.getTaskId();
@@ -535,14 +555,6 @@ public class ProcessContext {
         this.currentExecutingTaskModel = currentExecutingTaskModel;
     }
 
-    public StoragePreference getStoragePreference() {
-        return storagePreference;
-    }
-
-    public void setStoragePreference(StoragePreference storagePreference) {
-        this.storagePreference = storagePreference;
-    }
-
     public StorageResourceDescription getStorageResource() {
         return storageResource;
     }
@@ -559,14 +571,6 @@ public class ProcessContext {
 		return acknowledge;
 	}
 
-	public SSHKeyAuthentication getSshKeyAuthentication() {
-		return sshKeyAuthentication;
-	}
-
-	public void setSshKeyAuthentication(SSHKeyAuthentication sshKeyAuthentication) {
-		this.sshKeyAuthentication = sshKeyAuthentication;
-	}
-
 	public boolean isRecoveryWithCancel() {
 		return recoveryWithCancel;
 	}
@@ -579,14 +583,58 @@ public class ProcessContext {
 		return getProcessModel().isUseUserCRPref();
 	}
 
-	public String getLoginUserName(){
+	public String getComputeResourceLoginUserName(){
 		if (isUseUserCRPref() && isValid(userComputeResourcePreference.getLoginUserName())) {
-			return userComputeResourcePreference.getLoginUserName();
+			return userStoragePreference.getLoginUserName();
 		} else if (isValid(processModel.getProcessResourceSchedule().getOverrideLoginUserName())) {
 			return processModel.getProcessResourceSchedule().getOverrideLoginUserName();
 		} else {
 			return gatewayComputeResourcePreference.getLoginUserName();
 		}
+	}
+
+	public String getStorageResourceLoginUserName(){
+		if (isUseUserCRPref() && isValid(userStoragePreference.getLoginUserName())) {
+			return userStoragePreference.getLoginUserName();
+		} else {
+			return gatewayStorageResourcePreference.getLoginUserName();
+		}
+	}
+
+	public String getStorageFileSystemRootLocation(){
+		if (userStoragePreference != null && isValid(userStoragePreference.getFileSystemRootLocation())) {
+			return userStoragePreference.getFileSystemRootLocation();
+		} else {
+			return gatewayStorageResourcePreference.getFileSystemRootLocation();
+		}
+	}
+
+	public String getStorageResourceId() {
+		if (userStoragePreference != null && isValid(userStoragePreference.getStorageResourceId())) {
+			return userStoragePreference.getStorageResourceId();
+		} else {
+			return gatewayStorageResourcePreference.getStorageResourceId();
+		}
+	}
+
+	private ComputationalResourceSchedulingModel getProcessCRSchedule() {
+		if (getProcessModel() != null) {
+			return getProcessModel().getProcessResourceSchedule();
+		} else {
+			return null;
+		}
+	}
+
+	public ServerInfo getComputeResourceServerInfo(){
+		return new ServerInfo(getComputeResourceLoginUserName(),
+				getComputeResourceDescription().getHostName(),
+				getComputeResourceCredentialToken());
+	}
+
+	public ServerInfo getStorageResourceServerInfo() {
+		return new ServerInfo(getStorageResourceLoginUserName(),
+				getStorageResource().getHostName(),
+				getStorageResourceCredentialToken());
 	}
 
 	private boolean isValid(String str) {
@@ -641,6 +689,117 @@ public class ProcessContext {
 		} else {
 			return gatewayComputeResourcePreference.getPreferredBatchQueue();
 		}
+	}
+
+	public static class ProcessContextBuilder{
+		private final String processId;
+		private final String gatewayId;
+		private final String tokenId;
+		private ExperimentCatalog experimentCatalog;
+		private AppCatalog appCatalog;
+		private CuratorFramework curatorClient;
+		private Publisher statusPublisher;
+		private GatewayResourceProfile gatewayResourceProfile;
+		private ComputeResourcePreference gatewayComputeResourcePreference;
+		private StoragePreference gatewayStorageResourcePreference;
+		private ProcessModel processModel;
+
+		public ProcessContextBuilder(String processId, String gatewayId, String tokenId) throws GFacException {
+			if (notValid(processId) || notValid(gatewayId) || notValid(tokenId)) {
+				throwError("Process Id, Gateway Id and tokenId must be not null");
+			}
+			this.processId = processId;
+			this.gatewayId = gatewayId;
+			this.tokenId = tokenId;
+		}
+
+		public ProcessContextBuilder setGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) {
+			this.gatewayResourceProfile = gatewayResourceProfile;
+			return this;
+		}
+
+		public ProcessContextBuilder setGatewayComputeResourcePreference(ComputeResourcePreference gatewayComputeResourcePreference) {
+			this.gatewayComputeResourcePreference = gatewayComputeResourcePreference;
+			return this;
+		}
+
+		public ProcessContextBuilder setGatewayStorageResourcePreference(StoragePreference gatewayStorageResourcePreference) {
+			this.gatewayStorageResourcePreference = gatewayStorageResourcePreference;
+            return this;
+		}
+
+		public ProcessContextBuilder setProcessModel(ProcessModel processModel) {
+			this.processModel = processModel;
+			return this;
+		}
+
+		public ProcessContextBuilder setExperimentCatalog(ExperimentCatalog experimentCatalog) {
+			this.experimentCatalog = experimentCatalog;
+			return this;
+		}
+
+		public ProcessContextBuilder setAppCatalog(AppCatalog appCatalog) {
+			this.appCatalog = appCatalog;
+			return this;
+		}
+
+		public ProcessContextBuilder setCuratorClient(CuratorFramework curatorClient) {
+			this.curatorClient = curatorClient;
+			return this;
+		}
+
+		public ProcessContextBuilder setStatusPublisher(Publisher statusPublisher) {
+			this.statusPublisher = statusPublisher;
+			return this;
+		}
+
+		public ProcessContext build() throws GFacException {
+			if (notValid(gatewayResourceProfile)) {
+				throwError("Invalid GatewayResourceProfile");
+			}
+			if (notValid(gatewayComputeResourcePreference)) {
+				throwError("Invalid Gateway ComputeResourcePreference");
+			}
+			if (notValid(gatewayStorageResourcePreference)) {
+				throwError("Invalid Gateway StoragePreference");
+			}
+			if (notValid(processModel)) {
+				throwError("Invalid Process Model");
+			}
+			if (notValid(appCatalog)) {
+				throwError("Invalid AppCatalog");
+			}
+			if (notValid(experimentCatalog)) {
+				throwError("Invalid Experiment catalog");
+			}
+			if (notValid(curatorClient)) {
+				throwError("Invalid Curator Client");
+			}
+			if (notValid(statusPublisher)) {
+				throwError("Invalid Status Publisher");
+			}
+
+			ProcessContext pc = new ProcessContext(processId, gatewayId, tokenId);
+			pc.setAppCatalog(appCatalog);
+			pc.setExperimentCatalog(experimentCatalog);
+			pc.setCuratorClient(curatorClient);
+			pc.setStatusPublisher(statusPublisher);
+			pc.setProcessModel(processModel);
+			pc.setGatewayResourceProfile(gatewayResourceProfile);
+			pc.setGatewayComputeResourcePreference(gatewayComputeResourcePreference);
+			pc.setGatewayStorageResourcePreference(gatewayStorageResourcePreference);
+
+			return pc;
+		}
+
+		private boolean notValid(Object value) {
+			return value == null;
+		}
+
+		private void throwError(String msg) throws GFacException {
+			throw new GFacException(msg);
+		}
+
 	}
 }
 
