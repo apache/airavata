@@ -342,7 +342,8 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
                 List<Credential> allCredentials = credentialReader.getAllCredentialsPerGateway(gatewayId);
                 if (allCredentials != null && !allCredentials.isEmpty()){
                     for (Credential credential : allCredentials) {
-                        if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) {
+                        if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential
+                                && credential.getCredentialOwnerType() == CredentialOwnerType.GATEWAY) {
                             org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredential = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
                             CredentialSummary sshCredentialSummary = new CredentialSummary();
                             sshCredentialSummary.setType(SummaryType.SSH);
@@ -380,7 +381,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
                             String portalUserName = sshCredential.getPortalUserName();
                             String gateway = sshCredential.getGateway();
                             if (portalUserName != null && gateway != null){
-                                if (portalUserName.equals(userId) && gateway.equals(gatewayId)) {
+                                if (portalUserName.equals(userId) && gateway.equals(gatewayId) && sshCredential.getCredentialOwnerType() == CredentialOwnerType.USER) {
                                     org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredentialKey = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
                                     CredentialSummary sshCredentialSummary = new CredentialSummary();
                                     sshCredentialSummary.setType(SummaryType.SSH);
