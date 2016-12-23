@@ -174,9 +174,9 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 				log.info("Transferring from:" + sourceFile + " To: " + destinationFile);
 				try {
 					if (direction == DIRECTION.TO) {
-                        SSHUtils.scpThirdParty(sourceFile, clientSession, destinationFile, session, ignoreEmptyFile);
-                    } else {
                         SSHUtils.scpThirdParty(sourceFile, session, destinationFile, clientSession, ignoreEmptyFile);
+                    } else {
+                        SSHUtils.scpThirdParty(sourceFile, clientSession, destinationFile, session, ignoreEmptyFile);
                     }
 					break; // exit while loop
 				} catch (JSchException e) {
