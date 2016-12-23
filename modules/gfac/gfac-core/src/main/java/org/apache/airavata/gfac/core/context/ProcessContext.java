@@ -585,7 +585,7 @@ public class ProcessContext {
 
 	public String getComputeResourceLoginUserName(){
 		if (isUseUserCRPref() && isValid(userComputeResourcePreference.getLoginUserName())) {
-			return userStoragePreference.getLoginUserName();
+			return userComputeResourcePreference.getLoginUserName();
 		} else if (isValid(processModel.getProcessResourceSchedule().getOverrideLoginUserName())) {
 			return processModel.getProcessResourceSchedule().getOverrideLoginUserName();
 		} else {
