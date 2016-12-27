@@ -246,7 +246,7 @@ public class SCPDataStageTask implements Task {
          * scp third party file transfer 'to' compute resource.
          */
         taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(),
-                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.TO, false);
+                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.FROM, false);
     }
 
     private void outputDataStaging(TaskContext taskContext, Session sshSession, URI sourceURI, URI destinationURI)
@@ -256,7 +256,7 @@ public class SCPDataStageTask implements Task {
          * scp third party file transfer 'from' comute resource.
          */
         taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(),
-                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.FROM, true);
+                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.TO, true);
         // update output locations
         GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.toString());
         GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.toString());
