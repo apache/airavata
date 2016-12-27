@@ -37,8 +37,6 @@ import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.Factory;
-import org.apache.airavata.gfac.impl.SSHUtils;
-import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
@@ -161,8 +159,7 @@ public class SCPDataStageTask implements Task {
                 inputDataStaging(taskContext, sshSession, sourceURI, destinationURI);
                 status.setReason("Successfully staged input data");
             } else if (processState == ProcessState.OUTPUT_DATA_STAGING) {
-                String targetPath = destinationURI.getPath().substring(0, destinationURI.getPath().lastIndexOf('/'));
-                SSHUtils.makeDirectory(targetPath, sshSession);
+                makeDir(taskContext, destinationURI);
                 // TODO - save updated subtask model with new destination
                 outputDataStaging(taskContext, sshSession, sourceURI, destinationURI);
                 status.setReason("Successfully staged output data");
@@ -224,7 +221,7 @@ public class SCPDataStageTask implements Task {
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         } catch (GFacException e) {
-            String msg = "Failed update experiment and process inputs and outputs";
+            String msg = "Data staging failed";
             log.error(msg, e);
             status.setState(TaskState.FAILED);
             status.setReason(msg);
@@ -264,6 +261,15 @@ public class SCPDataStageTask implements Task {
         GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.toString());
         GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.toString());
 
+    }
+
+    private void makeDir(TaskContext taskContext, URI pathURI) throws GFacException {
+        int endIndex = pathURI.getPath().lastIndexOf('/');
+        if (endIndex < 1) {
+            return;
+        }
+        String targetPath = pathURI.getPath().substring(0, endIndex);
+        taskContext.getParentProcessContext().getDataMovementRemoteCluster().makeDirectory(targetPath);
     }
 
     @Override
