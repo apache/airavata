@@ -38,10 +38,9 @@ import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.gfac.impl.GFacWorker;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
-import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.Subscriber;
-import org.apache.airavata.messaging.core.Type;
+import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.messaging.event.ProcessIdentifier;
 import org.apache.airavata.model.messaging.event.ProcessStatusChangeEvent;
@@ -50,6 +49,7 @@ import org.apache.airavata.model.messaging.event.TaskSubmitEvent;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.cpi.AppCatalog;
+import org.apache.airavata.registry.cpi.ExpCatChildDataType;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.airavata.registry.cpi.RegistryException;
@@ -64,10 +64,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -163,10 +164,10 @@ public class GfacServerHandler implements GfacService.Iface {
 	        executorService.execute(MDCUtil.wrapWithMDC(new GFacWorker(processId, gatewayId, tokenId)));
         } catch (GFacException e) {
             log.error("Failed to submit process", e);
-
-            return false;
+            throw new TException("Failed to submit process", e);
         } catch (Exception e) {
 	        log.error("Error creating zookeeper nodes");
+            throw new TException("Error creating zookeeper nodes", e);
         }
 	    return true;
     }
@@ -231,14 +232,16 @@ public class GfacServerHandler implements GfacService.Iface {
                                 status.setState(ProcessState.CANCELLING);
                                 status.setReason("Process Cancel is triggered");
                                 status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                                Factory.getDefaultExpCatalog().update(ExperimentCatalogModelType.PROCESS_STATUS, status, event.getProcessId());
+                                Factory.getDefaultExpCatalog()
+                                        .update(ExperimentCatalogModelType.PROCESS_STATUS, status, event.getProcessId());
                                 publishProcessStatus(event, status);
 
                                 // do cancel operation here
 
                                 status.setState(ProcessState.CANCELED);
                                 status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                                Factory.getDefaultExpCatalog().update(ExperimentCatalogModelType.PROCESS_STATUS, status, event.getProcessId());
+                                Factory.getDefaultExpCatalog()
+                                        .update(ExperimentCatalogModelType.PROCESS_STATUS, status, event.getProcessId());
                                 publishProcessStatus(event, status);
                                 processLaunchSubscriber.sendAck(messageContext.getDeliveryTag());
                                 return;
@@ -246,7 +249,12 @@ public class GfacServerHandler implements GfacService.Iface {
                                 setCancelData(event.getExperimentId(),event.getProcessId());
                             }
                         }
-                        submitProcess(event.getProcessId(), event.getGatewayId(), event.getTokenId());
+                        try {
+                            submitProcess(event.getProcessId(), event.getGatewayId(), event.getTokenId());
+                        } catch (TException e) {
+                            submissionErrorHandling(status, event, e);
+                            processLaunchSubscriber.sendAck(messageContext.getDeliveryTag());
+                        }
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
                         processLaunchSubscriber.sendAck(messageContext.getDeliveryTag());
@@ -262,6 +270,30 @@ public class GfacServerHandler implements GfacService.Iface {
                 }
             }
         }
+    }
+
+    private void submissionErrorHandling(ProcessStatus status, ProcessSubmitEvent event, TException e) throws RegistryException, AiravataException {
+        StringWriter errors = new StringWriter();
+        e.printStackTrace(new PrintWriter(errors));
+        ErrorModel errorModel = new ErrorModel();
+        errorModel.setUserFriendlyMessage("Process execution failed");
+        errorModel.setActualErrorMessage(errors.toString());
+        errorModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
+
+        errorModel.setErrorId(AiravataUtils.getId("PROCESS_ERROR"));
+        Factory.getDefaultExpCatalog()
+                .add(ExpCatChildDataType.PROCESS_ERROR, errorModel, event.getProcessId());
+
+        errorModel.setErrorId(AiravataUtils.getId("EXP_ERROR"));
+        Factory.getDefaultExpCatalog()
+                .add(ExpCatChildDataType.EXPERIMENT_ERROR, errorModel, event.getExperimentId());
+
+        status.setState(ProcessState.FAILED);
+        status.setReason("Process execution failed");
+        status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        Factory.getDefaultExpCatalog()
+                .update(ExperimentCatalogModelType.PROCESS_STATUS, status, event.getProcessId());
+        publishProcessStatus(event, status);
     }
 
     private void setCancelData(String experimentId, String processId) throws Exception {
