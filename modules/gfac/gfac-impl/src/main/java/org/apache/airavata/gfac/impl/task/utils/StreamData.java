@@ -155,7 +155,7 @@ public class StreamData extends TimerTask  {
          * scp third party file transfer 'from' comute resource.
          */
         taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(),
-                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.FROM, true);
+                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.TO, true);
         // update output locations
         GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.getPath());
         GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.getPath());

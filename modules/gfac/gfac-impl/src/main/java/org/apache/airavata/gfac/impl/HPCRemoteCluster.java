@@ -173,7 +173,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 				session = Factory.getSSHSession(authenticationInfo, serverInfo);
 				log.info("Transferring from:" + sourceFile + " To: " + destinationFile);
 				try {
-					if (direction == DIRECTION.TO) {
+					if (direction == DIRECTION.FROM) {
                         SSHUtils.scpThirdParty(sourceFile, session, destinationFile, clientSession, ignoreEmptyFile);
                     } else {
                         SSHUtils.scpThirdParty(sourceFile, clientSession, destinationFile, session, ignoreEmptyFile);
