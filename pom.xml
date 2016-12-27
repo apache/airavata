@@ -372,6 +372,17 @@
                 <role>PMC member</role>
             </roles>
         </developer>
+        <developer>
+            <id>machristie</id>
+            <name>Marcus Christie</name>
+            <email>machristie@apache.org</email>
+            <timezone>-5</timezone>
+            <organization>Indiana University</organization>
+            <organizationUrl>https://www.indiana.edu</organizationUrl>
+            <roles>
+                <role>committer</role>
+            </roles>
+        </developer>
     </developers>
 
     <dependencyManagement>
