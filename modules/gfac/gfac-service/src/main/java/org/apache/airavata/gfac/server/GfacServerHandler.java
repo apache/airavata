@@ -30,6 +30,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.common.utils.ZkConstants;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
+import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.cpi.GfacService;
@@ -161,15 +162,20 @@ public class GfacServerHandler implements GfacService.Iface {
         MDC.put(MDCConstants.GATEWAY_ID, gatewayId);
         MDC.put(MDCConstants.TOKEN_ID, tokenId);
         try {
-	        executorService.execute(MDCUtil.wrapWithMDC(new GFacWorker(processId, gatewayId, tokenId)));
+            executorService.execute(MDCUtil.wrapWithMDC(new GFacWorker(processId, gatewayId, tokenId)));
         } catch (GFacException e) {
             log.error("Failed to submit process", e);
             throw new TException("Failed to submit process", e);
+        } catch (CredentialStoreException e) {
+            log.error("Failed to submit process due to credential issue, " +
+                    "make sure you are passing a valid credentials");
+            throw new TException("Failed to submit process due to credential issue, " +
+                    "make sure you are passing a valid credentials", e);
         } catch (Exception e) {
-	        log.error("Error creating zookeeper nodes");
+            log.error("Error creating zookeeper nodes");
             throw new TException("Error creating zookeeper nodes", e);
         }
-	    return true;
+        return true;
     }
 
     @Override
