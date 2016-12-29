@@ -374,7 +374,7 @@ public abstract class Factory {
         } else {
             String msg = "Provided credential store token is not valid. Please provide the correct credential store token";
             log.error(msg);
-            throw new GFacException("Invalid credential store token:" + credentialStoreToken);
+            throw new CredentialStoreException("Invalid credential store token:" + credentialStoreToken);
         }
     }
 
