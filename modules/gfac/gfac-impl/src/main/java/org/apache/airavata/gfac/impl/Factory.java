@@ -224,7 +224,7 @@ public abstract class Factory {
 	 * @throws AiravataException
 	 */
 	public static RemoteCluster getJobSubmissionRemoteCluster(ProcessContext processContext)
-            throws GFacException, AppCatalogException, AiravataException {
+			throws GFacException, AppCatalogException, AiravataException, CredentialStoreException {
 
         String computeResourceId = processContext.getComputeResourceId();
         JobSubmissionProtocol jobSubmissionProtocol = processContext.getJobSubmissionProtocol();
@@ -277,7 +277,7 @@ public abstract class Factory {
 	}
 
     public static RemoteCluster getDataMovementRemoteCluster(ProcessContext processContext)
-            throws GFacException, AiravataException {
+			throws GFacException, AiravataException, CredentialStoreException {
 
         String storageResourceId = processContext.getStorageResourceId();
         DataMovementProtocol dataMovementProtocol = processContext.getDataMovementProtocol();
@@ -326,22 +326,24 @@ public abstract class Factory {
         return remoteCluster;
     }
 
-	public static SSHKeyAuthentication getComputerResourceSSHKeyAuthentication(ProcessContext pc) throws GFacException {
+	public static SSHKeyAuthentication getComputerResourceSSHKeyAuthentication(ProcessContext pc)
+			throws GFacException, CredentialStoreException {
         try {
 			return getSshKeyAuthentication(pc.getGatewayId(),
 					pc.getComputeResourceLoginUserName(),
 					pc.getComputeResourceCredentialToken());
-		} catch (ApplicationSettingsException | IllegalAccessException | InstantiationException | CredentialStoreException e) {
+		} catch (ApplicationSettingsException | IllegalAccessException | InstantiationException e) {
             throw new GFacException("Couldn't build ssh authentication object", e);
         }
     }
 
-    public static SSHKeyAuthentication getStorageSSHKeyAuthentication(ProcessContext pc) throws GFacException {
+    public static SSHKeyAuthentication getStorageSSHKeyAuthentication(ProcessContext pc)
+			throws GFacException, CredentialStoreException {
         try {
             return getSshKeyAuthentication(pc.getGatewayId(),
 					pc.getStorageResourceLoginUserName(),
 					pc.getStorageResourceCredentialToken());
-        }  catch (ApplicationSettingsException | IllegalAccessException | InstantiationException | CredentialStoreException e) {
+        }  catch (ApplicationSettingsException | IllegalAccessException | InstantiationException e) {
             throw new GFacException("Couldn't build ssh authentication object", e);
         }
     }

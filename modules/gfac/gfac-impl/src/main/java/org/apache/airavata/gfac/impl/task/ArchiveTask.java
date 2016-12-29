@@ -25,6 +25,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.cluster.CommandInfo;
@@ -145,6 +146,16 @@ public class ArchiveTask implements Task {
                     " && tar -xvf " + archiveTar + " -C " + storageArchiveDir + " && rm " + archiveTar +
                     " && chmod 755 -R " + storageArchiveDir + "/*");
             executeCommand(sshSession, commandInfo, new StandardOutReader());
+        } catch (CredentialStoreException e) {
+            String msg = "Storage authentication issue, make sure you are passing valid credential token";
+            log.error(msg, e);
+            status.setState(TaskState.FAILED);
+            status.setReason(msg);
+            status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setActualErrorMessage(e.getMessage());
+            errorModel.setUserFriendlyMessage(msg);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         } catch ( URISyntaxException | GFacException e) {
             String msg = "Error! Archive task failed";
             log.error(msg, e);

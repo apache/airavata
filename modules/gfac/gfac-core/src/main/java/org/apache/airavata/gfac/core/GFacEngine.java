@@ -19,7 +19,7 @@
  */
 package org.apache.airavata.gfac.core;
 
-import org.apache.airavata.credential.store.exception.CredentialStoreException;
+import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 
 public interface GFacEngine {

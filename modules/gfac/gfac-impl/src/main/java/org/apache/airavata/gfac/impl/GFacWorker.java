@@ -22,7 +22,7 @@
 package org.apache.airavata.gfac.impl;
 
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.credential.store.exception.CredentialStoreException;
+import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;

@@ -24,9 +24,9 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
-import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.cluster.CommandInfo;
 import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
@@ -125,7 +125,7 @@ public class SCPDataStageTask implements Task {
             if (storageResource != null) {
                 hostName = storageResource.getHostName();
             } else {
-                throw new SSHApiException("Storage Resource is null");
+                throw new GFacException("Storage Resource is null");
             }
             inputPath  = processContext.getStorageFileSystemRootLocation();
             inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
@@ -193,8 +193,8 @@ public class SCPDataStageTask implements Task {
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
-        } catch (SSHApiException e) {
-            String msg = e.getMessage();
+        } catch (CredentialStoreException e) {
+            String msg = "Storage authentication issue, could be invalid credential token";
             log.error(msg, e);
             status.setState(TaskState.FAILED);
             status.setReason(msg);

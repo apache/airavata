@@ -31,6 +31,7 @@ import de.fzj.unicore.wsrflite.xmlbeans.WSUtilities;
 import eu.unicore.util.httpclient.DefaultClientConfiguration;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.SSHApiException;
@@ -272,7 +273,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
                         break;
                 }
             }
-        } catch (IOException | JSchException | SSHApiException | URISyntaxException e) {
+        } catch (IOException | JSchException | SSHApiException | URISyntaxException | CredentialStoreException e) {
             log.error("Error while coping local file " + localFilePath + " to remote " + remoteFilePath, e);
             throw new GFacException("Error while scp output files to remote storage file location", e);
         }
@@ -312,6 +313,10 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
         } catch (IOException | JSchException | SSHApiException | URISyntaxException e) {
             log.error("Error while coping remote file " + remoteFilePath + " to local " + localFilePath, e);
             throw new GFacException("Error while scp input files to local file location", e);
+        } catch (CredentialStoreException e) {
+            String msg = "Authentication issue, make sure you are passing valid credential token";
+            log.error(msg, e);
+            throw new GFacException(msg, e);
         }
     }
 
