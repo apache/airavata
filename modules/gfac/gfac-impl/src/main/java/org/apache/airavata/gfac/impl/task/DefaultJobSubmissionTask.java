@@ -167,7 +167,8 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
                     if (computeResourceDescription.isGatewayUsageReporting()){
                         String loadCommand = computeResourceDescription.getGatewayUsageModuleLoadCommand();
                         String usageExecutable = computeResourceDescription.getGatewayUsageExecutable();
-                        ExperimentModel experiment = (ExperimentModel)taskContext.getParentProcessContext().getExperimentCatalog().get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+                        ExperimentModel experiment = (ExperimentModel)taskContext.getParentProcessContext()
+								.getExperimentCatalog().get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
                         String username = experiment.getUserName() + "@" + taskContext.getParentProcessContext().getUsageReportingGatewayId();
                         RawCommandInfo rawCommandInfo = new RawCommandInfo(loadCommand + " && " + usageExecutable + " -gateway_user " +  username  +
                                                                            " -submit_time \"`date '+%F %T %:z'`\"  -jobid " + jobId );

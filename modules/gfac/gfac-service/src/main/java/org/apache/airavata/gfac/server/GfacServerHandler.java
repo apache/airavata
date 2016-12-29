@@ -30,7 +30,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.common.utils.ZkConstants;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
-import org.apache.airavata.credential.store.exception.CredentialStoreException;
+import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.cpi.GfacService;
@@ -170,7 +170,7 @@ public class GfacServerHandler implements GfacService.Iface {
             log.error("Failed to submit process due to credential issue, " +
                     "make sure you are passing a valid credentials");
             throw new TException("Failed to submit process due to credential issue, " +
-                    "make sure you are passing a valid credentials", e);
+                    "make sure you are passing a valid credential token", e);
         } catch (Exception e) {
             log.error("Error creating zookeeper nodes");
             throw new TException("Error creating zookeeper nodes", e);

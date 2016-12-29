@@ -26,6 +26,7 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.common.utils.ZkConstants;
+import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.GFacConstants;
 import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
@@ -40,9 +41,12 @@ import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.task.DataStreamingTask;
 import org.apache.airavata.gfac.impl.task.EnvironmentSetupTask;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.*;
-import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
@@ -53,9 +57,25 @@ import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.data.movement.SecurityProtocol;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.status.*;
-import org.apache.airavata.model.task.*;
-import org.apache.airavata.registry.cpi.*;
+import org.apache.airavata.model.status.JobState;
+import org.apache.airavata.model.status.JobStatus;
+import org.apache.airavata.model.status.ProcessState;
+import org.apache.airavata.model.status.ProcessStatus;
+import org.apache.airavata.model.status.TaskState;
+import org.apache.airavata.model.status.TaskStatus;
+import org.apache.airavata.model.task.DataStageType;
+import org.apache.airavata.model.task.DataStagingTaskModel;
+import org.apache.airavata.model.task.EnvironmentSetupTaskModel;
+import org.apache.airavata.model.task.JobSubmissionTaskModel;
+import org.apache.airavata.model.task.MonitorTaskModel;
+import org.apache.airavata.model.task.TaskModel;
+import org.apache.airavata.model.task.TaskTypes;
+import org.apache.airavata.registry.cpi.AppCatalog;
+import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.ExpCatChildDataType;
+import org.apache.airavata.registry.cpi.ExperimentCatalog;
+import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.utils.ZKPaths;
@@ -68,7 +88,12 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public class GFacEngineImpl implements GFacEngine {
 
@@ -80,7 +105,7 @@ public class GFacEngineImpl implements GFacEngine {
 
     @Override
     public ProcessContext populateProcessContext(String processId, String gatewayId, String
-            tokenId) throws GFacException {
+            tokenId) throws GFacException, CredentialStoreException {
 
         // NOTE: Process context gives precedence to data come with process Computer resources;
         ProcessContext processContext = null;
