@@ -55,7 +55,6 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	private static final int MAX_RETRY_COUNT = 3;
 	private final SSHKeyAuthentication authentication;
 	private final JSch jSch;
-	private Session session;
 
 	public HPCRemoteCluster(ServerInfo serverInfo, JobManagerConfiguration jobManagerConfiguration, AuthenticationInfo
 			authenticationInfo) throws AiravataException, GFacException {
@@ -69,7 +68,6 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 			jSch = new JSch();
 			jSch.addIdentity(UUID.randomUUID().toString(), authentication.getPrivateKey(), authentication.getPublicKey(),
 					authentication.getPassphrase().getBytes());
-			session = Factory.getSSHSession(authenticationInfo, serverInfo);
 		} catch (JSchException e) {
 			throw new AiravataException("JSch initialization error ", e);
 		}
@@ -120,13 +118,11 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 		int retry = 3;
 		while (retry > 0) {
 			try {
-				session = Factory.getSSHSession(authenticationInfo, serverInfo);
 				log.info("Transferring localhost:" + localFile  + " to " + serverInfo.getHost() + ":" + remoteFile);
-				SSHUtils.scpTo(localFile, remoteFile, session);
+				SSHUtils.scpTo(localFile, remoteFile,  getSshSession());
 				retry = 0;
 			} catch (Exception e) {
 				retry--;
-				session = Factory.getSSHSession(authenticationInfo, serverInfo);
 				if (retry == 0) {
 					throw new GFacException("Failed to scp localhost:" + localFile + " to " + serverInfo.getHost() +
 							":" + remoteFile, e);
@@ -138,18 +134,20 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 		}
 	}
 
+	private Session getSshSession() throws GFacException {
+		return Factory.getSSHSession(authenticationInfo, serverInfo);
+	}
+
 	@Override
 	public void copyFrom(String remoteFile, String localFile) throws GFacException {
 		int retry = 3;
 		while(retry>0) {
 			try {
-				session = Factory.getSSHSession(authenticationInfo, serverInfo);
 				log.info("Transferring " + serverInfo.getHost() + ":" + remoteFile + " To localhost:" + localFile);
-				SSHUtils.scpFrom(remoteFile, localFile, session);
+				SSHUtils.scpFrom(remoteFile, localFile, getSession());
 				retry=0;
 			} catch (Exception e) {
 				retry--;
-				session = Factory.getSSHSession(authenticationInfo, serverInfo);
 				if (retry == 0) {
 					throw new GFacException("Failed to scp " + serverInfo.getHost() + ":" + remoteFile + " to " +
 							"localhost:" + localFile, e);
@@ -170,13 +168,12 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 		try {
 			while (retryCount < MAX_RETRY_COUNT) {
 				retryCount++;
-				session = Factory.getSSHSession(authenticationInfo, serverInfo);
 				log.info("Transferring from:" + sourceFile + " To: " + destinationFile);
 				try {
 					if (direction == DIRECTION.FROM) {
-                        SSHUtils.scpThirdParty(sourceFile, session, destinationFile, clientSession, ignoreEmptyFile);
+                        SSHUtils.scpThirdParty(sourceFile, getSession(), destinationFile, clientSession, ignoreEmptyFile);
                     } else {
-                        SSHUtils.scpThirdParty(sourceFile, clientSession, destinationFile, session, ignoreEmptyFile);
+                        SSHUtils.scpThirdParty(sourceFile, clientSession, destinationFile, getSession(), ignoreEmptyFile);
                     }
 					break; // exit while loop
 				} catch (JSchException e) {
@@ -200,10 +197,9 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 		try {
 			while (retryCount < MAX_RETRY_COUNT) {
 				retryCount++;
-				session = Factory.getSSHSession(authenticationInfo, serverInfo);
 				log.info("Creating directory: " + serverInfo.getHost() + ":" + directoryPath);
 				try {
-					SSHUtils.makeDirectory(directoryPath, session);
+					SSHUtils.makeDirectory(directoryPath, getSession());
 					break;  // Exit while loop
 				} catch (JSchException e) {
 					if (retryCount == MAX_RETRY_COUNT) {
@@ -260,9 +256,8 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	@Override
 	public List<String> listDirectory(String directoryPath) throws GFacException {
 		try {
-			session = Factory.getSSHSession(authenticationInfo, serverInfo);
 			log.info("Creating directory: " + serverInfo.getHost() + ":" + directoryPath);
-			return SSHUtils.listDirectory(directoryPath, session);
+			return SSHUtils.listDirectory(directoryPath, getSession());
 		} catch (JSchException | IOException e) {
 			throw new GFacException("Failed to list directory " + serverInfo.getHost() + ":" + directoryPath, e);
 		}
@@ -277,7 +272,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 
 	@Override
 	public Session getSession() throws GFacException {
-		return Factory.getSSHSession(authenticationInfo, serverInfo);
+		return getSshSession();
 	}
 
 	@Override
@@ -314,7 +309,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 			while (retryCount < MAX_RETRY_COUNT) {
 				retryCount++;
 				try {
-					session = Factory.getSSHSession(authenticationInfo, serverInfo);
+					Session session = getSshSession();
 					channelExec = ((ChannelExec) session.openChannel("exec"));
 					channelExec.setCommand(command);
 					channelExec.setInputStream(null);
