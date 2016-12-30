@@ -339,7 +339,6 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>12.0</version>
         </dependency>
 
         <!-- Hadoop provider related dependencies -->
