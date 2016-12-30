@@ -443,7 +443,9 @@ public class ProcessContext {
 	}
 
 	public String getComputeResourceCredentialToken(){
-		if (isUseUserCRPref() && isValid(userComputeResourcePreference.getResourceSpecificCredentialStoreToken())) {
+		if (isUseUserCRPref() &&
+				userComputeResourcePreference != null &&
+				isValid(userComputeResourcePreference.getResourceSpecificCredentialStoreToken())) {
 			return userComputeResourcePreference.getResourceSpecificCredentialStoreToken();
 		} else if (isValid(gatewayComputeResourcePreference.getResourceSpecificCredentialStoreToken())) {
 			return gatewayComputeResourcePreference.getResourceSpecificCredentialStoreToken();
@@ -453,7 +455,9 @@ public class ProcessContext {
 	}
 
 	public String getStorageResourceCredentialToken(){
-		if (isUseUserCRPref() && isValid(userStoragePreference.getResourceSpecificCredentialStoreToken())) {
+		if (isUseUserCRPref() &&
+				userStoragePreference != null &&
+				isValid(userStoragePreference.getResourceSpecificCredentialStoreToken())) {
 			return userStoragePreference.getResourceSpecificCredentialStoreToken();
 		}else {
 			return gatewayStorageResourcePreference.getResourceSpecificCredentialStoreToken();
