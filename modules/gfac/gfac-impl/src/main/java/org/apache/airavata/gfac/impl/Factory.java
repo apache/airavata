@@ -134,6 +134,46 @@ public abstract class Factory {
 		return engine;
 	}
 
+	public static void loadConfiguration() throws GFacException {
+		GFacYamlConfigruation config = new GFacYamlConfigruation();
+		try {
+			for (JobSubmitterTaskConfig jobSubmitterTaskConfig : config.getJobSbumitters()) {
+				String taskClass = jobSubmitterTaskConfig.getTaskClass();
+				Class<?> aClass = Class.forName(taskClass);
+				Constructor<?> constructor = aClass.getConstructor();
+				JobSubmissionTask task = (JobSubmissionTask) constructor.newInstance();
+				task.init(jobSubmitterTaskConfig.getProperties());
+				jobSubmissionTask.put(jobSubmitterTaskConfig.getSubmissionProtocol(), task);
+			}
+
+			for (DataTransferTaskConfig dataTransferTaskConfig : config.getFileTransferTasks()) {
+				String taskClass = dataTransferTaskConfig.getTaskClass();
+				Class<?> aClass = Class.forName(taskClass);
+				Constructor<?> constructor = aClass.getConstructor();
+				Task task = (Task) constructor.newInstance();
+				task.init(dataTransferTaskConfig.getProperties());
+				dataMovementTask.put(dataTransferTaskConfig.getTransferProtocol(), task);
+			}
+
+			for (ResourceConfig resourceConfig : config.getResourceConfiguration()) {
+				resources.put(resourceConfig.getJobManagerType(), resourceConfig);
+			}
+		} catch (Exception e) {
+			throw new GFacException("Gfac config issue", e);
+		}
+
+		sessionCache = CacheBuilder.newBuilder()
+				.expireAfterAccess(ServerSettings.getSessionCacheAccessTimeout(), TimeUnit.MINUTES)
+				.removalListener((RemovalListener<String, Session>) removalNotification -> {
+					if (removalNotification.getValue().isConnected()) {
+						log.info("Disconnecting ssh session with key: " + removalNotification.getKey());
+						removalNotification.getValue().disconnect();
+					}
+					log.info("Removed ssh session with key: " + removalNotification.getKey());
+				})
+				.build();
+	}
+
 	public static GFacContext getGfacContext() {
 		if (gfacContext == null) {
 			gfacContext = GFacContext.getInstance();
@@ -225,10 +265,10 @@ public abstract class Factory {
 
 	}
 
+
 	public static HostScheduler getHostScheduler() {
 		return new DefaultHostScheduler();
 	}
-
 
 	/**
 	 * Factory class manage reomete cluster map, this will solve too many connections/ sessions issues with cluster
@@ -364,6 +404,7 @@ public abstract class Factory {
         }
     }
 
+
     private static SSHKeyAuthentication getSshKeyAuthentication(String gatewayId,
                                                                 String loginUserName,
                                                                 String credentialStoreToken)
@@ -394,7 +435,6 @@ public abstract class Factory {
         }
     }
 
-
 	public static JobSubmissionTask getJobSubmissionTask(JobSubmissionProtocol jobSubmissionProtocol) {
 		return jobSubmissionTask.get(jobSubmissionProtocol);
 	}
@@ -409,44 +449,6 @@ public abstract class Factory {
 
 	public static Map<ResourceJobManagerType, ResourceConfig> getResourceConfig() {
 		return resources;
-	}
-
-	public static void loadConfiguration() throws GFacException {
-		GFacYamlConfigruation config = new GFacYamlConfigruation();
-		try {
-			for (JobSubmitterTaskConfig jobSubmitterTaskConfig : config.getJobSbumitters()) {
-				String taskClass = jobSubmitterTaskConfig.getTaskClass();
-				Class<?> aClass = Class.forName(taskClass);
-				Constructor<?> constructor = aClass.getConstructor();
-				JobSubmissionTask task = (JobSubmissionTask) constructor.newInstance();
-				task.init(jobSubmitterTaskConfig.getProperties());
-				jobSubmissionTask.put(jobSubmitterTaskConfig.getSubmissionProtocol(), task);
-			}
-
-			for (DataTransferTaskConfig dataTransferTaskConfig : config.getFileTransferTasks()) {
-				String taskClass = dataTransferTaskConfig.getTaskClass();
-				Class<?> aClass = Class.forName(taskClass);
-				Constructor<?> constructor = aClass.getConstructor();
-				Task task = (Task) constructor.newInstance();
-				task.init(dataTransferTaskConfig.getProperties());
-				dataMovementTask.put(dataTransferTaskConfig.getTransferProtocol(), task);
-			}
-
-			for (ResourceConfig resourceConfig : config.getResourceConfiguration()) {
-				resources.put(resourceConfig.getJobManagerType(), resourceConfig);
-			}
-		} catch (Exception e) {
-			throw new GFacException("Gfac config issue", e);
-		}
-
-		sessionCache = CacheBuilder.newBuilder()
-				.expireAfterAccess(ServerSettings.getSessionCacheAccessTimeout(), TimeUnit.MINUTES)
-				.removalListener((RemovalListener<String, Session>) removalNotification -> {
-					if (removalNotification.getValue().isConnected()) {
-						removalNotification.getValue().disconnect();
-					}
-                })
-				.build();
 	}
 
 	public static JobMonitor getMonitorService(MonitorMode monitorMode) throws AiravataException, GFacException {
