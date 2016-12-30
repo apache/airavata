@@ -20,6 +20,9 @@
  */
 package org.apache.airavata.gfac.impl;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.RemovalListener;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
@@ -33,7 +36,6 @@ import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
-import org.apache.airavata.gfac.core.GFac;
 import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
@@ -55,13 +57,21 @@ import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.watcher.CancelRequestWatcher;
 import org.apache.airavata.gfac.core.watcher.RedeliveryRequestWatcher;
-import org.apache.airavata.gfac.impl.job.*;
+import org.apache.airavata.gfac.impl.job.ForkJobConfiguration;
+import org.apache.airavata.gfac.impl.job.LSFJobConfiguration;
+import org.apache.airavata.gfac.impl.job.PBSJobConfiguration;
+import org.apache.airavata.gfac.impl.job.SlurmJobConfiguration;
+import org.apache.airavata.gfac.impl.job.UGEJobConfiguration;
 import org.apache.airavata.gfac.impl.task.ArchiveTask;
 import org.apache.airavata.gfac.impl.watcher.CancelRequestWatcherImpl;
 import org.apache.airavata.gfac.impl.watcher.RedeliveryRequestWatcherImpl;
 import org.apache.airavata.gfac.monitor.cloud.AuroraJobMonitor;
 import org.apache.airavata.gfac.monitor.email.EmailBasedMonitor;
-import org.apache.airavata.messaging.core.*;
+import org.apache.airavata.messaging.core.MessageHandler;
+import org.apache.airavata.messaging.core.MessagingFactory;
+import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.messaging.core.Subscriber;
+import org.apache.airavata.messaging.core.Type;
 import org.apache.airavata.messaging.core.impl.RabbitMQPublisher;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
@@ -81,7 +91,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public abstract class Factory {
 
@@ -106,6 +121,7 @@ public abstract class Factory {
 	private static Map<MonitorMode, JobMonitor> jobMonitorServices = new HashMap<>();
 	private static Subscriber processLaunchSubscriber;
 	private static Map<String, Session> sessionMap = new HashMap<>();
+	private static Cache<String,Session> sessionCache;
 
 	public static GFacEngine getGFacEngine() throws GFacException {
 		if (engine == null) {
@@ -422,6 +438,15 @@ public abstract class Factory {
 		} catch (Exception e) {
 			throw new GFacException("Gfac config issue", e);
 		}
+
+		sessionCache = CacheBuilder.newBuilder()
+				.expireAfterAccess(ServerSettings.getSessionCacheAccessTimeout(), TimeUnit.MINUTES)
+				.removalListener((RemovalListener<String, Session>) removalNotification -> {
+					if (removalNotification.getValue().isConnected()) {
+						removalNotification.getValue().disconnect();
+					}
+                })
+				.build();
 	}
 
 	public static JobMonitor getMonitorService(MonitorMode monitorMode) throws AiravataException, GFacException {
@@ -479,7 +504,7 @@ public abstract class Factory {
 			throw new GFacException("Support ssh key authentication only");
 		}
 		String key = buildKey(serverInfo);
-		Session session = sessionMap.get(key);
+		Session session = sessionCache.getIfPresent(key);
 		boolean valid = isValidSession(session);
 		// FIXME - move following info logs to debug
 		if (valid) {
@@ -514,7 +539,7 @@ public abstract class Factory {
 					session.setConfig("StrictHostKeyChecking", "no");
 				}
 				session.connect(); // 0 connection timeout
-				sessionMap.put(key, session);
+				sessionCache.put(key, session);
 			} catch (JSchException e) {
 				throw new GFacException("JSch initialization error ", e);
 			}
@@ -522,7 +547,7 @@ public abstract class Factory {
 			// FIXME - move following info log to debug
 			log.info("Reuse SSH session for :" + key);
 		}
-		return sessionMap.get(key);
+		return session;
 
 	}
 

@@ -127,6 +127,9 @@ public class ServerSettings extends ApplicationSettings {
     public static final String USER_PROFILE_SERVER_HOST = "user.profile.server.host";
     public static final String USER_PROFILE_SERVER_PORT = "user.profile.server.port";
 
+    /* Caching */
+    private static final String SESSION_CACHE_ACCESS_TIME_OUT = "ssh.session.cache.access.timeout";
+
     // todo until AIRAVATA-2066 is finished, keep server side list configurations here.
     private static Map<String, String[]> listConfigurations = new HashMap<>();
 
@@ -470,4 +473,9 @@ public class ServerSettings extends ApplicationSettings {
     public static int getAuroraSchedulerTimeout() throws ApplicationSettingsException {
     	return Integer.valueOf(getSetting(AURORA_SCHEDULER_CONNECT_TIMEOUT_MS));
     }
+
+    public static int getSessionCacheAccessTimeout() {
+        return Integer.valueOf(getSetting(SESSION_CACHE_ACCESS_TIME_OUT, "30"));
+    }
+
 }
