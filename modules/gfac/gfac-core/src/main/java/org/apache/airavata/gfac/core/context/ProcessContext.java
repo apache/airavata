@@ -186,7 +186,9 @@ public class ProcessContext {
 
 	public String getScratchLocation() {
 		if (scratchLocation == null) {
-			if (processModel.isUseUserCRPref() && isValid(userComputeResourcePreference.getScratchLocation())) {
+			if (isUseUserCRPref() &&
+					userComputeResourcePreference != null &&
+					isValid(userComputeResourcePreference.getScratchLocation())) {
 				scratchLocation = userComputeResourcePreference.getScratchLocation();
 			} else if (isValid(processModel.getProcessResourceSchedule().getOverrideScratchLocation())) {
 				scratchLocation = processModel.getProcessResourceSchedule().getOverrideScratchLocation();
@@ -435,7 +437,9 @@ public class ProcessContext {
 	}
 
 	public String getComputeResourceId() {
-		if (isUseUserCRPref()) {
+		if (isUseUserCRPref() &&
+				userComputeResourcePreference != null &&
+				isValid(userComputeResourcePreference.getComputeResourceId())) {
 			return userComputeResourcePreference.getComputeResourceId();
 		} else {
 			return gatewayComputeResourcePreference.getComputeResourceId();
@@ -588,7 +592,9 @@ public class ProcessContext {
 	}
 
 	public String getComputeResourceLoginUserName(){
-		if (isUseUserCRPref() && isValid(userComputeResourcePreference.getLoginUserName())) {
+		if (isUseUserCRPref() &&
+				userComputeResourcePreference != null &&
+				isValid(userComputeResourcePreference.getLoginUserName())) {
 			return userComputeResourcePreference.getLoginUserName();
 		} else if (isValid(processModel.getProcessResourceSchedule().getOverrideLoginUserName())) {
 			return processModel.getProcessResourceSchedule().getOverrideLoginUserName();
@@ -598,7 +604,9 @@ public class ProcessContext {
 	}
 
 	public String getStorageResourceLoginUserName(){
-		if (isUseUserCRPref() && isValid(userStoragePreference.getLoginUserName())) {
+		if (isUseUserCRPref() &&
+				userStoragePreference != null &&
+				isValid(userStoragePreference.getLoginUserName())) {
 			return userStoragePreference.getLoginUserName();
 		} else {
 			return gatewayStorageResourcePreference.getLoginUserName();
@@ -606,7 +614,9 @@ public class ProcessContext {
 	}
 
 	public String getStorageFileSystemRootLocation(){
-		if (userStoragePreference != null && isValid(userStoragePreference.getFileSystemRootLocation())) {
+		if (isUseUserCRPref() &&
+				userStoragePreference != null &&
+				isValid(userStoragePreference.getFileSystemRootLocation())) {
 			return userStoragePreference.getFileSystemRootLocation();
 		} else {
 			return gatewayStorageResourcePreference.getFileSystemRootLocation();
@@ -614,7 +624,9 @@ public class ProcessContext {
 	}
 
 	public String getStorageResourceId() {
-		if (userStoragePreference != null && isValid(userStoragePreference.getStorageResourceId())) {
+		if (isUseUserCRPref() &&
+				userStoragePreference != null &&
+				isValid(userStoragePreference.getStorageResourceId())) {
 			return userStoragePreference.getStorageResourceId();
 		} else {
 			return gatewayStorageResourcePreference.getStorageResourceId();
@@ -656,12 +668,12 @@ public class ProcessContext {
 	public String getReservation() {
 		long start = 0, end = 0;
 		String reservation = null;
-		if (isUseUserCRPref() && isValid(userComputeResourcePreference.getLoginUserName())) {
-			if (isValid(userComputeResourcePreference.getReservation())) {
-				reservation = userComputeResourcePreference.getReservation();
-				start = userComputeResourcePreference.getReservationStartTime();
-				end = userComputeResourcePreference.getReservationEndTime();
-			}
+		if (isUseUserCRPref() &&
+				userComputeResourcePreference != null &&
+				isValid(userComputeResourcePreference.getReservation())) {
+			reservation = userComputeResourcePreference.getReservation();
+			start = userComputeResourcePreference.getReservationStartTime();
+			end = userComputeResourcePreference.getReservationEndTime();
 		} else {
 			reservation = gatewayComputeResourcePreference.getReservation();
 			start = gatewayComputeResourcePreference.getReservationStartTime();
@@ -677,7 +689,9 @@ public class ProcessContext {
 	}
 
 	public String getQualityOfService() {
-		if (isUseUserCRPref() && isValid(userComputeResourcePreference.getLoginUserName())) {
+		if (isUseUserCRPref() &&
+				userComputeResourcePreference != null &&
+				isValid(userComputeResourcePreference.getQualityOfService())) {
 			return userComputeResourcePreference.getQualityOfService();
 		} else {
 			return gatewayComputeResourcePreference.getQualityOfService();
@@ -686,7 +700,9 @@ public class ProcessContext {
 
 
 	public String getQueueName() {
-		if (isUseUserCRPref() && isValid(userComputeResourcePreference.getPreferredBatchQueue())) {
+		if (isUseUserCRPref() &&
+				userComputeResourcePreference != null &&
+				isValid(userComputeResourcePreference.getPreferredBatchQueue())) {
 			return userComputeResourcePreference.getPreferredBatchQueue();
 		} else if (isValid(processModel.getProcessResourceSchedule().getQueueName())) {
 			return processModel.getProcessResourceSchedule().getQueueName();
