@@ -1,0 +1,118 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+- name: install pre-requities
+  yum:
+    name: "{{item}}"
+    state: latest
+  with_items:
+    - firewalld
+    - vim
+  become: yes
+
+- name: start firewalld
+  service:
+    name: firewalld
+    state: started
+  become: yes
+
+- name: open zookeeper port
+  firewalld:
+    port: "{{item}}"
+    zone: public
+    permanent: true
+    state: enabled
+    immediate: yes
+  with_items:
+    - "{{zookeeper_client_port}}/tcp"
+    - 2888/tcp
+    - 3888/tcp
+  become: yes
+
+# - name: get ip4 address
+#   command: hostname -i
+#   register: _ip4
+#   tags: ttt
+
+# - debug:
+#     msg: "{{_ip4.stdout}}"
+#   tags: ttt
+
+######################
+- name: Download and unarchive zookeeper
+  unarchive:
+    src: "{{ zookeeper_url }}"
+    dest: /opt
+    copy: no
+    creates: /opt/zookeeper-{{ zookeeper_version }}
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  become: yes
+
+- name: Link to Zookeeper Directory
+  file:
+    src: "/opt/zookeeper-{{ zookeeper_version }}"
+    dest: "{{zookeeper_dir}}"
+    state: link
+    force: yes
+  become: yes
+
+- name: Create Zookeeper Log Dir
+  file:
+    path: "{{zookeeper_log_dir}}"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    recurse: yes
+    state: directory
+    mode: 0644
+  become: yes
+
+- name: Create Zookeeper DataStore Dir
+  file:
+    path: "{{zookeeper_datastore_dir}}"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    recurse: yes
+    state: directory
+    mode: 0755
+  become: yes
+
+- name: Copy zoo.cfg file
+  template:
+    src: zoo.cfg.j2
+    # dest: "{{zookeeper_conf_dir}}/zoo.cfg"
+    dest: "{{zookeeper_dir}}/conf/zoo.cfg"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: "u=rw,g=r,o=r"
+  notify:
+    - restart zookeeper
+
+
+- name: Copy myid file
+  template:
+    src: myid.j2
+    dest: "{{zookeeper_datastore_dir}}/myid"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: "u=rw,g=r,o=r"
+  notify:
+    - restart zookeeper

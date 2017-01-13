@@ -33,6 +33,7 @@
                 <module>registry-cpi</module>
                 <module>registry-core</module>
                 <module>registry-tools</module>
+                <module>registry-server</module>
             </modules>
         </profile>
     </profiles>

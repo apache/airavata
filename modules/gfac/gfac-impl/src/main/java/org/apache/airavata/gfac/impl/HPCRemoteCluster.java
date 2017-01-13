@@ -26,11 +26,16 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.JobManagerConfiguration;
-import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
-import org.apache.airavata.gfac.core.cluster.*;
+import org.apache.airavata.gfac.core.cluster.AbstractRemoteCluster;
+import org.apache.airavata.gfac.core.cluster.CommandInfo;
+import org.apache.airavata.gfac.core.cluster.CommandOutput;
+import org.apache.airavata.gfac.core.cluster.JobSubmissionOutput;
+import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
+import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.model.status.JobStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,10 +55,9 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	private static final int MAX_RETRY_COUNT = 3;
 	private final SSHKeyAuthentication authentication;
 	private final JSch jSch;
-	private Session session;
 
 	public HPCRemoteCluster(ServerInfo serverInfo, JobManagerConfiguration jobManagerConfiguration, AuthenticationInfo
-			authenticationInfo) throws AiravataException {
+			authenticationInfo) throws AiravataException, GFacException {
 		super(serverInfo, jobManagerConfiguration, authenticationInfo);
 		try {
 			if (authenticationInfo instanceof SSHKeyAuthentication) {
@@ -64,7 +68,6 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 			jSch = new JSch();
 			jSch.addIdentity(UUID.randomUUID().toString(), authentication.getPrivateKey(), authentication.getPublicKey(),
 					authentication.getPassphrase().getBytes());
-			session = Factory.getSSHSession(authenticationInfo, serverInfo);
 		} catch (JSchException e) {
 			throw new AiravataException("JSch initialization error ", e);
 		}
@@ -83,7 +86,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	}
 
 	@Override
-	public JobSubmissionOutput submitBatchJob(String jobScriptFilePath, String workingDirectory) throws SSHApiException {
+	public JobSubmissionOutput submitBatchJob(String jobScriptFilePath, String workingDirectory) throws GFacException {
 		JobSubmissionOutput jsoutput = new JobSubmissionOutput();
 		copyTo(jobScriptFilePath, workingDirectory); // scp script file to working directory
 		RawCommandInfo submitCommand = jobManagerConfiguration.getSubmitCommand(workingDirectory, jobScriptFilePath);
@@ -111,23 +114,17 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	}
 
 	@Override
-	public void copyTo(String localFile, String remoteFile) throws SSHApiException {
+	public void copyTo(String localFile, String remoteFile) throws GFacException {
 		int retry = 3;
 		while (retry > 0) {
 			try {
-				session = Factory.getSSHSession(authenticationInfo, serverInfo);
 				log.info("Transferring localhost:" + localFile  + " to " + serverInfo.getHost() + ":" + remoteFile);
-				SSHUtils.scpTo(localFile, remoteFile, session);
+				SSHUtils.scpTo(localFile, remoteFile,  getSshSession());
 				retry = 0;
 			} catch (Exception e) {
 				retry--;
-				try {
-					session = Factory.getSSHSession(authenticationInfo, serverInfo);
-				} catch (AiravataException e1) {
-					throw new SSHApiException("JSch Session connection failed", e1);
-				}
 				if (retry == 0) {
-					throw new SSHApiException("Failed to scp localhost:" + localFile + " to " + serverInfo.getHost() +
+					throw new GFacException("Failed to scp localhost:" + localFile + " to " + serverInfo.getHost() +
 							":" + remoteFile, e);
 				} else {
 					log.info("Retry transfer localhost:" + localFile + " to " + serverInfo.getHost() + ":" +
@@ -137,24 +134,22 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 		}
 	}
 
+	private Session getSshSession() throws GFacException {
+		return Factory.getSSHSession(authenticationInfo, serverInfo);
+	}
+
 	@Override
-	public void copyFrom(String remoteFile, String localFile) throws SSHApiException {
+	public void copyFrom(String remoteFile, String localFile) throws GFacException {
 		int retry = 3;
 		while(retry>0) {
 			try {
-				session = Factory.getSSHSession(authenticationInfo, serverInfo);
 				log.info("Transferring " + serverInfo.getHost() + ":" + remoteFile + " To localhost:" + localFile);
-				SSHUtils.scpFrom(remoteFile, localFile, session);
+				SSHUtils.scpFrom(remoteFile, localFile, getSession());
 				retry=0;
 			} catch (Exception e) {
 				retry--;
-				try {
-					session = Factory.getSSHSession(authenticationInfo, serverInfo);
-				} catch (AiravataException e1) {
-					throw new SSHApiException("JSch Session connection failed", e1);
-				}
 				if (retry == 0) {
-					throw new SSHApiException("Failed to scp " + serverInfo.getHost() + ":" + remoteFile + " to " +
+					throw new GFacException("Failed to scp " + serverInfo.getHost() + ":" + remoteFile + " to " +
 							"localhost:" + localFile, e);
 				} else {
 					log.info("Retry transfer " + serverInfo.getHost() + ":" + remoteFile + "  to localhost:" + localFile);
@@ -164,18 +159,21 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	}
 
 	@Override
-	public void scpThirdParty(String sourceFile, String destinationFile, Session clientSession, DIRECTION direction, boolean ignoreEmptyFile) throws SSHApiException {
+	public void scpThirdParty(String sourceFile,
+							  String destinationFile,
+							  Session clientSession,
+							  DIRECTION direction,
+							  boolean ignoreEmptyFile) throws GFacException {
 		int retryCount= 0;
 		try {
 			while (retryCount < MAX_RETRY_COUNT) {
 				retryCount++;
-				session = Factory.getSSHSession(authenticationInfo, serverInfo);
 				log.info("Transferring from:" + sourceFile + " To: " + destinationFile);
 				try {
-					if (direction == DIRECTION.TO) {
-                        SSHUtils.scpThirdParty(sourceFile, clientSession, destinationFile, session, ignoreEmptyFile);
+					if (direction == DIRECTION.FROM) {
+                        SSHUtils.scpThirdParty(sourceFile, getSession(), destinationFile, clientSession, ignoreEmptyFile);
                     } else {
-                        SSHUtils.scpThirdParty(sourceFile, session, destinationFile, clientSession, ignoreEmptyFile);
+                        SSHUtils.scpThirdParty(sourceFile, clientSession, destinationFile, getSession(), ignoreEmptyFile);
                     }
 					break; // exit while loop
 				} catch (JSchException e) {
@@ -187,22 +185,21 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 					log.error("Issue with jsch, Retry transferring from:" + sourceFile + " To: " + destinationFile, e);
 				}
 			}
-        } catch (IOException | AiravataException| JSchException e) {
-			throw new SSHApiException("Failed scp file:" + sourceFile + " to remote file "
+        } catch (IOException | JSchException e) {
+			throw new GFacException("Failed scp file:" + sourceFile + " to remote file "
 					+destinationFile , e);
 		}
 	}
 
 	@Override
-	public void makeDirectory(String directoryPath) throws SSHApiException {
+	public void makeDirectory(String directoryPath) throws GFacException {
 		int retryCount = 0;
 		try {
 			while (retryCount < MAX_RETRY_COUNT) {
 				retryCount++;
-				session = Factory.getSSHSession(authenticationInfo, serverInfo);
 				log.info("Creating directory: " + serverInfo.getHost() + ":" + directoryPath);
 				try {
-					SSHUtils.makeDirectory(directoryPath, session);
+					SSHUtils.makeDirectory(directoryPath, getSession());
 					break;  // Exit while loop
 				} catch (JSchException e) {
 					if (retryCount == MAX_RETRY_COUNT) {
@@ -214,13 +211,13 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 					log.error("Issue with jsch, Retry creating directory: " + serverInfo.getHost() + ":" + directoryPath);
 				}
 			}
-		} catch (JSchException | AiravataException | IOException e) {
-			throw new SSHApiException("Failed to create directory " + serverInfo.getHost() + ":" + directoryPath, e);
+		} catch (JSchException | IOException e) {
+			throw new GFacException("Failed to create directory " + serverInfo.getHost() + ":" + directoryPath, e);
 		}
 	}
 
 	@Override
-	public JobStatus cancelJob(String jobId) throws SSHApiException {
+	public JobStatus cancelJob(String jobId) throws GFacException {
 		JobStatus oldStatus = getJobStatus(jobId);
 		RawCommandInfo cancelCommand = jobManagerConfiguration.getCancelCommand(jobId);
 		StandardOutReader reader = new StandardOutReader();
@@ -230,7 +227,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	}
 
 	@Override
-	public JobStatus getJobStatus(String jobId) throws SSHApiException {
+	public JobStatus getJobStatus(String jobId) throws GFacException {
 		RawCommandInfo monitorCommand = jobManagerConfiguration.getMonitorCommand(jobId);
 		StandardOutReader reader = new StandardOutReader();
 		executeCommand(monitorCommand, reader);
@@ -239,7 +236,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	}
 
 	@Override
-	public String getJobIdByJobName(String jobName, String userName) throws SSHApiException {
+	public String getJobIdByJobName(String jobName, String userName) throws GFacException {
 		RawCommandInfo jobIdMonitorCommand = jobManagerConfiguration.getJobIdMonitorCommand(jobName, userName);
 		StandardOutReader reader = new StandardOutReader();
 		executeCommand(jobIdMonitorCommand, reader);
@@ -248,7 +245,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	}
 
 	@Override
-	public void getJobStatuses(String userName, Map<String, JobStatus> jobStatusMap) throws SSHApiException {
+	public void getJobStatuses(String userName, Map<String, JobStatus> jobStatusMap) throws GFacException {
 		RawCommandInfo userBasedMonitorCommand = jobManagerConfiguration.getUserBasedMonitorCommand(userName);
 		StandardOutReader reader = new StandardOutReader();
 		executeCommand(userBasedMonitorCommand, reader);
@@ -257,58 +254,54 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	}
 
 	@Override
-	public List<String> listDirectory(String directoryPath) throws SSHApiException {
+	public List<String> listDirectory(String directoryPath) throws GFacException {
 		try {
-			session = Factory.getSSHSession(authenticationInfo, serverInfo);
 			log.info("Creating directory: " + serverInfo.getHost() + ":" + directoryPath);
-			return SSHUtils.listDirectory(directoryPath, session);
-		} catch (JSchException | AiravataException | IOException e) {
-			throw new SSHApiException("Failed to list directory " + serverInfo.getHost() + ":" + directoryPath, e);
+			return SSHUtils.listDirectory(directoryPath, getSession());
+		} catch (JSchException | IOException e) {
+			throw new GFacException("Failed to list directory " + serverInfo.getHost() + ":" + directoryPath, e);
 		}
 	}
 
 	@Override
-	public boolean execute(CommandInfo commandInfo) throws SSHApiException {
+	public boolean execute(CommandInfo commandInfo) throws GFacException {
 		StandardOutReader reader = new StandardOutReader();
 		executeCommand(commandInfo, reader);
 		return true;
 	}
 
 	@Override
-	public Session getSession() throws SSHApiException {
-		try {
-			return Factory.getSSHSession(authenticationInfo, serverInfo);
-		} catch (AiravataException e) {
-			throw new SSHApiException("Error!",e);
-		}
+	public Session getSession() throws GFacException {
+		return getSshSession();
 	}
 
 	@Override
-	public void disconnect() throws SSHApiException {
+	public void disconnect() throws GFacException {
 		Factory.disconnectSSHSession(serverInfo);
 	}
 
 	/**
 	 * This method return <code>true</code> if there is an error in standard output. If not return <code>false</code>
-	 * @param reader - command output reader
+	 *
+	 * @param reader        - command output reader
 	 * @param submitCommand - command which executed in remote machine.
 	 * @return command has return error or not.
 	 */
-	private void throwExceptionOnError(StandardOutReader reader, RawCommandInfo submitCommand) throws SSHApiException{
+	private void throwExceptionOnError(StandardOutReader reader, RawCommandInfo submitCommand) throws GFacException {
 		String stdErrorString = reader.getStdErrorString();
 		String command = submitCommand.getCommand().substring(submitCommand.getCommand().lastIndexOf(File.separator)
 				+ 1);
 		if (stdErrorString == null) {
 			// noting to do
-		}else if ((stdErrorString.contains(command.trim()) && !stdErrorString.contains("Warning")) || stdErrorString
+		} else if ((stdErrorString.contains(command.trim()) && !stdErrorString.contains("Warning")) || stdErrorString
 				.contains("error")) {
 			log.error("Command {} , Standard Error output {}", command, stdErrorString);
-			throw new SSHApiException("Error running command " + command + "  on remote cluster. StandardError: " +
+			throw new GFacException("Error running command " + command + "  on remote cluster. StandardError: " +
 					stdErrorString);
 		}
 	}
 
-	private void executeCommand(CommandInfo commandInfo, CommandOutput commandOutput) throws SSHApiException {
+	private void executeCommand(CommandInfo commandInfo, CommandOutput commandOutput) throws GFacException {
 		String command = commandInfo.getCommand();
 		int retryCount = 0;
 		ChannelExec channelExec = null;
@@ -316,7 +309,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 			while (retryCount < MAX_RETRY_COUNT) {
 				retryCount++;
 				try {
-					session = Factory.getSSHSession(authenticationInfo, serverInfo);
+					Session session = getSshSession();
 					channelExec = ((ChannelExec) session.openChannel("exec"));
 					channelExec.setCommand(command);
 					channelExec.setInputStream(null);
@@ -333,8 +326,8 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 					log.error("Issue with jsch, Retry executing command : " + command, e);
 				}
 			}
-		} catch (JSchException | AiravataException e) {
-			throw new SSHApiException("Unable to execute command - " + command, e);
+		} catch (JSchException e) {
+			throw new GFacException("Unable to execute command - " + command, e);
 		} finally {
 			//Only disconnecting the channel, session can be reused
 			if (channelExec != null) {

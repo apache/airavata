@@ -49,6 +49,11 @@ public class UGEEmailParser implements EmailParser {
     public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException {
         JobStatusResult jobStatusResult = new JobStatusResult();
 
+        parseContent(message, jobStatusResult);
+        return jobStatusResult;
+    }
+
+    private void parseContent(Message message, JobStatusResult jobStatusResult) throws MessagingException, AiravataException {
         String subject = message.getSubject();
         Pattern pattern = Pattern.compile(REGEX);
         Matcher matcher = pattern.matcher(subject);
@@ -64,7 +69,6 @@ public class UGEEmailParser implements EmailParser {
         } catch (IOException e) {
             throw new AiravataException("[EJM]: Error while reading content of the email message");
         }
-        return jobStatusResult;
     }
 
     private JobState getJobState(String status, String content) {

@@ -21,3 +21,4 @@
 include "compute_resource_model.thrift"
 include "storage_resource_model.thrift"
 include "gateway_resource_profile_model.thrift"
+include "user_resource_profile_model.thrift"

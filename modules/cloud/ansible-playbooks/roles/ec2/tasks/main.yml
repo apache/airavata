@@ -1,0 +1,50 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+- name: include credentials
+  include_vars: vars/aws-credential.yml
+
+- name: create a aws instace/s
+  ec2:
+    key_name: "{{ key_name }}"
+    region: us-east-1
+    instance_type: t2.small
+    image: "{{centos_ami_7_2}}"
+    group: "{{ security_group }}"
+    instance_tags:
+      Name: "{{ item }}"
+    assign_public_ip: yes
+    state: present
+    count: 1
+    vpc_subnet_id: subnet-54f8f70c
+    volumes:
+      - device_name: /dev/sda1
+        volume_type: io1
+        iops: 200
+        volume_size: 50
+        delete_on_termination: true
+    wait: yes
+  with_items:
+    - Mesos-master-1
+    - Mesos-master-2
+    - Mesos-master-3
+    - Mesos-slave-1
+  register: ec2

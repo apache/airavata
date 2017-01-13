@@ -41,9 +41,11 @@ import org.apache.thrift.TEnum;
  */
 public enum MonitorMode implements org.apache.thrift.TEnum {
   POLL_JOB_MANAGER(0),
-  JOB_EMAIL_NOTIFICATION_MONITOR(1),
-  XSEDE_AMQP_SUBSCRIBE(2),
-  FORK(3);
+  CLOUD_JOB_MONITOR(1),
+  JOB_EMAIL_NOTIFICATION_MONITOR(2),
+  XSEDE_AMQP_SUBSCRIBE(3),
+  FORK(4),
+  LOCAL(5);
 
   private final int value;
 
@@ -67,11 +69,15 @@ public enum MonitorMode implements org.apache.thrift.TEnum {
       case 0:
         return POLL_JOB_MANAGER;
       case 1:
-        return JOB_EMAIL_NOTIFICATION_MONITOR;
+        return CLOUD_JOB_MONITOR;
       case 2:
-        return XSEDE_AMQP_SUBSCRIBE;
+        return JOB_EMAIL_NOTIFICATION_MONITOR;
       case 3:
+        return XSEDE_AMQP_SUBSCRIBE;
+      case 4:
         return FORK;
+      case 5:
+        return LOCAL;
       default:
         return null;
     }

@@ -20,6 +20,7 @@
 package org.apache.airavata.gfac.core.cluster;
 
 import com.jcraft.jsch.Session;
+import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
@@ -43,7 +44,7 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 	 * @return jobId after successful job submission
 	 * @throws SSHApiException throws exception during error
 	 */
-	public JobSubmissionOutput submitBatchJob(String jobScriptFilePath, String workingDirectory) throws SSHApiException;
+	public JobSubmissionOutput submitBatchJob(String jobScriptFilePath, String workingDirectory) throws GFacException;
 
 	/**
 	 * This will copy the localFile to remoteFile location in configured cluster
@@ -52,7 +53,7 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 	 * @param remoteFile remote file location, this can be a directory too
 	 * @throws SSHApiException throws exception during error
 	 */
-	public void copyTo(String localFile, String remoteFile) throws SSHApiException;
+	public void copyTo(String localFile, String remoteFile) throws GFacException;
 
 	/**
 	 * This will copy a remote file in path rFile to local file lFile
@@ -60,7 +61,7 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 	 * @param remoteFile      remote file path, this has to be a full qualified path
 	 * @param localFile This is the local file to copy, this can be a directory too
 	 */
-	public void copyFrom(String remoteFile, String localFile) throws SSHApiException;
+	public void copyFrom(String remoteFile, String localFile) throws GFacException;
 
 	/**
 	 * This wil copy source remote file to target remote file.
@@ -71,7 +72,11 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
      * @param inOrOut direction to file transfer , to the remote cluster(DIRECTION.IN) or from the remote cluster(DIRECTION.OUT)
 	 *
 	 */
-	public void scpThirdParty(String sourceFile, String destinationFile ,Session session , DIRECTION inOrOut, boolean ignoreEmptyFile) throws SSHApiException;
+	public void scpThirdParty(String sourceFile,
+							  String destinationFile ,
+							  Session session ,
+							  DIRECTION inOrOut,
+							  boolean ignoreEmptyFile) throws GFacException;
 
 	/**
 	 * This will create directories in computing resources
@@ -79,7 +84,7 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 	 * @param directoryPath the full qualified path for the directory user wants to create
 	 * @throws SSHApiException throws during error
 	 */
-	public void makeDirectory(String directoryPath) throws SSHApiException;
+	public void makeDirectory(String directoryPath) throws  GFacException;
 
 	/**
 	 * This will delete the given job from the queue
@@ -88,7 +93,7 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 	 * @return return the description of the deleted job
 	 * @throws SSHApiException throws exception during error
 	 */
-	public JobStatus cancelJob(String jobID) throws SSHApiException;
+	public JobStatus cancelJob(String jobID) throws GFacException;
 
 	/**
 	 * This will get the job status of the the job associated with this jobId
@@ -97,7 +102,7 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 	 * @return job status of the given jobID
 	 * @throws SSHApiException throws exception during error
 	 */
-	public JobStatus getJobStatus(String jobID) throws SSHApiException;
+	public JobStatus getJobStatus(String jobID) throws GFacException;
 
 	/**
 	 * This will get the job status of the the job associated with this jobId
@@ -106,7 +111,7 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 	 * @return jobId of the given jobName
 	 * @throws SSHApiException throws exception during error
 	 */
-	public String getJobIdByJobName(String jobName, String userName) throws SSHApiException;
+	public String getJobIdByJobName(String jobName, String userName) throws GFacException;
 
 	/**
 	 * This method can be used to poll the jobstatuses based on the given
@@ -117,7 +122,7 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 	 * @param userName userName of the jobs which required to get the status
 	 * @param jobIDs   precises set of jobIDs
 	 */
-	public void getJobStatuses(String userName, Map<String, JobStatus> jobIDs) throws SSHApiException;
+	public void getJobStatuses(String userName, Map<String, JobStatus> jobIDs) throws GFacException;
 
 	/**
 	 * This will list directories in computing resources
@@ -125,7 +130,7 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 	 * @param directoryPath the full qualified path for the directory user wants to create
 	 * @throws SSHApiException throws during error
 	 */
-	public List<String> listDirectory(String directoryPath) throws SSHApiException;
+	public List<String> listDirectory(String directoryPath) throws GFacException;
 
 	/**
 	 * This method can use to execute custom command on remote compute resource.
@@ -133,19 +138,19 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 	 * @return <code>true</code> if command successfully executed, <code>false</code> otherwise.
 	 * @throws SSHApiException
 	 */
-	public boolean execute(CommandInfo commandInfo) throws SSHApiException;
+	public boolean execute(CommandInfo commandInfo) throws GFacException;
 
 	/**
 	 * This method can be used to get created ssh session
 	 * to reuse the created session.
 	 */
-	public Session getSession() throws SSHApiException;
+	public Session getSession() throws GFacException;
 
 	/**
 	 * This method can be used to close the connections initialized
 	 * to handle graceful shutdown of the system
 	 */
-	public void disconnect() throws SSHApiException;
+	public void disconnect() throws GFacException;
 
 	/**
 	 * This gives the server Info

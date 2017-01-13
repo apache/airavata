@@ -26,12 +26,13 @@ import org.apache.airavata.common.exception.AiravataException;
 /**
  * This is the basic publisher interface.
  */
+@FunctionalInterface
 public interface Publisher {
 
     /**
      *
-     * @param message object of message context which will include actual event and other information
+     * @param messageContext object of message context which will include actual event and other information
      * @throws AiravataException
      */
-    public void publish(MessageContext message) throws AiravataException;
+    public void publish(MessageContext messageContext) throws AiravataException;
 }

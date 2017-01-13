@@ -22,6 +22,7 @@
 package org.apache.airavata.gfac.impl;
 
 import com.jcraft.jsch.Session;
+import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.JobManagerConfiguration;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
@@ -38,67 +39,67 @@ public class BESRemoteCluster extends AbstractRemoteCluster{
     }
 
     @Override
-    public JobSubmissionOutput submitBatchJob(String jobScriptFilePath, String workingDirectory) throws SSHApiException {
+    public JobSubmissionOutput submitBatchJob(String jobScriptFilePath, String workingDirectory) throws GFacException {
         return null;
     }
 
     @Override
-    public void copyTo(String localFile, String remoteFile) throws SSHApiException {
+    public void copyTo(String localFile, String remoteFile) throws GFacException {
 
     }
 
     @Override
-    public void copyFrom(String remoteFile, String localFile) throws SSHApiException {
+    public void copyFrom(String remoteFile, String localFile) throws GFacException {
 
     }
 
     @Override
-    public void scpThirdParty(String sourceFile, String destinationFile, Session session, DIRECTION inOrOut, boolean ignoreEmptyFile) throws SSHApiException {
+    public void scpThirdParty(String sourceFile, String destinationFile, Session session, DIRECTION inOrOut, boolean ignoreEmptyFile) throws GFacException {
 
     }
 
     @Override
-    public void makeDirectory(String directoryPath) throws SSHApiException {
+    public void makeDirectory(String directoryPath) throws GFacException {
 
     }
 
     @Override
-    public JobStatus cancelJob(String jobID) throws SSHApiException {
+    public JobStatus cancelJob(String jobID) throws GFacException {
         return null;
     }
 
     @Override
-    public JobStatus getJobStatus(String jobID) throws SSHApiException {
+    public JobStatus getJobStatus(String jobID) throws GFacException {
         return null;
     }
 
     @Override
-    public String getJobIdByJobName(String jobName, String userName) throws SSHApiException {
+    public String getJobIdByJobName(String jobName, String userName) throws GFacException {
         return null;
     }
 
     @Override
-    public void getJobStatuses(String userName, Map<String, JobStatus> jobIDs) throws SSHApiException {
+    public void getJobStatuses(String userName, Map<String, JobStatus> jobIDs) throws GFacException {
 
     }
 
     @Override
-    public List<String> listDirectory(String directoryPath) throws SSHApiException {
+    public List<String> listDirectory(String directoryPath) throws GFacException {
         return null;
     }
 
     @Override
-    public boolean execute(CommandInfo commandInfo) throws SSHApiException {
+    public boolean execute(CommandInfo commandInfo) throws GFacException {
         return false;
     }
 
     @Override
-    public Session getSession() throws SSHApiException {
+    public Session getSession() throws GFacException {
         return null;
     }
 
     @Override
-    public void disconnect() throws SSHApiException {
+    public void disconnect() throws GFacException {
 
     }
 

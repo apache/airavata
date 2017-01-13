@@ -24,15 +24,11 @@ package org.apache.airavata.gfac.impl.task.utils;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.credential.store.credential.Credential;
-import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
-import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
-import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
 import org.apache.airavata.gfac.core.cluster.CommandInfo;
 import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
@@ -40,7 +36,6 @@ import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.gfac.impl.SSHUtils;
-import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.task.DataStagingTaskModel;
@@ -48,7 +43,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -78,7 +72,7 @@ public class StreamData extends TimerTask  {
     public void run() {
         try {
             // output staging should start when the job is in active state
-            JobStatus jobStatus = taskContext.getParentProcessContext().getJobModel().getJobStatus();
+            JobStatus jobStatus = taskContext.getParentProcessContext().getJobModel().getJobStatuses().get(0);
             if (jobStatus != null && jobStatus.getJobState().equals(JobState.ACTIVE)){
                 runOutputStaging();
             }
@@ -91,7 +85,7 @@ public class StreamData extends TimerTask  {
             log.error("expId: {}, processId:{}, taskId: {}:- Couldn't stage file {} , Erroneous path specified",
                     taskContext.getExperimentId(), taskContext.getProcessId(), taskContext.getTaskId(),
                     taskContext.getProcessOutput().getName());
-        } catch (IllegalAccessException | InstantiationException | AiravataException | IOException | JSchException | SSHApiException e) {
+        } catch (IllegalAccessException | InstantiationException | AiravataException | IOException | JSchException  e) {
             log.error("expId: {}, processId:{}, taskId: {}:- Couldn't stage file {} , Error occurred while streaming data",
                     taskContext.getExperimentId(), taskContext.getProcessId(), taskContext.getTaskId(),
                     taskContext.getProcessOutput().getName());
@@ -102,7 +96,10 @@ public class StreamData extends TimerTask  {
         }
     }
 
-    public void runOutputStaging() throws URISyntaxException, IllegalAccessException, InstantiationException, CredentialStoreException, AiravataException, IOException, JSchException, SSHApiException {
+    public void runOutputStaging() throws URISyntaxException,
+            IllegalAccessException,
+            InstantiationException,
+            CredentialStoreException, AiravataException, IOException, JSchException {
         try {
 
             AuthenticationInfo authenticationInfo = null;
@@ -123,7 +120,7 @@ public class StreamData extends TimerTask  {
             }
             authenticationInfo = Factory.getStorageSSHKeyAuthentication(taskContext.getParentProcessContext());
 
-            ServerInfo serverInfo = new ServerInfo(userName, hostName, DEFAULT_SSH_PORT);
+            ServerInfo serverInfo = taskContext.getParentProcessContext().getStorageResourceServerInfo();
             Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
             String targetPath = destinationURI.getPath().substring(0, destinationURI.getPath().lastIndexOf('/'));
             SSHUtils.makeDirectory(targetPath, sshSession);
@@ -136,7 +133,7 @@ public class StreamData extends TimerTask  {
         }
     }
 
-    private void localDataCopy(TaskContext taskContext, URI sourceURI, URI destinationURI) throws SSHApiException {
+    private void localDataCopy(TaskContext taskContext, URI sourceURI, URI destinationURI) throws GFacException {
         StringBuilder sb = new StringBuilder("rsync -cr ");
         sb.append(sourceURI.getPath()).append(" ").append(destinationURI.getPath());
         CommandInfo commandInfo = new RawCommandInfo(sb.toString());
@@ -152,13 +149,13 @@ public class StreamData extends TimerTask  {
     }
 
     private void outputDataStaging(TaskContext taskContext, Session sshSession, URI sourceURI, URI destinationURI)
-            throws SSHApiException, AiravataException, IOException, JSchException, GFacException {
+            throws AiravataException, IOException, JSchException, GFacException {
 
         /**
          * scp third party file transfer 'from' comute resource.
          */
         taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(),
-                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.FROM, true);
+                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.TO, true);
         // update output locations
         GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.getPath());
         GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.getPath());

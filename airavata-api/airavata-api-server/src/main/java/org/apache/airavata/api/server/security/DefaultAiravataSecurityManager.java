@@ -29,13 +29,13 @@ import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.datamodel.PasswordCredential;
+import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.AppCatalog;
-import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.security.util.TrustStoreManager;
 import org.apache.axis2.AxisFault;
@@ -69,8 +69,7 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
                 TrustStoreManager trustStoreManager = new TrustStoreManager();
                 trustStoreManager.initializeTrustStoreManager(ServerSettings.getTrustStorePath(),
                         ServerSettings.getTrustStorePassword());
-                AppCatalog appCatalog = RegistryFactory.getAppCatalog();
-                List<GatewayResourceProfile> gwProfiles = appCatalog.getGatewayProfile().getAllGatewayProfiles();
+                List<GatewayResourceProfile> gwProfiles = getRegistryServiceClient().getAllGatewayResourceProfiles();
                 //read the policy as a string
                 BufferedReader bufferedReader = new BufferedReader(new FileReader(new File(
                         ServerSettings.getAuthorizationPoliyName() + ".xml")));
@@ -117,7 +116,7 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
             throw new AiravataSecurityException("Error in reading the authorization policy.");
-        } catch (AppCatalogException e) {
+        } catch (RegistryServiceException e) {
             logger.error(e.getMessage(), e);
             throw new AiravataSecurityException("Error in reading the Gateway Profiles from App Catalog.");
         } catch (TException e) {
@@ -153,8 +152,7 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
                             "Obtaining it from the authorization server.");
 
                     CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
-                    AppCatalog appCatalog = RegistryFactory.getAppCatalog();
-                    GatewayResourceProfile gwrp = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
+                    GatewayResourceProfile gwrp = getRegistryServiceClient().getGatewayResourceProfile(gatewayId);
                     PasswordCredential credential = csClient.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
                     String username = credential.getLoginUserName();
                     if(gwrp.getIdentityServerTenant() != null && !gwrp.getIdentityServerTenant().isEmpty())
@@ -209,8 +207,7 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
                 }
             } else {
                 CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
-                AppCatalog appCatalog = RegistryFactory.getAppCatalog();
-                GatewayResourceProfile gwrp = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
+                GatewayResourceProfile gwrp = getRegistryServiceClient().getGatewayResourceProfile(gatewayId);
                 PasswordCredential credential = csClient.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
                 String username = credential.getLoginUserName();
                 if(gwrp.getIdentityServerTenant() != null && !gwrp.getIdentityServerTenant().isEmpty())
@@ -245,7 +242,7 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AiravataSecurityException("Error in reading OAuth server configuration.");
-        } catch (AppCatalogException e) {
+        } catch (RegistryServiceException e) {
             logger.error(e.getMessage(), e);
             throw new AiravataSecurityException("Error in accessing AppCatalog.");
         } catch (TException e) {
@@ -261,6 +258,16 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
             return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
         } catch (CredentialStoreException e) {
             throw new TException("Unable to create credential store client...", e);
+        }
+    }
+
+    private RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
+        final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
+        final String serverHost = ServerSettings.getRegistryServerHost();
+        try {
+            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
+        } catch (RegistryServiceException e) {
+            throw new TException("Unable to create registry client...", e);
         }
     }
 }

@@ -42,7 +42,10 @@ struct GatewayApprovalStatus {
     REQUESTED = 0,
     APPROVED = 1,
     ACTIVE = 2,
-    DEACTIVATED = 3
+    DEACTIVATED = 3,
+    CANCELLED = 4,
+    DENIED = 5,
+    CREATED = 6
   };
 };
 
@@ -134,12 +137,13 @@ class Project {
 
   Project(const Project&);
   Project& operator=(const Project&);
-  Project() : projectID("DO_NOT_SET_AT_CLIENTS"), owner(), name(), description(), creationTime(0) {
+  Project() : projectID("DO_NOT_SET_AT_CLIENTS"), owner(), gatewayId(), name(), description(), creationTime(0) {
   }
 
   virtual ~Project() throw();
   std::string projectID;
   std::string owner;
+  std::string gatewayId;
   std::string name;
   std::string description;
   int64_t creationTime;
@@ -151,6 +155,8 @@ class Project {
   void __set_projectID(const std::string& val);
 
   void __set_owner(const std::string& val);
+
+  void __set_gatewayId(const std::string& val);
 
   void __set_name(const std::string& val);
 
@@ -167,6 +173,8 @@ class Project {
     if (!(projectID == rhs.projectID))
       return false;
     if (!(owner == rhs.owner))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
       return false;
     if (!(name == rhs.name))
       return false;
@@ -209,8 +217,11 @@ inline std::ostream& operator<<(std::ostream& out, const Project& obj)
 }
 
 typedef struct _User__isset {
-  _User__isset() : groupList(false) {}
-  bool groupList :1;
+  _User__isset() : userName(false), firstName(false), lastName(false), email(false) {}
+  bool userName :1;
+  bool firstName :1;
+  bool lastName :1;
+  bool email :1;
 } _User__isset;
 
 class User {
@@ -218,26 +229,52 @@ class User {
 
   User(const User&);
   User& operator=(const User&);
-  User() : userName() {
+  User() : airavataInternalUserId("DO_NOT_SET_AT_CLIENTS"), userName(), gatewayId(), firstName(), lastName(), email() {
   }
 
   virtual ~User() throw();
+  std::string airavataInternalUserId;
   std::string userName;
-  std::vector<Group>  groupList;
+  std::string gatewayId;
+  std::string firstName;
+  std::string lastName;
+  std::string email;
 
   _User__isset __isset;
 
+  void __set_airavataInternalUserId(const std::string& val);
+
   void __set_userName(const std::string& val);
 
-  void __set_groupList(const std::vector<Group> & val);
+  void __set_gatewayId(const std::string& val);
+
+  void __set_firstName(const std::string& val);
+
+  void __set_lastName(const std::string& val);
+
+  void __set_email(const std::string& val);
 
   bool operator == (const User & rhs) const
   {
-    if (!(userName == rhs.userName))
+    if (!(airavataInternalUserId == rhs.airavataInternalUserId))
       return false;
-    if (__isset.groupList != rhs.__isset.groupList)
+    if (__isset.userName != rhs.__isset.userName)
       return false;
-    else if (__isset.groupList && !(groupList == rhs.groupList))
+    else if (__isset.userName && !(userName == rhs.userName))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
+    if (__isset.firstName != rhs.__isset.firstName)
+      return false;
+    else if (__isset.firstName && !(firstName == rhs.firstName))
+      return false;
+    if (__isset.lastName != rhs.__isset.lastName)
+      return false;
+    else if (__isset.lastName && !(lastName == rhs.lastName))
+      return false;
+    if (__isset.email != rhs.__isset.email)
+      return false;
+    else if (__isset.email && !(email == rhs.email))
       return false;
     return true;
   }
@@ -262,7 +299,7 @@ inline std::ostream& operator<<(std::ostream& out, const User& obj)
 }
 
 typedef struct _Gateway__isset {
-  _Gateway__isset() : gatewayName(false), domain(false), emailAddress(false), gatewayAcronym(false), gatewayURL(false), gatewayPublicAbstract(false), reviewProposalDescription(false), gatewayAdminFirstName(false), gatewayAdminLastName(false), gatewayAdminEmail(false), identityServerUserName(false), identityServerPasswordToken(false) {}
+  _Gateway__isset() : gatewayName(false), domain(false), emailAddress(false), gatewayAcronym(false), gatewayURL(false), gatewayPublicAbstract(false), reviewProposalDescription(false), gatewayAdminFirstName(false), gatewayAdminLastName(false), gatewayAdminEmail(false), identityServerUserName(false), identityServerPasswordToken(false), declinedReason(false), oauthClientId(false), oauthClientSecret(false), requestCreationTime(false), requesterUsername(false) {}
   bool gatewayName :1;
   bool domain :1;
   bool emailAddress :1;
@@ -275,6 +312,11 @@ typedef struct _Gateway__isset {
   bool gatewayAdminEmail :1;
   bool identityServerUserName :1;
   bool identityServerPasswordToken :1;
+  bool declinedReason :1;
+  bool oauthClientId :1;
+  bool oauthClientSecret :1;
+  bool requestCreationTime :1;
+  bool requesterUsername :1;
 } _Gateway__isset;
 
 class Gateway {
@@ -282,7 +324,7 @@ class Gateway {
 
   Gateway(const Gateway&);
   Gateway& operator=(const Gateway&);
-  Gateway() : gatewayId(), gatewayApprovalStatus((GatewayApprovalStatus::type)0), gatewayName(), domain(), emailAddress(), gatewayAcronym(), gatewayURL(), gatewayPublicAbstract(), reviewProposalDescription(), gatewayAdminFirstName(), gatewayAdminLastName(), gatewayAdminEmail(), identityServerUserName(), identityServerPasswordToken() {
+  Gateway() : gatewayId(), gatewayApprovalStatus((GatewayApprovalStatus::type)0), gatewayName(), domain(), emailAddress(), gatewayAcronym(), gatewayURL(), gatewayPublicAbstract(), reviewProposalDescription(), gatewayAdminFirstName(), gatewayAdminLastName(), gatewayAdminEmail(), identityServerUserName(), identityServerPasswordToken(), declinedReason(), oauthClientId(), oauthClientSecret(), requestCreationTime(0), requesterUsername() {
   }
 
   virtual ~Gateway() throw();
@@ -300,6 +342,11 @@ class Gateway {
   std::string gatewayAdminEmail;
   std::string identityServerUserName;
   std::string identityServerPasswordToken;
+  std::string declinedReason;
+  std::string oauthClientId;
+  std::string oauthClientSecret;
+  int64_t requestCreationTime;
+  std::string requesterUsername;
 
   _Gateway__isset __isset;
 
@@ -330,6 +377,16 @@ class Gateway {
   void __set_identityServerUserName(const std::string& val);
 
   void __set_identityServerPasswordToken(const std::string& val);
+
+  void __set_declinedReason(const std::string& val);
+
+  void __set_oauthClientId(const std::string& val);
+
+  void __set_oauthClientSecret(const std::string& val);
+
+  void __set_requestCreationTime(const int64_t val);
+
+  void __set_requesterUsername(const std::string& val);
 
   bool operator == (const Gateway & rhs) const
   {
@@ -384,6 +441,26 @@ class Gateway {
     if (__isset.identityServerPasswordToken != rhs.__isset.identityServerPasswordToken)
       return false;
     else if (__isset.identityServerPasswordToken && !(identityServerPasswordToken == rhs.identityServerPasswordToken))
+      return false;
+    if (__isset.declinedReason != rhs.__isset.declinedReason)
+      return false;
+    else if (__isset.declinedReason && !(declinedReason == rhs.declinedReason))
+      return false;
+    if (__isset.oauthClientId != rhs.__isset.oauthClientId)
+      return false;
+    else if (__isset.oauthClientId && !(oauthClientId == rhs.oauthClientId))
+      return false;
+    if (__isset.oauthClientSecret != rhs.__isset.oauthClientSecret)
+      return false;
+    else if (__isset.oauthClientSecret && !(oauthClientSecret == rhs.oauthClientSecret))
+      return false;
+    if (__isset.requestCreationTime != rhs.__isset.requestCreationTime)
+      return false;
+    else if (__isset.requestCreationTime && !(requestCreationTime == rhs.requestCreationTime))
+      return false;
+    if (__isset.requesterUsername != rhs.__isset.requesterUsername)
+      return false;
+    else if (__isset.requesterUsername && !(requesterUsername == rhs.requesterUsername))
       return false;
     return true;
   }

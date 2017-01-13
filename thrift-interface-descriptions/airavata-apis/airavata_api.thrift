@@ -27,6 +27,7 @@
 include "airavata_errors.thrift"
 include "security_model.thrift"
 include "../data-models/airavata_data_models.thrift"
+include "../data-models/credential-store-models/credential_store_data_models.thrift"
 include "../data-models/experiment-catalog-models/status_models.thrift"
 include "../data-models/experiment-catalog-models/job_model.thrift"
 include "../data-models/experiment-catalog-models/experiment_model.thrift"
@@ -36,11 +37,14 @@ include "../data-models/app-catalog-models/application_io_models.thrift"
 include "../data-models/app-catalog-models/application_deployment_model.thrift"
 include "../data-models/app-catalog-models/application_interface_model.thrift"
 include "../data-models/resource-catalog-models/compute_resource_model.thrift"
+include "../data-models/resource-catalog-models/credential_summary.thrift"
 include "../data-models/resource-catalog-models/storage_resource_model.thrift"
 include "../data-models/resource-catalog-models/gateway_resource_profile_model.thrift"
+include "../data-models/resource-catalog-models/user_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/data_movement_models.thrift"
 include "../data-models/workflow-models/workflow_data_model.thrift"
 include "../data-models/replica-catalog-models/replica_catalog_models.thrift"
+include "../data-models/user-group-models/group_manager_model.thrift"
 
 namespace java org.apache.airavata.api
 namespace php Airavata.API
@@ -263,6 +267,12 @@ service Airavata {
    *    The User for which the credential should be registered. For community accounts, this user is the name of the
    *    community user name. For computational resources, this user name need not be the same user name on resoruces.
    *
+   * @param description
+   *    The description field for a credential type, all type of credential can have a description.
+   *
+   * @param credentialOwnerType
+   *    The type of owner of this credential. Two possible values: GATEWAY (default) and USER
+   *
    * @return airavataCredStoreToken
    *   An SSH Key pair is generated and stored in the credential store and associated with users or community account
    *   belonging to a Gateway.
@@ -270,11 +280,12 @@ service Airavata {
    **/
    string generateAndRegisterSSHKeys (1: required security_model.AuthzToken authzToken,
                     2: required string gatewayId,
-                    3: required string userName)
+                    3: required string userName,
+                    4: string description,
+                    5: credential_store_data_models.CredentialOwnerType credentialOwnerType)
            throws (1: airavata_errors.InvalidRequestException ire,
                    2: airavata_errors.AiravataClientException ace,
                    3: airavata_errors.AiravataSystemException ase)
-
 
  /**
    * Generate and Register Username PWD Pair with Airavata Credential Store.
@@ -342,6 +353,56 @@ service Airavata {
              throws (1: airavata_errors.InvalidRequestException ire,
                      2: airavata_errors.AiravataClientException ace,
                      3: airavata_errors.AiravataSystemException ase)
+
+    /**
+       *
+       * Get all Credential summaries for the Gateway
+       *
+       * @param CredStoreToken
+       *    Credential Store Token which you want to find the Public Key for.
+       *
+       * @param credential_store_data_models.SummaryType
+       *    Summary type : SSH,PASSWD or CERT
+       *
+       * @param gatewayId
+       *    This is the unique identifier of your gateway where the token and public key was generated from.
+       *
+       * @return List of Credential Summary Objects
+       *
+       **/
+  list<credential_store_data_models.CredentialSummary> getAllCredentialSummaryForGateway (1: required security_model.AuthzToken authzToken,
+                                                     2: required credential_store_data_models.SummaryType type,
+                                                     3: required string gatewayId)
+                   throws (1: airavata_errors.InvalidRequestException ire,
+                           2: airavata_errors.AiravataClientException ace,
+                           3: airavata_errors.AiravataSystemException ase)
+
+  /**
+         *
+         * Get all Credential summaries for user in a Gateway
+         *
+         * @param CredStoreToken
+         *    Credential Store Token which you want to find the Public Key for.
+         *
+         * @param credential_store_data_models.SummaryType
+         *    Summary type : SSH,PASSWD or CERT
+         *
+         * @param gatewayId
+         *    This is the unique identifier of your gateway where the token and public key was generated from.
+         *
+         * @param userId
+         *    This is the unique identifier of user whose public keys are to be fetched.
+         *
+         * @return CredentialSummary
+         *
+         **/
+    list<credential_store_data_models.CredentialSummary> getAllCredentialSummaryForUsersInGateway (1: required security_model.AuthzToken authzToken,
+                                                         2: required credential_store_data_models.SummaryType type,
+                                                         3: required string gatewayId,
+                                                         4: required string userId)
+                       throws (1: airavata_errors.InvalidRequestException ire,
+                               2: airavata_errors.AiravataClientException ace,
+                               3: airavata_errors.AiravataSystemException ase)
 
 
   map<string, string> getAllGatewayPWDCredentials (1: required security_model.AuthzToken authzToken,
@@ -567,11 +628,23 @@ service Airavata {
      * @param toTime
      *       Ending data time.
      *
+     * @param userName
+     *       Gateway username substring with which to further filter statistics.
+     *
+     * @param applicationName
+     *       Application id substring with which to further filter statistics.
+     *
+     * @param resourceHostName
+     *       Hostname id substring with which to further filter statistics.
+     *
      **/
     experiment_model.ExperimentStatistics getExperimentStatistics(1: required security_model.AuthzToken authzToken,
                             2: required string gatewayId,
                             3: required i64 fromTime,
-                            4: required i64 toTime)
+                            4: required i64 toTime,
+                            5: string userName,
+                            6: string applicationName,
+                            7: string resourceHostName)
                 throws (1: airavata_errors.InvalidRequestException ire,
                         2: airavata_errors.AiravataClientException ace,
                         3: airavata_errors.AiravataSystemException ase,
@@ -745,6 +818,49 @@ service Airavata {
             5: airavata_errors.AuthorizationException ae)
 
 
+  /**
+   *
+   * Get Experiment by an admin user
+   *
+   * Used by an admin user to fetch previously created experiment metadata.
+   *
+   * @param airavataExperimentId
+   *    The unique identifier of the requested experiment. This ID is returned during the create experiment step.
+   *
+   * @return ExperimentModel
+   *   This method will return the previously stored experiment metadata.
+   *
+   * @throws org.apache.airavata.model.error.InvalidRequestException
+   *    For any incorrect forming of the request itself.
+   *
+   * @throws org.apache.airavata.model.error.ExperimentNotFoundException
+   *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+   *
+   * @throws org.apache.airavata.model.error.AiravataClientException
+   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   *
+   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
+   *         gateway registration steps and retry this request.
+   *
+   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+   *         For now this is a place holder.
+   *
+   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+   *         is implemented, the authorization will be more substantial.
+   *
+   * @throws org.apache.airavata.model.error.AiravataSystemException
+   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+   *       rather an Airavata Administrator will be notified to take corrective action.
+   *
+ **/
+  experiment_model.ExperimentModel getExperimentByAdmin(1: required security_model.AuthzToken authzToken,
+                                                 2: required string airavataExperimentId)
+    throws (1: airavata_errors.InvalidRequestException ire,
+            2: airavata_errors.ExperimentNotFoundException enf,
+            3: airavata_errors.AiravataClientException ace,
+            4: airavata_errors.AiravataSystemException ase,
+            5: airavata_errors.AuthorizationException ae)
   /**
    *
    * Get Complete Experiment Details
@@ -1041,6 +1157,9 @@ service Airavata {
    *    Once an experiment is cloned, to disambiguate, the users are suggested to provide new metadata. This will again require
    *      the basic experiment metadata like the name and description, intended user, the gateway identifier and if the experiment
    *      should be shared public by default.
+   * @param newExperimentProjectId
+   *    The project in which to create the cloned experiment. This is optional and if null the experiment will be created
+   *      in the same project as the existing experiment.
    *
    * @return
    *   The server-side generated.airavata.registry.core.experiment.globally unique identifier (Experiment ID) for the newly cloned experiment.
@@ -1071,13 +1190,69 @@ service Airavata {
   */
   string cloneExperiment(1: required security_model.AuthzToken authzToken,
                          2: string existingExperimentID,
-                         3: string newExperimentName)
+                         3: string newExperimentName,
+                         4: string newExperimentProjectId)
     throws (1: airavata_errors.InvalidRequestException ire,
             2: airavata_errors.ExperimentNotFoundException enf,
             3: airavata_errors.AiravataClientException ace,
             4: airavata_errors.AiravataSystemException ase,
-            5: airavata_errors.AuthorizationException ae)
+            5: airavata_errors.AuthorizationException ae,
+            6: airavata_errors.ProjectNotFoundException pnfe)
 
+  /**
+   *
+   * Clone an Existing Experiment by an admin user
+   * Existing specified experiment is cloned and a new name is provided. A copy of the experiment configuration is made and is persisted with new metadata.
+   *   The client has to subsequently update this configuration if needed and launch the cloned experiment.
+   *
+   * @param newExperimentName
+   *    experiment name that should be used in the cloned experiment
+   *
+   * @param updatedExperiment
+   *    Once an experiment is cloned, to disambiguate, the users are suggested to provide new metadata. This will again require
+   *      the basic experiment metadata like the name and description, intended user, the gateway identifier and if the experiment
+   *      should be shared public by default.
+   * @param newExperimentProjectId
+   *    The project in which to create the cloned experiment. This is optional and if null the experiment will be created
+   *      in the same project as the existing experiment.
+   *
+   * @return
+   *   The server-side generated.airavata.registry.core.experiment.globally unique identifier (Experiment ID) for the newly cloned experiment.
+   *
+   * @throws org.apache.airavata.model.error.InvalidRequestException
+   *    For any incorrect forming of the request itself.
+   *
+   * @throws org.apache.airavata.model.error.ExperimentNotFoundException
+   *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+   *
+   * @throws org.apache.airavata.model.error.AiravataClientException
+   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   *
+   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
+   *         gateway registration steps and retry this request.
+   *
+   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+   *         For now this is a place holder.
+   *
+   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+   *         is implemented, the authorization will be more substantial.
+   *
+   * @throws org.apache.airavata.model.error.AiravataSystemException
+   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+   *       rather an Airavata Administrator will be notified to take corrective action.
+   *
+  */
+  string cloneExperimentByAdmin(1: required security_model.AuthzToken authzToken,
+                                2: string existingExperimentID,
+                                3: string newExperimentName,
+                                4: string newExperimentProjectId)
+    throws (1: airavata_errors.InvalidRequestException ire,
+            2: airavata_errors.ExperimentNotFoundException enf,
+            3: airavata_errors.AiravataClientException ace,
+            4: airavata_errors.AiravataSystemException ase,
+            5: airavata_errors.AuthorizationException ae,
+            6: airavata_errors.ProjectNotFoundException pnfe)
   /**
    *
    * Terminate a running Experiment.
@@ -2774,19 +2949,379 @@ service Airavata {
               3: airavata_errors.AiravataSystemException ase,
               4: airavata_errors.AuthorizationException ae)
 
-  /**
-   * Delete the Storage Resource Preference of a registered gateway profile.
-   *
-   * @param gatewayID
-   *   The identifier of the gateway profile to be deleted.
-   *
-   * @param storageId
-   *   ID of the storage preference you want to delete.
-   *
-   * @return status
-   *   Returns a success/failure of the deletion.
+
+
+
+  /*
+   * User Resource Profile
    *
   */
+
+    /**
+     * Register User Resource Profile.
+     *
+     * @param UserResourceProfile
+     *    User Resource Profile Object.
+     *    The userId should be obtained from Airavata user profile data model and passed to register a corresponding
+     *      resource profile.
+     *
+     * @return status
+     *   Returns a success/failure of the update.
+     *
+    */
+    string registerUserResourceProfile(1: required security_model.AuthzToken authzToken,
+                      2: required user_resource_profile_model.UserResourceProfile userResourceProfile)
+      	throws (1: airavata_errors.InvalidRequestException ire,
+                2: airavata_errors.AiravataClientException ace,
+                3: airavata_errors.AiravataSystemException ase,
+                4: airavata_errors.AuthorizationException ae)
+
+    /**
+     * Fetch the given User Resource Profile.
+     *
+     * @param userId
+     *   The identifier for the requested user resource profile.
+     *
+     * @param gatewayID
+     *   The identifier to link a gateway for the requested user resource profile.
+     *
+     * @return UserResourceProfile
+     *    User Resource Profile Object.
+     *
+    */
+
+    user_resource_profile_model.UserResourceProfile getUserResourceProfile(1: required security_model.AuthzToken authzToken,
+                  2: required string userId, 3: required string gatewayID)
+        	throws (1: airavata_errors.InvalidRequestException ire,
+                  2: airavata_errors.AiravataClientException ace,
+                  3: airavata_errors.AiravataSystemException ase,
+                  4: airavata_errors.AuthorizationException ae)
+
+    /**
+     * Update a User Resource Profile.
+     *
+     * @param userId
+     *   The identifier for the requested user resource to be updated.
+     *
+     * @param gatewayID
+     *   The identifier to link a gateway for the requested user resource profile.
+     *
+     * @param UserResourceProfile
+     *    User Resource Profile Object.
+     *
+     * @return status
+     *   Returns a success/failure of the update.
+     *
+    */
+
+    bool updateUserResourceProfile(1: required security_model.AuthzToken authzToken, 2: required string userId,
+              3: required string gatewayID, 4: required user_resource_profile_model.UserResourceProfile userResourceProfile)
+        	throws (1: airavata_errors.InvalidRequestException ire,
+                  2: airavata_errors.AiravataClientException ace,
+                  3: airavata_errors.AiravataSystemException ase,
+                  4: airavata_errors.AuthorizationException ae)
+
+    /**
+     * Delete the given User Resource Profile.
+     *
+     * @param userId
+     *   The identifier for the requested user resource to be deleted.
+     *
+     * @param gatewayID
+     *   The identifier to link a gateway for the requested user resource profile.
+     *
+     * @return status
+     *   Returns a success/failure of the deletion.
+     *
+    */
+
+    bool deleteUserResourceProfile(1: required security_model.AuthzToken authzToken, 2: required string userId,
+                3: required string gatewayID)
+           	throws (1: airavata_errors.InvalidRequestException ire,
+                     2: airavata_errors.AiravataClientException ace,
+                     3: airavata_errors.AiravataSystemException ase,
+                     4: airavata_errors.AuthorizationException ae)
+
+    /**
+     * Add a Compute Resource Preference to a registered User profile.
+     *
+     * @param userId
+     *   The identifier for the User resource profile to be added.
+     *
+     * @param gatewayID
+     *   The identifier to link a gateway for the requested user resource profile.
+     *
+     * @param computeResourceId
+     *   Preferences related to a particular compute resource
+     *
+     * @param computeResourcePreference
+     *   The ComputeResourcePreference object to be added to the resource profile.
+     *
+     * @return status
+     *   Returns a success/failure of the addition. If a profile already exists, this operation will fail.
+     *    Instead an update should be used.
+     *
+    */
+    bool addUserComputeResourcePreference(1: required security_model.AuthzToken authzToken, 2: required string userId,
+              3: required string gatewayID, 4: required string userComputeResourceId,
+              5: required user_resource_profile_model.UserComputeResourcePreference userComputeResourcePreference)
+    	throws (1: airavata_errors.InvalidRequestException ire,
+              2: airavata_errors.AiravataClientException ace,
+              3: airavata_errors.AiravataSystemException ase,
+              4: airavata_errors.AuthorizationException ae)
+
+    /**
+     * Add a Storage Resource Preference to a registered user resource profile.
+     *
+     * @param userId
+     *   The identifier of the user resource profile to be added.
+     *
+     * @param gatewayID
+     *   The identifier to link a gateway for the requested user resource profile.
+     *
+     * @param storageResourceId
+     *   Preferences related to a particular compute resource
+     *
+     * @param computeResourcePreference
+     *   The ComputeResourcePreference object to be added to the resource profile.
+     *
+     * @return status
+     *   Returns a success/failure of the addition. If a profile already exists, this operation will fail.
+     *    Instead an update should be used.
+     *
+    */
+    bool addUserStoragePreference(1: required security_model.AuthzToken authzToken, 2: required string userId,
+                3: required string gatewayID,
+                4: required string userStorageResourceId,
+                5: required user_resource_profile_model.UserStoragePreference userStoragePreference)
+      	throws (1: airavata_errors.InvalidRequestException ire,
+                2: airavata_errors.AiravataClientException ace,
+                3: airavata_errors.AiravataSystemException ase,
+                4: airavata_errors.AuthorizationException ae)
+    /**
+     *
+     * Fetch a Compute Resource Preference of a registered user resource profile.
+     *
+     * @param userId
+     *   The identifier for the user profile to be requested
+     *
+     * @param gatewayID
+     *   The identifier to link a gateway for the requested user resource profile.
+     *
+     * @param userComputeResourceId
+     *   Preferences related to a particular compute resource
+     *
+     * @return computeResourcePreference
+     *   Returns the ComputeResourcePreference object.
+     *
+    */
+    user_resource_profile_model.UserComputeResourcePreference getUserComputeResourcePreference(1: required security_model.AuthzToken authzToken,
+              2: required string userId,
+              3: required string gatewayID,
+              4: required string userComputeResourceId)
+    	throws (1: airavata_errors.InvalidRequestException ire,
+              2: airavata_errors.AiravataClientException ace,
+              3: airavata_errors.AiravataSystemException ase,
+              4: airavata_errors.AuthorizationException ae)
+
+    /**
+     *
+     * Fetch a Storage Resource Preference of a registered user resource profile.
+     *
+     * @param userId
+     *   The identifier of the user resource profile to request to fetch the particular storage resource preference.
+     *
+     * @param gatewayID
+     *   The identifier to link a gateway for the requested user resource profile.
+     *
+     * @param userStorageResourceId
+     *   Identifier of the Stprage Preference required to be fetched.
+     *
+     * @return UserStoragePreference
+     *   Returns the StoragePreference object.
+     *
+    */
+    user_resource_profile_model.UserStoragePreference getUserStoragePreference(1: required security_model.AuthzToken authzToken,
+                2: required string userId,
+                3: required string gatewayID,
+                4: required string userStorageResourceId)
+      	throws (1: airavata_errors.InvalidRequestException ire,
+                2: airavata_errors.AiravataClientException ace,
+                3: airavata_errors.AiravataSystemException ase,
+                4: airavata_errors.AuthorizationException ae)
+
+
+    /**
+       *
+       * Fetch all Compute Resource Preferences of a registered gateway profile.
+       *
+       * @param userId
+       *   The identifier of the user resource profile to request to fetch the particular storage resource preference.
+       *
+       * @param gatewayID
+       *   The identifier for the gateway profile to be requested
+       *
+       * @return computeResourcePreference
+       *   Returns the ComputeResourcePreference object.
+       *
+      */
+      list<user_resource_profile_model.UserComputeResourcePreference>
+                getAllUserComputeResourcePreferences(1: required security_model.AuthzToken authzToken,
+                2: required string userId,
+                3: required string gatewayID)
+      	throws (1: airavata_errors.InvalidRequestException ire,
+                2: airavata_errors.AiravataClientException ace,
+                3: airavata_errors.AiravataSystemException ase,
+                4: airavata_errors.AuthorizationException ae)
+
+      /**
+      * Fetch all User Storage Resource Preferences of a registered user profile.
+      *
+      * @param userId
+      *   The identifier of the user resource profile to request to fetch the particular storage resource preference.
+      *
+      * @param gatewayID
+      *   The identifier for the gateway profile to be requested
+      *
+      * @return StoragePreference
+      *   Returns the StoragePreference object.
+      *
+     */
+
+      list<user_resource_profile_model.UserStoragePreference>
+                  getAllUserStoragePreferences(1: required security_model.AuthzToken authzToken,
+                  2: required string userId,
+                  3: required string gatewayID)
+        	throws (1: airavata_errors.InvalidRequestException ire,
+                  2: airavata_errors.AiravataClientException ace,
+                  3: airavata_errors.AiravataSystemException ase,
+                  4: airavata_errors.AuthorizationException ae)
+
+
+    /**
+    *
+    * Fetch all user resources Profiles registered
+    *
+    * @return UserResourceProfile
+    *   Returns all the UserResourcePrifle list object.
+    *
+    **/
+    list<user_resource_profile_model.UserResourceProfile>
+                getAllUserResourceProfiles(1: required security_model.AuthzToken authzToken)
+      	throws (1: airavata_errors.InvalidRequestException ire,
+                2: airavata_errors.AiravataClientException ace,
+                3: airavata_errors.AiravataSystemException ase,
+                4: airavata_errors.AuthorizationException ae)
+
+    /**
+     * Update a Compute Resource Preference to a registered user resource profile.
+     *
+     * @param userId
+     *   The identifier for the user profile to be updated.
+     *
+     * @param gatewayID
+     *   The identifier to link a gateway for the requested user resource profile.
+     *
+     * @param userComputeResourceId
+     *   Preferences related to a particular compute resource
+     *
+     * @param userComputeResourcePreference
+     *   The ComputeResourcePreference object to be updated to the resource profile.
+     *
+     * @return status
+     *   Returns a success/failure of the updation.
+     *
+    */
+    bool updateUserComputeResourcePreference(1: required security_model.AuthzToken authzToken, 2: required string userId,
+              3: required string gatewayID,
+              4: required string userComputeResourceId,
+              5: required user_resource_profile_model.UserComputeResourcePreference userComputeResourcePreference)
+    	throws (1: airavata_errors.InvalidRequestException ire,
+              2: airavata_errors.AiravataClientException ace,
+              3: airavata_errors.AiravataSystemException ase,
+              4: airavata_errors.AuthorizationException ae)
+
+      /**
+       * Update a Storage Resource Preference of a registered user resource profile.
+       *
+       * @param userId
+       *   The identifier of the user resource profile to be updated.
+       *
+       * @param gatewayID
+       *   The identifier to link a gateway for the requested user resource profile.
+       *
+       * @param userStorageId
+       *   The Storage resource identifier of the one that you want to update
+       *
+       * @param userStoragePreference
+       *   The storagePreference object to be updated to the resource profile.
+       *
+       * @return status
+       *   Returns a success/failure of the updation.
+       *
+      */
+
+    bool updateUserStoragePreference(1: required security_model.AuthzToken authzToken, 2: required string userId,
+                3: required string gatewayID,
+                4: required string userStorageId,
+                5: required user_resource_profile_model.UserStoragePreference userStoragePreference)
+      	throws (1: airavata_errors.InvalidRequestException ire,
+                2: airavata_errors.AiravataClientException ace,
+                3: airavata_errors.AiravataSystemException ase,
+                4: airavata_errors.AuthorizationException ae)
+
+    /**
+     * Delete the Compute Resource Preference of a registered user resource profile.
+     *
+     * @param userId
+     *   The identifier for the user resource profile to be deleted.
+     *
+     * @param gatewayID
+     *   The identifier to link a gateway for the requested user resource profile.
+     *
+     * @param userComputeResourceId
+     *   Preferences related to a particular compute resource
+     *
+     * @return status
+     *   Returns a success/failure of the deletion.
+     *
+    */
+    bool deleteUserComputeResourcePreference(1: required security_model.AuthzToken authzToken, 2: required string userId,
+              3: required string gatewayID,
+              4: required string userComputeResourceId)
+    	throws (1: airavata_errors.InvalidRequestException ire,
+              2: airavata_errors.AiravataClientException ace,
+              3: airavata_errors.AiravataSystemException ase,
+              4: airavata_errors.AuthorizationException ae)
+
+
+    /**
+     * Delete the Storage Resource Preference of a registered user resource profile.
+     *
+     * @param userId
+     *   The identifier of the user profile to be deleted.
+     *
+     * @param gatewayID
+     *   The identifier to link a gateway for the requested user resource profile.
+     *
+     * @param userStorageId
+     *   ID of the storage preference you want to delete.
+     *
+     * @return status
+     *   Returns a success/failure of the deletion.
+     *
+    */
+
+    bool deleteUserStoragePreference(1: required security_model.AuthzToken authzToken, 2: required string userId,
+                3: required string gatewayID,
+                4: required string userStorageId)
+      	throws (1: airavata_errors.InvalidRequestException ire,
+                2: airavata_errors.AiravataClientException ace,
+                3: airavata_errors.AiravataSystemException ase,
+                4: airavata_errors.AuthorizationException ae)
+
+
+
 
   list<string> getAllWorkflows(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
           throws (1: airavata_errors.InvalidRequestException ire,
@@ -2794,6 +3329,11 @@ service Airavata {
                   3: airavata_errors.AiravataSystemException ase,
                   4: airavata_errors.AuthorizationException ae)
 
+  list<status_models.QueueStatusModel> getLatestQueueStatuses(1: required security_model.AuthzToken authzToken)
+        throws (1: airavata_errors.InvalidRequestException ire,
+                        2: airavata_errors.AiravataClientException ace,
+                        3: airavata_errors.AiravataSystemException ase,
+                        4: airavata_errors.AuthorizationException ae)
   /**
    *
    * API Methods Related for Work-Flow Submission Features.
@@ -2871,6 +3411,61 @@ service Airavata {
                                  2: airavata_errors.AiravataClientException ace,
                                  3: airavata_errors.AiravataSystemException ase,
                                  4: airavata_errors.AuthorizationException ae)
+
+ /**
+  * Group Manager and Data Sharing Related API methods
+  **/
+  bool shareResourceWithUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId, 3: required group_manager_model.ResourceType resourceType,
+                                4: map<string, group_manager_model.ResourcePermissionType> userPermissionList)
+               throws (1: airavata_errors.InvalidRequestException ire,
+                                                2: airavata_errors.AiravataClientException ace,
+                                                3: airavata_errors.AiravataSystemException ase,
+                                                4: airavata_errors.AuthorizationException ae)
+
+ bool revokeSharingOfResourceFromUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId, 3: required group_manager_model.ResourceType resourceType,
+                                 4: map<string, group_manager_model.ResourcePermissionType> userPermissionList)
+                throws (1: airavata_errors.InvalidRequestException ire,
+                                                 2: airavata_errors.AiravataClientException ace,
+                                                 3: airavata_errors.AiravataSystemException ase,
+                                                 4: airavata_errors.AuthorizationException ae)
+
+ list<string> getAllAccessibleUsers(1: required security_model.AuthzToken authzToken, 2: required string resourceId, 3: required group_manager_model.ResourceType resourceType,
+                                  4: required group_manager_model.ResourcePermissionType permissionType)
+                throws (1: airavata_errors.InvalidRequestException ire,
+                                                 2: airavata_errors.AiravataClientException ace,
+                                                 3: airavata_errors.AiravataSystemException ase,
+                                                 4: airavata_errors.AuthorizationException ae)
+
+bool createGroup(1: required security_model.AuthzToken authzToken, 2: required group_manager_model.GroupModel groupModel)
+                throws (1: airavata_errors.InvalidRequestException ire,
+                                                  2: airavata_errors.AiravataClientException ace,
+                                                  3: airavata_errors.AiravataSystemException ase,
+                                                  4: airavata_errors.AuthorizationException ae)
+
+ bool updateGroup(1: required security_model.AuthzToken authzToken, 2: required group_manager_model.GroupModel groupModel)
+                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                   2: airavata_errors.AiravataClientException ace,
+                                                   3: airavata_errors.AiravataSystemException ase,
+                                                   4: airavata_errors.AuthorizationException ae)
+
+ bool deleteGroup(1: required security_model.AuthzToken authzToken, 2: required string groupId, 3: required string ownerId, 4: required string gatewayId)
+                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                    2: airavata_errors.AiravataClientException ace,
+                                                    3: airavata_errors.AiravataSystemException ase,
+                                                    4: airavata_errors.AuthorizationException ae)
+
+ group_manager_model.GroupModel getGroup(1: required security_model.AuthzToken authzToken, 2: required string groupId)
+                  throws (1: airavata_errors.InvalidRequestException ire,
+                                                     2: airavata_errors.AiravataClientException ace,
+                                                     3: airavata_errors.AiravataSystemException ase,
+                                                     4: airavata_errors.AuthorizationException ae)
+
+ list<group_manager_model.GroupModel> getAllGroupsUserBelongs(1: required security_model.AuthzToken authzToken, 2: required string userName, 3: required string gatewayId)
+                   throws (1: airavata_errors.InvalidRequestException ire,
+                                                      2: airavata_errors.AiravataClientException ace,
+                                                      3: airavata_errors.AiravataSystemException ase,
+                                                      4: airavata_errors.AuthorizationException ae)
+ //
  //End of API
  }
 

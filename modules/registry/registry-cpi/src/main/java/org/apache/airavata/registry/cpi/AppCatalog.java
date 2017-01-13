@@ -52,6 +52,13 @@ public interface AppCatalog {
     GwyResourceProfile getGatewayProfile() throws AppCatalogException;
 
     /**
+     * Get Gateway profile interface
+     * @return User Resource profile interface
+     * @throws AppCatalogException
+     */
+    UsrResourceProfile getUserResourceProfile() throws AppCatalogException;
+
+    /**
      * Get workflow catalog interface
      * @return workflow catalog interface
      * @throws AppCatalogException

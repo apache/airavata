@@ -49,17 +49,19 @@ public class SLURMEmailParser implements EmailParser {
     @Override
     public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException{
         JobStatusResult jobStatusResult = new JobStatusResult();
-        String subject = message.getSubject();
+        parseSubject(message.getSubject(), jobStatusResult);
+        return jobStatusResult;
+    }
+
+    private void parseSubject(String subject, JobStatusResult jobStatusResult) throws MessagingException {
         Matcher matcher = pattern.matcher(subject);
         if (matcher.find()) {
             jobStatusResult.setJobId(matcher.group(JOBID));
             jobStatusResult.setJobName(matcher.group(JOBNAME));
             jobStatusResult.setState(getJobState(matcher.group(STATUS), subject));
-            return jobStatusResult;
         } else {
             log.error("[EJM]: No matched found for subject -> " + subject);
         }
-        return jobStatusResult;
     }
 
     private JobState getJobState(String state, String subject) {

@@ -84,8 +84,13 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                     resource.setScratchLocation(preference.getScratchLocation());
                     resource.setQualityOfService(preference.getQualityOfService());
                     resource.setReservation(preference.getReservation());
-                    resource.setReservationStartTime(AiravataUtils.getTime(preference.getReservationStartTime()));
-                    resource.setReservationEndTime(AiravataUtils.getTime(preference.getReservationEndTime()));
+                    if(preference.getReservationStartTime() > 0){
+                        resource.setReservationStartTime(AiravataUtils.getTime(preference.getReservationStartTime()));
+                    }
+
+                    if (preference.getReservationEndTime() > 0) {
+                        resource.setReservationEndTime(AiravataUtils.getTime(preference.getReservationEndTime()));
+                    }
                     resource.save();
                 }
             }
@@ -144,8 +149,13 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                     resource.setUsageReportingGatewayId(preference.getUsageReportingGatewayId());
                     resource.setQualityOfService(preference.getQualityOfService());
                     resource.setReservation(preference.getReservation());
-                    resource.setReservationStartTime(AiravataUtils.getTime(preference.getReservationStartTime()));
-                    resource.setReservationEndTime(AiravataUtils.getTime(preference.getReservationEndTime()));
+                    if(preference.getReservationStartTime() > 0){
+                        resource.setReservationStartTime(AiravataUtils.getTime(preference.getReservationStartTime()));
+                    }
+
+                    if (preference.getReservationEndTime() > 0) {
+                        resource.setReservationEndTime(AiravataUtils.getTime(preference.getReservationEndTime()));
+                    }
                     resource.save();
                 }
             }

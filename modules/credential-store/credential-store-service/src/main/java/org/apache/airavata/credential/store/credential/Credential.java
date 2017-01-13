@@ -30,9 +30,23 @@ import java.util.Date;
  */
 public abstract class Credential implements Serializable {
 
+    private static final long serialVersionUID = -3653870227035604734L;
+
     private String portalUserName;
     private Date persistedTime;
     private String token;
+    private CredentialOwnerType credentialOwnerType = CredentialOwnerType.GATEWAY;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    private String description;
+
 
     public String getToken() {
         return token;
@@ -58,4 +72,7 @@ public abstract class Credential implements Serializable {
         return persistedTime;
     }
 
+    public CredentialOwnerType getCredentialOwnerType() { return credentialOwnerType; }
+
+    public void setCredentialOwnerType(CredentialOwnerType credentialOwnerType) { this.credentialOwnerType = credentialOwnerType; }
 }

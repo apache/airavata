@@ -1,0 +1,30 @@
+---
+pga_user: "pga"
+pga_group: "pga"
+doc_root_dir: "/var/www/html/php-gateway"
+user_data_dir: "/var/www/user_data"
+#httpd_conf_file: "/etc/httpd/conf/httpd.conf"
+httpd_conf_file_location: "/etc/httpd/conf"
+
+## WSO2 IS related variables
+tenant_domain: "prod.testdrive"
+admin_username: "tdaadmin"
+admin_password: "SciDeploy"
+oauth_client_key: "RuLl_Uw7i_KXaLoAGJkiasTfyBYa"
+oauth_client_secret: "vD9yi2ANkChzgWiih3RahrIcfsoa"
+
+## Airavata Client related variables
+#airavata_server: "tls://gw77.iu.xsede.org"
+airavata_server: "{{ groups['api-orch'][0] }}"
+airavata_port: "8930"
+gateway_id: "{{ default_gateway }}"
+# relative to document root dir
+experiment_data_dir: "{{ user_data_dir }}"
+gateway_data_store_resource_id: "js-170-103.jetstream-cloud.org_6497a464-3121-4b64-a7cb-d195b0a26c19"
+
+## Portal related variables
+super_admin_portal: "true"
+admin_emails: "'sgg@iu.edu'"
+portal_email_username: "pga.airavata@gmail.com"
+portal_email_password: "airavata12"
+...

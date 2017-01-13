@@ -22,6 +22,7 @@
 package org.apache.airavata.gfac.impl;
 
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
@@ -29,7 +30,6 @@ import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
-import org.apache.airavata.registry.core.experiment.catalog.model.Process;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +67,8 @@ public class GFacWorker implements Runnable {
 	/**
 	 * This constructor will be called when new or recovery request comes.
 	 */
-	public GFacWorker(String processId, String gatewayId, String tokenId) throws GFacException {
+	public GFacWorker(String processId, String gatewayId, String tokenId) throws GFacException,
+			CredentialStoreException {
 		this.processId = processId;
 		this.gatewayId = gatewayId;
 		this.tokenId = tokenId;
@@ -195,7 +196,9 @@ public class GFacWorker implements Runnable {
         }
         if (nextTaskId != null) {
             engine.continueProcess(processContext, nextTaskId);
-        }
+        }else {
+			processContext.setComplete(true);
+		}
         // checkpoint
         if (processContext.isInterrupted()) {
             return;
@@ -240,7 +243,7 @@ public class GFacWorker implements Runnable {
 			try {
                 long processDeliveryTag = GFacUtils.getProcessDeliveryTag(processContext.getCuratorClient(),
                         processContext.getExperimentId(), processId);
-                Factory.getProcessLaunchConsumer().sendAck(processDeliveryTag);
+                Factory.getProcessLaunchSubscriber().sendAck(processDeliveryTag);
                 processContext.setAcknowledge(true);
                 log.info("expId: {}, processId: {} :- Sent ack for deliveryTag {}", processContext.getExperimentId(),
                         processId, processDeliveryTag);

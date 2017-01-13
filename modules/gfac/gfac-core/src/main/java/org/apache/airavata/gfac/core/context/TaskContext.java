@@ -30,6 +30,9 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TaskContext {
 	private static final Logger log = LoggerFactory.getLogger(TaskContext.class);
 
@@ -61,18 +64,26 @@ public class TaskContext {
 	}
 
 	public void setTaskStatus(TaskStatus taskStatus) {
-		log.info("expId: {}, processId: {}, taskId: {}, type: {}:- Task status changed {} -> {}", parentProcessContext
+		log.info("expId: {}, processId: {}, taskId: {}, type: {} : Task status changed {} -> {}", parentProcessContext
 				.getExperimentId(), parentProcessContext.getProcessId(), getTaskId(), getTaskType().name(),
 				getTaskState().name(), taskStatus .getState().name());
-		taskModel.setTaskStatus(taskStatus);
+		List<TaskStatus> taskStatuses = new ArrayList<>();
+		taskStatuses.add(taskStatus);
+		taskModel.setTaskStatuses(taskStatuses);
 	}
 
 	public TaskStatus getTaskStatus() {
-		return taskModel.getTaskStatus();
+		if(taskModel.getTaskStatuses() != null)
+			return taskModel.getTaskStatuses().get(0);
+		else
+			return null;
 	}
 
 	public TaskState getTaskState() {
-		return taskModel.getTaskStatus().getState();
+		if(taskModel.getTaskStatuses() != null)
+			return taskModel.getTaskStatuses().get(0).getState();
+		else
+			return null;
 	}
 
 	public TaskTypes getTaskType() {

@@ -60,7 +60,7 @@ public class JobModel implements org.apache.thrift.TBase<JobModel, JobModel._Fie
   private static final org.apache.thrift.protocol.TField PROCESS_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("processId", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField JOB_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("jobDescription", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("creationTime", org.apache.thrift.protocol.TType.I64, (short)5);
-  private static final org.apache.thrift.protocol.TField JOB_STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("jobStatus", org.apache.thrift.protocol.TType.STRUCT, (short)6);
+  private static final org.apache.thrift.protocol.TField JOB_STATUSES_FIELD_DESC = new org.apache.thrift.protocol.TField("jobStatuses", org.apache.thrift.protocol.TType.LIST, (short)6);
   private static final org.apache.thrift.protocol.TField COMPUTE_RESOURCE_CONSUMED_FIELD_DESC = new org.apache.thrift.protocol.TField("computeResourceConsumed", org.apache.thrift.protocol.TType.STRING, (short)7);
   private static final org.apache.thrift.protocol.TField JOB_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("jobName", org.apache.thrift.protocol.TType.STRING, (short)8);
   private static final org.apache.thrift.protocol.TField WORKING_DIR_FIELD_DESC = new org.apache.thrift.protocol.TField("workingDir", org.apache.thrift.protocol.TType.STRING, (short)9);
@@ -79,7 +79,7 @@ public class JobModel implements org.apache.thrift.TBase<JobModel, JobModel._Fie
   private String processId; // required
   private String jobDescription; // required
   private long creationTime; // optional
-  private org.apache.airavata.model.status.JobStatus jobStatus; // optional
+  private List<org.apache.airavata.model.status.JobStatus> jobStatuses; // optional
   private String computeResourceConsumed; // optional
   private String jobName; // optional
   private String workingDir; // optional
@@ -94,7 +94,7 @@ public class JobModel implements org.apache.thrift.TBase<JobModel, JobModel._Fie
     PROCESS_ID((short)3, "processId"),
     JOB_DESCRIPTION((short)4, "jobDescription"),
     CREATION_TIME((short)5, "creationTime"),
-    JOB_STATUS((short)6, "jobStatus"),
+    JOB_STATUSES((short)6, "jobStatuses"),
     COMPUTE_RESOURCE_CONSUMED((short)7, "computeResourceConsumed"),
     JOB_NAME((short)8, "jobName"),
     WORKING_DIR((short)9, "workingDir"),
@@ -125,8 +125,8 @@ public class JobModel implements org.apache.thrift.TBase<JobModel, JobModel._Fie
           return JOB_DESCRIPTION;
         case 5: // CREATION_TIME
           return CREATION_TIME;
-        case 6: // JOB_STATUS
-          return JOB_STATUS;
+        case 6: // JOB_STATUSES
+          return JOB_STATUSES;
         case 7: // COMPUTE_RESOURCE_CONSUMED
           return COMPUTE_RESOURCE_CONSUMED;
         case 8: // JOB_NAME
@@ -182,7 +182,7 @@ public class JobModel implements org.apache.thrift.TBase<JobModel, JobModel._Fie
   private static final int __CREATIONTIME_ISSET_ID = 0;
   private static final int __EXITCODE_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.JOB_STATUS,_Fields.COMPUTE_RESOURCE_CONSUMED,_Fields.JOB_NAME,_Fields.WORKING_DIR,_Fields.STD_OUT,_Fields.STD_ERR,_Fields.EXIT_CODE};
+  private static final _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.JOB_STATUSES,_Fields.COMPUTE_RESOURCE_CONSUMED,_Fields.JOB_NAME,_Fields.WORKING_DIR,_Fields.STD_OUT,_Fields.STD_ERR,_Fields.EXIT_CODE};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -196,8 +196,9 @@ public class JobModel implements org.apache.thrift.TBase<JobModel, JobModel._Fie
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.CREATION_TIME, new org.apache.thrift.meta_data.FieldMetaData("creationTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
-    tmpMap.put(_Fields.JOB_STATUS, new org.apache.thrift.meta_data.FieldMetaData("jobStatus", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.status.JobStatus.class)));
+    tmpMap.put(_Fields.JOB_STATUSES, new org.apache.thrift.meta_data.FieldMetaData("jobStatuses", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.status.JobStatus.class))));
     tmpMap.put(_Fields.COMPUTE_RESOURCE_CONSUMED, new org.apache.thrift.meta_data.FieldMetaData("computeResourceConsumed", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.JOB_NAME, new org.apache.thrift.meta_data.FieldMetaData("jobName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -248,8 +249,12 @@ public class JobModel implements org.apache.thrift.TBase<JobModel, JobModel._Fie
       this.jobDescription = other.jobDescription;
     }
     this.creationTime = other.creationTime;
-    if (other.isSetJobStatus()) {
-      this.jobStatus = new org.apache.airavata.model.status.JobStatus(other.jobStatus);
+    if (other.isSetJobStatuses()) {
+      List<org.apache.airavata.model.status.JobStatus> __this__jobStatuses = new ArrayList<org.apache.airavata.model.status.JobStatus>(other.jobStatuses.size());
+      for (org.apache.airavata.model.status.JobStatus other_element : other.jobStatuses) {
+        __this__jobStatuses.add(new org.apache.airavata.model.status.JobStatus(other_element));
+      }
+      this.jobStatuses = __this__jobStatuses;
     }
     if (other.isSetComputeResourceConsumed()) {
       this.computeResourceConsumed = other.computeResourceConsumed;
@@ -281,7 +286,7 @@ public class JobModel implements org.apache.thrift.TBase<JobModel, JobModel._Fie
     this.jobDescription = null;
     setCreationTimeIsSet(false);
     this.creationTime = 0;
-    this.jobStatus = null;
+    this.jobStatuses = null;
     this.computeResourceConsumed = null;
     this.jobName = null;
     this.workingDir = null;
@@ -405,26 +410,41 @@ public class JobModel implements org.apache.thrift.TBase<JobModel, JobModel._Fie
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __CREATIONTIME_ISSET_ID, value);
   }
 
-  public org.apache.airavata.model.status.JobStatus getJobStatus() {
-    return this.jobStatus;
+  public int getJobStatusesSize() {
+    return (this.jobStatuses == null) ? 0 : this.jobStatuses.size();
   }
 
-  public void setJobStatus(org.apache.airavata.model.status.JobStatus jobStatus) {
-    this.jobStatus = jobStatus;
+  public java.util.Iterator<org.apache.airavata.model.status.JobStatus> getJobStatusesIterator() {
+    return (this.jobStatuses == null) ? null : this.jobStatuses.iterator();
   }
 
-  public void unsetJobStatus() {
-    this.jobStatus = null;
+  public void addToJobStatuses(org.apache.airavata.model.status.JobStatus elem) {
+    if (this.jobStatuses == null) {
+      this.jobStatuses = new ArrayList<org.apache.airavata.model.status.JobStatus>();
+    }
+    this.jobStatuses.add(elem);
   }
 
-  /** Returns true if field jobStatus is set (has been assigned a value) and false otherwise */
-  public boolean isSetJobStatus() {
-    return this.jobStatus != null;
+  public List<org.apache.airavata.model.status.JobStatus> getJobStatuses() {
+    return this.jobStatuses;
   }
 
-  public void setJobStatusIsSet(boolean value) {
+  public void setJobStatuses(List<org.apache.airavata.model.status.JobStatus> jobStatuses) {
+    this.jobStatuses = jobStatuses;
+  }
+
+  public void unsetJobStatuses() {
+    this.jobStatuses = null;
+  }
+
+  /** Returns true if field jobStatuses is set (has been assigned a value) and false otherwise */
+  public boolean isSetJobStatuses() {
+    return this.jobStatuses != null;
+  }
+
+  public void setJobStatusesIsSet(boolean value) {
     if (!value) {
-      this.jobStatus = null;
+      this.jobStatuses = null;
     }
   }
 
@@ -607,11 +627,11 @@ public class JobModel implements org.apache.thrift.TBase<JobModel, JobModel._Fie
       }
       break;
 
-    case JOB_STATUS:
+    case JOB_STATUSES:
       if (value == null) {
-        unsetJobStatus();
+        unsetJobStatuses();
       } else {
-        setJobStatus((org.apache.airavata.model.status.JobStatus)value);
+        setJobStatuses((List<org.apache.airavata.model.status.JobStatus>)value);
       }
       break;
 
@@ -683,8 +703,8 @@ public class JobModel implements org.apache.thrift.TBase<JobModel, JobModel._Fie
     case CREATION_TIME:
       return getCreationTime();
 
-    case JOB_STATUS:
-      return getJobStatus();
+    case JOB_STATUSES:
+      return getJobStatuses();
 
     case COMPUTE_RESOURCE_CONSUMED:
       return getComputeResourceConsumed();
@@ -725,8 +745,8 @@ public class JobModel implements org.apache.thrift.TBase<JobModel, JobModel._Fie
       return isSetJobDescription();
     case CREATION_TIME:
       return isSetCreationTime();
-    case JOB_STATUS:
-      return isSetJobStatus();
+    case JOB_STATUSES:
+      return isSetJobStatuses();
     case COMPUTE_RESOURCE_CONSUMED:
       return isSetComputeResourceConsumed();
     case JOB_NAME:
@@ -801,12 +821,12 @@ public class JobModel implements org.apache.thrift.TBase<JobModel, JobModel._Fie
         return false;
     }
 
-    boolean this_present_jobStatus = true && this.isSetJobStatus();
-    boolean that_present_jobStatus = true && that.isSetJobStatus();
-    if (this_present_jobStatus || that_present_jobStatus) {
-      if (!(this_present_jobStatus && that_present_jobStatus))
+    boolean this_present_jobStatuses = true && this.isSetJobStatuses();
+    boolean that_present_jobStatuses = true && that.isSetJobStatuses();
+    if (this_present_jobStatuses || that_present_jobStatuses) {
+      if (!(this_present_jobStatuses && that_present_jobStatuses))
         return false;
-      if (!this.jobStatus.equals(that.jobStatus))
+      if (!this.jobStatuses.equals(that.jobStatuses))
         return false;
     }
 
@@ -896,10 +916,10 @@ public class JobModel implements org.apache.thrift.TBase<JobModel, JobModel._Fie
     if (present_creationTime)
       list.add(creationTime);
 
-    boolean present_jobStatus = true && (isSetJobStatus());
-    list.add(present_jobStatus);
-    if (present_jobStatus)
-      list.add(jobStatus);
+    boolean present_jobStatuses = true && (isSetJobStatuses());
+    list.add(present_jobStatuses);
+    if (present_jobStatuses)
+      list.add(jobStatuses);
 
     boolean present_computeResourceConsumed = true && (isSetComputeResourceConsumed());
     list.add(present_computeResourceConsumed);
@@ -992,12 +1012,12 @@ public class JobModel implements org.apache.thrift.TBase<JobModel, JobModel._Fie
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetJobStatus()).compareTo(other.isSetJobStatus());
+    lastComparison = Boolean.valueOf(isSetJobStatuses()).compareTo(other.isSetJobStatuses());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetJobStatus()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.jobStatus, other.jobStatus);
+    if (isSetJobStatuses()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.jobStatuses, other.jobStatuses);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1119,13 +1139,13 @@ public class JobModel implements org.apache.thrift.TBase<JobModel, JobModel._Fie
       sb.append(this.creationTime);
       first = false;
     }
-    if (isSetJobStatus()) {
+    if (isSetJobStatuses()) {
       if (!first) sb.append(", ");
-      sb.append("jobStatus:");
-      if (this.jobStatus == null) {
+      sb.append("jobStatuses:");
+      if (this.jobStatuses == null) {
         sb.append("null");
       } else {
-        sb.append(this.jobStatus);
+        sb.append(this.jobStatuses);
       }
       first = false;
     }
@@ -1208,9 +1228,6 @@ public class JobModel implements org.apache.thrift.TBase<JobModel, JobModel._Fie
     }
 
     // check for sub-struct validity
-    if (jobStatus != null) {
-      jobStatus.validate();
-    }
   }
 
   private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -1289,11 +1306,21 @@ public class JobModel implements org.apache.thrift.TBase<JobModel, JobModel._Fie
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // JOB_STATUS
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-              struct.jobStatus = new org.apache.airavata.model.status.JobStatus();
-              struct.jobStatus.read(iprot);
-              struct.setJobStatusIsSet(true);
+          case 6: // JOB_STATUSES
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
+                struct.jobStatuses = new ArrayList<org.apache.airavata.model.status.JobStatus>(_list0.size);
+                org.apache.airavata.model.status.JobStatus _elem1;
+                for (int _i2 = 0; _i2 < _list0.size; ++_i2)
+                {
+                  _elem1 = new org.apache.airavata.model.status.JobStatus();
+                  _elem1.read(iprot);
+                  struct.jobStatuses.add(_elem1);
+                }
+                iprot.readListEnd();
+              }
+              struct.setJobStatusesIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1384,10 +1411,17 @@ public class JobModel implements org.apache.thrift.TBase<JobModel, JobModel._Fie
         oprot.writeI64(struct.creationTime);
         oprot.writeFieldEnd();
       }
-      if (struct.jobStatus != null) {
-        if (struct.isSetJobStatus()) {
-          oprot.writeFieldBegin(JOB_STATUS_FIELD_DESC);
-          struct.jobStatus.write(oprot);
+      if (struct.jobStatuses != null) {
+        if (struct.isSetJobStatuses()) {
+          oprot.writeFieldBegin(JOB_STATUSES_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.jobStatuses.size()));
+            for (org.apache.airavata.model.status.JobStatus _iter3 : struct.jobStatuses)
+            {
+              _iter3.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
           oprot.writeFieldEnd();
         }
       }
@@ -1456,7 +1490,7 @@ public class JobModel implements org.apache.thrift.TBase<JobModel, JobModel._Fie
       if (struct.isSetCreationTime()) {
         optionals.set(0);
       }
-      if (struct.isSetJobStatus()) {
+      if (struct.isSetJobStatuses()) {
         optionals.set(1);
       }
       if (struct.isSetComputeResourceConsumed()) {
@@ -1481,8 +1515,14 @@ public class JobModel implements org.apache.thrift.TBase<JobModel, JobModel._Fie
       if (struct.isSetCreationTime()) {
         oprot.writeI64(struct.creationTime);
       }
-      if (struct.isSetJobStatus()) {
-        struct.jobStatus.write(oprot);
+      if (struct.isSetJobStatuses()) {
+        {
+          oprot.writeI32(struct.jobStatuses.size());
+          for (org.apache.airavata.model.status.JobStatus _iter4 : struct.jobStatuses)
+          {
+            _iter4.write(oprot);
+          }
+        }
       }
       if (struct.isSetComputeResourceConsumed()) {
         oprot.writeString(struct.computeResourceConsumed);
@@ -1521,9 +1561,18 @@ public class JobModel implements org.apache.thrift.TBase<JobModel, JobModel._Fie
         struct.setCreationTimeIsSet(true);
       }
       if (incoming.get(1)) {
-        struct.jobStatus = new org.apache.airavata.model.status.JobStatus();
-        struct.jobStatus.read(iprot);
-        struct.setJobStatusIsSet(true);
+        {
+          org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.jobStatuses = new ArrayList<org.apache.airavata.model.status.JobStatus>(_list5.size);
+          org.apache.airavata.model.status.JobStatus _elem6;
+          for (int _i7 = 0; _i7 < _list5.size; ++_i7)
+          {
+            _elem6 = new org.apache.airavata.model.status.JobStatus();
+            _elem6.read(iprot);
+            struct.jobStatuses.add(_elem6);
+          }
+        }
+        struct.setJobStatusesIsSet(true);
       }
       if (incoming.get(2)) {
         struct.computeResourceConsumed = iprot.readString();

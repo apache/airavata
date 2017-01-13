@@ -19,18 +19,20 @@
  */
 package org.apache.airavata.gfac.core;
 
+import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 
 public interface GFacEngine {
 
 
-	public ProcessContext populateProcessContext(String processId, String gatewayId, String tokenId) throws GFacException;
+	public ProcessContext populateProcessContext(String processId, String gatewayId, String tokenId)
+			throws GFacException, CredentialStoreException;
 
-	public void executeProcess(ProcessContext processContext) throws GFacException ;
+	public void executeProcess(ProcessContext processContext) throws GFacException;
 
-    public void recoverProcess(ProcessContext processContext) throws GFacException;
+	public void recoverProcess(ProcessContext processContext) throws GFacException;
 
-	public void continueProcess(ProcessContext processContext, String taskId) throws GFacException ;
+	public void continueProcess(ProcessContext processContext, String taskId) throws GFacException;
 
-	public void cancelProcess(ProcessContext processContext) throws GFacException ;
+	public void cancelProcess(ProcessContext processContext) throws GFacException;
 }

@@ -44,17 +44,17 @@ struct ProcessModel {
     2: required string experimentId,
     3: optional i64 creationTime,
     4: optional i64 lastUpdateTime,
-    5: optional status_models.ProcessStatus processStatus,
+    5: optional list<status_models.ProcessStatus> processStatuses,
     6: optional string processDetail,
     7: optional string applicationInterfaceId,
     8: optional string applicationDeploymentId,
     9: optional string computeResourceId,
     10: optional list<application_io_models.InputDataObjectType> processInputs,
     11: optional list<application_io_models.OutputDataObjectType> processOutputs,
-    12: optional scheduling_model.ComputationalResourceSchedulingModel resourceSchedule,
+    12: optional scheduling_model.ComputationalResourceSchedulingModel processResourceSchedule,
     13: optional list<task_model.TaskModel> tasks,
     14: optional string taskDag,
-    15: optional airavata_commons.ErrorModel processError,
+    15: optional list<airavata_commons.ErrorModel> processErrors,
     16: optional string gatewayExecutionId,
     17: optional bool enableEmailNotification,
     18: optional list<string> emailAddresses,
@@ -62,5 +62,6 @@ struct ProcessModel {
     20: optional string userDn,
     21: optional bool generateCert = 0,
     22: optional string experimentDataDir,
-    23: optional string userName;
+    23: optional string userName,
+    24: optional bool useUserCRPref;
 }

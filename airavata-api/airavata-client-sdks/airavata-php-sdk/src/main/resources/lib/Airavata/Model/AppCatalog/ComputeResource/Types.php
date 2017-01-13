@@ -42,12 +42,14 @@ final class ResourceJobManagerType {
   const SLURM = 2;
   const LSF = 3;
   const UGE = 4;
+  const CLOUD = 5;
   static public $__names = array(
     0 => 'FORK',
     1 => 'PBS',
     2 => 'SLURM',
     3 => 'LSF',
     4 => 'UGE',
+    5 => 'CLOUD',
   );
 }
 
@@ -171,14 +173,18 @@ final class JobSubmissionProtocol {
  */
 final class MonitorMode {
   const POLL_JOB_MANAGER = 0;
-  const JOB_EMAIL_NOTIFICATION_MONITOR = 1;
-  const XSEDE_AMQP_SUBSCRIBE = 2;
-  const FORK = 3;
+  const CLOUD_JOB_MONITOR = 1;
+  const JOB_EMAIL_NOTIFICATION_MONITOR = 2;
+  const XSEDE_AMQP_SUBSCRIBE = 3;
+  const FORK = 4;
+  const LOCAL = 5;
   static public $__names = array(
     0 => 'POLL_JOB_MANAGER',
-    1 => 'JOB_EMAIL_NOTIFICATION_MONITOR',
-    2 => 'XSEDE_AMQP_SUBSCRIBE',
-    3 => 'FORK',
+    1 => 'CLOUD_JOB_MONITOR',
+    2 => 'JOB_EMAIL_NOTIFICATION_MONITOR',
+    3 => 'XSEDE_AMQP_SUBSCRIBE',
+    4 => 'FORK',
+    5 => 'LOCAL',
   );
 }
 
@@ -518,6 +524,22 @@ class BatchQueue {
    * @var int
    */
   public $maxMemory = null;
+  /**
+   * @var int
+   */
+  public $cpuPerNode = null;
+  /**
+   * @var int
+   */
+  public $defaultNodeCount = null;
+  /**
+   * @var int
+   */
+  public $defaultCPUCount = null;
+  /**
+   * @var bool
+   */
+  public $isDefaultQueue = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -550,6 +572,22 @@ class BatchQueue {
           'var' => 'maxMemory',
           'type' => TType::I32,
           ),
+        8 => array(
+          'var' => 'cpuPerNode',
+          'type' => TType::I32,
+          ),
+        9 => array(
+          'var' => 'defaultNodeCount',
+          'type' => TType::I32,
+          ),
+        10 => array(
+          'var' => 'defaultCPUCount',
+          'type' => TType::I32,
+          ),
+        11 => array(
+          'var' => 'isDefaultQueue',
+          'type' => TType::BOOL,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -573,6 +611,18 @@ class BatchQueue {
       }
       if (isset($vals['maxMemory'])) {
         $this->maxMemory = $vals['maxMemory'];
+      }
+      if (isset($vals['cpuPerNode'])) {
+        $this->cpuPerNode = $vals['cpuPerNode'];
+      }
+      if (isset($vals['defaultNodeCount'])) {
+        $this->defaultNodeCount = $vals['defaultNodeCount'];
+      }
+      if (isset($vals['defaultCPUCount'])) {
+        $this->defaultCPUCount = $vals['defaultCPUCount'];
+      }
+      if (isset($vals['isDefaultQueue'])) {
+        $this->isDefaultQueue = $vals['isDefaultQueue'];
       }
     }
   }
@@ -645,6 +695,34 @@ class BatchQueue {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 8:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->cpuPerNode);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 9:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->defaultNodeCount);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 10:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->defaultCPUCount);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 11:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->isDefaultQueue);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -691,6 +769,26 @@ class BatchQueue {
     if ($this->maxMemory !== null) {
       $xfer += $output->writeFieldBegin('maxMemory', TType::I32, 7);
       $xfer += $output->writeI32($this->maxMemory);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->cpuPerNode !== null) {
+      $xfer += $output->writeFieldBegin('cpuPerNode', TType::I32, 8);
+      $xfer += $output->writeI32($this->cpuPerNode);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->defaultNodeCount !== null) {
+      $xfer += $output->writeFieldBegin('defaultNodeCount', TType::I32, 9);
+      $xfer += $output->writeI32($this->defaultNodeCount);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->defaultCPUCount !== null) {
+      $xfer += $output->writeFieldBegin('defaultCPUCount', TType::I32, 10);
+      $xfer += $output->writeI32($this->defaultCPUCount);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->isDefaultQueue !== null) {
+      $xfer += $output->writeFieldBegin('isDefaultQueue', TType::BOOL, 11);
+      $xfer += $output->writeBool($this->isDefaultQueue);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

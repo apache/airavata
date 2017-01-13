@@ -237,6 +237,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                     inputResource.setInputOrder(input.getInputOrder());
                     inputResource.setRequired(input.isIsRequired());
                     inputResource.setRequiredToCMD(input.isRequiredToAddedToCommandLine());
+                    inputResource.setDataStaged(input.isDataStaged());
                     inputResource.save();
                 }
             }

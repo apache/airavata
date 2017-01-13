@@ -43,5 +43,6 @@ public enum ExperimentCatalogModelType {
     TASK_STATUS,
     TASK_ERROR,
     JOB,
-    JOB_STATUS
+    JOB_STATUS,
+    QUEUE_STATUS
 }

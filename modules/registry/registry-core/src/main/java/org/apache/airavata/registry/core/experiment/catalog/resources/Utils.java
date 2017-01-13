@@ -356,6 +356,12 @@ public class Utils {
         gatewayResource.setGatewayAdminEmail(o.getGatewayAdminEmail());
         gatewayResource.setIdentityServerUserName(o.getIdentityServerUserName());
         gatewayResource.setIdentityServerPasswordToken(o.getIdentityServerPasswordToken());
+        gatewayResource.setDeclinedReason(o.getDeclinedReason());
+        gatewayResource.setOauthClientId(o.getOauthClientId());
+        gatewayResource.setRequestCreationTime(o.getRequestCreationTime());
+        gatewayResource.setRequesterUsername(o.getRequesterUsername());
+
+        gatewayResource.setOauthClientSecret(o.getGetOauthClientSecret());
         return gatewayResource;
     }
 
@@ -551,6 +557,7 @@ public class Utils {
             configurationDataResource.setOverrideAllocationProjectNumber(o.getOverrideAllocationProjectNumber());
             configurationDataResource.setStorageId(o.getStorageId());
             configurationDataResource.setExperimentDataDir(o.getExperimentDataDir());
+            configurationDataResource.setUseUserCRPref(o.isUseUserCRPref());
         }
         return configurationDataResource;
     }
@@ -575,6 +582,7 @@ public class Utils {
             processResource.setGenerateCert(o.getGenerateCert());
             processResource.setExperimentDataDir(o.getExperimentDataDir());
             processResource.setUserName(o.getUserName());
+            processResource.setUseUserCRPref(o.isUseUserCRPref());
         }
         return processResource;
     }

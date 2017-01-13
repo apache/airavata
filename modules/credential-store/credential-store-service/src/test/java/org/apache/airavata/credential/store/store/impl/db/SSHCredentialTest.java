@@ -23,7 +23,6 @@ package org.apache.airavata.credential.store.store.impl.db;
 
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
@@ -54,6 +53,7 @@ public class SSHCredentialTest {
             String token = TokenGenerator.generateToken(gatewayId, null);
             sshCredential.setToken(token);
             sshCredential.setPortalUserName("phasta");
+            sshCredential.setDescription("dummy creds for testing");
             FileInputStream privateKeyStream = new FileInputStream(privateKeyPath);
             File filePri = new File(privateKeyPath);
             byte[] bFilePri = new byte[(int) filePri.length()];

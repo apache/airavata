@@ -32,6 +32,7 @@ import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,6 +63,11 @@ public class GatewayRegistry {
             resource.setGatewayAdminEmail(gateway.getGatewayAdminEmail());
             resource.setIdentityServerUserName(gateway.getIdentityServerUserName());
             resource.setIdentityServerPasswordToken(gateway.getIdentityServerPasswordToken());
+            resource.setDeclinedReason(gateway.getDeclinedReason());
+            resource.setOauthClientId(gateway.getOauthClientId());
+            resource.setOauthClientSecret(gateway.getOauthClientSecret());
+            resource.setRequestCreationTime(new Timestamp(System.currentTimeMillis()));
+            resource.setRequesterUsername(gateway.getRequesterUsername());
             resource.save();
             return gateway.getGatewayId();
         }catch (RegistryException e){
@@ -86,6 +92,10 @@ public class GatewayRegistry {
             existingGateway.setGatewayAdminEmail(updatedGateway.getGatewayAdminEmail());
             existingGateway.setIdentityServerUserName(updatedGateway.getIdentityServerUserName());
             existingGateway.setIdentityServerPasswordToken(updatedGateway.getIdentityServerPasswordToken());
+            existingGateway.setDeclinedReason(updatedGateway.getDeclinedReason());
+            existingGateway.setOauthClientId(updatedGateway.getOauthClientId());
+            existingGateway.setOauthClientSecret(updatedGateway.getOauthClientSecret());
+            existingGateway.setRequesterUsername(updatedGateway.getRequesterUsername());
             existingGateway.save();
         }catch (RegistryException e){
             logger.error("Error while updating gateway to registry", e);
