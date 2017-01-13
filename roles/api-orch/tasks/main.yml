@@ -1,0 +1,54 @@
+---
+################################################################################
+# api-orch deployment
+- name: Create api-orchestrator deployment directory
+  file: path="{{ api_orch_dir }}" state=directory owner="{{ user }}" group="{{ group }}"
+  when: build|success
+  tags: deploy, update_api_orch, update
+
+- name: Check previous deployments
+  stat: path="{{ api_orch_dir }}/{{ airavata_dist }}" get_md5=no get_checksum=no
+  register: pp
+  tags: deploy, update_api_orch, update
+
+- block:
+    - name: stop api-orch
+      command: ./bin/airavata-server-stop.sh -f chdir="{{ api_orch_dir }}/{{ airavata_dist }}/" removes="{{ api_orch_dir }}/{{ airavata_dist }}/bin/server_start_*"
+
+    - name: Delete previous deployments
+      file: path="{{ gfac_dir }}/{{ airavata_dist }}" state=absent
+
+  when: pp.stat.exists == True
+  tags: deploy, update_api_orch, update
+#
+# - block:
+#     - name: Remove pervious backup directory
+#       file: path="{{ api_orch_dir }}/backup" state=absent
+#       notify:
+#         - stop api-orch
+#
+#     - name: Backup previous deployment directory
+#       copy: src="{{ api_orch_dir }}/{{ airavata_dist }}" dest="{{ api_orch_dir }}/backup" copy=no
+#
+#   when: p.stat.exist == True
+#   tags: deploy update_api_orch update
+
+- name: Copy distribution to api-orcheatrator deployment directory
+  unarchive: src="{{ airavata_source_dir }}/distribution/target/{{ airavata_dist_name }}" dest="{{ api_orch_dir }}/" copy=no
+  become: yes
+  become_user: "{{ user }}"
+  tags: deploy, update_api_orch, update
+
+- name: Copy Airavata server properties file
+  template: src=airavata-server.properties.j2 dest="{{ api_orch_dir }}/{{ airavata_dist }}/bin/airavata-server.properties" owner="{{ user }}" group="{{ group }}" mode="u=rw,g=r,o=r"
+  tags: deploy, update_api_orch, update
+
+- name: Copy Gfac configuration file
+  template: src=gfac-config.yaml.j2 dest="{{ api_orch_dir }}/{{ airavata_dist }}/bin/gfac-config.yaml" owner="{{ user }}" group="{{ group }}" mode="u=rw,g=r,o=r"
+  tags: deploy, update_api_orch, update
+
+- name: Copy Mysql jar to lib
+  copy: src="{{ mysql_connector_jar }}" dest="{{ api_orch_dir }}/{{ airavata_dist }}/lib/{{ mysql_connector_jar }}" owner="{{ user }}" group="{{ group }}"
+  tags: deploy, update_api_orch, update
+
+...

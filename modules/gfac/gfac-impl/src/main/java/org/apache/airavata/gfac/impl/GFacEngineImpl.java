@@ -26,6 +26,7 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.common.utils.ZkConstants;
+import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.GFacConstants;
 import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
@@ -37,15 +38,18 @@ import org.apache.airavata.gfac.core.monitor.JobMonitor;
 import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
-import org.apache.airavata.gfac.impl.task.DataStageTask;
 import org.apache.airavata.gfac.impl.task.DataStreamingTask;
 import org.apache.airavata.gfac.impl.task.EnvironmentSetupTask;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.*;
-import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
@@ -59,7 +63,13 @@ import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
-import org.apache.airavata.model.task.*;
+import org.apache.airavata.model.task.DataStageType;
+import org.apache.airavata.model.task.DataStagingTaskModel;
+import org.apache.airavata.model.task.EnvironmentSetupTaskModel;
+import org.apache.airavata.model.task.JobSubmissionTaskModel;
+import org.apache.airavata.model.task.MonitorTaskModel;
+import org.apache.airavata.model.task.TaskModel;
+import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ExpCatChildDataType;
@@ -78,7 +88,12 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public class GFacEngineImpl implements GFacEngine {
 
@@ -90,37 +105,41 @@ public class GFacEngineImpl implements GFacEngine {
 
     @Override
     public ProcessContext populateProcessContext(String processId, String gatewayId, String
-            tokenId) throws GFacException {
-        ProcessContext processContext = new ProcessContext(processId, gatewayId, tokenId);
+            tokenId) throws GFacException, CredentialStoreException {
+
+        // NOTE: Process context gives precedence to data come with process Computer resources;
+        ProcessContext processContext = null;
+        ProcessContext.ProcessContextBuilder builder = new ProcessContext.ProcessContextBuilder(processId, gatewayId, tokenId);
         try {
             AppCatalog appCatalog = Factory.getDefaultAppCatalog();
-            processContext.setAppCatalog(appCatalog);
             ExperimentCatalog expCatalog = Factory.getDefaultExpCatalog();
-            processContext.setExperimentCatalog(expCatalog);
-            processContext.setCuratorClient(Factory.getCuratorClient());
-            processContext.setStatusPublisher(Factory.getStatusPublisher());
-
             ProcessModel processModel = (ProcessModel) expCatalog.get(ExperimentCatalogModelType.PROCESS, processId);
-            processContext.setProcessModel(processModel);
+            builder.setAppCatalog(appCatalog)
+                    .setExperimentCatalog(expCatalog)
+                    .setCuratorClient(Factory.getCuratorClient())
+                    .setStatusPublisher(Factory.getStatusPublisher())
+                    .setProcessModel(processModel)
+                    .setGatewayResourceProfile(appCatalog.getGatewayProfile().getGatewayProfile(gatewayId))
+                    .setGatewayComputeResourcePreference(
+                            appCatalog.getGatewayProfile()
+                                    .getComputeResourcePreference(gatewayId, processModel.getComputeResourceId()))
+                    .setGatewayStorageResourcePreference(
+                            appCatalog.getGatewayProfile()
+                                    .getStoragePreference(gatewayId, processModel.getStorageResourceId()));
 
-            try {
-                checkRecoveryWithCancel(processContext);
-            } catch (Exception e) {
-                log.error("expId: {}, processId: {}, Error while checking process cancel data in zookeeper",
-                        processContext.getExperimentId(), processContext.getProcessId());
+            processContext = builder.build();
+            /* check point */
+            checkpoint(processContext);
+
+            if (processModel.isUseUserCRPref()) {
+                setUserResourceProfile(gatewayId, processContext);
+                setUserComputeResourcePreference(gatewayId, processContext);
             }
 
-            GatewayResourceProfile gatewayProfile = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
-            processContext.setGatewayResourceProfile(gatewayProfile);
-            ComputeResourcePreference computeResourcePreference = appCatalog.getGatewayProfile().getComputeResourcePreference
-                    (gatewayId, processModel.getComputeResourceId());
-            //FIXME: Temporary revert, this needs a proper fix.
-//            String scratchLocation = Factory.getScratchLocation(processContext);
-            String scratchLocation = computeResourcePreference.getScratchLocation();
-            scratchLocation = scratchLocation + File.separator + processId + File.separator;
-            processContext.setComputeResourcePreference(computeResourcePreference);
-            StoragePreference storagePreference = appCatalog.getGatewayProfile().getStoragePreference(gatewayId, processModel.getStorageResourceId());
-            StorageResourceDescription storageResource = appCatalog.getStorageResource().getStorageResource(processModel.getStorageResourceId());
+            String scratchLocation = processContext.getScratchLocation();
+            String workingDirectory = scratchLocation + File.separator + processId + File.separator;
+            StorageResourceDescription storageResource = appCatalog.getStorageResource()
+                    .getStorageResource(processModel.getStorageResourceId());
             if (storageResource != null){
                 processContext.setStorageResource(storageResource);
             }else {
@@ -130,47 +149,32 @@ public class GFacEngineImpl implements GFacEngine {
                 throw new GFacException("expId: " + processModel.getExperimentId() + ", processId: " + processId +
                         ":- Couldn't find storage resource for storage resource id :" + processModel.getStorageResourceId());
             }
-            if (storagePreference != null) {
-                processContext.setStoragePreference(storagePreference);
-            } else {
-                // we need to fail the process which will fail the experiment
-                processContext.setProcessStatus(new ProcessStatus(ProcessState.FAILED));
-                GFacUtils.saveAndPublishProcessStatus(processContext);
-                throw new GFacException("expId: " + processModel.getExperimentId() + ", processId: " + processId +
-                        ":- Couldn't find storage preference for storage resource id :" + processModel.getStorageResourceId());
-
-            }
-
 
 /*            StorageResourceDescription storageResource = appCatalog.getStorageResource().getStorageResource(processModel.getStorageResourceId());
             if (storageResource != null){
                 processContext.setStorageResource(storageResource);
             }*/
             processContext.setComputeResourceDescription(appCatalog.getComputeResource().getComputeResource
-                    (processContext.getComputeResourcePreference().getComputeResourceId()));
+                    (processContext.getComputeResourceId()));
             processContext.setApplicationDeploymentDescription(appCatalog.getApplicationDeployment()
                     .getApplicationDeployement(processModel.getApplicationDeploymentId()));
             ApplicationInterfaceDescription applicationInterface = appCatalog.getApplicationInterface()
                     .getApplicationInterface(processModel.getApplicationInterfaceId());
             processContext.setApplicationInterfaceDescription(applicationInterface);
-            String computeResourceId = processContext.getComputeResourceDescription().getComputeResourceId();
-            String hostName = Factory.getDefaultAppCatalog().getComputeResource().getComputeResource(computeResourceId).getHostName();
-            ServerInfo serverInfo = new ServerInfo(Factory.getLoginUserName(processContext), hostName);
-            processContext.setServerInfo(serverInfo);
             List<OutputDataObjectType> applicationOutputs = applicationInterface.getApplicationOutputs();
             if (applicationOutputs != null && !applicationOutputs.isEmpty()) {
                 for (OutputDataObjectType outputDataObjectType : applicationOutputs) {
                     if (outputDataObjectType.getType().equals(DataType.STDOUT)) {
                         if (outputDataObjectType.getValue() == null || outputDataObjectType.getValue().equals("")) {
-                            outputDataObjectType.setValue(scratchLocation + applicationInterface.getApplicationName() + ".stdout");
-                            processContext.setStdoutLocation(scratchLocation + applicationInterface.getApplicationName() + ".stdout");
+                            outputDataObjectType.setValue(workingDirectory + applicationInterface.getApplicationName() + ".stdout");
+                            processContext.setStdoutLocation(workingDirectory + applicationInterface.getApplicationName() + ".stdout");
                         } else {
                             processContext.setStdoutLocation(outputDataObjectType.getValue());
                         }
                     }
                     if (outputDataObjectType.getType().equals(DataType.STDERR)) {
                         if (outputDataObjectType.getValue() == null || outputDataObjectType.getValue().equals("")) {
-                            String stderrLocation = scratchLocation + applicationInterface.getApplicationName() + ".stderr";
+                            String stderrLocation = workingDirectory + applicationInterface.getApplicationName() + ".stderr";
                             outputDataObjectType.setValue(stderrLocation);
                             processContext.setStderrLocation(stderrLocation);
                         } else {
@@ -182,7 +186,6 @@ public class GFacEngineImpl implements GFacEngine {
             expCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processId);
             processModel.setProcessOutputs(applicationOutputs);
 
-            processContext.setSshKeyAuthentication(Factory.getComputerResourceSSHKeyAuthentication(processContext));
             if (processContext.getJobSubmissionProtocol() == JobSubmissionProtocol.UNICORE) {
                 // process monitor mode set in getResourceJobManager method, but unicore doesn't have resource job manager.
                 // hence we set process monitor mode here.
@@ -206,6 +209,9 @@ public class GFacEngineImpl implements GFacEngine {
                 }
                 processContext.setJobModel(((JobModel) jobModels.get(0)));
             }
+
+
+
             return processContext;
         } catch (AppCatalogException e) {
             String msg = "App catalog access exception ";
@@ -224,6 +230,37 @@ public class GFacEngineImpl implements GFacEngine {
             throw new GFacException(msg, e);
         }
 
+    }
+
+    private void checkpoint(ProcessContext processContext) {
+        try {
+            checkRecoveryWithCancel(processContext);
+        } catch (Exception e) {
+            log.error("expId: {}, processId: {}, Error while checking process cancel data in zookeeper",
+                    processContext.getExperimentId(), processContext.getProcessId());
+        }
+    }
+
+    private void setUserResourceProfile(String gatewayId, ProcessContext processContext) throws AppCatalogException {
+        AppCatalog appCatalog = processContext.getAppCatalog();
+        ProcessModel processModel = processContext.getProcessModel();
+
+        UserResourceProfile userResourceProfile =
+                appCatalog.getUserResourceProfile()
+                        .getUserResourceProfile(processModel.getUserName(), gatewayId);
+
+        processContext.setUserResourceProfile(userResourceProfile);
+    }
+
+    private void setUserComputeResourcePreference(String gatewayId, ProcessContext processContext) throws AppCatalogException {
+        AppCatalog appCatalog = processContext.getAppCatalog();
+        ProcessModel processModel = processContext.getProcessModel();
+        UserComputeResourcePreference userComputeResourcePreference =
+                appCatalog.getUserResourceProfile().getUserComputeResourcePreference(
+                        processModel.getUserName(),
+                        gatewayId,
+                        processModel.getComputeResourceId());
+        processContext.setUserComputeResourcePreference(userComputeResourcePreference);
     }
 
     private void checkRecoveryWithCancel(ProcessContext processContext) throws Exception {
@@ -351,7 +388,7 @@ public class GFacEngineImpl implements GFacEngine {
                     executeJobSubmission(taskContext, processContext.isRecovery());
                     // Don't put any checkpoint in between JobSubmission and Monitoring tasks
 
-                    JobStatus jobStatus = processContext.getJobModel().getJobStatus();
+                    JobStatus jobStatus = processContext.getJobModel().getJobStatuses().get(0);
                     if (jobStatus != null && (jobStatus.getJobState() == JobState.SUBMITTED
                             || jobStatus.getJobState() == JobState.QUEUED || jobStatus.getJobState() == JobState.ACTIVE)) {
 
@@ -362,7 +399,7 @@ public class GFacEngineImpl implements GFacEngine {
                                     if (output.isOutputStreaming()){
                                         TaskModel streamingTaskModel = new TaskModel();
                                         streamingTaskModel.setTaskType(TaskTypes.OUTPUT_FETCHING);
-                                        streamingTaskModel.setTaskStatus(new TaskStatus(TaskState.CREATED));
+                                        streamingTaskModel.setTaskStatuses(Arrays.asList(new TaskStatus(TaskState.CREATED)));
                                         streamingTaskModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
                                         streamingTaskModel.setParentProcessId(processContext.getProcessId());
                                         TaskContext streamingTaskContext = getTaskContext(processContext);
@@ -370,7 +407,7 @@ public class GFacEngineImpl implements GFacEngine {
                                         submodel.setType(DataStageType.OUPUT);
                                         submodel.setProcessOutput(output);
                                         URI source = new URI(processContext.getDataMovementProtocol().name(),
-                                                Factory.getLoginUserName(processContext),
+                                                processContext.getComputeResourceLoginUserName(),
                                                 processContext.getComputeResourceDescription().getHostName(),
                                                 22,
                                                 processContext.getWorkingDir() + output.getValue(), null, null);
@@ -504,7 +541,8 @@ public class GFacEngineImpl implements GFacEngine {
         try {
             EnvironmentSetupTaskModel subTaskModel = (EnvironmentSetupTaskModel) taskContext.getSubTaskModel();
             Task envSetupTask = null;
-            if (subTaskModel.getProtocol() == SecurityProtocol.SSH_KEYS) {
+            if (subTaskModel.getProtocol() == SecurityProtocol.SSH_KEYS ||
+                    subTaskModel.getProtocol() == SecurityProtocol.LOCAL) {
                 envSetupTask = new EnvironmentSetupTask();
             } else {
                 throw new GFacException("Unsupported security protocol, Airavata doesn't support " +
@@ -550,6 +588,10 @@ public class GFacEngineImpl implements GFacEngine {
         ProcessContext processContext = taskContext.getParentProcessContext();
         // handle URI_COLLECTION input data type
         Task dMoveTask = Factory.getDataMovementTask(processContext.getDataMovementProtocol());
+        if(null == dMoveTask){
+            throw new GFacException("Unsupported security protocol, Airavata doesn't support " +
+                    processContext.getDataMovementProtocol() + " protocol yet.");
+        }
         if (taskContext.getProcessInput().getType() == DataType.URI_COLLECTION) {
             String values = taskContext.getProcessInput().getValue();
             String[] multiple_inputs = values.split(GFacConstants.MULTIPLE_INPUTS_SPLITTER);
@@ -601,7 +643,7 @@ public class GFacEngineImpl implements GFacEngine {
         TaskModel taskModel = null;
         for (String taskId : taskExecutionOrder) {
             taskModel = taskMap.get(taskId);
-            TaskState state = taskModel.getTaskStatus().getState();
+            TaskState state = taskModel.getTaskStatuses().get(0).getState();
             if (state == TaskState.CREATED || state == TaskState.EXECUTING) {
                 recoverTaskId = taskId;
                 break;
@@ -616,11 +658,10 @@ public class GFacEngineImpl implements GFacEngine {
             }
             continueProcess(processContext, recoverTaskId);
         } else {
-            log.error("expId: {}, processId: {}, Error while recovering process, couldn't find recovery task",
+            log.error("expId: {}, processId: {}, couldn't find recovery task, mark this as complete ",
                     processContext.getExperimentId(), processContext.getProcessId());
+            processContext.setComplete(true);
         }
-
-
     }
 
     private void cancelJobSubmission(ProcessContext processContext, String rTaskId, String pTaskId) {
@@ -720,6 +761,10 @@ public class GFacEngineImpl implements GFacEngine {
         } else {
             dMoveTask = Factory.getDataMovementTask(processContext.getDataMovementProtocol());
         }
+        if(null == dMoveTask){
+            throw new GFacException("Unsupported security protocol, Airavata doesn't support " +
+                    processContext.getDataMovementProtocol() + " protocol yet.");
+        }
         taskStatus = executeTask(taskContext, dMoveTask, recovery);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         taskContext.setTaskStatus(taskStatus);
@@ -798,7 +843,7 @@ public class GFacEngineImpl implements GFacEngine {
         taskModel.setLastUpdateTime(taskModel.getCreationTime());
         TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-        taskModel.setTaskStatus(taskStatus);
+        taskModel.setTaskStatuses(Arrays.asList(taskStatus));
         taskModel.setTaskType(TaskTypes.JOB_SUBMISSION);
         taskCtx.setTaskModel(taskModel);
         return taskCtx;
@@ -815,13 +860,13 @@ public class GFacEngineImpl implements GFacEngine {
         taskModel.setLastUpdateTime(taskModel.getCreationTime());
         TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-        taskModel.setTaskStatus(taskStatus);
+        taskModel.setTaskStatuses(Arrays.asList(taskStatus));
         taskModel.setTaskType(TaskTypes.DATA_STAGING);
         // create data staging sub task model
         String remoteOutputDir = processContext.getOutputDir();
         remoteOutputDir = remoteOutputDir.endsWith("/") ? remoteOutputDir : remoteOutputDir + "/";
         DataStagingTaskModel submodel = new DataStagingTaskModel();
-        ServerInfo serverInfo = processContext.getServerInfo();
+        ServerInfo serverInfo = processContext.getComputeResourceServerInfo();
         URI source = null;
         try {
             source = new URI(processContext.getDataMovementProtocol().name(), serverInfo.getHost(),
@@ -871,7 +916,10 @@ public class GFacEngineImpl implements GFacEngine {
         });
     }
 
-    private void updateProcessFailure(ProcessContext pc, String reason){
+    private void updateProcessFailure(ProcessContext pc, String reason) throws GFacException {
+        if (pc == null) {
+            throw new GFacException("Can't update process failure, process context is null");
+        }
         ProcessStatus status = new ProcessStatus(ProcessState.FAILED);
         status.setReason(reason);
         pc.setProcessStatus(status);
@@ -882,7 +930,10 @@ public class GFacEngineImpl implements GFacEngine {
         }
     }
 
-    private void saveErrorModel(ProcessContext pc, Exception e, String userFriendlyMsg){
+    private void saveErrorModel(ProcessContext pc, Exception e, String userFriendlyMsg) throws GFacException {
+        if(pc == null){
+            throw new GFacException("Can't save error process context is null", e);
+        }
         StringWriter errors = new StringWriter();
         e.printStackTrace(new PrintWriter(errors));
         ErrorModel errorModel = new ErrorModel();
@@ -926,6 +977,8 @@ public class GFacEngineImpl implements GFacEngine {
                     (jsInterface.getJobSubmissionInterfaceId());
             processCtx.setMonitorMode(sshJobSubmission.getMonitorMode()); // fixme - Move this to populate process
             resourceJobManager = sshJobSubmission.getResourceJobManager();
+        } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.CLOUD) {
+            return null;
         } else {
             throw new GFacException("Unsupported JobSubmissionProtocol - " + jsInterface.getJobSubmissionProtocol()
                     .name());

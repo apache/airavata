@@ -50,6 +50,7 @@ public class UserConfigurationData {
     private String overrideAllocationProjectNumber;
     private String storageId;
     private String experimentDataDir;
+    private boolean useUserCRPref;
 
     @Id
     @Column(name = "EXPERIMENT_ID")
@@ -232,6 +233,14 @@ public class UserConfigurationData {
         this.experimentDataDir = experimentDataDir;
     }
 
+    @Column(name = "IS_USE_USER_CR_PREF")
+    public boolean isUseUserCRPref() {
+        return useUserCRPref;
+    }
+
+    public void setUseUserCRPref(boolean useUserCRPref) {
+        this.useUserCRPref = useUserCRPref;
+    }
 
     //    @Override
 //    public boolean equals(Object o) {

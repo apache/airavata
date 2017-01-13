@@ -82,7 +82,7 @@ class ExperimentSummaryModel;
 class ExperimentStatistics;
 
 typedef struct _UserConfigurationDataModel__isset {
-  _UserConfigurationDataModel__isset() : shareExperimentPublicly(true), computationalResourceScheduling(false), throttleResources(true), userDN(false), generateCert(true), storageId(false), experimentDataDir(false) {}
+  _UserConfigurationDataModel__isset() : shareExperimentPublicly(true), computationalResourceScheduling(false), throttleResources(true), userDN(false), generateCert(true), storageId(false), experimentDataDir(false), useUserCRPref(false) {}
   bool shareExperimentPublicly :1;
   bool computationalResourceScheduling :1;
   bool throttleResources :1;
@@ -90,6 +90,7 @@ typedef struct _UserConfigurationDataModel__isset {
   bool generateCert :1;
   bool storageId :1;
   bool experimentDataDir :1;
+  bool useUserCRPref :1;
 } _UserConfigurationDataModel__isset;
 
 class UserConfigurationDataModel {
@@ -97,7 +98,7 @@ class UserConfigurationDataModel {
 
   UserConfigurationDataModel(const UserConfigurationDataModel&);
   UserConfigurationDataModel& operator=(const UserConfigurationDataModel&);
-  UserConfigurationDataModel() : airavataAutoSchedule(false), overrideManualScheduledParams(false), shareExperimentPublicly(false), throttleResources(false), userDN(), generateCert(false), storageId(), experimentDataDir() {
+  UserConfigurationDataModel() : airavataAutoSchedule(false), overrideManualScheduledParams(false), shareExperimentPublicly(false), throttleResources(false), userDN(), generateCert(false), storageId(), experimentDataDir(), useUserCRPref(0) {
   }
 
   virtual ~UserConfigurationDataModel() throw();
@@ -110,6 +111,7 @@ class UserConfigurationDataModel {
   bool generateCert;
   std::string storageId;
   std::string experimentDataDir;
+  bool useUserCRPref;
 
   _UserConfigurationDataModel__isset __isset;
 
@@ -130,6 +132,8 @@ class UserConfigurationDataModel {
   void __set_storageId(const std::string& val);
 
   void __set_experimentDataDir(const std::string& val);
+
+  void __set_useUserCRPref(const bool val);
 
   bool operator == (const UserConfigurationDataModel & rhs) const
   {
@@ -164,6 +168,10 @@ class UserConfigurationDataModel {
     if (__isset.experimentDataDir != rhs.__isset.experimentDataDir)
       return false;
     else if (__isset.experimentDataDir && !(experimentDataDir == rhs.experimentDataDir))
+      return false;
+    if (__isset.useUserCRPref != rhs.__isset.useUserCRPref)
+      return false;
+    else if (__isset.useUserCRPref && !(useUserCRPref == rhs.useUserCRPref))
       return false;
     return true;
   }
@@ -231,7 +239,7 @@ class ExperimentModel {
   UserConfigurationDataModel userConfigurationData;
   std::vector< ::apache::airavata::model::application::io::InputDataObjectType>  experimentInputs;
   std::vector< ::apache::airavata::model::application::io::OutputDataObjectType>  experimentOutputs;
-   ::apache::airavata::model::status::ExperimentStatus experimentStatus;
+  std::vector< ::apache::airavata::model::status::ExperimentStatus>  experimentStatus;
   std::vector< ::apache::airavata::model::commons::ErrorModel>  errors;
   std::vector< ::apache::airavata::model::process::ProcessModel>  processes;
 
@@ -269,7 +277,7 @@ class ExperimentModel {
 
   void __set_experimentOutputs(const std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & val);
 
-  void __set_experimentStatus(const  ::apache::airavata::model::status::ExperimentStatus& val);
+  void __set_experimentStatus(const std::vector< ::apache::airavata::model::status::ExperimentStatus> & val);
 
   void __set_errors(const std::vector< ::apache::airavata::model::commons::ErrorModel> & val);
 

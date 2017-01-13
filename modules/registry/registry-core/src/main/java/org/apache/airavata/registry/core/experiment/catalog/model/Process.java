@@ -55,6 +55,7 @@ public class Process {
     private Collection<Task> tasks;
     private String userDn;
     private boolean generateCert;
+    private boolean useUserCRPref;
 
     @Id
     @Column(name = "PROCESS_ID")
@@ -310,5 +311,14 @@ public class Process {
 
     public void setTasks(Collection<Task> taskByProcessId) {
         this.tasks = taskByProcessId;
+    }
+
+    @Column(name = "USE_USER_CR_PREF")
+    public boolean isUseUserCRPref() {
+        return useUserCRPref;
+    }
+
+    public void setUseUserCRPref(boolean useUserCRPref) {
+        this.useUserCRPref = useUserCRPref;
     }
 }

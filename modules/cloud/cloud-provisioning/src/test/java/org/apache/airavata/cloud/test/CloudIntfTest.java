@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,23 +16,13 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.cloud.test;
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.Properties;
-import java.util.Scanner;
 
 import org.apache.airavata.cloud.intf.CloudInterface;
 import org.apache.airavata.cloud.intf.impl.OpenstackIntfImpl;
 import org.apache.airavata.cloud.util.Constants;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openstack4j.model.compute.Keypair;
 import org.openstack4j.model.compute.Server;
@@ -42,6 +32,15 @@ import org.openstack4j.model.network.RouterInterface;
 import org.openstack4j.model.network.Subnet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.Properties;
+import java.util.Scanner;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class CloudIntfTest {
 
@@ -77,6 +76,7 @@ public class CloudIntfTest {
 	 * Test that will create keypair, create server with keypair, delete server, delete keypair.
 	 */
 	@Test
+	@Ignore
 	public void jetstreamCreateDeleteServerTest() {
 		try {
 			CloudInterface cloudIntf = new OpenstackIntfImpl("jetstream_openrc.properties");
@@ -138,6 +138,7 @@ public class CloudIntfTest {
 	 * Jetstream create delete network test.
 	 */
 	@Test
+	@Ignore
 	public void jetstreamCreateDeleteNetworkTest() {
 		try {
 			CloudInterface cloudIntf = new OpenstackIntfImpl("jetstream_openrc.properties");

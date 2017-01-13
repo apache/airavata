@@ -32,8 +32,10 @@ jobSubmitters:
     taskClass: org.apache.airavata.gfac.impl.task.ForkJobSubmissionTask
 
   - submissionProtocol: LOCAL
-    taskClass: org.apache.airavata.gfac.impl.task.DefaultJobSubmissionTask
+    taskClass: org.apache.airavata.gfac.impl.task.LocalJobSubmissionTask
 
+  - submissionProtocol: CLOUD
+    taskClass: org.apache.airavata.gfac.impl.task.AuroraJobSubmissionTask
 
 # Following job subbmitters are not yet implemented.
 
@@ -48,6 +50,8 @@ commonTasks:
 
 fileTransferTasks:
   - transferProtocol: SCP
+    taskClass: org.apache.airavata.gfac.impl.task.SCPDataStageTask
+  - transferProtocol: LOCAL
     taskClass: org.apache.airavata.gfac.impl.task.SCPDataStageTask
 
 # If your client doen't run the same instance where airavata server is running then you need to comment above

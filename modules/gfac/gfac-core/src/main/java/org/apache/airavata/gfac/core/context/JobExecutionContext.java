@@ -474,7 +474,7 @@
 //
 //
 //
-//    public String getLoginUserName() {
+//    public String getComputeResourceLoginUserName() {
 //        return loginUserName;
 //    }
 //

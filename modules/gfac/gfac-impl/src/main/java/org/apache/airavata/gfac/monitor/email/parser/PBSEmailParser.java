@@ -39,7 +39,7 @@ public class PBSEmailParser implements EmailParser {
     public static final String EXECUTION_TERMINATED = "Execution terminated";
     public static final String ABORTED_BY_PBS_SERVER = "Aborted by PBS Server";
 
-    static final String REGEX = "[a-zA-Z ]*:[ ]*(?<" + JOBID + ">[a-zA-Z0-9-\\.]*)\\s+[a-zA-Z ]*:[ ]*(?<" +
+    static final String REGEX = "[a-zA-Z ]*:[ ]*(?<" + JOBID + ">[a-zA-Z0-9-_\\.]*)\\s+[a-zA-Z ]*:[ ]*(?<" +
             JOBNAME + ">[a-zA-Z0-9-\\.]*)\\s[\\S|\\s]*(?<" + STATUS + ">" + BEGUN_EXECUTION + "|" +
             EXECUTION_TERMINATED + "|" + ABORTED_BY_PBS_SERVER + ")";
 
@@ -51,22 +51,25 @@ public class PBSEmailParser implements EmailParser {
 //        log.info("Parsing -> " + message.getSubject());
         try {
             String content = ((String) message.getContent());
-            Pattern pattern = Pattern.compile(REGEX);
-            Matcher matcher = pattern.matcher(content);
-            if (matcher.find()) {
-                jobStatusResult.setJobId(matcher.group(JOBID));
-                jobStatusResult.setJobName(matcher.group(JOBNAME));
-                String statusLine = matcher.group(STATUS);
-                jobStatusResult.setState(getJobState(statusLine, content));
-                return jobStatusResult;
-            } else {
-                log.error("[EJM]: No matched found for content => \n" + content);
-            }
-
+            parseContent(content, jobStatusResult);
         } catch (IOException e) {
             throw new AiravataException("[EJM]: Error while reading content of the email message");
         }
         return jobStatusResult;
+    }
+
+    void parseContent(String content, JobStatusResult jobStatusResult) throws MessagingException, AiravataException {
+        content = content.replaceAll("[^\\x00-\\x7F]", "");
+        Pattern pattern = Pattern.compile(REGEX);
+        Matcher matcher = pattern.matcher(content);
+        if (matcher.find()) {
+            jobStatusResult.setJobId(matcher.group(JOBID));
+            jobStatusResult.setJobName(matcher.group(JOBNAME));
+            String statusLine = matcher.group(STATUS);
+            jobStatusResult.setState(getJobState(statusLine, content));
+        } else {
+            log.error("[EJM]: No matched found for content => \n" + content);
+        }
     }
 
     private JobState getJobState(String statusLine, String content) {

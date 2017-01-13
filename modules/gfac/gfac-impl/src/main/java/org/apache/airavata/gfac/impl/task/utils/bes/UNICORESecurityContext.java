@@ -69,9 +69,11 @@ public class UNICORESecurityContext extends X509SecurityContext {
 		return secProperties;
 	}
 
-	public DefaultClientConfiguration getDefaultConfiguration(Boolean enableMessageLogging, UserConfigurationDataModel userDataModel) throws GFacException, ApplicationSettingsException {
+	public DefaultClientConfiguration getDefaultConfiguration(Boolean enableMessageLogging,
+															  UserConfigurationDataModel userDataModel)
+			throws GFacException, ApplicationSettingsException {
+
 		X509Credential cred = null;
-		
 		try{
 			boolean genCert = userDataModel.isGenerateCert();
 				if(genCert) {
@@ -89,7 +91,8 @@ public class UNICORESecurityContext extends X509SecurityContext {
 							
 							if(caCertPath.equals("") || caKeyPath.equals("")) {
 								throw new Exception("CA certificate or key file path missing in the properties file. "
-										            + "Please make sure "+BESConstants.PROP_CA_CERT_PATH+ " or "+BESConstants.PROP_CA_KEY_PATH+" are not empty.");
+										+ "Please make sure " + BESConstants.PROP_CA_CERT_PATH + " or "
+										+ BESConstants.PROP_CA_KEY_PATH + " are not empty.");
 							}
 							
 							if("".equals(caKeyPass)) {
@@ -114,7 +117,8 @@ public class UNICORESecurityContext extends X509SecurityContext {
 		secProperties.getETDSettings().setExtendTrustDelegation(true);
 		if(enableMessageLogging) secProperties.setMessageLogging(true);
 //		secProperties.setDoSignMessage(true);
-		secProperties.getETDSettings().setIssuerCertificateChain(secProperties.getCredential().getCertificateChain());
+		secProperties.getETDSettings()
+				.setIssuerCertificateChain(secProperties.getCredential().getCertificateChain());
 		
 		return secProperties;
 	}

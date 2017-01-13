@@ -1,0 +1,44 @@
+---
+
+
+################################################################################
+# Setup and run rabbitmq
+- name: Install erlang latest version
+  yum: name=https://www.rabbitmq.com/releases/erlang/erlang-18.3-1.el7.centos.x86_64.rpm state=present
+  tags: rabbitmq, dependency
+
+
+- name: Install Rabbitmq rpm
+  yum: name=https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.3/rabbitmq-server-3.6.3-1.noarch.rpm state=present
+  tags: rabbimq, dependency
+
+  # add hostname to /etc/hosts file
+- name: Edit /etc/hosts file
+  lineinfile: dest=/etc/hosts line="{{ host_address }} {{host_name}}"
+  notify:
+    - restart rabbitmq
+  tags: rabbitmq, dependency
+
+- name: Start Rabbitmq server
+  service: name=rabbitmq-server state=started
+  tags: rabbitmq, dependency
+
+- name: Enable rabbitmq management plugin
+  rabbitmq_plugin: names=rabbitmq_management state=enabled
+  tags: rabbitmq, dependency
+
+- name: Create rabbitmq vhost {{ rabbitmq_vhost }}
+  rabbitmq_vhost: name="{{ rabbitmq_vhost }}" state=present
+  tags: rabbitmq, dependency
+
+- name: Add user {{ rabbitmq_user }} to vhost {{ rabbitmq_vhost }}  and give permission
+  rabbitmq_user: user="{{ rabbitmq_user }}"
+                 password="{{ rabbitmq_password }}"
+                 vhost="{{ rabbitmq_vhost }}"
+                 configure_priv=.*
+                 read_priv=.*
+                 write_priv=.*
+                 state=present
+  tags: rabbitmq, dependency
+
+...

@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
 
 public class ForkJobSubmissionTask implements JobSubmissionTask {
@@ -63,15 +64,15 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
             JobModel jobModel = processContext.getJobModel();
             jobModel.setTaskId(taskContext.getTaskId());
             RemoteCluster remoteCluster = processContext.getJobSubmissionRemoteCluster();
-            JobDescriptor jobDescriptor = GFacUtils.createJobDescriptor(processContext, taskContext);
-            jobModel.setJobName(jobDescriptor.getJobName());
+            GroovyMap groovyMap = GFacUtils.createGroovyMap(processContext, taskContext);
+            jobModel.setJobName(groovyMap.get(Script.JOB_NAME).toString());
             ResourceJobManager resourceJobManager = GFacUtils.getResourceJobManager(processContext);
             JobManagerConfiguration jConfig = null;
             if (resourceJobManager != null) {
                 jConfig = Factory.getJobManagerConfiguration(resourceJobManager);
             }
             JobStatus jobStatus = new JobStatus();
-	        File jobFile = GFacUtils.createJobFile(taskContext, jobDescriptor, jConfig);
+	        File jobFile = GFacUtils.createJobFile(groovyMap, taskContext, jConfig);
 	        if (jobFile != null && jobFile.exists()) {
                 jobModel.setJobDescription(FileUtils.readFileToString(jobFile));
 	            JobSubmissionOutput jobSubmissionOutput = remoteCluster.submitBatchJob(jobFile.getPath(),
@@ -87,7 +88,7 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
                     jobStatus.setReason("Successfully Submitted to " + taskContext.getParentProcessContext()
                             .getComputeResourceDescription().getHostName());
                     jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                    jobModel.setJobStatus(jobStatus);
+                    jobModel.setJobStatuses(Arrays.asList(jobStatus));
                     GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), jobModel);
                     taskStatus = new TaskStatus(TaskState.COMPLETED);
                     taskStatus.setReason("Submitted job to compute resource");
@@ -124,7 +125,7 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         } catch (AppCatalogException e) {
             String msg = "Error while instantiating app catalog";
             log.error(msg, e);
@@ -133,17 +134,8 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         } catch (GFacException e) {
-            String msg = "Error occurred while creating job descriptor";
-            log.error(msg, e);
-            taskStatus.setState(TaskState.FAILED);
-            taskStatus.setReason(msg);
-            ErrorModel errorModel = new ErrorModel();
-            errorModel.setActualErrorMessage(e.getMessage());
-            errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
-        } catch (SSHApiException e) {
             String msg = "Error occurred while submitting the job";
             log.error(msg, e);
             taskStatus.setState(TaskState.FAILED);
@@ -151,7 +143,7 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         } catch (IOException e) {
             String msg = "Error while reading the content of the job file";
             log.error(msg, e);
@@ -160,7 +152,7 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         }
         return taskStatus;
     }

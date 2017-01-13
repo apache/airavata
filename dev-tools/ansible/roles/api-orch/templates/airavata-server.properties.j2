@@ -1,0 +1,294 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+###########################################################################
+#
+#  This properties file provides configuration for all Airavata Services:
+#  API Server, Registry, Workflow Interpreter, GFac, Orchestrator
+#
+###########################################################################
+
+###########################################################################
+#  API Server Registry Configuration
+###########################################################################
+
+#for derby [AiravataJPARegistry]
+#registry.jdbc.driver=org.apache.derby.jdbc.ClientDriver
+#registry.jdbc.url=jdbc:derby://localhost:1527/experiment_catalog;create=true;user=airavata;password=airavata
+# MySql database configuration
+registry.jdbc.driver=com.mysql.jdbc.Driver
+registry.jdbc.url=jdbc:mysql://{{ db_server }}:{{ db_server_port }}/{{ exp_catalog }}
+registry.jdbc.user={{ db_user }}
+registry.jdbc.password={{ db_password }}
+#FIXME: Probably the following property should be removed.
+start.derby.server.mode=false
+validationQuery=SELECT 1 from CONFIGURATION
+cache.enable=false
+jpa.cache.size=-1
+#jpa.connection.properties=MaxActive=10,MaxIdle=5,MinIdle=2,MaxWait=60000,testWhileIdle=true,testOnBorrow=true
+enable.sharing={{enable_sharing}}
+
+# Properties for default user mode
+default.registry.user=admin
+default.registry.password=admin
+default.registry.password.hash.method=SHA
+default.registry.gateway={{ default_gateway }}
+
+###########################################################################
+#  Application Catalog DB Configuration
+###########################################################################
+#for derby [AiravataJPARegistry]
+#appcatalog.jdbc.driver=org.apache.derby.jdbc.ClientDriver
+#appcatalog.jdbc.url=jdbc:derby://localhost:1527/app_catalog;create=true;user=airavata;password=airavata
+# MySql database configuration
+appcatalog.jdbc.driver=com.mysql.jdbc.Driver
+appcatalog.jdbc.url=jdbc:mysql://{{ db_server }}:3306/{{ app_catalog }}
+appcatalog.jdbc.user={{ db_user }}
+appcatalog.jdbc.password={{ db_password }}
+appcatalog.validationQuery=SELECT 1 from CONFIGURATION
+
+##########################################################################
+#  Replica Catalog DB Configuration
+###########################################################################
+#for derby [AiravataJPARegistry]
+#replicacatalog.jdbc.driver=org.apache.derby.jdbc.ClientDriver
+#replicacatalog.jdbc.url=jdbc:derby://localhost:1527/replica_catalog;create=true;user=airavata;password=airavata
+# MySql database configuration
+replicacatalog.jdbc.driver=com.mysql.jdbc.Driver
+replicacatalog.jdbc.url=jdbc:mysql://{{ db_server }}:3306/{{ replica_catalog }}
+replicacatalog.jdbc.user={{ db_user }}
+replicacatalog.jdbc.password={{ db_password }}
+replicacatalog.validationQuery=SELECT 1 from CONFIGURATION
+
+###########################################################################
+#  Workflow Catalog DB Configuration
+###########################################################################
+#for derby [AiravataJPARegistry]
+#workflowcatalog.jdbc.driver=org.apache.derby.jdbc.ClientDriver
+#workflowcatalog.jdbc.url=jdbc:derby://localhost:1527/workflow_catalog;create=true;user=airavata;password=airavata
+# MySql database configuration
+workflowcatalog.jdbc.driver=com.mysql.jdbc.Driver
+workflowcatalog.jdbc.url=jdbc:mysql://{{ db_server }}:3306/{{ replica_catalog }}
+workflowcatalog.jdbc.user={{ db_user }}
+workflowcatalog.jdbc.password={{ db_password }}
+workflowcatalog.validationQuery=SELECT 1 from CONFIGURATION
+
+###########################################################################
+#  Sharing Catalog DB Configuration
+###########################################################################
+#for derby [AiravataJPARegistry]
+#sharingcatalog.jdbc.driver=org.apache.derby.jdbc.ClientDriver
+#sharingcatalog.jdbc.url=jdbc:derby://localhost:1527/sharing_catalog;create=true;user=airavata;password=airavata
+# MySql database configuration
+sharingcatalog.jdbc.driver=com.mysql.jdbc.Driver
+sharingcatalog.jdbc.url=jdbc:mysql://{{ db_server }}:3306/{{ sharing_catalog }}
+sharingcatalog.jdbc.user={{ db_user }}
+sharingcatalog.jdbc.password={{ db_password }}
+sharingcatalog.validationQuery=SELECT 1 from CONFIGURATION
+
+###########################################################################
+#  User Profile MongoDB Configuration
+###########################################################################
+userprofile.mongodb.host=localhost
+userprofile.mongodb.port=27017
+
+
+###########################################################################
+#  Server module Configuration
+###########################################################################
+#credential store server should be started before API server
+#This is obsolete property with new script files.
+#servers=credentialstore,apiserver,orchestrator
+
+
+###########################################################################
+#  API Server Configurations
+###########################################################################
+apiserver=org.apache.airavata.api.server.AiravataAPIServer
+apiserver.name={{ api_server_name }}
+apiserver.host={{ api_server_host }}
+apiserver.port={{ api_server_port }}
+apiserver.min.threads=50
+
+###########################################################################
+#  Orchestrator Server Configurations
+###########################################################################
+orchestrator=org.apache.airavata.orchestrator.server.OrchestratorServer
+orchestrator.server.name={{ orchestrator_name }}
+orchestrator.server.host={{ orchestrator_host }}
+orchestrator.server.port={{ orchestrator_port }}
+orchestrator.server.min.threads=50
+job.validators=org.apache.airavata.orchestrator.core.validator.impl.BatchQueueValidator,org.apache.airavata.orchestrator.core.validator.impl.ExperimentStatusValidator
+submitter.interval=10000
+threadpool.size=10
+start.submitter=true
+embedded.mode=true
+enable.validation=true
+
+###########################################################################
+#  Registry Server Configurations
+###########################################################################
+regserver=org.apache.airavata.registry.api.service.RegistryAPIServer
+regserver.server.name={{registry_name}}
+regserver.server.host={{registry_host}}
+regserver.server.port={{registry_port}}
+regserver.server.min.threads=50
+
+###########################################################################
+#  GFac Server Configurations
+###########################################################################
+gfac=org.apache.airavata.gfac.server.GfacServer
+gfac.server.name={{ gfac_name }}
+gfac.server.host={{ gfac_host }}
+gfac.server.port={{ gfac_port }}
+gfac.thread.pool.size=50
+host.scheduler=org.apache.airavata.gfac.impl.DefaultHostScheduler
+
+
+
+###########################################################################
+# Airavata Workflow Interpreter Configurations
+###########################################################################
+workflowserver=org.apache.airavata.api.server.WorkflowServer
+enactment.thread.pool.size=10
+
+#to define custom workflow parser user following property
+#workflow.parser=org.apache.airavata.workflow.core.parser.AiravataWorkflowBuilder
+
+
+
+###########################################################################
+#  Job Scheduler can send informative email messages to you about the status of your job.
+# Specify a string which consists of either the single character "n" (no mail), or one or more
+#  of the characters "a" (send mail when job is aborted), "b" (send mail when job begins),
+# and "e" (send mail when job terminates).  The default is "a" if not specified.
+###########################################################################
+
+job.notification.enable=true
+#Provide comma separated email ids as a string if more than one
+job.notification.emailids=
+job.notification.flags=abe
+
+###########################################################################
+# Credential Store module Configuration
+###########################################################################
+credential.store.keystore.url={{ keystores_location }}/{{ cred_keystore }}
+credential.store.keystore.alias={{ cred_keystore_alias }}
+credential.store.keystore.password={{ cred_keystore_passwd }}
+credential.store.jdbc.url=jdbc:mysql://{{ db_server }}:3306/{{ credential_store }}
+credential.store.jdbc.user={{ db_user }}
+credential.store.jdbc.password={{ db_password }}
+credential.store.jdbc.driver=com.mysql.jdbc.Driver
+credential.store.server.host={{ cred_store_server_host }}
+credential.store.server.port={{ cred_store_port }}
+credentialstore=org.apache.airavata.credential.store.server.CredentialStoreServer
+credential.stroe.jdbc.validationQuery=SELECT 1 from CONFIGURATION
+
+# these properties used by credential store email notifications
+email.server=smtp.googlemail.com
+email.server.port=465
+email.user=airavata
+email.password=xxx
+email.ssl=true
+email.from=airavata@apache.org
+
+# SSH PKI key pair or ssh password can be used SSH based sshKeyAuthentication is used.
+# if user specify both password sshKeyAuthentication gets the higher preference
+
+################# ---------- For ssh key pair sshKeyAuthentication ------------------- ################
+#ssh.public.key=/path to public key for ssh
+#ssh.private.key=/path to private key file for ssh
+#ssh.keypass=passphrase for the private key
+#ssh.username=username for ssh connection
+## If you set "yes" for ssh.strict.hostKey.checking, then you must provide known hosts file path
+#ssh.strict.hostKey.checking=yes/no
+#ssh.known.hosts.file=/path to known hosts file
+### Incase of password sshKeyAuthentication.
+#ssh.password=Password for ssh connection
+
+################ ---------- BES Properties ------------------- ###############
+#bes.ca.cert.path=<location>/certificates/cacert.pem
+#bes.ca.key.path=<location>/certificates/cakey.pem
+#bes.ca.key.pass=passphrase
+
+###########################################################################
+# Monitoring module Configuration
+###########################################################################
+
+#This will be the primary monitoring tool which runs in airavata, in future there will be multiple monitoring
+#mechanisms and one would be able to start a monitor
+monitors=org.apache.airavata.gfac.monitor.impl.pull.qstat.QstatMonitor,org.apache.airavata.gfac.monitor.impl.LocalJobMonitor
+
+#These properties will used to enable email base monitoring
+email.based.monitor.host=imap.gmail.com
+email.based.monitor.address={{ monitor_email_address }}
+email.based.monitor.password={{ monitor_email_password }}
+email.based.monitor.folder.name=INBOX
+# either imaps or pop3
+email.based.monitor.store.protocol=imaps
+#These property will be used to query the email server periodically. value in milliseconds(ms).
+email.based.monitoring.period=10000
+
+###########################################################################
+# AMQP Notification Configuration
+###########################################################################
+#for simple scenarios we can use the guest user
+#rabbitmq.broker.url=amqp://localhost:5672
+#for production scenarios, give url as amqp://userName:password@hostName:portNumber/virtualHost, create user, virtualhost
+# and give permissions, refer: http://blog.dtzq.com/2012/06/rabbitmq-users-and-virtual-hosts.html
+rabbitmq.broker.url={{ rabbitmq_broker_url }}
+rabbitmq.status.exchange.name=status_exchange
+rabbitmq.process.exchange.name=process_exchange
+rabbitmq.experiment.exchange.name=experiment_exchange
+durable.queue=false
+prefetch.count=200
+process.launch.queue.name=process.launch.queue
+experiment.launch..queue.name=experiment.launch.queue
+
+###########################################################################
+# Zookeeper Server Configuration
+###########################################################################
+embedded.zk=false
+zookeeper.server.connection={{ zookeeper_url }}
+zookeeper.timeout=30000
+
+########################################################################
+## API Security Configuration
+########################################################################
+api.secured={{ api_secured }}
+security.manager.class=org.apache.airavata.api.server.security.DefaultAiravataSecurityManager
+### TLS related configuration ####
+TLS.enabled={{ tls_enable }}
+TLS.api.server.port={{ api_server_tls_port }}
+TLS.client.timeout=10000
+#### keystore configuration ####
+keystore.path={{ keystores_location }}/{{ keystore }}
+keystore.password={{ keystore_passwd }}
+#### trust store configuration ####
+trust.store={{ keystores_location }}/{{ client_truststore }}
+trust.store.password=airavata
+#### remote authorization server url ####
+remote.oauth.authorization.server=https://idp.scigap.org:9443/services/
+#### xacml based authorization policy ####
+authorization.policy=airavata-default-xacml-policy
+#### authorization cache related configuration ####
+authz.cache.enabled=true
+authz.cache.manager.class=org.apache.airavata.api.server.security.authzcache.DefaultAuthzCacheManager
+in.memory.cache.size=1000

@@ -23,43 +23,37 @@ package org.apache.airavata.gfac.core.cluster;
  * Encapsulate server information.
  */
 public class ServerInfo {
-
+    private static int DEFAULT_PORT = 22;
     private String host;
     private String userName;
-    private int port = 22;
+    private int port;
+    private String credentialToken;
 
-    public ServerInfo(String userName, String host) {
-        this.userName = userName;
-        this.host = host;
+    public ServerInfo(String userName, String host, String credentialToken) {
+        this(userName, host, credentialToken, DEFAULT_PORT);
     }
 
-    public ServerInfo(String userName,String host,  int port) {
+    public ServerInfo(String userName, String host, String credentialToken, int port) {
         this.host = host;
         this.userName = userName;
         this.port = port;
+        this.credentialToken = credentialToken;
     }
 
     public String getHost() {
         return host;
     }
 
-    public void setHost(String host) {
-        this.host = host;
-    }
-
     public String getUserName() {
         return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 
     public int getPort() {
         return port;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    public String getCredentialToken() {
+        return credentialToken;
     }
+
 }

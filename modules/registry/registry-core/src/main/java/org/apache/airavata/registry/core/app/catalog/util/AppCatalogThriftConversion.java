@@ -31,6 +31,9 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePrefer
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
@@ -253,6 +256,10 @@ public class AppCatalogThriftConversion {
     	batchQueue.setMaxMemory(resource.getMaxMemory());
     	batchQueue.setQueueDescription(resource.getQueueDescription());
     	batchQueue.setQueueName(resource.getQueueName());
+        batchQueue.setCpuPerNode(resource.getCpuPerNode());
+        batchQueue.setDefaultNodeCount(resource.getDefaultNodeCount());
+        batchQueue.setDefaultCPUCount(resource.getDefaultCPUCount());
+        batchQueue.setIsDefaultQueue(resource.isDefaultQueue());
         return batchQueue;
     }
 
@@ -265,6 +272,10 @@ public class AppCatalogThriftConversion {
     	batchQueue.setQueueDescription(resource.getQueueDescription());
     	batchQueue.setQueueName(resource.getQueueName());
     	batchQueue.setMaxMemory(resource.getMaxMemory());
+        batchQueue.setCpuPerNode(resource.getCpuPerNode());
+        batchQueue.setDefaultCPUCount(resource.getDefaultCPUCount());
+        batchQueue.setDefaultNodeCount(resource.getDefaultNodeCount());
+        batchQueue.setIsDefaultQueue(resource.isIsDefaultQueue());
         return batchQueue;
     }
     
@@ -367,6 +378,7 @@ public class AppCatalogThriftConversion {
     	LOCALSubmission submission = new LOCALSubmission();
     	submission.setJobSubmissionInterfaceId(localSubmission.getJobSubmissionInterfaceId());
     	submission.setResourceJobManager(getResourceJobManager(localSubmission.getResourceJobManagerResource()));
+        submission.setSecurityProtocol(SecurityProtocol.valueOf(localSubmission.getSecurityProtocol()));
     	return submission;
     }
     
@@ -710,6 +722,11 @@ public class AppCatalogThriftConversion {
             description.setParallelism(ApplicationParallelismType.valueOf(resource.getParallelism()));
         }
         description.setAppDeploymentDescription(resource.getAppDes());
+        description.setDefaultQueueName(resource.getDefaultQueueName());
+        description.setDefaultCPUCount(resource.getDefaultCPUCount());
+        description.setDefaultNodeCount(resource.getDefaultNodeCount());
+        description.setEditableByUser(resource.isEditableByUser());
+
         ModuleLoadCmdResource cmdResource = new ModuleLoadCmdResource();
         List<AppCatalogResource> moduleLoadCmds = cmdResource.get(AppCatAbstractResource.ModuleLoadCmdConstants.APP_DEPLOYMENT_ID, resource.getDeploymentId());
         if (moduleLoadCmds != null && !moduleLoadCmds.isEmpty()){
@@ -844,11 +861,41 @@ public class AppCatalogThriftConversion {
         return preference;
     }
 
+    public static UserComputeResourcePreference getUserComputeResourcePreference (UserComputeHostPreferenceResource resource){
+        UserComputeResourcePreference preference = new UserComputeResourcePreference();
+        preference.setComputeResourceId(resource.getResourceId());
+        preference.setPreferredBatchQueue(resource.getBatchQueue());
+        preference.setScratchLocation(resource.getScratchLocation());
+        preference.setAllocationProjectNumber(resource.getProjectNumber());
+        preference.setLoginUserName(resource.getLoginUserName());
+        preference.setResourceSpecificCredentialStoreToken(resource.getResourceCSToken());
+        preference.setQualityOfService(resource.getQualityOfService());
+        preference.setReservation(resource.getReservation());
+        if (resource.getReservationStartTime() != null) {
+            preference.setReservationStartTime(resource.getReservationStartTime().getTime());
+        }
+
+        if (resource.getReservationEndTime() != null) {
+            preference.setReservationEndTime(resource.getReservationEndTime().getTime());
+        }
+        return preference;
+    }
+
     public static List<ComputeResourcePreference> getComputeResourcePreferences (List<AppCatalogResource> resources){
         List<ComputeResourcePreference> preferences = new ArrayList<ComputeResourcePreference>();
         if (resources != null && !resources.isEmpty()){
             for (AppCatalogResource resource : resources){
                  preferences.add(getComputeResourcePreference((ComputeHostPreferenceResource)resource));
+            }
+        }
+        return preferences;
+    }
+
+    public static List<UserComputeResourcePreference> getUserComputeResourcePreferences (List<AppCatalogResource> resources){
+        List<UserComputeResourcePreference> preferences = new ArrayList<UserComputeResourcePreference>();
+        if (resources != null && !resources.isEmpty()){
+            for (AppCatalogResource resource : resources){
+                preferences.add(getUserComputeResourcePreference((UserComputeHostPreferenceResource)resource));
             }
         }
         return preferences;
@@ -872,6 +919,24 @@ public class AppCatalogThriftConversion {
         }
         return preferences;
     }
+    public static UserStoragePreference getUserDataStoragePreference (UserStoragePreferenceResource resource){
+        UserStoragePreference preference = new UserStoragePreference();
+        preference.setStorageResourceId(resource.getStorageResourceId());
+        preference.setFileSystemRootLocation(resource.getFsRootLocation());
+        preference.setLoginUserName(resource.getLoginUserName());
+        preference.setResourceSpecificCredentialStoreToken(resource.getResourceCSToken());
+        return preference;
+    }
+
+    public static List<UserStoragePreference> getUserDataStoragePreferences (List<AppCatalogResource> resources){
+        List<UserStoragePreference> preferences = new ArrayList<UserStoragePreference>();
+        if (resources != null && !resources.isEmpty()){
+            for (AppCatalogResource resource : resources){
+                preferences.add(getUserDataStoragePreference((UserStoragePreferenceResource)resource));
+            }
+        }
+        return preferences;
+    }
 
     public static GatewayResourceProfile getGatewayResourceProfile(GatewayProfileResource gw, List<ComputeResourcePreference> preferences, List<StoragePreference> storagePreferences){
         GatewayResourceProfile gatewayProfile = new GatewayResourceProfile();
@@ -884,4 +949,21 @@ public class AppCatalogThriftConversion {
         return gatewayProfile;
     }
 
+    public static UserResourceProfile getUserResourceProfile(UserResourceProfileResource gw, List<UserComputeResourcePreference> preferences, List<UserStoragePreference> storagePreferences){
+        UserResourceProfile userResourceProfile = new UserResourceProfile();
+        userResourceProfile.setGatewayID(gw.getGatewayID());
+        userResourceProfile.setUserId(gw.getUserId());
+        userResourceProfile.setCredentialStoreToken(gw.getCredentialStoreToken());
+        userResourceProfile.setIdentityServerTenant(gw.getIdentityServerTenant());
+        userResourceProfile.setIdentityServerPwdCredToken(gw.getIdentityServerPwdCredToken());
+        userResourceProfile.setUserComputeResourcePreferences(preferences);
+        userResourceProfile.setUserStoragePreferences(storagePreferences);
+        return userResourceProfile;
+    }
+
+    public static UserResourceProfile createNullUserResourceProfile(String userId, String gatewayId){
+        UserResourceProfile userResourceProfile = new UserResourceProfile(userId, gatewayId);
+        userResourceProfile.setIsNull(true);
+        return userResourceProfile;
+    }
 }

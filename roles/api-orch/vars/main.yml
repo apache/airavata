@@ -1,0 +1,3 @@
+---
+# API Server and Orchestrator related variables
+api_orch_dir: "{{ deployment_dir }}/api-orchestrator"

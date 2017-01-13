@@ -122,5 +122,10 @@
             <artifactId>commons-httpclient</artifactId>
             <version>3.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>aurora-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

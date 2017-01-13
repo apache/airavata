@@ -89,9 +89,9 @@ class TaskModel {
    */
   public $lastUpdateTime = null;
   /**
-   * @var \Airavata\Model\Status\TaskStatus
+   * @var \Airavata\Model\Status\TaskStatus[]
    */
-  public $taskStatus = null;
+  public $taskStatuses = null;
   /**
    * @var string
    */
@@ -101,9 +101,9 @@ class TaskModel {
    */
   public $subTaskModel = null;
   /**
-   * @var \Airavata\Model\Commons\ErrorModel
+   * @var \Airavata\Model\Commons\ErrorModel[]
    */
-  public $taskError = null;
+  public $taskErrors = null;
   /**
    * @var \Airavata\Model\Job\JobModel[]
    */
@@ -133,9 +133,13 @@ class TaskModel {
           'type' => TType::I64,
           ),
         6 => array(
-          'var' => 'taskStatus',
-          'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\Status\TaskStatus',
+          'var' => 'taskStatuses',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\Status\TaskStatus',
+            ),
           ),
         7 => array(
           'var' => 'taskDetail',
@@ -146,9 +150,13 @@ class TaskModel {
           'type' => TType::STRING,
           ),
         9 => array(
-          'var' => 'taskError',
-          'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\Commons\ErrorModel',
+          'var' => 'taskErrors',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\Commons\ErrorModel',
+            ),
           ),
         10 => array(
           'var' => 'jobs',
@@ -177,8 +185,8 @@ class TaskModel {
       if (isset($vals['lastUpdateTime'])) {
         $this->lastUpdateTime = $vals['lastUpdateTime'];
       }
-      if (isset($vals['taskStatus'])) {
-        $this->taskStatus = $vals['taskStatus'];
+      if (isset($vals['taskStatuses'])) {
+        $this->taskStatuses = $vals['taskStatuses'];
       }
       if (isset($vals['taskDetail'])) {
         $this->taskDetail = $vals['taskDetail'];
@@ -186,8 +194,8 @@ class TaskModel {
       if (isset($vals['subTaskModel'])) {
         $this->subTaskModel = $vals['subTaskModel'];
       }
-      if (isset($vals['taskError'])) {
-        $this->taskError = $vals['taskError'];
+      if (isset($vals['taskErrors'])) {
+        $this->taskErrors = $vals['taskErrors'];
       }
       if (isset($vals['jobs'])) {
         $this->jobs = $vals['jobs'];
@@ -250,9 +258,19 @@ class TaskModel {
           }
           break;
         case 6:
-          if ($ftype == TType::STRUCT) {
-            $this->taskStatus = new \Airavata\Model\Status\TaskStatus();
-            $xfer += $this->taskStatus->read($input);
+          if ($ftype == TType::LST) {
+            $this->taskStatuses = array();
+            $_size0 = 0;
+            $_etype3 = 0;
+            $xfer += $input->readListBegin($_etype3, $_size0);
+            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
+            {
+              $elem5 = null;
+              $elem5 = new \Airavata\Model\Status\TaskStatus();
+              $xfer += $elem5->read($input);
+              $this->taskStatuses []= $elem5;
+            }
+            $xfer += $input->readListEnd();
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -272,9 +290,19 @@ class TaskModel {
           }
           break;
         case 9:
-          if ($ftype == TType::STRUCT) {
-            $this->taskError = new \Airavata\Model\Commons\ErrorModel();
-            $xfer += $this->taskError->read($input);
+          if ($ftype == TType::LST) {
+            $this->taskErrors = array();
+            $_size6 = 0;
+            $_etype9 = 0;
+            $xfer += $input->readListBegin($_etype9, $_size6);
+            for ($_i10 = 0; $_i10 < $_size6; ++$_i10)
+            {
+              $elem11 = null;
+              $elem11 = new \Airavata\Model\Commons\ErrorModel();
+              $xfer += $elem11->read($input);
+              $this->taskErrors []= $elem11;
+            }
+            $xfer += $input->readListEnd();
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -282,15 +310,15 @@ class TaskModel {
         case 10:
           if ($ftype == TType::LST) {
             $this->jobs = array();
-            $_size0 = 0;
-            $_etype3 = 0;
-            $xfer += $input->readListBegin($_etype3, $_size0);
-            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
+            $_size12 = 0;
+            $_etype15 = 0;
+            $xfer += $input->readListBegin($_etype15, $_size12);
+            for ($_i16 = 0; $_i16 < $_size12; ++$_i16)
             {
-              $elem5 = null;
-              $elem5 = new \Airavata\Model\Job\JobModel();
-              $xfer += $elem5->read($input);
-              $this->jobs []= $elem5;
+              $elem17 = null;
+              $elem17 = new \Airavata\Model\Job\JobModel();
+              $xfer += $elem17->read($input);
+              $this->jobs []= $elem17;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -335,12 +363,21 @@ class TaskModel {
       $xfer += $output->writeI64($this->lastUpdateTime);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->taskStatus !== null) {
-      if (!is_object($this->taskStatus)) {
+    if ($this->taskStatuses !== null) {
+      if (!is_array($this->taskStatuses)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('taskStatus', TType::STRUCT, 6);
-      $xfer += $this->taskStatus->write($output);
+      $xfer += $output->writeFieldBegin('taskStatuses', TType::LST, 6);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->taskStatuses));
+        {
+          foreach ($this->taskStatuses as $iter18)
+          {
+            $xfer += $iter18->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
       $xfer += $output->writeFieldEnd();
     }
     if ($this->taskDetail !== null) {
@@ -353,12 +390,21 @@ class TaskModel {
       $xfer += $output->writeString($this->subTaskModel);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->taskError !== null) {
-      if (!is_object($this->taskError)) {
+    if ($this->taskErrors !== null) {
+      if (!is_array($this->taskErrors)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('taskError', TType::STRUCT, 9);
-      $xfer += $this->taskError->write($output);
+      $xfer += $output->writeFieldBegin('taskErrors', TType::LST, 9);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->taskErrors));
+        {
+          foreach ($this->taskErrors as $iter19)
+          {
+            $xfer += $iter19->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
       $xfer += $output->writeFieldEnd();
     }
     if ($this->jobs !== null) {
@@ -369,9 +415,9 @@ class TaskModel {
       {
         $output->writeListBegin(TType::STRUCT, count($this->jobs));
         {
-          foreach ($this->jobs as $iter6)
+          foreach ($this->jobs as $iter20)
           {
-            $xfer += $iter6->write($output);
+            $xfer += $iter20->write($output);
           }
         }
         $output->writeListEnd();

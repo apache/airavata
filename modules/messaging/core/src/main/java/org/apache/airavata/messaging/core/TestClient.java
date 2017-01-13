@@ -22,10 +22,8 @@
 package org.apache.airavata.messaging.core;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
-import org.apache.airavata.messaging.core.impl.RabbitMQStatusConsumer;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.thrift.TBase;
@@ -34,9 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class TestClient {
@@ -47,41 +43,33 @@ public class TestClient {
 
     public static void main(String[] args) {
         try {
-            String brokerUrl = ServerSettings.getSetting(RABBITMQ_BROKER_URL);
-            final String exchangeName = ServerSettings.getSetting(RABBITMQ_EXCHANGE_NAME);
-            RabbitMQStatusConsumer consumer = new RabbitMQStatusConsumer(brokerUrl, exchangeName);
-            consumer.listen(new MessageHandler() {
-                @Override
-                public Map<String, Object> getProperties() {
-                    Map<String, Object> props = new HashMap<String, Object>();
-                    List<String> routingKeys = new ArrayList<String>();
-                    routingKeys.add(experimentId);
-                    routingKeys.add(experimentId + ".*");
-                    props.put(MessagingConstants.RABBIT_ROUTING_KEY, routingKeys);
-                    return props;
-                }
-
-                @Override
-                public void onMessage(MessageContext message) {
-                    if (message.getType().equals(MessageType.EXPERIMENT)){
-                        try {
-                            ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent();
-                            TBase messageEvent = message.getEvent();
-                            byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
-                            ThriftUtils.createThriftFromBytes(bytes, event);
-                            System.out.println(" Message Received with message id '" + message.getMessageId()
-                                    + "' and with message type '" + message.getType() + "' and with state : '" + event.getState().toString());
-                        } catch (TException e) {
-                            logger.error(e.getMessage(), e);
-                        }
-                    }
-                }
-            });
+            List<String> routingKeys = new ArrayList<>();
+            routingKeys.add(experimentId);
+            routingKeys.add(experimentId + ".*");
+            MessagingFactory.getSubscriber(getMessageHandler(),routingKeys,  Type.STATUS);
         } catch (ApplicationSettingsException e) {
             logger.error("Error reading airavata server properties", e);
         }catch (Exception e) {
            logger.error(e.getMessage(), e);
         }
 
+    }
+
+
+    private static MessageHandler getMessageHandler(){
+        return message -> {
+                if (message.getType().equals(MessageType.EXPERIMENT)){
+                    try {
+                        ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent();
+                        TBase messageEvent = message.getEvent();
+                        byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
+                        ThriftUtils.createThriftFromBytes(bytes, event);
+                        System.out.println(" Message Received with message id '" + message.getMessageId()
+                                + "' and with message type '" + message.getType() + "' and with state : '" + event.getState().toString());
+                    } catch (TException e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                }
+            };
     }
 }

@@ -24,21 +24,19 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
-import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.cluster.CommandInfo;
 import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.cluster.ServerInfo;
+import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.Factory;
-import org.apache.airavata.gfac.impl.SSHUtils;
-import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
@@ -57,6 +55,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -66,7 +65,6 @@ import java.util.Map;
 public class SCPDataStageTask implements Task {
     private static final Logger log = LoggerFactory.getLogger(SCPDataStageTask.class);
     private static final int DEFAULT_SSH_PORT = 22;
-    private String userName;
     private String hostName;
     private String inputPath;
 
@@ -81,7 +79,9 @@ public class SCPDataStageTask implements Task {
         AuthenticationInfo authenticationInfo = null;
         DataStagingTaskModel subTaskModel = null;
         String localDataDir = null;
-        ProcessState processState = taskContext.getParentProcessContext().getProcessState();
+
+        ProcessContext processContext = taskContext.getParentProcessContext();
+        ProcessState processState = processContext.getProcessState();
         try {
             subTaskModel = ((DataStagingTaskModel) taskContext.getSubTaskModel());
             if (processState == ProcessState.OUTPUT_DATA_STAGING) {
@@ -119,22 +119,16 @@ public class SCPDataStageTask implements Task {
                 return status;
             }
 
-            StorageResourceDescription storageResource = taskContext.getParentProcessContext().getStorageResource();
-            StoragePreference storagePreference = taskContext.getParentProcessContext().getStoragePreference();
+            StorageResourceDescription storageResource = processContext.getStorageResource();
+//            StoragePreference storagePreference = taskContext.getParentProcessContext().getStoragePreference();
 
             if (storageResource != null) {
                 hostName = storageResource.getHostName();
             } else {
-                throw new SSHApiException("Storage Resource is null");
+                throw new GFacException("Storage Resource is null");
             }
-
-            if (storagePreference != null) {
-                userName = storagePreference.getLoginUserName();
-                inputPath = storagePreference.getFileSystemRootLocation();
-                inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
-            } else {
-                throw new SSHApiException("Storage Preference is null");
-            }
+            inputPath  = processContext.getStorageFileSystemRootLocation();
+            inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
 
             // use rsync instead of scp if source and destination host and user name is same.
             URI sourceURI = new URI(subTaskModel.getSource());
@@ -156,17 +150,16 @@ public class SCPDataStageTask implements Task {
                 return status;
             }
 
-            authenticationInfo = Factory.getStorageSSHKeyAuthentication(taskContext.getParentProcessContext());
+            authenticationInfo = Factory.getStorageSSHKeyAuthentication(processContext);
             status = new TaskStatus(TaskState.COMPLETED);
 
-            ServerInfo serverInfo = new ServerInfo(userName, hostName, DEFAULT_SSH_PORT);
+            ServerInfo serverInfo = processContext.getComputeResourceServerInfo();
             Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
             if (processState == ProcessState.INPUT_DATA_STAGING) {
                 inputDataStaging(taskContext, sshSession, sourceURI, destinationURI);
                 status.setReason("Successfully staged input data");
             } else if (processState == ProcessState.OUTPUT_DATA_STAGING) {
-                String targetPath = destinationURI.getPath().substring(0, destinationURI.getPath().lastIndexOf('/'));
-                SSHUtils.makeDirectory(targetPath, sshSession);
+                makeDir(taskContext, destinationURI);
                 // TODO - save updated subtask model with new destination
                 outputDataStaging(taskContext, sshSession, sourceURI, destinationURI);
                 status.setReason("Successfully staged output data");
@@ -179,7 +172,7 @@ public class SCPDataStageTask implements Task {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
             return status;
         } catch (ApplicationSettingsException | FileNotFoundException e) {
             String msg = "Failed while reading credentials";
@@ -189,7 +182,7 @@ public class SCPDataStageTask implements Task {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         } catch (URISyntaxException e) {
             String msg = "Source or destination uri is not correct source : " + subTaskModel.getSource() + ", " +
                     "destination : " + subTaskModel.getDestination();
@@ -199,16 +192,16 @@ public class SCPDataStageTask implements Task {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
-        } catch (SSHApiException e) {
-            String msg = e.getMessage();
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
+        } catch (CredentialStoreException e) {
+            String msg = "Storage authentication issue, could be invalid credential token";
             log.error(msg, e);
             status.setState(TaskState.FAILED);
             status.setReason(msg);
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         } catch (AiravataException e) {
             String msg = "Error while creating ssh session with client";
             log.error(msg, e);
@@ -217,7 +210,7 @@ public class SCPDataStageTask implements Task {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         } catch (JSchException | IOException e) {
             String msg = "Failed to do scp with client";
             log.error(msg, e);
@@ -226,21 +219,21 @@ public class SCPDataStageTask implements Task {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         } catch (GFacException e) {
-            String msg = "Failed update experiment and process inputs and outputs";
+            String msg = "Data staging failed";
             log.error(msg, e);
             status.setState(TaskState.FAILED);
             status.setReason(msg);
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskError(errorModel);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         }
         return status;
     }
 
-    private void localDataCopy(TaskContext taskContext, URI sourceURI, URI destinationURI) throws SSHApiException {
+    private void localDataCopy(TaskContext taskContext, URI sourceURI, URI destinationURI) throws GFacException {
         StringBuilder sb = new StringBuilder("rsync -cr ");
         sb.append(sourceURI.getPath()).append(" ").append(destinationURI.getPath());
         CommandInfo commandInfo = new RawCommandInfo(sb.toString());
@@ -248,26 +241,35 @@ public class SCPDataStageTask implements Task {
     }
 
     private void inputDataStaging(TaskContext taskContext, Session sshSession, URI sourceURI, URI
-            destinationURI) throws SSHApiException, IOException, JSchException {
+            destinationURI) throws GFacException, IOException, JSchException {
         /**
          * scp third party file transfer 'to' compute resource.
          */
         taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(),
-                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.TO, false);
+                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.FROM, false);
     }
 
     private void outputDataStaging(TaskContext taskContext, Session sshSession, URI sourceURI, URI destinationURI)
-            throws SSHApiException, AiravataException, IOException, JSchException, GFacException {
+            throws AiravataException, IOException, JSchException, GFacException {
 
         /**
          * scp third party file transfer 'from' comute resource.
          */
         taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(),
-                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.FROM, true);
+                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.TO, true);
         // update output locations
         GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.toString());
         GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.toString());
 
+    }
+
+    private void makeDir(TaskContext taskContext, URI pathURI) throws GFacException {
+        int endIndex = pathURI.getPath().lastIndexOf('/');
+        if (endIndex < 1) {
+            return;
+        }
+        String targetPath = pathURI.getPath().substring(0, endIndex);
+        taskContext.getParentProcessContext().getDataMovementRemoteCluster().makeDirectory(targetPath);
     }
 
     @Override

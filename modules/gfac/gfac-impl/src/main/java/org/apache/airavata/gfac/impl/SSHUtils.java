@@ -24,6 +24,7 @@ import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -426,7 +427,7 @@ public class SSHUtils {
         }
     }
 
-	public static void makeDirectory(String path, Session session) throws IOException, JSchException, SSHApiException {
+	public static void makeDirectory(String path, Session session) throws IOException, JSchException, GFacException {
 
 		// exec 'scp -t rfile' remotely
 		String command = "mkdir -p " + path;
@@ -451,14 +452,14 @@ public class SSHUtils {
 		}
 		stdOutReader.onOutput(channel);
 		if (stdOutReader.getStdErrorString().contains("mkdir:")) {
-			throw new SSHApiException(stdOutReader.getStdErrorString());
+			throw new GFacException(stdOutReader.getStdErrorString());
 		}
 
 		channel.disconnect();
 	}
 
 	public static List<String> listDirectory(String path, Session session) throws IOException, JSchException,
-			SSHApiException {
+			GFacException {
 
 		// exec 'scp -t rfile' remotely
 		String command = "ls " + path;
@@ -476,7 +477,7 @@ public class SSHUtils {
 			channel.disconnect();
 //            session.disconnect();
 
-			throw new SSHApiException("Unable to retrieve command output. Command - " + command +
+			throw new GFacException("Unable to retrieve command output. Command - " + command +
 					" on server - " + session.getHost() + ":" + session.getPort() +
 					" connecting user name - "
 					+ session.getUserName(), e);
@@ -484,7 +485,7 @@ public class SSHUtils {
 		stdOutReader.onOutput(channel);
 		stdOutReader.getStdOutputString();
 		if (stdOutReader.getStdErrorString().contains("ls:")) {
-			throw new SSHApiException(stdOutReader.getStdErrorString());
+			throw new GFacException(stdOutReader.getStdErrorString());
 		}
 		channel.disconnect();
 		return Arrays.asList(stdOutReader.getStdOutputString().split("\n"));

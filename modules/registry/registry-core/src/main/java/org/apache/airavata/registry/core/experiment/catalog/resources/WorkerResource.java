@@ -37,6 +37,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -428,7 +429,7 @@ public class WorkerResource extends AbstractExpCatResource {
      * @return list of projects for the user
      */
     public List<org.apache.airavata.registry.core.experiment.catalog.resources.ProjectResource> getProjects(int limit, int offset, Object orderByIdentifier,
-                                             ResultOrderType resultOrderType) throws RegistryException {
+                                                                                                            ResultOrderType resultOrderType) throws RegistryException {
         List<org.apache.airavata.registry.core.experiment.catalog.resources.ProjectResource> result = new ArrayList<org.apache.airavata.registry.core.experiment.catalog.resources.ProjectResource>();
         List<ExperimentCatResource> list = get(ResourceType.PROJECT, limit, offset, orderByIdentifier, resultOrderType);
         for (ExperimentCatResource resource : list) {
@@ -518,11 +519,11 @@ public class WorkerResource extends AbstractExpCatResource {
             String query = "SELECT DISTINCT p from Project p WHERE ";
 
             // FIXME There is a performance bottleneck for using IN clause. Try using temporary tables ?
-            if(accessibleIds != null){
+            if (accessibleIds != null && accessibleIds.size() > 0) {
                 query += " p.projectId IN (";
-                for(String id : accessibleIds)
+                for (String id : accessibleIds)
                     query += ("'" + id + "'" + ",");
-                query = query.substring(0, query.length()-1) + ") AND ";
+                query = query.substring(0, query.length() - 1) + ") AND ";
             }
 
             if (filters != null && filters.size() != 0) {
@@ -569,6 +570,7 @@ public class WorkerResource extends AbstractExpCatResource {
             }
             em.getTransaction().commit();
             em.close();
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -599,13 +601,21 @@ public class WorkerResource extends AbstractExpCatResource {
      * @return
      * @throws org.apache.airavata.registry.cpi.RegistryException
      */
-    public List<ExperimentSummaryResource> searchExperiments(Timestamp fromTime, Timestamp toTime, Map<String, String> filters, int limit,
+    public List<ExperimentSummaryResource> searchExperiments(List<String> accessibleIds, Timestamp fromTime, Timestamp toTime, Map<String, String> filters, int limit,
                                                              int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
         List<ExperimentSummaryResource> result = new ArrayList();
         EntityManager em = null;
         try {
             String query = "SELECT e FROM ExperimentSummary e " +
                     "WHERE ";
+
+            // FIXME There is a performance bottleneck for using IN clause. Try using temporary tables ?
+            if (accessibleIds != null && accessibleIds.size() > 0) {
+                query += " e.experimentId IN (";
+                for (String id : accessibleIds)
+                    query += ("'" + id + "'" + ",");
+                query = query.substring(0, query.length() - 1) + ") AND ";
+            }
 
             if (filters.get(ExperimentStatusConstants.STATE) != null) {
                 String experimentState = ExperimentState.valueOf(filters.get(ExperimentStatusConstants.STATE)).toString();
@@ -687,33 +697,33 @@ public class WorkerResource extends AbstractExpCatResource {
      * @return
      * @throws org.apache.airavata.registry.cpi.RegistryException
      */
-    public ExperimentStatisticsResource getExperimentStatistics(String gatewayId, Timestamp fromTime, Timestamp toTime) throws RegistryException {
+    public ExperimentStatisticsResource getExperimentStatistics(String gatewayId, Timestamp fromTime, Timestamp toTime, String userName, String applicationName, String resourceHostName) throws RegistryException {
         ExperimentStatisticsResource experimentStatisticsResource = new ExperimentStatisticsResource();
-        List<ExperimentSummaryResource> allExperiments = getExperimentStatisticsForState(null, gatewayId, fromTime, toTime);
+        List<ExperimentSummaryResource> allExperiments = getExperimentStatisticsForState(null, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName);
         experimentStatisticsResource.setAllExperimentCount(allExperiments.size());
         experimentStatisticsResource.setAllExperiments(allExperiments);
 
-        List<ExperimentSummaryResource> createdExperiments = getExperimentStatisticsForState(ExperimentState.CREATED, gatewayId, fromTime, toTime);
-        createdExperiments.addAll(getExperimentStatisticsForState(ExperimentState.VALIDATED, gatewayId, fromTime, toTime));
+        List<ExperimentSummaryResource> createdExperiments = getExperimentStatisticsForState(ExperimentState.CREATED, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName);
+        createdExperiments.addAll(getExperimentStatisticsForState(ExperimentState.VALIDATED, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName));
         experimentStatisticsResource.setCreatedExperimentCount(createdExperiments.size());
         experimentStatisticsResource.setCreatedExperiments(createdExperiments);
 
-        List<ExperimentSummaryResource> runningExperiments = getExperimentStatisticsForState(ExperimentState.EXECUTING, gatewayId, fromTime, toTime);
-        runningExperiments.addAll(getExperimentStatisticsForState(ExperimentState.SCHEDULED, gatewayId, fromTime, toTime));
-        runningExperiments.addAll(getExperimentStatisticsForState(ExperimentState.LAUNCHED, gatewayId, fromTime, toTime));
+        List<ExperimentSummaryResource> runningExperiments = getExperimentStatisticsForState(ExperimentState.EXECUTING, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName);
+        runningExperiments.addAll(getExperimentStatisticsForState(ExperimentState.SCHEDULED, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName));
+        runningExperiments.addAll(getExperimentStatisticsForState(ExperimentState.LAUNCHED, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName));
         experimentStatisticsResource.setRunningExperimentCount(runningExperiments.size());
         experimentStatisticsResource.setRunningExperiments(runningExperiments);
 
-        List<ExperimentSummaryResource> completedExperiments = getExperimentStatisticsForState(ExperimentState.COMPLETED, gatewayId, fromTime, toTime);
+        List<ExperimentSummaryResource> completedExperiments = getExperimentStatisticsForState(ExperimentState.COMPLETED, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName);
         experimentStatisticsResource.setCompletedExperimentCount(completedExperiments.size());
         experimentStatisticsResource.setCompletedExperiments(completedExperiments);
 
-        List<ExperimentSummaryResource> failedExperiments = getExperimentStatisticsForState(ExperimentState.FAILED, gatewayId, fromTime, toTime);
+        List<ExperimentSummaryResource> failedExperiments = getExperimentStatisticsForState(ExperimentState.FAILED, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName);
         experimentStatisticsResource.setFailedExperimentCount(failedExperiments.size());
         experimentStatisticsResource.setFailedExperiments(failedExperiments);
 
-        List<ExperimentSummaryResource> cancelledExperiments = getExperimentStatisticsForState(ExperimentState.CANCELED, gatewayId, fromTime, toTime);
-        cancelledExperiments.addAll(getExperimentStatisticsForState(ExperimentState.CANCELING, gatewayId, fromTime, toTime));
+        List<ExperimentSummaryResource> cancelledExperiments = getExperimentStatisticsForState(ExperimentState.CANCELED, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName);
+        cancelledExperiments.addAll(getExperimentStatisticsForState(ExperimentState.CANCELING, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName));
         experimentStatisticsResource.setCancelledExperimentCount(cancelledExperiments.size());
         experimentStatisticsResource.setCancelledExperiments(cancelledExperiments);
 
@@ -721,21 +731,39 @@ public class WorkerResource extends AbstractExpCatResource {
     }
 
     private List<ExperimentSummaryResource> getExperimentStatisticsForState(
-            ExperimentState expState, String gatewayId, Timestamp fromTime, Timestamp toTime) throws RegistryException {
+            ExperimentState expState, String gatewayId, Timestamp fromTime, Timestamp toTime,
+            String userName, String applicationName, String resourceHostName) throws RegistryException {
         EntityManager em = null;
         List<ExperimentSummaryResource> result = new ArrayList();
         try {
+            Map<String, Object> queryParameters = new HashMap<>();
             String query = "SELECT e FROM ExperimentSummary e " +
                     "WHERE ";
             if (expState != null) {
                 query += "e.state='" + expState.toString() + "' AND ";
             }
             query += "e.creationTime > '" + fromTime + "' " + "AND e.creationTime <'" + toTime + "' AND ";
-            query += "e." + ExperimentConstants.GATEWAY_ID + "= '" + gatewayId + "' ORDER BY e.creationTime DESC";
+            query += "e." + ExperimentConstants.GATEWAY_ID + "= '" + gatewayId + "' ";
+            if (userName != null) {
+                query += "AND e.userName LIKE :userName ";
+                queryParameters.put("userName", "%" + userName + "%");
+            }
+            if (applicationName != null) {
+                query += "AND e.executionId LIKE :applicationName ";
+                queryParameters.put("applicationName", "%" + applicationName + "%");
+            }
+            if (resourceHostName != null) {
+                query += "AND e.resourceHostId LIKE :resourceHostName ";
+                queryParameters.put("resourceHostName", "%" + resourceHostName + "%");
+            }
+            query += "ORDER BY e.creationTime DESC";
 
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
             Query q = em.createQuery(query);
+            for (String parameterName : queryParameters.keySet()) {
+                q.setParameter(parameterName, queryParameters.get(parameterName));
+            }
 
             List resultList = q.getResultList();
             for (Object o : resultList) {

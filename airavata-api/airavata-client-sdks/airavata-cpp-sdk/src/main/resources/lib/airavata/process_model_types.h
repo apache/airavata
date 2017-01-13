@@ -44,20 +44,20 @@ namespace apache { namespace airavata { namespace model { namespace process {
 class ProcessModel;
 
 typedef struct _ProcessModel__isset {
-  _ProcessModel__isset() : creationTime(false), lastUpdateTime(false), processStatus(false), processDetail(false), applicationInterfaceId(false), applicationDeploymentId(false), computeResourceId(false), processInputs(false), processOutputs(false), resourceSchedule(false), tasks(false), taskDag(false), processError(false), gatewayExecutionId(false), enableEmailNotification(false), emailAddresses(false), storageResourceId(false), userDn(false), generateCert(true), experimentDataDir(false), userName(false) {}
+  _ProcessModel__isset() : creationTime(false), lastUpdateTime(false), processStatuses(false), processDetail(false), applicationInterfaceId(false), applicationDeploymentId(false), computeResourceId(false), processInputs(false), processOutputs(false), processResourceSchedule(false), tasks(false), taskDag(false), processErrors(false), gatewayExecutionId(false), enableEmailNotification(false), emailAddresses(false), storageResourceId(false), userDn(false), generateCert(true), experimentDataDir(false), userName(false), useUserCRPref(false) {}
   bool creationTime :1;
   bool lastUpdateTime :1;
-  bool processStatus :1;
+  bool processStatuses :1;
   bool processDetail :1;
   bool applicationInterfaceId :1;
   bool applicationDeploymentId :1;
   bool computeResourceId :1;
   bool processInputs :1;
   bool processOutputs :1;
-  bool resourceSchedule :1;
+  bool processResourceSchedule :1;
   bool tasks :1;
   bool taskDag :1;
-  bool processError :1;
+  bool processErrors :1;
   bool gatewayExecutionId :1;
   bool enableEmailNotification :1;
   bool emailAddresses :1;
@@ -66,6 +66,7 @@ typedef struct _ProcessModel__isset {
   bool generateCert :1;
   bool experimentDataDir :1;
   bool userName :1;
+  bool useUserCRPref :1;
 } _ProcessModel__isset;
 
 class ProcessModel {
@@ -73,7 +74,7 @@ class ProcessModel {
 
   ProcessModel(const ProcessModel&);
   ProcessModel& operator=(const ProcessModel&);
-  ProcessModel() : processId("DO_NOT_SET_AT_CLIENTS"), experimentId(), creationTime(0), lastUpdateTime(0), processDetail(), applicationInterfaceId(), applicationDeploymentId(), computeResourceId(), taskDag(), gatewayExecutionId(), enableEmailNotification(0), storageResourceId(), userDn(), generateCert(false), experimentDataDir(), userName() {
+  ProcessModel() : processId("DO_NOT_SET_AT_CLIENTS"), experimentId(), creationTime(0), lastUpdateTime(0), processDetail(), applicationInterfaceId(), applicationDeploymentId(), computeResourceId(), taskDag(), gatewayExecutionId(), enableEmailNotification(0), storageResourceId(), userDn(), generateCert(false), experimentDataDir(), userName(), useUserCRPref(0) {
   }
 
   virtual ~ProcessModel() throw();
@@ -81,17 +82,17 @@ class ProcessModel {
   std::string experimentId;
   int64_t creationTime;
   int64_t lastUpdateTime;
-   ::apache::airavata::model::status::ProcessStatus processStatus;
+  std::vector< ::apache::airavata::model::status::ProcessStatus>  processStatuses;
   std::string processDetail;
   std::string applicationInterfaceId;
   std::string applicationDeploymentId;
   std::string computeResourceId;
   std::vector< ::apache::airavata::model::application::io::InputDataObjectType>  processInputs;
   std::vector< ::apache::airavata::model::application::io::OutputDataObjectType>  processOutputs;
-   ::apache::airavata::model::scheduling::ComputationalResourceSchedulingModel resourceSchedule;
+   ::apache::airavata::model::scheduling::ComputationalResourceSchedulingModel processResourceSchedule;
   std::vector< ::apache::airavata::model::task::TaskModel>  tasks;
   std::string taskDag;
-   ::apache::airavata::model::commons::ErrorModel processError;
+  std::vector< ::apache::airavata::model::commons::ErrorModel>  processErrors;
   std::string gatewayExecutionId;
   bool enableEmailNotification;
   std::vector<std::string>  emailAddresses;
@@ -100,6 +101,7 @@ class ProcessModel {
   bool generateCert;
   std::string experimentDataDir;
   std::string userName;
+  bool useUserCRPref;
 
   _ProcessModel__isset __isset;
 
@@ -111,7 +113,7 @@ class ProcessModel {
 
   void __set_lastUpdateTime(const int64_t val);
 
-  void __set_processStatus(const  ::apache::airavata::model::status::ProcessStatus& val);
+  void __set_processStatuses(const std::vector< ::apache::airavata::model::status::ProcessStatus> & val);
 
   void __set_processDetail(const std::string& val);
 
@@ -125,13 +127,13 @@ class ProcessModel {
 
   void __set_processOutputs(const std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & val);
 
-  void __set_resourceSchedule(const  ::apache::airavata::model::scheduling::ComputationalResourceSchedulingModel& val);
+  void __set_processResourceSchedule(const  ::apache::airavata::model::scheduling::ComputationalResourceSchedulingModel& val);
 
   void __set_tasks(const std::vector< ::apache::airavata::model::task::TaskModel> & val);
 
   void __set_taskDag(const std::string& val);
 
-  void __set_processError(const  ::apache::airavata::model::commons::ErrorModel& val);
+  void __set_processErrors(const std::vector< ::apache::airavata::model::commons::ErrorModel> & val);
 
   void __set_gatewayExecutionId(const std::string& val);
 
@@ -149,6 +151,8 @@ class ProcessModel {
 
   void __set_userName(const std::string& val);
 
+  void __set_useUserCRPref(const bool val);
+
   bool operator == (const ProcessModel & rhs) const
   {
     if (!(processId == rhs.processId))
@@ -163,9 +167,9 @@ class ProcessModel {
       return false;
     else if (__isset.lastUpdateTime && !(lastUpdateTime == rhs.lastUpdateTime))
       return false;
-    if (__isset.processStatus != rhs.__isset.processStatus)
+    if (__isset.processStatuses != rhs.__isset.processStatuses)
       return false;
-    else if (__isset.processStatus && !(processStatus == rhs.processStatus))
+    else if (__isset.processStatuses && !(processStatuses == rhs.processStatuses))
       return false;
     if (__isset.processDetail != rhs.__isset.processDetail)
       return false;
@@ -191,9 +195,9 @@ class ProcessModel {
       return false;
     else if (__isset.processOutputs && !(processOutputs == rhs.processOutputs))
       return false;
-    if (__isset.resourceSchedule != rhs.__isset.resourceSchedule)
+    if (__isset.processResourceSchedule != rhs.__isset.processResourceSchedule)
       return false;
-    else if (__isset.resourceSchedule && !(resourceSchedule == rhs.resourceSchedule))
+    else if (__isset.processResourceSchedule && !(processResourceSchedule == rhs.processResourceSchedule))
       return false;
     if (__isset.tasks != rhs.__isset.tasks)
       return false;
@@ -203,9 +207,9 @@ class ProcessModel {
       return false;
     else if (__isset.taskDag && !(taskDag == rhs.taskDag))
       return false;
-    if (__isset.processError != rhs.__isset.processError)
+    if (__isset.processErrors != rhs.__isset.processErrors)
       return false;
-    else if (__isset.processError && !(processError == rhs.processError))
+    else if (__isset.processErrors && !(processErrors == rhs.processErrors))
       return false;
     if (__isset.gatewayExecutionId != rhs.__isset.gatewayExecutionId)
       return false;
@@ -238,6 +242,10 @@ class ProcessModel {
     if (__isset.userName != rhs.__isset.userName)
       return false;
     else if (__isset.userName && !(userName == rhs.userName))
+      return false;
+    if (__isset.useUserCRPref != rhs.__isset.useUserCRPref)
+      return false;
+    else if (__isset.useUserCRPref && !(useUserCRPref == rhs.useUserCRPref))
       return false;
     return true;
   }

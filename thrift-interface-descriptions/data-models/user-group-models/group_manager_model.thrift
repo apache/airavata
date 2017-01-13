@@ -25,8 +25,6 @@
  namespace cpp apache.airavata.model.group
  namespace py apache.airavata.model.group
 
-const string GROUP_MANAGER_VERSION = "1.0"
-
 
 enum ResourceType {
     PROJECT,
@@ -36,53 +34,15 @@ enum ResourceType {
 }
 
 enum ResourcePermissionType {
-    READ_WRITE,
-    READ_ONLY
+    WRITE,
+    READ,
+    OWNER
 }
 
-struct Resource {
-    1: required string resourceId = airavata_commons.DEFAULT_ID,
-    2: required string resourceName,
-    3: required ResourceType resourceType,
-    4: required string ownerId,
-    5: optional string resourceDescription,
-    6: optional i64 createdTime,
-    8: optional string parentResourceId,
-    9: optional list<Resource> childResources,
-    10: optional map<string,string> metadata
-}
-
-struct Group{
-    1: required string groupId = airavata_commons.DEFAULT_ID,
-    2: required string groupId,
-    3: required string groupName,
+struct GroupModel{
+    1: optional string id,
+    2: optional string name,
+    3: optional string ownerId,
     4: optional string description,
-    5: optional list<User> users,
-    6: optional list<Group> subGroups,
-    7: optional map<string,string> metadata
-}
-
-struct User {
-    1: required string airavataInternalUserId,
-    2: required string userId,
-    3: optional map<string,string> metadata
-}
-
-enum SubjectType {
-    USER,
-    GROUP
-}
-
-enum GroupMembershipType {
-    DIRECT,
-    INDIRECT
-}
-
-struct GroupMembership{
-    1: required string groupId,
-    2: required string childId,
-    3: required SubjectType childSubjectType,
-    4: required string parentSubjectName,
-    5: required string childSubjectName,
-    6: required GroupMembershipType groupMembershipType
+    5: optional list<string> members
 }

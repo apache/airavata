@@ -369,6 +369,7 @@ class UserProfile:
    - userModelVersion
    - airavataInternalUserId
    - userId
+   - gatewayId
    - emails
    - userName
    - orcidId
@@ -393,29 +394,31 @@ class UserProfile:
     (1, TType.STRING, 'userModelVersion', None, "1.0", ), # 1
     (2, TType.STRING, 'airavataInternalUserId', None, "DO_NOT_SET_AT_CLIENTS", ), # 2
     (3, TType.STRING, 'userId', None, None, ), # 3
-    (4, TType.LIST, 'emails', (TType.STRING,None), None, ), # 4
-    (5, TType.STRING, 'userName', None, None, ), # 5
-    (6, TType.STRING, 'orcidId', None, None, ), # 6
-    (7, TType.LIST, 'phones', (TType.STRING,None), None, ), # 7
-    (8, TType.STRING, 'country', None, None, ), # 8
-    (9, TType.LIST, 'nationality', (TType.STRING,None), None, ), # 9
-    (10, TType.STRING, 'homeOrganization', None, None, ), # 10
-    (11, TType.STRING, 'orginationAffiliation', None, None, ), # 11
-    (12, TType.STRING, 'creationTime', None, None, ), # 12
-    (13, TType.STRING, 'lastAccessTime', None, None, ), # 13
-    (14, TType.STRING, 'validUntil', None, None, ), # 14
-    (15, TType.I32, 'State', None, None, ), # 15
-    (16, TType.STRING, 'comments', None, None, ), # 16
-    (17, TType.LIST, 'labeledURI', (TType.STRING,None), None, ), # 17
-    (18, TType.STRING, 'gpgKey', None, None, ), # 18
-    (19, TType.STRING, 'timeZone', None, None, ), # 19
-    (20, TType.STRUCT, 'nsfDemographics', (NSFDemographics, NSFDemographics.thrift_spec), None, ), # 20
+    (4, TType.STRING, 'gatewayId', None, None, ), # 4
+    (5, TType.LIST, 'emails', (TType.STRING,None), None, ), # 5
+    (6, TType.STRING, 'userName', None, None, ), # 6
+    (7, TType.STRING, 'orcidId', None, None, ), # 7
+    (8, TType.LIST, 'phones', (TType.STRING,None), None, ), # 8
+    (9, TType.STRING, 'country', None, None, ), # 9
+    (10, TType.LIST, 'nationality', (TType.STRING,None), None, ), # 10
+    (11, TType.STRING, 'homeOrganization', None, None, ), # 11
+    (12, TType.STRING, 'orginationAffiliation', None, None, ), # 12
+    (13, TType.STRING, 'creationTime', None, None, ), # 13
+    (14, TType.STRING, 'lastAccessTime', None, None, ), # 14
+    (15, TType.STRING, 'validUntil', None, None, ), # 15
+    (16, TType.I32, 'State', None, None, ), # 16
+    (17, TType.STRING, 'comments', None, None, ), # 17
+    (18, TType.LIST, 'labeledURI', (TType.STRING,None), None, ), # 18
+    (19, TType.STRING, 'gpgKey', None, None, ), # 19
+    (20, TType.STRING, 'timeZone', None, None, ), # 20
+    (21, TType.STRUCT, 'nsfDemographics', (NSFDemographics, NSFDemographics.thrift_spec), None, ), # 21
   )
 
-  def __init__(self, userModelVersion=thrift_spec[1][4], airavataInternalUserId=thrift_spec[2][4], userId=None, emails=None, userName=None, orcidId=None, phones=None, country=None, nationality=None, homeOrganization=None, orginationAffiliation=None, creationTime=None, lastAccessTime=None, validUntil=None, State=None, comments=None, labeledURI=None, gpgKey=None, timeZone=None, nsfDemographics=None,):
+  def __init__(self, userModelVersion=thrift_spec[1][4], airavataInternalUserId=thrift_spec[2][4], userId=None, gatewayId=None, emails=None, userName=None, orcidId=None, phones=None, country=None, nationality=None, homeOrganization=None, orginationAffiliation=None, creationTime=None, lastAccessTime=None, validUntil=None, State=None, comments=None, labeledURI=None, gpgKey=None, timeZone=None, nsfDemographics=None,):
     self.userModelVersion = userModelVersion
     self.airavataInternalUserId = airavataInternalUserId
     self.userId = userId
+    self.gatewayId = gatewayId
     self.emails = emails
     self.userName = userName
     self.orcidId = orcidId
@@ -459,6 +462,11 @@ class UserProfile:
         else:
           iprot.skip(ftype)
       elif fid == 4:
+        if ftype == TType.STRING:
+          self.gatewayId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
         if ftype == TType.LIST:
           self.emails = []
           (_etype24, _size21) = iprot.readListBegin()
@@ -468,17 +476,17 @@ class UserProfile:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 5:
+      elif fid == 6:
         if ftype == TType.STRING:
           self.userName = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 6:
+      elif fid == 7:
         if ftype == TType.STRING:
           self.orcidId = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 7:
+      elif fid == 8:
         if ftype == TType.LIST:
           self.phones = []
           (_etype30, _size27) = iprot.readListBegin()
@@ -488,12 +496,12 @@ class UserProfile:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 8:
+      elif fid == 9:
         if ftype == TType.STRING:
           self.country = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 9:
+      elif fid == 10:
         if ftype == TType.LIST:
           self.nationality = []
           (_etype36, _size33) = iprot.readListBegin()
@@ -503,42 +511,42 @@ class UserProfile:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 10:
+      elif fid == 11:
         if ftype == TType.STRING:
           self.homeOrganization = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 11:
+      elif fid == 12:
         if ftype == TType.STRING:
           self.orginationAffiliation = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 12:
+      elif fid == 13:
         if ftype == TType.STRING:
           self.creationTime = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 13:
+      elif fid == 14:
         if ftype == TType.STRING:
           self.lastAccessTime = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 14:
+      elif fid == 15:
         if ftype == TType.STRING:
           self.validUntil = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 15:
+      elif fid == 16:
         if ftype == TType.I32:
           self.State = iprot.readI32()
         else:
           iprot.skip(ftype)
-      elif fid == 16:
+      elif fid == 17:
         if ftype == TType.STRING:
           self.comments = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 17:
+      elif fid == 18:
         if ftype == TType.LIST:
           self.labeledURI = []
           (_etype42, _size39) = iprot.readListBegin()
@@ -548,17 +556,17 @@ class UserProfile:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 18:
+      elif fid == 19:
         if ftype == TType.STRING:
           self.gpgKey = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 19:
+      elif fid == 20:
         if ftype == TType.STRING:
           self.timeZone = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 20:
+      elif fid == 21:
         if ftype == TType.STRUCT:
           self.nsfDemographics = NSFDemographics()
           self.nsfDemographics.read(iprot)
@@ -586,84 +594,88 @@ class UserProfile:
       oprot.writeFieldBegin('userId', TType.STRING, 3)
       oprot.writeString(self.userId)
       oprot.writeFieldEnd()
+    if self.gatewayId is not None:
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 4)
+      oprot.writeString(self.gatewayId)
+      oprot.writeFieldEnd()
     if self.emails is not None:
-      oprot.writeFieldBegin('emails', TType.LIST, 4)
+      oprot.writeFieldBegin('emails', TType.LIST, 5)
       oprot.writeListBegin(TType.STRING, len(self.emails))
       for iter45 in self.emails:
         oprot.writeString(iter45)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.userName is not None:
-      oprot.writeFieldBegin('userName', TType.STRING, 5)
+      oprot.writeFieldBegin('userName', TType.STRING, 6)
       oprot.writeString(self.userName)
       oprot.writeFieldEnd()
     if self.orcidId is not None:
-      oprot.writeFieldBegin('orcidId', TType.STRING, 6)
+      oprot.writeFieldBegin('orcidId', TType.STRING, 7)
       oprot.writeString(self.orcidId)
       oprot.writeFieldEnd()
     if self.phones is not None:
-      oprot.writeFieldBegin('phones', TType.LIST, 7)
+      oprot.writeFieldBegin('phones', TType.LIST, 8)
       oprot.writeListBegin(TType.STRING, len(self.phones))
       for iter46 in self.phones:
         oprot.writeString(iter46)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.country is not None:
-      oprot.writeFieldBegin('country', TType.STRING, 8)
+      oprot.writeFieldBegin('country', TType.STRING, 9)
       oprot.writeString(self.country)
       oprot.writeFieldEnd()
     if self.nationality is not None:
-      oprot.writeFieldBegin('nationality', TType.LIST, 9)
+      oprot.writeFieldBegin('nationality', TType.LIST, 10)
       oprot.writeListBegin(TType.STRING, len(self.nationality))
       for iter47 in self.nationality:
         oprot.writeString(iter47)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.homeOrganization is not None:
-      oprot.writeFieldBegin('homeOrganization', TType.STRING, 10)
+      oprot.writeFieldBegin('homeOrganization', TType.STRING, 11)
       oprot.writeString(self.homeOrganization)
       oprot.writeFieldEnd()
     if self.orginationAffiliation is not None:
-      oprot.writeFieldBegin('orginationAffiliation', TType.STRING, 11)
+      oprot.writeFieldBegin('orginationAffiliation', TType.STRING, 12)
       oprot.writeString(self.orginationAffiliation)
       oprot.writeFieldEnd()
     if self.creationTime is not None:
-      oprot.writeFieldBegin('creationTime', TType.STRING, 12)
+      oprot.writeFieldBegin('creationTime', TType.STRING, 13)
       oprot.writeString(self.creationTime)
       oprot.writeFieldEnd()
     if self.lastAccessTime is not None:
-      oprot.writeFieldBegin('lastAccessTime', TType.STRING, 13)
+      oprot.writeFieldBegin('lastAccessTime', TType.STRING, 14)
       oprot.writeString(self.lastAccessTime)
       oprot.writeFieldEnd()
     if self.validUntil is not None:
-      oprot.writeFieldBegin('validUntil', TType.STRING, 14)
+      oprot.writeFieldBegin('validUntil', TType.STRING, 15)
       oprot.writeString(self.validUntil)
       oprot.writeFieldEnd()
     if self.State is not None:
-      oprot.writeFieldBegin('State', TType.I32, 15)
+      oprot.writeFieldBegin('State', TType.I32, 16)
       oprot.writeI32(self.State)
       oprot.writeFieldEnd()
     if self.comments is not None:
-      oprot.writeFieldBegin('comments', TType.STRING, 16)
+      oprot.writeFieldBegin('comments', TType.STRING, 17)
       oprot.writeString(self.comments)
       oprot.writeFieldEnd()
     if self.labeledURI is not None:
-      oprot.writeFieldBegin('labeledURI', TType.LIST, 17)
+      oprot.writeFieldBegin('labeledURI', TType.LIST, 18)
       oprot.writeListBegin(TType.STRING, len(self.labeledURI))
       for iter48 in self.labeledURI:
         oprot.writeString(iter48)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.gpgKey is not None:
-      oprot.writeFieldBegin('gpgKey', TType.STRING, 18)
+      oprot.writeFieldBegin('gpgKey', TType.STRING, 19)
       oprot.writeString(self.gpgKey)
       oprot.writeFieldEnd()
     if self.timeZone is not None:
-      oprot.writeFieldBegin('timeZone', TType.STRING, 19)
+      oprot.writeFieldBegin('timeZone', TType.STRING, 20)
       oprot.writeString(self.timeZone)
       oprot.writeFieldEnd()
     if self.nsfDemographics is not None:
-      oprot.writeFieldBegin('nsfDemographics', TType.STRUCT, 20)
+      oprot.writeFieldBegin('nsfDemographics', TType.STRUCT, 21)
       self.nsfDemographics.write(oprot)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -676,6 +688,8 @@ class UserProfile:
       raise TProtocol.TProtocolException(message='Required field airavataInternalUserId is unset!')
     if self.userId is None:
       raise TProtocol.TProtocolException(message='Required field userId is unset!')
+    if self.gatewayId is None:
+      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
     if self.emails is None:
       raise TProtocol.TProtocolException(message='Required field emails is unset!')
     if self.creationTime is None:
@@ -694,6 +708,7 @@ class UserProfile:
     value = (value * 31) ^ hash(self.userModelVersion)
     value = (value * 31) ^ hash(self.airavataInternalUserId)
     value = (value * 31) ^ hash(self.userId)
+    value = (value * 31) ^ hash(self.gatewayId)
     value = (value * 31) ^ hash(self.emails)
     value = (value * 31) ^ hash(self.userName)
     value = (value * 31) ^ hash(self.orcidId)

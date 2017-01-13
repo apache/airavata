@@ -1,0 +1,137 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+
+- name: wait untill instance is up and running
+  local_action: wait_for port=22
+                host="{{ ansible_ssh_host | default(inventory_hostname) }}"
+                search_regex=OpenSSH delay=10
+- name: create group
+  group: name="{{group}}"
+  become: yes
+
+- name: create user
+  user: name="{{user}}"
+  become: yes
+
+# RedHat related things
+- name: install required packages
+  yum: name="{{item}}" state=latest
+  with_items:
+    - wget
+    - tar
+    - git
+    - epel-release
+    - firewalld
+  become: yes
+
+- name: updage systemd
+  yum: name=systemd state=latest
+  become: yes
+
+- name: get apache maven
+  get_url:
+    url: http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo
+    dest: /etc/yum.repos.d/epel-apache-maven.repo
+  become: yes
+
+- name: copy svn repo file
+  copy:
+    src: wandisco-svn.repo
+    dest: /etc/yum.repos.d/wandisco-svn.repo
+  become: yes
+
+- name: install development tools
+  yum: name="@Development tools" state=present
+  become: yes
+
+#Install other Mesos dependencies.
+- name: install mesos dependencies
+  yum: name="{{item}}" state=latest
+  with_items:
+    - apache-maven
+    - python-devel
+    - java-1.8.0-openjdk-devel
+    - zlib-devel
+    - libcurl-devel
+    - openssl-devel
+    - cyrus-sasl-devel
+    - cyrus-sasl-md5
+    - apr-devel
+    - apr-util-devel
+    - subversion-devel
+  become: yes
+
+- name: start firewall service
+  service: name=firewalld state=started enabled=yes
+  become: yes
+
+- name: download and unarchive mesos latest
+  unarchive:
+      src="{{mesos_url}}"
+      dest="{{user_home}}"
+      remote_src=yes
+      copy=no
+      creates="{{mesos_deploy_dir}}/configure"
+      owner="{{user}}"
+      group="{{group}}"
+
+  # Bootstrap (Only required if building from git repository).
+  # $ ./bootstrap
+
+- name: make build dir
+  file: path="{{mesos_build_dir}}" state=directory owner={{user}} group={{group}}
+
+# - name: create simlink to configure script
+#   file: src="{{mesos_deploy_dir}}/configure"
+#         dest="{{mesos_build_dir}}/configure"
+#         state=link
+#         owner={{user}}
+#         group={{group}}
+#   tags: test
+
+- name: configure and build mesos
+  command: ../configure  chdir="{{mesos_build_dir}}"
+  register: build
+
+- name: run make
+  command: make chdir="{{mesos_build_dir}}"
+  when: build|success
+  register: make
+
+# - name: run make tests
+#   command: make check chdir="{{mesos_build_dir}}"
+#   when: make|success
+
+- name: open firewall port
+  firewalld: port=5050/tcp zone=public permanent=true state=enabled immediate=yes
+  become: yes
+
+- name: create working dir
+  file: path="{{mesos_work_dir}}" state=directory user={{user}} group={{group}}
+
+- name: start mesos master
+  command: ./bin/mesos-master.sh --ip={{inventory_hostname}} --work_dir={{mesos_work_dir}} &
+      chdir={{mesos_build_dir}}
+
+- name: start mesos agent
+  command: /bin/mesos-agent.sh --master={{inventory_hostname}}:5050 --work_dir={{mesos_work_dir}} &
+      chdir={{mesos_build_dir}}

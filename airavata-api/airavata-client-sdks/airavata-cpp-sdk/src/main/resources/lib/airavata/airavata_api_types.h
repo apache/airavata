@@ -44,11 +44,14 @@
 #include "application_deployment_model_types.h"
 #include "application_interface_model_types.h"
 #include "compute_resource_model_types.h"
+#include "credential_summary_types.h"
 #include "storage_resource_model_types.h"
 #include "gateway_resource_profile_model_types.h"
+#include "user_resource_profile_model_types.h"
 #include "data_movement_models_types.h"
 #include "workflow_data_model_types.h"
 #include "replica_catalog_models_types.h"
+#include "group_manager_model_types.h"
 
 
 namespace apache { namespace airavata { namespace api {

@@ -1,0 +1,25 @@
+---
+#Master playbook
+- hosts: zookeeper
+  roles:
+    - setup
+    - zookeeper
+
+- hosts: rabbitmq
+  roles:
+    - setup
+    - rabbitmq
+
+- hosts: gfac
+  roles:
+    - setup
+    - common
+    - gfac
+
+- hosts: api-orch
+  roles:
+    - setup
+    - common
+    - api-orch
+
+...

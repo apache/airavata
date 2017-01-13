@@ -28,6 +28,7 @@ import org.apache.airavata.common.utils.DerbyUtil;
 import org.apache.airavata.common.utils.KeyStorePasswordCallback;
 import org.apache.airavata.credential.store.credential.CommunityUser;
 import org.apache.airavata.credential.store.credential.Credential;
+import org.apache.airavata.credential.store.credential.CredentialOwnerType;
 import org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.junit.AfterClass;
@@ -39,7 +40,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URL;
-import java.security.*;
+import java.security.KeyStore;
+import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.sql.Connection;
 import java.util.Arrays;
@@ -72,13 +74,15 @@ public class CredentialsDAOTest extends DatabaseTestCases {
          * "        REQUESTED_TIME TIMESTAMP DEFAULT '0000-00-00 00:00:00',\n" +
          * "        PRIMARY KEY (GATEWAY_NAME, COMMUNITY_USER_NAME)\n" + ")";
          */
-
+        // Adding description field as per pull request https://github.com/apache/airavata/pull/54
         String createTable = "CREATE TABLE CREDENTIALS\n" + "(\n"
                 + "        GATEWAY_ID VARCHAR(256) NOT NULL,\n"
                 + "        TOKEN_ID VARCHAR(256) NOT NULL,\n"
                 + // Actual token used to identify the credential
                 "        CREDENTIAL BLOB NOT NULL,\n" + "        PORTAL_USER_ID VARCHAR(256) NOT NULL,\n"
                 + "        TIME_PERSISTED TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n"
+                + "        DESCRIPTION VARCHAR(500),\n"
+                + "        CREDENTIAL_OWNER_TYPE VARCHAR(10) DEFAULT 'GATEWAY' NOT NULL,\n"
                 + "        PRIMARY KEY (GATEWAY_ID, TOKEN_ID)\n" + ")";
 
         String dropTable = "drop table CREDENTIALS";
@@ -194,6 +198,7 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         certificateCredential.setPortalUserName("jerry");
         certificateCredential.setNotBefore("13 OCT 2012 5:34:23");
         certificateCredential.setNotAfter("14 OCT 2012 5:34:23");
+        certificateCredential.setCredentialOwnerType(CredentialOwnerType.GATEWAY);
 
         return certificateCredential;
 
@@ -223,6 +228,7 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         Assert.assertEquals(certificateCredential.getNotAfter(), readCertificateCredential.getNotAfter());
         Assert.assertEquals(certificateCredential.getNotBefore(), readCertificateCredential.getNotBefore());
         Assert.assertEquals(certificateCredential.getPortalUserName(), readCertificateCredential.getPortalUserName());
+        Assert.assertEquals(certificateCredential.getCredentialOwnerType(), readCertificateCredential.getCredentialOwnerType());
 
         PrivateKey newKey = readCertificateCredential.getPrivateKey();
 
@@ -264,6 +270,7 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         Assert.assertEquals(certificateCredential.getNotAfter(), readCertificateCredential.getNotAfter());
         Assert.assertEquals(certificateCredential.getNotBefore(), readCertificateCredential.getNotBefore());
         Assert.assertEquals(certificateCredential.getPortalUserName(), readCertificateCredential.getPortalUserName());
+        Assert.assertEquals(certificateCredential.getCredentialOwnerType(), readCertificateCredential.getCredentialOwnerType());
 
         PrivateKey newKey = readCertificateCredential.getPrivateKey();
 
@@ -366,6 +373,7 @@ public class CredentialsDAOTest extends DatabaseTestCases {
             certificateCredential.setLifeTime(50);
             certificateCredential.setNotBefore("15 OCT 2012 5:34:23");
             certificateCredential.setNotAfter("16 OCT 2012 5:34:23");
+            certificateCredential.setCredentialOwnerType(CredentialOwnerType.USER);
 
             credentialsDAO.updateCredentials(communityUser.getGatewayName(), certificateCredential, connection);
 
@@ -375,6 +383,7 @@ public class CredentialsDAOTest extends DatabaseTestCases {
                     certificateCredential.getCertificates()[0].getIssuerDN().toString());
             // Assert.assertNotNull(certificateCredential.getPrivateKey());
             Assert.assertEquals("test2", certificateCredential.getPortalUserName());
+            Assert.assertEquals(CredentialOwnerType.USER, certificateCredential.getCredentialOwnerType());
 
         } finally {
             connection.close();
@@ -418,4 +427,5 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         }
 
     }
+
 }

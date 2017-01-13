@@ -22,10 +22,9 @@
 package org.apache.airavata.registry.core.app.catalog.impl;
 
 import org.apache.airavata.model.appcatalog.computeresource.*;
-import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.model.data.movement.DMType;
+import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
-import org.apache.airavata.registry.core.app.catalog.model.ParallelismPrefixCommand;
 import org.apache.airavata.registry.core.app.catalog.resources.*;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogUtils;
@@ -201,10 +200,10 @@ public class ComputeResourceImpl implements ComputeResource {
     }
 
     @Override
-    public String addCloudJobSubmission(CloudJobSubmission sshJobSubmission) throws AppCatalogException {
+    public String addCloudJobSubmission(CloudJobSubmission cloudJobSubmission) throws AppCatalogException {
         try {
-            sshJobSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("Cloud"));
-            CloudSubmissionResource resource = AppCatalogThriftConversion.getCloudJobSubmission(sshJobSubmission);
+            cloudJobSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("Cloud"));
+            CloudSubmissionResource resource = AppCatalogThriftConversion.getCloudJobSubmission(cloudJobSubmission);
             resource.save();
             return resource.getJobSubmissionInterfaceId();
         }catch (Exception e) {
@@ -824,11 +823,13 @@ public class ComputeResourceImpl implements ComputeResource {
 		Map<JobManagerCommand, String> jobManagerCommands = resourceJobManager.getJobManagerCommands();
 		if (jobManagerCommands!=null && jobManagerCommands.size() != 0) {
 			for (JobManagerCommand commandType : jobManagerCommands.keySet()) {
-				JobManagerCommandResource r = new JobManagerCommandResource();
-				r.setCommandType(commandType.toString());
-				r.setCommand(jobManagerCommands.get(commandType));
-				r.setResourceJobManagerId(resource.getResourceJobManagerId());
-				r.save();
+                if(jobManagerCommands.get(commandType) != null && !jobManagerCommands.get(commandType).isEmpty()) {
+                    JobManagerCommandResource r = new JobManagerCommandResource();
+                    r.setCommandType(commandType.toString());
+                    r.setCommand(jobManagerCommands.get(commandType));
+                    r.setResourceJobManagerId(resource.getResourceJobManagerId());
+                    r.save();
+                }
 			}
 		}
 
@@ -864,10 +865,12 @@ public class ComputeResourceImpl implements ComputeResource {
                     }else {
                         existingCommand = new JobManagerCommandResource();
                     }
-                    existingCommand.setCommandType(commandType.toString());
-                    existingCommand.setCommand(jobManagerCommands.get(commandType));
-                    existingCommand.setResourceJobManagerId(resource.getResourceJobManagerId());
-                    existingCommand.save();
+                    if(jobManagerCommands.get(commandType) != null && !jobManagerCommands.get(commandType).isEmpty()) {
+                        existingCommand.setCommandType(commandType.toString());
+                        existingCommand.setCommand(jobManagerCommands.get(commandType));
+                        existingCommand.setResourceJobManagerId(resource.getResourceJobManagerId());
+                        existingCommand.save();
+                    }
                 }
             }
 
@@ -927,6 +930,7 @@ public class ComputeResourceImpl implements ComputeResource {
 		LocalSubmissionResource localJobSubmission = AppCatalogThriftConversion.getLocalJobSubmission(localSubmission);
 		localJobSubmission.setResourceJobManagerId(resourceJobManagerId);
 		localJobSubmission.getResourceJobManagerResource().setResourceJobManagerId(resourceJobManagerId);
+        localJobSubmission.setSecurityProtocol(localSubmission.getSecurityProtocol().toString());
     	localJobSubmission.save();
     	return localJobSubmission.getJobSubmissionInterfaceId();
 	}
