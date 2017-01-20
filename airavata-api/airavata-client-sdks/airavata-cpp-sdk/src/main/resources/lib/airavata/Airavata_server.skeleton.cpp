@@ -243,34 +243,12 @@ class AiravataHandler : virtual public AiravataIf {
    *    The User for which the credential should be registered. For community accounts, this user is the name of the
    *    community user name. For computational resources, this user name need not be the same user name on resoruces.
    * 
-   * @return airavataCredStoreToken
-   *   An SSH Key pair is generated and stored in the credential store and associated with users or community account
-   *   belonging to a Gateway.
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param gatewayId
-   * @param userName
-   */
-  void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName) {
-    // Your implementation goes here
-    printf("generateAndRegisterSSHKeys\n");
-  }
-
-  /**
-   * Generate and Register SSH Key Pair with Airavata Credential Store.
-   * 
-   * @param gatewayId
-   *    The identifier for the requested Gateway.
-   * 
-   * @param userName
-   *    The User for which the credential should be registered. For community accounts, this user is the name of the
-   *    community user name. For computational resources, this user name need not be the same user name on resoruces.
-   * 
    * @param description
    *    The description field for a credential type, all type of credential can have a description.
    * 
+   * @param credentialOwnerType
+   *    The type of owner of this credential. Two possible values: GATEWAY (default) and USER
+   * 
    * @return airavataCredStoreToken
    *   An SSH Key pair is generated and stored in the credential store and associated with users or community account
    *   belonging to a Gateway.
@@ -281,10 +259,11 @@ class AiravataHandler : virtual public AiravataIf {
    * @param gatewayId
    * @param userName
    * @param description
+   * @param credentialOwnerType
    */
-  void generateAndRegisterSSHKeysWithDescription(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description) {
+  void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const  ::CredentialOwnerType::type credentialOwnerType) {
     // Your implementation goes here
-    printf("generateAndRegisterSSHKeysWithDescription\n");
+    printf("generateAndRegisterSSHKeys\n");
   }
 
   /**
@@ -365,32 +344,39 @@ class AiravataHandler : virtual public AiravataIf {
 
   /**
    * 
-   * Get all Public Keys of the Gateway
+   * Get all Credential summaries for the Gateway
    * 
    * @param CredStoreToken
    *    Credential Store Token which you want to find the Public Key for.
+   * 
+   * @param credential_store_data_models.SummaryType
+   *    Summary type : SSH,PASSWD or CERT
    * 
    * @param gatewayId
    *    This is the unique identifier of your gateway where the token and public key was generated from.
    * 
-   * @return publicKey
+   * @return List of Credential Summary Objects
    * 
    * 
    * 
    * @param authzToken
+   * @param type
    * @param gatewayId
    */
-  void getAllGatewaySSHPubKeysSummary(std::vector< ::apache::airavata::model::appcatalog::credentialsummary::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
+  void getAllCredentialSummaryForGateway(std::vector< ::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::SummaryType::type type, const std::string& gatewayId) {
     // Your implementation goes here
-    printf("getAllGatewaySSHPubKeysSummary\n");
+    printf("getAllCredentialSummaryForGateway\n");
   }
 
   /**
    * 
-   * Get all Public Key summaries for user in a Gateway
+   * Get all Credential summaries for user in a Gateway
    * 
    * @param CredStoreToken
    *    Credential Store Token which you want to find the Public Key for.
+   * 
+   * @param credential_store_data_models.SummaryType
+   *    Summary type : SSH,PASSWD or CERT
    * 
    * @param gatewayId
    *    This is the unique identifier of your gateway where the token and public key was generated from.
@@ -403,12 +389,13 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * 
    * @param authzToken
+   * @param type
    * @param gatewayId
    * @param userId
    */
-  void getAllSSHPubKeysSummaryForUserInGateway(std::vector< ::apache::airavata::model::appcatalog::credentialsummary::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userId) {
+  void getAllCredentialSummaryForUsersInGateway(std::vector< ::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::SummaryType::type type, const std::string& gatewayId, const std::string& userId) {
     // Your implementation goes here
-    printf("getAllSSHPubKeysSummaryForUserInGateway\n");
+    printf("getAllCredentialSummaryForUsersInGateway\n");
   }
 
   void getAllGatewayPWDCredentials(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
@@ -644,14 +631,26 @@ class AiravataHandler : virtual public AiravataIf {
    * @param toTime
    *       Ending data time.
    * 
+   * @param userName
+   *       Gateway username substring with which to further filter statistics.
+   * 
+   * @param applicationName
+   *       Application id substring with which to further filter statistics.
+   * 
+   * @param resourceHostName
+   *       Hostname id substring with which to further filter statistics.
+   * 
    * 
    * 
    * @param authzToken
    * @param gatewayId
    * @param fromTime
    * @param toTime
+   * @param userName
+   * @param applicationName
+   * @param resourceHostName
    */
-  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime) {
+  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime, const std::string& userName, const std::string& applicationName, const std::string& resourceHostName) {
     // Your implementation goes here
     printf("getExperimentStatistics\n");
   }

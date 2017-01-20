@@ -67,7 +67,7 @@ namespace js ApacheAiravataAPI
  *              in a change to major/minor version numbers.
  *
 */
-const string AIRAVATA_API_VERSION = "0.16.0"
+const string AIRAVATA_API_VERSION = "0.17.0"
 
 service Airavata {
 
