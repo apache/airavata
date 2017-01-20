@@ -9,4 +9,4 @@
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
 from ttypes import *
 
-AIRAVATA_API_VERSION = "0.16.0"
+AIRAVATA_API_VERSION = "0.17.0"

@@ -22,6 +22,7 @@ import apache.airavata.model.data.movement.ttypes
 import apache.airavata.model.data.replica.ttypes
 import apache.airavata.model.user.ttypes
 import apache.airavata.model.group.ttypes
+import credential_store_data_models.ttypes
 
 
 from thrift.transport import TTransport

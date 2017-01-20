@@ -28,7 +28,7 @@ namespace apache { namespace airavata { namespace api {
 const airavata_apiConstants g_airavata_api_constants;
 
 airavata_apiConstants::airavata_apiConstants() {
-  AIRAVATA_API_VERSION = "0.16.0";
+  AIRAVATA_API_VERSION = "0.17.0";
 
 }
 

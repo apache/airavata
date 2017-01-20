@@ -27,10 +27,11 @@
 include 'getAiravataClient.php';
 global $airavataclient;
 global $transport;
+global $authToken;
 
 try
 {
-	$version = $airavataclient->getAPIVersion();
+    $version = $airavataclient->getAPIVersion($authToken);
 }
 catch (TException $texp)
 {

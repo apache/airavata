@@ -197,31 +197,12 @@ class AiravataIf {
    *    The User for which the credential should be registered. For community accounts, this user is the name of the
    *    community user name. For computational resources, this user name need not be the same user name on resoruces.
    * 
-   * @return airavataCredStoreToken
-   *   An SSH Key pair is generated and stored in the credential store and associated with users or community account
-   *   belonging to a Gateway.
-   * 
-   * 
-   * 
-   * @param authzToken
-   * @param gatewayId
-   * @param userName
-   */
-  virtual void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName) = 0;
-
-  /**
-   * Generate and Register SSH Key Pair with Airavata Credential Store.
-   * 
-   * @param gatewayId
-   *    The identifier for the requested Gateway.
-   * 
-   * @param userName
-   *    The User for which the credential should be registered. For community accounts, this user is the name of the
-   *    community user name. For computational resources, this user name need not be the same user name on resoruces.
-   * 
    * @param description
    *    The description field for a credential type, all type of credential can have a description.
    * 
+   * @param credentialOwnerType
+   *    The type of owner of this credential. Two possible values: GATEWAY (default) and USER
+   * 
    * @return airavataCredStoreToken
    *   An SSH Key pair is generated and stored in the credential store and associated with users or community account
    *   belonging to a Gateway.
@@ -232,8 +213,9 @@ class AiravataIf {
    * @param gatewayId
    * @param userName
    * @param description
+   * @param credentialOwnerType
    */
-  virtual void generateAndRegisterSSHKeysWithDescription(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description) = 0;
+  virtual void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const  ::CredentialOwnerType::type credentialOwnerType) = 0;
 
   /**
    * Generate and Register Username PWD Pair with Airavata Credential Store.
@@ -304,29 +286,36 @@ class AiravataIf {
 
   /**
    * 
-   * Get all Public Keys of the Gateway
+   * Get all Credential summaries for the Gateway
    * 
    * @param CredStoreToken
    *    Credential Store Token which you want to find the Public Key for.
+   * 
+   * @param credential_store_data_models.SummaryType
+   *    Summary type : SSH,PASSWD or CERT
    * 
    * @param gatewayId
    *    This is the unique identifier of your gateway where the token and public key was generated from.
    * 
-   * @return publicKey
+   * @return List of Credential Summary Objects
    * 
    * 
    * 
    * @param authzToken
+   * @param type
    * @param gatewayId
    */
-  virtual void getAllGatewaySSHPubKeysSummary(std::vector< ::apache::airavata::model::appcatalog::credentialsummary::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) = 0;
+  virtual void getAllCredentialSummaryForGateway(std::vector< ::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::SummaryType::type type, const std::string& gatewayId) = 0;
 
   /**
    * 
-   * Get all Public Key summaries for user in a Gateway
+   * Get all Credential summaries for user in a Gateway
    * 
    * @param CredStoreToken
    *    Credential Store Token which you want to find the Public Key for.
+   * 
+   * @param credential_store_data_models.SummaryType
+   *    Summary type : SSH,PASSWD or CERT
    * 
    * @param gatewayId
    *    This is the unique identifier of your gateway where the token and public key was generated from.
@@ -339,10 +328,11 @@ class AiravataIf {
    * 
    * 
    * @param authzToken
+   * @param type
    * @param gatewayId
    * @param userId
    */
-  virtual void getAllSSHPubKeysSummaryForUserInGateway(std::vector< ::apache::airavata::model::appcatalog::credentialsummary::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userId) = 0;
+  virtual void getAllCredentialSummaryForUsersInGateway(std::vector< ::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::SummaryType::type type, const std::string& gatewayId, const std::string& userId) = 0;
   virtual void getAllGatewayPWDCredentials(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) = 0;
 
   /**
@@ -545,14 +535,26 @@ class AiravataIf {
    * @param toTime
    *       Ending data time.
    * 
+   * @param userName
+   *       Gateway username substring with which to further filter statistics.
+   * 
+   * @param applicationName
+   *       Application id substring with which to further filter statistics.
+   * 
+   * @param resourceHostName
+   *       Hostname id substring with which to further filter statistics.
+   * 
    * 
    * 
    * @param authzToken
    * @param gatewayId
    * @param fromTime
    * @param toTime
+   * @param userName
+   * @param applicationName
+   * @param resourceHostName
    */
-  virtual void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime) = 0;
+  virtual void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime, const std::string& userName, const std::string& applicationName, const std::string& resourceHostName) = 0;
 
   /**
    * 
@@ -3048,10 +3050,7 @@ class AiravataNull : virtual public AiravataIf {
   void getAllNotifications(std::vector< ::apache::airavata::model::workspace::Notification> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */) {
     return;
   }
-  void generateAndRegisterSSHKeys(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */) {
-    return;
-  }
-  void generateAndRegisterSSHKeysWithDescription(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* description */) {
+  void generateAndRegisterSSHKeys(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* description */, const  ::CredentialOwnerType::type /* credentialOwnerType */) {
     return;
   }
   void registerPwdCredential(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* portalUserName */, const std::string& /* loginUserName */, const std::string& /* password */, const std::string& /* description */) {
@@ -3063,10 +3062,10 @@ class AiravataNull : virtual public AiravataIf {
   void getAllGatewaySSHPubKeys(std::map<std::string, std::string> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */) {
     return;
   }
-  void getAllGatewaySSHPubKeysSummary(std::vector< ::apache::airavata::model::appcatalog::credentialsummary::CredentialSummary> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */) {
+  void getAllCredentialSummaryForGateway(std::vector< ::CredentialSummary> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const  ::SummaryType::type /* type */, const std::string& /* gatewayId */) {
     return;
   }
-  void getAllSSHPubKeysSummaryForUserInGateway(std::vector< ::apache::airavata::model::appcatalog::credentialsummary::CredentialSummary> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userId */) {
+  void getAllCredentialSummaryForUsersInGateway(std::vector< ::CredentialSummary> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const  ::SummaryType::type /* type */, const std::string& /* gatewayId */, const std::string& /* userId */) {
     return;
   }
   void getAllGatewayPWDCredentials(std::map<std::string, std::string> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */) {
@@ -3102,7 +3101,7 @@ class AiravataNull : virtual public AiravataIf {
   void searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & /* filters */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
-  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const int64_t /* fromTime */, const int64_t /* toTime */) {
+  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const int64_t /* fromTime */, const int64_t /* toTime */, const std::string& /* userName */, const std::string& /* applicationName */, const std::string& /* resourceHostName */) {
     return;
   }
   void getExperimentsInProject(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* projectId */, const int32_t /* limit */, const int32_t /* offset */) {
@@ -5488,25 +5487,38 @@ class Airavata_getAllNotifications_presult {
 
 };
 
+typedef struct _Airavata_generateAndRegisterSSHKeys_args__isset {
+  _Airavata_generateAndRegisterSSHKeys_args__isset() : description(false), credentialOwnerType(false) {}
+  bool description :1;
+  bool credentialOwnerType :1;
+} _Airavata_generateAndRegisterSSHKeys_args__isset;
 
 class Airavata_generateAndRegisterSSHKeys_args {
  public:
 
   Airavata_generateAndRegisterSSHKeys_args(const Airavata_generateAndRegisterSSHKeys_args&);
   Airavata_generateAndRegisterSSHKeys_args& operator=(const Airavata_generateAndRegisterSSHKeys_args&);
-  Airavata_generateAndRegisterSSHKeys_args() : gatewayId(), userName() {
+  Airavata_generateAndRegisterSSHKeys_args() : gatewayId(), userName(), description(), credentialOwnerType(( ::CredentialOwnerType::type)0) {
   }
 
   virtual ~Airavata_generateAndRegisterSSHKeys_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
   std::string gatewayId;
   std::string userName;
+  std::string description;
+   ::CredentialOwnerType::type credentialOwnerType;
+
+  _Airavata_generateAndRegisterSSHKeys_args__isset __isset;
 
   void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
   void __set_gatewayId(const std::string& val);
 
   void __set_userName(const std::string& val);
+
+  void __set_description(const std::string& val);
+
+  void __set_credentialOwnerType(const  ::CredentialOwnerType::type val);
 
   bool operator == (const Airavata_generateAndRegisterSSHKeys_args & rhs) const
   {
@@ -5515,6 +5527,10 @@ class Airavata_generateAndRegisterSSHKeys_args {
     if (!(gatewayId == rhs.gatewayId))
       return false;
     if (!(userName == rhs.userName))
+      return false;
+    if (!(description == rhs.description))
+      return false;
+    if (!(credentialOwnerType == rhs.credentialOwnerType))
       return false;
     return true;
   }
@@ -5538,6 +5554,8 @@ class Airavata_generateAndRegisterSSHKeys_pargs {
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
   const std::string* gatewayId;
   const std::string* userName;
+  const std::string* description;
+  const  ::CredentialOwnerType::type* credentialOwnerType;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -5617,146 +5635,6 @@ class Airavata_generateAndRegisterSSHKeys_presult {
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_generateAndRegisterSSHKeys_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-};
-
-
-class Airavata_generateAndRegisterSSHKeysWithDescription_args {
- public:
-
-  Airavata_generateAndRegisterSSHKeysWithDescription_args(const Airavata_generateAndRegisterSSHKeysWithDescription_args&);
-  Airavata_generateAndRegisterSSHKeysWithDescription_args& operator=(const Airavata_generateAndRegisterSSHKeysWithDescription_args&);
-  Airavata_generateAndRegisterSSHKeysWithDescription_args() : gatewayId(), userName(), description() {
-  }
-
-  virtual ~Airavata_generateAndRegisterSSHKeysWithDescription_args() throw();
-   ::apache::airavata::model::security::AuthzToken authzToken;
-  std::string gatewayId;
-  std::string userName;
-  std::string description;
-
-  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
-
-  void __set_gatewayId(const std::string& val);
-
-  void __set_userName(const std::string& val);
-
-  void __set_description(const std::string& val);
-
-  bool operator == (const Airavata_generateAndRegisterSSHKeysWithDescription_args & rhs) const
-  {
-    if (!(authzToken == rhs.authzToken))
-      return false;
-    if (!(gatewayId == rhs.gatewayId))
-      return false;
-    if (!(userName == rhs.userName))
-      return false;
-    if (!(description == rhs.description))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_generateAndRegisterSSHKeysWithDescription_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_generateAndRegisterSSHKeysWithDescription_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-
-class Airavata_generateAndRegisterSSHKeysWithDescription_pargs {
- public:
-
-
-  virtual ~Airavata_generateAndRegisterSSHKeysWithDescription_pargs() throw();
-  const  ::apache::airavata::model::security::AuthzToken* authzToken;
-  const std::string* gatewayId;
-  const std::string* userName;
-  const std::string* description;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_generateAndRegisterSSHKeysWithDescription_result__isset {
-  _Airavata_generateAndRegisterSSHKeysWithDescription_result__isset() : success(false), ire(false), ace(false), ase(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-} _Airavata_generateAndRegisterSSHKeysWithDescription_result__isset;
-
-class Airavata_generateAndRegisterSSHKeysWithDescription_result {
- public:
-
-  Airavata_generateAndRegisterSSHKeysWithDescription_result(const Airavata_generateAndRegisterSSHKeysWithDescription_result&);
-  Airavata_generateAndRegisterSSHKeysWithDescription_result& operator=(const Airavata_generateAndRegisterSSHKeysWithDescription_result&);
-  Airavata_generateAndRegisterSSHKeysWithDescription_result() : success() {
-  }
-
-  virtual ~Airavata_generateAndRegisterSSHKeysWithDescription_result() throw();
-  std::string success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-
-  _Airavata_generateAndRegisterSSHKeysWithDescription_result__isset __isset;
-
-  void __set_success(const std::string& val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  bool operator == (const Airavata_generateAndRegisterSSHKeysWithDescription_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_generateAndRegisterSSHKeysWithDescription_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_generateAndRegisterSSHKeysWithDescription_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-typedef struct _Airavata_generateAndRegisterSSHKeysWithDescription_presult__isset {
-  _Airavata_generateAndRegisterSSHKeysWithDescription_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
-  bool success :1;
-  bool ire :1;
-  bool ace :1;
-  bool ase :1;
-} _Airavata_generateAndRegisterSSHKeysWithDescription_presult__isset;
-
-class Airavata_generateAndRegisterSSHKeysWithDescription_presult {
- public:
-
-
-  virtual ~Airavata_generateAndRegisterSSHKeysWithDescription_presult() throw();
-  std::string* success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-
-  _Airavata_generateAndRegisterSSHKeysWithDescription_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -6177,35 +6055,40 @@ class Airavata_getAllGatewaySSHPubKeys_presult {
 };
 
 
-class Airavata_getAllGatewaySSHPubKeysSummary_args {
+class Airavata_getAllCredentialSummaryForGateway_args {
  public:
 
-  Airavata_getAllGatewaySSHPubKeysSummary_args(const Airavata_getAllGatewaySSHPubKeysSummary_args&);
-  Airavata_getAllGatewaySSHPubKeysSummary_args& operator=(const Airavata_getAllGatewaySSHPubKeysSummary_args&);
-  Airavata_getAllGatewaySSHPubKeysSummary_args() : gatewayId() {
+  Airavata_getAllCredentialSummaryForGateway_args(const Airavata_getAllCredentialSummaryForGateway_args&);
+  Airavata_getAllCredentialSummaryForGateway_args& operator=(const Airavata_getAllCredentialSummaryForGateway_args&);
+  Airavata_getAllCredentialSummaryForGateway_args() : type(( ::SummaryType::type)0), gatewayId() {
   }
 
-  virtual ~Airavata_getAllGatewaySSHPubKeysSummary_args() throw();
+  virtual ~Airavata_getAllCredentialSummaryForGateway_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
+   ::SummaryType::type type;
   std::string gatewayId;
 
   void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
+  void __set_type(const  ::SummaryType::type val);
+
   void __set_gatewayId(const std::string& val);
 
-  bool operator == (const Airavata_getAllGatewaySSHPubKeysSummary_args & rhs) const
+  bool operator == (const Airavata_getAllCredentialSummaryForGateway_args & rhs) const
   {
     if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(type == rhs.type))
       return false;
     if (!(gatewayId == rhs.gatewayId))
       return false;
     return true;
   }
-  bool operator != (const Airavata_getAllGatewaySSHPubKeysSummary_args &rhs) const {
+  bool operator != (const Airavata_getAllCredentialSummaryForGateway_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Airavata_getAllGatewaySSHPubKeysSummary_args & ) const;
+  bool operator < (const Airavata_getAllCredentialSummaryForGateway_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -6213,43 +6096,44 @@ class Airavata_getAllGatewaySSHPubKeysSummary_args {
 };
 
 
-class Airavata_getAllGatewaySSHPubKeysSummary_pargs {
+class Airavata_getAllCredentialSummaryForGateway_pargs {
  public:
 
 
-  virtual ~Airavata_getAllGatewaySSHPubKeysSummary_pargs() throw();
+  virtual ~Airavata_getAllCredentialSummaryForGateway_pargs() throw();
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const  ::SummaryType::type* type;
   const std::string* gatewayId;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _Airavata_getAllGatewaySSHPubKeysSummary_result__isset {
-  _Airavata_getAllGatewaySSHPubKeysSummary_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+typedef struct _Airavata_getAllCredentialSummaryForGateway_result__isset {
+  _Airavata_getAllCredentialSummaryForGateway_result__isset() : success(false), ire(false), ace(false), ase(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
-} _Airavata_getAllGatewaySSHPubKeysSummary_result__isset;
+} _Airavata_getAllCredentialSummaryForGateway_result__isset;
 
-class Airavata_getAllGatewaySSHPubKeysSummary_result {
+class Airavata_getAllCredentialSummaryForGateway_result {
  public:
 
-  Airavata_getAllGatewaySSHPubKeysSummary_result(const Airavata_getAllGatewaySSHPubKeysSummary_result&);
-  Airavata_getAllGatewaySSHPubKeysSummary_result& operator=(const Airavata_getAllGatewaySSHPubKeysSummary_result&);
-  Airavata_getAllGatewaySSHPubKeysSummary_result() {
+  Airavata_getAllCredentialSummaryForGateway_result(const Airavata_getAllCredentialSummaryForGateway_result&);
+  Airavata_getAllCredentialSummaryForGateway_result& operator=(const Airavata_getAllCredentialSummaryForGateway_result&);
+  Airavata_getAllCredentialSummaryForGateway_result() {
   }
 
-  virtual ~Airavata_getAllGatewaySSHPubKeysSummary_result() throw();
-  std::vector< ::apache::airavata::model::appcatalog::credentialsummary::CredentialSummary>  success;
+  virtual ~Airavata_getAllCredentialSummaryForGateway_result() throw();
+  std::vector< ::CredentialSummary>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
 
-  _Airavata_getAllGatewaySSHPubKeysSummary_result__isset __isset;
+  _Airavata_getAllCredentialSummaryForGateway_result__isset __isset;
 
-  void __set_success(const std::vector< ::apache::airavata::model::appcatalog::credentialsummary::CredentialSummary> & val);
+  void __set_success(const std::vector< ::CredentialSummary> & val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -6257,7 +6141,7 @@ class Airavata_getAllGatewaySSHPubKeysSummary_result {
 
   void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
 
-  bool operator == (const Airavata_getAllGatewaySSHPubKeysSummary_result & rhs) const
+  bool operator == (const Airavata_getAllCredentialSummaryForGateway_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
@@ -6269,64 +6153,69 @@ class Airavata_getAllGatewaySSHPubKeysSummary_result {
       return false;
     return true;
   }
-  bool operator != (const Airavata_getAllGatewaySSHPubKeysSummary_result &rhs) const {
+  bool operator != (const Airavata_getAllCredentialSummaryForGateway_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Airavata_getAllGatewaySSHPubKeysSummary_result & ) const;
+  bool operator < (const Airavata_getAllCredentialSummaryForGateway_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _Airavata_getAllGatewaySSHPubKeysSummary_presult__isset {
-  _Airavata_getAllGatewaySSHPubKeysSummary_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+typedef struct _Airavata_getAllCredentialSummaryForGateway_presult__isset {
+  _Airavata_getAllCredentialSummaryForGateway_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
-} _Airavata_getAllGatewaySSHPubKeysSummary_presult__isset;
+} _Airavata_getAllCredentialSummaryForGateway_presult__isset;
 
-class Airavata_getAllGatewaySSHPubKeysSummary_presult {
+class Airavata_getAllCredentialSummaryForGateway_presult {
  public:
 
 
-  virtual ~Airavata_getAllGatewaySSHPubKeysSummary_presult() throw();
-  std::vector< ::apache::airavata::model::appcatalog::credentialsummary::CredentialSummary> * success;
+  virtual ~Airavata_getAllCredentialSummaryForGateway_presult() throw();
+  std::vector< ::CredentialSummary> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
 
-  _Airavata_getAllGatewaySSHPubKeysSummary_presult__isset __isset;
+  _Airavata_getAllCredentialSummaryForGateway_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
 
-class Airavata_getAllSSHPubKeysSummaryForUserInGateway_args {
+class Airavata_getAllCredentialSummaryForUsersInGateway_args {
  public:
 
-  Airavata_getAllSSHPubKeysSummaryForUserInGateway_args(const Airavata_getAllSSHPubKeysSummaryForUserInGateway_args&);
-  Airavata_getAllSSHPubKeysSummaryForUserInGateway_args& operator=(const Airavata_getAllSSHPubKeysSummaryForUserInGateway_args&);
-  Airavata_getAllSSHPubKeysSummaryForUserInGateway_args() : gatewayId(), userId() {
+  Airavata_getAllCredentialSummaryForUsersInGateway_args(const Airavata_getAllCredentialSummaryForUsersInGateway_args&);
+  Airavata_getAllCredentialSummaryForUsersInGateway_args& operator=(const Airavata_getAllCredentialSummaryForUsersInGateway_args&);
+  Airavata_getAllCredentialSummaryForUsersInGateway_args() : type(( ::SummaryType::type)0), gatewayId(), userId() {
   }
 
-  virtual ~Airavata_getAllSSHPubKeysSummaryForUserInGateway_args() throw();
+  virtual ~Airavata_getAllCredentialSummaryForUsersInGateway_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
+   ::SummaryType::type type;
   std::string gatewayId;
   std::string userId;
 
   void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
+  void __set_type(const  ::SummaryType::type val);
+
   void __set_gatewayId(const std::string& val);
 
   void __set_userId(const std::string& val);
 
-  bool operator == (const Airavata_getAllSSHPubKeysSummaryForUserInGateway_args & rhs) const
+  bool operator == (const Airavata_getAllCredentialSummaryForUsersInGateway_args & rhs) const
   {
     if (!(authzToken == rhs.authzToken))
+      return false;
+    if (!(type == rhs.type))
       return false;
     if (!(gatewayId == rhs.gatewayId))
       return false;
@@ -6334,11 +6223,11 @@ class Airavata_getAllSSHPubKeysSummaryForUserInGateway_args {
       return false;
     return true;
   }
-  bool operator != (const Airavata_getAllSSHPubKeysSummaryForUserInGateway_args &rhs) const {
+  bool operator != (const Airavata_getAllCredentialSummaryForUsersInGateway_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Airavata_getAllSSHPubKeysSummaryForUserInGateway_args & ) const;
+  bool operator < (const Airavata_getAllCredentialSummaryForUsersInGateway_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -6346,12 +6235,13 @@ class Airavata_getAllSSHPubKeysSummaryForUserInGateway_args {
 };
 
 
-class Airavata_getAllSSHPubKeysSummaryForUserInGateway_pargs {
+class Airavata_getAllCredentialSummaryForUsersInGateway_pargs {
  public:
 
 
-  virtual ~Airavata_getAllSSHPubKeysSummaryForUserInGateway_pargs() throw();
+  virtual ~Airavata_getAllCredentialSummaryForUsersInGateway_pargs() throw();
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
+  const  ::SummaryType::type* type;
   const std::string* gatewayId;
   const std::string* userId;
 
@@ -6359,31 +6249,31 @@ class Airavata_getAllSSHPubKeysSummaryForUserInGateway_pargs {
 
 };
 
-typedef struct _Airavata_getAllSSHPubKeysSummaryForUserInGateway_result__isset {
-  _Airavata_getAllSSHPubKeysSummaryForUserInGateway_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+typedef struct _Airavata_getAllCredentialSummaryForUsersInGateway_result__isset {
+  _Airavata_getAllCredentialSummaryForUsersInGateway_result__isset() : success(false), ire(false), ace(false), ase(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
-} _Airavata_getAllSSHPubKeysSummaryForUserInGateway_result__isset;
+} _Airavata_getAllCredentialSummaryForUsersInGateway_result__isset;
 
-class Airavata_getAllSSHPubKeysSummaryForUserInGateway_result {
+class Airavata_getAllCredentialSummaryForUsersInGateway_result {
  public:
 
-  Airavata_getAllSSHPubKeysSummaryForUserInGateway_result(const Airavata_getAllSSHPubKeysSummaryForUserInGateway_result&);
-  Airavata_getAllSSHPubKeysSummaryForUserInGateway_result& operator=(const Airavata_getAllSSHPubKeysSummaryForUserInGateway_result&);
-  Airavata_getAllSSHPubKeysSummaryForUserInGateway_result() {
+  Airavata_getAllCredentialSummaryForUsersInGateway_result(const Airavata_getAllCredentialSummaryForUsersInGateway_result&);
+  Airavata_getAllCredentialSummaryForUsersInGateway_result& operator=(const Airavata_getAllCredentialSummaryForUsersInGateway_result&);
+  Airavata_getAllCredentialSummaryForUsersInGateway_result() {
   }
 
-  virtual ~Airavata_getAllSSHPubKeysSummaryForUserInGateway_result() throw();
-  std::vector< ::apache::airavata::model::appcatalog::credentialsummary::CredentialSummary>  success;
+  virtual ~Airavata_getAllCredentialSummaryForUsersInGateway_result() throw();
+  std::vector< ::CredentialSummary>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
 
-  _Airavata_getAllSSHPubKeysSummaryForUserInGateway_result__isset __isset;
+  _Airavata_getAllCredentialSummaryForUsersInGateway_result__isset __isset;
 
-  void __set_success(const std::vector< ::apache::airavata::model::appcatalog::credentialsummary::CredentialSummary> & val);
+  void __set_success(const std::vector< ::CredentialSummary> & val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -6391,7 +6281,7 @@ class Airavata_getAllSSHPubKeysSummaryForUserInGateway_result {
 
   void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
 
-  bool operator == (const Airavata_getAllSSHPubKeysSummaryForUserInGateway_result & rhs) const
+  bool operator == (const Airavata_getAllCredentialSummaryForUsersInGateway_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
@@ -6403,36 +6293,36 @@ class Airavata_getAllSSHPubKeysSummaryForUserInGateway_result {
       return false;
     return true;
   }
-  bool operator != (const Airavata_getAllSSHPubKeysSummaryForUserInGateway_result &rhs) const {
+  bool operator != (const Airavata_getAllCredentialSummaryForUsersInGateway_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Airavata_getAllSSHPubKeysSummaryForUserInGateway_result & ) const;
+  bool operator < (const Airavata_getAllCredentialSummaryForUsersInGateway_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _Airavata_getAllSSHPubKeysSummaryForUserInGateway_presult__isset {
-  _Airavata_getAllSSHPubKeysSummaryForUserInGateway_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+typedef struct _Airavata_getAllCredentialSummaryForUsersInGateway_presult__isset {
+  _Airavata_getAllCredentialSummaryForUsersInGateway_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
-} _Airavata_getAllSSHPubKeysSummaryForUserInGateway_presult__isset;
+} _Airavata_getAllCredentialSummaryForUsersInGateway_presult__isset;
 
-class Airavata_getAllSSHPubKeysSummaryForUserInGateway_presult {
+class Airavata_getAllCredentialSummaryForUsersInGateway_presult {
  public:
 
 
-  virtual ~Airavata_getAllSSHPubKeysSummaryForUserInGateway_presult() throw();
-  std::vector< ::apache::airavata::model::appcatalog::credentialsummary::CredentialSummary> * success;
+  virtual ~Airavata_getAllCredentialSummaryForUsersInGateway_presult() throw();
+  std::vector< ::CredentialSummary> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
 
-  _Airavata_getAllSSHPubKeysSummaryForUserInGateway_presult__isset __isset;
+  _Airavata_getAllCredentialSummaryForUsersInGateway_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -7892,13 +7782,19 @@ class Airavata_searchExperiments_presult {
 
 };
 
+typedef struct _Airavata_getExperimentStatistics_args__isset {
+  _Airavata_getExperimentStatistics_args__isset() : userName(false), applicationName(false), resourceHostName(false) {}
+  bool userName :1;
+  bool applicationName :1;
+  bool resourceHostName :1;
+} _Airavata_getExperimentStatistics_args__isset;
 
 class Airavata_getExperimentStatistics_args {
  public:
 
   Airavata_getExperimentStatistics_args(const Airavata_getExperimentStatistics_args&);
   Airavata_getExperimentStatistics_args& operator=(const Airavata_getExperimentStatistics_args&);
-  Airavata_getExperimentStatistics_args() : gatewayId(), fromTime(0), toTime(0) {
+  Airavata_getExperimentStatistics_args() : gatewayId(), fromTime(0), toTime(0), userName(), applicationName(), resourceHostName() {
   }
 
   virtual ~Airavata_getExperimentStatistics_args() throw();
@@ -7906,6 +7802,11 @@ class Airavata_getExperimentStatistics_args {
   std::string gatewayId;
   int64_t fromTime;
   int64_t toTime;
+  std::string userName;
+  std::string applicationName;
+  std::string resourceHostName;
+
+  _Airavata_getExperimentStatistics_args__isset __isset;
 
   void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
@@ -7914,6 +7815,12 @@ class Airavata_getExperimentStatistics_args {
   void __set_fromTime(const int64_t val);
 
   void __set_toTime(const int64_t val);
+
+  void __set_userName(const std::string& val);
+
+  void __set_applicationName(const std::string& val);
+
+  void __set_resourceHostName(const std::string& val);
 
   bool operator == (const Airavata_getExperimentStatistics_args & rhs) const
   {
@@ -7924,6 +7831,12 @@ class Airavata_getExperimentStatistics_args {
     if (!(fromTime == rhs.fromTime))
       return false;
     if (!(toTime == rhs.toTime))
+      return false;
+    if (!(userName == rhs.userName))
+      return false;
+    if (!(applicationName == rhs.applicationName))
+      return false;
+    if (!(resourceHostName == rhs.resourceHostName))
       return false;
     return true;
   }
@@ -7948,6 +7861,9 @@ class Airavata_getExperimentStatistics_pargs {
   const std::string* gatewayId;
   const int64_t* fromTime;
   const int64_t* toTime;
+  const std::string* userName;
+  const std::string* applicationName;
+  const std::string* resourceHostName;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -27592,12 +27508,9 @@ class AiravataClient : virtual public AiravataIf {
   void getAllNotifications(std::vector< ::apache::airavata::model::workspace::Notification> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void send_getAllNotifications(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void recv_getAllNotifications(std::vector< ::apache::airavata::model::workspace::Notification> & _return);
-  void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName);
-  void send_generateAndRegisterSSHKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName);
+  void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const  ::CredentialOwnerType::type credentialOwnerType);
+  void send_generateAndRegisterSSHKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const  ::CredentialOwnerType::type credentialOwnerType);
   void recv_generateAndRegisterSSHKeys(std::string& _return);
-  void generateAndRegisterSSHKeysWithDescription(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description);
-  void send_generateAndRegisterSSHKeysWithDescription(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description);
-  void recv_generateAndRegisterSSHKeysWithDescription(std::string& _return);
   void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password, const std::string& description);
   void send_registerPwdCredential(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password, const std::string& description);
   void recv_registerPwdCredential(std::string& _return);
@@ -27607,12 +27520,12 @@ class AiravataClient : virtual public AiravataIf {
   void getAllGatewaySSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void send_getAllGatewaySSHPubKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void recv_getAllGatewaySSHPubKeys(std::map<std::string, std::string> & _return);
-  void getAllGatewaySSHPubKeysSummary(std::vector< ::apache::airavata::model::appcatalog::credentialsummary::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
-  void send_getAllGatewaySSHPubKeysSummary(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
-  void recv_getAllGatewaySSHPubKeysSummary(std::vector< ::apache::airavata::model::appcatalog::credentialsummary::CredentialSummary> & _return);
-  void getAllSSHPubKeysSummaryForUserInGateway(std::vector< ::apache::airavata::model::appcatalog::credentialsummary::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userId);
-  void send_getAllSSHPubKeysSummaryForUserInGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userId);
-  void recv_getAllSSHPubKeysSummaryForUserInGateway(std::vector< ::apache::airavata::model::appcatalog::credentialsummary::CredentialSummary> & _return);
+  void getAllCredentialSummaryForGateway(std::vector< ::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::SummaryType::type type, const std::string& gatewayId);
+  void send_getAllCredentialSummaryForGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::SummaryType::type type, const std::string& gatewayId);
+  void recv_getAllCredentialSummaryForGateway(std::vector< ::CredentialSummary> & _return);
+  void getAllCredentialSummaryForUsersInGateway(std::vector< ::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::SummaryType::type type, const std::string& gatewayId, const std::string& userId);
+  void send_getAllCredentialSummaryForUsersInGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::SummaryType::type type, const std::string& gatewayId, const std::string& userId);
+  void recv_getAllCredentialSummaryForUsersInGateway(std::vector< ::CredentialSummary> & _return);
   void getAllGatewayPWDCredentials(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void send_getAllGatewayPWDCredentials(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void recv_getAllGatewayPWDCredentials(std::map<std::string, std::string> & _return);
@@ -27643,8 +27556,8 @@ class AiravataClient : virtual public AiravataIf {
   void searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
   void send_searchExperiments(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
   void recv_searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
-  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime);
-  void send_getExperimentStatistics(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime);
+  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime, const std::string& userName, const std::string& applicationName, const std::string& resourceHostName);
+  void send_getExperimentStatistics(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime, const std::string& userName, const std::string& applicationName, const std::string& resourceHostName);
   void recv_getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return);
   void getExperimentsInProject(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId, const int32_t limit, const int32_t offset);
   void send_getExperimentsInProject(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId, const int32_t limit, const int32_t offset);
@@ -28090,12 +28003,11 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_getNotification(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAllNotifications(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_generateAndRegisterSSHKeys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_generateAndRegisterSSHKeysWithDescription(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_registerPwdCredential(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getSSHPubKey(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAllGatewaySSHPubKeys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_getAllGatewaySSHPubKeysSummary(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_getAllSSHPubKeysSummaryForUserInGateway(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getAllCredentialSummaryForGateway(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getAllCredentialSummaryForUsersInGateway(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAllGatewayPWDCredentials(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteSSHPubKey(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deletePWDCredential(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -28263,12 +28175,11 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["getNotification"] = &AiravataProcessor::process_getNotification;
     processMap_["getAllNotifications"] = &AiravataProcessor::process_getAllNotifications;
     processMap_["generateAndRegisterSSHKeys"] = &AiravataProcessor::process_generateAndRegisterSSHKeys;
-    processMap_["generateAndRegisterSSHKeysWithDescription"] = &AiravataProcessor::process_generateAndRegisterSSHKeysWithDescription;
     processMap_["registerPwdCredential"] = &AiravataProcessor::process_registerPwdCredential;
     processMap_["getSSHPubKey"] = &AiravataProcessor::process_getSSHPubKey;
     processMap_["getAllGatewaySSHPubKeys"] = &AiravataProcessor::process_getAllGatewaySSHPubKeys;
-    processMap_["getAllGatewaySSHPubKeysSummary"] = &AiravataProcessor::process_getAllGatewaySSHPubKeysSummary;
-    processMap_["getAllSSHPubKeysSummaryForUserInGateway"] = &AiravataProcessor::process_getAllSSHPubKeysSummaryForUserInGateway;
+    processMap_["getAllCredentialSummaryForGateway"] = &AiravataProcessor::process_getAllCredentialSummaryForGateway;
+    processMap_["getAllCredentialSummaryForUsersInGateway"] = &AiravataProcessor::process_getAllCredentialSummaryForUsersInGateway;
     processMap_["getAllGatewayPWDCredentials"] = &AiravataProcessor::process_getAllGatewayPWDCredentials;
     processMap_["deleteSSHPubKey"] = &AiravataProcessor::process_deleteSSHPubKey;
     processMap_["deletePWDCredential"] = &AiravataProcessor::process_deletePWDCredential;
@@ -28580,23 +28491,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName) {
+  void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const  ::CredentialOwnerType::type credentialOwnerType) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->generateAndRegisterSSHKeys(_return, authzToken, gatewayId, userName);
+      ifaces_[i]->generateAndRegisterSSHKeys(_return, authzToken, gatewayId, userName, description, credentialOwnerType);
     }
-    ifaces_[i]->generateAndRegisterSSHKeys(_return, authzToken, gatewayId, userName);
-    return;
-  }
-
-  void generateAndRegisterSSHKeysWithDescription(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->generateAndRegisterSSHKeysWithDescription(_return, authzToken, gatewayId, userName, description);
-    }
-    ifaces_[i]->generateAndRegisterSSHKeysWithDescription(_return, authzToken, gatewayId, userName, description);
+    ifaces_[i]->generateAndRegisterSSHKeys(_return, authzToken, gatewayId, userName, description, credentialOwnerType);
     return;
   }
 
@@ -28630,23 +28531,23 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getAllGatewaySSHPubKeysSummary(std::vector< ::apache::airavata::model::appcatalog::credentialsummary::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
+  void getAllCredentialSummaryForGateway(std::vector< ::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::SummaryType::type type, const std::string& gatewayId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAllGatewaySSHPubKeysSummary(_return, authzToken, gatewayId);
+      ifaces_[i]->getAllCredentialSummaryForGateway(_return, authzToken, type, gatewayId);
     }
-    ifaces_[i]->getAllGatewaySSHPubKeysSummary(_return, authzToken, gatewayId);
+    ifaces_[i]->getAllCredentialSummaryForGateway(_return, authzToken, type, gatewayId);
     return;
   }
 
-  void getAllSSHPubKeysSummaryForUserInGateway(std::vector< ::apache::airavata::model::appcatalog::credentialsummary::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userId) {
+  void getAllCredentialSummaryForUsersInGateway(std::vector< ::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::SummaryType::type type, const std::string& gatewayId, const std::string& userId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAllSSHPubKeysSummaryForUserInGateway(_return, authzToken, gatewayId, userId);
+      ifaces_[i]->getAllCredentialSummaryForUsersInGateway(_return, authzToken, type, gatewayId, userId);
     }
-    ifaces_[i]->getAllSSHPubKeysSummaryForUserInGateway(_return, authzToken, gatewayId, userId);
+    ifaces_[i]->getAllCredentialSummaryForUsersInGateway(_return, authzToken, type, gatewayId, userId);
     return;
   }
 
@@ -28746,13 +28647,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime) {
+  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime, const std::string& userName, const std::string& applicationName, const std::string& resourceHostName) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getExperimentStatistics(_return, authzToken, gatewayId, fromTime, toTime);
+      ifaces_[i]->getExperimentStatistics(_return, authzToken, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName);
     }
-    ifaces_[i]->getExperimentStatistics(_return, authzToken, gatewayId, fromTime, toTime);
+    ifaces_[i]->getExperimentStatistics(_return, authzToken, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName);
     return;
   }
 
@@ -30150,12 +30051,9 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void getAllNotifications(std::vector< ::apache::airavata::model::workspace::Notification> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   int32_t send_getAllNotifications(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void recv_getAllNotifications(std::vector< ::apache::airavata::model::workspace::Notification> & _return, const int32_t seqid);
-  void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName);
-  int32_t send_generateAndRegisterSSHKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName);
+  void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const  ::CredentialOwnerType::type credentialOwnerType);
+  int32_t send_generateAndRegisterSSHKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const  ::CredentialOwnerType::type credentialOwnerType);
   void recv_generateAndRegisterSSHKeys(std::string& _return, const int32_t seqid);
-  void generateAndRegisterSSHKeysWithDescription(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description);
-  int32_t send_generateAndRegisterSSHKeysWithDescription(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description);
-  void recv_generateAndRegisterSSHKeysWithDescription(std::string& _return, const int32_t seqid);
   void registerPwdCredential(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password, const std::string& description);
   int32_t send_registerPwdCredential(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& portalUserName, const std::string& loginUserName, const std::string& password, const std::string& description);
   void recv_registerPwdCredential(std::string& _return, const int32_t seqid);
@@ -30165,12 +30063,12 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void getAllGatewaySSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   int32_t send_getAllGatewaySSHPubKeys(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void recv_getAllGatewaySSHPubKeys(std::map<std::string, std::string> & _return, const int32_t seqid);
-  void getAllGatewaySSHPubKeysSummary(std::vector< ::apache::airavata::model::appcatalog::credentialsummary::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
-  int32_t send_getAllGatewaySSHPubKeysSummary(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
-  void recv_getAllGatewaySSHPubKeysSummary(std::vector< ::apache::airavata::model::appcatalog::credentialsummary::CredentialSummary> & _return, const int32_t seqid);
-  void getAllSSHPubKeysSummaryForUserInGateway(std::vector< ::apache::airavata::model::appcatalog::credentialsummary::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userId);
-  int32_t send_getAllSSHPubKeysSummaryForUserInGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userId);
-  void recv_getAllSSHPubKeysSummaryForUserInGateway(std::vector< ::apache::airavata::model::appcatalog::credentialsummary::CredentialSummary> & _return, const int32_t seqid);
+  void getAllCredentialSummaryForGateway(std::vector< ::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::SummaryType::type type, const std::string& gatewayId);
+  int32_t send_getAllCredentialSummaryForGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::SummaryType::type type, const std::string& gatewayId);
+  void recv_getAllCredentialSummaryForGateway(std::vector< ::CredentialSummary> & _return, const int32_t seqid);
+  void getAllCredentialSummaryForUsersInGateway(std::vector< ::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::SummaryType::type type, const std::string& gatewayId, const std::string& userId);
+  int32_t send_getAllCredentialSummaryForUsersInGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::SummaryType::type type, const std::string& gatewayId, const std::string& userId);
+  void recv_getAllCredentialSummaryForUsersInGateway(std::vector< ::CredentialSummary> & _return, const int32_t seqid);
   void getAllGatewayPWDCredentials(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   int32_t send_getAllGatewayPWDCredentials(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void recv_getAllGatewayPWDCredentials(std::map<std::string, std::string> & _return, const int32_t seqid);
@@ -30201,8 +30099,8 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
   int32_t send_searchExperiments(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
   void recv_searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const int32_t seqid);
-  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime);
-  int32_t send_getExperimentStatistics(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime);
+  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime, const std::string& userName, const std::string& applicationName, const std::string& resourceHostName);
+  int32_t send_getExperimentStatistics(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime, const std::string& userName, const std::string& applicationName, const std::string& resourceHostName);
   void recv_getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const int32_t seqid);
   void getExperimentsInProject(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId, const int32_t limit, const int32_t offset);
   int32_t send_getExperimentsInProject(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId, const int32_t limit, const int32_t offset);
