@@ -1,0 +1,28 @@
+- name: register the new distribution
+  find:
+      paths: "{{ server_deployment_dir }}"
+      patterns: "{{ airavata_dist }}"
+      file_type: directory
+  register: new_dist_dir
+  listen: "restart airavata"
+
+- name: server start file
+  find: paths={{ new_dist_dir.files.0.path }} patterns="server_start_*"
+  register: server_start_file
+  listen: "restart airavata"
+
+- name: stop the server
+  shell: "{{ new_dist_dir.files.0.path }}/bin/airavata-server-stop.sh"
+  register: stop_airavata
+  listen: "restart airavata"
+  ignore_errors: True
+  when: server_start_file.matched == 1
+
+- name: force stop the server
+  shell: "{{ new_dist_dir.files.0.path }}/bin/airavata-server-stop.sh -f"
+  listen: "restart airavata"
+  when: stop_airavata|failed
+
+- name: start the server
+  shell: "{{ new_dist_dir.files.0.path }}/bin/airavata-server-start.sh -d {{ server_name }}"
+  listen: "restart airavata"
