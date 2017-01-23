@@ -1,0 +1,20 @@
+- name: pull in updates on develop branch
+  git: repo={{ airavata_repo }}
+       dest={{ airavata_source_dir }}
+       version={{ git_branch }}
+  when: do_git_pull
+  register: git_pull
+
+- name: check for existing distribution tarball
+  find:
+      paths: "{{ airavata_source_dir }}/modules/distribution/target"
+      patterns: "{{ airavata_dist_name }}"
+      file_type: file
+  register: dist_tarball_file
+
+- name: build the distribution
+  command: mvn clean install -DskipTests
+  args:
+      chdir: "{{ airavata_source_dir }}"
+  when: git_pull.changed or dist_tarball_file.matched == 0
+  register: dist_build
