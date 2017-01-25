@@ -483,6 +483,17 @@
             <artifactId>groovy-templates</artifactId>
             <version>${groovy.version}</version>
         </dependency>
+        <!-- ======================== User Profile Service module =================== -->
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>user-profile-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>user-profile-stubs</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- ======================== Sample =================== -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
