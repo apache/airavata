@@ -73,7 +73,7 @@ GFAC_SRC_DIR='../../modules/gfac/gfac-client/src/main/java/'
 REGISTRY_THRIFT_FILE='registry-api.thrift'
 REGISTRY_SRC_DIR='../../modules/registry/registry-server/registry-api-stubs/src/main/java/'
 
-USER_PROFILE_THRIFT_FILE='user-profile-crud-cpi.thrift'
+USER_PROFILE_THRIFT_FILE='user-profile-cpi.thrift'
 USER_PROFILE_SRC_DIR='../../modules/user-profile/user-profile-stubs/src/main/java/'
 
 # Initialize the thrift arguments.
