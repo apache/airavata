@@ -23,7 +23,7 @@ package org.apache.airavata.user.profile.server;
 
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.userprofile.crude.cpi.UserProfileCrudeService;
+import org.apache.airavata.userprofile.cpi.UserProfileService;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
@@ -71,7 +71,7 @@ public class UserProfileServer implements IServer {
             setStatus(ServerStatus.STARTING);
             final int serverPort = Integer.parseInt(ServerSettings.getUserProfileServerPort());
             final String serverHost = ServerSettings.getUserProfileServerHost();
-            UserProfileCrudeService.Processor processor = new UserProfileCrudeService.Processor(new UserProfileHandler());
+            UserProfileService.Processor processor = new UserProfileService.Processor(new UserProfileServiceHandler());
 
             TServerTransport serverTransport;
 
