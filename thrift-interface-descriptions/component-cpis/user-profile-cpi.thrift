@@ -24,35 +24,34 @@
 */
 
 include "../data-models/user-group-models/user_profile_model.thrift"
-include "registry_api_errors.thrift"
+include "user_profile_cpi_errors.thrift"
 
 
-namespace java org.apache.airavata.userprofile.crude.cpi
+namespace java org.apache.airavata.userprofile.cpi
 
-const string USER_PROFILE_CPI_VERSION = "0.16.0"
+const string USER_PROFILE_CPI_VERSION = "0.17"
 
-service UserProfileCrudeService {
+service UserProfileService {
 
   string addUserProfile (1: required user_profile_model.UserProfile userProfile)
-                        throws (1:registry_api_errors.RegistryServiceException registryException);
+                        throws (1:user_profile_cpi_errors.UserProfileServiceException userProfileException);
 
   bool updateUserProfile (1: required user_profile_model.UserProfile userProfile)
-                          throws (1:registry_api_errors.RegistryServiceException registryException);
+                          throws (1:user_profile_cpi_errors.UserProfileServiceException userProfileException);
 
   user_profile_model.UserProfile getUserProfileById(1: required string userId, 2: required string gatewayId)
-                                                throws (1:registry_api_errors.RegistryServiceException registryException);
+                                                throws (1:user_profile_cpi_errors.UserProfileServiceException userProfileException);
 
   bool deleteUserProfile(1: required string userId)
-                                                  throws (1:registry_api_errors.RegistryServiceException registryException);
+                                                  throws (1:user_profile_cpi_errors.UserProfileServiceException userProfileException);
 
   list<user_profile_model.UserProfile> getAllUserProfilesInGateway (1: required string gatewayId, 2: required i32 offset, 3: required i32 limit)
-                          throws (1:registry_api_errors.RegistryServiceException registryException);
+                          throws (1:user_profile_cpi_errors.UserProfileServiceException userProfileException);
 
  user_profile_model.UserProfile getUserProfileByName(1: required string userName, 2: required string gatewayId)
-                                                throws (1:registry_api_errors.RegistryServiceException registryException);
+                                                throws (1:user_profile_cpi_errors.UserProfileServiceException userProfileException);
 
    bool doesUserExist(1: required string userName, 2: required string gatewayId)
-                                                   throws (1:registry_api_errors.RegistryServiceException registryException);
-
+                                                   throws (1:user_profile_cpi_errors.UserProfileServiceException userProfileException);
 
 }

@@ -20,7 +20,7 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package org.apache.airavata.userprofile.crude.cpi;
+package org.apache.airavata.userprofile.cpi;
 
 import org.apache.thrift.scheme.IScheme;
 import org.apache.thrift.scheme.SchemeFactory;
@@ -50,8 +50,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked"})
-public class user_profile_crud_cpiConstants {
+public class user_profile_cpiConstants {
 
-  public static final String USER_PROFILE_CPI_VERSION = "0.16.0";
+  public static final String USER_PROFILE_CPI_VERSION = "0.17";
 
 }
