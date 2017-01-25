@@ -21,37 +21,22 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-#ifndef airavata_data_models_TYPES_H
-#define airavata_data_models_TYPES_H
+#ifndef credential_store_data_models_CONSTANTS_H
+#define credential_store_data_models_CONSTANTS_H
 
-#include <iosfwd>
-
-#include <thrift/Thrift.h>
-#include <thrift/TApplicationException.h>
-#include <thrift/protocol/TProtocol.h>
-#include <thrift/transport/TTransport.h>
-
-#include <thrift/cxxfunctional.h>
-#include "airavata_commons_types.h"
-#include "workspace_model_types.h"
-#include "airavata_errors_types.h"
-#include "messaging_events_types.h"
-#include "security_model_types.h"
-#include "experiment_model_types.h"
-#include "job_model_types.h"
-#include "task_model_types.h"
-#include "process_model_types.h"
-#include "scheduling_model_types.h"
-#include "status_models_types.h"
-#include "data_movement_models_types.h"
-#include "replica_catalog_models_types.h"
-#include "user_profile_model_types.h"
-#include "group_manager_model_types.h"
 #include "credential_store_data_models_types.h"
 
 
-namespace apache { namespace airavata { namespace model {
 
-}}} // namespace
+class credential_store_data_modelsConstants {
+ public:
+  credential_store_data_modelsConstants();
+
+  std::string DEFAULT_ID;
+};
+
+extern const credential_store_data_modelsConstants g_credential_store_data_models_constants;
+
+
 
 #endif

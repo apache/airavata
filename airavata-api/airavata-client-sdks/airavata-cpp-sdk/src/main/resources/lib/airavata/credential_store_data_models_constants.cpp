@@ -21,16 +21,16 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-#include "airavata_api_constants.h"
+#include "credential_store_data_models_constants.h"
 
-namespace apache { namespace airavata { namespace api {
 
-const airavata_apiConstants g_airavata_api_constants;
 
-airavata_apiConstants::airavata_apiConstants() {
-  AIRAVATA_API_VERSION = "0.17.0";
+const credential_store_data_modelsConstants g_credential_store_data_models_constants;
+
+credential_store_data_modelsConstants::credential_store_data_modelsConstants() {
+  DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS";
 
 }
 
-}}} // namespace
+
 

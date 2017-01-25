@@ -24,3 +24,9 @@
 
 [pga]
 149.165.170.103
+
+[local]
+localhost          ansible_connection=local
+
+[dev-airavata]
+gw56.iu.xsede.org ansible_user=airavata

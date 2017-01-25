@@ -1,0 +1,19 @@
+---
+
+- hosts: dev-airavata
+  vars:
+      git_branch: "develop"
+      server_deployment_dir: "{{ deployment_dir }}/api-orch"
+      server_name: "api-orch"
+  roles:
+      - airavata_build
+      - airavata_deploy
+
+- hosts: dev-airavata
+  vars:
+      git_branch: "develop"
+      server_deployment_dir: "{{ deployment_dir }}/registry"
+      server_name: "regserver"
+  roles:
+      - airavata_build
+      - airavata_deploy

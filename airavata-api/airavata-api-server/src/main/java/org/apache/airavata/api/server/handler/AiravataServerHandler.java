@@ -186,7 +186,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean isUserExists(AuthzToken authzToken, String gatewayId, String userName) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
-            return getRegistryServiceClient().isUserExists(userName, gatewayId);
+            return getRegistryServiceClient().isUserExists(gatewayId, userName);
         } catch (ApplicationSettingsException | RegistryServiceException e) {
             logger.error("Error while verifying user", e);
             AiravataSystemException exception = new AiravataSystemException();

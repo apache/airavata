@@ -118,10 +118,11 @@ public class ServerMain {
 			serverList.add(API_SERVER);
 			serverList.add(ORCHESTRATOR);
 			serverList.add(GFAC_SERVER);
-			serverList.add(USER_PROFILE);
+			// serverList.add(USER_PROFILE); // Commenting temporarily since there is no current usage
 		} else if (serverList.indexOf(API_ORCH) > -1) {
 			serverList.clear();
-			serverList.add(CREDENTIAL_STORE);
+            serverList.add(REGISTRY_SERVER);  // registry server should start before everything
+            serverList.add(CREDENTIAL_STORE); // credential store should start before api server
 			serverList.add(API_SERVER);
 			serverList.add(ORCHESTRATOR);
 		} else if (serverList.indexOf(EXECUTION) > -1) {
