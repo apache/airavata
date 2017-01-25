@@ -23,7 +23,7 @@ package org.apache.airavata;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.userprofile.crude.cpi.UserProfileCrudeService;
+import org.apache.airavata.userprofile.cpi.UserProfileService;
 import org.apache.thrift.TException;
 import org.wso2.carbon.um.ws.api.stub.ClaimValue;
 import org.wso2.carbon.um.ws.api.stub.RemoteUserStoreManagerServiceStub;
@@ -108,7 +108,7 @@ public class MigrationManager {
     private boolean migrateUserProfilesToAiravata(List<UserProfileDAO> ISProfileList) throws TException, ApplicationSettingsException {
         System.out.println("Initiating migration to Airavata internal DB ...");
         UserProfileAiravataThriftClient objFactory = new UserProfileAiravataThriftClient();
-        UserProfileCrudeService.Client client = objFactory.getRegistryServiceClient();
+        UserProfileService.Client client = objFactory.getRegistryServiceClient();
         UserProfile airavataUserProfile = new UserProfile();
         // Here are the data associations...
         for(UserProfileDAO ISProfile : ISProfileList){
