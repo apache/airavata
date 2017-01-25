@@ -119,7 +119,7 @@ public class ServerMain {
 			serverList.add(API_SERVER);
 			serverList.add(ORCHESTRATOR);
 			serverList.add(GFAC_SERVER);
-			// serverList.add(USER_PROFILE); // Commenting temporarily since there is no current usage
+			serverList.add(USER_PROFILE);
 		} else if (serverList.indexOf(API_ORCH) > -1) {
 			serverList.clear();
             serverList.add(REGISTRY_SERVER);  // registry server should start before everything
