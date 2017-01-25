@@ -217,31 +217,7 @@ class Iface:
     """
     pass
 
-  def generateAndRegisterSSHKeys(self, authzToken, gatewayId, userName):
-    """
-    Generate and Register SSH Key Pair with Airavata Credential Store.
-
-    @param gatewayId
-       The identifier for the requested Gateway.
-
-    @param userName
-       The User for which the credential should be registered. For community accounts, this user is the name of the
-       community user name. For computational resources, this user name need not be the same user name on resoruces.
-
-    @return airavataCredStoreToken
-      An SSH Key pair is generated and stored in the credential store and associated with users or community account
-      belonging to a Gateway.
-
-
-
-    Parameters:
-     - authzToken
-     - gatewayId
-     - userName
-    """
-    pass
-
-  def generateAndRegisterSSHKeysWithDescription(self, authzToken, gatewayId, userName, description):
+  def generateAndRegisterSSHKeys(self, authzToken, gatewayId, userName, description, credentialOwnerType):
     """
     Generate and Register SSH Key Pair with Airavata Credential Store.
 
@@ -255,6 +231,9 @@ class Iface:
     @param description
        The description field for a credential type, all type of credential can have a description.
 
+    @param credentialOwnerType
+       The type of owner of this credential. Two possible values: GATEWAY (default) and USER
+
     @return airavataCredStoreToken
       An SSH Key pair is generated and stored in the credential store and associated with users or community account
       belonging to a Gateway.
@@ -266,6 +245,7 @@ class Iface:
      - gatewayId
      - userName
      - description
+     - credentialOwnerType
     """
     pass
 
@@ -342,34 +322,41 @@ class Iface:
     """
     pass
 
-  def getAllGatewaySSHPubKeysSummary(self, authzToken, gatewayId):
+  def getAllCredentialSummaryForGateway(self, authzToken, type, gatewayId):
     """
 
-    Get all Public Keys of the Gateway
+    Get all Credential summaries for the Gateway
 
     @param CredStoreToken
        Credential Store Token which you want to find the Public Key for.
 
+    @param credential_store_data_models.SummaryType
+       Summary type : SSH,PASSWD or CERT
+
     @param gatewayId
        This is the unique identifier of your gateway where the token and public key was generated from.
 
-    @return publicKey
+    @return List of Credential Summary Objects
 
 
 
     Parameters:
      - authzToken
+     - type
      - gatewayId
     """
     pass
 
-  def getAllSSHPubKeysSummaryForUserInGateway(self, authzToken, gatewayId, userId):
+  def getAllCredentialSummaryForUsersInGateway(self, authzToken, type, gatewayId, userId):
     """
 
-    Get all Public Key summaries for user in a Gateway
+    Get all Credential summaries for user in a Gateway
 
     @param CredStoreToken
        Credential Store Token which you want to find the Public Key for.
+
+    @param credential_store_data_models.SummaryType
+       Summary type : SSH,PASSWD or CERT
 
     @param gatewayId
        This is the unique identifier of your gateway where the token and public key was generated from.
@@ -383,6 +370,7 @@ class Iface:
 
     Parameters:
      - authzToken
+     - type
      - gatewayId
      - userId
     """
@@ -606,7 +594,7 @@ class Iface:
     """
     pass
 
-  def getExperimentStatistics(self, authzToken, gatewayId, fromTime, toTime):
+  def getExperimentStatistics(self, authzToken, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName):
     """
 
     Get Experiment Statistics
@@ -621,6 +609,15 @@ class Iface:
     @param toTime
           Ending data time.
 
+    @param userName
+          Gateway username substring with which to further filter statistics.
+
+    @param applicationName
+          Application id substring with which to further filter statistics.
+
+    @param resourceHostName
+          Hostname id substring with which to further filter statistics.
+
 
 
     Parameters:
@@ -628,6 +625,9 @@ class Iface:
      - gatewayId
      - fromTime
      - toTime
+     - userName
+     - applicationName
+     - resourceHostName
     """
     pass
 
@@ -4126,7 +4126,7 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllNotifications failed: unknown result")
 
-  def generateAndRegisterSSHKeys(self, authzToken, gatewayId, userName):
+  def generateAndRegisterSSHKeys(self, authzToken, gatewayId, userName, description, credentialOwnerType):
     """
     Generate and Register SSH Key Pair with Airavata Credential Store.
 
@@ -4136,6 +4136,12 @@ class Client(Iface):
     @param userName
        The User for which the credential should be registered. For community accounts, this user is the name of the
        community user name. For computational resources, this user name need not be the same user name on resoruces.
+
+    @param description
+       The description field for a credential type, all type of credential can have a description.
+
+    @param credentialOwnerType
+       The type of owner of this credential. Two possible values: GATEWAY (default) and USER
 
     @return airavataCredStoreToken
       An SSH Key pair is generated and stored in the credential store and associated with users or community account
@@ -4147,16 +4153,20 @@ class Client(Iface):
      - authzToken
      - gatewayId
      - userName
+     - description
+     - credentialOwnerType
     """
-    self.send_generateAndRegisterSSHKeys(authzToken, gatewayId, userName)
+    self.send_generateAndRegisterSSHKeys(authzToken, gatewayId, userName, description, credentialOwnerType)
     return self.recv_generateAndRegisterSSHKeys()
 
-  def send_generateAndRegisterSSHKeys(self, authzToken, gatewayId, userName):
+  def send_generateAndRegisterSSHKeys(self, authzToken, gatewayId, userName, description, credentialOwnerType):
     self._oprot.writeMessageBegin('generateAndRegisterSSHKeys', TMessageType.CALL, self._seqid)
     args = generateAndRegisterSSHKeys_args()
     args.authzToken = authzToken
     args.gatewayId = gatewayId
     args.userName = userName
+    args.description = description
+    args.credentialOwnerType = credentialOwnerType
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
@@ -4181,67 +4191,6 @@ class Client(Iface):
     if result.ase is not None:
       raise result.ase
     raise TApplicationException(TApplicationException.MISSING_RESULT, "generateAndRegisterSSHKeys failed: unknown result")
-
-  def generateAndRegisterSSHKeysWithDescription(self, authzToken, gatewayId, userName, description):
-    """
-    Generate and Register SSH Key Pair with Airavata Credential Store.
-
-    @param gatewayId
-       The identifier for the requested Gateway.
-
-    @param userName
-       The User for which the credential should be registered. For community accounts, this user is the name of the
-       community user name. For computational resources, this user name need not be the same user name on resoruces.
-
-    @param description
-       The description field for a credential type, all type of credential can have a description.
-
-    @return airavataCredStoreToken
-      An SSH Key pair is generated and stored in the credential store and associated with users or community account
-      belonging to a Gateway.
-
-
-
-    Parameters:
-     - authzToken
-     - gatewayId
-     - userName
-     - description
-    """
-    self.send_generateAndRegisterSSHKeysWithDescription(authzToken, gatewayId, userName, description)
-    return self.recv_generateAndRegisterSSHKeysWithDescription()
-
-  def send_generateAndRegisterSSHKeysWithDescription(self, authzToken, gatewayId, userName, description):
-    self._oprot.writeMessageBegin('generateAndRegisterSSHKeysWithDescription', TMessageType.CALL, self._seqid)
-    args = generateAndRegisterSSHKeysWithDescription_args()
-    args.authzToken = authzToken
-    args.gatewayId = gatewayId
-    args.userName = userName
-    args.description = description
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_generateAndRegisterSSHKeysWithDescription(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = generateAndRegisterSSHKeysWithDescription_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    if result.ire is not None:
-      raise result.ire
-    if result.ace is not None:
-      raise result.ace
-    if result.ase is not None:
-      raise result.ase
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "generateAndRegisterSSHKeysWithDescription failed: unknown result")
 
   def registerPwdCredential(self, authzToken, gatewayId, portalUserName, loginUserName, password, description):
     """
@@ -4414,38 +4363,43 @@ class Client(Iface):
       raise result.ase
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllGatewaySSHPubKeys failed: unknown result")
 
-  def getAllGatewaySSHPubKeysSummary(self, authzToken, gatewayId):
+  def getAllCredentialSummaryForGateway(self, authzToken, type, gatewayId):
     """
 
-    Get all Public Keys of the Gateway
+    Get all Credential summaries for the Gateway
 
     @param CredStoreToken
        Credential Store Token which you want to find the Public Key for.
 
+    @param credential_store_data_models.SummaryType
+       Summary type : SSH,PASSWD or CERT
+
     @param gatewayId
        This is the unique identifier of your gateway where the token and public key was generated from.
 
-    @return publicKey
+    @return List of Credential Summary Objects
 
 
 
     Parameters:
      - authzToken
+     - type
      - gatewayId
     """
-    self.send_getAllGatewaySSHPubKeysSummary(authzToken, gatewayId)
-    return self.recv_getAllGatewaySSHPubKeysSummary()
+    self.send_getAllCredentialSummaryForGateway(authzToken, type, gatewayId)
+    return self.recv_getAllCredentialSummaryForGateway()
 
-  def send_getAllGatewaySSHPubKeysSummary(self, authzToken, gatewayId):
-    self._oprot.writeMessageBegin('getAllGatewaySSHPubKeysSummary', TMessageType.CALL, self._seqid)
-    args = getAllGatewaySSHPubKeysSummary_args()
+  def send_getAllCredentialSummaryForGateway(self, authzToken, type, gatewayId):
+    self._oprot.writeMessageBegin('getAllCredentialSummaryForGateway', TMessageType.CALL, self._seqid)
+    args = getAllCredentialSummaryForGateway_args()
     args.authzToken = authzToken
+    args.type = type
     args.gatewayId = gatewayId
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
 
-  def recv_getAllGatewaySSHPubKeysSummary(self):
+  def recv_getAllCredentialSummaryForGateway(self):
     iprot = self._iprot
     (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
@@ -4453,7 +4407,7 @@ class Client(Iface):
       x.read(iprot)
       iprot.readMessageEnd()
       raise x
-    result = getAllGatewaySSHPubKeysSummary_result()
+    result = getAllCredentialSummaryForGateway_result()
     result.read(iprot)
     iprot.readMessageEnd()
     if result.success is not None:
@@ -4464,15 +4418,18 @@ class Client(Iface):
       raise result.ace
     if result.ase is not None:
       raise result.ase
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllGatewaySSHPubKeysSummary failed: unknown result")
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllCredentialSummaryForGateway failed: unknown result")
 
-  def getAllSSHPubKeysSummaryForUserInGateway(self, authzToken, gatewayId, userId):
+  def getAllCredentialSummaryForUsersInGateway(self, authzToken, type, gatewayId, userId):
     """
 
-    Get all Public Key summaries for user in a Gateway
+    Get all Credential summaries for user in a Gateway
 
     @param CredStoreToken
        Credential Store Token which you want to find the Public Key for.
+
+    @param credential_store_data_models.SummaryType
+       Summary type : SSH,PASSWD or CERT
 
     @param gatewayId
        This is the unique identifier of your gateway where the token and public key was generated from.
@@ -4486,23 +4443,25 @@ class Client(Iface):
 
     Parameters:
      - authzToken
+     - type
      - gatewayId
      - userId
     """
-    self.send_getAllSSHPubKeysSummaryForUserInGateway(authzToken, gatewayId, userId)
-    return self.recv_getAllSSHPubKeysSummaryForUserInGateway()
+    self.send_getAllCredentialSummaryForUsersInGateway(authzToken, type, gatewayId, userId)
+    return self.recv_getAllCredentialSummaryForUsersInGateway()
 
-  def send_getAllSSHPubKeysSummaryForUserInGateway(self, authzToken, gatewayId, userId):
-    self._oprot.writeMessageBegin('getAllSSHPubKeysSummaryForUserInGateway', TMessageType.CALL, self._seqid)
-    args = getAllSSHPubKeysSummaryForUserInGateway_args()
+  def send_getAllCredentialSummaryForUsersInGateway(self, authzToken, type, gatewayId, userId):
+    self._oprot.writeMessageBegin('getAllCredentialSummaryForUsersInGateway', TMessageType.CALL, self._seqid)
+    args = getAllCredentialSummaryForUsersInGateway_args()
     args.authzToken = authzToken
+    args.type = type
     args.gatewayId = gatewayId
     args.userId = userId
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
 
-  def recv_getAllSSHPubKeysSummaryForUserInGateway(self):
+  def recv_getAllCredentialSummaryForUsersInGateway(self):
     iprot = self._iprot
     (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
@@ -4510,7 +4469,7 @@ class Client(Iface):
       x.read(iprot)
       iprot.readMessageEnd()
       raise x
-    result = getAllSSHPubKeysSummaryForUserInGateway_result()
+    result = getAllCredentialSummaryForUsersInGateway_result()
     result.read(iprot)
     iprot.readMessageEnd()
     if result.success is not None:
@@ -4521,7 +4480,7 @@ class Client(Iface):
       raise result.ace
     if result.ase is not None:
       raise result.ase
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllSSHPubKeysSummaryForUserInGateway failed: unknown result")
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllCredentialSummaryForUsersInGateway failed: unknown result")
 
   def getAllGatewayPWDCredentials(self, authzToken, gatewayId):
     """
@@ -5084,7 +5043,7 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "searchExperiments failed: unknown result")
 
-  def getExperimentStatistics(self, authzToken, gatewayId, fromTime, toTime):
+  def getExperimentStatistics(self, authzToken, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName):
     """
 
     Get Experiment Statistics
@@ -5099,6 +5058,15 @@ class Client(Iface):
     @param toTime
           Ending data time.
 
+    @param userName
+          Gateway username substring with which to further filter statistics.
+
+    @param applicationName
+          Application id substring with which to further filter statistics.
+
+    @param resourceHostName
+          Hostname id substring with which to further filter statistics.
+
 
 
     Parameters:
@@ -5106,17 +5074,23 @@ class Client(Iface):
      - gatewayId
      - fromTime
      - toTime
+     - userName
+     - applicationName
+     - resourceHostName
     """
-    self.send_getExperimentStatistics(authzToken, gatewayId, fromTime, toTime)
+    self.send_getExperimentStatistics(authzToken, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName)
     return self.recv_getExperimentStatistics()
 
-  def send_getExperimentStatistics(self, authzToken, gatewayId, fromTime, toTime):
+  def send_getExperimentStatistics(self, authzToken, gatewayId, fromTime, toTime, userName, applicationName, resourceHostName):
     self._oprot.writeMessageBegin('getExperimentStatistics', TMessageType.CALL, self._seqid)
     args = getExperimentStatistics_args()
     args.authzToken = authzToken
     args.gatewayId = gatewayId
     args.fromTime = fromTime
     args.toTime = toTime
+    args.userName = userName
+    args.applicationName = applicationName
+    args.resourceHostName = resourceHostName
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
@@ -12658,12 +12632,11 @@ class Processor(Iface, TProcessor):
     self._processMap["getNotification"] = Processor.process_getNotification
     self._processMap["getAllNotifications"] = Processor.process_getAllNotifications
     self._processMap["generateAndRegisterSSHKeys"] = Processor.process_generateAndRegisterSSHKeys
-    self._processMap["generateAndRegisterSSHKeysWithDescription"] = Processor.process_generateAndRegisterSSHKeysWithDescription
     self._processMap["registerPwdCredential"] = Processor.process_registerPwdCredential
     self._processMap["getSSHPubKey"] = Processor.process_getSSHPubKey
     self._processMap["getAllGatewaySSHPubKeys"] = Processor.process_getAllGatewaySSHPubKeys
-    self._processMap["getAllGatewaySSHPubKeysSummary"] = Processor.process_getAllGatewaySSHPubKeysSummary
-    self._processMap["getAllSSHPubKeysSummaryForUserInGateway"] = Processor.process_getAllSSHPubKeysSummaryForUserInGateway
+    self._processMap["getAllCredentialSummaryForGateway"] = Processor.process_getAllCredentialSummaryForGateway
+    self._processMap["getAllCredentialSummaryForUsersInGateway"] = Processor.process_getAllCredentialSummaryForUsersInGateway
     self._processMap["getAllGatewayPWDCredentials"] = Processor.process_getAllGatewayPWDCredentials
     self._processMap["deleteSSHPubKey"] = Processor.process_deleteSSHPubKey
     self._processMap["deletePWDCredential"] = Processor.process_deletePWDCredential
@@ -13269,7 +13242,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = generateAndRegisterSSHKeys_result()
     try:
-      result.success = self._handler.generateAndRegisterSSHKeys(args.authzToken, args.gatewayId, args.userName)
+      result.success = self._handler.generateAndRegisterSSHKeys(args.authzToken, args.gatewayId, args.userName, args.description, args.credentialOwnerType)
       msg_type = TMessageType.REPLY
     except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
       raise
@@ -13287,34 +13260,6 @@ class Processor(Iface, TProcessor):
       logging.exception(ex)
       result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
     oprot.writeMessageBegin("generateAndRegisterSSHKeys", msg_type, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_generateAndRegisterSSHKeysWithDescription(self, seqid, iprot, oprot):
-    args = generateAndRegisterSSHKeysWithDescription_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = generateAndRegisterSSHKeysWithDescription_result()
-    try:
-      result.success = self._handler.generateAndRegisterSSHKeysWithDescription(args.authzToken, args.gatewayId, args.userName, args.description)
-      msg_type = TMessageType.REPLY
-    except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
-      raise
-    except apache.airavata.api.error.ttypes.InvalidRequestException as ire:
-      msg_type = TMessageType.REPLY
-      result.ire = ire
-    except apache.airavata.api.error.ttypes.AiravataClientException as ace:
-      msg_type = TMessageType.REPLY
-      result.ace = ace
-    except apache.airavata.api.error.ttypes.AiravataSystemException as ase:
-      msg_type = TMessageType.REPLY
-      result.ase = ase
-    except Exception as ex:
-      msg_type = TMessageType.EXCEPTION
-      logging.exception(ex)
-      result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
-    oprot.writeMessageBegin("generateAndRegisterSSHKeysWithDescription", msg_type, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -13403,13 +13348,13 @@ class Processor(Iface, TProcessor):
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
-  def process_getAllGatewaySSHPubKeysSummary(self, seqid, iprot, oprot):
-    args = getAllGatewaySSHPubKeysSummary_args()
+  def process_getAllCredentialSummaryForGateway(self, seqid, iprot, oprot):
+    args = getAllCredentialSummaryForGateway_args()
     args.read(iprot)
     iprot.readMessageEnd()
-    result = getAllGatewaySSHPubKeysSummary_result()
+    result = getAllCredentialSummaryForGateway_result()
     try:
-      result.success = self._handler.getAllGatewaySSHPubKeysSummary(args.authzToken, args.gatewayId)
+      result.success = self._handler.getAllCredentialSummaryForGateway(args.authzToken, args.type, args.gatewayId)
       msg_type = TMessageType.REPLY
     except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
       raise
@@ -13426,18 +13371,18 @@ class Processor(Iface, TProcessor):
       msg_type = TMessageType.EXCEPTION
       logging.exception(ex)
       result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
-    oprot.writeMessageBegin("getAllGatewaySSHPubKeysSummary", msg_type, seqid)
+    oprot.writeMessageBegin("getAllCredentialSummaryForGateway", msg_type, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
-  def process_getAllSSHPubKeysSummaryForUserInGateway(self, seqid, iprot, oprot):
-    args = getAllSSHPubKeysSummaryForUserInGateway_args()
+  def process_getAllCredentialSummaryForUsersInGateway(self, seqid, iprot, oprot):
+    args = getAllCredentialSummaryForUsersInGateway_args()
     args.read(iprot)
     iprot.readMessageEnd()
-    result = getAllSSHPubKeysSummaryForUserInGateway_result()
+    result = getAllCredentialSummaryForUsersInGateway_result()
     try:
-      result.success = self._handler.getAllSSHPubKeysSummaryForUserInGateway(args.authzToken, args.gatewayId, args.userId)
+      result.success = self._handler.getAllCredentialSummaryForUsersInGateway(args.authzToken, args.type, args.gatewayId, args.userId)
       msg_type = TMessageType.REPLY
     except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
       raise
@@ -13454,7 +13399,7 @@ class Processor(Iface, TProcessor):
       msg_type = TMessageType.EXCEPTION
       logging.exception(ex)
       result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
-    oprot.writeMessageBegin("getAllSSHPubKeysSummaryForUserInGateway", msg_type, seqid)
+    oprot.writeMessageBegin("getAllCredentialSummaryForUsersInGateway", msg_type, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -13775,7 +13720,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = getExperimentStatistics_result()
     try:
-      result.success = self._handler.getExperimentStatistics(args.authzToken, args.gatewayId, args.fromTime, args.toTime)
+      result.success = self._handler.getExperimentStatistics(args.authzToken, args.gatewayId, args.fromTime, args.toTime, args.userName, args.applicationName, args.resourceHostName)
       msg_type = TMessageType.REPLY
     except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
       raise
@@ -21024,6 +20969,8 @@ class generateAndRegisterSSHKeys_args:
    - authzToken
    - gatewayId
    - userName
+   - description
+   - credentialOwnerType
   """
 
   thrift_spec = (
@@ -21031,12 +20978,16 @@ class generateAndRegisterSSHKeys_args:
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
     (2, TType.STRING, 'gatewayId', None, None, ), # 2
     (3, TType.STRING, 'userName', None, None, ), # 3
+    (4, TType.STRING, 'description', None, None, ), # 4
+    (5, TType.I32, 'credentialOwnerType', None, None, ), # 5
   )
 
-  def __init__(self, authzToken=None, gatewayId=None, userName=None,):
+  def __init__(self, authzToken=None, gatewayId=None, userName=None, description=None, credentialOwnerType=None,):
     self.authzToken = authzToken
     self.gatewayId = gatewayId
     self.userName = userName
+    self.description = description
+    self.credentialOwnerType = credentialOwnerType
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -21063,6 +21014,16 @@ class generateAndRegisterSSHKeys_args:
           self.userName = iprot.readString()
         else:
           iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRING:
+          self.description = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.I32:
+          self.credentialOwnerType = iprot.readI32()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -21085,6 +21046,14 @@ class generateAndRegisterSSHKeys_args:
       oprot.writeFieldBegin('userName', TType.STRING, 3)
       oprot.writeString(self.userName)
       oprot.writeFieldEnd()
+    if self.description is not None:
+      oprot.writeFieldBegin('description', TType.STRING, 4)
+      oprot.writeString(self.description)
+      oprot.writeFieldEnd()
+    if self.credentialOwnerType is not None:
+      oprot.writeFieldBegin('credentialOwnerType', TType.I32, 5)
+      oprot.writeI32(self.credentialOwnerType)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -21103,6 +21072,8 @@ class generateAndRegisterSSHKeys_args:
     value = (value * 31) ^ hash(self.authzToken)
     value = (value * 31) ^ hash(self.gatewayId)
     value = (value * 31) ^ hash(self.userName)
+    value = (value * 31) ^ hash(self.description)
+    value = (value * 31) ^ hash(self.credentialOwnerType)
     return value
 
   def __repr__(self):
@@ -21180,225 +21151,6 @@ class generateAndRegisterSSHKeys_result:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('generateAndRegisterSSHKeys_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.STRING, 0)
-      oprot.writeString(self.success)
-      oprot.writeFieldEnd()
-    if self.ire is not None:
-      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
-      self.ire.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ace is not None:
-      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
-      self.ace.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ase is not None:
-      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
-      self.ase.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.ire)
-    value = (value * 31) ^ hash(self.ace)
-    value = (value * 31) ^ hash(self.ase)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class generateAndRegisterSSHKeysWithDescription_args:
-  """
-  Attributes:
-   - authzToken
-   - gatewayId
-   - userName
-   - description
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
-    (2, TType.STRING, 'gatewayId', None, None, ), # 2
-    (3, TType.STRING, 'userName', None, None, ), # 3
-    (4, TType.STRING, 'description', None, None, ), # 4
-  )
-
-  def __init__(self, authzToken=None, gatewayId=None, userName=None, description=None,):
-    self.authzToken = authzToken
-    self.gatewayId = gatewayId
-    self.userName = userName
-    self.description = description
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRUCT:
-          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
-          self.authzToken.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.gatewayId = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRING:
-          self.userName = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 4:
-        if ftype == TType.STRING:
-          self.description = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('generateAndRegisterSSHKeysWithDescription_args')
-    if self.authzToken is not None:
-      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
-      self.authzToken.write(oprot)
-      oprot.writeFieldEnd()
-    if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
-      oprot.writeString(self.gatewayId)
-      oprot.writeFieldEnd()
-    if self.userName is not None:
-      oprot.writeFieldBegin('userName', TType.STRING, 3)
-      oprot.writeString(self.userName)
-      oprot.writeFieldEnd()
-    if self.description is not None:
-      oprot.writeFieldBegin('description', TType.STRING, 4)
-      oprot.writeString(self.description)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.authzToken is None:
-      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
-    if self.gatewayId is None:
-      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
-    if self.userName is None:
-      raise TProtocol.TProtocolException(message='Required field userName is unset!')
-    if self.description is None:
-      raise TProtocol.TProtocolException(message='Required field description is unset!')
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.authzToken)
-    value = (value * 31) ^ hash(self.gatewayId)
-    value = (value * 31) ^ hash(self.userName)
-    value = (value * 31) ^ hash(self.description)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class generateAndRegisterSSHKeysWithDescription_result:
-  """
-  Attributes:
-   - success
-   - ire
-   - ace
-   - ase
-  """
-
-  thrift_spec = (
-    (0, TType.STRING, 'success', None, None, ), # 0
-    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
-    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
-    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
-  )
-
-  def __init__(self, success=None, ire=None, ace=None, ase=None,):
-    self.success = success
-    self.ire = ire
-    self.ace = ace
-    self.ase = ase
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.STRING:
-          self.success = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
-          self.ire.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRUCT:
-          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
-          self.ace.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRUCT:
-          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
-          self.ase.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('generateAndRegisterSSHKeysWithDescription_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.STRING, 0)
       oprot.writeString(self.success)
@@ -22093,21 +21845,24 @@ class getAllGatewaySSHPubKeys_result:
   def __ne__(self, other):
     return not (self == other)
 
-class getAllGatewaySSHPubKeysSummary_args:
+class getAllCredentialSummaryForGateway_args:
   """
   Attributes:
    - authzToken
+   - type
    - gatewayId
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
-    (2, TType.STRING, 'gatewayId', None, None, ), # 2
+    (2, TType.I32, 'type', None, None, ), # 2
+    (3, TType.STRING, 'gatewayId', None, None, ), # 3
   )
 
-  def __init__(self, authzToken=None, gatewayId=None,):
+  def __init__(self, authzToken=None, type=None, gatewayId=None,):
     self.authzToken = authzToken
+    self.type = type
     self.gatewayId = gatewayId
 
   def read(self, iprot):
@@ -22126,6 +21881,11 @@ class getAllGatewaySSHPubKeysSummary_args:
         else:
           iprot.skip(ftype)
       elif fid == 2:
+        if ftype == TType.I32:
+          self.type = iprot.readI32()
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
         if ftype == TType.STRING:
           self.gatewayId = iprot.readString()
         else:
@@ -22139,13 +21899,17 @@ class getAllGatewaySSHPubKeysSummary_args:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('getAllGatewaySSHPubKeysSummary_args')
+    oprot.writeStructBegin('getAllCredentialSummaryForGateway_args')
     if self.authzToken is not None:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
       oprot.writeFieldEnd()
+    if self.type is not None:
+      oprot.writeFieldBegin('type', TType.I32, 2)
+      oprot.writeI32(self.type)
+      oprot.writeFieldEnd()
     if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 3)
       oprot.writeString(self.gatewayId)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -22154,6 +21918,8 @@ class getAllGatewaySSHPubKeysSummary_args:
   def validate(self):
     if self.authzToken is None:
       raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.type is None:
+      raise TProtocol.TProtocolException(message='Required field type is unset!')
     if self.gatewayId is None:
       raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
     return
@@ -22162,6 +21928,7 @@ class getAllGatewaySSHPubKeysSummary_args:
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.type)
     value = (value * 31) ^ hash(self.gatewayId)
     return value
 
@@ -22176,7 +21943,7 @@ class getAllGatewaySSHPubKeysSummary_args:
   def __ne__(self, other):
     return not (self == other)
 
-class getAllGatewaySSHPubKeysSummary_result:
+class getAllCredentialSummaryForGateway_result:
   """
   Attributes:
    - success
@@ -22186,7 +21953,7 @@ class getAllGatewaySSHPubKeysSummary_result:
   """
 
   thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.appcatalog.credentialsummary.ttypes.CredentialSummary, apache.airavata.model.appcatalog.credentialsummary.ttypes.CredentialSummary.thrift_spec)), None, ), # 0
+    (0, TType.LIST, 'success', (TType.STRUCT,(credential_store_data_models.ttypes.CredentialSummary, credential_store_data_models.ttypes.CredentialSummary.thrift_spec)), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -22212,7 +21979,7 @@ class getAllGatewaySSHPubKeysSummary_result:
           self.success = []
           (_etype33, _size30) = iprot.readListBegin()
           for _i34 in xrange(_size30):
-            _elem35 = apache.airavata.model.appcatalog.credentialsummary.ttypes.CredentialSummary()
+            _elem35 = credential_store_data_models.ttypes.CredentialSummary()
             _elem35.read(iprot)
             self.success.append(_elem35)
           iprot.readListEnd()
@@ -22245,7 +22012,7 @@ class getAllGatewaySSHPubKeysSummary_result:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('getAllGatewaySSHPubKeysSummary_result')
+    oprot.writeStructBegin('getAllCredentialSummaryForGateway_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
@@ -22291,10 +22058,11 @@ class getAllGatewaySSHPubKeysSummary_result:
   def __ne__(self, other):
     return not (self == other)
 
-class getAllSSHPubKeysSummaryForUserInGateway_args:
+class getAllCredentialSummaryForUsersInGateway_args:
   """
   Attributes:
    - authzToken
+   - type
    - gatewayId
    - userId
   """
@@ -22302,12 +22070,14 @@ class getAllSSHPubKeysSummaryForUserInGateway_args:
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
-    (2, TType.STRING, 'gatewayId', None, None, ), # 2
-    (3, TType.STRING, 'userId', None, None, ), # 3
+    (2, TType.I32, 'type', None, None, ), # 2
+    (3, TType.STRING, 'gatewayId', None, None, ), # 3
+    (4, TType.STRING, 'userId', None, None, ), # 4
   )
 
-  def __init__(self, authzToken=None, gatewayId=None, userId=None,):
+  def __init__(self, authzToken=None, type=None, gatewayId=None, userId=None,):
     self.authzToken = authzToken
+    self.type = type
     self.gatewayId = gatewayId
     self.userId = userId
 
@@ -22327,11 +22097,16 @@ class getAllSSHPubKeysSummaryForUserInGateway_args:
         else:
           iprot.skip(ftype)
       elif fid == 2:
+        if ftype == TType.I32:
+          self.type = iprot.readI32()
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
         if ftype == TType.STRING:
           self.gatewayId = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 3:
+      elif fid == 4:
         if ftype == TType.STRING:
           self.userId = iprot.readString()
         else:
@@ -22345,17 +22120,21 @@ class getAllSSHPubKeysSummaryForUserInGateway_args:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('getAllSSHPubKeysSummaryForUserInGateway_args')
+    oprot.writeStructBegin('getAllCredentialSummaryForUsersInGateway_args')
     if self.authzToken is not None:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
       oprot.writeFieldEnd()
+    if self.type is not None:
+      oprot.writeFieldBegin('type', TType.I32, 2)
+      oprot.writeI32(self.type)
+      oprot.writeFieldEnd()
     if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 3)
       oprot.writeString(self.gatewayId)
       oprot.writeFieldEnd()
     if self.userId is not None:
-      oprot.writeFieldBegin('userId', TType.STRING, 3)
+      oprot.writeFieldBegin('userId', TType.STRING, 4)
       oprot.writeString(self.userId)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -22364,6 +22143,8 @@ class getAllSSHPubKeysSummaryForUserInGateway_args:
   def validate(self):
     if self.authzToken is None:
       raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.type is None:
+      raise TProtocol.TProtocolException(message='Required field type is unset!')
     if self.gatewayId is None:
       raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
     if self.userId is None:
@@ -22374,6 +22155,7 @@ class getAllSSHPubKeysSummaryForUserInGateway_args:
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.type)
     value = (value * 31) ^ hash(self.gatewayId)
     value = (value * 31) ^ hash(self.userId)
     return value
@@ -22389,7 +22171,7 @@ class getAllSSHPubKeysSummaryForUserInGateway_args:
   def __ne__(self, other):
     return not (self == other)
 
-class getAllSSHPubKeysSummaryForUserInGateway_result:
+class getAllCredentialSummaryForUsersInGateway_result:
   """
   Attributes:
    - success
@@ -22399,7 +22181,7 @@ class getAllSSHPubKeysSummaryForUserInGateway_result:
   """
 
   thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.appcatalog.credentialsummary.ttypes.CredentialSummary, apache.airavata.model.appcatalog.credentialsummary.ttypes.CredentialSummary.thrift_spec)), None, ), # 0
+    (0, TType.LIST, 'success', (TType.STRUCT,(credential_store_data_models.ttypes.CredentialSummary, credential_store_data_models.ttypes.CredentialSummary.thrift_spec)), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -22425,7 +22207,7 @@ class getAllSSHPubKeysSummaryForUserInGateway_result:
           self.success = []
           (_etype40, _size37) = iprot.readListBegin()
           for _i41 in xrange(_size37):
-            _elem42 = apache.airavata.model.appcatalog.credentialsummary.ttypes.CredentialSummary()
+            _elem42 = credential_store_data_models.ttypes.CredentialSummary()
             _elem42.read(iprot)
             self.success.append(_elem42)
           iprot.readListEnd()
@@ -22458,7 +22240,7 @@ class getAllSSHPubKeysSummaryForUserInGateway_result:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('getAllSSHPubKeysSummaryForUserInGateway_result')
+    oprot.writeStructBegin('getAllCredentialSummaryForUsersInGateway_result')
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
@@ -24810,6 +24592,9 @@ class getExperimentStatistics_args:
    - gatewayId
    - fromTime
    - toTime
+   - userName
+   - applicationName
+   - resourceHostName
   """
 
   thrift_spec = (
@@ -24818,13 +24603,19 @@ class getExperimentStatistics_args:
     (2, TType.STRING, 'gatewayId', None, None, ), # 2
     (3, TType.I64, 'fromTime', None, None, ), # 3
     (4, TType.I64, 'toTime', None, None, ), # 4
+    (5, TType.STRING, 'userName', None, None, ), # 5
+    (6, TType.STRING, 'applicationName', None, None, ), # 6
+    (7, TType.STRING, 'resourceHostName', None, None, ), # 7
   )
 
-  def __init__(self, authzToken=None, gatewayId=None, fromTime=None, toTime=None,):
+  def __init__(self, authzToken=None, gatewayId=None, fromTime=None, toTime=None, userName=None, applicationName=None, resourceHostName=None,):
     self.authzToken = authzToken
     self.gatewayId = gatewayId
     self.fromTime = fromTime
     self.toTime = toTime
+    self.userName = userName
+    self.applicationName = applicationName
+    self.resourceHostName = resourceHostName
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -24856,6 +24647,21 @@ class getExperimentStatistics_args:
           self.toTime = iprot.readI64()
         else:
           iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.STRING:
+          self.userName = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 6:
+        if ftype == TType.STRING:
+          self.applicationName = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 7:
+        if ftype == TType.STRING:
+          self.resourceHostName = iprot.readString()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -24882,6 +24688,18 @@ class getExperimentStatistics_args:
       oprot.writeFieldBegin('toTime', TType.I64, 4)
       oprot.writeI64(self.toTime)
       oprot.writeFieldEnd()
+    if self.userName is not None:
+      oprot.writeFieldBegin('userName', TType.STRING, 5)
+      oprot.writeString(self.userName)
+      oprot.writeFieldEnd()
+    if self.applicationName is not None:
+      oprot.writeFieldBegin('applicationName', TType.STRING, 6)
+      oprot.writeString(self.applicationName)
+      oprot.writeFieldEnd()
+    if self.resourceHostName is not None:
+      oprot.writeFieldBegin('resourceHostName', TType.STRING, 7)
+      oprot.writeString(self.resourceHostName)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -24903,6 +24721,9 @@ class getExperimentStatistics_args:
     value = (value * 31) ^ hash(self.gatewayId)
     value = (value * 31) ^ hash(self.fromTime)
     value = (value * 31) ^ hash(self.toTime)
+    value = (value * 31) ^ hash(self.userName)
+    value = (value * 31) ^ hash(self.applicationName)
+    value = (value * 31) ^ hash(self.resourceHostName)
     return value
 
   def __repr__(self):

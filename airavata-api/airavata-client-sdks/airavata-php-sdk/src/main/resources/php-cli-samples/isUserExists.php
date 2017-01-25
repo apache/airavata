@@ -31,7 +31,7 @@ global $authToken;
 
 try
 {
-    $version = $airavataclient->getAPIVersion($authToken);
+    $bool = $airavataclient->isUserExists($authToken, $airavataconfig['GATEWAY_ID'], "Ultrascan_Production");
 }
 catch (TException $texp)
 {
@@ -39,7 +39,12 @@ catch (TException $texp)
 }
 
 
-echo 'Airavata server version is ' . $version;
+if ($bool == true) {
+    echo 'User Exists';
+} else {
+    echo 'User does not Exist';
+}
+
 
 
 $transport->close();

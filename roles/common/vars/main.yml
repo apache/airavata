@@ -1,5 +1,0 @@
----
-# Common variables
-airavata_source_dir: "{{ user_home }}/source"
-
-...

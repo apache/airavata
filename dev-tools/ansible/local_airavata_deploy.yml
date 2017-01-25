@@ -1,0 +1,9 @@
+---
+
+- hosts: local
+  vars:
+      server_deployment_dir: "{{ deployment_dir }}"
+      server_name: all
+  roles:
+      - airavata_build
+      - airavata_deploy

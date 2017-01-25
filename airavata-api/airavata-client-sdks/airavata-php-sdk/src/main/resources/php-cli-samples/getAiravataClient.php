@@ -44,9 +44,9 @@ require_once $GLOBALS['THRIFT_ROOT'] . 'StringFunc/Core.php';
 $GLOBALS['AIRAVATA_ROOT'] = $airavataconfig['AIRAVATA_PHP_STUBS_DIR'];
 require_once $GLOBALS['AIRAVATA_ROOT'] . 'API/Airavata.php';
 require_once $GLOBALS['AIRAVATA_ROOT'] . 'API/Error/Types.php';
+require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/Security/Types.php';
 require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/Workspace/Types.php';
-require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/Workspace/Experiment/Types.php';
-require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/AppCatalog/Types.php';
+require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/Experiment/Types.php';
 require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/AppCatalog/ComputeResource/Types.php';
 require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/AppCatalog/AppDeployment/Types.php';
 require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/AppCatalog/AppInterface/Types.php';
@@ -59,6 +59,7 @@ use Thrift\Protocol\TBinaryProtocol;
 use Thrift\Transport\TBufferedTransport;
 use Thrift\Transport\TSocket;
 use Airavata\API\AiravataClient;
+use Airavata\Model\Security\AuthzToken;
 
 $transport = new TSocket($airavataconfig['AIRAVATA_SERVER'], $airavataconfig['AIRAVATA_PORT']);
 $transport->setRecvTimeout($airavataconfig['AIRAVATA_TIMEOUT']);
@@ -67,6 +68,9 @@ $transport->setSendTimeout($airavataconfig['AIRAVATA_TIMEOUT']);
 $protocol = new TBinaryProtocol($transport);
 $transport->open();
 $airavataclient = new AiravataClient($protocol);
+
+$authToken = new AuthzToken();
+$authToken->accessToken = "";
 
 function sampleDisabled()
 {

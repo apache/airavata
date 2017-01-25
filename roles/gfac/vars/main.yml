@@ -1,3 +1,0 @@
----
-# Gfac related variables
-gfac_dir: "{{ deployment_dir }}/gfac-instance"

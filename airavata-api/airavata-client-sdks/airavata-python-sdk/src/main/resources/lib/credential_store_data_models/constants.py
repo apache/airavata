@@ -9,4 +9,4 @@
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
 from ttypes import *
 
-AIRAVATA_API_VERSION = "0.17.0"
+DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
