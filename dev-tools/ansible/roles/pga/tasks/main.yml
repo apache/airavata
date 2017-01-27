@@ -74,11 +74,11 @@
 #   become: yes
 
 - name: copy httpd.conf file
-  template: src=httpd.conf.j2 dest="{{ httpd_conf_file_location }}/httpd.conf"
+  template: src={{ httpd_name[ansible_os_family] }}.conf.j2 dest={{ httpd_conf_file_location[ansible_os_family] }}
   become: yes
   notify:
     - restart httpd
 
-- name: start httpd service
-  service: name=httpd state=started
-  become: yes
+#- name: start httpd service
+#  service: name=httpd state=started
+#  become: yes
