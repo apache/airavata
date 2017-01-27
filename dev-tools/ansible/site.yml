@@ -73,10 +73,4 @@
     - env_setup
     - pga
 
-- hosts: pga-test
-  tags: pga-test
-  roles:
-    - env_setup
-    - pga
-
 ...
