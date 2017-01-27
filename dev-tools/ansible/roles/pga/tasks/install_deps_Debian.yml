@@ -28,11 +28,21 @@
   command: php5enmod mcrypt
   become: yes
 
+- name: enable apache rewrite
+  command: a2enmod rewrite
+  become: yes
+
 - name: create apache2 logdir
   file:
-   path: /etc/apache2/logs
-   state: directory
-   owner: www-data
-   group: www-data
-   mode: 0775
+    path: /etc/apache2/logs
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0775
    
+- name: set DocumentRoot in default site-enabled
+  lineinfile: 
+    dest: /etc/apache2/sites-enabled/000-default.conf
+    line: '	DocumentRoot "/var/www/html/php-gateway/public"'
+    regexp: '^\s+DocumentRoot'
+    state: present
