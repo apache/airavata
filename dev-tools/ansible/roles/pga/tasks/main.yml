@@ -12,7 +12,6 @@
 - name: delete previous deployments
   file: path="{{ doc_root_dir }}" state=absent
 
-
 - name: Git clone php gateway
   git: repo=https://github.com/apache/airavata-php-gateway.git
        dest="{{ doc_root_dir }}" version="{{ git_branch }}"
@@ -61,7 +60,7 @@
   file: path="{{ doc_root_dir }}/app/storage" state=directory mode=0777 owner="{{user}}" group="{{group}}" recurse=yes
   become: yes
 
-- name: Eanble https and http service on public zone
+- name: Enable https and http service on public zone
   firewalld: service="{{ item }}" permanent=true state=enabled zone=public immediate=True
   with_items:
     - http
