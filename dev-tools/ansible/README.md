@@ -6,6 +6,7 @@ There are ansible roles to install Airavata pre-requisites (RabbitMQ, Zookeeper,
 ## Supported OS with versions.
 
 - Centos 7
+- The PGA should also work on Ubuntu 16
 
 ## Roles
 
