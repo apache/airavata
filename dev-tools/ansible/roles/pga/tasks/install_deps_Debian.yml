@@ -5,13 +5,16 @@
   with_items:
     - git
     - apache2
-    - php5
-    - php-soap
     - python-selinux
+    - unzip
     - openssl
     - curl
+    - php5
+    - php5-curl
+    - php-soap
     - php5-mysql
     - php5-mcrypt
+    - python-software-properties
   become: yes
 
 - name: install composer
