@@ -22,8 +22,8 @@
 [gfac]
 149.165.171.0
 
-[pga]
-149.165.170.103
+[pga-test]
+192.168.56.99 ansible_user=jecoulte ansible_become=true become_method=sudo ansible_ssh_user=jecoulte
 
 [local]
 localhost          ansible_connection=local
