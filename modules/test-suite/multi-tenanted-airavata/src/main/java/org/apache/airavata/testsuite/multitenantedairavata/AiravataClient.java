@@ -47,8 +47,8 @@ public class AiravataClient {
 
     public Airavata.Client getAiravataClient() throws Exception{
         try {
-            String airavataHost = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.THRIFT_SERVER_HOST, PropertyFileType.AIRAVATA_CLIENT);
-            int airavataport = Integer.valueOf(propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.THRIFT_SERVER_PORT, PropertyFileType.AIRAVATA_CLIENT));
+            String airavataHost = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.THRIFT_SERVER_HOST, PropertyFileType.AIRAVATA_SERVER);
+            int airavataport = Integer.valueOf(propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.THRIFT_SERVER_PORT, PropertyFileType.AIRAVATA_SERVER));
             airavataClient = AiravataClientFactory.createAiravataClient(airavataHost, airavataport);
             return airavataClient;
         } catch (AiravataClientException e) {
