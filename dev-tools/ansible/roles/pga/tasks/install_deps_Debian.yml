@@ -1,0 +1,35 @@
+---
+
+- name: Install prerequisites
+  apt: name="{{ item }}" state=latest update_cache=yes
+  with_items:
+    - git
+    - apache2
+    - php5
+    - php-soap
+    - python-selinux
+    - openssl
+    - curl
+    - php5-mysql
+    - php5-mcrypt
+  become: yes
+
+- name: install composer
+  shell: curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+  args:
+    creates: /usr/local/bin/composer
+  become: yes
+
+# this just creates symlinks in /etc/php5/{apache2,cli}/conf.d/20-mcryp.ini to /etc/php5/modules-avail/mcrypt.ini
+- name: enable mcrypt
+  command: php5enmod mcrypt
+  become: yes
+
+- name: create apache2 logdir
+  file:
+   path: /etc/apache2/logs
+   state: directory
+   owner: www-data
+   group: www-data
+   mode: 0775
+   
