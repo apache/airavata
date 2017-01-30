@@ -463,8 +463,10 @@ public class ProcessContext {
 				userStoragePreference != null &&
 				isValid(userStoragePreference.getResourceSpecificCredentialStoreToken())) {
 			return userStoragePreference.getResourceSpecificCredentialStoreToken();
-		}else {
+		} else if (isValid(gatewayStorageResourcePreference.getResourceSpecificCredentialStoreToken())) {
 			return gatewayStorageResourcePreference.getResourceSpecificCredentialStoreToken();
+		} else {
+			return gatewayResourceProfile.getCredentialStoreToken();
 		}
 	}
 
