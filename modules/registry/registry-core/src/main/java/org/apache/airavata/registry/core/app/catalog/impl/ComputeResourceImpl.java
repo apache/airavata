@@ -836,11 +836,13 @@ public class ComputeResourceImpl implements ComputeResource {
         Map<ApplicationParallelismType, String> parallelismPrefix = resourceJobManager.getParallelismPrefix();
         if (parallelismPrefix!=null && parallelismPrefix.size() != 0) {
             for (ApplicationParallelismType commandType : parallelismPrefix.keySet()) {
-                ParallelismPrefixCommandResource r = new ParallelismPrefixCommandResource();
-                r.setCommandType(commandType.toString());
-                r.setCommand(parallelismPrefix.get(commandType));
-                r.setResourceJobManagerId(resource.getResourceJobManagerId());
-                r.save();
+                if (parallelismPrefix.get(commandType) != null && !parallelismPrefix.get(commandType).isEmpty()) {
+                    ParallelismPrefixCommandResource r = new ParallelismPrefixCommandResource();
+                    r.setCommandType(commandType.toString());
+                    r.setCommand(parallelismPrefix.get(commandType));
+                    r.setResourceJobManagerId(resource.getResourceJobManagerId());
+                    r.save();
+                }
             }
         }
 		return resource.getResourceJobManagerId();
@@ -887,10 +889,12 @@ public class ComputeResourceImpl implements ComputeResource {
                     }else {
                         existingCommand = new ParallelismPrefixCommandResource();
                     }
-                    existingCommand.setCommandType(commandType.toString());
-                    existingCommand.setCommand(parallelismPrefix.get(commandType));
-                    existingCommand.setResourceJobManagerId(resource.getResourceJobManagerId());
-                    existingCommand.save();
+                    if (parallelismPrefix.get(commandType) != null && !parallelismPrefix.get(commandType).isEmpty()) {
+                        existingCommand.setCommandType(commandType.toString());
+                        existingCommand.setCommand(parallelismPrefix.get(commandType));
+                        existingCommand.setResourceJobManagerId(resource.getResourceJobManagerId());
+                        existingCommand.save();
+                    }
                 }
             }
         }catch (Exception e){
