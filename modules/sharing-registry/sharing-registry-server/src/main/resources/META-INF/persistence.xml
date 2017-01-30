@@ -11,9 +11,5 @@
         <class>org.apache.airavata.sharing.registry.db.entities.SharingEntity</class>
         <class>org.apache.airavata.sharing.registry.db.entities.UserEntity</class>
         <class>org.apache.airavata.sharing.registry.db.entities.UserGroupEntity</class>
-        <properties>
-            <property name="hibernate.connection.useUnicode" value="false"/>
-            <property name="hibernate.connection.characterEncoding" value="latin1"/>
-        </properties>
     </persistence-unit>
 </persistence>
