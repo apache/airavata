@@ -31,7 +31,6 @@ import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.model.credential.store.*;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
@@ -42,7 +41,6 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentD
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.*;
-import org.apache.airavata.model.credential.store.CredentialSummary;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
@@ -53,6 +51,7 @@ import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePrefe
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
+import org.apache.airavata.model.credential.store.*;
 import org.apache.airavata.model.data.movement.DMType;
 import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.model.data.replica.DataProductModel;
@@ -78,8 +77,9 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
 import org.apache.airavata.sharing.registry.models.*;
-import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
+import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,14 +92,11 @@ public class AiravataServerHandler implements Airavata.Iface {
     private Publisher experimentPublisher;
     private CredentialStoreService.Client csClient;
 
-    private SharingRegistryServerHandler sharingRegistryServerHandler;
-
     public AiravataServerHandler() {
         try {
             statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
             experimentPublisher = MessagingFactory.getPublisher(Type.EXPERIMENT_LAUNCH);
 
-            sharingRegistryServerHandler = new SharingRegistryServerHandler();
             initSharingRegistry();
         } catch (ApplicationSettingsException e) {
             logger.error("Error occured while reading airavata-server properties..", e);
@@ -111,18 +108,18 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     private void initSharingRegistry() throws ApplicationSettingsException, TException {
-        if(sharingRegistryServerHandler.getDomain(ServerSettings.getDefaultUserGateway()) == null){
+        if (getSharingRegistryServiceClient().getDomain(ServerSettings.getDefaultUserGateway()) == null) {
             Domain domain = new Domain();
             domain.setDomainId(ServerSettings.getDefaultUserGateway());
             domain.setName(ServerSettings.getDefaultUserGateway());
             domain.setDescription("Domain entry for " + domain.name);
-            sharingRegistryServerHandler.createDomain(domain);
+            getSharingRegistryServiceClient().createDomain(domain);
 
             User user = new User();
             user.setDomainId(domain.domainId);
             user.setUserId(ServerSettings.getDefaultUser()+"@"+ServerSettings.getDefaultUserGateway());
             user.setUserName(ServerSettings.getDefaultUser());
-            sharingRegistryServerHandler.createUser(user);
+            getSharingRegistryServiceClient().createUser(user);
 
             //Creating Entity Types for each domain
             EntityType entityType = new EntityType();
@@ -130,21 +127,21 @@ public class AiravataServerHandler implements Airavata.Iface {
             entityType.setDomainId(domain.domainId);
             entityType.setName("PROJECT");
             entityType.setDescription("Project entity type");
-            sharingRegistryServerHandler.createEntityType(entityType);
+            getSharingRegistryServiceClient().createEntityType(entityType);
 
             entityType = new EntityType();
             entityType.setEntityTypeId(domain.domainId+":EXPERIMENT");
             entityType.setDomainId(domain.domainId);
             entityType.setName("EXPERIMENT");
             entityType.setDescription("Experiment entity type");
-            sharingRegistryServerHandler.createEntityType(entityType);
+            getSharingRegistryServiceClient().createEntityType(entityType);
 
             entityType = new EntityType();
             entityType.setEntityTypeId(domain.domainId+":FILE");
             entityType.setDomainId(domain.domainId);
             entityType.setName("FILE");
             entityType.setDescription("File entity type");
-            sharingRegistryServerHandler.createEntityType(entityType);
+            getSharingRegistryServiceClient().createEntityType(entityType);
 
             //Creating Permission Types for each domain
             PermissionType permissionType = new PermissionType();
@@ -152,14 +149,14 @@ public class AiravataServerHandler implements Airavata.Iface {
             permissionType.setDomainId(domain.domainId);
             permissionType.setName("READ");
             permissionType.setDescription("Read permission type");
-            sharingRegistryServerHandler.createPermissionType(permissionType);
+            getSharingRegistryServiceClient().createPermissionType(permissionType);
 
             permissionType = new PermissionType();
             permissionType.setPermissionTypeId(domain.domainId+":WRITE");
             permissionType.setDomainId(domain.domainId);
             permissionType.setName("WRITE");
             permissionType.setDescription("Write permission type");
-            sharingRegistryServerHandler.createPermissionType(permissionType);
+            getSharingRegistryServiceClient().createPermissionType(permissionType);
         }
     }
 
@@ -206,7 +203,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             domain.setDomainId(gateway.getGatewayId());
             domain.setName(gateway.getGatewayName());
             domain.setDescription("Domain entry for " + domain.name);
-            sharingRegistryServerHandler.createDomain(domain);
+            getSharingRegistryServiceClient().createDomain(domain);
 
             //Creating Entity Types for each domain
             EntityType entityType = new EntityType();
@@ -214,21 +211,21 @@ public class AiravataServerHandler implements Airavata.Iface {
             entityType.setDomainId(domain.domainId);
             entityType.setName("PROJECT");
             entityType.setDescription("Project entity type");
-            sharingRegistryServerHandler.createEntityType(entityType);
+            getSharingRegistryServiceClient().createEntityType(entityType);
 
             entityType = new EntityType();
             entityType.setEntityTypeId(domain.domainId+":EXPERIMENT");
             entityType.setDomainId(domain.domainId);
             entityType.setName("EXPERIMENT");
             entityType.setDescription("Experiment entity type");
-            sharingRegistryServerHandler.createEntityType(entityType);
+            getSharingRegistryServiceClient().createEntityType(entityType);
 
             entityType = new EntityType();
             entityType.setEntityTypeId(domain.domainId+":FILE");
             entityType.setDomainId(domain.domainId);
             entityType.setName("FILE");
             entityType.setDescription("File entity type");
-            sharingRegistryServerHandler.createEntityType(entityType);
+            getSharingRegistryServiceClient().createEntityType(entityType);
 
             //Creating Permission Types for each domain
             PermissionType permissionType = new PermissionType();
@@ -236,14 +233,14 @@ public class AiravataServerHandler implements Airavata.Iface {
             permissionType.setDomainId(domain.domainId);
             permissionType.setName("READ");
             permissionType.setDescription("Read permission type");
-            sharingRegistryServerHandler.createPermissionType(permissionType);
+            getSharingRegistryServiceClient().createPermissionType(permissionType);
 
             permissionType = new PermissionType();
             permissionType.setPermissionTypeId(domain.domainId+":WRITE");
             permissionType.setDomainId(domain.domainId);
             permissionType.setName("WRITE");
             permissionType.setDescription("Write permission type");
-            sharingRegistryServerHandler.createPermissionType(permissionType);
+            getSharingRegistryServiceClient().createPermissionType(permissionType);
 
             return gatewayId;
         } catch (ApplicationSettingsException | RegistryServiceException e) {
@@ -661,15 +658,25 @@ public class AiravataServerHandler implements Airavata.Iface {
             String projectId = getRegistryServiceClient().createProject(gatewayId, project);
 
             if(ServerSettings.isEnableSharing()){
-                Entity entity = new Entity();
-                entity.setEntityId(projectId);
-                entity.setDomainId(project.getGatewayId());
-                entity.setEntityTypeId(project.getGatewayId()+":"+"PROJECT");
-                entity.setOwnerId(project.getOwner() + "@" + project.getGatewayId());
-                entity.setName(project.getName());
-                entity.setDescription(project.getDescription());
+                try {
+                    Entity entity = new Entity();
+                    entity.setEntityId(projectId);
+                    entity.setDomainId(project.getGatewayId());
+                    entity.setEntityTypeId(project.getGatewayId() + ":" + "PROJECT");
+                    entity.setOwnerId(project.getOwner() + "@" + project.getGatewayId());
+                    entity.setName(project.getName());
+                    entity.setDescription(project.getDescription());
 
-                sharingRegistryServerHandler.createEntity(entity);
+                    getSharingRegistryServiceClient().createEntity(entity);
+                } catch (Exception ex) {
+                    logger.error(ex.getMessage(), ex);
+                    logger.error("Rolling back project creation Proj ID : " + projectId);
+                    getRegistryServiceClient().deleteProject(projectId);
+                    AiravataSystemException ase = new AiravataSystemException();
+                    ase.setMessage("Failed to create entry for project in Sharing Registry");
+                    throw ase;
+                }
+
             }
 
             logger.debug("Airavata created project with project Id : " + projectId + " for gateway Id : " + gatewayId);
@@ -695,7 +702,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 try {
                     String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                     String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-                    if(!sharingRegistryServerHandler.userHasAccess(gatewayId, userId + "@" + gatewayId,
+                    if (!getSharingRegistryServiceClient().userHasAccess(gatewayId, userId + "@" + gatewayId,
                             projectId, gatewayId + ":WRITE")){
                         throw new AuthorizationException("User does not have permission to access this resource");
                     }
@@ -732,7 +739,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 try {
                     String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                     String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-                    if(!sharingRegistryServerHandler.userHasAccess(gatewayId, userId + "@" + gatewayId,
+                    if (!getSharingRegistryServiceClient().userHasAccess(gatewayId, userId + "@" + gatewayId,
                             projectId, gatewayId + ":WRITE")){
                         throw new AuthorizationException("User does not have permission to access this resource");
                     }
@@ -777,7 +784,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 try {
                     String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                     String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-                    if(!sharingRegistryServerHandler.userHasAccess(gatewayId, userId + "@" + gatewayId,
+                    if (!getSharingRegistryServiceClient().userHasAccess(gatewayId, userId + "@" + gatewayId,
                             projectId, gatewayId + ":READ")){
                         throw new AuthorizationException("User does not have permission to access this resource");
                     }
@@ -818,7 +825,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             if (ServerSettings.isEnableSharing()){
                 // user projects + user accessible projects
                 List<String> accessibleProjectIds = new ArrayList<>();
-                sharingRegistryServerHandler.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                getSharingRegistryServiceClient().searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         userName+"@"+gatewayId , gatewayId+":PROJECT",
                         new ArrayList<>(), offset, limit).stream().forEach(p->accessibleProjectIds.add(p.entityId));
                 return getRegistryServiceClient().searchProjects(gatewayId, userName, accessibleProjectIds, new HashMap<>(), limit, offset);
@@ -864,7 +871,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             List<String> accessibleProjIds  = new ArrayList<>();
 
             if(ServerSettings.isEnableSharing())
-                sharingRegistryServerHandler.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                getSharingRegistryServiceClient().searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         userName+"@"+gatewayId, gatewayId+":PROJECT",
                         new ArrayList<>(), 0, -1).stream().forEach(e->accessibleProjIds.add(e.entityId));
 
@@ -902,7 +909,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             List<String> accessibleExpIds = new ArrayList<>();
             if(ServerSettings.isEnableSharing())
-                sharingRegistryServerHandler.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                getSharingRegistryServiceClient().searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         userName+"@"+gatewayId, gatewayId+":EXPERIMENT",
                         new ArrayList<>(), 0, -1).forEach(e->accessibleExpIds.add(e.entityId));
             return getRegistryServiceClient().searchExperiments(gatewayId, userName, accessibleExpIds, filters, limit, offset);
@@ -969,7 +976,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 try {
                     String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                     String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-                    if(!sharingRegistryServerHandler.userHasAccess(gatewayId, userId + "@" + gatewayId,
+                    if (!getSharingRegistryServiceClient().userHasAccess(gatewayId, userId + "@" + gatewayId,
                             projectId, gatewayId + ":READ")){
                         throw new AuthorizationException("User does not have permission to access this resource");
                     }
@@ -1046,16 +1053,25 @@ public class AiravataServerHandler implements Airavata.Iface {
             String experimentId = getRegistryServiceClient().createExperiment(gatewayId, experiment);
 
             if(ServerSettings.isEnableSharing()) {
-                Entity entity = new Entity();
-                entity.setEntityId(experimentId);
-                entity.setDomainId(experiment.getGatewayId());
-                entity.setEntityTypeId(experiment.getGatewayId()+":"+"EXPERIMENT");
-                entity.setOwnerId(experiment.getUserName() + "@" + experiment.getGatewayId());
-                entity.setName(experiment.getExperimentName());
-                entity.setDescription(experiment.getDescription());
-                entity.setParentEntityId(experiment.getProjectId());
+                try {
+                    Entity entity = new Entity();
+                    entity.setEntityId(experimentId);
+                    entity.setDomainId(experiment.getGatewayId());
+                    entity.setEntityTypeId(experiment.getGatewayId() + ":" + "EXPERIMENT");
+                    entity.setOwnerId(experiment.getUserName() + "@" + experiment.getGatewayId());
+                    entity.setName(experiment.getExperimentName());
+                    entity.setDescription(experiment.getDescription());
+                    entity.setParentEntityId(experiment.getProjectId());
 
-                sharingRegistryServerHandler.createEntity(entity);
+                    getSharingRegistryServiceClient().createEntity(entity);
+                } catch (Exception ex) {
+                    logger.error(ex.getMessage(), ex);
+                    logger.error("Rolling back experiment creation Exp ID : " + experimentId);
+                    getRegistryServiceClient().deleteExperiment(experimentId);
+                    AiravataSystemException ase = new AiravataSystemException();
+                    ase.setMessage("Failed to create sharing registry record");
+                    throw ase;
+                }
             }
 
             ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.CREATED,
@@ -1101,7 +1117,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 try {
                     String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                     String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-                    if(!sharingRegistryServerHandler.userHasAccess(gatewayId, userId + "@" + gatewayId,
+                    if (!getSharingRegistryServiceClient().userHasAccess(gatewayId, userId + "@" + gatewayId,
                             experimentId, gatewayId + ":WRITE")){
                         throw new AuthorizationException("User does not have permission to access this resource");
                     }
@@ -1160,7 +1176,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 try {
                     String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                     String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-                    if(!sharingRegistryServerHandler.userHasAccess(gatewayId, userId + "@" + gatewayId,
+                    if (!getSharingRegistryServiceClient().userHasAccess(gatewayId, userId + "@" + gatewayId,
                             airavataExperimentId, gatewayId + ":READ")){
                         throw new AuthorizationException("User does not have permission to access this resource");
                     }
@@ -1278,7 +1294,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 try {
                     String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                     String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-                    if(!sharingRegistryServerHandler.userHasAccess(gatewayId, userId + "@" + gatewayId,
+                    if (!getSharingRegistryServiceClient().userHasAccess(gatewayId, userId + "@" + gatewayId,
                             airavataExperimentId, gatewayId + ":WRITE")){
                         throw new AuthorizationException("User does not have permission to access this resource");
                     }
@@ -1628,7 +1644,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         // make sure user has write access to the project
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-        if(!sharingRegistryServerHandler.userHasAccess(gatewayId, userId + "@" + gatewayId,
+        if (!getSharingRegistryServiceClient().userHasAccess(gatewayId, userId + "@" + gatewayId,
                 existingExperiment.getProjectId(), gatewayId + ":WRITE")){
             logger.error("Error while cloning experiment {}, user doesn't have write access to project {}", existingExperimentID, existingExperiment.getProjectId());
             throw new AuthorizationException("User does not have permission to clone an experiment in this project");
@@ -1660,15 +1676,20 @@ public class AiravataServerHandler implements Airavata.Iface {
         String expId = regClient.createExperiment(gatewayId, existingExperiment);
 
         if(ServerSettings.isEnableSharing()){
-            Entity entity = new Entity();
-            entity.setEntityId(expId);
-            entity.setDomainId(existingExperiment.getGatewayId());
-            entity.setEntityTypeId(existingExperiment.getGatewayId()+":"+"EXPERIMENT");
-            entity.setOwnerId(existingExperiment.getUserName() + "@" + existingExperiment.getGatewayId());
-            entity.setName(existingExperiment.getExperimentName());
-            entity.setDescription(existingExperiment.getDescription());
-
-            sharingRegistryServerHandler.createEntity(entity);
+            try {
+                Entity entity = new Entity();
+                entity.setEntityId(expId);
+                entity.setDomainId(existingExperiment.getGatewayId());
+                entity.setEntityTypeId(existingExperiment.getGatewayId() + ":" + "EXPERIMENT");
+                entity.setOwnerId(existingExperiment.getUserName() + "@" + existingExperiment.getGatewayId());
+                entity.setName(existingExperiment.getExperimentName());
+                entity.setDescription(existingExperiment.getDescription());
+                getSharingRegistryServiceClient().createEntity(entity);
+            } catch (Exception ex) {
+                logger.error(ex.getMessage(), ex);
+                logger.error("rolling back experiment creation Exp ID : " + expId);
+                regClient.deleteExperiment(expId);
+            }
         }
 
         return expId;
@@ -3915,10 +3936,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             for(Map.Entry<String, ResourcePermissionType> userPermission : userPermissionList.entrySet()){
                 String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                 if(userPermission.getValue().equals(ResourcePermissionType.WRITE))
-                    sharingRegistryServerHandler.shareEntityWithUsers(gatewayId, resourceId,
+                    getSharingRegistryServiceClient().shareEntityWithUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "WRITE", true);
                 else
-                    sharingRegistryServerHandler.shareEntityWithUsers(gatewayId, resourceId,
+                    getSharingRegistryServiceClient().shareEntityWithUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "READ", true);
             }
             return true;
@@ -3939,10 +3960,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             for(Map.Entry<String, ResourcePermissionType> userPermission : userPermissionList.entrySet()){
                 String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
                 if(userPermission.getValue().equals(ResourcePermissionType.WRITE))
-                    sharingRegistryServerHandler.revokeEntitySharingFromUsers(gatewayId, resourceId,
+                    getSharingRegistryServiceClient().revokeEntitySharingFromUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "WRITE");
                 else
-                    sharingRegistryServerHandler.revokeEntitySharingFromUsers(gatewayId, resourceId,
+                    getSharingRegistryServiceClient().revokeEntitySharingFromUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "READ");
             }
             return true;
@@ -3961,15 +3982,15 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             List<String> accessibleUsers = new ArrayList<>();
             if(permissionType.equals(ResourcePermissionType.WRITE))
-                sharingRegistryServerHandler.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                getSharingRegistryServiceClient().getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
                                 + ":WRITE").stream().forEach(u->accessibleUsers.add(u.userId));
             else if(permissionType.equals(ResourcePermissionType.READ))
-                sharingRegistryServerHandler.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                getSharingRegistryServiceClient().getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
                                 + ":READ").stream().forEach(u->accessibleUsers.add(u.userId));
             else if(permissionType.equals(ResourcePermissionType.OWNER))
-                sharingRegistryServerHandler.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                getSharingRegistryServiceClient().getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
                                 + ":OWNER").stream().forEach(u->accessibleUsers.add(u.userId));
             return accessibleUsers;
@@ -4087,6 +4108,16 @@ public class AiravataServerHandler implements Airavata.Iface {
             return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
         } catch (RegistryServiceException e) {
             throw new TException("Unable to create registry client...", e);
+        }
+    }
+
+    private SharingRegistryService.Client getSharingRegistryServiceClient() throws TException, ApplicationSettingsException {
+        final int serverPort = Integer.parseInt(ServerSettings.getSharingRegistryPort());
+        final String serverHost = ServerSettings.getSharingRegistryHost();
+        try {
+            return SharingRegistryServiceClientFactory.createSharingRegistryClient(serverHost, serverPort);
+        } catch (SharingRegistryException e) {
+            throw new TException("Unable to create sharing registry client...", e);
         }
     }
 }

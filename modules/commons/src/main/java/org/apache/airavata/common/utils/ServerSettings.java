@@ -75,6 +75,8 @@ public class ServerSettings extends ApplicationSettings {
     private static final String CREDENTIAL_STORE_DB_USER = "credential.store.jdbc.user";
     private static final String CREDENTIAL_STORE_DB_PASSWORD = "credential.store.jdbc.password";
     private static final String CREDENTIAL_STORE_DB_DRIVER = "credential.store.jdbc.driver";
+    private static final java.lang.String SHARING_REGISTRY_PORT = "sharing.registry.server.port";
+    private static final java.lang.String SHARING_REGISTRY_HOST = "sharing.registry.server.host";
 
     private static String USER_PROFILE_MONGODB_HOST = "userprofile.mongodb.host";
     private static String USER_PROFILE_MONGODB_PORT = "userprofile.mongodb.port";
@@ -478,4 +480,11 @@ public class ServerSettings extends ApplicationSettings {
         return Integer.valueOf(getSetting(SESSION_CACHE_ACCESS_TIME_OUT, "30"));
     }
 
+    public static String getSharingRegistryPort() {
+        return getSetting(SHARING_REGISTRY_PORT, "7878");
+    }
+
+    public static String getSharingRegistryHost() {
+        return getSetting(SHARING_REGISTRY_HOST, "localhost");
+    }
 }

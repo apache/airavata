@@ -21,7 +21,6 @@
 package org.apache.airavata.server;
 
 import ch.qos.logback.classic.LoggerContext;
-import org.apache.airavata.api.Airavata;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logging.kafka.KafkaAppender;
@@ -61,6 +60,7 @@ public class ServerMain {
 	private static final String API_SERVER = "apiserver";
 	private static final String CREDENTIAL_STORE = "credentialstore";
 	private static final String REGISTRY_SERVER = "regserver";
+	private static final String SHARING_SERVER = "sharing_server";
 	private static final String GFAC_SERVER = "gfac";
 	private static final String ORCHESTRATOR = "orchestrator";
 	private static final String USER_PROFILE = "user_profile";
@@ -115,6 +115,7 @@ public class ServerMain {
 			serverList.clear();
 			serverList.add(REGISTRY_SERVER);  // registry server should start before everything
 			serverList.add(CREDENTIAL_STORE); // credential store should start before api server
+			serverList.add(SHARING_SERVER);
 			serverList.add(API_SERVER);
 			serverList.add(ORCHESTRATOR);
 			serverList.add(GFAC_SERVER);
@@ -123,6 +124,7 @@ public class ServerMain {
 			serverList.clear();
             serverList.add(REGISTRY_SERVER);  // registry server should start before everything
             serverList.add(CREDENTIAL_STORE); // credential store should start before api server
+			serverList.add(SHARING_SERVER);
 			serverList.add(API_SERVER);
 			serverList.add(ORCHESTRATOR);
 		} else if (serverList.indexOf(EXECUTION) > -1) {
@@ -158,6 +160,8 @@ public class ServerMain {
 //				if (command.equals("yes") || command.equals("y")){
 //					System.exit(1);
 //				}
+
+
 //			}
 //		});
 //	}
