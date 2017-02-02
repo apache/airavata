@@ -11,14 +11,16 @@
 	language governing permissions and limitations under the License. -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>user-profile</artifactId>
         <groupId>org.apache.airavata</groupId>
+        <artifactId>airavata</artifactId>
         <version>0.17-SNAPSHOT</version>
+        <relativePath>../../../pom.xml</relativePath>
     </parent>
+
     <modelVersion>4.0.0</modelVersion>
-
     <artifactId>user-profile-stubs</artifactId>
-
+    <name>Airavata user profile service stubs</name>
+    <description>thrift generated user profile service stubs</description>
 
     <dependencies>
         <dependency>
@@ -32,4 +34,30 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>replacer</artifactId>
+                <version>${maven.replacer.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includes>
+                        <include>${basedir}/src/main/java/org/apache/airavata/**/*.java</include>
+                    </includes>
+                    <token>, date = ".*"</token>
+                    <value> </value>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

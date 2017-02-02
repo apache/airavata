@@ -18,10 +18,10 @@
  * under the License.
  *
  */
-package org.apache.airavata.userprofile.crude.cpi.client;
+package org.apache.airavata.userprofile.cpi.client;
 
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.userprofile.crude.cpi.UserProfileCrudeService;
+import org.apache.airavata.userprofile.cpi.exception.UserProfileServiceException;
+import org.apache.airavata.userprofile.cpi.UserProfileService;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
@@ -30,14 +30,14 @@ import org.apache.thrift.transport.TTransportException;
 
 
 public class UserProfileServiceClientFactory {
-    public static UserProfileCrudeService.Client createRegistryClient(String serverHost, int serverPort)  throws RegistryServiceException {
+    public static UserProfileService.Client createRegistryClient(String serverHost, int serverPort)  throws UserProfileServiceException {
         try {
             TTransport transport = new TSocket(serverHost, serverPort);
             transport.open();
             TProtocol protocol = new TBinaryProtocol(transport);
-            return new UserProfileCrudeService.Client(protocol);
+            return new UserProfileService.Client(protocol);
         } catch (TTransportException e) {
-            throw new RegistryServiceException();
+            throw new UserProfileServiceException();
         }
     }
 }
