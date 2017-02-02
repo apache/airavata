@@ -34,7 +34,7 @@
 - name: register the backup distribution
   find:
       paths: "{{ server_deployment_dir }}"
-      patterns: "{{ old_dist_dir }}bk"
+      patterns: "{{ old_airavata_dist }}bk"
       file_type: directory
   register: backup_dist_dir
 

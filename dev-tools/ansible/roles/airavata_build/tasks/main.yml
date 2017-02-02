@@ -2,7 +2,6 @@
   git: repo={{ airavata_repo }}
        dest={{ airavata_source_dir }}
        version={{ git_branch }}
-  when: do_git_pull
   register: git_pull
 
 - name: check for existing distribution tarball
