@@ -1,0 +1,7 @@
+---
+- name: pull in updates on develop branch
+  git: repo={{ airavata_php_gateway_repo }}
+       dest={{ portal_dir }}
+       version={{ git_branch }}
+  notify:
+    - composer update

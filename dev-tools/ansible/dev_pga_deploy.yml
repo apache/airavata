@@ -1,0 +1,17 @@
+---
+
+- hosts: dev-pga
+  name: update dev-seagrid
+  tags: dev-seagrid
+  vars:
+      portal_dir: "{{portals_dir}}/dev-seagrid"
+  roles:
+      - pga_deploy
+
+- hosts: dev-pga
+  name: update dev-scigap
+  tags: dev-scigap
+  vars:
+      portal_dir: "{{portals_dir}}/dev-scigap"
+  roles:
+      - pga_deploy

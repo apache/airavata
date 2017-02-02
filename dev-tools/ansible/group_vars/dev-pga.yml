@@ -1,0 +1,3 @@
+portals_dir: /home/pga/portals
+git_branch: develop
+airavata_php_gateway_repo: https://git-wip-us.apache.org/repos/asf/airavata-php-gateway.git

@@ -30,3 +30,6 @@ localhost          ansible_connection=local
 
 [dev-airavata]
 gw56.iu.xsede.org ansible_user=airavata
+
+[dev-pga]
+gw54.iu.xsede.org  ansible_user=pga
