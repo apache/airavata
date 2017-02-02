@@ -73,6 +73,9 @@ GFAC_SRC_DIR='../../modules/gfac/gfac-client/src/main/java/'
 REGISTRY_THRIFT_FILE='registry-api.thrift'
 REGISTRY_SRC_DIR='../../modules/registry/registry-server/registry-api-stubs/src/main/java/'
 
+USER_PROFILE_THRIFT_FILE='user-profile-cpi.thrift'
+USER_PROFILE_SRC_DIR='../../modules/user-profile/user-profile-stubs/src/main/java/'
+
 # Initialize the thrift arguments.
 #  Since most of the Airavata API and Data Models have includes, use recursive option by default.
 #  Generate all the files in target directory
@@ -171,11 +174,12 @@ generate_thrift_stubs() {
 for arg in "$@"
 do
     case "$arg" in
-    all)    echo "Generate all (credential store, orchestrator, gfac) Stubs"
+    all)    echo "Generate all (credential store, orchestrator, gfac, user_profile) Stubs"
             generate_thrift_stubs ${CS_THRIFT_FILE} ${CS_SRC_DIR}
             generate_thrift_stubs ${ORCHESTRATOR_THRIFT_FILE} ${ORCHESTRATOR_SRC_DIR}
             generate_thrift_stubs ${GFAC_THRIFT_FILE} ${GFAC_SRC_DIR}
             generate_thrift_stubs ${REGISTRY_THRIFT_FILE} ${REGISTRY_SRC_DIR}
+            generate_thrift_stubs ${USER_PROFILE_THRIFT_FILE} ${USER_PROFILE_SRC_DIR}
             ;;
     cs)   echo "Generating Credential Store Stubs"
             generate_thrift_stubs ${CS_THRIFT_FILE} ${CS_SRC_DIR}
@@ -188,6 +192,9 @@ do
             ;;
     registry)    echo "Generate Registry Stubs"
             generate_thrift_stubs ${REGISTRY_THRIFT_FILE} ${REGISTRY_SRC_DIR}
+            ;;
+    up)    echo "Generate User profile Stubs"
+            generate_thrift_stubs ${USER_PROFILE_THRIFT_FILE} ${USER_PROFILE_SRC_DIR}
             ;;
     *)      echo "Invalid or unsupported option"
     	    show_usage

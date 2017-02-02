@@ -1,8 +1,29 @@
-package com.apache.airavata.user.profile.server;
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+*/
+
+package org.apache.airavata.user.profile.server;
 
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.userprofile.crude.cpi.UserProfileCrudeService;
+import org.apache.airavata.userprofile.cpi.UserProfileService;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
@@ -14,9 +35,6 @@ import org.slf4j.LoggerFactory;
 import java.net.InetSocketAddress;
 import java.util.Date;
 
-/**
- * Created by abhij on 11/11/2016.
- */
 public class UserProfileServer implements IServer {
 
     private final static Logger logger = LoggerFactory.getLogger(UserProfileServer.class);
@@ -49,12 +67,11 @@ public class UserProfileServer implements IServer {
 
     public void start() throws Exception {
 
-
         try {
             setStatus(ServerStatus.STARTING);
             final int serverPort = Integer.parseInt(ServerSettings.getUserProfileServerPort());
             final String serverHost = ServerSettings.getUserProfileServerHost();
-            UserProfileCrudeService.Processor processor = new UserProfileCrudeService.Processor(new UserProfileHandler());
+            UserProfileService.Processor processor = new UserProfileService.Processor(new UserProfileServiceHandler());
 
             TServerTransport serverTransport;
 
@@ -99,7 +116,7 @@ public class UserProfileServer implements IServer {
 
     public void stop() throws Exception {
 
-        if (server!=null && server.isServing()){
+        if (server != null && server.isServing()) {
             setStatus(ServerStatus.STOPING);
             server.stop();
         }
@@ -116,10 +133,11 @@ public class UserProfileServer implements IServer {
     }
 
     public ServerStatus getStatus() throws Exception {
-        return status;    }
+        return status;
+    }
 
-    private void setStatus(IServer.ServerStatus stat){
-        status=stat;
+    private void setStatus(IServer.ServerStatus stat) {
+        status = stat;
         status.updateTime();
     }
 
