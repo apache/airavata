@@ -2,4 +2,3 @@
 
 airavata_source_dir: "/Users/machrist/Documents/Airavata/airavata"
 deployment_dir: "/Users/machrist/Documents/Airavata/LocalAiravata"
-do_git_pull: true

@@ -1,4 +1,0 @@
----
-
-# You might override this for local development
-do_git_pull: true
