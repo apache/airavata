@@ -18,10 +18,10 @@
  * under the License.
  *
 */
-package org.apache.airavata.registry.core.repositories;
+package org.apache.airavata.user.registry.core.repositories;
 
-import org.apache.airavata.registry.core.utils.JPAUtils;
-import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
+import org.apache.airavata.user.registry.core.utils.JPAUtils;
+import org.apache.airavata.user.registry.core.utils.ObjectMapperSingleton;
 import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
