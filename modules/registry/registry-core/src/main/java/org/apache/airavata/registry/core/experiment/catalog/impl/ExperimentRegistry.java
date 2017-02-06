@@ -149,6 +149,9 @@ public class ExperimentRegistry {
             configDataResource.setStorageId(configurationData.getStorageId());
             configDataResource.setExperimentDataDir(configurationData.getExperimentDataDir());
             configDataResource.setUseUserCRPref(configurationData.isUseUserCRPref());
+            configDataResource.setOverrideLoginUserName(configurationData.getComputationalResourceScheduling().getOverrideLoginUserName());
+            configDataResource.setOverrideScratchLocation(configurationData.getComputationalResourceScheduling().getOverrideScratchLocation());
+            configDataResource.setOverrideAllocationProjectNumber(configurationData.getComputationalResourceScheduling().getOverrideAllocationProjectNumber());
             configDataResource.save();
         } catch (Exception e) {
             logger.error("Unable to save user config data", e);
@@ -732,6 +735,9 @@ public class ExperimentRegistry {
             configDataResource.setStaticWorkingDir(configurationData.getComputationalResourceScheduling().getStaticWorkingDir());
             configDataResource.setExperimentDataDir(configurationData.getExperimentDataDir());
             configDataResource.setUseUserCRPref(configurationData.isUseUserCRPref());
+            configDataResource.setOverrideLoginUserName(configurationData.getComputationalResourceScheduling().getOverrideLoginUserName());
+            configDataResource.setOverrideScratchLocation(configurationData.getComputationalResourceScheduling().getOverrideScratchLocation());
+            configDataResource.setOverrideAllocationProjectNumber(configurationData.getComputationalResourceScheduling().getOverrideAllocationProjectNumber());
             configDataResource.save();
         } catch (Exception e) {
             logger.error("Unable to save user config data", e);
@@ -1016,6 +1022,9 @@ public class ExperimentRegistry {
         configDataResource.setWallTimeLimit(value.getWallTimeLimit());
         configDataResource.setTotalPhysicalMemory(value.getTotalPhysicalMemory());
         configDataResource.setStaticWorkingDir(value.getStaticWorkingDir());
+        configDataResource.setOverrideLoginUserName(value.getOverrideLoginUserName());
+        configDataResource.setOverrideScratchLocation(value.getOverrideScratchLocation());
+        configDataResource.setOverrideAllocationProjectNumber(value.getOverrideAllocationProjectNumber());
         configDataResource.save();
     }
 
