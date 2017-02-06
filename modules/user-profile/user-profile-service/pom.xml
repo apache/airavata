@@ -24,6 +24,11 @@
             <artifactId>user-profile-stubs</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>user-profile-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     
 </project>

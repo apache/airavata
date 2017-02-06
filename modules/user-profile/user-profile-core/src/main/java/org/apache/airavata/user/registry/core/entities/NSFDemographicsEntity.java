@@ -18,7 +18,7 @@
  * under the License.
  *
 */
-package org.apache.airavata.registry.core.entities;
+package org.apache.airavata.user.registry.core.entities;
 
 import javax.persistence.*;
 import java.util.List;
