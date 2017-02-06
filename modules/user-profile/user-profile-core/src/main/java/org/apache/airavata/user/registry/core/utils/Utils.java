@@ -18,11 +18,10 @@
  * under the License.
  *
  */
-package org.apache.airavata.registry.core.utils;
+package org.apache.airavata.user.registry.core.utils;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.registry.core.utils.JPAConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

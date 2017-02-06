@@ -22,8 +22,8 @@
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
     <persistence-unit name="user_profile_catalog">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-        <class>org.apache.airavata.registry.core.entities.UserProfileEntity</class>
-        <class>org.apache.airavata.registry.core.entities.NSFDemographicsEntity</class>
+        <class>org.apache.airavata.user.registry.core.entities.UserProfileEntity</class>
+        <class>org.apache.airavata.user.registry.core.entities.NSFDemographicsEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 </persistence>
