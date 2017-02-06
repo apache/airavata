@@ -179,7 +179,8 @@ enum SearchCondition {
     LIKE,
     FULL_TEXT,
     GTE,
-    LTE
+    LTE,
+    NOT
 }
 
 /**

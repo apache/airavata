@@ -25,7 +25,8 @@ public enum SearchCondition implements org.apache.thrift.TEnum {
   LIKE(1),
   FULL_TEXT(2),
   GTE(3),
-  LTE(4);
+  LTE(4),
+  NOT(5);
 
   private final int value;
 
@@ -56,6 +57,8 @@ public enum SearchCondition implements org.apache.thrift.TEnum {
         return GTE;
       case 4:
         return LTE;
+      case 5:
+        return NOT;
       default:
         return null;
     }
