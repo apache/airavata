@@ -61,11 +61,19 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
 
         for(SearchCriteria searchCriteria : filters){
             if(searchCriteria.getSearchField().equals(EntitySearchField.NAME)){
-                query += "E.NAME LIKE '%" + searchCriteria.getValue() + "%' AND ";
+                if (searchCriteria.getSearchCondition() != null && searchCriteria.getSearchCondition().equals(SearchCondition.NOT)) {
+                    query += "E.NAME != '" + searchCriteria.getValue() + "' AND ";
+                } else {
+                    query += "E.NAME LIKE '%" + searchCriteria.getValue() + "%' AND ";
+                }
             }else if(searchCriteria.getSearchField().equals(EntitySearchField.DESCRIPTION)){
                 query += "E.DESCRIPTION LIKE '%" + searchCriteria.getValue() + "%' AND ";
             }else if(searchCriteria.getSearchField().equals(EntitySearchField.PERMISSION_TYPE_ID)){
-                query += "S.PERMISSION_TYPE_ID = '" + searchCriteria.getValue() + "' AND ";
+                if (searchCriteria.getSearchCondition() != null && searchCriteria.getSearchCondition().equals(SearchCondition.NOT)) {
+                    query += "S.PERMISSION_TYPE_ID != '" + searchCriteria.getValue() + "' AND ";
+                } else {
+                    query += "S.PERMISSION_TYPE_ID = '" + searchCriteria.getValue() + "' AND ";
+                }
             }else if(searchCriteria.getSearchField().equals(EntitySearchField.FULL_TEXT)){
                 try {
                     if(ServerSettings.getSetting(JPAUtils.SHARING_REG_JDBC_DRIVER).contains("derby")){
@@ -85,9 +93,17 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
                     throw new SharingRegistryException(e.getMessage());
                 }
             }else if(searchCriteria.getSearchField().equals(EntitySearchField.PARRENT_ENTITY_ID)){
-                query += "E.PARENT_ENTITY_ID = '" + searchCriteria.getValue() + "' AND ";
+                if (searchCriteria.getSearchCondition() != null && searchCriteria.getSearchCondition().equals(SearchCondition.NOT)) {
+                    query += "E.PARENT_ENTITY_ID != '" + searchCriteria.getValue() + "' AND ";
+                } else {
+                    query += "E.PARENT_ENTITY_ID = '" + searchCriteria.getValue() + "' AND ";
+                }
             }else if(searchCriteria.getSearchField().equals(EntitySearchField.OWNER_ID)){
-                query += "E.OWNER_ID = '" + searchCriteria.getValue() + "' AND ";
+                if (searchCriteria.getSearchCondition() != null && searchCriteria.getSearchCondition().equals(SearchCondition.NOT)) {
+                    query += "E.OWNER_ID != '" + searchCriteria.getValue() + "' AND ";
+                } else {
+                    query += "E.OWNER_ID = '" + searchCriteria.getValue() + "' AND ";
+                }
             }else if(searchCriteria.getSearchField().equals(EntitySearchField.CREATED_TIME)){
                 if(searchCriteria.getSearchCondition().equals(SearchCondition.GTE)){
                     query += "E.CREATED_TIME >= " + Integer.parseInt(searchCriteria.getValue().trim()) + " AND ";

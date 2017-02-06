@@ -7,6 +7,10 @@
 package org.apache.airavata.sharing.registry.models;
 
 
+import java.util.Map;
+import java.util.HashMap;
+import org.apache.thrift.TEnum;
+
 /**
  * <p>This list of fields that can be used to search entities</p>
  * <li>NAME : Name of the entity</li>

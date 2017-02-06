@@ -28,7 +28,6 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
-import org.databene.contiperf.PerfTest;
 import org.databene.contiperf.junit.ContiPerfRule;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -55,7 +54,7 @@ public class SharingRegistryServiceTest {
 
 
     @Test
-    @PerfTest(invocations = 50, threads = 10)
+//    @PerfTest(invocations = 50, threads = 10)
     public void test() throws TException, InterruptedException {
         String serverHost = "localhost";
         int serverPort = 7878;
@@ -317,5 +316,12 @@ public class SharingRegistryServiceTest {
         Assert.assertEquals(entity3.getName(), persistedEntity.getName());
         Assert.assertEquals(entity3.getDescription(), persistedEntity.getDescription());
         Assert.assertEquals(entity3.getFullText(), persistedEntity.getFullText());
+
+        searchCriteria = new SearchCriteria();
+        searchCriteria.setSearchCondition(SearchCondition.NOT);
+        searchCriteria.setValue("test-user-1");
+        searchCriteria.setSearchField(EntitySearchField.OWNER_ID);
+        filters.add(searchCriteria);
+        Assert.assertTrue(sharingServiceClient.searchEntities(domainId, "test-user-2", "EXPERIMENT", filters, 0, -1).size() == 0);
     }
 }
