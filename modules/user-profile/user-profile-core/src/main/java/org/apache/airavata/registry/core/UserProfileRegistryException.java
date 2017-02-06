@@ -18,18 +18,11 @@
  * under the License.
  *
 */
-package org.apache.airavata.registry.core.repositories.workspacecatalog;
+package org.apache.airavata.registry.core;
 
-import org.apache.airavata.model.workspace.Notification;
-import org.apache.airavata.registry.core.entities.workspacecatalog.NotificationEntity;
-import org.apache.airavata.registry.core.repositories.AbstractRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class NotificationRepository extends AbstractRepository<Notification, NotificationEntity, String> {
-    private final static Logger logger = LoggerFactory.getLogger(NotificationRepository.class);
-
-    public NotificationRepository(Class thriftGenericClass, Class dbEntityGenericClass) {
-        super(thriftGenericClass, dbEntityGenericClass);
-    }
+public class UserProfileRegistryException extends Exception {
+    private final static Logger logger = LoggerFactory.getLogger(UserProfileRegistryException.class);
 }

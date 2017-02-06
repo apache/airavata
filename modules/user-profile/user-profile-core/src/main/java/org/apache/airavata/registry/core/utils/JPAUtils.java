@@ -29,10 +29,10 @@ import java.util.Map;
 
 public class JPAUtils {
     private final static Logger logger = LoggerFactory.getLogger(JPAUtils.class);
-    private static final String PERSISTENCE_UNIT_NAME = "airavata_catalog";
-    @PersistenceUnit(unitName = "airavata_catalog")
+    private static final String PERSISTENCE_UNIT_NAME = "user_profile_catalog";
+    @PersistenceUnit(unitName = "user_profile_catalog")
     protected static EntityManagerFactory factory;
-    @PersistenceContext(unitName = "airavata_catalog")
+    @PersistenceContext(unitName = "user_profile_catalog")
     private static EntityManager entityManager;
 
     public static EntityManager getEntityManager(){
