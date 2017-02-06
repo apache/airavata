@@ -18,13 +18,13 @@
  * under the License.
  *
 */
-package org.apache.airavata.registry.core.entities.workspacecatalog;
+package org.apache.airavata.registry.core.entities;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name="WORKSPACE_USER_PROFILE")
+@Table(name="USER_PROFILE")
 public class UserProfileEntity {
     private String airavataInternalUserId;
     private String userId;

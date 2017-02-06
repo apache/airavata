@@ -21,12 +21,12 @@
 
 package org.apache.airavata.registry.core.utils;
 public class JPAConstants {
-	public static final String KEY_JDBC_URL = "registry.jdbc.url";
-	public static final String KEY_JDBC_USER = "registry.jdbc.user";
-	public static final String KEY_JDBC_PASSWORD = "registry.jdbc.password";
-	public static final String KEY_JDBC_DRIVER = "registry.jdbc.driver";
-	public static final String KEY_DERBY_START_ENABLE = "start.derby.server.mode";
-    public static final String VALIDATION_QUERY = "validationQuery";
-    public static final String JPA_CACHE_SIZE = "jpa.cache.size";
-    public static final String ENABLE_CACHING = "cache.enable";
+	public static final String KEY_JDBC_URL = "user.profile.catalog.registry.jdbc.url";
+	public static final String KEY_JDBC_USER = "user.profile.catalog.registry.jdbc.user";
+	public static final String KEY_JDBC_PASSWORD = "user.profile.catalog.registry.jdbc.password";
+	public static final String KEY_JDBC_DRIVER = "user.profile.catalog.registry.jdbc.driver";
+	public static final String KEY_DERBY_START_ENABLE = "user.profile.catalog.start.derby.server.mode";
+	public static final String VALIDATION_QUERY = "user.profile.catalog.validationQuery";
+	public static final String JPA_CACHE_SIZE = "user.profile.catalog.jpa.cache.size";
+	public static final String ENABLE_CACHING = "user.profile.catalog.cache.enable";
 }
