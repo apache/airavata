@@ -18,7 +18,7 @@
  * under the License.
  *
 */
-package org.apache.airavata.registry.core;
+package org.apache.airavata.user.registry.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

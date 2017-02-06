@@ -18,11 +18,11 @@
  * under the License.
  *
 */
-package org.apache.airavata.registry.core.repositories;
+package org.apache.airavata.user.registry.core.repositories;
 
 import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.registry.core.entities.UserProfileEntity;
-import org.apache.airavata.registry.core.utils.QueryConstants;
+import org.apache.airavata.user.registry.core.entities.UserProfileEntity;
+import org.apache.airavata.user.registry.core.utils.QueryConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
