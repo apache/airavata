@@ -3,21 +3,24 @@
   file: path="{{ doc_root_dir }}" state=directory
   become: yes
 
-- debug: 
-   var: ansible_distribution_version
-
 - include: install_deps_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml
 
 # - name: Check previous deployments
 #   stat: path="{{ doc_root_dir }}" get_md5=no get_checksum=no
 #   register: check
 
-- name: delete previous deployments
-  file: path="{{ doc_root_dir }}" state=absent
+# Why? if it's new, we just created this dir above...
+# if not, can just pull from the git repo in the next task...
+#- name: delete previous deployments 
+#  file: path="{{ doc_root_dir }}" state=absent
 
 - name: Git clone php gateway
-  git: repo=https://github.com/apache/airavata-php-gateway.git
-       dest="{{ doc_root_dir }}" version="{{ git_branch }}"
+  git: 
+   repo: "{{ pga_repo }}"
+   dest: "{{ doc_root_dir }}" 
+   version: "{{ git_branch }}"
+   update: yes
+   force: yes
   become: yes
 
 - name: Create user data dir {{ user_data_dir }}
