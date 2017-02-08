@@ -3,7 +3,10 @@
   file: path="{{ doc_root_dir }}" state=directory
   become: yes
 
-- include: install_deps_{{ ansible_os_family }}.yml
+- debug: 
+   var: ansible_distribution_version
+
+- include: install_deps_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml
 
 # - name: Check previous deployments
 #   stat: path="{{ doc_root_dir }}" get_md5=no get_checksum=no
