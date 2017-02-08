@@ -90,3 +90,5 @@ gfac_dir: "{{ deployment_dir }}/gfac-instance"
 monitor_email_address: "test.airavata@gmail.com"
 monitor_email_password: "airavata"
 
+# PGA variables
+pga_repo: "https://github.com/apache/airavata-php-gateway.git"
