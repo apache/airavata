@@ -1,6 +1,6 @@
 ---
 
-- name: Install pre-requireties
+- name: Install pre-requisites
   yum: name="{{ item }}" state=latest update_cache=yes
   with_items:
     - git
