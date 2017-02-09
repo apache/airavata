@@ -34,7 +34,7 @@
 # going to permissive from enforcing doesn't require a reboot
 # permissive allows all, but still logs, allowing easy build
 # of a working profile.
-- name: Disable selinux
+- name: set selinux permissive
   selinux: state=permissive policy=default
   become: yes
   register: selinux_disable
@@ -65,18 +65,8 @@
     - https
   become: yes
 
-# - name: Edit file
-#   lineinfile: dest="{{ httpd_conf_file }}" regexp="#\n\s*AllowOverride None" line="#\nAllowOverride All"
-#   notify:
-#     - restart httpd
-#   become: yes
-
 - name: copy httpd.conf file
   template: src={{ httpd_name[ansible_os_family] }}.conf.j2 dest={{ httpd_conf_file_location[ansible_os_family] }}
   become: yes
   notify:
     - restart httpd
-
-#- name: start httpd service
-#  service: name=httpd state=started
-#  become: yes
