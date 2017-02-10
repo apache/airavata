@@ -35,46 +35,45 @@ import java.util.regex.Pattern;
 
 public class LSFEmailParser implements EmailParser {
     private static final Logger log = LoggerFactory.getLogger(LSFEmailParser.class);
-    //root@c312-206.ls4.tacc.utexas.edu
-    private static final String SIGNAL = "signal";
-    private static final String LONESTAR_REGEX = "Job (?<" + JOBID + ">\\d+) \\(.*\\) (?<" + STATUS
-            + ">.*)\\s[a-zA-Z =]+(?<" + EXIT_STATUS + ">\\d+)\\sSignal[ ]*=[ ]*(?<" + SIGNAL + ">[a-zA-z]*)";
+    private static final String REGEX = "[a-zA-Z]+\\s+(?<" + JOBID + ">[\\d]+):\\s+<(?<" + JOBNAME + ">[a-zA-Z0-9]+)>\\s+(?<" + STATUS + ">[a-zA-Z]+)";
+    public static final String STARTED = "started";
+    public static final String COMPLETE = "Exited";
 
     @Override
     public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException {
         JobStatusResult jobStatusResult = new JobStatusResult();
-        try {
-            parseContent(((String) message.getContent()), jobStatusResult);
-        } catch (IOException e) {
-            throw new AiravataException("i[EJM]: Error while reading content of the email message");
-        }
+
+        parseContent(message, jobStatusResult);
         return jobStatusResult;
     }
 
-    private boolean parseContent(String content, JobStatusResult jobStatusResult) throws IOException, MessagingException {
-        content = content.replaceAll("[^\\x00-\\x7F]", "");
-        Pattern pattern = Pattern.compile(LONESTAR_REGEX);
-        Matcher matcher = pattern.matcher(content);
-        if (matcher.find()) {
-            jobStatusResult.setJobId(matcher.group(JOBID));
-            String status = matcher.group(STATUS);
-            jobStatusResult.setState(getJobState(status, content));
-            return true;
-        } else {
-            log.error("[EJM]: No matched found for content => \n" + content);
+    private void parseContent(Message message, JobStatusResult jobStatusResult) throws MessagingException, AiravataException {
+        String subject = message.getSubject();
+        Pattern pattern = Pattern.compile(REGEX);
+        Matcher matcher = pattern.matcher(subject);
+        try {
+            if (matcher.find()) {
+                jobStatusResult.setJobId(matcher.group(JOBID));
+                jobStatusResult.setJobName(matcher.group(JOBNAME));
+                String content = (String) message.getContent();
+                jobStatusResult.setState(getJobState(matcher.group(STATUS), content));
+            } else {
+                log.error("[EJM]: No matched found for subject => \n" + subject);
+            }
+        } catch (IOException e) {
+            throw new AiravataException("[EJM]: Error while reading content of the email message");
         }
-        return false;
     }
 
     private JobState getJobState(String status, String content) {
         switch (status) {
-            case "Aborted":
-                return JobState.FAILED;
-            case "Success":
+            case STARTED:
+                return JobState.ACTIVE;
+            case COMPLETE:
                 return JobState.COMPLETE;
             default:
                 return JobState.UNKNOWN;
-        }
 
+        }
     }
 }
