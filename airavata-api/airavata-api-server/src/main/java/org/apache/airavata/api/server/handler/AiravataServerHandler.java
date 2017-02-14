@@ -92,6 +92,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     private Publisher experimentPublisher;
     private CredentialStoreService.Client csClient;
 
+    private SharingRegistryService.Client sharingClient;
+
     public AiravataServerHandler() {
         try {
             statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
@@ -4115,7 +4117,13 @@ public class AiravataServerHandler implements Airavata.Iface {
         final int serverPort = Integer.parseInt(ServerSettings.getSharingRegistryPort());
         final String serverHost = ServerSettings.getSharingRegistryHost();
         try {
-            return SharingRegistryServiceClientFactory.createSharingRegistryClient(serverHost, serverPort);
+            if (sharingClient != null && sharingClient.getInputProtocol().getTransport().isOpen() &&
+                    sharingClient.getOutputProtocol().getTransport().isOpen()) {
+                return sharingClient;
+            } else {
+                sharingClient = SharingRegistryServiceClientFactory.createSharingRegistryClient(serverHost, serverPort);
+                return sharingClient;
+            }
         } catch (SharingRegistryException e) {
             throw new TException("Unable to create sharing registry client...", e);
         }
