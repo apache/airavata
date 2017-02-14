@@ -37,7 +37,8 @@ public class LSFEmailParser implements EmailParser {
     private static final Logger log = LoggerFactory.getLogger(LSFEmailParser.class);
     private static final String REGEX = "[a-zA-Z]+\\s+(?<" + JOBID + ">[\\d]+):\\s+<(?<" + JOBNAME + ">[a-zA-Z0-9]+)>\\s+(?<" + STATUS + ">[a-zA-Z]+)";
     public static final String STARTED = "started";
-    public static final String COMPLETE = "Exited";
+    public static final String COMPLETE = "Done";
+    public static final String FAILED = "Exited";
 
     @Override
     public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException {
@@ -71,6 +72,8 @@ public class LSFEmailParser implements EmailParser {
                 return JobState.ACTIVE;
             case COMPLETE:
                 return JobState.COMPLETE;
+            case FAILED:
+                return JobState.FAILED;
             default:
                 return JobState.UNKNOWN;
         }
