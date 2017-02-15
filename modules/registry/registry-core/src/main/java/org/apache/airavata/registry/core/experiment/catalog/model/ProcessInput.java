@@ -44,6 +44,7 @@ public class ProcessInput {
     private boolean requiredToAddedToCmd;
     private boolean dataStaged;
     private String storageResourceId;
+    private boolean isReadOnly;
     private Process process;
 
     @Id
@@ -166,6 +167,14 @@ public class ProcessInput {
         this.storageResourceId = storageResourceId;
     }
 
+    @Column(name = "IS_READ_ONLY")
+    public boolean getIsReadOnly() {
+        return isReadOnly;
+    }
+
+    public void setIsReadOnly(boolean isReadOnly) {
+        this.isReadOnly = isReadOnly;
+    }
 
 //    @Override
 //    public boolean equals(Object o) {

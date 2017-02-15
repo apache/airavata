@@ -53,6 +53,7 @@ public class ApplicationInputResource extends AppCatAbstractResource {
     private boolean isRequired;
     private boolean requiredToCMD;
     private boolean dataStaged;
+    private boolean isReadOnly;
 
     private AppInterfaceResource appInterfaceResource;
 
@@ -332,6 +333,7 @@ public class ApplicationInputResource extends AppCatAbstractResource {
             applicationInput.setRequiredToCMD(requiredToCMD);
             applicationInput.setRequired(isRequired);
             applicationInput.setDataStaged(dataStaged);
+            applicationInput.setReadOnly(isReadOnly);
             if (existingApplicationInput == null) {
                 em.persist(applicationInput);
             } else {
@@ -495,5 +497,13 @@ public class ApplicationInputResource extends AppCatAbstractResource {
 
     public void setDataStaged(boolean dataStaged) {
         this.dataStaged = dataStaged;
+    }
+
+    public boolean isReadOnly() {
+        return isReadOnly;
+    }
+
+    public void setIsReadOnly(boolean isReadOnly) {
+        this.isReadOnly = isReadOnly;
     }
 }

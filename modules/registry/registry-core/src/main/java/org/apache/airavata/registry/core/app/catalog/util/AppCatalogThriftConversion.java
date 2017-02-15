@@ -687,6 +687,7 @@ public class AppCatalogThriftConversion {
         inputDataObjectType.setIsRequired(input.getRequired());
         inputDataObjectType.setRequiredToAddedToCommandLine(input.getRequiredToCMD());
         inputDataObjectType.setDataStaged(input.isDataStaged());
+        inputDataObjectType.setIsReadOnly(input.isReadOnly());
         return inputDataObjectType;
     }
 

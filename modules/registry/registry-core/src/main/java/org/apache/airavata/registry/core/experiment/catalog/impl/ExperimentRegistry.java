@@ -176,6 +176,7 @@ public class ExperimentRegistry {
                 resource.setIsRequired(input.isIsRequired());
                 resource.setRequiredToAddedToCmd(input.isRequiredToAddedToCommandLine());
                 resource.setStorageResourceId(input.getStorageResourceId());
+                resource.setIsReadOnly(input.isIsReadOnly());
                 resource.save();
             }
         } catch (Exception e) {
@@ -365,6 +366,7 @@ public class ExperimentRegistry {
                 resource.setIsRequired(input.isIsRequired());
                 resource.setRequiredToAddedToCmd(input.isRequiredToAddedToCommandLine());
                 resource.setStorageResourceId(input.getStorageResourceId());
+                resource.setIsReadOnly(input.isIsReadOnly());
                 resource.save();
             }
             return processID;
@@ -663,6 +665,7 @@ public class ExperimentRegistry {
                         exinput.setIsRequired(input.isIsRequired());
                         exinput.setRequiredToAddedToCmd(input.isRequiredToAddedToCommandLine());
                         exinput.setStorageResourceId(input.getStorageResourceId());
+                        exinput.setIsReadOnly(input.isIsReadOnly());
                         exinput.save();
                     }
                 }
@@ -847,6 +850,7 @@ public class ExperimentRegistry {
                         exinput.setIsRequired(input.isIsRequired());
                         exinput.setRequiredToAddedToCmd(input.isRequiredToAddedToCommandLine());
                         exinput.setStorageResourceId(input.getStorageResourceId());
+                        exinput.setIsReadOnly(input.isIsReadOnly());
                         exinput.save();
                     }
                 }

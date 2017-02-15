@@ -185,6 +185,7 @@ public class ThriftDataModelConversion {
                 dataObjectType.setIsRequired(inputResource.getIsRequired());
                 dataObjectType.setRequiredToAddedToCommandLine(inputResource.getRequiredToAddedToCmd());
                 dataObjectType.setDataStaged(inputResource.getDataStaged());
+                dataObjectType.setIsReadOnly(inputResource.isReadOnly());
                 dataObjectType.setStorageResourceId(inputResource.getStorageResourceId());
                 return dataObjectType;
             }else if (object instanceof ProcessInputResource){
@@ -201,6 +202,7 @@ public class ThriftDataModelConversion {
                 dataObjectType.setRequiredToAddedToCommandLine(inputResource.getRequiredToAddedToCmd());
                 dataObjectType.setDataStaged(inputResource.getDataStaged());
                 dataObjectType.setStorageResourceId(inputResource.getStorageResourceId());
+                dataObjectType.setIsReadOnly(inputResource.isReadOnly());
                 return dataObjectType;
             }else {
                 return null;

@@ -483,6 +483,7 @@ public class Utils {
             inputResource.setIsRequired(o.getIsRequired());
             inputResource.setRequiredToAddedToCmd(o.getRequiredToAddedToCmd());
             inputResource.setDataStaged(o.getDataStaged());
+            inputResource.setIsReadOnly(o.isReadOnly());
         }
         return inputResource;
     }
@@ -616,6 +617,7 @@ public class Utils {
             inputResource.setIsRequired(o.getIsRequired());
             inputResource.setRequiredToAddedToCmd(o.getRequiredToAddedToCmd());
             inputResource.setDataStaged(o.getDataStaged());
+            inputResource.setIsReadOnly(o.getIsReadOnly());
         }
         return inputResource;
     }
