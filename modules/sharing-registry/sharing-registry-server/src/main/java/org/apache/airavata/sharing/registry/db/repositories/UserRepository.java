@@ -40,6 +40,7 @@ public class UserRepository extends AbstractRepository<User, UserEntity, UserPK>
     }
 
 
+    //TODO Replace with prepared statements
     public List<User> getAccessibleUsers(String domainId, String entityId, String permissionTypeId) throws SharingRegistryException {
         String query = "SELECT DISTINCT u from " + UserEntity.class.getSimpleName() + " u, " + SharingEntity.class.getSimpleName() + " s";
         query += " WHERE ";

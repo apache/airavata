@@ -48,6 +48,7 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
         return select(filters, 0, -1);
     }
 
+    //TODO Replace with prepared statements
     public List<Entity> searchEntities(String domainId, List<String> groupIds, List<SearchCriteria> filters,
                                        int offset, int limit) throws SharingRegistryException {
         String groupIdString = "'";
