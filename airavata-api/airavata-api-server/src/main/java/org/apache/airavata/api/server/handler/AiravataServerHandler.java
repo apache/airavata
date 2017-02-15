@@ -825,9 +825,14 @@ public class AiravataServerHandler implements Airavata.Iface {
             if (ServerSettings.isEnableSharing()){
                 // user projects + user accessible projects
                 List<String> accessibleProjectIds = new ArrayList<>();
+                List<SearchCriteria> filters = new ArrayList<>();
+                SearchCriteria searchCriteria = new SearchCriteria();
+                searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+                searchCriteria.setSearchCondition(SearchCondition.EQUAL);
+                searchCriteria.setValue(gatewayId + ":PROJECT");
+                filters.add(searchCriteria);
                 getSharingRegistryServiceClient().searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                        userName+"@"+gatewayId , gatewayId+":PROJECT",
-                        new ArrayList<>(), offset, limit).stream().forEach(p->accessibleProjectIds.add(p.entityId));
+                        userName + "@" + gatewayId, filters, offset, limit).stream().forEach(p -> accessibleProjectIds.add(p.entityId));
                 return getRegistryServiceClient().searchProjects(gatewayId, userName, accessibleProjectIds, new HashMap<>(), limit, offset);
             }else{
                 return getRegistryServiceClient().getUserProjects(gatewayId, userName, limit, offset);
@@ -870,11 +875,16 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             List<String> accessibleProjIds  = new ArrayList<>();
 
-            if(ServerSettings.isEnableSharing())
+            if (ServerSettings.isEnableSharing()) {
+                List<SearchCriteria> sharingFilters = new ArrayList<>();
+                SearchCriteria searchCriteria = new SearchCriteria();
+                searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+                searchCriteria.setSearchCondition(SearchCondition.EQUAL);
+                searchCriteria.setValue(gatewayId + ":PROJECT");
+                sharingFilters.add(searchCriteria);
                 getSharingRegistryServiceClient().searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                        userName+"@"+gatewayId, gatewayId+":PROJECT",
-                        new ArrayList<>(), 0, -1).stream().forEach(e->accessibleProjIds.add(e.entityId));
-
+                        userName + "@" + gatewayId, sharingFilters, 0, -1).stream().forEach(e -> accessibleProjIds.add(e.entityId));
+            }
             return getRegistryServiceClient().searchProjects(gatewayId, userName, accessibleProjIds, filters, limit, offset);
         }catch (Exception e) {
             logger.error("Error while retrieving projects", e);
@@ -908,10 +918,16 @@ public class AiravataServerHandler implements Airavata.Iface {
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             List<String> accessibleExpIds = new ArrayList<>();
-            if(ServerSettings.isEnableSharing())
+            if (ServerSettings.isEnableSharing()) {
+                List<SearchCriteria> sharingFilters = new ArrayList<>();
+                SearchCriteria searchCriteria = new SearchCriteria();
+                searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+                searchCriteria.setSearchCondition(SearchCondition.EQUAL);
+                searchCriteria.setValue(gatewayId + ":EXPERIMENT");
+                sharingFilters.add(searchCriteria);
                 getSharingRegistryServiceClient().searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                        userName+"@"+gatewayId, gatewayId+":EXPERIMENT",
-                        new ArrayList<>(), 0, -1).forEach(e->accessibleExpIds.add(e.entityId));
+                        userName + "@" + gatewayId, sharingFilters, 0, -1).forEach(e -> accessibleExpIds.add(e.entityId));
+            }
             return getRegistryServiceClient().searchExperiments(gatewayId, userName, accessibleExpIds, filters, limit, offset);
         }catch (Exception e) {
             logger.error("Error while retrieving experiments", e);

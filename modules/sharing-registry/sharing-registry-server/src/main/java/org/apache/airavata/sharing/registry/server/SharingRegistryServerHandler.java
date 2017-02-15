@@ -688,13 +688,13 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     }
 
     @Override
-    public List<Entity> searchEntities(String domainId, String userId, String entityTypeId, List<SearchCriteria> filters,
+    public List<Entity> searchEntities(String domainId, String userId, List<SearchCriteria> filters,
                                        int offset, int limit) throws SharingRegistryException, TException {
         try{
             List<String> groupIds = new ArrayList<>();
             groupIds.add(userId);
             (new GroupMembershipRepository()).getAllParentMembershipsForChild(domainId, userId).stream().forEach(gm -> groupIds.add(gm.parentId));
-            return (new EntityRepository()).searchEntities(domainId, groupIds, entityTypeId, filters, offset, limit);
+            return (new EntityRepository()).searchEntities(domainId, groupIds, filters, offset, limit);
         }catch (SharingRegistryException ex) {
             logger.error(ex.getMessage(), ex);
             throw ex;

@@ -163,7 +163,8 @@ enum EntitySearchField {
     OWNER_ID,
     PERMISSION_TYPE_ID,
     CREATED_TIME,
-    UPDATED_TIME
+    UPDATED_TIME,
+    ENTITY_TYPE_ID
 }
 
 /**

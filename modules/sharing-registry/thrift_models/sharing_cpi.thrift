@@ -156,7 +156,7 @@ service SharingRegistryService {
     /**
      <p>API method to search entities</p>
     */
-    list<sharing_models.Entity> searchEntities(1: required string domainId, 2: required string userId, 3: required string entityTypeId, 4: required list<sharing_models.SearchCriteria> filters, 5: required i32 offset, 6: required i32 limit) throws (1: sharing_models.SharingRegistryException sre)
+    list<sharing_models.Entity> searchEntities(1: required string domainId, 2: required string userId, 3: required list<sharing_models.SearchCriteria> filters, 4: required i32 offset, 5: required i32 limit) throws (1: sharing_models.SharingRegistryException sre)
     /**
      <p>API method to get a list of shared users given the entity id</p>
     */
