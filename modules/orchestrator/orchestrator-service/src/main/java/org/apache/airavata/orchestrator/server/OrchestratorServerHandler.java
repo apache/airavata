@@ -38,10 +38,12 @@ import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescr
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.application.io.DataType;
+import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
 import org.apache.airavata.model.error.LaunchValidationException;
+import org.apache.airavata.model.error.ValidationResults;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.messaging.event.*;
@@ -241,6 +243,12 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 log.error(experimentId, "Couldn't identify experiment type, experiment {} is neither single application nor workflow.", experimentId);
                 throw new TException("Experiment '" + experimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getExecutionId());
             }
+		} catch (LaunchValidationException launchValidationException) {
+			ExperimentStatus status = new ExperimentStatus(ExperimentState.FAILED);
+			status.setReason("Validation failed: " + launchValidationException.getErrorMessage());
+			status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+			OrchestratorUtils.updageAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
+			throw new TException("Experiment '" + experimentId + "' launch failed. Experiment failed to validate: " + launchValidationException.getErrorMessage(), launchValidationException);
         } catch (Exception e) {
             throw new TException("Experiment '" + experimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getExecutionId(), e);
         }
@@ -272,14 +280,26 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     @Override
     public boolean validateProcess(String experimentId, List<ProcessModel> processes) throws LaunchValidationException, TException {
         try {
-            ExperimentModel experimentModel = (ExperimentModel)experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
-            for (ProcessModel processModel : processes){
-                boolean state = orchestrator.validateProcess(experimentModel, processModel).isSetValidationState();
-                if (!state){
-                    return false;
-                }
-            }
-            return true;
+			ExperimentModel experimentModel = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+			for (ProcessModel processModel : processes) {
+				boolean state = orchestrator.validateProcess(experimentModel, processModel).isSetValidationState();
+				if (!state) {
+					return false;
+				}
+			}
+			return true;
+		} catch (LaunchValidationException lve) {
+
+			// If a process failed to validate, also add an error message at the experiment level
+			ErrorModel details = new ErrorModel();
+			details.setActualErrorMessage(lve.getErrorMessage());
+			details.setCreationTime(Calendar.getInstance().getTimeInMillis());
+			try {
+				experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_ERROR, details, experimentId);
+			} catch (RegistryException e) {
+			    log.error("Failed to add EXPERIMENT_ERROR regarding LaunchValidationException to experiment " + experimentId, e);
+			}
+			throw lve;
         } catch (OrchestratorException e) {
             log.error(experimentId, "Error while validating process", e);
             throw new TException(e);

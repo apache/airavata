@@ -97,8 +97,8 @@ public class BatchQueueValidator implements JobMetadataValidator {
 
                         //Set the validation to false. Once all the queue's are looped, if nothing matches, then this gets passed.
                         queueNameResult.setResult(false);
-                        queueNameResult.setErrorDetails("The specified queue" + experimentQueueName +
-                                "does not exist. If you believe this is an error, contact the administrator to verify App-Catalog Configurations");
+                        queueNameResult.setErrorDetails("The specified queue " + experimentQueueName +
+                                " does not exist. If you believe this is an error, contact the administrator to verify App-Catalog Configurations");
                         for (BatchQueue queue : batchQueues) {
                             String resourceQueueName = queue.getQueueName();
                             int maxQueueRunTime = queue.getMaxRunTime();
