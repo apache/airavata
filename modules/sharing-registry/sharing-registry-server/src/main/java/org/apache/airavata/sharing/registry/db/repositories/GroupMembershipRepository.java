@@ -35,6 +35,7 @@ public class GroupMembershipRepository extends AbstractRepository<GroupMembershi
         super(GroupMembership.class, GroupMembershipEntity.class);
     }
 
+    //TODO Replace with prepared statements
     public List<User> getAllChildUsers(String domainId, String groupId) throws SharingRegistryException {
         String queryString = "SELECT DISTINCT U FROM " + UserEntity.class.getSimpleName() + " U, " + GroupMembershipEntity.class.getSimpleName()
                 + " GM WHERE GM." + DBConstants.GroupMembershipTable.CHILD_ID + " = U." + DBConstants.UserTable.USER_ID + " AND " +
@@ -47,6 +48,7 @@ public class GroupMembershipRepository extends AbstractRepository<GroupMembershi
         return users;
     }
 
+    //TODO Replace with prepared statements
     public List<UserGroup> getAllChildGroups(String domainId, String groupId) throws SharingRegistryException {
         String queryString = "SELECT DISTINCT G FROM " + UserGroupEntity.class.getSimpleName() + " G, " + GroupMembershipEntity.class.getSimpleName()
                 + " GM WHERE GM." + DBConstants.GroupMembershipTable.CHILD_ID + " = G." + DBConstants.UserGroupTable.GROUP_ID + " AND " +

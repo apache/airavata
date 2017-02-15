@@ -49,6 +49,7 @@ public class SharingRepository extends AbstractRepository<Sharing, SharingEntity
         return select(filters, 0, -1);
     }
 
+    //TODO Replace with prepared statements
     public List<Sharing> getCascadingPermissionsForEntity(String domainId, String entityId) throws SharingRegistryException {
         String query = "SELECT DISTINCT p from " + SharingEntity.class.getSimpleName() + " as p";
         query += " WHERE ";
@@ -60,6 +61,7 @@ public class SharingRepository extends AbstractRepository<Sharing, SharingEntity
         return select(query, 0, -1);
     }
 
+    //TODO Replace with prepared statements
     public boolean hasAccess(String domainId, String entityId, List<String> groupIds, List<String> permissionTypeIds) throws SharingRegistryException {
         String query = "SELECT p from " + SharingEntity.class.getSimpleName() + " as p";
         query += " WHERE ";
