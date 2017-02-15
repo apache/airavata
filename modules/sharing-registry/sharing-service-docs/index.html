@@ -348,6 +348,12 @@
 
                 searchCriteria = new SearchCriteria();
                 searchCriteria.setSearchCondition(SearchCondition.EQUAL);
+                searchCriteria.setValue("EXPERIMENT");
+                searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+                filters.add(searchCriteria);
+
+                searchCriteria = new SearchCriteria();
+                searchCriteria.setSearchCondition(SearchCondition.EQUAL);
                 searchCriteria.setValue("READ");
                 searchCriteria.setSearchField(EntitySearchField.PERMISSION_TYPE_ID);
                 filters.add(searchCriteria);

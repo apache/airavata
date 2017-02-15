@@ -30,7 +30,8 @@ public enum EntitySearchField implements org.apache.thrift.TEnum {
   OWNER_ID(4),
   PERMISSION_TYPE_ID(5),
   CREATED_TIME(6),
-  UPDATED_TIME(7);
+  UPDATED_TIME(7),
+  ENTITY_TYPE_ID(8);
 
   private final int value;
 
@@ -67,6 +68,8 @@ public enum EntitySearchField implements org.apache.thrift.TEnum {
         return CREATED_TIME;
       case 7:
         return UPDATED_TIME;
+      case 8:
+        return ENTITY_TYPE_ID;
       default:
         return null;
     }

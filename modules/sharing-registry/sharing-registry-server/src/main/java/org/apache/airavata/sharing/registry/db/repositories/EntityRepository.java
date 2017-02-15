@@ -48,7 +48,7 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
         return select(filters, 0, -1);
     }
 
-    public List<Entity> searchEntities(String domainId, List<String> groupIds, String entityTypeId, List<SearchCriteria> filters,
+    public List<Entity> searchEntities(String domainId, List<String> groupIds, List<SearchCriteria> filters,
                                        int offset, int limit) throws SharingRegistryException {
         String groupIdString = "'";
         for(String groupId : groupIds)
@@ -56,8 +56,7 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
         groupIdString = groupIdString.substring(0, groupIdString.length()-2);
 
         String query = "SELECT E.* FROM ENTITY AS E INNER JOIN SHARING AS S ON (E.ENTITY_ID=S.ENTITY_ID AND E.DOMAIN_ID=S.DOMAIN_ID) WHERE " +
-                    "E.DOMAIN_ID = '" + domainId + "' AND " + "S.GROUP_ID IN(" + groupIdString + ") AND E." +
-                    "ENTITY_TYPE_ID" + "='" + entityTypeId + "' AND ";
+                "E.DOMAIN_ID = '" + domainId + "' AND " + "S.GROUP_ID IN(" + groupIdString + ") AND ";
 
         for(SearchCriteria searchCriteria : filters){
             if(searchCriteria.getSearchField().equals(EntitySearchField.NAME)){
@@ -103,6 +102,12 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
                     query += "E.OWNER_ID != '" + searchCriteria.getValue() + "' AND ";
                 } else {
                     query += "E.OWNER_ID = '" + searchCriteria.getValue() + "' AND ";
+                }
+            } else if (searchCriteria.getSearchField().equals(EntitySearchField.ENTITY_TYPE_ID)) {
+                if (searchCriteria.getSearchCondition() != null && searchCriteria.getSearchCondition().equals(SearchCondition.NOT)) {
+                    query += "E.ENTITY_TYPE_ID != '" + searchCriteria.getValue() + "' AND ";
+                } else {
+                    query += "E.ENTITY_TYPE_ID = '" + searchCriteria.getValue() + "' AND ";
                 }
             }else if(searchCriteria.getSearchField().equals(EntitySearchField.CREATED_TIME)){
                 if(searchCriteria.getSearchCondition().equals(SearchCondition.GTE)){

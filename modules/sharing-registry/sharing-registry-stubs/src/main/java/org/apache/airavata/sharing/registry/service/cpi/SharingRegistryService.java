@@ -286,12 +286,11 @@ public class SharingRegistryService {
      * 
      * @param domainId
      * @param userId
-     * @param entityTypeId
      * @param filters
      * @param offset
      * @param limit
      */
-    public List<org.apache.airavata.sharing.registry.models.Entity> searchEntities(String domainId, String userId, String entityTypeId, List<org.apache.airavata.sharing.registry.models.SearchCriteria> filters, int offset, int limit) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
+    public List<org.apache.airavata.sharing.registry.models.Entity> searchEntities(String domainId, String userId, List<org.apache.airavata.sharing.registry.models.SearchCriteria> filters, int offset, int limit) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
 
     /**
      * <p>API method to get a list of shared users given the entity id</p>
@@ -466,7 +465,7 @@ public class SharingRegistryService {
 
     public void getEntity(String domainId, String entityId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void searchEntities(String domainId, String userId, String entityTypeId, List<org.apache.airavata.sharing.registry.models.SearchCriteria> filters, int offset, int limit, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void searchEntities(String domainId, String userId, List<org.apache.airavata.sharing.registry.models.SearchCriteria> filters, int offset, int limit, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void getListOfSharedUsers(String domainId, String entityId, String permissionTypeId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -1320,18 +1319,17 @@ public class SharingRegistryService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getEntity failed: unknown result");
     }
 
-    public List<org.apache.airavata.sharing.registry.models.Entity> searchEntities(String domainId, String userId, String entityTypeId, List<org.apache.airavata.sharing.registry.models.SearchCriteria> filters, int offset, int limit) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public List<org.apache.airavata.sharing.registry.models.Entity> searchEntities(String domainId, String userId, List<org.apache.airavata.sharing.registry.models.SearchCriteria> filters, int offset, int limit) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
     {
-      send_searchEntities(domainId, userId, entityTypeId, filters, offset, limit);
+      send_searchEntities(domainId, userId, filters, offset, limit);
       return recv_searchEntities();
     }
 
-    public void send_searchEntities(String domainId, String userId, String entityTypeId, List<org.apache.airavata.sharing.registry.models.SearchCriteria> filters, int offset, int limit) throws org.apache.thrift.TException
+    public void send_searchEntities(String domainId, String userId, List<org.apache.airavata.sharing.registry.models.SearchCriteria> filters, int offset, int limit) throws org.apache.thrift.TException
     {
       searchEntities_args args = new searchEntities_args();
       args.setDomainId(domainId);
       args.setUserId(userId);
-      args.setEntityTypeId(entityTypeId);
       args.setFilters(filters);
       args.setOffset(offset);
       args.setLimit(limit);
@@ -2753,9 +2751,9 @@ public class SharingRegistryService {
       }
     }
 
-    public void searchEntities(String domainId, String userId, String entityTypeId, List<org.apache.airavata.sharing.registry.models.SearchCriteria> filters, int offset, int limit, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void searchEntities(String domainId, String userId, List<org.apache.airavata.sharing.registry.models.SearchCriteria> filters, int offset, int limit, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      searchEntities_call method_call = new searchEntities_call(domainId, userId, entityTypeId, filters, offset, limit, resultHandler, this, ___protocolFactory, ___transport);
+      searchEntities_call method_call = new searchEntities_call(domainId, userId, filters, offset, limit, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -2763,15 +2761,14 @@ public class SharingRegistryService {
     public static class searchEntities_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String domainId;
       private String userId;
-      private String entityTypeId;
       private List<org.apache.airavata.sharing.registry.models.SearchCriteria> filters;
       private int offset;
       private int limit;
-      public searchEntities_call(String domainId, String userId, String entityTypeId, List<org.apache.airavata.sharing.registry.models.SearchCriteria> filters, int offset, int limit, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+
+      public searchEntities_call(String domainId, String userId, List<org.apache.airavata.sharing.registry.models.SearchCriteria> filters, int offset, int limit, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.domainId = domainId;
         this.userId = userId;
-        this.entityTypeId = entityTypeId;
         this.filters = filters;
         this.offset = offset;
         this.limit = limit;
@@ -2782,7 +2779,6 @@ public class SharingRegistryService {
         searchEntities_args args = new searchEntities_args();
         args.setDomainId(domainId);
         args.setUserId(userId);
-        args.setEntityTypeId(entityTypeId);
         args.setFilters(filters);
         args.setOffset(offset);
         args.setLimit(limit);
@@ -4064,7 +4060,7 @@ public class SharingRegistryService {
       public searchEntities_result getResult(I iface, searchEntities_args args) throws org.apache.thrift.TException {
         searchEntities_result result = new searchEntities_result();
         try {
-          result.success = iface.searchEntities(args.domainId, args.userId, args.entityTypeId, args.filters, args.offset, args.limit);
+          result.success = iface.searchEntities(args.domainId, args.userId, args.filters, args.offset, args.limit);
         } catch (org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
           result.sre = sre;
         }
@@ -6197,7 +6193,7 @@ public class SharingRegistryService {
       }
 
       public void start(I iface, searchEntities_args args, org.apache.thrift.async.AsyncMethodCallback<List<org.apache.airavata.sharing.registry.models.Entity>> resultHandler) throws TException {
-        iface.searchEntities(args.domainId, args.userId, args.entityTypeId, args.filters, args.offset, args.limit,resultHandler);
+        iface.searchEntities(args.domainId, args.userId, args.filters, args.offset, args.limit, resultHandler);
       }
     }
 
@@ -34898,10 +34894,9 @@ public class SharingRegistryService {
 
     private static final org.apache.thrift.protocol.TField DOMAIN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("domainId", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField USER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("userId", org.apache.thrift.protocol.TType.STRING, (short)2);
-    private static final org.apache.thrift.protocol.TField ENTITY_TYPE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("entityTypeId", org.apache.thrift.protocol.TType.STRING, (short)3);
-    private static final org.apache.thrift.protocol.TField FILTERS_FIELD_DESC = new org.apache.thrift.protocol.TField("filters", org.apache.thrift.protocol.TType.LIST, (short)4);
-    private static final org.apache.thrift.protocol.TField OFFSET_FIELD_DESC = new org.apache.thrift.protocol.TField("offset", org.apache.thrift.protocol.TType.I32, (short)5);
-    private static final org.apache.thrift.protocol.TField LIMIT_FIELD_DESC = new org.apache.thrift.protocol.TField("limit", org.apache.thrift.protocol.TType.I32, (short)6);
+    private static final org.apache.thrift.protocol.TField FILTERS_FIELD_DESC = new org.apache.thrift.protocol.TField("filters", org.apache.thrift.protocol.TType.LIST, (short) 3);
+    private static final org.apache.thrift.protocol.TField OFFSET_FIELD_DESC = new org.apache.thrift.protocol.TField("offset", org.apache.thrift.protocol.TType.I32, (short) 4);
+    private static final org.apache.thrift.protocol.TField LIMIT_FIELD_DESC = new org.apache.thrift.protocol.TField("limit", org.apache.thrift.protocol.TType.I32, (short) 5);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -34911,7 +34906,6 @@ public class SharingRegistryService {
 
     public String domainId; // required
     public String userId; // required
-    public String entityTypeId; // required
     public List<org.apache.airavata.sharing.registry.models.SearchCriteria> filters; // required
     public int offset; // required
     public int limit; // required
@@ -34920,10 +34914,9 @@ public class SharingRegistryService {
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       DOMAIN_ID((short)1, "domainId"),
       USER_ID((short)2, "userId"),
-      ENTITY_TYPE_ID((short)3, "entityTypeId"),
-      FILTERS((short)4, "filters"),
-      OFFSET((short)5, "offset"),
-      LIMIT((short)6, "limit");
+      FILTERS((short) 3, "filters"),
+      OFFSET((short) 4, "offset"),
+      LIMIT((short) 5, "limit");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -34942,13 +34935,11 @@ public class SharingRegistryService {
             return DOMAIN_ID;
           case 2: // USER_ID
             return USER_ID;
-          case 3: // ENTITY_TYPE_ID
-            return ENTITY_TYPE_ID;
-          case 4: // FILTERS
+          case 3: // FILTERS
             return FILTERS;
-          case 5: // OFFSET
+          case 4: // OFFSET
             return OFFSET;
-          case 6: // LIMIT
+          case 5: // LIMIT
             return LIMIT;
           default:
             return null;
@@ -35000,8 +34991,6 @@ public class SharingRegistryService {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.USER_ID, new org.apache.thrift.meta_data.FieldMetaData("userId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-      tmpMap.put(_Fields.ENTITY_TYPE_ID, new org.apache.thrift.meta_data.FieldMetaData("entityTypeId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.FILTERS, new org.apache.thrift.meta_data.FieldMetaData("filters", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
               new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.sharing.registry.models.SearchCriteria.class))));
@@ -35019,7 +35008,6 @@ public class SharingRegistryService {
     public searchEntities_args(
       String domainId,
       String userId,
-      String entityTypeId,
       List<org.apache.airavata.sharing.registry.models.SearchCriteria> filters,
       int offset,
       int limit)
@@ -35027,7 +35015,6 @@ public class SharingRegistryService {
       this();
       this.domainId = domainId;
       this.userId = userId;
-      this.entityTypeId = entityTypeId;
       this.filters = filters;
       this.offset = offset;
       setOffsetIsSet(true);
@@ -35045,9 +35032,6 @@ public class SharingRegistryService {
       }
       if (other.isSetUserId()) {
         this.userId = other.userId;
-      }
-      if (other.isSetEntityTypeId()) {
-        this.entityTypeId = other.entityTypeId;
       }
       if (other.isSetFilters()) {
         List<org.apache.airavata.sharing.registry.models.SearchCriteria> __this__filters = new ArrayList<org.apache.airavata.sharing.registry.models.SearchCriteria>(other.filters.size());
@@ -35068,7 +35052,6 @@ public class SharingRegistryService {
     public void clear() {
       this.domainId = null;
       this.userId = null;
-      this.entityTypeId = null;
       this.filters = null;
       setOffsetIsSet(false);
       this.offset = 0;
@@ -35121,30 +35104,6 @@ public class SharingRegistryService {
     public void setUserIdIsSet(boolean value) {
       if (!value) {
         this.userId = null;
-      }
-    }
-
-    public String getEntityTypeId() {
-      return this.entityTypeId;
-    }
-
-    public searchEntities_args setEntityTypeId(String entityTypeId) {
-      this.entityTypeId = entityTypeId;
-      return this;
-    }
-
-    public void unsetEntityTypeId() {
-      this.entityTypeId = null;
-    }
-
-    /** Returns true if field entityTypeId is set (has been assigned a value) and false otherwise */
-    public boolean isSetEntityTypeId() {
-      return this.entityTypeId != null;
-    }
-
-    public void setEntityTypeIdIsSet(boolean value) {
-      if (!value) {
-        this.entityTypeId = null;
       }
     }
 
@@ -35251,14 +35210,6 @@ public class SharingRegistryService {
         }
         break;
 
-      case ENTITY_TYPE_ID:
-        if (value == null) {
-          unsetEntityTypeId();
-        } else {
-          setEntityTypeId((String)value);
-        }
-        break;
-
       case FILTERS:
         if (value == null) {
           unsetFilters();
@@ -35294,9 +35245,6 @@ public class SharingRegistryService {
       case USER_ID:
         return getUserId();
 
-      case ENTITY_TYPE_ID:
-        return getEntityTypeId();
-
       case FILTERS:
         return getFilters();
 
@@ -35321,8 +35269,6 @@ public class SharingRegistryService {
         return isSetDomainId();
       case USER_ID:
         return isSetUserId();
-      case ENTITY_TYPE_ID:
-        return isSetEntityTypeId();
       case FILTERS:
         return isSetFilters();
       case OFFSET:
@@ -35361,15 +35307,6 @@ public class SharingRegistryService {
         if (!(this_present_userId && that_present_userId))
           return false;
         if (!this.userId.equals(that.userId))
-          return false;
-      }
-
-      boolean this_present_entityTypeId = true && this.isSetEntityTypeId();
-      boolean that_present_entityTypeId = true && that.isSetEntityTypeId();
-      if (this_present_entityTypeId || that_present_entityTypeId) {
-        if (!(this_present_entityTypeId && that_present_entityTypeId))
-          return false;
-        if (!this.entityTypeId.equals(that.entityTypeId))
           return false;
       }
 
@@ -35417,11 +35354,6 @@ public class SharingRegistryService {
       if (present_userId)
         list.add(userId);
 
-      boolean present_entityTypeId = true && (isSetEntityTypeId());
-      list.add(present_entityTypeId);
-      if (present_entityTypeId)
-        list.add(entityTypeId);
-
       boolean present_filters = true && (isSetFilters());
       list.add(present_filters);
       if (present_filters)
@@ -35464,16 +35396,6 @@ public class SharingRegistryService {
       }
       if (isSetUserId()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userId, other.userId);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      lastComparison = Boolean.valueOf(isSetEntityTypeId()).compareTo(other.isSetEntityTypeId());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetEntityTypeId()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.entityTypeId, other.entityTypeId);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -35544,14 +35466,6 @@ public class SharingRegistryService {
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("entityTypeId:");
-      if (this.entityTypeId == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.entityTypeId);
-      }
-      first = false;
-      if (!first) sb.append(", ");
       sb.append("filters:");
       if (this.filters == null) {
         sb.append("null");
@@ -35578,9 +35492,6 @@ public class SharingRegistryService {
       }
       if (userId == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'userId' was not present! Struct: " + toString());
-      }
-      if (entityTypeId == null) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'entityTypeId' was not present! Struct: " + toString());
       }
       if (filters == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'filters' was not present! Struct: " + toString());
@@ -35642,15 +35553,7 @@ public class SharingRegistryService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 3: // ENTITY_TYPE_ID
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.entityTypeId = iprot.readString();
-                struct.setEntityTypeIdIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 4: // FILTERS
+            case 3: // FILTERS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
                   org.apache.thrift.protocol.TList _list72 = iprot.readListBegin();
@@ -35669,7 +35572,7 @@ public class SharingRegistryService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 5: // OFFSET
+            case 4: // OFFSET
               if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
                 struct.offset = iprot.readI32();
                 struct.setOffsetIsSet(true);
@@ -35677,7 +35580,7 @@ public class SharingRegistryService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 6: // LIMIT
+            case 5: // LIMIT
               if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
                 struct.limit = iprot.readI32();
                 struct.setLimitIsSet(true);
@@ -35714,11 +35617,6 @@ public class SharingRegistryService {
         if (struct.userId != null) {
           oprot.writeFieldBegin(USER_ID_FIELD_DESC);
           oprot.writeString(struct.userId);
-          oprot.writeFieldEnd();
-        }
-        if (struct.entityTypeId != null) {
-          oprot.writeFieldBegin(ENTITY_TYPE_ID_FIELD_DESC);
-          oprot.writeString(struct.entityTypeId);
           oprot.writeFieldEnd();
         }
         if (struct.filters != null) {
@@ -35758,7 +35656,6 @@ public class SharingRegistryService {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         oprot.writeString(struct.domainId);
         oprot.writeString(struct.userId);
-        oprot.writeString(struct.entityTypeId);
         {
           oprot.writeI32(struct.filters.size());
           for (org.apache.airavata.sharing.registry.models.SearchCriteria _iter76 : struct.filters)
@@ -35777,8 +35674,6 @@ public class SharingRegistryService {
         struct.setDomainIdIsSet(true);
         struct.userId = iprot.readString();
         struct.setUserIdIsSet(true);
-        struct.entityTypeId = iprot.readString();
-        struct.setEntityTypeIdIsSet(true);
         {
           org.apache.thrift.protocol.TList _list77 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.filters = new ArrayList<org.apache.airavata.sharing.registry.models.SearchCriteria>(_list77.size);

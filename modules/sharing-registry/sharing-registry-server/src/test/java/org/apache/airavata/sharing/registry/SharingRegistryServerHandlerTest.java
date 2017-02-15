@@ -267,7 +267,14 @@ public class SharingRegistryServerHandlerTest {
         searchCriteria.setValue("Input");
         searchCriteria.setSearchField(EntitySearchField.NAME);
         filters.add(searchCriteria);
-        Assert.assertTrue(sharingRegistryServerHandler.searchEntities(domainId, userId1, entityTypeId3, filters, 0, -1).size() > 0);
+
+        searchCriteria = new SearchCriteria();
+        searchCriteria.setSearchCondition(SearchCondition.EQUAL);
+        searchCriteria.setValue(entityTypeId3);
+        searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+        filters.add(searchCriteria);
+
+        Assert.assertTrue(sharingRegistryServerHandler.searchEntities(domainId, userId1, filters, 0, -1).size() > 0);
 
         Assert.assertNotNull(sharingRegistryServerHandler.getListOfSharedUsers(domainId, entityId1, permissionTypeId1));
         Assert.assertNotNull(sharingRegistryServerHandler.getListOfSharedGroups(domainId, entityId1, permissionTypeId1));

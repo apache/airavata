@@ -70,6 +70,7 @@ considered as a group in it's own right for implementation ease</p>
 <li>OWNER_ID : Owner of the entity</li>
 <li>CREATED_TIME : Created time of the entity</li>
 <li>UPDATED_TIME : Updated time of the entity</li>
+ <li>ENTITY_TYPE_ID : Entity type ID</li>
 
 <br/><br/><table class="table-bordered table-striped table-condensed">
 <tr><td><code>NAME</code></td><td><code>0</code></td><td>
@@ -88,10 +89,16 @@ considered as a group in it's own right for implementation ease</p>
 </td></tr>
 <tr><td><code>UPDATED_TIME</code></td><td><code>7</code></td><td>
 </td></tr>
+  <tr>
+   <td><code>ENTITY_TYPE_ID</code></td>
+   <td><code>8</code></td>
+   <td>
+   </td>
+  </tr>
 </table></div>
 <div class="definition"><h3 id="Enum_SearchCondition">Enumeration: SearchCondition</h3>
 <p>Different search operators that can be used with the entity search fields</p>
- <li>EQUAL : Simply matches for equality. Applicable for name, permission type id, and parent entity id</li>
+ <li>EQUAL : Simply matches for equality. Applicable for name, and parent entity id</li>
 <li>LIKE : Check for the condition %$FIELD% condition. Applicable for name, and description</li>
 <li>FULL_TEXT : Does a full text search. Only applicable for the FULL_TEXT field.</li>
 <li>GTE : Greater than or equal. Only applicable for created time and updated time.</li>
