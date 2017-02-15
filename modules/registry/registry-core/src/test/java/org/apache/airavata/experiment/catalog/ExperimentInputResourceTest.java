@@ -55,6 +55,7 @@ public class ExperimentInputResourceTest extends AbstractResourceTest  {
         experimentInputResource.setInputName("testKey");
         experimentInputResource.setInputValue("testValue");
         experimentInputResource.setDataType("string");
+        experimentInputResource.setIsReadOnly(false);
         experimentInputResource.save();
     }
 

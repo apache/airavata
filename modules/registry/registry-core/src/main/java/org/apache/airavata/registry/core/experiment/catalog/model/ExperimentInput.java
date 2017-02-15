@@ -43,6 +43,7 @@ public class ExperimentInput {
     private boolean requiredToAddedToCmd;
     private boolean dataStaged;
     private String storageResourceId;
+    private boolean isReadOnly;
     private Experiment experiment;
 
     @Id
@@ -163,6 +164,15 @@ public class ExperimentInput {
 
     public void setDataStaged(boolean dataStaged) {
         this.dataStaged = dataStaged;
+    }
+
+    @Column(name = "IS_READ_ONLY")
+    public boolean isReadOnly() {
+        return isReadOnly;
+    }
+
+    public void setIsReadOnly(boolean isReadOnly) {
+        this.isReadOnly = isReadOnly;
     }
 
 //    @Override

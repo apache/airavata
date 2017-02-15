@@ -868,6 +868,7 @@ public class AppCatalogJPAUtils {
             resource.setRequired(o.isRequired());
             resource.setRequiredToCMD(o.isRequiredToCMD());
             resource.setDataStaged(o.isDataStaged());
+            resource.setIsReadOnly(o.isReadOnly());
             resource.setAppInterfaceResource((AppInterfaceResource) createAppInterfaceResource(o.getApplicationInterface()));
         }
         return resource;

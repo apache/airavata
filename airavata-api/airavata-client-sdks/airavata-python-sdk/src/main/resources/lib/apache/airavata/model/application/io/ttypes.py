@@ -92,6 +92,7 @@ class InputDataObjectType:
    - requiredToAddedToCommandLine
    - dataStaged
    - storageResourceId
+   - isReadOnly
   """
 
   thrift_spec = (
@@ -108,9 +109,10 @@ class InputDataObjectType:
     (10, TType.BOOL, 'requiredToAddedToCommandLine', None, None, ), # 10
     (11, TType.BOOL, 'dataStaged', None, None, ), # 11
     (12, TType.STRING, 'storageResourceId', None, None, ), # 12
+    (13, TType.BOOL, 'isReadOnly', None, None, ), # 13
   )
 
-  def __init__(self, name=None, value=None, type=None, applicationArgument=None, standardInput=None, userFriendlyDescription=None, metaData=None, inputOrder=None, isRequired=None, requiredToAddedToCommandLine=None, dataStaged=None, storageResourceId=None,):
+  def __init__(self, name=None, value=None, type=None, applicationArgument=None, standardInput=None, userFriendlyDescription=None, metaData=None, inputOrder=None, isRequired=None, requiredToAddedToCommandLine=None, dataStaged=None, storageResourceId=None, isReadOnly=None,):
     self.name = name
     self.value = value
     self.type = type
@@ -123,6 +125,7 @@ class InputDataObjectType:
     self.requiredToAddedToCommandLine = requiredToAddedToCommandLine
     self.dataStaged = dataStaged
     self.storageResourceId = storageResourceId
+    self.isReadOnly = isReadOnly
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -193,6 +196,11 @@ class InputDataObjectType:
           self.storageResourceId = iprot.readString()
         else:
           iprot.skip(ftype)
+      elif fid == 13:
+        if ftype == TType.BOOL:
+          self.isReadOnly = iprot.readBool()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -251,6 +259,10 @@ class InputDataObjectType:
       oprot.writeFieldBegin('storageResourceId', TType.STRING, 12)
       oprot.writeString(self.storageResourceId)
       oprot.writeFieldEnd()
+    if self.isReadOnly is not None:
+      oprot.writeFieldBegin('isReadOnly', TType.BOOL, 13)
+      oprot.writeBool(self.isReadOnly)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -274,6 +286,7 @@ class InputDataObjectType:
     value = (value * 31) ^ hash(self.requiredToAddedToCommandLine)
     value = (value * 31) ^ hash(self.dataStaged)
     value = (value * 31) ^ hash(self.storageResourceId)
+    value = (value * 31) ^ hash(self.isReadOnly)
     return value
 
   def __repr__(self):

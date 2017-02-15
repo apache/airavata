@@ -48,6 +48,7 @@ public class ProcessInputResource extends AbstractExpCatResource {
     private boolean requiredToAddedToCmd = false;
     private boolean dataStaged = false;
     private String storageResourceId;
+    private boolean isReadOnly;
 
     public String getProcessId() {
         return processId;
@@ -153,6 +154,14 @@ public class ProcessInputResource extends AbstractExpCatResource {
         this.storageResourceId = storageResourceId;
     }
 
+    public boolean isReadOnly() {
+        return isReadOnly;
+    }
+
+    public void setIsReadOnly(boolean isReadOnly) {
+        this.isReadOnly = isReadOnly;
+    }
+
     public ExperimentCatResource create(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for process input data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
@@ -216,6 +225,7 @@ public class ProcessInputResource extends AbstractExpCatResource {
             processInput.setRequiredToAddedToCmd(requiredToAddedToCmd);
             processInput.setDataStaged(dataStaged);
             processInput.setStorageResourceId(storageResourceId);
+            processInput.setIsReadOnly(isReadOnly);
             if (existingProInput == null){
                 em.persist(processInput);
             }else {

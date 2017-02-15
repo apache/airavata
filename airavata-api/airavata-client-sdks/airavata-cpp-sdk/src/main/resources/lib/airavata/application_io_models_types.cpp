@@ -114,6 +114,11 @@ void InputDataObjectType::__set_storageResourceId(const std::string& val) {
 __isset.storageResourceId = true;
 }
 
+void InputDataObjectType::__set_isReadOnly(const bool val) {
+  this->isReadOnly = val;
+__isset.isReadOnly = true;
+}
+
 uint32_t InputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -234,6 +239,14 @@ uint32_t InputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
+      case 13:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->isReadOnly);
+          this->__isset.isReadOnly = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -312,6 +325,11 @@ uint32_t InputDataObjectType::write(::apache::thrift::protocol::TProtocol* oprot
     xfer += oprot->writeString(this->storageResourceId);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.isReadOnly) {
+    xfer += oprot->writeFieldBegin("isReadOnly", ::apache::thrift::protocol::T_BOOL, 13);
+    xfer += oprot->writeBool(this->isReadOnly);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -331,6 +349,7 @@ void swap(InputDataObjectType &a, InputDataObjectType &b) {
   swap(a.requiredToAddedToCommandLine, b.requiredToAddedToCommandLine);
   swap(a.dataStaged, b.dataStaged);
   swap(a.storageResourceId, b.storageResourceId);
+  swap(a.isReadOnly, b.isReadOnly);
   swap(a.__isset, b.__isset);
 }
 
@@ -347,6 +366,7 @@ InputDataObjectType::InputDataObjectType(const InputDataObjectType& other1) {
   requiredToAddedToCommandLine = other1.requiredToAddedToCommandLine;
   dataStaged = other1.dataStaged;
   storageResourceId = other1.storageResourceId;
+  isReadOnly = other1.isReadOnly;
   __isset = other1.__isset;
 }
 InputDataObjectType& InputDataObjectType::operator=(const InputDataObjectType& other2) {
@@ -362,6 +382,7 @@ InputDataObjectType& InputDataObjectType::operator=(const InputDataObjectType& o
   requiredToAddedToCommandLine = other2.requiredToAddedToCommandLine;
   dataStaged = other2.dataStaged;
   storageResourceId = other2.storageResourceId;
+  isReadOnly = other2.isReadOnly;
   __isset = other2.__isset;
   return *this;
 }
@@ -380,6 +401,7 @@ void InputDataObjectType::printTo(std::ostream& out) const {
   out << ", " << "requiredToAddedToCommandLine="; (__isset.requiredToAddedToCommandLine ? (out << to_string(requiredToAddedToCommandLine)) : (out << "<null>"));
   out << ", " << "dataStaged="; (__isset.dataStaged ? (out << to_string(dataStaged)) : (out << "<null>"));
   out << ", " << "storageResourceId="; (__isset.storageResourceId ? (out << to_string(storageResourceId)) : (out << "<null>"));
+  out << ", " << "isReadOnly="; (__isset.isReadOnly ? (out << to_string(isReadOnly)) : (out << "<null>"));
   out << ")";
 }
 

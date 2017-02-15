@@ -117,6 +117,10 @@ class InputDataObjectType {
    * @var string
    */
   public $storageResourceId = null;
+  /**
+   * @var bool
+   */
+  public $isReadOnly = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -169,6 +173,10 @@ class InputDataObjectType {
           'var' => 'storageResourceId',
           'type' => TType::STRING,
           ),
+          13 => array(
+              'var' => 'isReadOnly',
+              'type' => TType::BOOL,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -207,6 +215,9 @@ class InputDataObjectType {
       }
       if (isset($vals['storageResourceId'])) {
         $this->storageResourceId = $vals['storageResourceId'];
+      }
+      if (isset($vals['isReadOnly'])) {
+        $this->isReadOnly = $vals['isReadOnly'];
       }
     }
   }
@@ -314,6 +325,13 @@ class InputDataObjectType {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 13:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->isReadOnly);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -385,6 +403,11 @@ class InputDataObjectType {
     if ($this->storageResourceId !== null) {
       $xfer += $output->writeFieldBegin('storageResourceId', TType::STRING, 12);
       $xfer += $output->writeString($this->storageResourceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->isReadOnly !== null) {
+      $xfer += $output->writeFieldBegin('isReadOnly', TType::BOOL, 13);
+      $xfer += $output->writeBool($this->isReadOnly);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
