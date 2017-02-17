@@ -86,7 +86,7 @@ public class UserProfileEntity {
         this.userModelVersion = userModelVersion;
     }
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="USER_PROFILE_EMAIL", joinColumns = @JoinColumn(name="AIRAVATA_INTERNAL_USER_ID"))
     public List<String> getEmails() {
         return emails;
