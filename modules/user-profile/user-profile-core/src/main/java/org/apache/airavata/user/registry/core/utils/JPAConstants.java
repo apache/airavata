@@ -25,6 +25,7 @@ public class JPAConstants {
 	public static final String KEY_JDBC_USER = "user.profile.catalog.registry.jdbc.user";
 	public static final String KEY_JDBC_PASSWORD = "user.profile.catalog.registry.jdbc.password";
 	public static final String KEY_JDBC_DRIVER = "user.profile.catalog.registry.jdbc.driver";
+	// TODO: is this needed?
 	public static final String KEY_DERBY_START_ENABLE = "user.profile.catalog.start.derby.server.mode";
 	public static final String VALIDATION_QUERY = "user.profile.catalog.validationQuery";
 	public static final String JPA_CACHE_SIZE = "user.profile.catalog.jpa.cache.size";
