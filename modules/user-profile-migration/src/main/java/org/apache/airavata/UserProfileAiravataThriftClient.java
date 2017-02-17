@@ -33,12 +33,12 @@ import java.util.List;
 
 public class UserProfileAiravataThriftClient {
 
-    public UserProfileService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
+    public UserProfileService.Client getUserProfileServiceClient() throws TException, ApplicationSettingsException {
         // Check the server ports before running migration
-        final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-        final String serverHost = ServerSettings.getRegistryServerHost();
+        final int serverPort = Integer.parseInt(ServerSettings.getUserProfileServerPort());
+        final String serverHost = ServerSettings.getUserProfileServerHost();
         try {
-            return UserProfileServiceClientFactory.createRegistryClient(serverHost, serverPort);
+            return UserProfileServiceClientFactory.createUserProfileServiceClient(serverHost, serverPort);
         } catch (UserProfileServiceException e) {
             throw new TException("Unable to create registry client...", e);
         }

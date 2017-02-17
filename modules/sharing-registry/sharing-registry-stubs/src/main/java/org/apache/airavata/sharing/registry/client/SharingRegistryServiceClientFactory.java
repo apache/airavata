@@ -38,6 +38,7 @@ public class SharingRegistryServiceClientFactory {
             TBinaryProtocol protocol = new TBinaryProtocol(e);
             return new SharingRegistryService.Client(protocol);
         } catch (TTransportException var4) {
+            logger.error("failed to create sharing registry client", var4);
             throw new SharingRegistryException();
         }
     }
