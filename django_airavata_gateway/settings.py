@@ -135,5 +135,11 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG' if DEBUG else 'INFO'
         },
+        'django_airavata_gateway': {
+            'handlers': ['console'],
+            'level': 'DEBUG' if DEBUG else 'INFO'
+        },
     },
 }
+
+LOGIN_REDIRECT_URL = '/'

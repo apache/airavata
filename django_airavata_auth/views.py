@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -25,10 +26,9 @@ def logout(request):
 def callback(request):
     # TODO handle authentication errors
     user = authenticate(authorization_code_url=request.build_absolute_uri(),
-        redirect_url=request.build_absolute_uri(reverse('airavata_auth_callback')))
+        redirect_url=request.build_absolute_uri(reverse('airavata_auth_callback')), request=request)
     if user is not None:
         login(request, user)
-        # TODO redirect to LOGIN_REDIRECT_URL
-        return HttpResponse("Logged in!")
+        return redirect(settings.LOGIN_REDIRECT_URL)
     else:
-        redirect('/')
+        return redirect('/')

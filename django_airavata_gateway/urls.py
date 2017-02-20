@@ -16,7 +16,11 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
+from . import views
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^auth/', include('django_airavata_auth.urls')),
+    # This is just a dummy view to test authentication
+    url(r'^$', views.home)
 ]
