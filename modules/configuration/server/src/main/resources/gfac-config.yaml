@@ -88,6 +88,7 @@ resources:
       - adm@trident.bigred2.uits.iu.edu # Bigred2
       - root <adm@trident.bigred2.uits.iu.edu> # Bigred2
       - root <adm@scyld.localdomain> # alamo
+      - gordon-fe2.local # Gordon
 
   - jobManagerType: SLURM
     commandOutputParser: org.apache.airavata.gfac.impl.job.SlurmOutputParser
