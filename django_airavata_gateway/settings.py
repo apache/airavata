@@ -118,3 +118,22 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+
+AUTHENTICATION_BACKENDS = [
+    'django_airavata_auth.backends.WSO2ISBackend'
+]
+
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django_airavata_auth': {
+            'handlers': ['console'],
+            'level': 'DEBUG' if DEBUG else 'INFO'
+        },
+    },
+}
