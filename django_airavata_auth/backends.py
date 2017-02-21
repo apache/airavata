@@ -1,6 +1,7 @@
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 from requests_oauthlib import OAuth2Session
 
@@ -9,7 +10,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 class WSO2ISBackend(object):
-    def authenticate(self, authorization_code_url=None, redirect_url=None, request=None):
+    def authenticate(self, request=None):
+        authorization_code_url=request.build_absolute_uri()
+        redirect_url=request.build_absolute_uri(reverse('airavata_auth_callback'))
         client_id = settings.WSO2IS_CLIENT_ID
         token_url = settings.WSO2IS_TOKEN_URL
         userinfo_url = settings.WSO2IS_USERINFO_URL
@@ -20,12 +23,15 @@ class WSO2ISBackend(object):
         wso2is = OAuth2Session(client_id, scope='openid', redirect_uri=redirect_url, state=state)
         token = wso2is.fetch_token(token_url, client_secret=client_secret,
             authorization_response=authorization_code_url, verify=verify_ssl)
+        # TODO validate the JWS signature
+        logger.debug("token: {}".format(token))
         access_token = token['access_token']
         userinfo = wso2is.get(userinfo_url).json()
-        logger.debug("userinfo: %s", userinfo)
+        logger.debug("userinfo: {}".format(userinfo))
         # TODO WSO2 IS userinfo only returns the 'sub' claim. Fixed in 5.3.0?
         # See also: http://stackoverflow.com/q/41281292
         # and: https://wso2.org/jira/browse/IDENTITY-4250
+        # TODO load user roles as well
         sub_claim = userinfo['sub']
         # For WSO2 IS sometimes the sub claim is in the form of 'username@tenant-id'
         username = sub_claim.split('@')[0]

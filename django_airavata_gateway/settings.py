@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_airavata_auth',
 ]
 
 MIDDLEWARE = [
@@ -130,6 +131,9 @@ WSO2IS_TOKEN_URL = 'https://localhost:9443/oauth2/token'
 WSO2IS_USERINFO_URL = 'https://localhost:9443/oauth2/userinfo?schema=openid'
 WSO2IS_VERIFY_SSL = False
 
+LOGIN_URL = '/auth/login'
+LOGIN_REDIRECT_URL = '/'
+
 GATEWAY_ID = 'php_reference_gateway'
 
 LOGGING = {
@@ -150,5 +154,3 @@ LOGGING = {
         },
     },
 }
-
-LOGIN_REDIRECT_URL = '/'

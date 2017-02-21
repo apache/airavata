@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -23,16 +23,20 @@ def start_login(request):
     request.session['OAUTH2_STATE'] = state
     return redirect(authorization_url)
 
-def logout(request):
-    # TODO clear out session information
-    return HttpResponse("Logout")
+def start_logout(request):
+    logout(request)
+    return redirect('/')
 
 def callback(request):
-    # TODO handle authentication errors
-    user = authenticate(authorization_code_url=request.build_absolute_uri(),
-        redirect_url=request.build_absolute_uri(reverse('airavata_auth_callback')), request=request)
-    if user is not None:
+    try:
+        user = authenticate(request=request)
         login(request, user)
         return redirect(settings.LOGIN_REDIRECT_URL)
-    else:
-        return redirect('/')
+    except Exception as err:
+        logger.exception("An error occurred while processing OAuth2 callback: {}".format(request.build_absolute_uri()))
+        return redirect(reverse('airavata_auth_error'))
+
+def auth_error(request):
+    return render(request, 'django_airavata_auth/auth_error.html', {
+        'login_url': settings.LOGIN_URL
+    })
