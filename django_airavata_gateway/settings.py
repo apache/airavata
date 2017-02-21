@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_airavata_auth',
+    'django_airavata_workspace',
 ]
 
 MIDDLEWARE = [
@@ -135,6 +136,9 @@ LOGIN_URL = '/auth/login'
 LOGIN_REDIRECT_URL = '/'
 
 GATEWAY_ID = 'php_reference_gateway'
+AIRAVATA_API_HOST = 'localhost'
+AIRAVATA_API_PORT = 8930
+AIRAVATA_API_SECURE = False
 
 LOGGING = {
     'version': 1,
