@@ -123,6 +123,15 @@ AUTHENTICATION_BACKENDS = [
     'django_airavata_auth.backends.WSO2ISBackend'
 ]
 
+WSO2IS_CLIENT_ID = 'fGwm3EW0EmaiV0jI6GBmmOiQ2Xca'
+WSO2IS_CLIENT_SECRET = 'fMLLvWH6YEHwgl4Nb0hHu9AC5Jwa'
+WSO2IS_AUTHORIZE_URL = 'https://localhost:9443/oauth2/authorize'
+WSO2IS_TOKEN_URL = 'https://localhost:9443/oauth2/token'
+WSO2IS_USERINFO_URL = 'https://localhost:9443/oauth2/userinfo?schema=openid'
+WSO2IS_VERIFY_SSL = False
+
+GATEWAY_ID = 'php_reference_gateway'
+
 LOGGING = {
     'version': 1,
     'handlers': {

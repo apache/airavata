@@ -1,4 +1,5 @@
 
+from django.conf import settings
 from django.contrib.auth.models import User
 
 from requests_oauthlib import OAuth2Session
@@ -9,15 +10,16 @@ logger = logging.getLogger(__name__)
 
 class WSO2ISBackend(object):
     def authenticate(self, authorization_code_url=None, redirect_url=None, request=None):
-        # TODO: get these values from settings
-        client_id = 'fGwm3EW0EmaiV0jI6GBmmOiQ2Xca'
-        token_url = 'https://localhost:9443/oauth2/token'
-        userinfo_url = 'https://localhost:9443/oauth2/userinfo?schema=openid'
-        client_secret = 'fMLLvWH6YEHwgl4Nb0hHu9AC5Jwa'
-        # TODO: maybe store the OAuth2Session in session?
-        wso2is = OAuth2Session(client_id, scope='openid', redirect_uri=redirect_url)
+        client_id = settings.WSO2IS_CLIENT_ID
+        token_url = settings.WSO2IS_TOKEN_URL
+        userinfo_url = settings.WSO2IS_USERINFO_URL
+        client_secret = settings.WSO2IS_CLIENT_SECRET
+        verify_ssl = settings.WSO2IS_VERIFY_SSL
+        state = request.session['OAUTH2_STATE']
+        logger.debug("state={}".format(state))
+        wso2is = OAuth2Session(client_id, scope='openid', redirect_uri=redirect_url, state=state)
         token = wso2is.fetch_token(token_url, client_secret=client_secret,
-            authorization_response=authorization_code_url, verify=False)
+            authorization_response=authorization_code_url, verify=verify_ssl)
         access_token = token['access_token']
         userinfo = wso2is.get(userinfo_url).json()
         logger.debug("userinfo: %s", userinfo)
