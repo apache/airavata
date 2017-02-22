@@ -49,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_airavata_auth.middleware.authz_token_middleware',
 ]
 
 ROOT_URLCONF = 'django_airavata_gateway.urls'
@@ -153,6 +154,10 @@ LOGGING = {
             'level': 'DEBUG' if DEBUG else 'INFO'
         },
         'django_airavata_gateway': {
+            'handlers': ['console'],
+            'level': 'DEBUG' if DEBUG else 'INFO'
+        },
+        'django_airavata_workspace': {
             'handlers': ['console'],
             'level': 'DEBUG' if DEBUG else 'INFO'
         },
