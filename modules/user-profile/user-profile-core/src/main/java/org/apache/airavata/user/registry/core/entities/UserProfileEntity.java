@@ -114,7 +114,7 @@ public class UserProfileEntity {
         this.orcidId = orcidId;
     }
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="USER_PROFILE_PHONE", joinColumns = @JoinColumn(name="AIRAVATA_INTERNAL_USER_ID"))
     public List<String> getPhones() {
         return phones;
@@ -133,7 +133,7 @@ public class UserProfileEntity {
         this.country = country;
     }
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="USER_PROFILE_NATIONALITY", joinColumns = @JoinColumn(name="AIRAVATA_INTERNAL_USER_ID"))
     public List<String> getNationality() {
         return nationality;
@@ -207,7 +207,7 @@ public class UserProfileEntity {
         this.comments = comments;
     }
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="USER_PROFILE_LABELED_URI", joinColumns = @JoinColumn(name="AIRAVATA_INTERNAL_USER_ID"))
     public List<String> getLabeledURI() {
         return labeledURI;
@@ -236,7 +236,7 @@ public class UserProfileEntity {
         this.timeZone = timeZone;
     }
 
-    @OneToOne(targetEntity = NSFDemographicsEntity.class, cascade = CascadeType.ALL, mappedBy = "userProfile")
+    @OneToOne(targetEntity = NSFDemographicsEntity.class, cascade = CascadeType.ALL, mappedBy = "userProfile", fetch = FetchType.EAGER)
     public NSFDemographicsEntity getNsfDemographics() {
         return nsfDemographics;
     }
