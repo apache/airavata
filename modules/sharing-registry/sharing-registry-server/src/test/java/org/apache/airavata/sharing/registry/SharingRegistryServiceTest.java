@@ -236,8 +236,6 @@ public class SharingRegistryServiceTest {
         entity1.setOriginalEntityCreationTime(System.currentTimeMillis());
         sharingServiceClient.createEntity(entity1);
 
-        sharingServiceClient.shareEntityWithUsers(domainId, "test-project-1", Arrays.asList("test-user-2"), "WRITE", true);
-
         Entity entity2 = new Entity();
         entity2.setEntityId("test-experiment-1");
         entity2.setDomainId(domainId);
