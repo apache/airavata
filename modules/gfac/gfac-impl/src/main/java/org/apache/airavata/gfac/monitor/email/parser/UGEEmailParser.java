@@ -82,7 +82,7 @@ public class UGEEmailParser implements EmailParser {
             case FAILED:
                 return JobState.FAILED;
             case ABORTED:
-                return JobState.FAILED;
+                return JobState.CANCELED;
             default:
                 return JobState.UNKNOWN;
 
