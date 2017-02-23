@@ -779,7 +779,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
 
             if(cascadePermission){
                 //Adding permission for the specified users/groups for all child entities
-                (new EntityRepository()).getChildEntities(entityId).stream().forEach(e-> temp.addLast(e));
+                (new EntityRepository()).getChildEntities(domainId, entityId).stream().forEach(e -> temp.addLast(e));
                 while(temp.size() > 0){
                     Entity entity = temp.pop();
                     String childEntityId = entity.entityId;
@@ -795,7 +795,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
                         sharing.setCreatedTime(System.currentTimeMillis());
                         sharing.setUpdatedTime(System.currentTimeMillis());
                         sharings.add(sharing);
-                        (new EntityRepository()).getChildEntities(childEntityId).stream().forEach(e-> temp.addLast(e));
+                        (new EntityRepository()).getChildEntities(domainId, childEntityId).stream().forEach(e -> temp.addLast(e));
                     }
                 }
             }
