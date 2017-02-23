@@ -127,21 +127,24 @@ public class SharingEntity {
 
         SharingEntity that = (SharingEntity) o;
 
-        if (permissionTypeId != null ? !permissionTypeId.equals(that.permissionTypeId) : that.permissionTypeId != null)
+        if (getPermissionTypeId() != null ? !getPermissionTypeId().equals(that.getPermissionTypeId()) : that.getPermissionTypeId() != null)
             return false;
-        if (entityId != null ? !entityId.equals(that.entityId) : that.entityId != null) return false;
-        if (groupId != null ? !groupId.equals(that.groupId) : that.groupId != null) return false;
-        if (createdTime != null ? !createdTime.equals(that.createdTime) : that.createdTime != null) return false;
-        if (updatedTime != null ? !updatedTime.equals(that.updatedTime) : that.updatedTime != null) return false;
+        if (getEntityId() != null ? !getEntityId().equals(that.getEntityId()) : that.getEntityId() != null)
+            return false;
+        if (getGroupId() != null ? !getGroupId().equals(that.getGroupId()) : that.getGroupId() != null) return false;
+        if (getCreatedTime() != null ? !getCreatedTime().equals(that.getCreatedTime()) : that.getCreatedTime() != null)
+            return false;
+        if (getUpdatedTime() != null ? !getUpdatedTime().equals(that.getUpdatedTime()) : that.getUpdatedTime() != null)
+            return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = permissionTypeId != null ? permissionTypeId.hashCode() : 0;
-        result = 31 * result + (entityId != null ? entityId.hashCode() : 0);
-        result = 31 * result + (groupId != null ? groupId.hashCode() : 0);
+        int result = getPermissionTypeId() != null ? getPermissionTypeId().hashCode() : 0;
+        result = 31 * result + (getEntityId() != null ? getEntityId().hashCode() : 0);
+        result = 31 * result + (getGroupId() != null ? getGroupId().hashCode() : 0);
         return result;
     }
 }

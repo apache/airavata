@@ -70,19 +70,20 @@ public class GroupMembershipPK implements Serializable {
 
         GroupMembershipPK that = (GroupMembershipPK) o;
 
-        if (parentId != null ? !parentId.equals(that.parentId) : that.parentId != null)
+        if (getParentId() != null ? !getParentId().equals(that.getParentId()) : that.getParentId() != null)
             return false;
-        if (childId != null ? !childId.equals(that.childId) : that.childId != null) return false;
-        if (domainId != null ? !domainId.equals(that.domainId) : that.domainId != null) return false;
+        if (getChildId() != null ? !getChildId().equals(that.getChildId()) : that.getChildId() != null) return false;
+        if (getDomainId() != null ? !getDomainId().equals(that.getDomainId()) : that.getDomainId() != null)
+            return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = parentId != null ? parentId.hashCode() : 0;
-        result = 31 * result + (childId != null ? childId.hashCode() : 0);
-        result = 31 * result + (domainId != null ? domainId.hashCode() : 0);
+        int result = getParentId() != null ? getParentId().hashCode() : 0;
+        result = 31 * result + (getChildId() != null ? getChildId().hashCode() : 0);
+        result = 31 * result + (getDomainId() != null ? getDomainId().hashCode() : 0);
         return result;
     }
 }

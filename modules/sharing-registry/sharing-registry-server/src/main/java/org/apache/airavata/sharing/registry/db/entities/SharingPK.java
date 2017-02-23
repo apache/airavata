@@ -92,23 +92,26 @@ public class SharingPK implements Serializable {
 
         SharingPK that = (SharingPK) o;
 
-        if (permissionTypeId != null ? !permissionTypeId.equals(that.permissionTypeId) : that.permissionTypeId != null)
+        if (getPermissionTypeId() != null ? !getPermissionTypeId().equals(that.getPermissionTypeId()) : that.getPermissionTypeId() != null)
             return false;
-        if (entityId != null ? !entityId.equals(that.entityId) : that.entityId != null) return false;
-        if (groupId != null ? !groupId.equals(that.groupId) : that.groupId != null) return false;
-        if (inheritedParentId != null ? !inheritedParentId.equals(that.inheritedParentId) : that.inheritedParentId != null) return false;
-        if (domainId != null ? !domainId.equals(that.domainId) : that.domainId != null) return false;
+        if (getEntityId() != null ? !getEntityId().equals(that.getEntityId()) : that.getEntityId() != null)
+            return false;
+        if (getGroupId() != null ? !getGroupId().equals(that.getGroupId()) : that.getGroupId() != null) return false;
+        if (getInheritedParentId() != null ? !getInheritedParentId().equals(that.getInheritedParentId()) : that.getInheritedParentId() != null)
+            return false;
+        if (getDomainId() != null ? !getDomainId().equals(that.getDomainId()) : that.getDomainId() != null)
+            return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = permissionTypeId != null ? permissionTypeId.hashCode() : 0;
-        result = 31 * result + (entityId != null ? entityId.hashCode() : 0);
-        result = 31 * result + (groupId != null ? groupId.hashCode() : 0);
-        result = 31 * result + (inheritedParentId != null ? inheritedParentId.hashCode() : 0);
-        result = 31 * result + (domainId != null ? domainId.hashCode() : 0);
+        int result = getPermissionTypeId() != null ? getPermissionTypeId().hashCode() : 0;
+        result = 31 * result + (getEntityId() != null ? getEntityId().hashCode() : 0);
+        result = 31 * result + (getGroupId() != null ? getGroupId().hashCode() : 0);
+        result = 31 * result + (getInheritedParentId() != null ? getInheritedParentId().hashCode() : 0);
+        result = 31 * result + (getDomainId() != null ? getDomainId().hashCode() : 0);
         return result;
     }
 }

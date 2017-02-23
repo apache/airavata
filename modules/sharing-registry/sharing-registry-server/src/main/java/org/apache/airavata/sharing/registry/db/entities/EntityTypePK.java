@@ -60,17 +60,18 @@ public class EntityTypePK implements Serializable {
 
         EntityTypePK that = (EntityTypePK) o;
 
-        if (entityTypeId != null ? !entityTypeId.equals(that.entityTypeId) : that.entityTypeId != null)
+        if (getEntityTypeId() != null ? !getEntityTypeId().equals(that.getEntityTypeId()) : that.getEntityTypeId() != null)
             return false;
-        if (domainId != null ? !domainId.equals(that.domainId) : that.domainId != null) return false;
+        if (getDomainId() != null ? !getDomainId().equals(that.getDomainId()) : that.getDomainId() != null)
+            return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = entityTypeId != null ? entityTypeId.hashCode() : 0;
-        result = 31 * result + (domainId != null ? domainId.hashCode() : 0);
+        int result = getEntityTypeId() != null ? getEntityTypeId().hashCode() : 0;
+        result = 31 * result + (getDomainId() != null ? getDomainId().hashCode() : 0);
         return result;
     }
 }

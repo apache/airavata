@@ -60,17 +60,18 @@ public class PermissionTypePK implements Serializable {
 
         PermissionTypePK that = (PermissionTypePK) o;
 
-        if (permissionTypeId != null ? !permissionTypeId.equals(that.permissionTypeId) : that.permissionTypeId != null)
+        if (getPermissionTypeId() != null ? !getPermissionTypeId().equals(that.getPermissionTypeId()) : that.getPermissionTypeId() != null)
             return false;
-        if (domainId != null ? !domainId.equals(that.domainId) : that.domainId != null) return false;
+        if (getDomainId() != null ? !getDomainId().equals(that.getDomainId()) : that.getDomainId() != null)
+            return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = permissionTypeId != null ? permissionTypeId.hashCode() : 0;
-        result = 31 * result + (domainId != null ? domainId.hashCode() : 0);
+        int result = getPermissionTypeId() != null ? getPermissionTypeId().hashCode() : 0;
+        result = 31 * result + (getDomainId() != null ? getDomainId().hashCode() : 0);
         return result;
     }
 }

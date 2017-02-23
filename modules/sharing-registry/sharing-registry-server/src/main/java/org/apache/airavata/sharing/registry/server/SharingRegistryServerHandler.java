@@ -755,6 +755,8 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
                 throw new SharingRegistryException(OWNER_PERMISSION_NAME + " permission cannot be assigned or removed");
             }
 
+            List<Sharing> sharings = new ArrayList<>();
+
             //Adding permission for the specified users/groups for the specified entity
             LinkedList<Entity> temp = new LinkedList<>();
             for(String userId : groupOrUserList){
@@ -772,7 +774,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
                 sharing.setCreatedTime(System.currentTimeMillis());
                 sharing.setUpdatedTime(System.currentTimeMillis());
 
-                (new SharingRepository()).create(sharing);
+                sharings.add(sharing);
             }
 
             if(cascadePermission){
@@ -792,11 +794,12 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
                         sharing.setDomainId(domainId);
                         sharing.setCreatedTime(System.currentTimeMillis());
                         sharing.setUpdatedTime(System.currentTimeMillis());
-                        (new SharingRepository()).create(sharing);
+                        sharings.add(sharing);
                         (new EntityRepository()).getChildEntities(childEntityId).stream().forEach(e-> temp.addLast(e));
                     }
                 }
             }
+            (new SharingRepository()).create(sharings);
             return true;
         }catch (SharingRegistryException ex) {
             logger.error(ex.getMessage(), ex);

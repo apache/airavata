@@ -49,6 +49,7 @@ public abstract class AbstractRepository<T, E, Id> {
         return update(t);
     }
 
+    //FIXME do a bulk insert
     public List<T> create(List<T> tList) throws SharingRegistryException {
         return update(tList);
     }
@@ -60,6 +61,7 @@ public abstract class AbstractRepository<T, E, Id> {
         return mapper.map(persistedCopy, thriftGenericClass);
     }
 
+    //FIXME do a bulk update
     public  List<T> update(List<T> tList) throws SharingRegistryException {
         List<T> returnList = new ArrayList<>();
         for(T temp : tList)
