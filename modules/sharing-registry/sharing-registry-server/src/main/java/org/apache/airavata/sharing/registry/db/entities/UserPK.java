@@ -59,17 +59,18 @@ public class UserPK implements Serializable {
 
         UserPK that = (UserPK) o;
 
-        if (userId != null ? !userId.equals(that.userId) : that.userId != null)
+        if (getUserId() != null ? !getUserId().equals(that.getUserId()) : that.getUserId() != null)
             return false;
-        if (domainId != null ? !domainId.equals(that.domainId) : that.domainId != null) return false;
+        if (getDomainId() != null ? !getDomainId().equals(that.getDomainId()) : that.getDomainId() != null)
+            return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = userId != null ? userId.hashCode() : 0;
-        result = 31 * result + (domainId != null ? domainId.hashCode() : 0);
+        int result = getUserId() != null ? getUserId().hashCode() : 0;
+        result = 31 * result + (getDomainId() != null ? getDomainId().hashCode() : 0);
         return result;
     }
 }

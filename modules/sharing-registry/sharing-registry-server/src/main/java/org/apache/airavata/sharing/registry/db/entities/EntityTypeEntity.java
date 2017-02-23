@@ -104,23 +104,28 @@ public class EntityTypeEntity {
 
         EntityTypeEntity that = (EntityTypeEntity) o;
 
-        if (entityTypeId != null ? !entityTypeId.equals(that.entityTypeId) : that.entityTypeId != null) return false;
-        if (domainId != null ? !domainId.equals(that.domainId) : that.domainId != null) return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (description != null ? !description.equals(that.description) : that.description != null) return false;
-        if (createdTime != null ? !createdTime.equals(that.createdTime) : that.createdTime != null) return false;
-        if (updatedTime != null ? !updatedTime.equals(that.updatedTime) : that.updatedTime != null) return false;
+        if (getEntityTypeId() != null ? !getEntityTypeId().equals(that.getEntityTypeId()) : that.getEntityTypeId() != null)
+            return false;
+        if (getDomainId() != null ? !getDomainId().equals(that.getDomainId()) : that.getDomainId() != null)
+            return false;
+        if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null) return false;
+        if (getDescription() != null ? !getDescription().equals(that.getDescription()) : that.getDescription() != null)
+            return false;
+        if (getCreatedTime() != null ? !getCreatedTime().equals(that.getCreatedTime()) : that.getCreatedTime() != null)
+            return false;
+        if (getUpdatedTime() != null ? !getUpdatedTime().equals(that.getUpdatedTime()) : that.getUpdatedTime() != null)
+            return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = entityTypeId != null ? entityTypeId.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (createdTime != null ? createdTime.hashCode() : 0);
-        result = 31 * result + (updatedTime != null ? updatedTime.hashCode() : 0);
+        int result = getEntityTypeId() != null ? getEntityTypeId().hashCode() : 0;
+        result = 31 * result + (getName() != null ? getName().hashCode() : 0);
+        result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
+        result = 31 * result + (getCreatedTime() != null ? getCreatedTime().hashCode() : 0);
+        result = 31 * result + (getUpdatedTime() != null ? getUpdatedTime().hashCode() : 0);
         return result;
     }
 }

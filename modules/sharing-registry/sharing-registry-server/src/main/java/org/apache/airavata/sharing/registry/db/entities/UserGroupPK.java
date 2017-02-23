@@ -59,17 +59,18 @@ public class UserGroupPK implements Serializable {
 
         UserGroupPK that = (UserGroupPK) o;
 
-        if (groupId != null ? !groupId.equals(that.groupId) : that.groupId != null)
+        if (getGroupId() != null ? !getGroupId().equals(that.getGroupId()) : that.getGroupId() != null)
             return false;
-        if (domainId != null ? !domainId.equals(that.domainId) : that.domainId != null) return false;
+        if (getDomainId() != null ? !getDomainId().equals(that.getDomainId()) : that.getDomainId() != null)
+            return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = groupId != null ? groupId.hashCode() : 0;
-        result = 31 * result + (domainId != null ? domainId.hashCode() : 0);
+        int result = getGroupId() != null ? getGroupId().hashCode() : 0;
+        result = 31 * result + (getDomainId() != null ? getDomainId().hashCode() : 0);
         return result;
     }
 }

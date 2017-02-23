@@ -171,32 +171,39 @@ public class EntityEntity {
 
         EntityEntity that = (EntityEntity) o;
 
-        if (entityId != null ? !entityId.equals(that.entityId) : that.entityId != null) return false;
-        if (domainId != null ? !domainId.equals(that.domainId) : that.domainId != null) return false;
-        if (parentEntityId != null ? !parentEntityId.equals(that.parentEntityId) : that.parentEntityId != null) return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (description != null ? !description.equals(that.description) : that.description != null) return false;
-        if (binaryData.equals(that.binaryData)) return false;
-        if (fullText != null ? !fullText.equals(that.fullText) : that.fullText != null) return false;
-        if (originalEntityCreationTime != null ? !originalEntityCreationTime.equals(that.originalEntityCreationTime)
-                : that.originalEntityCreationTime != null) return false;
-        if (createdTime != null ? !createdTime.equals(that.createdTime) : that.createdTime != null) return false;
-        if (updatedTime != null ? !updatedTime.equals(that.updatedTime) : that.updatedTime != null) return false;
-        if (ownerId != null ? !ownerId.equals(that.ownerId) : that.ownerId != null) return false;
+        if (getEntityId() != null ? !getEntityId().equals(that.getEntityId()) : that.getEntityId() != null)
+            return false;
+        if (getDomainId() != null ? !getDomainId().equals(that.getDomainId()) : that.getDomainId() != null)
+            return false;
+        if (getParentEntityId() != null ? !getParentEntityId().equals(that.getParentEntityId()) : that.getParentEntityId() != null)
+            return false;
+        if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null) return false;
+        if (getDescription() != null ? !getDescription().equals(that.getDescription()) : that.getDescription() != null)
+            return false;
+        if (getBinaryData().equals(that.getBinaryData())) return false;
+        if (getFullText() != null ? !getFullText().equals(that.getFullText()) : that.getFullText() != null)
+            return false;
+        if (getOriginalEntityCreationTime() != null ? !getOriginalEntityCreationTime().equals(that.getOriginalEntityCreationTime())
+                : that.getOriginalEntityCreationTime() != null) return false;
+        if (getCreatedTime() != null ? !getCreatedTime().equals(that.getCreatedTime()) : that.getCreatedTime() != null)
+            return false;
+        if (getUpdatedTime() != null ? !getUpdatedTime().equals(that.getUpdatedTime()) : that.getUpdatedTime() != null)
+            return false;
+        if (getOwnerId() != null ? !getOwnerId().equals(that.getOwnerId()) : that.getOwnerId() != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = entityId != null ? entityId.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (binaryData != null ? binaryData.hashCode() : 0);
-        result = 31 * result + (fullText != null ? fullText.hashCode() : 0);
-        result = 31 * result + (originalEntityCreationTime != null ? originalEntityCreationTime.hashCode() : 0);
-        result = 31 * result + (createdTime != null ? createdTime.hashCode() : 0);
-        result = 31 * result + (updatedTime != null ? updatedTime.hashCode() : 0);
+        int result = getEntityId() != null ? getEntityId().hashCode() : 0;
+        result = 31 * result + (getName() != null ? getName().hashCode() : 0);
+        result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
+        result = 31 * result + (getBinaryData() != null ? getBinaryData().hashCode() : 0);
+        result = 31 * result + (getFullText() != null ? getFullText().hashCode() : 0);
+        result = 31 * result + (getOriginalEntityCreationTime() != null ? getOriginalEntityCreationTime().hashCode() : 0);
+        result = 31 * result + (getCreatedTime() != null ? getCreatedTime().hashCode() : 0);
+        result = 31 * result + (getUpdatedTime() != null ? getUpdatedTime().hashCode() : 0);
         return result;
     }
 }

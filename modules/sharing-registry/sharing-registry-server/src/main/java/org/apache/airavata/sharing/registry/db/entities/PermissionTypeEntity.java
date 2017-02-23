@@ -105,22 +105,25 @@ public class PermissionTypeEntity {
 
         PermissionTypeEntity that = (PermissionTypeEntity) o;
 
-        if (permissionTypeId != null ? !permissionTypeId.equals(that.permissionTypeId) : that.permissionTypeId != null)
+        if (getPermissionTypeId() != null ? !getPermissionTypeId().equals(that.getPermissionTypeId()) : that.getPermissionTypeId() != null)
             return false;
-        if (domainId != null ? !domainId.equals(that.domainId) : that.domainId != null) return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (createdTime != null ? !createdTime.equals(that.createdTime) : that.createdTime != null) return false;
-        if (updatedTime != null ? !updatedTime.equals(that.updatedTime) : that.updatedTime != null) return false;
+        if (getDomainId() != null ? !getDomainId().equals(that.getDomainId()) : that.getDomainId() != null)
+            return false;
+        if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null) return false;
+        if (getCreatedTime() != null ? !getCreatedTime().equals(that.getCreatedTime()) : that.getCreatedTime() != null)
+            return false;
+        if (getUpdatedTime() != null ? !getUpdatedTime().equals(that.getUpdatedTime()) : that.getUpdatedTime() != null)
+            return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = permissionTypeId != null ? permissionTypeId.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (createdTime != null ? createdTime.hashCode() : 0);
-        result = 31 * result + (updatedTime != null ? updatedTime.hashCode() : 0);
+        int result = getPermissionTypeId() != null ? getPermissionTypeId().hashCode() : 0;
+        result = 31 * result + (getName() != null ? getName().hashCode() : 0);
+        result = 31 * result + (getCreatedTime() != null ? getCreatedTime().hashCode() : 0);
+        result = 31 * result + (getUpdatedTime() != null ? getUpdatedTime().hashCode() : 0);
         return result;
     }
 }
