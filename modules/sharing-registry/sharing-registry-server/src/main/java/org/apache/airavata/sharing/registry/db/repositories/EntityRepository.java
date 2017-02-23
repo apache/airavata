@@ -42,8 +42,9 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
         super(Entity.class, EntityEntity.class);
     }
 
-    public List<Entity> getChildEntities(String parentId) throws SharingRegistryException {
+    public List<Entity> getChildEntities(String domainId, String parentId) throws SharingRegistryException {
         HashMap<String, String> filters = new HashMap<>();
+        filters.put(DBConstants.EntityTable.DOMAIN_ID, domainId);
         filters.put(DBConstants.EntityTable.PARENT_ENTITY_ID, parentId);
         return select(filters, 0, -1);
     }
@@ -72,7 +73,8 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
                 if (searchCriteria.getSearchCondition() != null && searchCriteria.getSearchCondition().equals(SearchCondition.NOT)) {
                     query += "S.PERMISSION_TYPE_ID != '" + searchCriteria.getValue() + "' AND ";
                 } else {
-                    query += "S.PERMISSION_TYPE_ID = '" + searchCriteria.getValue() + "' AND ";
+                    query += "S.PERMISSION_TYPE_ID IN ('" + searchCriteria.getValue() + "', '"
+                            + (new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId) + "') AND ";
                 }
             }else if(searchCriteria.getSearchField().equals(EntitySearchField.FULL_TEXT)){
                 try {
