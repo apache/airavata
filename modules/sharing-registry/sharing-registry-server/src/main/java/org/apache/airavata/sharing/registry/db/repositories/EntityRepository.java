@@ -57,7 +57,7 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
             groupIdString += groupId + "','";
         groupIdString = groupIdString.substring(0, groupIdString.length()-2);
 
-        String query = "SELECT E.* FROM ENTITY AS E INNER JOIN SHARING AS S ON (E.ENTITY_ID=S.ENTITY_ID AND E.DOMAIN_ID=S.DOMAIN_ID) WHERE " +
+        String query = "SELECT DISTINCT E.* FROM ENTITY AS E INNER JOIN SHARING AS S ON (E.ENTITY_ID=S.ENTITY_ID AND E.DOMAIN_ID=S.DOMAIN_ID) WHERE " +
                 "E.DOMAIN_ID = '" + domainId + "' AND " + "S.GROUP_ID IN(" + groupIdString + ") AND ";
 
         for(SearchCriteria searchCriteria : filters){
