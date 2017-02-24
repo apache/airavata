@@ -30,10 +30,7 @@ import org.apache.airavata.sharing.registry.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class EntityRepository extends AbstractRepository<Entity, EntityEntity, EntityPK> {
     private final static Logger logger = LoggerFactory.getLogger(EntityRepository.class);
@@ -57,7 +54,7 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
             groupIdString += groupId + "','";
         groupIdString = groupIdString.substring(0, groupIdString.length()-2);
 
-        String query = "SELECT DISTINCT E.* FROM ENTITY AS E INNER JOIN SHARING AS S ON (E.ENTITY_ID=S.ENTITY_ID AND E.DOMAIN_ID=S.DOMAIN_ID) WHERE " +
+        String query = "SELECT E.* FROM ENTITY AS E INNER JOIN SHARING AS S ON (E.ENTITY_ID=S.ENTITY_ID AND E.DOMAIN_ID=S.DOMAIN_ID) WHERE " +
                 "E.DOMAIN_ID = '" + domainId + "' AND " + "S.GROUP_ID IN(" + groupIdString + ") AND ";
 
         for(SearchCriteria searchCriteria : filters){
@@ -135,6 +132,8 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
                 .setMaxResults(newLimit).getResultList());
         List<Entity> resultSet = new ArrayList<>();
 
+        HashMap<String, Object> keys = new HashMap<>();
+
         temp.stream().forEach(rs->{
             Entity entity = new Entity();
             entity.setEntityId((String)(rs[0]));
@@ -150,7 +149,11 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
             entity.setCreatedTime((long)(rs[10]));
             entity.setUpdatedTime((long)(rs[11]));
 
-            resultSet.add(entity);
+            //Removing duplicates. Another option is to change the query to remove duplicates.
+            if (!keys.containsKey(entity + domainId + "," + entity.entityId)) {
+                resultSet.add(entity);
+                keys.put(entity + domainId + "," + entity.entityId, null);
+            }
         });
 
         return resultSet;
