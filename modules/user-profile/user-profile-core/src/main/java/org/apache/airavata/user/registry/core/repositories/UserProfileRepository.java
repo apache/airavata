@@ -50,7 +50,7 @@ public class UserProfileRepository extends AbstractRepository<UserProfile, UserP
         Map<String, Object> queryParam = new HashMap<String, Object>();
         queryParam.put(UserProfile._Fields.USER_ID.getFieldName(), userId);
         queryParam.put(UserProfile._Fields.GATEWAY_ID.getFieldName(), gatewayId);
-        List<UserProfile> resultList = select(QueryConstants.FIND_USER_PROFILE_BY_USER_ID, 0, 1, queryParam);
+        List<UserProfile> resultList = select(QueryConstants.FIND_USER_PROFILE_BY_USER_ID, 1, 0, queryParam);
 
         if (resultList != null && resultList.size() > 0)
             userProfile =  resultList.get(0);

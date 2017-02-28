@@ -25,5 +25,9 @@
         <class>org.apache.airavata.user.registry.core.entities.UserProfileEntity</class>
         <class>org.apache.airavata.user.registry.core.entities.NSFDemographicsEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="openjpa.jdbc.MappingDefaults"
+                      value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />
+        </properties>
     </persistence-unit>
 </persistence>

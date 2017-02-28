@@ -82,6 +82,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
         }
     }
 
+    // FIXME: shouldn't deleteUserProfile require the gatewayId as well?
     public boolean deleteUserProfile(String userId) throws UserProfileServiceException {
         try{
             boolean deleteResult = userProfileRepository.delete(userId);
