@@ -4088,7 +4088,12 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String addUserProfile(AuthzToken authzToken, UserProfile userProfile)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 
-        // TODO: check that username and gatewayId match authzToken
+        // check that username and gatewayId match authzToken
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+        if( !userProfile.getUserId().equals(userId) || !userProfile.getGatewayId().equals(gatewayId) ){
+            throw new AuthorizationException("User isn't authorized to add user profile for this user and/or gateway");
+        }
         try {
             return getUserProfileServiceClient().addUserProfile(userProfile);
         } catch (Exception e) {
@@ -4105,7 +4110,12 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean updateUserProfile(AuthzToken authzToken, UserProfile userProfile)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 
-        // TODO: check that username and gatewayId match authzToken
+        // check that username and gatewayId match authzToken
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+        if( !userProfile.getUserId().equals(userId) || !userProfile.getGatewayId().equals(gatewayId) ){
+            throw new AuthorizationException("User isn't authorized to update user profile for this user and/or gateway");
+        }
         try {
             return getUserProfileServiceClient().updateUserProfile(userProfile);
         } catch (Exception e) {
@@ -4122,7 +4132,6 @@ public class AiravataServerHandler implements Airavata.Iface {
     public UserProfile getUserProfileById(AuthzToken authzToken, String userId, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 
-        // TODO: check that username and gatewayId match authzToken
         try {
             return getUserProfileServiceClient().getUserProfileById(userId, gatewayId);
         } catch (Exception e) {
@@ -4136,10 +4145,14 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
+    // FIXME: deleting user profile should require the gatewayId as well!
     public boolean deleteUserProfile(AuthzToken authzToken, String userId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 
-        // TODO: check that username match authzToken
+        // check that userId match authzToken
+        if( !authzToken.getClaimsMap().get(Constants.USER_NAME).equals(userId) ){
+            throw new AuthorizationException("User isn't authorized to delete user profile for this user");
+        }
         try {
             return getUserProfileServiceClient().deleteUserProfile(userId);
         } catch (Exception e) {
@@ -4156,7 +4169,6 @@ public class AiravataServerHandler implements Airavata.Iface {
     public List<UserProfile> getAllUserProfilesInGateway(AuthzToken authzToken, String gatewayId, int offset, int limit)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 
-        // TODO: check that gatewayId match authzToken
         try {
             return getUserProfileServiceClient().getAllUserProfilesInGateway(gatewayId, offset, limit);
         } catch (Exception e) {
@@ -4173,7 +4185,6 @@ public class AiravataServerHandler implements Airavata.Iface {
     public UserProfile getUserProfileByName(AuthzToken authzToken, String userName, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 
-        // TODO: check that username and gatewayId match authzToken
         try {
             return getUserProfileServiceClient().getUserProfileByName(userName, gatewayId);
         } catch (Exception e) {
@@ -4190,7 +4201,6 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean doesUserProfileExist(AuthzToken authzToken, String userName, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 
-        // TODO: verify that authzToken gatewayId matches
         try {
             return getUserProfileServiceClient().doesUserExist(userName, gatewayId);
         } catch (Exception e) {
