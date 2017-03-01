@@ -21,8 +21,8 @@
 package org.apache.airavata.user.profile.server;
 
 import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.registry.core.entities.workspacecatalog.UserProfileEntity;
-import org.apache.airavata.registry.core.repositories.workspacecatalog.UserProfileRepository;
+import org.apache.airavata.user.registry.core.entities.UserProfileEntity;
+import org.apache.airavata.user.registry.core.repositories.UserProfileRepository;
 import org.apache.airavata.userprofile.cpi.UserProfileService;
 import org.apache.airavata.userprofile.cpi.exception.UserProfileServiceException;
 import org.apache.thrift.TException;
@@ -82,6 +82,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
         }
     }
 
+    // FIXME: shouldn't deleteUserProfile require the gatewayId as well?
     public boolean deleteUserProfile(String userId) throws UserProfileServiceException {
         try{
             boolean deleteResult = userProfileRepository.delete(userId);

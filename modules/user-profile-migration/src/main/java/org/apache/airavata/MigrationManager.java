@@ -108,7 +108,7 @@ public class MigrationManager {
     private boolean migrateUserProfilesToAiravata(List<UserProfileDAO> ISProfileList) throws TException, ApplicationSettingsException {
         System.out.println("Initiating migration to Airavata internal DB ...");
         UserProfileAiravataThriftClient objFactory = new UserProfileAiravataThriftClient();
-        UserProfileService.Client client = objFactory.getRegistryServiceClient();
+        UserProfileService.Client client = objFactory.getUserProfileServiceClient();
         UserProfile airavataUserProfile = new UserProfile();
         // Here are the data associations...
         for(UserProfileDAO ISProfile : ISProfileList){
