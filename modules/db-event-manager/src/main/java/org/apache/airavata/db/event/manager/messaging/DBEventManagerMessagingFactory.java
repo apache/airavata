@@ -26,7 +26,7 @@ public class DBEventManagerMessagingFactory {
         String queueName = DBEventManagerConstant.DB_EVENT_MANAGER_QUEUE;
         return dbEventMessagingSubscriber;
     }
-    private Publisher getPublisher(String entiryName){
+    private Publisher getPublisher(String entityName){
         Publisher publisher = null;
         return publisher;
     }
