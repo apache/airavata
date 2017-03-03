@@ -173,6 +173,7 @@ struct UserProfile {
     10: optional list<string> nationality,
     11: optional string homeOrganization,
     12: optional string orginationAffiliation,
+    // TODO: shouldn't these time fields be of type i64?
     13: required string creationTime,
     14: required string lastAccessTime,
     15: required string validUntil,
