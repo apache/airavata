@@ -36,7 +36,8 @@ int _kResourceJobManagerTypeValues[] = {
   ResourceJobManagerType::SLURM,
   ResourceJobManagerType::LSF,
   ResourceJobManagerType::UGE,
-  ResourceJobManagerType::CLOUD
+  ResourceJobManagerType::CLOUD,
+  ResourceJobManagerType::AIRAVATA_CUSTOM
 };
 const char* _kResourceJobManagerTypeNames[] = {
   "FORK",
@@ -44,9 +45,10 @@ const char* _kResourceJobManagerTypeNames[] = {
   "SLURM",
   "LSF",
   "UGE",
-  "CLOUD"
+  "CLOUD",
+  "AIRAVATA_CUSTOM"
 };
-const std::map<int, const char*> _ResourceJobManagerType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(6, _kResourceJobManagerTypeValues, _kResourceJobManagerTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _ResourceJobManagerType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(7, _kResourceJobManagerTypeValues, _kResourceJobManagerTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kJobManagerCommandValues[] = {
   JobManagerCommand::SUBMISSION,
