@@ -30,6 +30,7 @@ include "profile_user_cpi_errors.thrift"
 namespace java org.apache.airavata.service.profile.user.cpi
 
 const string USER_PROFILE_CPI_VERSION = "0.17"
+const string USER_PROFILE_CPI_NAME = "UserProfileService"
 
 service UserProfileService {
 
