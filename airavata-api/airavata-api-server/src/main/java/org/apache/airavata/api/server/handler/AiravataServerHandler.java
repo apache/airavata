@@ -79,13 +79,13 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
+import org.apache.airavata.service.profile.user.cpi.UserProfileService;
+import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
 import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.commons.pool.impl.GenericObjectPool;
-import org.apache.airavata.userprofile.cpi.UserProfileService;
-import org.apache.airavata.userprofile.cpi.client.UserProfileServiceClientFactory;
-import org.apache.airavata.userprofile.cpi.exception.UserProfileServiceException;
 import org.apache.http.auth.AUTH;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -4942,10 +4942,10 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     private UserProfileService.Client getUserProfileServiceClient() throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getUserProfileServerPort());
-        final String serverHost = ServerSettings.getUserProfileServerHost();
+        final int serverPort = Integer.parseInt(ServerSettings.getProfileServiceServerPort());
+        final String serverHost = ServerSettings.getProfileServiceServerHost();
         try {
-            return UserProfileServiceClientFactory.createUserProfileServiceClient(serverHost, serverPort);
+            return ProfileServiceClientFactory.createUserProfileServiceClient(serverHost, serverPort);
         } catch (UserProfileServiceException e) {
             throw new TException("Unable to create user profile service client...", e);
         }
