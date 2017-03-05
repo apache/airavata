@@ -24,10 +24,6 @@
 package org.apache.airavata.model.appcatalog.computeresource;
 
 
-import java.util.Map;
-import java.util.HashMap;
-import org.apache.thrift.TEnum;
-
 /**
  * * Enumeration of local resource job manager types supported by Airavata
  * *
@@ -53,7 +49,8 @@ public enum ResourceJobManagerType implements org.apache.thrift.TEnum {
   SLURM(2),
   LSF(3),
   UGE(4),
-  CLOUD(5);
+  CLOUD(5),
+  AIRAVATA_CUSTOM(6);
 
   private final int value;
 
@@ -86,6 +83,8 @@ public enum ResourceJobManagerType implements org.apache.thrift.TEnum {
         return UGE;
       case 5:
         return CLOUD;
+      case 6:
+        return AIRAVATA_CUSTOM;
       default:
         return null;
     }
