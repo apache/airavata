@@ -55,6 +55,14 @@ public class AiravataCustomMailParser implements EmailParser {
             jobStatusResult.setJobId(matcher.group(JOBID));
             jobStatusResult.setJobName(matcher.group(JOBNAME));
             jobStatusResult.setState(getJobState(matcher.group(STATUS)));
+            jobStatusResult.setAuthoritative(false);
+
+            try {
+                //Waiting some time for the scheduler to move the job from completing to completed.
+                Thread.sleep(5000);
+            } catch (Exception ex) {
+            }
+
         } else {
             log.error("[EJM]: No matched found for subject -> " + subject);
         }
