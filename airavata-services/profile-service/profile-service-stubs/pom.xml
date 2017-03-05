@@ -6,19 +6,23 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
+        <artifactId>profile-service</artifactId>
         <groupId>org.apache.airavata</groupId>
-        <artifactId>airavata-services</artifactId>
         <version>0.17-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <name>Profile Service</name>
-    <artifactId>profile-service</artifactId>
-    <packaging>pom</packaging>
+    <name>Profile Service Stubs</name>
+    <artifactId>profile-service-stubs</artifactId>
+    <packaging>jar</packaging>
     <url>http://airavata.apache.org/</url>
 
-    <modules>
-        <module>profile-service-stubs</module>
-    </modules>
-    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-data-models</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
 </project>
