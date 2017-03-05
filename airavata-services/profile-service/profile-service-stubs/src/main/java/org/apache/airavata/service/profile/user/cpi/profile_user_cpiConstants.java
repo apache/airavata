@@ -54,4 +54,6 @@ public class profile_user_cpiConstants {
 
   public static final String USER_PROFILE_CPI_VERSION = "0.17";
 
+  public static final String USER_PROFILE_CPI_NAME = "UserProfileService";
+
 }
