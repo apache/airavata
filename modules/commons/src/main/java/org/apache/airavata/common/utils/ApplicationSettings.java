@@ -421,6 +421,14 @@ public class ApplicationSettings {
         return getSetting(ServerSettings.USER_PROFILE_SERVER_PORT);
     }
 
+    public static String getProfileServiceServerHost() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.PROFILE_SERVICE_SERVER_HOST);
+    }
+
+    public static String getProfileServiceServerPort() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.PROFILE_SERVICE_SERVER_PORT);
+    }
+
     /**
      * @deprecated use {{@link #getSetting(String)}}
      * @return
