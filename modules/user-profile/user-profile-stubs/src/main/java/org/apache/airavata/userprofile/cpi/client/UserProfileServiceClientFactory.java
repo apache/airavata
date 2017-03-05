@@ -30,7 +30,7 @@ import org.apache.thrift.transport.TTransportException;
 
 
 public class UserProfileServiceClientFactory {
-    public static UserProfileService.Client createRegistryClient(String serverHost, int serverPort)  throws UserProfileServiceException {
+    public static UserProfileService.Client createUserProfileServiceClient(String serverHost, int serverPort)  throws UserProfileServiceException {
         try {
             TTransport transport = new TSocket(serverHost, serverPort);
             transport.open();
