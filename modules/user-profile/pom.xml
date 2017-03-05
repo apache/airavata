@@ -23,6 +23,7 @@
     <modules>
         <module>user-profile-stubs</module>
         <module>user-profile-service</module>
+        <module>user-profile-core</module>
     </modules>
 
 
