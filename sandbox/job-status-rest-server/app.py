@@ -10,10 +10,10 @@ import sys
 
 app = Flask(__name__)
 
-email_username = 'gw56jobs@scigap.org'
-email_password = 'XseDe2015'
+email_username = ''
+email_password = ''
 status_string = "COMPLETED"
-from_address = 'gw56jobs@scigap.org'
+from_address = 'emailtrigger@scigap.org'
 
 
 @app.route('/job_status', methods=['POST'])
@@ -42,7 +42,7 @@ def job_status():
 
 if __name__ == '__main__':
     app.config.update(
-        DEBUG=True
+        DEBUG=False
     )
     app.run(
         host="localhost",
