@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.service.profile.gateway.core.entities;
+package org.apache.airavata.service.profile.tenant.core.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

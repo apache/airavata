@@ -10,7 +10,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>profile-gateway-core</artifactId>
+    <artifactId>profile-tenant-core</artifactId>
     <name>Profile Gateway Core</name>
 
     <properties>

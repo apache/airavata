@@ -18,14 +18,13 @@
  * under the License.
  *
  */
-package org.apache.airavata.service.profile.gateway.core.util;
+package org.apache.airavata.service.profile.tenant.core.util;
 
 import org.apache.airavata.model.workspace.GatewayApprovalStatus;
-import org.apache.airavata.service.profile.gateway.core.entities.Gateway;
-import org.apache.airavata.service.profile.gateway.core.resources.GatewayResource;
+import org.apache.airavata.service.profile.tenant.core.entities.Gateway;
+import org.apache.airavata.service.profile.tenant.core.resources.GatewayResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.reflect.annotation.ExceptionProxy;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;

@@ -18,11 +18,10 @@
  * under the License.
  *
  */
-package org.apache.airavata.service.profile.gateway.core.resources;
+package org.apache.airavata.service.profile.tenant.core.resources;
 
-import org.apache.airavata.service.profile.gateway.core.entities.Gateway;
-import org.apache.airavata.service.profile.gateway.core.util.GatewayUtils;
-import org.apache.airavata.service.profile.gateway.core.util.JPAUtils;
+import org.apache.airavata.service.profile.tenant.core.entities.Gateway;
+import org.apache.airavata.service.profile.tenant.core.util.JPAUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

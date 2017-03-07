@@ -1,5 +1,5 @@
 
-package org.apache.airavata.service.profile.gateway.core.util;
+package org.apache.airavata.service.profile.tenant.core.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

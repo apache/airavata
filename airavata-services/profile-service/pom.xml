@@ -20,7 +20,7 @@
     <modules>
         <module>profile-service-stubs</module>
         <module>profile-user-core</module>
-        <module>profile-gateway-core</module>
+        <module>profile-tenant-core</module>
         <module>profile-service-server</module>
     </modules>
     

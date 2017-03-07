@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.service.profile.gateway.core.util;
+package org.apache.airavata.service.profile.tenant.core.util;
 public class JPAConstants {
 	public static final String KEY_JDBC_URL = "gateway.profile.catalog.registry.jdbc.url";
 	public static final String KEY_JDBC_USER = "gateway.profile.catalog.registry.jdbc.user";
