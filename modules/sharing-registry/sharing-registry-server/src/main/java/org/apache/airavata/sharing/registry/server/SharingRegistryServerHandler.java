@@ -90,6 +90,21 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
         }
     }
 
+    /**
+     * <p>API method to check Domain Exists</p>
+     *
+     * @param domainId
+     */
+    @Override
+    public boolean isDomainExists(String domainId) throws SharingRegistryException, TException {
+        try{
+            return (new DomainRepository()).isExists(domainId);
+        }catch (SharingRegistryException ex) {
+            logger.error(ex.getMessage(), ex);
+            throw ex;
+        }
+    }
+
     @Override
     public boolean deleteDomain(String domainId) throws SharingRegistryException, TException {
         try{
@@ -175,6 +190,24 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             userGroup.setDescription("user " + user.userName + " group");
             updateGroup(userGroup);
             return true;
+        }catch (SharingRegistryException ex) {
+            logger.error(ex.getMessage(), ex);
+            throw ex;
+        }
+    }
+
+    /**
+     * <p>API method to check User Exists</p>
+     *
+     * @param userId
+     */
+    @Override
+    public boolean isUserExists(String domainId, String userId) throws SharingRegistryException, TException {
+        try{
+            UserPK userPK = new UserPK();
+            userPK.setDomainId(domainId);
+            userPK.setUserId(userId);
+            return (new UserRepository()).isExists(userPK);
         }catch (SharingRegistryException ex) {
             logger.error(ex.getMessage(), ex);
             throw ex;
@@ -269,6 +302,24 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
 
             (new UserGroupRepository()).update(group);
             return true;
+        }catch (SharingRegistryException ex) {
+            logger.error(ex.getMessage(), ex);
+            throw ex;
+        }
+    }
+
+    /**
+     * <p>API method to check Group Exists</p>
+     *
+     * @param group
+     */
+    @Override
+    public boolean isGroupExists(String domainId, String groupId) throws SharingRegistryException, TException {
+        try{
+            UserGroupPK userGroupPK = new UserGroupPK();
+            userGroupPK.setDomainId(domainId);
+            userGroupPK.setGroupId(groupId);
+            return (new UserGroupRepository()).isExists(userGroupPK);
         }catch (SharingRegistryException ex) {
             logger.error(ex.getMessage(), ex);
             throw ex;
@@ -452,6 +503,24 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
         }
     }
 
+    /**
+     * <p>API method to check EntityType Exists</p>
+     *
+     * @param entityTypeId
+     */
+    @Override
+    public boolean isEntityTypeExists(String domainId, String entityTypeId) throws SharingRegistryException, TException {
+        try{
+            EntityTypePK entityTypePK = new EntityTypePK();
+            entityTypePK.setDomainId(domainId);
+            entityTypePK.setEntityTypeId(entityTypeId);
+            return (new EntityTypeRepository()).isExists(entityTypePK);
+        }catch (SharingRegistryException ex) {
+            logger.error(ex.getMessage(), ex);
+            throw ex;
+        }
+    }
+
     @Override
     public boolean deleteEntityType(String domainId, String entityTypeId) throws SharingRegistryException, TException {
         try{
@@ -524,6 +593,24 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             permissionType = getUpdatedObject(oldPermissionType, permissionType);
             (new PermissionTypeRepository()).update(permissionType);
             return true;
+        }catch (SharingRegistryException ex) {
+            logger.error(ex.getMessage(), ex);
+            throw ex;
+        }
+    }
+
+    /**
+     * <p>API method to check Permission Exists</p>
+     *
+     * @param permissionId
+     */
+    @Override
+    public boolean isPermissionExists(String domainId, String permissionId) throws SharingRegistryException, TException {
+        try{
+            PermissionTypePK permissionTypePK = new PermissionTypePK();
+            permissionTypePK.setDomainId(domainId);
+            permissionTypePK.setPermissionTypeId(permissionId);
+            return (new PermissionTypeRepository()).isExists(permissionTypePK);
         }catch (SharingRegistryException ex) {
             logger.error(ex.getMessage(), ex);
             throw ex;
@@ -653,6 +740,24 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             entity = getUpdatedObject(oldEntity, entity);
             (new EntityRepository()).update(entity);
             return true;
+        }catch (SharingRegistryException ex) {
+            logger.error(ex.getMessage(), ex);
+            throw ex;
+        }
+    }
+
+    /**
+     * <p>API method to check Entity Exists</p>
+     *
+     * @param entityId
+     */
+    @Override
+    public boolean isEntityExists(String domainId, String entityId) throws SharingRegistryException, TException {
+        try{
+            EntityPK entityPK = new EntityPK();
+            entityPK.setDomainId(domainId);
+            entityPK.setEntityId(entityId);
+            return (new EntityRepository()).isExists(entityPK);
         }catch (SharingRegistryException ex) {
             logger.error(ex.getMessage(), ex);
             throw ex;

@@ -72,6 +72,7 @@ public class SharingRegistryServiceTest {
         domain.setDescription("test domain description");
 
         String domainId = sharingServiceClient.createDomain(domain);
+        Assert.assertTrue(sharingServiceClient.isDomainExists(domainId));
 
         User user1 = new User();
         //required
@@ -91,6 +92,7 @@ public class SharingRegistryServiceTest {
         //user1.setIcon(icon1);
 
         sharingServiceClient.createUser(user1);
+        Assert.assertTrue(sharingServiceClient.isUserExists(domainId, "test-user-1"));
 
         User user2 = new User();
         //required
@@ -145,6 +147,7 @@ public class SharingRegistryServiceTest {
         userGroup1.setGroupType(GroupType.USER_LEVEL_GROUP);
 
         sharingServiceClient.createGroup(userGroup1);
+        Assert.assertTrue(sharingServiceClient.isGroupExists(domainId, "test-group-1"));
 
         UserGroup userGroup2 = new UserGroup();
         //required
@@ -176,6 +179,7 @@ public class SharingRegistryServiceTest {
         //optional
         permissionType1.setDescription("READ description");
         sharingServiceClient.createPermissionType(permissionType1);
+        Assert.assertTrue(sharingServiceClient.isPermissionExists(domainId, "READ"));
 
         PermissionType permissionType2 = new PermissionType();
         permissionType2.setPermissionTypeId("WRITE");
@@ -201,6 +205,7 @@ public class SharingRegistryServiceTest {
         //optional
         entityType1.setDescription("PROJECT entity type description");
         sharingServiceClient.createEntityType(entityType1);
+        Assert.assertTrue(sharingServiceClient.isEntityTypeExists(domainId, "PROJECT"));
 
         EntityType entityType2 = new EntityType();
         entityType2.setEntityTypeId("EXPERIMENT");
@@ -236,6 +241,7 @@ public class SharingRegistryServiceTest {
         //optional - If not set this will be default to current system time
         entity1.setOriginalEntityCreationTime(System.currentTimeMillis());
         sharingServiceClient.createEntity(entity1);
+        Assert.assertTrue(sharingServiceClient.isEntityExists(domainId, "test-project-1"));
 
         Entity entity2 = new Entity();
         entity2.setEntityId("test-experiment-1");
