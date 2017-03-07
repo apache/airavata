@@ -1,8 +1,6 @@
 
 package org.apache.airavata.service.profile.gateway.core.util;
 
-import org.apache.airavata.service.profile.gateway.core.entities.GatewayProfile;
-import org.apache.airavata.service.profile.gateway.core.resources.GatewayProfileResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,20 +46,5 @@ public class JPAUtils {
 
         entityManager = factory.createEntityManager();
         return entityManager;
-    }
-
-    public static GatewayProfileResource createGatewayProfile(GatewayProfile gatewayProfile) {
-        GatewayProfileResource resource = new GatewayProfileResource();
-        if (gatewayProfile != null) {
-            resource.setGatewayID(gatewayProfile.getGatewayID());
-            resource.setCreatedTime(gatewayProfile.getCreationTime());
-            resource.setCredentialStoreToken(gatewayProfile.getCredentialStoreToken());
-            resource.setIdentityServerTenant(gatewayProfile.getIdentityServerTenant());
-            resource.setIdentityServerPwdCredToken(gatewayProfile.getIdentityServerPwdCredToken());
-            if (gatewayProfile.getUpdateTime() != null) {
-                resource.setUpdatedTime(gatewayProfile.getUpdateTime());
-            }
-        }
-        return resource;
     }
 }

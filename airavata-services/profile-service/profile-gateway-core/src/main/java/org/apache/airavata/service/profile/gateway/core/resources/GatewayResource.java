@@ -20,9 +20,13 @@
  */
 package org.apache.airavata.service.profile.gateway.core.resources;
 
+import org.apache.airavata.service.profile.gateway.core.entities.Gateway;
+import org.apache.airavata.service.profile.gateway.core.util.GatewayUtils;
+import org.apache.airavata.service.profile.gateway.core.util.JPAUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityManager;
 import java.sql.Timestamp;
 
 /**
@@ -202,5 +206,74 @@ public class GatewayResource {
 
     public void setRequesterUsername(String requesterUsername) {
         this.requesterUsername = requesterUsername;
+    }
+
+    public void save() throws Exception {
+        EntityManager em = null;
+        try {
+            em = JPAUtils.getEntityManager();
+            Gateway existingGateway = em.find(Gateway.class, gatewayId);
+            em.close();
+
+            em = JPAUtils.getEntityManager();
+            em.getTransaction().begin();
+            Gateway gateway = new Gateway();
+            gateway.setGatewayName(gatewayName);
+            gateway.setGatewayId(gatewayId);
+            gateway.setGatewayApprovalStatus(gatewayApprovalStatus);
+            gateway.setDomain(domain);
+            gateway.setEmailAddress(emailAddress);
+            gateway.setGatewayAcronym(gatewayAcronym);
+            gateway.setGatewayUrl(gatewayUrl);
+            gateway.setGatewayPublicAbstract(gatewayPublicAbstract);
+            gateway.setReviewProposalDescription(reviewProposalDescription);
+            gateway.setGatewayAdminFirstName(gatewayAdminFirstName);
+            gateway.setGetGatewayAdminLastName(getGatewayAdminLastName);
+            gateway.setGatewayAdminEmail(gatewayAdminEmail);
+            gateway.setIdentityServerUserName(identityServerUserName);
+            gateway.setIdentityServerPasswordToken(identityServerPasswordToken);
+            gateway.setDeclinedReason(declinedReason);
+            gateway.setOauthClientId(oauthClientId);
+            gateway.setGetOauthClientSecret(oauthClientSecret);
+            gateway.setRequestCreationTime(requestCreationTime);
+            gateway.setRequesterUsername(requesterUsername);
+            if (existingGateway != null) {
+                existingGateway.setDomain(domain);
+                existingGateway.setGatewayApprovalStatus(gatewayApprovalStatus);
+                existingGateway.setGatewayName(gatewayName);
+                gateway.setGatewayApprovalStatus(gatewayApprovalStatus);
+                existingGateway.setEmailAddress(emailAddress);
+                existingGateway.setGatewayAcronym(gatewayAcronym);
+                existingGateway.setGatewayUrl(gatewayUrl);
+                existingGateway.setGatewayPublicAbstract(gatewayPublicAbstract);
+                existingGateway.setReviewProposalDescription(reviewProposalDescription);
+                existingGateway.setGatewayAdminFirstName(gatewayAdminFirstName);
+                existingGateway.setGetGatewayAdminLastName(getGatewayAdminLastName);
+                existingGateway.setGatewayAdminEmail(gatewayAdminEmail);
+                existingGateway.setIdentityServerUserName(identityServerUserName);
+                existingGateway.setIdentityServerPasswordToken(identityServerPasswordToken);
+                existingGateway.setDeclinedReason(declinedReason);
+                existingGateway.setOauthClientId(oauthClientId);
+                existingGateway.setGetOauthClientSecret(oauthClientSecret);
+                existingGateway.setRequestCreationTime(requestCreationTime);
+                existingGateway.setRequesterUsername(requesterUsername);
+                em.merge(existingGateway);
+            } else {
+                em.persist(gateway);
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw e;
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+
     }
 }
