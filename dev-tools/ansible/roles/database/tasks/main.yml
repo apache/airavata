@@ -24,13 +24,23 @@
   become_user: root
   # when: ansible_os_family == 'RedHat'
 
+- name: Add MariaDB yum repository on CentOS
+  copy: src="MariaDB_yum_CentOS_{{ ansible_distribution_major_version }}.repo"
+        dest="/etc/yum.repos.d/"
+  become_user: root
+  when: ansible_distribution == 'CentOS'
+
 - name: install mariadb
   yum: name="{{ item }}" state=latest update_cache=yes
   with_items: "{{ mysql_packages }}"
   become_user: root
 
+# TODO: SELinux issue for 10.0.29 MariaDB, need to allow setgid/setuid.
+# See https://www.rootusers.com/how-to-fix-mariadb-10-0-29-selinux-update-failure/
+# and https://jira.mariadb.org/browse/MDEV-11789
+# For now I'm not adding to Ansible script since this bug should be fixed in next MariaDB release
 - name: start mariadb
-  service: name=mariadb state=started enabled=yes
+  service: name=mysql state=started enabled=yes
   become_user: root
 
 - include: secure_install.yml
