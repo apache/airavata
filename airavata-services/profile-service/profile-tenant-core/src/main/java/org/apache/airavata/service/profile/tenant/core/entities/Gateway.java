@@ -18,14 +18,13 @@
  * under the License.
  *
 */
-package org.apache.airavata.service.profile.gateway.core.entities;
+package org.apache.airavata.service.profile.tenant.core.entities;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Collection;
 
 @Entity
 @Table(name = "GATEWAY")

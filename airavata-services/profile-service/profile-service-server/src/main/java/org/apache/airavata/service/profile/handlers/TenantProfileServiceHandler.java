@@ -21,7 +21,7 @@
 package org.apache.airavata.service.profile.handlers;
 
 import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.service.profile.gateway.core.impl.GatewayRegistry;
+import org.apache.airavata.service.profile.tenant.core.impl.GatewayRegistry;
 import org.apache.airavata.service.profile.gateway.cpi.GatewayProfileService;
 import org.apache.airavata.service.profile.gateway.cpi.exception.GatewayProfileServiceException;
 import org.apache.airavata.service.profile.gateway.cpi.profile_gateway_cpiConstants;
@@ -33,9 +33,9 @@ import java.util.List;
 /**
  * Created by goshenoy on 3/6/17.
  */
-public class GatewayProfileServiceHandler implements GatewayProfileService.Iface {
+public class TenantProfileServiceHandler implements GatewayProfileService.Iface {
 
-    private final static Logger logger = LoggerFactory.getLogger(GatewayProfileServiceHandler.class);
+    private final static Logger logger = LoggerFactory.getLogger(TenantProfileServiceHandler.class);
 
     private final GatewayRegistry gatewayRegistry = new GatewayRegistry();
 

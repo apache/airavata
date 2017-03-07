@@ -27,7 +27,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>profile-gateway-core</artifactId>
+            <artifactId>profile-tenant-core</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

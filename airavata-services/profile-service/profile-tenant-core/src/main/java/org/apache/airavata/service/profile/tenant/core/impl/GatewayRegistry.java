@@ -19,11 +19,11 @@
  *
  */
 
-package org.apache.airavata.service.profile.gateway.core.impl;
+package org.apache.airavata.service.profile.tenant.core.impl;
 
 import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.service.profile.gateway.core.resources.GatewayResource;
-import org.apache.airavata.service.profile.gateway.core.util.GatewayUtils;
+import org.apache.airavata.service.profile.tenant.core.resources.GatewayResource;
+import org.apache.airavata.service.profile.tenant.core.util.GatewayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

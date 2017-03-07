@@ -1,4 +1,4 @@
-package org.apache.airavata.service.profile.gateway.core.util;
+package org.apache.airavata.service.profile.tenant.core.util;
 
 import org.apache.airavata.model.user.UserProfile;
 

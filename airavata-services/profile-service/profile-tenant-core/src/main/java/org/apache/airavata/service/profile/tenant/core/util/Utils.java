@@ -18,7 +18,7 @@
  * under the License.
  *
  */
-package org.apache.airavata.service.profile.gateway.core.util;
+package org.apache.airavata.service.profile.tenant.core.util;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
