@@ -293,7 +293,6 @@ public class SSHUtils {
             sin = sourceChannel.getInputStream();
             sourceChannel.connect();
 
-
             boolean ptimestamp = true;
             // exec 'scp -t destinationFile'
             String command = "scp " + (ptimestamp ? "-p" : "") + " -t " + destinationFile;
@@ -319,6 +318,8 @@ public class SSHUtils {
             buf[0] = 0;
             sout.write(buf, 0, 1);
             sout.flush();
+
+			log.info("Initiating transfer from:" + sourceFile + " To: " + destinationFile + ", Ignore Empty file : " + ignoreEmptyFile);
 
             while (true) {
                 int c = checkAck(sin);
@@ -347,6 +348,14 @@ public class SSHUtils {
                         break;
                     }
                 }
+
+				//FIXME: Remove me after fixing file transfer issue
+				if(fileSize == 0L){
+					log.warn("*****Zero byte file*****. Transferring from:" + sourceFile + " To: " + destinationFile + ", File Size : " + fileSize + ", Ignore Empty file : " + ignoreEmptyFile);
+				}else{
+					log.info("Transferring from:" + sourceFile + " To: " + destinationFile + ", File Size : " + fileSize + ", Ignore Empty file : " + ignoreEmptyFile);
+				}
+
                 if (fileSize == 0L && !ignoreEmptyFile){
                     String error = "Input file is empty...";
                     log.error(error);
@@ -505,12 +514,14 @@ public class SSHUtils {
 				sb.append((char) c);
 			}
 			while (c != '\n');
+			//FIXME: Redundant
 			if (b == 1) { // error
 				System.out.print(sb.toString());
 			}
 			if (b == 2) { // fatal error
 				System.out.print(sb.toString());
 			}
+			log.warn(sb.toString());
 		}
 		return b;
 	}
