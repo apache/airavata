@@ -64,6 +64,7 @@ public class ServerMain {
 	private static final String GFAC_SERVER = "gfac";
 	private static final String ORCHESTRATOR = "orchestrator";
 	private static final String USER_PROFILE = "user_profile";
+	private static final String PROFILE_SERVICE = "profile_service";
 
     private static ServerCnxnFactory cnxnFactory;
 //	private static boolean shutdownHookCalledBefore=false;
@@ -120,6 +121,7 @@ public class ServerMain {
 			serverList.add(ORCHESTRATOR);
 			serverList.add(GFAC_SERVER);
 			serverList.add(USER_PROFILE);
+			serverList.add(PROFILE_SERVICE);
 		} else if (serverList.indexOf(API_ORCH) > -1) {
 			serverList.clear();
             serverList.add(REGISTRY_SERVER);  // registry server should start before everything
