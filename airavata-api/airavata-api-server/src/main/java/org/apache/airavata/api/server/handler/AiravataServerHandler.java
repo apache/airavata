@@ -130,7 +130,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     private void initSharingRegistry() throws ApplicationSettingsException, TException {
         SharingRegistryService.Client client = sharingClientPool.getResource();
         try {
-            if (client.getDomain(ServerSettings.getDefaultUserGateway()) == null) {
+            if (!client.isDomainExists(ServerSettings.getDefaultUserGateway())) {
                 Domain domain = new Domain();
                 domain.setDomainId(ServerSettings.getDefaultUserGateway());
                 domain.setName(ServerSettings.getDefaultUserGateway());
