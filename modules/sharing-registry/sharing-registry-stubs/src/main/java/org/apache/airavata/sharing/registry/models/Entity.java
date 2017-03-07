@@ -67,6 +67,7 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
   private static final org.apache.thrift.protocol.TField ORIGINAL_ENTITY_CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("originalEntityCreationTime", org.apache.thrift.protocol.TType.I64, (short)10);
   private static final org.apache.thrift.protocol.TField CREATED_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("createdTime", org.apache.thrift.protocol.TType.I64, (short)11);
   private static final org.apache.thrift.protocol.TField UPDATED_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("updatedTime", org.apache.thrift.protocol.TType.I64, (short)12);
+  private static final org.apache.thrift.protocol.TField SHARED_FIELD_DESC = new org.apache.thrift.protocol.TField("shared", org.apache.thrift.protocol.TType.BOOL, (short) 13);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -86,6 +87,7 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
   public long originalEntityCreationTime; // optional
   public long createdTime; // optional
   public long updatedTime; // optional
+  public boolean shared; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -100,7 +102,8 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     FULL_TEXT((short)9, "fullText"),
     ORIGINAL_ENTITY_CREATION_TIME((short)10, "originalEntityCreationTime"),
     CREATED_TIME((short)11, "createdTime"),
-    UPDATED_TIME((short)12, "updatedTime");
+    UPDATED_TIME((short) 12, "updatedTime"),
+    SHARED((short) 13, "shared");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -139,6 +142,8 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
           return CREATED_TIME;
         case 12: // UPDATED_TIME
           return UPDATED_TIME;
+        case 13: // SHARED
+          return SHARED;
         default:
           return null;
       }
@@ -182,8 +187,9 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
   private static final int __ORIGINALENTITYCREATIONTIME_ISSET_ID = 0;
   private static final int __CREATEDTIME_ISSET_ID = 1;
   private static final int __UPDATEDTIME_ISSET_ID = 2;
+  private static final int __SHARED_ISSET_ID = 3;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.ENTITY_ID,_Fields.DOMAIN_ID,_Fields.ENTITY_TYPE_ID,_Fields.OWNER_ID,_Fields.PARENT_ENTITY_ID,_Fields.NAME,_Fields.DESCRIPTION,_Fields.BINARY_DATA,_Fields.FULL_TEXT,_Fields.ORIGINAL_ENTITY_CREATION_TIME,_Fields.CREATED_TIME,_Fields.UPDATED_TIME};
+  private static final _Fields optionals[] = {_Fields.ENTITY_ID, _Fields.DOMAIN_ID, _Fields.ENTITY_TYPE_ID, _Fields.OWNER_ID, _Fields.PARENT_ENTITY_ID, _Fields.NAME, _Fields.DESCRIPTION, _Fields.BINARY_DATA, _Fields.FULL_TEXT, _Fields.ORIGINAL_ENTITY_CREATION_TIME, _Fields.CREATED_TIME, _Fields.UPDATED_TIME, _Fields.SHARED};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -211,11 +217,15 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     tmpMap.put(_Fields.UPDATED_TIME, new org.apache.thrift.meta_data.FieldMetaData("updatedTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
+    tmpMap.put(_Fields.SHARED, new org.apache.thrift.meta_data.FieldMetaData("shared", org.apache.thrift.TFieldRequirementType.OPTIONAL,
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Entity.class, metaDataMap);
   }
 
   public Entity() {
+    this.shared = false;
+
   }
 
   /**
@@ -253,6 +263,7 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     this.originalEntityCreationTime = other.originalEntityCreationTime;
     this.createdTime = other.createdTime;
     this.updatedTime = other.updatedTime;
+    this.shared = other.shared;
   }
 
   public Entity deepCopy() {
@@ -276,6 +287,8 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     this.createdTime = 0;
     setUpdatedTimeIsSet(false);
     this.updatedTime = 0;
+    this.shared = false;
+
   }
 
   public String getEntityId() {
@@ -573,6 +586,31 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __UPDATEDTIME_ISSET_ID, value);
   }
 
+  public boolean isShared() {
+    return this.shared;
+  }
+
+  public Entity setShared(boolean shared) {
+    this.shared = shared;
+    setSharedIsSet(true);
+    return this;
+  }
+
+  public void unsetShared() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SHARED_ISSET_ID);
+  }
+
+  /**
+   * Returns true if field shared is set (has been assigned a value) and false otherwise
+   */
+  public boolean isSetShared() {
+    return EncodingUtils.testBit(__isset_bitfield, __SHARED_ISSET_ID);
+  }
+
+  public void setSharedIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SHARED_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case ENTITY_ID:
@@ -671,6 +709,14 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
       }
       break;
 
+      case SHARED:
+        if (value == null) {
+          unsetShared();
+        } else {
+          setShared((Boolean) value);
+        }
+        break;
+
     }
   }
 
@@ -712,6 +758,9 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     case UPDATED_TIME:
       return getUpdatedTime();
 
+      case SHARED:
+        return isShared();
+
     }
     throw new IllegalStateException();
   }
@@ -747,6 +796,8 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
       return isSetCreatedTime();
     case UPDATED_TIME:
       return isSetUpdatedTime();
+      case SHARED:
+        return isSetShared();
     }
     throw new IllegalStateException();
   }
@@ -872,6 +923,15 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
         return false;
     }
 
+    boolean this_present_shared = true && this.isSetShared();
+    boolean that_present_shared = true && that.isSetShared();
+    if (this_present_shared || that_present_shared) {
+      if (!(this_present_shared && that_present_shared))
+        return false;
+      if (this.shared != that.shared)
+        return false;
+    }
+
     return true;
   }
 
@@ -938,6 +998,11 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     list.add(present_updatedTime);
     if (present_updatedTime)
       list.add(updatedTime);
+
+    boolean present_shared = true && (isSetShared());
+    list.add(present_shared);
+    if (present_shared)
+      list.add(shared);
 
     return list.hashCode();
   }
@@ -1070,6 +1135,16 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetShared()).compareTo(other.isSetShared());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetShared()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.shared, other.shared);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -1195,6 +1270,12 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
       if (!first) sb.append(", ");
       sb.append("updatedTime:");
       sb.append(this.updatedTime);
+      first = false;
+    }
+    if (isSetShared()) {
+      if (!first) sb.append(", ");
+      sb.append("shared:");
+      sb.append(this.shared);
       first = false;
     }
     sb.append(")");
@@ -1338,6 +1419,14 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 13: // SHARED
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct.shared = iprot.readBool();
+              struct.setSharedIsSet(true);
+            } else {
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1431,6 +1520,11 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
         oprot.writeI64(struct.updatedTime);
         oprot.writeFieldEnd();
       }
+      if (struct.isSetShared()) {
+        oprot.writeFieldBegin(SHARED_FIELD_DESC);
+        oprot.writeBool(struct.shared);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1485,7 +1579,10 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
       if (struct.isSetUpdatedTime()) {
         optionals.set(11);
       }
-      oprot.writeBitSet(optionals, 12);
+      if (struct.isSetShared()) {
+        optionals.set(12);
+      }
+      oprot.writeBitSet(optionals, 13);
       if (struct.isSetEntityId()) {
         oprot.writeString(struct.entityId);
       }
@@ -1522,12 +1619,15 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
       if (struct.isSetUpdatedTime()) {
         oprot.writeI64(struct.updatedTime);
       }
+      if (struct.isSetShared()) {
+        oprot.writeBool(struct.shared);
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, Entity struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(12);
+      BitSet incoming = iprot.readBitSet(13);
       if (incoming.get(0)) {
         struct.entityId = iprot.readString();
         struct.setEntityIdIsSet(true);
@@ -1575,6 +1675,10 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
       if (incoming.get(11)) {
         struct.updatedTime = iprot.readI64();
         struct.setUpdatedTimeIsSet(true);
+      }
+      if (incoming.get(12)) {
+        struct.shared = iprot.readBool();
+        struct.setSharedIsSet(true);
       }
     }
   }
