@@ -7,7 +7,9 @@ import org.apache.airavata.model.user.UserProfile;
  */
 public class QueryConstants {
 
-    public static final String FIND_GATEWAY_BY_ID = "SELECT g FROM Gateway g where g.gatewayId='{}'";
+    public static final String FIND_GATEWAY_BY_ID = "SELECT g FROM Gateway g where g.gatewayId='{0}'";
 
     public static final String GET_ALL_GATEWAYS = "SELECT g FROM Gateway g";
+
+    public static final String DELETE_GATEWAY_BY_ID = "DELETE FROM Gateway g where g.gatewayId='{0}'";
 }
