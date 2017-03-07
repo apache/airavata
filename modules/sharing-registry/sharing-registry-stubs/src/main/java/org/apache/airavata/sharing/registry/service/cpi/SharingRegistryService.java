@@ -2764,7 +2764,6 @@ public class SharingRegistryService {
       private List<org.apache.airavata.sharing.registry.models.SearchCriteria> filters;
       private int offset;
       private int limit;
-
       public searchEntities_call(String domainId, String userId, List<org.apache.airavata.sharing.registry.models.SearchCriteria> filters, int offset, int limit, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.domainId = domainId;
