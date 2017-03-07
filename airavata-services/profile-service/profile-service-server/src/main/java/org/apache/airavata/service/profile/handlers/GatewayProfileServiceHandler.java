@@ -20,11 +20,13 @@
 */
 package org.apache.airavata.service.profile.handlers;
 
+import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.service.profile.gateway.core.GwyResourceProfile;
+import org.apache.airavata.service.profile.gateway.core.impl.GwyResourceProfileImpl;
 import org.apache.airavata.service.profile.gateway.cpi.GatewayProfileService;
 import org.apache.airavata.service.profile.gateway.cpi.exception.GatewayProfileServiceException;
 import org.apache.airavata.service.profile.gateway.cpi.profile_gateway_cpiConstants;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +39,8 @@ public class GatewayProfileServiceHandler implements GatewayProfileService.Iface
 
     private final static Logger logger = LoggerFactory.getLogger(GatewayProfileServiceHandler.class);
 
+    private final GwyResourceProfile gatewayProfile = new GwyResourceProfileImpl();
+
     @Override
     public String getAPIVersion() throws GatewayProfileServiceException {
         try {
@@ -45,13 +49,24 @@ public class GatewayProfileServiceHandler implements GatewayProfileService.Iface
             logger.error("Error getting API version, reason: " + ex.getMessage(), ex);
             GatewayProfileServiceException exception = new GatewayProfileServiceException();
             exception.setMessage("Error getting API version, reason: " + ex.getMessage());
-            throw ex;
+            throw exception;
         }
     }
 
     @Override
     public String addGateway(Gateway gateway) throws GatewayProfileServiceException {
-        return null;
+        try {
+            GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
+            gatewayResourceProfile.setGatewayID(gateway.getGatewayId());
+            String gatewayId = gatewayProfile.addGatewayResourceProfile(gatewayResourceProfile);
+            logger.debug("Airavata added gateway-profile with ID: " + gatewayId);
+            return gatewayId;
+        } catch (Exception ex) {
+            logger.error("Error adding gateway-profile, reason: " + ex.getMessage(), ex);
+            GatewayProfileServiceException exception = new GatewayProfileServiceException();
+            exception.setMessage("Error adding gateway-profile, reason: " + ex.getMessage());
+            throw exception;
+        }
     }
 
     @Override
@@ -66,7 +81,15 @@ public class GatewayProfileServiceHandler implements GatewayProfileService.Iface
 
     @Override
     public boolean deleteGateway(String gatewayId) throws GatewayProfileServiceException {
-        return false;
+        try {
+            logger.debug("Deleting Airavata gateway-profile with ID: " + gatewayId);
+            return gatewayProfile.removeGatewayResourceProfile(gatewayId);
+        } catch (Exception ex) {
+            logger.error("Error deleting gateway-profile, reason: " + ex.getMessage(), ex);
+            GatewayProfileServiceException exception = new GatewayProfileServiceException();
+            exception.setMessage("Error deleting gateway-profile, reason: " + ex.getMessage());
+            throw exception;
+        }
     }
 
     @Override
@@ -76,6 +99,13 @@ public class GatewayProfileServiceHandler implements GatewayProfileService.Iface
 
     @Override
     public boolean isGatewayExist(String gatewayId) throws GatewayProfileServiceException {
-        return false;
+        try {
+            return gatewayProfile.isGatewayResourceProfileExists(gatewayId);
+        } catch (Exception ex) {
+            logger.error("Error checking if gateway-profile exists, reason: " + ex.getMessage(), ex);
+            GatewayProfileServiceException exception = new GatewayProfileServiceException();
+            exception.setMessage("Error checking if gateway-profile exists, reason: " + ex.getMessage());
+            throw exception;
+        }
     }
 }
