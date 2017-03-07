@@ -19,6 +19,9 @@
     <prerequisites>
         <maven>3.0</maven>
     </prerequisites>
+    <modules>
+        <module>profile-gateway-core</module>
+    </modules>
 
     <parent>
         <groupId>org.apache</groupId>
