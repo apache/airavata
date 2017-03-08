@@ -24,9 +24,9 @@
 *  built in funcationality to raise TApplicationException for all internal server errors.
 */
 
-namespace java org.apache.airavata.service.profile.gateway.cpi.exception
-namespace php Airavata.Service.Profile.Gateway.CPI.Error
+namespace java org.apache.airavata.service.profile.tenant.cpi.exception
+namespace php Airavata.Service.Profile.Tenant.CPI.Error
 
-exception GatewayProfileServiceException {
+exception TenantProfileServiceException {
   1: required string message
 }

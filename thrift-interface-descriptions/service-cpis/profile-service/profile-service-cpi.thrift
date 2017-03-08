@@ -19,7 +19,7 @@
  */
 
  include "profile-user/profile-user-cpi.thrift"
- include "profile-gateway/profile-gateway-cpi.thrift"
+ include "profile-tenant/profile-tenant-cpi.thrift"
 
  namespace java org.apache.airavata.service.profile
  namespace php Airavata.Service.Profile
