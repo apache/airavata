@@ -3,13 +3,16 @@ pga_user: "pga"
 pga_group: "pga"
 doc_root_dir: "/var/www/html/php-gateway"
 user_data_dir: "/var/www/user_data"
-#httpd_conf_file: "/etc/httpd/conf/httpd.conf"
-httpd_conf_file_location:
- RedHat: "/etc/httpd/conf/httpd.conf"
- Debian: "/etc/apache2/apache2.conf"
+vhost_servername: "mygateway.example.com"
+httpd_confd_file_location:
+ RedHat: "/etc/httpd/conf.d/pga-{{ gateway_id }}.conf"
+ Debian: "/etc/apache2/sites-available/pga-{{ gateway_id }}.conf"
 httpd_name:
  Debian: apache2
  RedHat: httpd
+httpd_log_dir:
+ Debian: /var/log/apache2
+ RedHat: /var/log/httpd
 
 ## WSO2 IS related variables
 tenant_domain: "prod.testdrive"
