@@ -24,6 +24,14 @@ return array(
         'user-role-name' => 'gateway-user',
 
         /**
+         * Initial user role. This is the initial user role assigned to a new
+         * user. Set this to one of the three roles above to automatically
+         * grant new users that role, or set to some other role ('user-pending')
+         * to require admin approval before users have access.
+         */
+        'initial-role-name' => 'user-pending',
+
+        /**
          * Tenant Domain
          */
         'tenant-domain' => '{{ tenant_domain }}',

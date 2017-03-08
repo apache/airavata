@@ -1,0 +1,8 @@
+---
+- hosts: pga
+  tags: pga
+  roles:
+    - env_setup
+    - pga
+
+...
