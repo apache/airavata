@@ -22,7 +22,6 @@ package org.apache.airavata.service.profile.handlers;
 
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.service.profile.commons.tenant.entities.GatewayEntity;
-import org.apache.airavata.service.profile.tenant.core.impl.GatewayRegistry;
 import org.apache.airavata.service.profile.tenant.core.repositories.TenantProfileRepository;
 import org.apache.airavata.service.profile.tenant.cpi.TenantProfileService;
 import org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException;
@@ -38,8 +37,6 @@ import java.util.List;
 public class TenantProfileServiceHandler implements TenantProfileService.Iface {
 
     private final static Logger logger = LoggerFactory.getLogger(TenantProfileServiceHandler.class);
-
-    private final GatewayRegistry gatewayRegistry = new GatewayRegistry();
 
     private TenantProfileRepository tenantProfileRepository;
 
