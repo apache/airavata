@@ -18,3 +18,6 @@
 # needs to be here as a workaround
 [registry]
 149.165.168.5 ansible_user=centos
+
+[pga]
+149.165.156.102 ansible_user=centos
