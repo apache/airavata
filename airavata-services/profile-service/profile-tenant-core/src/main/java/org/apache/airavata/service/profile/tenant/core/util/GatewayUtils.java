@@ -40,7 +40,7 @@ public class GatewayUtils {
     private final static Logger logger = LoggerFactory.getLogger(GatewayUtils.class);
 
     /**
-     * This method converts Gateway object to GatewayResource
+     * This method converts GatewayEntity object to GatewayResource
      * @param gateway
      * @return
      */
@@ -50,7 +50,7 @@ public class GatewayUtils {
     }
 
     /**
-     * This method converts Gateway object to GatewayResource
+     * This method converts GatewayEntity object to GatewayResource
      * @param gatewayResource
      * @param gateway
      * @return
@@ -77,13 +77,13 @@ public class GatewayUtils {
             gatewayResource.setRequesterUsername(gateway.getRequesterUsername());
             gatewayResource.setOauthClientSecret(gateway.getGetOauthClientSecret());
         } else {
-            throw new Exception("Could not get GatewayResource object because Gateway object is null");
+            throw new Exception("Could not get GatewayResource object because GatewayEntity object is null");
         }
         return gatewayResource;
     }
 
     /**
-     * This method converts GatewayResource to Gateway
+     * This method converts GatewayResource to GatewayEntity
      * @param resource
      * @return
      */

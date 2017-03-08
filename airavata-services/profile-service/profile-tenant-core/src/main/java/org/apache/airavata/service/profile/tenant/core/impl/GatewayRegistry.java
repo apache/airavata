@@ -141,19 +141,19 @@ public class GatewayRegistry {
 //    public static void main(String args[]) {
 //        Mapper mapper = ObjectMapperSingleton.getInstance();
 //
-//        Gateway g = new Gateway();
+//        GatewayEntity g = new GatewayEntity();
 //        g.setGatewayId("sd");
 //        g.setRequestCreationTime(1213232);
 //        g.setGatewayApprovalStatus(GatewayApprovalStatus.ACTIVE);
 //        System.out.println("T: " + g);
 //
-//        org.apache.airavata.service.profile.commons.tenant.entities.Gateway ge = new org.apache.airavata.service.profile.commons.tenant.entities.Gateway();
+//        org.apache.airavata.service.profile.commons.tenant.entities.GatewayEntity ge = new org.apache.airavata.service.profile.commons.tenant.entities.GatewayEntity();
 //        ge.setGatewayId("ads");
 //        ge.setRequestCreationTime(new Date().getTime());
 //        ge.setGatewayApprovalStatus("ACTIVE");
 //
-//        Class t = Gateway.class;
-//        Class e = org.apache.airavata.service.profile.commons.tenant.entities.Gateway.class;
+//        Class t = GatewayEntity.class;
+//        Class e = org.apache.airavata.service.profile.commons.tenant.entities.GatewayEntity.class;
 //        Object o = mapper.map(ge, t);
 //        System.out.println(o);
 //    }

@@ -21,10 +21,12 @@
 package org.apache.airavata.service.profile.handlers;
 
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.service.profile.commons.tenant.entities.GatewayEntity;
 import org.apache.airavata.service.profile.tenant.core.impl.GatewayRegistry;
-import org.apache.airavata.service.profile.gateway.cpi.GatewayProfileService;
-import org.apache.airavata.service.profile.gateway.cpi.exception.GatewayProfileServiceException;
-import org.apache.airavata.service.profile.gateway.cpi.profile_gateway_cpiConstants;
+import org.apache.airavata.service.profile.tenant.core.repositories.TenantProfileRepository;
+import org.apache.airavata.service.profile.tenant.cpi.TenantProfileService;
+import org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException;
+import org.apache.airavata.service.profile.tenant.cpi.profile_tenant_cpiConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,96 +35,115 @@ import java.util.List;
 /**
  * Created by goshenoy on 3/6/17.
  */
-public class TenantProfileServiceHandler implements GatewayProfileService.Iface {
+public class TenantProfileServiceHandler implements TenantProfileService.Iface {
 
     private final static Logger logger = LoggerFactory.getLogger(TenantProfileServiceHandler.class);
 
     private final GatewayRegistry gatewayRegistry = new GatewayRegistry();
 
+    private TenantProfileRepository tenantProfileRepository;
+
+    public TenantProfileServiceHandler() {
+        logger.debug("Initializing TenantProfileServiceHandler");
+        this.tenantProfileRepository = new TenantProfileRepository(Gateway.class, GatewayEntity.class);
+    }
+
     @Override
-    public String getAPIVersion() throws GatewayProfileServiceException {
+    public String getAPIVersion() throws TenantProfileServiceException {
         try {
-            return profile_gateway_cpiConstants.GATEWAY_PROFILE_CPI_VERSION;
+            return profile_tenant_cpiConstants.TENANT_PROFILE_CPI_VERSION;
         } catch (Exception ex) {
             logger.error("Error getting API version, reason: " + ex.getMessage(), ex);
-            GatewayProfileServiceException exception = new GatewayProfileServiceException();
+            TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Error getting API version, reason: " + ex.getMessage());
             throw exception;
         }
     }
 
     @Override
-    public String addGateway(Gateway gateway) throws GatewayProfileServiceException {
+    public String addGateway(Gateway gateway) throws TenantProfileServiceException {
         try {
-            String gatewayId = gatewayRegistry.addGateway(gateway);
-            logger.debug("Airavata added gateway-profile with ID: " + gatewayId);
-            return gatewayId;
+            tenantProfileRepository.create(gateway);
+            if (gateway != null) {
+                logger.debug("Added Airavata Gateway with Id: " + gateway.getGatewayId());
+                return gateway.getGatewayId();
+            } else {
+                throw new Exception("Gateway object is null.");
+            }
         } catch (Exception ex) {
             logger.error("Error adding gateway-profile, reason: " + ex.getMessage(), ex);
-            GatewayProfileServiceException exception = new GatewayProfileServiceException();
+            TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Error adding gateway-profile, reason: " + ex.getMessage());
             throw exception;
         }
     }
 
     @Override
-    public boolean updateGateway(String gatewayId, Gateway updatedGateway) throws GatewayProfileServiceException {
+    public boolean updateGateway(Gateway updatedGateway) throws TenantProfileServiceException {
         try {
-            logger.debug("Updating gateway-profile with ID: " + gatewayId);
-            gatewayRegistry.updateGateway(gatewayId, updatedGateway);
-            return true;
+            if (tenantProfileRepository.update(updatedGateway) != null) {
+                logger.debug("Updated gateway-profile with ID: " + updatedGateway.getGatewayId());
+                return true;
+            } else {
+                return false;
+            }
         } catch (Exception ex) {
             logger.error("Error updating gateway-profile, reason: " + ex.getMessage(), ex);
-            GatewayProfileServiceException exception = new GatewayProfileServiceException();
+            TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Error updating gateway-profile, reason: " + ex.getMessage());
             return false;
         }
     }
 
     @Override
-    public Gateway getGateway(String gatewayId) throws GatewayProfileServiceException {
+    public Gateway getGateway(String gatewayId) throws TenantProfileServiceException {
         try {
-            return gatewayRegistry.getGateway(gatewayId);
+            Gateway gateway = tenantProfileRepository.getGateway(gatewayId);
+            if (gateway == null) {
+                throw new Exception("Could not find Gateway with ID: " + gatewayId);
+            }
+            return gateway;
         } catch (Exception ex) {
             logger.error("Error getting gateway-profile, reason: " + ex.getMessage(), ex);
-            GatewayProfileServiceException exception = new GatewayProfileServiceException();
+            TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Error getting gateway-profile, reason: " + ex.getMessage());
             throw exception;
         }
     }
 
     @Override
-    public boolean deleteGateway(String gatewayId) throws GatewayProfileServiceException {
+    public boolean deleteGateway(String gatewayId) throws TenantProfileServiceException {
         try {
             logger.debug("Deleting Airavata gateway-profile with ID: " + gatewayId);
-            return gatewayRegistry.removeGateway(gatewayId);
+            return tenantProfileRepository.delete(gatewayId);
         } catch (Exception ex) {
             logger.error("Error deleting gateway-profile, reason: " + ex.getMessage(), ex);
-            GatewayProfileServiceException exception = new GatewayProfileServiceException();
+            TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Error deleting gateway-profile, reason: " + ex.getMessage());
             throw exception;
         }
     }
 
     @Override
-    public List<Gateway> getAllGateways() throws GatewayProfileServiceException {
+    public List<Gateway> getAllGateways() throws TenantProfileServiceException {
         try {
-            return gatewayRegistry.getAllGateways();
+            return tenantProfileRepository.getAllGateways();
         } catch (Exception ex) {
             logger.error("Error getting all gateway-profiles, reason: " + ex.getMessage(), ex);
-            GatewayProfileServiceException exception = new GatewayProfileServiceException();
+            TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Error getting all gateway-profiles, reason: " + ex.getMessage());
             throw exception;
         }
     }
 
     @Override
-    public boolean isGatewayExist(String gatewayId) throws GatewayProfileServiceException {
+    public boolean isGatewayExist(String gatewayId) throws TenantProfileServiceException {
         try {
-            return gatewayRegistry.isGatewayExist(gatewayId);
+            Gateway gateway = tenantProfileRepository.getGateway(gatewayId);
+            return gateway != null;
         } catch (Exception ex) {
             logger.error("Error checking if gateway-profile exists, reason: " + ex.getMessage(), ex);
-            GatewayProfileServiceException exception = new GatewayProfileServiceException();
+            TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Error checking if gateway-profile exists, reason: " + ex.getMessage());
             throw exception;
         }
