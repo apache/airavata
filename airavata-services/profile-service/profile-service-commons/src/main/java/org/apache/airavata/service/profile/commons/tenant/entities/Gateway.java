@@ -210,7 +210,7 @@ public class Gateway {
         return requestCreationTime;
     }
 
-    private void setRequestCreationTime(long requestCreationTime) {
+    public void setRequestCreationTime(long requestCreationTime) {
         this.requestCreationTime = requestCreationTime;
     }
 
