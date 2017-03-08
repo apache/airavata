@@ -4,7 +4,7 @@ pga_group: "pga"
 doc_root_dir: "/var/www/html/php-gateway"
 user_data_dir: "/var/www/user_data"
 #httpd_conf_file: "/etc/httpd/conf/httpd.conf"
-httpd_conf_file_location: 
+httpd_conf_file_location:
  RedHat: "/etc/httpd/conf/httpd.conf"
  Debian: "/etc/apache2/apache2.conf"
 httpd_name:
