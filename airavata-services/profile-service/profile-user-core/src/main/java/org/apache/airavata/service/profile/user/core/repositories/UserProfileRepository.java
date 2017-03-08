@@ -21,9 +21,9 @@
 package org.apache.airavata.service.profile.user.core.repositories;
 
 import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.service.profile.user.core.entities.UserProfileEntity;
-import org.apache.airavata.service.profile.user.core.utils.ObjectMapperSingleton;
-import org.apache.airavata.service.profile.user.core.utils.QueryConstants;
+import org.apache.airavata.service.profile.commons.repositories.AbstractRepository;
+import org.apache.airavata.service.profile.commons.user.entities.UserProfileEntity;
+import org.apache.airavata.service.profile.commons.utils.QueryConstants;
 import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

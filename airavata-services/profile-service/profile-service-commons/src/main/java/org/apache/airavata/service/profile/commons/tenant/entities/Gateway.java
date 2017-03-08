@@ -23,11 +23,9 @@ package org.apache.airavata.service.profile.commons.tenant.entities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Date;
 
 @Entity
 @Table(name = "GATEWAY")
@@ -50,7 +48,7 @@ public class Gateway {
     private String declinedReason;
     private String oauthClientId;
     private String getOauthClientSecret;
-    private Timestamp requestCreationTime;
+    private long requestCreationTime;
     private String requesterUsername;
 
     @Id
@@ -208,11 +206,11 @@ public class Gateway {
     }
 
     @Column(name = "REQUEST_CREATION_TIME")
-    public Timestamp getRequestCreationTime() {
+    public long getRequestCreationTime() {
         return requestCreationTime;
     }
 
-    public void setRequestCreationTime(Timestamp requestCreationTime) {
+    private void setRequestCreationTime(long requestCreationTime) {
         this.requestCreationTime = requestCreationTime;
     }
 
@@ -223,5 +221,35 @@ public class Gateway {
 
     public void setGetOauthClientSecret(String oauthClientSecret) {
         this.getOauthClientSecret = oauthClientSecret;
+    }
+
+    @PrePersist
+    void createdAt() {
+        this.requestCreationTime = new Date().getTime();
+    }
+
+    @Override
+    public String toString() {
+        return "Gateway{" +
+                "gatewayId='" + gatewayId + '\'' +
+                ", gatewayName='" + gatewayName + '\'' +
+                ", domain='" + domain + '\'' +
+                ", emailAddress='" + emailAddress + '\'' +
+                ", gatewayApprovalStatus='" + gatewayApprovalStatus + '\'' +
+                ", gatewayAcronym='" + gatewayAcronym + '\'' +
+                ", gatewayUrl='" + gatewayUrl + '\'' +
+                ", gatewayPublicAbstract='" + gatewayPublicAbstract + '\'' +
+                ", reviewProposalDescription='" + reviewProposalDescription + '\'' +
+                ", gatewayAdminFirstName='" + gatewayAdminFirstName + '\'' +
+                ", getGatewayAdminLastName='" + getGatewayAdminLastName + '\'' +
+                ", gatewayAdminEmail='" + gatewayAdminEmail + '\'' +
+                ", identityServerUserName='" + identityServerUserName + '\'' +
+                ", identityServerPasswordToken='" + identityServerPasswordToken + '\'' +
+                ", declinedReason='" + declinedReason + '\'' +
+                ", oauthClientId='" + oauthClientId + '\'' +
+                ", getOauthClientSecret='" + getOauthClientSecret + '\'' +
+                ", requestCreationTime=" + requestCreationTime +
+                ", requesterUsername='" + requesterUsername + '\'' +
+                '}';
     }
 }
