@@ -22,13 +22,17 @@
 package org.apache.airavata.service.profile.tenant.core.impl;
 
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.model.workspace.GatewayApprovalStatus;
+import org.apache.airavata.service.profile.commons.utils.ObjectMapperSingleton;
 import org.apache.airavata.service.profile.tenant.core.resources.GatewayResource;
 import org.apache.airavata.service.profile.tenant.core.util.GatewayUtils;
+import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class GatewayRegistry {
@@ -133,5 +137,25 @@ public class GatewayRegistry {
             throw e;
         }
     }
+
+//    public static void main(String args[]) {
+//        Mapper mapper = ObjectMapperSingleton.getInstance();
+//
+//        Gateway g = new Gateway();
+//        g.setGatewayId("sd");
+//        g.setRequestCreationTime(1213232);
+//        g.setGatewayApprovalStatus(GatewayApprovalStatus.ACTIVE);
+//        System.out.println("T: " + g);
+//
+//        org.apache.airavata.service.profile.commons.tenant.entities.Gateway ge = new org.apache.airavata.service.profile.commons.tenant.entities.Gateway();
+//        ge.setGatewayId("ads");
+//        ge.setRequestCreationTime(new Date().getTime());
+//        ge.setGatewayApprovalStatus("ACTIVE");
+//
+//        Class t = Gateway.class;
+//        Class e = org.apache.airavata.service.profile.commons.tenant.entities.Gateway.class;
+//        Object o = mapper.map(ge, t);
+//        System.out.println(o);
+//    }
 
 }
