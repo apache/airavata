@@ -31,14 +31,6 @@ import java.net.URI;
 public class Utils {
     private final static Logger logger = LoggerFactory.getLogger(Utils.class);
 
-    public static String getJDBCFullURL(){
-		String jdbcUrl = getJDBCURL();
-		String jdbcUser = getJDBCUser();
-		String jdbcPassword = getJDBCPassword();
-        jdbcUrl = jdbcUrl + "?"  + "user=" + jdbcUser + "&" + "password=" + jdbcPassword;
-        return jdbcUrl;
-    }
-
     public static String getJDBCURL(){
     	try {
             return ServerSettings.getSetting(JPAConstants.KEY_JDBC_URL);

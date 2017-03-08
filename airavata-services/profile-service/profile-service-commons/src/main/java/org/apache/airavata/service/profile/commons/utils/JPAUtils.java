@@ -29,16 +29,15 @@ import java.util.Map;
 
 public class JPAUtils {
     private final static Logger logger = LoggerFactory.getLogger(JPAUtils.class);
-    private static final String PERSISTENCE_UNIT_NAME = "user_profile_catalog";
-    @PersistenceUnit(unitName = "user_profile_catalog")
-    protected static EntityManagerFactory factory;
-    @PersistenceContext(unitName = "user_profile_catalog")
-    private static EntityManager entityManager;
+    private static final String PERSISTENCE_UNIT_NAME = "profile_service";
 
-    public static EntityManager getEntityManager(){
+    @PersistenceUnit(unitName = PERSISTENCE_UNIT_NAME)
+    private static EntityManagerFactory factory;
+
+    private static EntityManager getEntityManager(){
+        EntityManager entityManager;
 
         if (factory == null) {
-            //FIXME
             String connectionProperties = "DriverClassName=" + Utils.getJDBCDriver() + "," + "Url=" +
                     Utils.getJDBCURL() + "?autoReconnect=true," +
                     "Username=" + Utils.getJDBCUser() + "," + "Password=" + Utils.getJDBCPassword() +
@@ -57,7 +56,6 @@ public class JPAUtils {
                     " PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=31536000,  autoReconnect=true");
             factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
         }
-
         entityManager = factory.createEntityManager();
         return entityManager;
     }
@@ -78,6 +76,4 @@ public class JPAUtils {
             }
         }
     }
-
-
 }
