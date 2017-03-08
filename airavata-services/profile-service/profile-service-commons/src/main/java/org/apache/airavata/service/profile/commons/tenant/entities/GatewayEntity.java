@@ -24,13 +24,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.util.Date;
 
 @Entity
 @Table(name = "GATEWAY")
-public class Gateway {
-    private final static Logger logger = LoggerFactory.getLogger(Gateway.class);
+public class GatewayEntity {
+    private final static Logger logger = LoggerFactory.getLogger(GatewayEntity.class);
     private String gatewayId;
     private String gatewayName;
     private String domain;
@@ -230,7 +229,7 @@ public class Gateway {
 
     @Override
     public String toString() {
-        return "Gateway{" +
+        return "GatewayEntity{" +
                 "gatewayId='" + gatewayId + '\'' +
                 ", gatewayName='" + gatewayName + '\'' +
                 ", domain='" + domain + '\'' +
