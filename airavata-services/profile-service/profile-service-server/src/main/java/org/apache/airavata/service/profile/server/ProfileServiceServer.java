@@ -41,6 +41,9 @@ import org.slf4j.LoggerFactory;
 import java.net.InetSocketAddress;
 import java.util.Date;
 
+/**
+ * Created by goshenoy on 03/08/2017.
+ */
 public class ProfileServiceServer implements IServer {
 
     private final static Logger logger = LoggerFactory.getLogger(ProfileServiceServer.class);
