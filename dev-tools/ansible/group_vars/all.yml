@@ -2,7 +2,7 @@
 ansible_connection: ssh
 # ansible_user: centos
 ansible_user: root
-ansible_ssh_private_key_file: /Users/supun/Desktop/shameera-key.pem
+#ansible_ssh_private_key_file: /Users/supun/Desktop/shameera-key.pem
 # ansible_ssh_private_key_file: /Users/syodage/Projects/airavata-ansible/shameera-aws.pem.txt
 
 user: centos
@@ -89,3 +89,6 @@ gfac_dir: "{{ deployment_dir }}/gfac-instance"
 # Monitoring variables
 monitor_email_address: "test.airavata@gmail.com"
 monitor_email_password: "airavata"
+
+# PGA variables
+pga_repo: "https://github.com/apache/airavata-php-gateway.git"
