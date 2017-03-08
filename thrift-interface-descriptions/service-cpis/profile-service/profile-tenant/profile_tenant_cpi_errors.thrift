@@ -18,16 +18,15 @@
  *
  */
 
- include "profile-user/profile-user-cpi.thrift"
- include "profile-tenant/profile-tenant-cpi.thrift"
+/*
+* This file describes the definitions of the Error Messages that can occur
+*  when invoking Apache Airavata Services through the API. In addition Thrift provides
+*  built in funcationality to raise TApplicationException for all internal server errors.
+*/
 
- namespace java org.apache.airavata.service.profile
- namespace php Airavata.Service.Profile
- namespace cpp apache.airavata.service.profile
- namespace py apache.airavata.service.profile
+namespace java org.apache.airavata.service.profile.tenant.cpi.exception
+namespace php Airavata.Service.Profile.Tenant.CPI.Error
 
- /*
-  * This file describes the definitions of the Airavata Execution Data Structures. Each of the
-  *   language specific Airavata Client SDK's will translate this neutral data model into an
-  *   appropriate form for passing to the Airavata Server Execution API Calls.
- */
+exception TenantProfileServiceException {
+  1: required string message
+}

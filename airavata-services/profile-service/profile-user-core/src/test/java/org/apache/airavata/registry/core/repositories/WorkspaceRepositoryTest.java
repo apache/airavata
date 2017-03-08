@@ -41,7 +41,7 @@ public class WorkspaceRepositoryTest {
 //    @Before
 //    public void setupRepository() {
 //
-//        gatewayRepository = new GatewayRepository(Gateway.class, GatewayEntity.class);
+//        gatewayRepository = new GatewayRepository(GatewayEntity.class, GatewayEntity.class);
 //        notificationRepository = new NotificationRepository(Notification.class,
 //                NotificationEntity.class);
 //        userProfileRepository = new UserProfileRepository(UserProfile.class, UserProfileEntity.class);
@@ -57,9 +57,9 @@ public class WorkspaceRepositoryTest {
 //    public void userProfileRepositoryTest() {
 //
 //		/*
-//         * Creating Gateway required for UserProfile creation
+//         * Creating GatewayEntity required for UserProfile creation
 //		 */
-//        Gateway gateway = new Gateway();
+//        GatewayEntity gateway = new GatewayEntity();
 //        gateway.setGatewayApprovalStatus(GatewayApprovalStatus.ACTIVE);
 //        gateway.setGatewayId(gatewayId);
 //        gateway.setDomain(GATEWAY_DOMAIN);
@@ -111,9 +111,9 @@ public class WorkspaceRepositoryTest {
 //    public void projectRepositoryTest() {
 //
 //		/*
-//         * Creating Gateway required for UserProfile & Project creation
+//         * Creating GatewayEntity required for UserProfile & Project creation
 //		 */
-//        Gateway gateway = new Gateway();
+//        GatewayEntity gateway = new GatewayEntity();
 //        gateway.setGatewayApprovalStatus(GatewayApprovalStatus.ACTIVE);
 //        gateway.setGatewayId(gatewayId);
 //        gateway.setDomain(GATEWAY_DOMAIN);
