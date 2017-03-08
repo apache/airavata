@@ -22,10 +22,13 @@ package org.apache.airavata.service.profile.user.core.repositories;
 
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.service.profile.user.core.entities.UserProfileEntity;
+import org.apache.airavata.service.profile.user.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.service.profile.user.core.utils.QueryConstants;
+import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,4 +87,23 @@ public class UserProfileRepository extends AbstractRepository<UserProfile, UserP
 
         return userProfile;
     }
+
+//    public static void main(String args[]) {
+//        Mapper mapper = ObjectMapperSingleton.getInstance();
+//        UserProfile up = new UserProfile();
+//        up.setAiravataInternalUserId("asd");
+//        up.setComments("asd");
+//        up.setCountry("sd");
+//        up.setCreationTime("ad");
+//        up.setGatewayId("asd");
+//
+//        UserProfileEntity upe = new UserProfileEntity();
+//        upe.setGatewayId("bl");
+//        upe.setCreationTime(new Date());
+//
+//        Class t = UserProfile.class;
+//        Class e = UserProfileEntity.class;
+//        Object o = mapper.map(upe, t);
+//        System.out.println(o);
+//    }
 }
