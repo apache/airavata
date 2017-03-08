@@ -1,0 +1,34 @@
+---
+pga_repo: "https://github.com/apache/airavata-php-gateway.git"
+pga_git_branch: "develop"
+user: "pga"
+group: "pga"
+pga_user: "pga"
+pga_group: "pga"
+doc_root_dir: "/var/www/html/geogateway-dev"
+user_data_dir: "/var/www/user_data"
+
+vhost_servername: "gw137.iu.xsede.org"
+
+## WSO2 IS related variables
+tenant_domain: "airavata.geog"
+admin_username: "adminuser"
+admin_password: "{{ vault_admin_password }}"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+## Airavata Client related variables
+airavata_server: "tls://gw56.iu.xsede.org"
+airavata_port: "9930"
+gateway_id: "GeoGateway"
+# relative to document root dir
+experiment_data_dir: "{{ user_data_dir }}"
+# TODO: fix this
+gateway_data_store_resource_id: "js-170-103.jetstream-cloud.org_6497a464-3121-4b64-a7cb-d195b0a26c19"
+
+## Portal related variables
+super_admin_portal: "false"
+admin_emails: "'sgg@iu.edu'"
+portal_email_username: "pga.airavata@gmail.com"
+portal_email_password: "{{ vault_portal_email_password }}"
+...

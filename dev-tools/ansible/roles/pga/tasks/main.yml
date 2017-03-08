@@ -49,7 +49,6 @@
   template: src=pga_config.php.j2 dest="{{ doc_root_dir }}/app/config/pga_config.php"
   become: yes
 
-# give write permission to storage directory
 - name: give read permissions to doc root
   file: path="{{ doc_root_dir }}" state=directory mode=0755 recurse=yes
   become: yes
@@ -66,7 +65,7 @@
   become: yes
 
 - name: copy httpd.conf file
-  template: src={{ httpd_name[ansible_os_family] }}.conf.j2 dest={{ httpd_conf_file_location[ansible_os_family] }}
+  template: src=pga-vhost.conf.j2 dest={{ httpd_confd_file_location[ansible_os_family] }} backup=yes
   become: yes
   notify:
     - restart httpd
