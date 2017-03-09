@@ -22,13 +22,13 @@ There are ansible roles to install Airavata pre-requisites (RabbitMQ, Zookeeper,
 
 ## Useful commands
 
-- `ansible-playbook -i hosts site.yml`
-- `ansible-playbook -i hosts site.yml -t "tags"`
-- `ansible-playbook -i hosts site.yml --start-at-task="name of the ansible task"`
+- `ansible-playbook -i inventories/develop site.yml`
+- `ansible-playbook -i inventories/develop site.yml -t "tags"`
+- `ansible-playbook -i inventories/develop site.yml --start-at-task="name of the ansible task"`
 
 To deploy pga run following. see site.yml (playbook) file for other available tags.
 
-- `ansible-playbook -i hosts site.yml -t "pga"`
+- `ansible-playbook -i inventories/develop site.yml -t "pga"`
 
 ## Configurations
 
