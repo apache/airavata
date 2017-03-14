@@ -20,11 +20,13 @@
  *
 * -->
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
-    <persistence-unit name="user_profile_catalog">
+    <persistence-unit name="profile_service">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-        <class>org.apache.airavata.user.registry.core.entities.UserProfileEntity</class>
-        <class>org.apache.airavata.user.registry.core.entities.NSFDemographicsEntity</class>
+        <class>org.apache.airavata.service.profile.commons.user.entities.UserProfileEntity</class>
+        <class>org.apache.airavata.service.profile.commons.user.entities.NSFDemographicsEntity</class>
+        <class>org.apache.airavata.service.profile.commons.tenant.entities.GatewayEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
+
         <properties>
             <property name="openjpa.jdbc.MappingDefaults"
                       value="ForeignKeyDeleteAction=cascade, JoinForeignKeyDeleteAction=cascade" />

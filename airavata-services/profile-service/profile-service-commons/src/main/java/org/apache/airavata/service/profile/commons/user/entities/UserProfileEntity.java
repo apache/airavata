@@ -18,9 +18,10 @@
  * under the License.
  *
 */
-package org.apache.airavata.service.profile.user.core.entities;
+package org.apache.airavata.service.profile.commons.user.entities;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -35,8 +36,8 @@ public class UserProfileEntity {
     private String country;
     private String homeOrganization;
     private String orginationAffiliation;
-    private long creationTime;
-    private long lastAccessTime;
+    private Date creationTime;
+    private Date lastAccessTime;
     private long validUntil;
     private String state;
     private String comments;
@@ -162,20 +163,20 @@ public class UserProfileEntity {
     }
 
     @Column(name="CREATION_TIME")
-    public long getCreationTime() {
+    public Date getCreationTime() {
         return creationTime;
     }
 
-    public void setCreationTime(long creationTime) {
+    private void setCreationTime(Date creationTime) {
         this.creationTime = creationTime;
     }
 
     @Column(name = "LAST_ACCESS_TIME")
-    public long getLastAccessTime() {
+    public Date getLastAccessTime() {
         return lastAccessTime;
     }
 
-    public void setLastAccessTime(long lastAccessTime) {
+    private void setLastAccessTime(Date lastAccessTime) {
         this.lastAccessTime = lastAccessTime;
     }
 
@@ -243,5 +244,42 @@ public class UserProfileEntity {
 
     public void setNsfDemographics(NSFDemographicsEntity nsfDemographics) {
         this.nsfDemographics = nsfDemographics;
+    }
+
+    @PrePersist
+    void createdAt() {
+        this.creationTime = this.lastAccessTime = new Date();
+    }
+
+    @PreUpdate
+    void updatedAt() {
+        this.lastAccessTime = new Date();
+    }
+
+    @Override
+    public String toString() {
+        return "UserProfileEntity{" +
+                "airavataInternalUserId='" + airavataInternalUserId + '\'' +
+                ", userId='" + userId + '\'' +
+                ", gatewayId='" + gatewayId + '\'' +
+                ", userModelVersion='" + userModelVersion + '\'' +
+                ", userName='" + userName + '\'' +
+                ", orcidId='" + orcidId + '\'' +
+                ", country='" + country + '\'' +
+                ", homeOrganization='" + homeOrganization + '\'' +
+                ", orginationAffiliation='" + orginationAffiliation + '\'' +
+                ", creationTime=" + creationTime +
+                ", lastAccessTime=" + lastAccessTime +
+                ", validUntil=" + validUntil +
+                ", state='" + state + '\'' +
+                ", comments='" + comments + '\'' +
+                ", labeledURI=" + labeledURI +
+                ", gpgKey='" + gpgKey + '\'' +
+                ", timeZone='" + timeZone + '\'' +
+                ", nationality=" + nationality +
+                ", emails=" + emails +
+                ", phones=" + phones +
+                ", nsfDemographics=" + nsfDemographics +
+                '}';
     }
 }

@@ -21,7 +21,7 @@
 package org.apache.airavata.service.profile.handlers;
 
 import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.service.profile.user.core.entities.UserProfileEntity;
+import org.apache.airavata.service.profile.commons.user.entities.UserProfileEntity;
 import org.apache.airavata.service.profile.user.core.repositories.UserProfileRepository;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;

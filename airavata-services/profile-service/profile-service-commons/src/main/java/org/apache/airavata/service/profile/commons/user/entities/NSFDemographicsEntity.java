@@ -18,7 +18,7 @@
  * under the License.
  *
 */
-package org.apache.airavata.service.profile.user.core.entities;
+package org.apache.airavata.service.profile.commons.user.entities;
 
 import javax.persistence.*;
 import java.util.List;

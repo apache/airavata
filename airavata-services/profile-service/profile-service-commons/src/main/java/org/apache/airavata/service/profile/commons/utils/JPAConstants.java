@@ -18,16 +18,17 @@
  * under the License.
  *
  */
+package org.apache.airavata.service.profile.commons.utils;
 
-package org.apache.airavata.service.profile.user.core.utils;
 public class JPAConstants {
-	public static final String KEY_JDBC_URL = "user.profile.catalog.registry.jdbc.url";
-	public static final String KEY_JDBC_USER = "user.profile.catalog.registry.jdbc.user";
-	public static final String KEY_JDBC_PASSWORD = "user.profile.catalog.registry.jdbc.password";
-	public static final String KEY_JDBC_DRIVER = "user.profile.catalog.registry.jdbc.driver";
+	public static final String KEY_JDBC_URL = "profile.service.jdbc.url";
+	public static final String KEY_JDBC_USER = "profile.service.jdbc.user";
+	public static final String KEY_JDBC_PASSWORD = "profile.service.jdbc.password";
+	public static final String KEY_JDBC_DRIVER = "profile.service.jdbc.driver";
+
 	// TODO: is this needed?
-	public static final String KEY_DERBY_START_ENABLE = "user.profile.catalog.start.derby.server.mode";
-	public static final String VALIDATION_QUERY = "user.profile.catalog.validationQuery";
-	public static final String JPA_CACHE_SIZE = "user.profile.catalog.jpa.cache.size";
-	public static final String ENABLE_CACHING = "user.profile.catalog.cache.enable";
+	public static final String KEY_DERBY_START_ENABLE = "profile.service.start.derby.server.mode";
+	public static final String VALIDATION_QUERY = "profile.service.validationQuery";
+	public static final String JPA_CACHE_SIZE = "profile.service.jpa.cache.size";
+	public static final String ENABLE_CACHING = "profile.service.cache.enable";
 }

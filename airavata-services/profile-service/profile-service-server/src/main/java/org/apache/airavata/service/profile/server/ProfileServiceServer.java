@@ -23,7 +23,10 @@ package org.apache.airavata.service.profile.server;
 
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.service.profile.tenant.cpi.profile_tenant_cpiConstants;
+import org.apache.airavata.service.profile.handlers.TenantProfileServiceHandler;
 import org.apache.airavata.service.profile.handlers.UserProfileServiceHandler;
+import org.apache.airavata.service.profile.tenant.cpi.TenantProfileService;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.profile_user_cpiConstants;
 import org.apache.thrift.TMultiplexedProcessor;
@@ -38,6 +41,9 @@ import org.slf4j.LoggerFactory;
 import java.net.InetSocketAddress;
 import java.util.Date;
 
+/**
+ * Created by goshenoy on 03/08/2017.
+ */
 public class ProfileServiceServer implements IServer {
 
     private final static Logger logger = LoggerFactory.getLogger(ProfileServiceServer.class);
@@ -77,10 +83,12 @@ public class ProfileServiceServer implements IServer {
 
             // create multiple processors for each profile-service
             UserProfileService.Processor userProfileProcessor = new UserProfileService.Processor(new UserProfileServiceHandler());
+            TenantProfileService.Processor teneantProfileProcessor = new TenantProfileService.Processor(new TenantProfileServiceHandler());
 
             // create a multiplexed processor
             TMultiplexedProcessor profileServiceProcessor = new TMultiplexedProcessor();
             profileServiceProcessor.registerProcessor(profile_user_cpiConstants.USER_PROFILE_CPI_NAME, userProfileProcessor);
+            profileServiceProcessor.registerProcessor(profile_tenant_cpiConstants.TENANT_PROFILE_CPI_NAME, teneantProfileProcessor);
 
             TServerTransport serverTransport;
 

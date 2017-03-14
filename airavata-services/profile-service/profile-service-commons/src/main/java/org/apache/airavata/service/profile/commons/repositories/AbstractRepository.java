@@ -18,10 +18,10 @@
  * under the License.
  *
 */
-package org.apache.airavata.service.profile.user.core.repositories;
+package org.apache.airavata.service.profile.commons.repositories;
 
-import org.apache.airavata.service.profile.user.core.utils.JPAUtils;
-import org.apache.airavata.service.profile.user.core.utils.ObjectMapperSingleton;
+import org.apache.airavata.service.profile.commons.utils.JPAUtils;
+import org.apache.airavata.service.profile.commons.utils.ObjectMapperSingleton;
 import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,13 +69,21 @@ public abstract class AbstractRepository<T, E, Id> {
         return mapper.map(entity, thriftGenericClass);
     }
 
+    public List<T> select(String query) {
+        List resultSet = (List) JPAUtils.execute(entityManager -> entityManager.createQuery(query).getResultList());
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        List<T> resultList = new ArrayList<>();
+        resultSet.stream().forEach(rs -> resultList.add(mapper.map(rs, thriftGenericClass)));
+        return resultList;
+    }
+
     public List<T> select(String query, int limit, int offset) {
         List resultSet = (List) JPAUtils.execute(entityManager -> entityManager.createQuery(query).setFirstResult(offset)
-                .setMaxResults(offset).getResultList());
+                .setMaxResults(limit).getResultList());
         Mapper mapper = ObjectMapperSingleton.getInstance();
-        List<T> gatewayList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
-        return gatewayList;
+        List<T> resultList = new ArrayList<>();
+        resultSet.stream().forEach(rs -> resultList.add(mapper.map(rs, thriftGenericClass)));
+        return resultList;
     }
 
     public List<T> select(String query, int limit, int offset, Map<String, Object> queryParams) {
@@ -91,8 +99,8 @@ public abstract class AbstractRepository<T, E, Id> {
 
         });
         Mapper mapper = ObjectMapperSingleton.getInstance();
-        List<T> gatewayList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
-        return gatewayList;
+        List<T> resultList = new ArrayList<>();
+        resultSet.stream().forEach(rs -> resultList.add(mapper.map(rs, thriftGenericClass)));
+        return resultList;
     }
 }

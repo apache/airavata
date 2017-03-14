@@ -18,7 +18,7 @@
  * under the License.
  *
  */
-package org.apache.airavata.service.profile.user.core.utils;
+package org.apache.airavata.service.profile.commons.utils;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -30,14 +30,6 @@ import java.net.URI;
 
 public class Utils {
     private final static Logger logger = LoggerFactory.getLogger(Utils.class);
-
-    public static String getJDBCFullURL(){
-		String jdbcUrl = getJDBCURL();
-		String jdbcUser = getJDBCUser();
-		String jdbcPassword = getJDBCPassword();
-        jdbcUrl = jdbcUrl + "?"  + "user=" + jdbcUser + "&" + "password=" + jdbcPassword;
-        return jdbcUrl;
-    }
 
     public static String getJDBCURL(){
     	try {

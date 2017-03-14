@@ -19,7 +19,9 @@
 
     <modules>
         <module>profile-service-stubs</module>
+        <module>profile-service-commons</module>
         <module>profile-user-core</module>
+        <module>profile-tenant-core</module>
         <module>profile-service-server</module>
     </modules>
     
