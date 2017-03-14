@@ -20,4 +20,4 @@
 149.165.168.5 ansible_user=centos
 
 [pga]
-149.165.156.102 ansible_user=centos
+149.165.156.11 ansible_user=centos

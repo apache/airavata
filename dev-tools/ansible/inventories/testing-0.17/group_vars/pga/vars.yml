@@ -5,6 +5,7 @@ pga_user: "pga"
 pga_group: "pga"
 doc_root_dir: "/var/www/html/php-gateway"
 user_data_dir: "/var/www/user_data"
+#vhost_servername: "{{ groups['pga'][0] }}"
 
 ## WSO2 IS related variables
 tenant_domain: "prod.seagrid"

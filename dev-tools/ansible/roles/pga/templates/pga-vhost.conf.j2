@@ -1,8 +1,8 @@
 <VirtualHost *:80>
     ServerName {{ vhost_servername }}
 
-    DocumentRoot {{ doc_root_dir }}
-    <Directory "{{ doc_root_dir }}">
+    DocumentRoot {{ doc_root_dir }}/public
+    <Directory "{{ doc_root_dir }}/public">
        AllowOverride All
     </Directory>
     ErrorLog {{ httpd_log_dir[ansible_os_family] }}/{{ gateway_id }}.error.log
