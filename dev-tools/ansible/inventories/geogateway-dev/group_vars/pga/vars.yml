@@ -8,7 +8,7 @@ pga_group: "pga"
 doc_root_dir: "/var/www/html/geogateway-dev"
 user_data_dir: "/var/www/user_data"
 
-vhost_servername: "gw137.iu.xsede.org"
+#vhost_servername: "gw137.iu.xsede.org"
 
 ## WSO2 IS related variables
 tenant_domain: "airavata.geog"

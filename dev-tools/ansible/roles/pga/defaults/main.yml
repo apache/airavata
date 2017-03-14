@@ -3,7 +3,7 @@ pga_user: "pga"
 pga_group: "pga"
 doc_root_dir: "/var/www/html/php-gateway"
 user_data_dir: "/var/www/user_data"
-vhost_servername: "mygateway.example.com"
+vhost_servername: "{{ groups['pga'][0] }}"
 httpd_confd_file_location:
  RedHat: "/etc/httpd/conf.d/pga-{{ gateway_id }}.conf"
  Debian: "/etc/apache2/sites-available/pga-{{ gateway_id }}.conf"
