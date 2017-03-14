@@ -70,7 +70,6 @@ considered as a group in it's own right for implementation ease</p>
 <li>OWNER_ID : Owner of the entity</li>
 <li>CREATED_TIME : Created time of the entity</li>
 <li>UPDATED_TIME : Updated time of the entity</li>
- <li>ENTITY_TYPE_ID : Entity type ID</li>
 
 <br/><br/><table class="table-bordered table-striped table-condensed">
 <tr><td><code>NAME</code></td><td><code>0</code></td><td>
@@ -103,7 +102,6 @@ considered as a group in it's own right for implementation ease</p>
 <li>FULL_TEXT : Does a full text search. Only applicable for the FULL_TEXT field.</li>
 <li>GTE : Greater than or equal. Only applicable for created time and updated time.</li>
 <li>LTE : Less than or equal. Only applicable for created time and updated time.</li>
- <li>NOT : Not operator. Only applicable for name, permission type id, parent entity id and owner id.</li>
 
 <br/><br/><table class="table-bordered table-striped table-condensed">
 <tr><td><code>EQUAL</code></td><td><code>0</code></td><td>
@@ -246,6 +244,14 @@ regarding the user.</p>
 <tr><td>10</td><td>originalEntityCreationTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>11</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>12</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
+ <tr>
+  <td>13</td>
+  <td>shared</td>
+  <td><code>bool</code></td>
+  <td></td>
+  <td>optional</td>
+  <td><code>false</code></td>
+ </tr>
 </table><br/><p>Entity object which is used to register an entity in the system.</p>
 <li><b>entityId</b> : Entity id provided by the client</li>
 <li><b>domainId</b> : Domain id</li>

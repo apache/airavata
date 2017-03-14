@@ -20,6 +20,9 @@
  */
 package org.apache.airavata.service.profile.client;
 
+import org.apache.airavata.service.profile.tenant.cpi.TenantProfileService;
+import org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException;
+import org.apache.airavata.service.profile.tenant.cpi.profile_tenant_cpiConstants;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
 import org.apache.airavata.service.profile.user.cpi.profile_user_cpiConstants;
@@ -30,7 +33,9 @@ import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
-
+/**
+ * Created by goshenoy on 03/08/2017.
+ */
 public class ProfileServiceClientFactory {
     public static UserProfileService.Client createUserProfileServiceClient(String serverHost, int serverPort)  throws UserProfileServiceException {
         try {
@@ -40,7 +45,19 @@ public class ProfileServiceClientFactory {
             TMultiplexedProtocol multiplexedProtocol = new TMultiplexedProtocol(protocol, profile_user_cpiConstants.USER_PROFILE_CPI_NAME);
             return new UserProfileService.Client(multiplexedProtocol);
         } catch (TTransportException e) {
-            throw new UserProfileServiceException();
+            throw new UserProfileServiceException(e.getMessage());
+        }
+    }
+
+    public static TenantProfileService.Client createTenantProfileServiceClient(String serverHost, int serverPort) throws TenantProfileServiceException {
+        try {
+            TTransport transport = new TSocket(serverHost, serverPort);
+            transport.open();
+            TProtocol protocol = new TBinaryProtocol(transport);
+            TMultiplexedProtocol multiplexedProtocol = new TMultiplexedProtocol(protocol, profile_tenant_cpiConstants.TENANT_PROFILE_CPI_NAME);
+            return new TenantProfileService.Client(multiplexedProtocol);
+        } catch (TTransportException e) {
+            throw new TenantProfileServiceException(e.getMessage());
         }
     }
 }

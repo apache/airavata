@@ -18,7 +18,7 @@
  * under the License.
  *
 */
-package org.apache.airavata.service.profile.user.core.utils;
+package org.apache.airavata.service.profile.commons.utils;
 
 @FunctionalInterface
 public interface Committer<T, R>  {

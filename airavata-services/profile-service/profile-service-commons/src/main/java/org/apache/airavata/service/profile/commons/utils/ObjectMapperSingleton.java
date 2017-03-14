@@ -18,11 +18,22 @@
  * under the License.
  *
 */
-package org.apache.airavata.service.profile.user.core;
+package org.apache.airavata.service.profile.commons.utils;
 
+import org.dozer.DozerBeanMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UserProfileRegistryException extends Exception {
-    private final static Logger logger = LoggerFactory.getLogger(UserProfileRegistryException.class);
+public class ObjectMapperSingleton extends DozerBeanMapper{
+    private final static Logger logger = LoggerFactory.getLogger(ObjectMapperSingleton.class);
+
+    private static ObjectMapperSingleton instance;
+
+    private ObjectMapperSingleton(){}
+
+    public static ObjectMapperSingleton getInstance(){
+        if(instance == null)
+            instance = new ObjectMapperSingleton();
+        return instance;
+    }
 }
