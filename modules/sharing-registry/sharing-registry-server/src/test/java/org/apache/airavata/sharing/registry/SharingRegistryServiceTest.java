@@ -28,7 +28,6 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
-import org.databene.contiperf.PerfTest;
 import org.databene.contiperf.junit.ContiPerfRule;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -55,7 +54,7 @@ public class SharingRegistryServiceTest {
 
 
     @Test
-    @PerfTest(invocations = 50, threads = 10)
+//    @PerfTest(invocations = 50, threads = 10)
     public void test() throws TException, InterruptedException {
         String serverHost = "localhost";
         int serverPort = 7878;
@@ -278,7 +277,13 @@ public class SharingRegistryServiceTest {
         entity4.setFullText("test input file 1 for experiment 2");
         sharingServiceClient.createEntity(entity4);
 
+        Assert.assertTrue(sharingServiceClient.getEntity(domainId, "test-project-1").getSharedCount() == 0);
         sharingServiceClient.shareEntityWithUsers(domainId, "test-project-1", Arrays.asList("test-user-2"), "WRITE", true);
+        Assert.assertTrue(sharingServiceClient.getEntity(domainId, "test-project-1").getSharedCount() == 1);
+        sharingServiceClient.revokeEntitySharingFromUsers(domainId, "test-project-1", Arrays.asList("test-user-2"), "WRITE");
+        Assert.assertTrue(sharingServiceClient.getEntity(domainId, "test-project-1").getSharedCount() == 0);
+        sharingServiceClient.shareEntityWithUsers(domainId, "test-project-1", Arrays.asList("test-user-2"), "WRITE", true);
+
         sharingServiceClient.shareEntityWithGroups(domainId, "test-experiment-2", Arrays.asList("test-group-2"), "READ", true);
         sharingServiceClient.shareEntityWithGroups(domainId, "test-experiment-2", Arrays.asList("test-group-2"), "CLONE", false);
 
