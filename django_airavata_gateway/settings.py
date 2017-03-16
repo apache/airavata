@@ -50,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_airavata_auth.middleware.authz_token_middleware',
+    'django_airavata_gateway.middleware.airavata_client',
 ]
 
 ROOT_URLCONF = 'django_airavata_gateway.urls'
