@@ -146,7 +146,7 @@ public class EntityEntity {
     }
 
     @Basic
-    @Column(name = "SHARED")
+    @Column(name = "SHARED_COUNT")
     public int getSharedCount() {
         return sharedCount;
     }
