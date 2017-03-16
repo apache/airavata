@@ -738,6 +738,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             Entity oldEntity = (new EntityRepository()).get(entityPK);
             entity.setCreatedTime(oldEntity.createdTime);
             entity = getUpdatedObject(oldEntity, entity);
+            entity.setSharedCount((new SharingRepository()).getSharedCount(entity.domainId, entity.entityId));
             (new EntityRepository()).update(entity);
             return true;
         }catch (SharingRegistryException ex) {
@@ -905,6 +906,13 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
                 }
             }
             (new SharingRepository()).create(sharings);
+
+            EntityPK entityPK = new EntityPK();
+            entityPK.setDomainId(domainId);
+            entityPK.setEntityId(entityId);
+            Entity entity = (new EntityRepository()).get(entityPK);
+            entity.setSharedCount((new SharingRepository()).getSharedCount(domainId, entityId));
+            (new EntityRepository()).update(entity);
             return true;
         }catch (SharingRegistryException ex) {
             logger.error(ex.getMessage(), ex);
@@ -989,6 +997,13 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
                     (new SharingRepository()).delete(sharingPK);
                 }
             }
+
+            EntityPK entityPK = new EntityPK();
+            entityPK.setDomainId(domainId);
+            entityPK.setEntityId(entityId);
+            Entity entity = (new EntityRepository()).get(entityPK);
+            entity.setSharedCount((new SharingRepository()).getSharedCount(domainId, entityId));
+            (new EntityRepository()).update(entity);
             return true;
         }catch (SharingRegistryException ex) {
             logger.error(ex.getMessage(), ex);

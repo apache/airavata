@@ -223,8 +223,9 @@ struct Entity {
     8: optional binary binaryData,
     9: optional string fullText,
     10: optional i64 originalEntityCreationTime,
-    11: optional i64 createdTime,
-    12: optional i64 updatedTime
+    11: optional i64 sharedCount = 0,
+    12: optional i64 createdTime,
+    13: optional i64 updatedTime
 }
 
 /**
