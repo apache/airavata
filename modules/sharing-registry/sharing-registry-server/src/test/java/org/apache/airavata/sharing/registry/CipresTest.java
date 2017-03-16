@@ -21,7 +21,6 @@
 package org.apache.airavata.sharing.registry;
 
 import org.apache.airavata.sharing.registry.models.*;
-import org.apache.airavata.sharing.registry.server.ServerMain;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
@@ -37,15 +36,10 @@ public class CipresTest {
     public static void main(String[] args) throws InterruptedException {
         System.out.println("Hello World!");
         //should use the correct host name and port here
-//        String serverHost = "wb-airavata.scigap.org";
-        String serverHost = "localhost";
+        String serverHost = "wb-airavata.scigap.org";
 
         int serverPort = 7878;
         TTransport transport = null;
-
-        ServerMain serverMain = new ServerMain();
-        serverMain.main(new String[]{});
-        Thread.sleep(1000 * 2);
 
         try {
             transport = new TSocket(serverHost, serverPort);
