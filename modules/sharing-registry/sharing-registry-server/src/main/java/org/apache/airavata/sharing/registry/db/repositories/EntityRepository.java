@@ -145,8 +145,8 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
             entity.setDescription((String)(rs[6]));
             entity.setBinaryData((byte[]) (rs[7]));
             entity.setFullText((String) (rs[8]));
-            entity.setOriginalEntityCreationTime((long)(rs[9]));
-            entity.setSharedCount((long) rs[10]);
+            entity.setSharedCount((int) rs[9]);
+            entity.setOriginalEntityCreationTime((long) (rs[10]));
             entity.setCreatedTime((long) (rs[11]));
             entity.setUpdatedTime((long) (rs[12]));
 
