@@ -6,32 +6,16 @@
  */
 package org.apache.airavata.sharing.registry.models;
 
+import org.apache.thrift.EncodingUtils;
+import org.apache.thrift.protocol.TTupleProtocol;
 import org.apache.thrift.scheme.IScheme;
 import org.apache.thrift.scheme.SchemeFactory;
 import org.apache.thrift.scheme.StandardScheme;
-
 import org.apache.thrift.scheme.TupleScheme;
-import org.apache.thrift.protocol.TTupleProtocol;
-import org.apache.thrift.protocol.TProtocolException;
-import org.apache.thrift.EncodingUtils;
-import org.apache.thrift.TException;
-import org.apache.thrift.async.AsyncMethodCallback;
-import org.apache.thrift.server.AbstractNonblockingServer.*;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.EnumMap;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.EnumSet;
-import java.util.Collections;
-import java.util.BitSet;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
+
 import javax.annotation.Generated;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.nio.ByteBuffer;
+import java.util.*;
 
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked"})
 /**
@@ -64,8 +48,8 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
   private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)7);
   private static final org.apache.thrift.protocol.TField BINARY_DATA_FIELD_DESC = new org.apache.thrift.protocol.TField("binaryData", org.apache.thrift.protocol.TType.STRING, (short)8);
   private static final org.apache.thrift.protocol.TField FULL_TEXT_FIELD_DESC = new org.apache.thrift.protocol.TField("fullText", org.apache.thrift.protocol.TType.STRING, (short)9);
-  private static final org.apache.thrift.protocol.TField ORIGINAL_ENTITY_CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("originalEntityCreationTime", org.apache.thrift.protocol.TType.I64, (short)10);
-  private static final org.apache.thrift.protocol.TField SHARED_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("sharedCount", org.apache.thrift.protocol.TType.I64, (short)11);
+  private static final org.apache.thrift.protocol.TField SHARED_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("sharedCount", org.apache.thrift.protocol.TType.I32, (short) 10);
+  private static final org.apache.thrift.protocol.TField ORIGINAL_ENTITY_CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("originalEntityCreationTime", org.apache.thrift.protocol.TType.I64, (short) 11);
   private static final org.apache.thrift.protocol.TField CREATED_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("createdTime", org.apache.thrift.protocol.TType.I64, (short)12);
   private static final org.apache.thrift.protocol.TField UPDATED_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("updatedTime", org.apache.thrift.protocol.TType.I64, (short)13);
 
@@ -84,8 +68,8 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
   public String description; // optional
   public ByteBuffer binaryData; // optional
   public String fullText; // optional
+  public int sharedCount; // optional
   public long originalEntityCreationTime; // optional
-  public long sharedCount; // optional
   public long createdTime; // optional
   public long updatedTime; // optional
 
@@ -100,8 +84,8 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     DESCRIPTION((short)7, "description"),
     BINARY_DATA((short)8, "binaryData"),
     FULL_TEXT((short)9, "fullText"),
-    ORIGINAL_ENTITY_CREATION_TIME((short)10, "originalEntityCreationTime"),
-    SHARED_COUNT((short)11, "sharedCount"),
+    SHARED_COUNT((short) 10, "sharedCount"),
+    ORIGINAL_ENTITY_CREATION_TIME((short) 11, "originalEntityCreationTime"),
     CREATED_TIME((short)12, "createdTime"),
     UPDATED_TIME((short)13, "updatedTime");
 
@@ -136,10 +120,10 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
           return BINARY_DATA;
         case 9: // FULL_TEXT
           return FULL_TEXT;
-        case 10: // ORIGINAL_ENTITY_CREATION_TIME
-          return ORIGINAL_ENTITY_CREATION_TIME;
-        case 11: // SHARED_COUNT
+        case 10: // SHARED_COUNT
           return SHARED_COUNT;
+        case 11: // ORIGINAL_ENTITY_CREATION_TIME
+          return ORIGINAL_ENTITY_CREATION_TIME;
         case 12: // CREATED_TIME
           return CREATED_TIME;
         case 13: // UPDATED_TIME
@@ -184,12 +168,12 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
   }
 
   // isset id assignments
-  private static final int __ORIGINALENTITYCREATIONTIME_ISSET_ID = 0;
-  private static final int __SHAREDCOUNT_ISSET_ID = 1;
+  private static final int __SHAREDCOUNT_ISSET_ID = 0;
+  private static final int __ORIGINALENTITYCREATIONTIME_ISSET_ID = 1;
   private static final int __CREATEDTIME_ISSET_ID = 2;
   private static final int __UPDATEDTIME_ISSET_ID = 3;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.ENTITY_ID,_Fields.DOMAIN_ID,_Fields.ENTITY_TYPE_ID,_Fields.OWNER_ID,_Fields.PARENT_ENTITY_ID,_Fields.NAME,_Fields.DESCRIPTION,_Fields.BINARY_DATA,_Fields.FULL_TEXT,_Fields.ORIGINAL_ENTITY_CREATION_TIME,_Fields.SHARED_COUNT,_Fields.CREATED_TIME,_Fields.UPDATED_TIME};
+  private static final _Fields optionals[] = {_Fields.ENTITY_ID, _Fields.DOMAIN_ID, _Fields.ENTITY_TYPE_ID, _Fields.OWNER_ID, _Fields.PARENT_ENTITY_ID, _Fields.NAME, _Fields.DESCRIPTION, _Fields.BINARY_DATA, _Fields.FULL_TEXT, _Fields.SHARED_COUNT, _Fields.ORIGINAL_ENTITY_CREATION_TIME, _Fields.CREATED_TIME, _Fields.UPDATED_TIME};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -211,9 +195,9 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , true)));
     tmpMap.put(_Fields.FULL_TEXT, new org.apache.thrift.meta_data.FieldMetaData("fullText", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.SHARED_COUNT, new org.apache.thrift.meta_data.FieldMetaData("sharedCount", org.apache.thrift.TFieldRequirementType.OPTIONAL,
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.ORIGINAL_ENTITY_CREATION_TIME, new org.apache.thrift.meta_data.FieldMetaData("originalEntityCreationTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
-    tmpMap.put(_Fields.SHARED_COUNT, new org.apache.thrift.meta_data.FieldMetaData("sharedCount", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     tmpMap.put(_Fields.CREATED_TIME, new org.apache.thrift.meta_data.FieldMetaData("createdTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
@@ -224,7 +208,7 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
   }
 
   public Entity() {
-    this.sharedCount = 0L;
+    this.sharedCount = 0;
 
   }
 
@@ -260,8 +244,8 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     if (other.isSetFullText()) {
       this.fullText = other.fullText;
     }
-    this.originalEntityCreationTime = other.originalEntityCreationTime;
     this.sharedCount = other.sharedCount;
+    this.originalEntityCreationTime = other.originalEntityCreationTime;
     this.createdTime = other.createdTime;
     this.updatedTime = other.updatedTime;
   }
@@ -281,10 +265,10 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     this.description = null;
     this.binaryData = null;
     this.fullText = null;
+    this.sharedCount = 0;
+
     setOriginalEntityCreationTimeIsSet(false);
     this.originalEntityCreationTime = 0;
-    this.sharedCount = 0L;
-
     setCreatedTimeIsSet(false);
     this.createdTime = 0;
     setUpdatedTimeIsSet(false);
@@ -517,6 +501,31 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     }
   }
 
+  public int getSharedCount() {
+    return this.sharedCount;
+  }
+
+  public Entity setSharedCount(int sharedCount) {
+    this.sharedCount = sharedCount;
+    setSharedCountIsSet(true);
+    return this;
+  }
+
+  public void unsetSharedCount() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SHAREDCOUNT_ISSET_ID);
+  }
+
+  /**
+   * Returns true if field sharedCount is set (has been assigned a value) and false otherwise
+   */
+  public boolean isSetSharedCount() {
+    return EncodingUtils.testBit(__isset_bitfield, __SHAREDCOUNT_ISSET_ID);
+  }
+
+  public void setSharedCountIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SHAREDCOUNT_ISSET_ID, value);
+  }
+
   public long getOriginalEntityCreationTime() {
     return this.originalEntityCreationTime;
   }
@@ -538,29 +547,6 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
 
   public void setOriginalEntityCreationTimeIsSet(boolean value) {
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ORIGINALENTITYCREATIONTIME_ISSET_ID, value);
-  }
-
-  public long getSharedCount() {
-    return this.sharedCount;
-  }
-
-  public Entity setSharedCount(long sharedCount) {
-    this.sharedCount = sharedCount;
-    setSharedCountIsSet(true);
-    return this;
-  }
-
-  public void unsetSharedCount() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SHAREDCOUNT_ISSET_ID);
-  }
-
-  /** Returns true if field sharedCount is set (has been assigned a value) and false otherwise */
-  public boolean isSetSharedCount() {
-    return EncodingUtils.testBit(__isset_bitfield, __SHAREDCOUNT_ISSET_ID);
-  }
-
-  public void setSharedCountIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SHAREDCOUNT_ISSET_ID, value);
   }
 
   public long getCreatedTime() {
@@ -683,19 +669,19 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
       }
       break;
 
-    case ORIGINAL_ENTITY_CREATION_TIME:
-      if (value == null) {
-        unsetOriginalEntityCreationTime();
-      } else {
-        setOriginalEntityCreationTime((Long)value);
-      }
-      break;
-
-    case SHARED_COUNT:
+      case SHARED_COUNT:
       if (value == null) {
         unsetSharedCount();
       } else {
-        setSharedCount((Long)value);
+        setSharedCount((Integer) value);
+      }
+        break;
+
+      case ORIGINAL_ENTITY_CREATION_TIME:
+      if (value == null) {
+        unsetOriginalEntityCreationTime();
+      } else {
+        setOriginalEntityCreationTime((Long) value);
       }
       break;
 
@@ -747,11 +733,11 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     case FULL_TEXT:
       return getFullText();
 
-    case ORIGINAL_ENTITY_CREATION_TIME:
-      return getOriginalEntityCreationTime();
-
     case SHARED_COUNT:
       return getSharedCount();
+
+      case ORIGINAL_ENTITY_CREATION_TIME:
+        return getOriginalEntityCreationTime();
 
     case CREATED_TIME:
       return getCreatedTime();
@@ -788,10 +774,10 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
       return isSetBinaryData();
     case FULL_TEXT:
       return isSetFullText();
-    case ORIGINAL_ENTITY_CREATION_TIME:
-      return isSetOriginalEntityCreationTime();
     case SHARED_COUNT:
       return isSetSharedCount();
+      case ORIGINAL_ENTITY_CREATION_TIME:
+        return isSetOriginalEntityCreationTime();
     case CREATED_TIME:
       return isSetCreatedTime();
     case UPDATED_TIME:
@@ -894,21 +880,21 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
         return false;
     }
 
-    boolean this_present_originalEntityCreationTime = true && this.isSetOriginalEntityCreationTime();
-    boolean that_present_originalEntityCreationTime = true && that.isSetOriginalEntityCreationTime();
-    if (this_present_originalEntityCreationTime || that_present_originalEntityCreationTime) {
-      if (!(this_present_originalEntityCreationTime && that_present_originalEntityCreationTime))
-        return false;
-      if (this.originalEntityCreationTime != that.originalEntityCreationTime)
-        return false;
-    }
-
     boolean this_present_sharedCount = true && this.isSetSharedCount();
     boolean that_present_sharedCount = true && that.isSetSharedCount();
     if (this_present_sharedCount || that_present_sharedCount) {
       if (!(this_present_sharedCount && that_present_sharedCount))
         return false;
       if (this.sharedCount != that.sharedCount)
+        return false;
+    }
+
+    boolean this_present_originalEntityCreationTime = true && this.isSetOriginalEntityCreationTime();
+    boolean that_present_originalEntityCreationTime = true && that.isSetOriginalEntityCreationTime();
+    if (this_present_originalEntityCreationTime || that_present_originalEntityCreationTime) {
+      if (!(this_present_originalEntityCreationTime && that_present_originalEntityCreationTime))
+        return false;
+      if (this.originalEntityCreationTime != that.originalEntityCreationTime)
         return false;
     }
 
@@ -982,15 +968,15 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
     if (present_fullText)
       list.add(fullText);
 
-    boolean present_originalEntityCreationTime = true && (isSetOriginalEntityCreationTime());
-    list.add(present_originalEntityCreationTime);
-    if (present_originalEntityCreationTime)
-      list.add(originalEntityCreationTime);
-
     boolean present_sharedCount = true && (isSetSharedCount());
     list.add(present_sharedCount);
     if (present_sharedCount)
       list.add(sharedCount);
+
+    boolean present_originalEntityCreationTime = true && (isSetOriginalEntityCreationTime());
+    list.add(present_originalEntityCreationTime);
+    if (present_originalEntityCreationTime)
+      list.add(originalEntityCreationTime);
 
     boolean present_createdTime = true && (isSetCreatedTime());
     list.add(present_createdTime);
@@ -1103,22 +1089,22 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetOriginalEntityCreationTime()).compareTo(other.isSetOriginalEntityCreationTime());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetOriginalEntityCreationTime()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.originalEntityCreationTime, other.originalEntityCreationTime);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     lastComparison = Boolean.valueOf(isSetSharedCount()).compareTo(other.isSetSharedCount());
     if (lastComparison != 0) {
       return lastComparison;
     }
     if (isSetSharedCount()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sharedCount, other.sharedCount);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetOriginalEntityCreationTime()).compareTo(other.isSetOriginalEntityCreationTime());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetOriginalEntityCreationTime()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.originalEntityCreationTime, other.originalEntityCreationTime);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1252,16 +1238,16 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
       }
       first = false;
     }
-    if (isSetOriginalEntityCreationTime()) {
-      if (!first) sb.append(", ");
-      sb.append("originalEntityCreationTime:");
-      sb.append(this.originalEntityCreationTime);
-      first = false;
-    }
     if (isSetSharedCount()) {
       if (!first) sb.append(", ");
       sb.append("sharedCount:");
       sb.append(this.sharedCount);
+      first = false;
+    }
+    if (isSetOriginalEntityCreationTime()) {
+      if (!first) sb.append(", ");
+      sb.append("originalEntityCreationTime:");
+      sb.append(this.originalEntityCreationTime);
       first = false;
     }
     if (isSetCreatedTime()) {
@@ -1393,18 +1379,18 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 10: // ORIGINAL_ENTITY_CREATION_TIME
-            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
-              struct.originalEntityCreationTime = iprot.readI64();
-              struct.setOriginalEntityCreationTimeIsSet(true);
+          case 10: // SHARED_COUNT
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.sharedCount = iprot.readI32();
+              struct.setSharedCountIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 11: // SHARED_COUNT
+          case 11: // ORIGINAL_ENTITY_CREATION_TIME
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
-              struct.sharedCount = iprot.readI64();
-              struct.setSharedCountIsSet(true);
+              struct.originalEntityCreationTime = iprot.readI64();
+              struct.setOriginalEntityCreationTimeIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1503,14 +1489,14 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
           oprot.writeFieldEnd();
         }
       }
+      if (struct.isSetSharedCount()) {
+        oprot.writeFieldBegin(SHARED_COUNT_FIELD_DESC);
+        oprot.writeI32(struct.sharedCount);
+        oprot.writeFieldEnd();
+      }
       if (struct.isSetOriginalEntityCreationTime()) {
         oprot.writeFieldBegin(ORIGINAL_ENTITY_CREATION_TIME_FIELD_DESC);
         oprot.writeI64(struct.originalEntityCreationTime);
-        oprot.writeFieldEnd();
-      }
-      if (struct.isSetSharedCount()) {
-        oprot.writeFieldBegin(SHARED_COUNT_FIELD_DESC);
-        oprot.writeI64(struct.sharedCount);
         oprot.writeFieldEnd();
       }
       if (struct.isSetCreatedTime()) {
@@ -1568,10 +1554,10 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
       if (struct.isSetFullText()) {
         optionals.set(8);
       }
-      if (struct.isSetOriginalEntityCreationTime()) {
+      if (struct.isSetSharedCount()) {
         optionals.set(9);
       }
-      if (struct.isSetSharedCount()) {
+      if (struct.isSetOriginalEntityCreationTime()) {
         optionals.set(10);
       }
       if (struct.isSetCreatedTime()) {
@@ -1608,11 +1594,11 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
       if (struct.isSetFullText()) {
         oprot.writeString(struct.fullText);
       }
+      if (struct.isSetSharedCount()) {
+        oprot.writeI32(struct.sharedCount);
+      }
       if (struct.isSetOriginalEntityCreationTime()) {
         oprot.writeI64(struct.originalEntityCreationTime);
-      }
-      if (struct.isSetSharedCount()) {
-        oprot.writeI64(struct.sharedCount);
       }
       if (struct.isSetCreatedTime()) {
         oprot.writeI64(struct.createdTime);
@@ -1663,12 +1649,12 @@ public class Entity implements org.apache.thrift.TBase<Entity, Entity._Fields>, 
         struct.setFullTextIsSet(true);
       }
       if (incoming.get(9)) {
-        struct.originalEntityCreationTime = iprot.readI64();
-        struct.setOriginalEntityCreationTimeIsSet(true);
+        struct.sharedCount = iprot.readI32();
+        struct.setSharedCountIsSet(true);
       }
       if (incoming.get(10)) {
-        struct.sharedCount = iprot.readI64();
-        struct.setSharedCountIsSet(true);
+        struct.originalEntityCreationTime = iprot.readI64();
+        struct.setOriginalEntityCreationTimeIsSet(true);
       }
       if (incoming.get(11)) {
         struct.createdTime = iprot.readI64();
