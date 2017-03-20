@@ -5,7 +5,7 @@
 149.165.168.5 ansible_user=centos
 
 [database]
-149.165.168.5 ansible_user=centos
+149.165.172.163 ansible_user=centos
 
 [api-orch]
 149.165.168.5 ansible_user=centos

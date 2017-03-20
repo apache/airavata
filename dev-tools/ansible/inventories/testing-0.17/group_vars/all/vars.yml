@@ -17,7 +17,7 @@ git_branch: develop
 db_server: "{{ groups['database'][0] }}"
 db_server_port: "3306"
 db_user: "airavata"
-db_password: "airavata"
+db_password: "{{ vault_db_password }}"
 app_catalog: "app_catalog"
 exp_catalog: "exp_catalog"
 replica_catalog: "replica_catalog"
