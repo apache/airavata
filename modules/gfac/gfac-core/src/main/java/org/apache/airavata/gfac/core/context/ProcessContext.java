@@ -447,26 +447,36 @@ public class ProcessContext {
 	}
 
 	public String getComputeResourceCredentialToken(){
-		if (isUseUserCRPref() &&
-				userComputeResourcePreference != null &&
-				isValid(userComputeResourcePreference.getResourceSpecificCredentialStoreToken())) {
-			return userComputeResourcePreference.getResourceSpecificCredentialStoreToken();
-		} else if (isValid(gatewayComputeResourcePreference.getResourceSpecificCredentialStoreToken())) {
-			return gatewayComputeResourcePreference.getResourceSpecificCredentialStoreToken();
+		if (isUseUserCRPref()) {
+			if (userComputeResourcePreference != null &&
+					isValid(userComputeResourcePreference.getResourceSpecificCredentialStoreToken())) {
+				return userComputeResourcePreference.getResourceSpecificCredentialStoreToken();
+			} else {
+				return userResourceProfile.getCredentialStoreToken();
+			}
 		} else {
-			return gatewayResourceProfile.getCredentialStoreToken();
+			if (isValid(gatewayComputeResourcePreference.getResourceSpecificCredentialStoreToken())) {
+				return gatewayComputeResourcePreference.getResourceSpecificCredentialStoreToken();
+			} else {
+				return gatewayResourceProfile.getCredentialStoreToken();
+			}
 		}
 	}
 
 	public String getStorageResourceCredentialToken(){
-		if (isUseUserCRPref() &&
-				userStoragePreference != null &&
-				isValid(userStoragePreference.getResourceSpecificCredentialStoreToken())) {
-			return userStoragePreference.getResourceSpecificCredentialStoreToken();
-		} else if (isValid(gatewayStorageResourcePreference.getResourceSpecificCredentialStoreToken())) {
-			return gatewayStorageResourcePreference.getResourceSpecificCredentialStoreToken();
+		if (isUseUserCRPref()) {
+			if (userStoragePreference != null &&
+					isValid(userStoragePreference.getResourceSpecificCredentialStoreToken())) {
+				return userStoragePreference.getResourceSpecificCredentialStoreToken();
+			} else {
+				return userResourceProfile.getCredentialStoreToken();
+			}
 		} else {
-			return gatewayResourceProfile.getCredentialStoreToken();
+			if (isValid(gatewayStorageResourcePreference.getResourceSpecificCredentialStoreToken())) {
+				return gatewayStorageResourcePreference.getResourceSpecificCredentialStoreToken();
+			} else {
+				return gatewayResourceProfile.getCredentialStoreToken();
+			}
 		}
 	}
 
