@@ -52,4 +52,18 @@ public class UserGroupRepository extends AbstractRepository<UserGroup, UserGroup
         query += " ORDER BY s.createdTime DESC";
         return select(query, 0, -1);
     }
+
+
+    //checks whether is shared with any user or group with any permission
+    public boolean isShared(String domainId, String entityId) throws SharingRegistryException {
+        String query = "SELECT DISTINCT g from " + UserGroupEntity.class.getSimpleName() + " g, " + SharingEntity.class.getSimpleName() + " s";
+        query += " WHERE ";
+        query += "g." + DBConstants.UserGroupTable.GROUP_ID + " = s." + DBConstants.SharingTable.GROUP_ID + " AND ";
+        query += "g." + DBConstants.UserGroupTable.DOMAIN_ID + " = s." + DBConstants.SharingTable.DOMAIN_ID + " AND ";
+        query += "g." + DBConstants.UserGroupTable.DOMAIN_ID + " = '" + domainId + "' AND ";
+        query += "s." + DBConstants.SharingTable.ENTITY_ID + " = '" + entityId + "' AND ";
+        query += "s." + DBConstants.SharingTable.PERMISSION_TYPE_ID + " <> '" + (new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId) + "'";
+        query += " ORDER BY s.createdTime DESC";
+        return select(query, 0, -1).size() != 0;
+    }
 }

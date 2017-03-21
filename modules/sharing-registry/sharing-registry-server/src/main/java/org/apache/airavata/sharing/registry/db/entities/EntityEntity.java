@@ -41,6 +41,7 @@ public class EntityEntity {
     private ByteBuffer binaryData;
     private String fullText;
     private Long originalEntityCreationTime;
+    private boolean shared;
     private Long createdTime;
     private Long updatedTime;
 
@@ -142,6 +143,16 @@ public class EntityEntity {
 
     public void setOriginalEntityCreationTime(Long originalEntityCreationTime) {
         this.originalEntityCreationTime = originalEntityCreationTime;
+    }
+
+    @Basic
+    @Column(name = "SHARED")
+    public boolean getShared() {
+        return shared;
+    }
+
+    public void setShared(boolean shared) {
+        this.shared = shared;
     }
 
     @Basic
