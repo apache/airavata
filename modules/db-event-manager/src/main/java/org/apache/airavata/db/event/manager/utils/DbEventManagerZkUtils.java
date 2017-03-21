@@ -20,11 +20,15 @@
 */
 package org.apache.airavata.db.event.manager.utils;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.ZKPaths;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +39,35 @@ import java.util.Map;
  */
 public class DbEventManagerZkUtils {
 
+    private static final Logger logger = LoggerFactory.getLogger(DbEventManagerZkUtils.class);
+    private static CuratorFramework curatorClient;
+
+    /**
+     *  Get curatorFramework instance
+     * @return
+     * @throws ApplicationSettingsException
+     */
+    public static CuratorFramework getCuratorClient() throws ApplicationSettingsException {
+        if (curatorClient == null) {
+            synchronized (DbEventManagerZkUtils.class) {
+                if (curatorClient == null) {
+                    String connectionSting = ServerSettings.getZookeeperConnection();
+                    RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 5);
+                    curatorClient = CuratorFrameworkFactory.newClient(connectionSting, retryPolicy);
+                }
+            }
+        }
+
+        return curatorClient;
+    }
+
+    /**
+     * Create Zk node for db event manager
+     * @param curatorClient
+     * @param publisherNode
+     * @param subscriberNode
+     * @throws Exception
+     */
     public static void createDBEventMgrZkNode(CuratorFramework curatorClient, String publisherNode, String subscriberNode) throws Exception {
         // construct ZK paths for pub,sub
         String publisherZkPath = ZKPaths.makePath(Constants.DB_EVENT_MGR_ZK_PATH, publisherNode);
@@ -45,6 +78,7 @@ public class DbEventManagerZkUtils {
         byte[] subscriberZkData = subscriberNode.getBytes();
 
         // create zkNode: "/db-event-mgr/pubnodename/subnodename"
+        logger.debug("Creating Zk node for db-event-mgr: " + subscriberZkPath);
         ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), subscriberZkPath);
 
         // set zkNode data for pub,sub
@@ -52,6 +86,13 @@ public class DbEventManagerZkUtils {
         curatorClient.setData().withVersion(-1 ).forPath(subscriberZkPath, subscriberZkData);
     }
 
+    /**
+     * Get list of subscribers for given publisher
+     * @param curatorClient
+     * @param publisherNode
+     * @return
+     * @throws Exception
+     */
     public static Map<String, List<String>> getSubscribersForPublisher(CuratorFramework curatorClient, String publisherNode) throws Exception {
         Map<String, List<String>> subscriberMap = new HashMap<>();
 
