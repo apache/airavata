@@ -74,7 +74,7 @@ public class DbEventManagerZkUtils {
         String subscriberZkPath = ZKPaths.makePath(publisherZkPath, subscriberNode);
 
         // construct byte-data(s) for pub, sub
-        byte[] publisherZkData = subscriberNode.getBytes();
+        byte[] publisherZkData = publisherNode.getBytes();
         byte[] subscriberZkData = subscriberNode.getBytes();
 
         // create zkNode: "/db-event-mgr/pubnodename/subnodename"
