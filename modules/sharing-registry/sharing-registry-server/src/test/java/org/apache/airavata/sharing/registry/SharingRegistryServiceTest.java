@@ -281,6 +281,15 @@ public class SharingRegistryServiceTest {
         Assert.assertTrue(sharingServiceClient.getEntity(domainId, "test-project-1").getSharedCount() == 0);
         sharingServiceClient.shareEntityWithUsers(domainId, "test-project-1", Arrays.asList("test-user-2"), "WRITE", true);
         Assert.assertTrue(sharingServiceClient.getEntity(domainId, "test-project-1").getSharedCount() == 1);
+        ArrayList<SearchCriteria> filters = new ArrayList<>();
+        SearchCriteria searchCriteria = new SearchCriteria();
+        searchCriteria.setSearchField(EntitySearchField.SHARED_COUNT);
+        searchCriteria.setValue("1");
+        searchCriteria.setSearchCondition(SearchCondition.GTE);
+        filters.add(searchCriteria);
+        Assert.assertTrue(sharingServiceClient.searchEntities(domainId, "test-user-2", filters, 0, -1).size() == 1);
+
+
         sharingServiceClient.revokeEntitySharingFromUsers(domainId, "test-project-1", Arrays.asList("test-user-2"), "WRITE");
         Assert.assertTrue(sharingServiceClient.getEntity(domainId, "test-project-1").getSharedCount() == 0);
         sharingServiceClient.shareEntityWithUsers(domainId, "test-project-1", Arrays.asList("test-user-2"), "WRITE", true);
@@ -312,8 +321,8 @@ public class SharingRegistryServiceTest {
         //false
         Assert.assertFalse((sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-file-1", "CLONE")));
 
-        ArrayList<SearchCriteria> filters = new ArrayList<>();
-        SearchCriteria searchCriteria = new SearchCriteria();
+        filters = new ArrayList<>();
+        searchCriteria = new SearchCriteria();
         searchCriteria.setSearchCondition(SearchCondition.FULL_TEXT);
         searchCriteria.setValue("experiment");
         searchCriteria.setSearchField(EntitySearchField.FULL_TEXT);
