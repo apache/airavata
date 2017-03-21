@@ -272,7 +272,15 @@ public class SharingRegistryServiceTest {
         entity4.setFullText("test input file 1 for experiment 2");
         sharingServiceClient.createEntity(entity4);
 
+        Assert.assertTrue(!sharingServiceClient.getEntity(domainId, "test-project-1").isShared());
         sharingServiceClient.shareEntityWithUsers(domainId, "test-project-1", Arrays.asList("test-user-2"), "WRITE", true);
+        Assert.assertTrue(sharingServiceClient.getEntity(domainId, "test-project-1").isShared());
+        sharingServiceClient.revokeEntitySharingFromUsers(domainId, "test-project-1", Arrays.asList("test-user-2"), "WRITE");
+        Assert.assertTrue(!sharingServiceClient.getEntity(domainId, "test-project-1").isShared());
+
+        sharingServiceClient.shareEntityWithUsers(domainId, "test-project-1", Arrays.asList("test-user-2"), "WRITE", true);
+
+
         sharingServiceClient.shareEntityWithGroups(domainId, "test-experiment-2", Arrays.asList("test-group-2"), "READ", true);
         sharingServiceClient.shareEntityWithGroups(domainId, "test-experiment-2", Arrays.asList("test-group-2"), "CLONE", false);
 

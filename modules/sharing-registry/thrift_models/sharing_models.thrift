@@ -224,7 +224,8 @@ struct Entity {
     9: optional string fullText,
     10: optional i64 originalEntityCreationTime,
     11: optional i64 createdTime,
-    12: optional i64 updatedTime
+    12: optional i64 updatedTime,
+    13: optional bool shared = false
 }
 
 /**
