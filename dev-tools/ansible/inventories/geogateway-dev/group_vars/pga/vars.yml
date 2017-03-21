@@ -1,6 +1,6 @@
 ---
 pga_repo: "https://github.com/apache/airavata-php-gateway.git"
-pga_git_branch: "develop"
+git_branch: "develop"
 user: "pga"
 group: "pga"
 pga_user: "pga"
@@ -23,8 +23,7 @@ airavata_port: "9930"
 gateway_id: "GeoGateway"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}"
-# TODO: fix this
-gateway_data_store_resource_id: "js-170-103.jetstream-cloud.org_6497a464-3121-4b64-a7cb-d195b0a26c19"
+gateway_data_store_resource_id: "149.165.156.79_80025f37-19e4-496e-962e-d6fa75a5f63c"
 
 ## Portal related variables
 super_admin_portal: "false"
