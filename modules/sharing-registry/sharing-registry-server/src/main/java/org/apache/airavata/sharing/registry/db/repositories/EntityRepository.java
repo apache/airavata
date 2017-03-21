@@ -121,6 +121,12 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
                 }else{
                     query += "E.UPDATED_TIME <= " + Integer.parseInt(searchCriteria.getValue().trim()) + " AND ";
                 }
+            } else if (searchCriteria.getSearchField().equals(EntitySearchField.SHARED_COUNT)) {
+                if (searchCriteria.getSearchCondition().equals(SearchCondition.GTE)) {
+                    query += "E.SHARED_COUNT >= " + Integer.parseInt(searchCriteria.getValue().trim()) + " AND ";
+                } else {
+                    query += "E.SHARED_COUNT <= " + Integer.parseInt(searchCriteria.getValue().trim()) + " AND ";
+                }
             }
         }
 
