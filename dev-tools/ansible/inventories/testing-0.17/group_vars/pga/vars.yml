@@ -1,6 +1,6 @@
 ---
 pga_repo: "https://github.com/apache/airavata-php-gateway.git"
-pga_git_branch: "develop"
+git_branch: "develop"
 pga_user: "pga"
 pga_group: "pga"
 doc_root_dir: "/var/www/html/php-gateway"
