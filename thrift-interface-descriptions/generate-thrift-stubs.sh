@@ -159,13 +159,13 @@ generate_java_stubs() {
     # Generate the Airavata Data Model using thrift Java Beans generator. This will take generate the classes in bean style
     #   with members being private and setters returning voids.
     #   The airavata_data_models.thrift includes rest of data models.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans ${DATAMODEL_THRIFT_FILE} || fail unable to generate java bean thrift classes on base data model
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans,generated_annotations=undated ${DATAMODEL_THRIFT_FILE} || fail unable to generate java bean thrift classes on base data model
 
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans ${APP_CATALOG_THRIFT_FILE} || fail unable to generate java bean thrift classes on app catalog data models
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans,generated_annotations=undated ${APP_CATALOG_THRIFT_FILE} || fail unable to generate java bean thrift classes on app catalog data models
 
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans ${RESOURCE_CATALOG_THRIFT_FILE} || fail unable to generate java bean thrift classes on app catalog data models
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans,generated_annotations=undated ${RESOURCE_CATALOG_THRIFT_FILE} || fail unable to generate java bean thrift classes on app catalog data models
 
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans ${WORKFLOW_THRIFT_FILE} || fail unable to generate java bean thrift classes on app workflow data models
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans,generated_annotations=undated ${WORKFLOW_THRIFT_FILE} || fail unable to generate java bean thrift classes on app workflow data models
 
     # For the generated java beans add the ASF V2 License header
     add_license_header $JAVA_BEAN_GEN_DIR
@@ -186,7 +186,7 @@ generate_java_stubs() {
 
     # Using thrift Java generator, generate the java classes based on Airavata API. This
     #   The airavata_api.thrift includes rest of data models.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java ${AIRAVATA_API_THRIFT_FILE} || fail unable to generate java thrift classes on AiravataAPI
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:generated_annotations=undated ${AIRAVATA_API_THRIFT_FILE} || fail unable to generate java thrift classes on AiravataAPI
 
     # For the generated java classes add the ASF V2 License header
     add_license_header $JAVA_GEN_DIR
