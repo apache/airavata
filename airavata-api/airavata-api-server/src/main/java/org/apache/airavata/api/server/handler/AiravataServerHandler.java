@@ -4657,22 +4657,29 @@ public class AiravataServerHandler implements Airavata.Iface {
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
-            List<String> accessibleUsers = new ArrayList<>();
-            if(permissionType.equals(ResourcePermissionType.WRITE))
+            HashSet<String> accessibleUsers = new HashSet<>();
+            if (permissionType.equals(ResourcePermissionType.WRITE)) {
                 sharingClient.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
-                                + ":WRITE").stream().forEach(u->accessibleUsers.add(u.userId));
-            else if(permissionType.equals(ResourcePermissionType.READ))
+                                + ":WRITE").stream().forEach(u -> accessibleUsers.add(u.userId));
                 sharingClient.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
-                                + ":READ").stream().forEach(u->accessibleUsers.add(u.userId));
-            else if(permissionType.equals(ResourcePermissionType.OWNER))
+                                + ":OWNER").stream().forEach(u -> accessibleUsers.add(u.userId));
+            } else if (permissionType.equals(ResourcePermissionType.READ)) {
                 sharingClient.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
-                                + ":OWNER").stream().forEach(u->accessibleUsers.add(u.userId));
+                                + ":READ").stream().forEach(u -> accessibleUsers.add(u.userId));
+                sharingClient.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                        resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
+                                + ":OWNER").stream().forEach(u -> accessibleUsers.add(u.userId));
+            } else if (permissionType.equals(ResourcePermissionType.OWNER)) {
+                sharingClient.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                        resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
+                                + ":OWNER").stream().forEach(u -> accessibleUsers.add(u.userId));
+            }
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
-            return accessibleUsers;
+            return new ArrayList<>(accessibleUsers);
         } catch (Exception e) {
             String msg = "Error in getting all accessible users for resource. Resource ID : " + resourceId + " Resource Type : " + resourceType.toString() ;
             logger.error(msg, e);
