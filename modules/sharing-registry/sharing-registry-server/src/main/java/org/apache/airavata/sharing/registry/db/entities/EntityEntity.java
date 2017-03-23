@@ -41,7 +41,7 @@ public class EntityEntity {
     private ByteBuffer binaryData;
     private String fullText;
     private Long originalEntityCreationTime;
-    private int sharedCount;
+    private Long sharedCount;
     private Long createdTime;
     private Long updatedTime;
 
@@ -147,11 +147,11 @@ public class EntityEntity {
 
     @Basic
     @Column(name = "SHARED_COUNT")
-    public int getSharedCount() {
+    public Long getSharedCount() {
         return sharedCount;
     }
 
-    public void setSharedCount(int sharedCount) {
+    public void setSharedCount(Long sharedCount) {
         this.sharedCount = sharedCount;
     }
 
