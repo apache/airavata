@@ -166,11 +166,11 @@ public class ProfileServiceServer implements IServer {
         this.server = server;
     }
 
-    public static void main(String[] args) {
-        try {
-            new ProfileServiceServer().start();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
+//    public static void main(String[] args) {
+//        try {
+//            new ProfileServiceServer().start();
+//        } catch (Exception e) {
+//            logger.error(e.getMessage(), e);
+//        }
+//    }
 }
