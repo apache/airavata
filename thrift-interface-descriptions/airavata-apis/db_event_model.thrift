@@ -30,7 +30,32 @@ enum CrudType {
     DELETE
 }
 
-struct DBEvent {
+enum DBEventType {
+    PUBLISHER,
+    SUBSCRIBER
+}
+
+struct DBEventPublisherContext {
     1:  required CrudType crudType,
     2:  required binary dataModel
 }
+
+struct DBEventPublisher {
+    1:  required DBEventPublisherContext publisherContext
+}
+
+struct DBEventSubscriber {
+    1:  required string subscriberService
+}
+
+union DBEventMessageContext {
+    1:  DBEventPublisher publisher,
+    2:  DBEventSubscriber subscriber
+}
+
+struct DBEventMessage {
+    1:  required DBEventType dbEventType,
+    2:  required DBEventMessageContext messageContext,
+    3:  required string publisherService
+}
+
