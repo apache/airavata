@@ -47,6 +47,7 @@ public class AiravataDataMigrator {
             try{
                 //Creating domain entries
                 Domain domain = new Domain();
+                domain.setDomainId(rs.getString("GATEWAY_ID"));
                 domain.setName(rs.getString("GATEWAY_ID"));
                 domain.setDescription("Domain entry for " + domain.name);
 
@@ -84,7 +85,7 @@ public class AiravataDataMigrator {
                 permissionType.setDomainId(domain.domainId);
                 permissionType.setName("READ");
                 permissionType.setDescription("Read permission type");
-                if (!sharingRegistryServerHandler.isEntityTypeExists(entityType.domainId, entityType.entityTypeId))
+                if (!sharingRegistryServerHandler.isPermissionExists(permissionType.domainId, permissionType.permissionTypeId))
                     sharingRegistryServerHandler.createPermissionType(permissionType);
 
                 permissionType = new PermissionType();
@@ -92,7 +93,7 @@ public class AiravataDataMigrator {
                 permissionType.setDomainId(domain.domainId);
                 permissionType.setName("WRITE");
                 permissionType.setDescription("Write permission type");
-                if (!sharingRegistryServerHandler.isEntityTypeExists(entityType.domainId, entityType.entityTypeId))
+                if (!sharingRegistryServerHandler.isPermissionExists(permissionType.domainId, permissionType.permissionTypeId))
                     sharingRegistryServerHandler.createPermissionType(permissionType);
             }catch (Exception ex){
                 ex.printStackTrace();
