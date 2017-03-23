@@ -4662,16 +4662,10 @@ public class AiravataServerHandler implements Airavata.Iface {
                 sharingClient.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
                                 + ":WRITE").stream().forEach(u -> accessibleUsers.add(u.userId));
-                sharingClient.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                        resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
-                                + ":OWNER").stream().forEach(u -> accessibleUsers.add(u.userId));
             } else if (permissionType.equals(ResourcePermissionType.READ)) {
                 sharingClient.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
                                 + ":READ").stream().forEach(u -> accessibleUsers.add(u.userId));
-                sharingClient.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                        resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
-                                + ":OWNER").stream().forEach(u -> accessibleUsers.add(u.userId));
             } else if (permissionType.equals(ResourcePermissionType.OWNER)) {
                 sharingClient.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
