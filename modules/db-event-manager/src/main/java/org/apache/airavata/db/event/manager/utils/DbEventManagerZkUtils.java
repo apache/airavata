@@ -21,6 +21,7 @@
 package org.apache.airavata.db.event.manager.utils;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.DBEventManagerConstants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
@@ -69,15 +70,19 @@ public class DbEventManagerZkUtils {
      * @throws Exception
      */
     public static void createDBEventMgrZkNode(CuratorFramework curatorClient, String publisherNode, String subscriberNode) throws Exception {
+        // get pub,sub queue names
+        String publisherQueue = DBEventManagerConstants.getQueueName(publisherNode);
+        String subscriberQueue = DBEventManagerConstants.getQueueName(subscriberNode);
+
         // construct ZK paths for pub,sub
-        String publisherZkPath = ZKPaths.makePath(Constants.DB_EVENT_MGR_ZK_PATH, publisherNode);
-        String subscriberZkPath = ZKPaths.makePath(publisherZkPath, subscriberNode);
+        String publisherZkPath = ZKPaths.makePath(Constants.DB_EVENT_MGR_ZK_PATH, publisherQueue);
+        String subscriberZkPath = ZKPaths.makePath(publisherZkPath, subscriberQueue);
 
         // construct byte-data(s) for pub, sub
         byte[] publisherZkData = publisherNode.getBytes();
         byte[] subscriberZkData = subscriberNode.getBytes();
 
-        // create zkNode: "/db-event-mgr/pubnodename/subnodename"
+        // create zkNode: "/db-event-mgr/pubqueuename/subqueueename"
         logger.debug("Creating Zk node for db-event-mgr: " + subscriberZkPath);
         ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), subscriberZkPath);
 
@@ -97,25 +102,30 @@ public class DbEventManagerZkUtils {
         Map<String, List<String>> subscriberMap = new HashMap<>();
 
         // construct ZK path for pub
-        String publisherZkPath = ZKPaths.makePath(Constants.DB_EVENT_MGR_ZK_PATH, publisherNode);
+        String publisherQueue = DBEventManagerConstants.getQueueName(publisherNode);
+        String publisherZkPath = ZKPaths.makePath(Constants.DB_EVENT_MGR_ZK_PATH, publisherQueue);
 
         // get children-list for pub
         List<String> subscriberList = curatorClient.getChildren().forPath(publisherZkPath);
 
-        subscriberMap.put(publisherNode, subscriberList);
+        subscriberMap.put(publisherQueue, subscriberList);
         return subscriberMap;
     }
 
 //    public static void main(String[] args) {
 //        String connectionString = "localhost:2181";
+//        String userProfileService = DBEventManagerConstants.DBEventService.USER_PROFILE.toString();
+//        String sharingService = DBEventManagerConstants.DBEventService.SHARING.toString();
+//        String registryService = DBEventManagerConstants.DBEventService.REGISTRY.toString();
+//
 //        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 5);
 //
 //        CuratorFramework curatorClient = CuratorFrameworkFactory.newClient(connectionString, retryPolicy);
 //        curatorClient.start();
 //        try {
-//            DbEventManagerZkUtils.createDBEventMgrZkNode(curatorClient, "userprofile", "sharing");
-//            DbEventManagerZkUtils.createDBEventMgrZkNode(curatorClient, "userprofile", "appcatalog");
-//            System.out.println(DbEventManagerZkUtils.getSubscribersForPublisher(curatorClient, "userprofile"));
+//            DbEventManagerZkUtils.createDBEventMgrZkNode(curatorClient, userProfileService, sharingService);
+//            DbEventManagerZkUtils.createDBEventMgrZkNode(curatorClient, userProfileService, registryService);
+//            System.out.println(DbEventManagerZkUtils.getSubscribersForPublisher(curatorClient, userProfileService));
 //        } catch (Exception ex) {
 //            ex.printStackTrace();
 //        }
