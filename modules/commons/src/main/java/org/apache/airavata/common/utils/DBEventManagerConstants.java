@@ -5,11 +5,11 @@ package org.apache.airavata.common.utils;
  */
 public class DBEventManagerConstants {
 
-    public static final String DB_EVENT_SERVICE_DISCOVERY_QUEUE = "db.event.service.discovery.queue";
+    public static final String DB_EVENT_QUEUE = "db.event.queue";
     private final static String QUEUE_SUFFIX = ".queue";
     public final static String DB_EVENT_EXCHANGE_NAME = "db.event.exchange";
 
-    public enum DBEventService{
+    enum DBEventService{
 
         USER_PROFILE("user.profile"),
         SHARING("sharing"),
