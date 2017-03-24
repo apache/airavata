@@ -1,46 +1,38 @@
 package org.apache.airavata.db.event.manager.messaging;
 
-import org.apache.airavata.common.utils.listener.DBEventManagerConstant;
+import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.utils.DBEventManagerConstants;
+import org.apache.airavata.db.event.manager.messaging.impl.DBEventMessageHandler;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.Subscriber;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by Ajinkya on 3/1/17.
  */
 public class DBEventManagerMessagingFactory {
 
-    private static final Subscriber dbEventMessagingSubscriber;
+    private final static Logger log = LoggerFactory.getLogger(DBEventManagerMessagingFactory.class);
 
-    static{
-        //FIXME: create subscriber of db.event.manager.queue
-        dbEventMessagingSubscriber = null;
+    private static Subscriber dbEventSubscriber;
+
+    public static Subscriber getDBEventSubscriber() throws AiravataException {
+        if(null != dbEventSubscriber){
+            synchronized (dbEventSubscriber){
+                if(null != dbEventSubscriber){
+                    log.info("Creating DB Event subscriber.....");
+                    dbEventSubscriber = MessagingFactory.getDBEventSubscriber(new DBEventMessageHandler(), DBEventManagerConstants.DB_EVENT_QUEUE);
+                    log.info("DB Event Service created");
+                }
+            }
+        }
+        return dbEventSubscriber;
     }
 
-    public static Subscriber getDBEventMessagingSubscriber(){
-        //just to add reference
-        //FIXME: remove
-        String queueName = DBEventManagerConstant.DB_EVENT_MANAGER_QUEUE;
-        return dbEventMessagingSubscriber;
-    }
-    private Publisher getPublisher(String entityName){
-        Publisher publisher = null;
-        return publisher;
-    }
-
-
-    public static List<Publisher> getDBEventPublisher(String entityName){
-        List<Publisher> publishers = new ArrayList<>();
-        //TODO: get corresponding subscribers
-        /*
-        -get publishers from map
-        -create publishers using private method getPublisher(entityName) if not exist
-         */
-
-        return publishers;
+    public static Publisher getDBEventPublisher(String queueName) throws AiravataException {
+        return MessagingFactory.getDBEventPublisher(queueName);
     }
 
 }

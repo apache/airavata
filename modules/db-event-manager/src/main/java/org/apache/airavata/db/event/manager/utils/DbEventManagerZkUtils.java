@@ -31,9 +31,7 @@ import org.apache.curator.utils.ZKPaths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by goshenoy on 3/21/17.
@@ -98,8 +96,7 @@ public class DbEventManagerZkUtils {
      * @return
      * @throws Exception
      */
-    public static Map<String, List<String>> getSubscribersForPublisher(CuratorFramework curatorClient, String publisherNode) throws Exception {
-        Map<String, List<String>> subscriberMap = new HashMap<>();
+    public static List<String> getSubscribersForPublisher(CuratorFramework curatorClient, String publisherNode) throws Exception {
 
         // construct ZK path for pub
         String publisherQueue = DBEventManagerConstants.getQueueName(publisherNode);
@@ -108,8 +105,7 @@ public class DbEventManagerZkUtils {
         // get children-list for pub
         List<String> subscriberList = curatorClient.getChildren().forPath(publisherZkPath);
 
-        subscriberMap.put(publisherQueue, subscriberList);
-        return subscriberMap;
+        return subscriberList;
     }
 
 //    public static void main(String[] args) {

@@ -21,12 +21,9 @@
 package org.apache.airavata.messaging.core;
 
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.utils.DBEventManagerConstants;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.messaging.core.impl.ExperimentConsumer;
-import org.apache.airavata.messaging.core.impl.ProcessConsumer;
-import org.apache.airavata.messaging.core.impl.RabbitMQPublisher;
-import org.apache.airavata.messaging.core.impl.RabbitMQSubscriber;
-import org.apache.airavata.messaging.core.impl.StatusConsumer;
+import org.apache.airavata.messaging.core.impl.*;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
@@ -36,6 +33,7 @@ import org.apache.airavata.model.messaging.event.ProcessStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
 import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MessagingFactory {
@@ -70,6 +68,21 @@ public class MessagingFactory {
         return subscriber;
     }
 
+
+    public static Subscriber getDBEventSubscriber(final MessageHandler messageHandler, String queueName) throws AiravataException {
+        Subscriber subscriber = null;
+        RabbitMQProperties rProperties = getProperties();
+        rProperties.setExchangeName(DBEventManagerConstants.DB_EVENT_EXCHANGE_NAME)
+                .setQueueName(queueName)
+                .setAutoAck(false);
+        subscriber = new RabbitMQSubscriber(rProperties);
+        subscriber.listen(((connection, channel) -> new MessageConsumer(messageHandler, connection, channel)),
+                rProperties.getQueueName(),
+                new ArrayList<String>(){{add(queueName);}});
+
+        return subscriber;
+    }
+
     public static Publisher getPublisher(Type type) throws AiravataException {
         RabbitMQProperties rProperties = getProperties();
         Publisher publiser = null;
@@ -88,6 +101,12 @@ public class MessagingFactory {
         }
 
         return publiser;
+    }
+
+    public static Publisher getDBEventPublisher(String routingKey) throws AiravataException {
+        RabbitMQProperties rProperties = getProperties();
+        rProperties.setExchangeName(DBEventManagerConstants.DB_EVENT_EXCHANGE_NAME);
+        return new RabbitMQPublisher(rProperties, routingKey);
     }
 
     private static Publisher getExperimentPublisher(RabbitMQProperties rProperties) throws AiravataException {
