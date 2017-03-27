@@ -87,7 +87,7 @@ public class CredentialsDAO extends ParentDAO {
     public void addCredentials(String gatewayId, Credential credential, Connection connection)
             throws CredentialStoreException {
 
-        String sql = "INSERT INTO CREDENTIALS VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO CREDENTIALS (GATEWAY_ID, TOKEN_ID, BLOB, PORTAL_USER_ID, TIME_PERSISTED, DESCRIPTION, CREDENTIAL_OWNER_TYPE) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement preparedStatement = null;
 
