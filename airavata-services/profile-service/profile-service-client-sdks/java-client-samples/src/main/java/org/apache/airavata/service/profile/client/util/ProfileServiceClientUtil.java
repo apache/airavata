@@ -34,9 +34,9 @@ public class ProfileServiceClientUtil {
         return properties.getProperty(PROFILE_SERVICE_SERVER_HOST);
     }
 
-    public static String getProfileServiceServerPort() throws Exception {
+    public static int getProfileServiceServerPort() throws Exception {
         validateSuccessfullPropertyLoad();
-        return properties.getProperty(PROFILE_SERVICE_SERVER_PORT);
+        return Integer.parseInt(properties.getProperty(PROFILE_SERVICE_SERVER_PORT));
     }
 
     private static void validateSuccessfullPropertyLoad() throws Exception {
