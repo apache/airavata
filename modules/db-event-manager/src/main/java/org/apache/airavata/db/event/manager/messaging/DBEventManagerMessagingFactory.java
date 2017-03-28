@@ -31,8 +31,8 @@ public class DBEventManagerMessagingFactory {
         return dbEventSubscriber;
     }
 
-    public static Publisher getDBEventPublisher(String queueName) throws AiravataException {
-        return MessagingFactory.getDBEventPublisher(queueName);
+    public static Publisher getDBEventPublisher(String routingKey) throws AiravataException {
+        return MessagingFactory.getDBEventPublisher(routingKey);
     }
 
 }
