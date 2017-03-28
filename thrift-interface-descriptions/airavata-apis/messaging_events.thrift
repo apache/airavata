@@ -42,7 +42,8 @@ enum MessageType {
     JOB,
     LAUNCHPROCESS,
     TERMINATEPROCESS,
-    PROCESSOUTPUT
+    PROCESSOUTPUT,
+    DB_EVENT
 }
 
 struct ExperimentStatusChangeEvent {
