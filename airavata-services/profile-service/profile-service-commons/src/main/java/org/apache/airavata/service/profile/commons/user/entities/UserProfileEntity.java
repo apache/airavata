@@ -38,7 +38,7 @@ public class UserProfileEntity {
     private String orginationAffiliation;
     private Date creationTime;
     private Date lastAccessTime;
-    private long validUntil;
+    private Date validUntil;
     private String state;
     private String comments;
     private List<String> labeledURI;
@@ -184,11 +184,11 @@ public class UserProfileEntity {
     }
 
     @Column(name = "VALID_UNTIL")
-    public long getValidUntil() {
+    public Date getValidUntil() {
         return validUntil;
     }
 
-    public void setValidUntil(long validUntil) {
+    public void setValidUntil(Date validUntil) {
         this.validUntil = validUntil;
     }
 
@@ -241,7 +241,8 @@ public class UserProfileEntity {
         this.timeZone = timeZone;
     }
 
-    @OneToOne(targetEntity = NSFDemographicsEntity.class, cascade = CascadeType.ALL, mappedBy = "userProfile", fetch = FetchType.EAGER)
+    @OneToOne(targetEntity = NSFDemographicsEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "userProfile", fetch = FetchType.EAGER)
     public NSFDemographicsEntity getNsfDemographics() {
         return nsfDemographics;
     }
