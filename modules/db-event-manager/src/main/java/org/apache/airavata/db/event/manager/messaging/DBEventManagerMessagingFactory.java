@@ -18,6 +18,11 @@ public class DBEventManagerMessagingFactory {
 
     private static Subscriber dbEventSubscriber;
 
+    /**
+     * Get DB Event subscriber
+     * @return
+     * @throws AiravataException
+     */
     public static Subscriber getDBEventSubscriber() throws AiravataException {
         if(null != dbEventSubscriber){
             synchronized (dbEventSubscriber){
@@ -31,7 +36,14 @@ public class DBEventManagerMessagingFactory {
         return dbEventSubscriber;
     }
 
+    /**
+     * Get DB Event publisher based on routing key
+     * @param routingKey
+     * @return
+     * @throws AiravataException
+     */
     public static Publisher getDBEventPublisher(String routingKey) throws AiravataException {
+        log.info("Creating DB Event Publisher for routing key : " + routingKey);
         return MessagingFactory.getDBEventPublisher(routingKey);
     }
 
