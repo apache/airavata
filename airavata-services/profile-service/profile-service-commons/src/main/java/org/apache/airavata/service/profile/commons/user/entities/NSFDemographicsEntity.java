@@ -94,4 +94,16 @@ public class NSFDemographicsEntity {
     public void setUserProfile(UserProfileEntity userProfile) {
         this.userProfile = userProfile;
     }
+
+    @Override
+    public String toString() {
+        return "NSFDemographicsEntity{" +
+                "airavataInternalUserId='" + airavataInternalUserId + '\'' +
+                ", gender='" + gender + '\'' +
+                ", ethnicities=" + ethnicities +
+                ", races=" + races +
+                ", disabilities=" + disabilities +
+                ", userProfile=" + userProfile +
+                '}';
+    }
 }
