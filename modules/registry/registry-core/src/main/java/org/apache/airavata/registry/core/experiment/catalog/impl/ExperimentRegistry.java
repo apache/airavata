@@ -630,10 +630,14 @@ public class ExperimentRegistry {
             if (experimentOutputs != null && !experimentOutputs.isEmpty()) {
                 updateExpOutputs(experimentOutputs, expId);
             }
-            ExperimentStatus experimentStatus = experiment.getExperimentStatus().get(0);
-            if (experimentStatus != null) {
-                updateExperimentStatus(experimentStatus, expId);
+
+            List<ExperimentStatus> experimentStatuses = experiment.getExperimentStatus();
+            if (experimentStatuses != null && experimentStatuses.size() > 0) {
+                if (experimentStatuses.get(0) != null) {
+                    updateExperimentStatus(experimentStatuses.get(0), expId);
+                }
             }
+
             List<ErrorModel> errors = experiment.getErrors();
             if (errors != null && !errors.isEmpty()) {
                 for (ErrorModel errror : errors) {
