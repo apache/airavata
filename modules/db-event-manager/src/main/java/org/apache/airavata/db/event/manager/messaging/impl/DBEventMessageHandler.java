@@ -15,6 +15,8 @@ import org.apache.airavata.model.messaging.event.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -73,6 +75,7 @@ public class DBEventMessageHandler implements MessageHandler {
     private String getRoutingKeyFromList(final List<String> subscribers){
         StringBuilder sb = new StringBuilder();
         String separator = ".";
+        Collections.sort(subscribers);
         for(String subscriber : subscribers){
             sb.append(subscriber).append(separator);
         }
