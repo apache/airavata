@@ -34,6 +34,18 @@ public class DBEventManagerConstants {
     }
 
     /**
+     * Return routing key which is capable of consuming any message published with queueName in it.
+     * For example: let' say queueName is 'hello' function will return #.hello.#
+     * This queue can consume message with any of these routing keys 'q1.12.hello.q3', 'q1.hello', 'hello.q2' or just 'hello'
+     * It just need to have 'hello' in it.
+     * @param queueName
+     * @return
+     */
+    public static String getRoutingKey(String queueName) {
+        return "#." + queueName + ".#";
+    }
+
+    /**
      * Get the queue-name of the service, given service-name as string
      * @param dbEventService
      * @return
