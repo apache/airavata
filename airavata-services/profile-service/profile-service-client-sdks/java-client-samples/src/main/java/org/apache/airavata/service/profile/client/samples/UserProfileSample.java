@@ -39,13 +39,13 @@ public class UserProfileSample {
         userProfile.setUserId("test-user-001");
         userProfile.setGatewayId("test-gateway-001");
 
-        List<String> emails = new ArrayList<>();
-        emails.add("test-user-001@domain1.com");
-        emails.add("test-user-001@domain2.com");
-        userProfile.setEmails(emails);
+        userProfile.addToEmails("test-user-001@domain1.com");
+        userProfile.addToEmails("test-user-002@domain1.com");
 
         userProfile.setUserName("test-username-001");
-        userProfile.setValidUntil(new Date().toString());
+        userProfile.setCreationTime(Long.toString(new Date().getTime()));
+        userProfile.setLastAccessTime(Long.toString(new Date().getTime()));
+        userProfile.setValidUntil(Long.toString(new Date().getTime()));
         userProfile.setState(Status.ACTIVE);
         userProfile.setNsfDemographics(getNSFDemographics());
 

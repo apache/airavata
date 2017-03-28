@@ -89,6 +89,7 @@ public class UserProfileEntity {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="USER_PROFILE_EMAIL", joinColumns = @JoinColumn(name="AIRAVATA_INTERNAL_USER_ID"))
+    @Column(name = "EMAILS")
     public List<String> getEmails() {
         return emails;
     }
@@ -117,6 +118,7 @@ public class UserProfileEntity {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="USER_PROFILE_PHONE", joinColumns = @JoinColumn(name="AIRAVATA_INTERNAL_USER_ID"))
+    @Column(name = "PHONES")
     public List<String> getPhones() {
         return phones;
     }
@@ -136,6 +138,7 @@ public class UserProfileEntity {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="USER_PROFILE_NATIONALITY", joinColumns = @JoinColumn(name="AIRAVATA_INTERNAL_USER_ID"))
+    @Column(name = "NATIONALITY")
     public List<String> getNationality() {
         return nationality;
     }
@@ -210,6 +213,7 @@ public class UserProfileEntity {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="USER_PROFILE_LABELED_URI", joinColumns = @JoinColumn(name="AIRAVATA_INTERNAL_USER_ID"))
+    @Column(name = "LABELED_URI")
     public List<String> getLabeledURI() {
         return labeledURI;
     }

@@ -49,6 +49,7 @@ public abstract class AbstractRepository<T, E, Id> {
     public T update(T t) {
         Mapper mapper = ObjectMapperSingleton.getInstance();
         E entity = mapper.map(t, dbEntityGenericClass);
+        logger.info(entity.toString());
         E persistedCopy = JPAUtils.execute(entityManager -> entityManager.merge(entity));
         return mapper.map(persistedCopy, thriftGenericClass);
     }
