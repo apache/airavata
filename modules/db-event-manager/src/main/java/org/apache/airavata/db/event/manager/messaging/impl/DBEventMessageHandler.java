@@ -2,6 +2,7 @@ package org.apache.airavata.db.event.manager.messaging.impl;
 
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.db.event.manager.messaging.DBEventManagerException;
 import org.apache.airavata.db.event.manager.messaging.DBEventManagerMessagingFactory;
 import org.apache.airavata.db.event.manager.utils.DbEventManagerZkUtils;
 import org.apache.airavata.messaging.core.MessageContext;
@@ -27,7 +28,7 @@ public class DBEventMessageHandler implements MessageHandler {
     @Override
     public void onMessage(MessageContext messageContext) {
 
-        log.info("Incoming DB event message");
+        log.info("Incoming DB event message. Message Id : " + messageContext.getMessageId());
 
         try {
 
@@ -46,16 +47,38 @@ public class DBEventMessageHandler implements MessageHandler {
 
                 case PUBLISHER:
                     List<String> subscribers = DbEventManagerZkUtils.getSubscribersForPublisher(DbEventManagerZkUtils.getCuratorClient(), dbEventMessage.getPublisherService());
-                    for (String subscriber : subscribers){
-                        log.info("Publishing " + dbEventMessage.getPublisherService() + " db event to " + subscriber);
-                        MessageContext messageCtx = new MessageContext(dBEventMessageContext.getPublisher().getPublisherContext(), MessageType.DB_EVENT, "", "");
-                        messageCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-                        DBEventManagerMessagingFactory.getDBEventPublisher(subscriber).publish(messageCtx);
+                    if(subscribers.isEmpty()){
+                        log.error("No Subscribers registered for the service");
+                        throw new DBEventManagerException("No Subscribers registered for the service");
                     }
+                    String routingKey = getRoutingKeyFromList(subscribers);
+                    log.info("Publishing " + dbEventMessage.getPublisherService() + " db event to " + subscribers.toString());
+                    MessageContext messageCtx = new MessageContext(dBEventMessageContext.getPublisher().getPublisherContext(), MessageType.DB_EVENT, "", "");
+                    messageCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+                    DBEventManagerMessagingFactory.getDBEventPublisher(routingKey).publish(messageCtx);
+
+//                    for (String subscriber : subscribers){
+//                        log.info("Publishing " + dbEventMessage.getPublisherService() + " db event to " + subscriber);
+//                        MessageContext messageCtx = new MessageContext(dBEventMessageContext.getPublisher().getPublisherContext(), MessageType.DB_EVENT, "", "");
+//                        messageCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+//                        DBEventManagerMessagingFactory.getDBEventPublisher(subscriber).publish(messageCtx);
+//                    }
             }
 
         } catch (Exception e) {
             log.error("Error processing message.", e);
         }
+    }
+
+    private String getRoutingKeyFromList(final List<String> subscribers){
+        StringBuilder sb = new StringBuilder();
+        String separator = ".";
+        for(String subscriber : subscribers){
+            sb.append(subscriber).append(separator);
+        }
+        if(sb.length()>0){
+            return sb.substring(0, sb.length()-1);
+        }
+        return null;
     }
 }
