@@ -34,7 +34,9 @@ public enum EntityType implements org.apache.thrift.TEnum {
   GROUP(2),
   PROJECT(3),
   EXPERIMENT(4),
-  APPLICATION(5);
+  APPLICATION(5),
+  SHARING(6),
+  REGISTRY(7);
 
   private final int value;
 
@@ -67,6 +69,10 @@ public enum EntityType implements org.apache.thrift.TEnum {
         return EXPERIMENT;
       case 5:
         return APPLICATION;
+      case 6:
+        return SHARING;
+      case 7:
+        return REGISTRY;
       default:
         return null;
     }

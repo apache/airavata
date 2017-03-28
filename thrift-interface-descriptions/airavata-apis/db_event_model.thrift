@@ -38,7 +38,9 @@ enum EntityType {
     GROUP,
     PROJECT,
     EXPERIMENT,
-    APPLICATION
+    APPLICATION,
+    SHARING,
+    REGISTRY
 }
 
 // type of db-replication event
