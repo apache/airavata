@@ -40,7 +40,7 @@ public class ProfileServiceClientUtil {
     }
 
     private static void validateSuccessfullPropertyLoad() throws Exception {
-        if (propertyLoadException == null) {
+        if (propertyLoadException != null) {
             throw new Exception(propertyLoadException.getMessage(), propertyLoadException);
         }
     }
