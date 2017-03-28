@@ -39,6 +39,11 @@
             <artifactId>profile-tenant-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-messaging-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     
 </project>

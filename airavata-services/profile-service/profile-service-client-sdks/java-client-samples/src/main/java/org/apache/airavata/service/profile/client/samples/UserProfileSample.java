@@ -17,6 +17,8 @@ public class UserProfileSample {
 
     private static final Logger logger = LoggerFactory.getLogger(UserProfileSample.class);
     private static UserProfileService.Client userProfileClient;
+    private static String testUserId = null;
+    private static String testGatewayId = "test-gateway-001";
 
     public static void main(String[] args) throws Exception {
         try {
@@ -24,7 +26,17 @@ public class UserProfileSample {
             int profileServiceServerPort = ProfileServiceClientUtil.getProfileServiceServerPort();
 
             userProfileClient = ProfileServiceClientFactory.createUserProfileServiceClient(profileServiceServerHost, profileServiceServerPort);
-            userProfileClient.addUserProfile(getUserProfile());
+
+            // test add-user-profile
+            testUserId = userProfileClient.addUserProfile(getUserProfile());     // (1) run this only once
+
+            // test find-user-profile
+            UserProfile userProfile = userProfileClient.getUserProfileById(testUserId, testGatewayId);
+            assert (userProfile != null) : "Could not find user with userId: " + testUserId + ", and gatewayID: " + testGatewayId;
+            System.out.println("UserProfile: " + userProfile);
+
+
+
 
         } catch (Exception ex) {
             logger.error("UserProfile client-sample Exception: " + ex, ex);
@@ -36,7 +48,7 @@ public class UserProfileSample {
         userProfile.setUserModelVersion("model-001");
         userProfile.setAiravataInternalUserId("test-user-internal-001");
         userProfile.setUserId("test-user-001");
-        userProfile.setGatewayId("test-gateway-001");
+        userProfile.setGatewayId(testGatewayId);
         userProfile.addToEmails("test-user-001@domain1.com");
         userProfile.addToEmails("test-user-002@domain1.com");
         userProfile.setUserName("test-username-001");

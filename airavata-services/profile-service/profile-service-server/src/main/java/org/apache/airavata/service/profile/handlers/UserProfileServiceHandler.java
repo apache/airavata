@@ -20,11 +20,14 @@
 */
 package org.apache.airavata.service.profile.handlers;
 
+import org.apache.airavata.model.dbevent.CrudType;
+import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.service.profile.commons.user.entities.UserProfileEntity;
 import org.apache.airavata.service.profile.user.core.repositories.UserProfileRepository;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
+import org.apache.airavata.service.profile.utils.ProfileServiceUtils;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,8 +48,14 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
     public String addUserProfile(UserProfile userProfile) throws UserProfileServiceException {
         try{
             userProfileRepository.create(userProfile);
-            if (null != userProfile)
+            if (null != userProfile) {
+                // replicate userProfile at end-places
+                ProfileServiceUtils.getDbEventPublisher().publish(
+                        ProfileServiceUtils.getDBEventMessageContext(EntityType.USER_PROFILE, CrudType.CREATE, userProfile)
+                );
+                // return userId
                 return userProfile.getUserId();
+            }
             return null;
         } catch (Exception e){
             logger.error("Error while creating user profile", e);
