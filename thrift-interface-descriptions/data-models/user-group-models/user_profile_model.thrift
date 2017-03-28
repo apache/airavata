@@ -100,11 +100,12 @@ enum disability {
  *
 */
 struct NSFDemographics {
-    1: optional string gender,
-    2: optional USCitizenship usCitizenship,
-    3: optional list<ethnicity> ethnicities,
-    4: optional list<race> races,
-    5: optional list<disability> disabilities
+    1: required string airavataInternalUserId = airavata_commons.DEFAULT_ID,
+    2: optional string gender,
+    3: optional USCitizenship usCitizenship,
+    4: optional list<ethnicity> ethnicities,
+    5: optional list<race> races,
+    6: optional list<disability> disabilities
 }
 
 /**
@@ -173,10 +174,9 @@ struct UserProfile {
     10: optional list<string> nationality,
     11: optional string homeOrganization,
     12: optional string orginationAffiliation,
-    // TODO: shouldn't these time fields be of type i64?
-    13: required string creationTime,
-    14: required string lastAccessTime,
-    15: required string validUntil,
+    13: required i64 creationTime,
+    14: required i64 lastAccessTime,
+    15: required i64 validUntil,
     16: required Status State,
     17: optional string comments,
     18: optional list<string> labeledURI,
