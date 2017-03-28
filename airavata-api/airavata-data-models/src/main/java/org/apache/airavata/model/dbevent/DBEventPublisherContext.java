@@ -56,7 +56,8 @@ public class DBEventPublisherContext implements org.apache.thrift.TBase<DBEventP
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("DBEventPublisherContext");
 
   private static final org.apache.thrift.protocol.TField CRUD_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("crudType", org.apache.thrift.protocol.TType.I32, (short)1);
-  private static final org.apache.thrift.protocol.TField DATA_MODEL_FIELD_DESC = new org.apache.thrift.protocol.TField("dataModel", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField ENTITY_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("entityType", org.apache.thrift.protocol.TType.I32, (short)2);
+  private static final org.apache.thrift.protocol.TField ENTITY_DATA_MODEL_FIELD_DESC = new org.apache.thrift.protocol.TField("entityDataModel", org.apache.thrift.protocol.TType.STRING, (short)3);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -65,7 +66,8 @@ public class DBEventPublisherContext implements org.apache.thrift.TBase<DBEventP
   }
 
   private CrudType crudType; // required
-  private ByteBuffer dataModel; // required
+  private EntityType entityType; // required
+  private ByteBuffer entityDataModel; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -74,7 +76,12 @@ public class DBEventPublisherContext implements org.apache.thrift.TBase<DBEventP
      * @see CrudType
      */
     CRUD_TYPE((short)1, "crudType"),
-    DATA_MODEL((short)2, "dataModel");
+    /**
+     * 
+     * @see EntityType
+     */
+    ENTITY_TYPE((short)2, "entityType"),
+    ENTITY_DATA_MODEL((short)3, "entityDataModel");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -91,8 +98,10 @@ public class DBEventPublisherContext implements org.apache.thrift.TBase<DBEventP
       switch(fieldId) {
         case 1: // CRUD_TYPE
           return CRUD_TYPE;
-        case 2: // DATA_MODEL
-          return DATA_MODEL;
+        case 2: // ENTITY_TYPE
+          return ENTITY_TYPE;
+        case 3: // ENTITY_DATA_MODEL
+          return ENTITY_DATA_MODEL;
         default:
           return null;
       }
@@ -138,7 +147,9 @@ public class DBEventPublisherContext implements org.apache.thrift.TBase<DBEventP
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.CRUD_TYPE, new org.apache.thrift.meta_data.FieldMetaData("crudType", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, CrudType.class)));
-    tmpMap.put(_Fields.DATA_MODEL, new org.apache.thrift.meta_data.FieldMetaData("dataModel", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.ENTITY_TYPE, new org.apache.thrift.meta_data.FieldMetaData("entityType", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, EntityType.class)));
+    tmpMap.put(_Fields.ENTITY_DATA_MODEL, new org.apache.thrift.meta_data.FieldMetaData("entityDataModel", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , true)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(DBEventPublisherContext.class, metaDataMap);
@@ -149,11 +160,13 @@ public class DBEventPublisherContext implements org.apache.thrift.TBase<DBEventP
 
   public DBEventPublisherContext(
     CrudType crudType,
-    ByteBuffer dataModel)
+    EntityType entityType,
+    ByteBuffer entityDataModel)
   {
     this();
     this.crudType = crudType;
-    this.dataModel = org.apache.thrift.TBaseHelper.copyBinary(dataModel);
+    this.entityType = entityType;
+    this.entityDataModel = org.apache.thrift.TBaseHelper.copyBinary(entityDataModel);
   }
 
   /**
@@ -163,8 +176,11 @@ public class DBEventPublisherContext implements org.apache.thrift.TBase<DBEventP
     if (other.isSetCrudType()) {
       this.crudType = other.crudType;
     }
-    if (other.isSetDataModel()) {
-      this.dataModel = org.apache.thrift.TBaseHelper.copyBinary(other.dataModel);
+    if (other.isSetEntityType()) {
+      this.entityType = other.entityType;
+    }
+    if (other.isSetEntityDataModel()) {
+      this.entityDataModel = org.apache.thrift.TBaseHelper.copyBinary(other.entityDataModel);
     }
   }
 
@@ -175,7 +191,8 @@ public class DBEventPublisherContext implements org.apache.thrift.TBase<DBEventP
   @Override
   public void clear() {
     this.crudType = null;
-    this.dataModel = null;
+    this.entityType = null;
+    this.entityDataModel = null;
   }
 
   /**
@@ -209,35 +226,66 @@ public class DBEventPublisherContext implements org.apache.thrift.TBase<DBEventP
     }
   }
 
-  public byte[] getDataModel() {
-    setDataModel(org.apache.thrift.TBaseHelper.rightSize(dataModel));
-    return dataModel == null ? null : dataModel.array();
+  /**
+   * 
+   * @see EntityType
+   */
+  public EntityType getEntityType() {
+    return this.entityType;
   }
 
-  public ByteBuffer bufferForDataModel() {
-    return org.apache.thrift.TBaseHelper.copyBinary(dataModel);
+  /**
+   * 
+   * @see EntityType
+   */
+  public void setEntityType(EntityType entityType) {
+    this.entityType = entityType;
   }
 
-  public void setDataModel(byte[] dataModel) {
-    this.dataModel = dataModel == null ? (ByteBuffer)null : ByteBuffer.wrap(Arrays.copyOf(dataModel, dataModel.length));
+  public void unsetEntityType() {
+    this.entityType = null;
   }
 
-  public void setDataModel(ByteBuffer dataModel) {
-    this.dataModel = org.apache.thrift.TBaseHelper.copyBinary(dataModel);
+  /** Returns true if field entityType is set (has been assigned a value) and false otherwise */
+  public boolean isSetEntityType() {
+    return this.entityType != null;
   }
 
-  public void unsetDataModel() {
-    this.dataModel = null;
-  }
-
-  /** Returns true if field dataModel is set (has been assigned a value) and false otherwise */
-  public boolean isSetDataModel() {
-    return this.dataModel != null;
-  }
-
-  public void setDataModelIsSet(boolean value) {
+  public void setEntityTypeIsSet(boolean value) {
     if (!value) {
-      this.dataModel = null;
+      this.entityType = null;
+    }
+  }
+
+  public byte[] getEntityDataModel() {
+    setEntityDataModel(org.apache.thrift.TBaseHelper.rightSize(entityDataModel));
+    return entityDataModel == null ? null : entityDataModel.array();
+  }
+
+  public ByteBuffer bufferForEntityDataModel() {
+    return org.apache.thrift.TBaseHelper.copyBinary(entityDataModel);
+  }
+
+  public void setEntityDataModel(byte[] entityDataModel) {
+    this.entityDataModel = entityDataModel == null ? (ByteBuffer)null : ByteBuffer.wrap(Arrays.copyOf(entityDataModel, entityDataModel.length));
+  }
+
+  public void setEntityDataModel(ByteBuffer entityDataModel) {
+    this.entityDataModel = org.apache.thrift.TBaseHelper.copyBinary(entityDataModel);
+  }
+
+  public void unsetEntityDataModel() {
+    this.entityDataModel = null;
+  }
+
+  /** Returns true if field entityDataModel is set (has been assigned a value) and false otherwise */
+  public boolean isSetEntityDataModel() {
+    return this.entityDataModel != null;
+  }
+
+  public void setEntityDataModelIsSet(boolean value) {
+    if (!value) {
+      this.entityDataModel = null;
     }
   }
 
@@ -251,11 +299,19 @@ public class DBEventPublisherContext implements org.apache.thrift.TBase<DBEventP
       }
       break;
 
-    case DATA_MODEL:
+    case ENTITY_TYPE:
       if (value == null) {
-        unsetDataModel();
+        unsetEntityType();
       } else {
-        setDataModel((ByteBuffer)value);
+        setEntityType((EntityType)value);
+      }
+      break;
+
+    case ENTITY_DATA_MODEL:
+      if (value == null) {
+        unsetEntityDataModel();
+      } else {
+        setEntityDataModel((ByteBuffer)value);
       }
       break;
 
@@ -267,8 +323,11 @@ public class DBEventPublisherContext implements org.apache.thrift.TBase<DBEventP
     case CRUD_TYPE:
       return getCrudType();
 
-    case DATA_MODEL:
-      return getDataModel();
+    case ENTITY_TYPE:
+      return getEntityType();
+
+    case ENTITY_DATA_MODEL:
+      return getEntityDataModel();
 
     }
     throw new IllegalStateException();
@@ -283,8 +342,10 @@ public class DBEventPublisherContext implements org.apache.thrift.TBase<DBEventP
     switch (field) {
     case CRUD_TYPE:
       return isSetCrudType();
-    case DATA_MODEL:
-      return isSetDataModel();
+    case ENTITY_TYPE:
+      return isSetEntityType();
+    case ENTITY_DATA_MODEL:
+      return isSetEntityDataModel();
     }
     throw new IllegalStateException();
   }
@@ -311,12 +372,21 @@ public class DBEventPublisherContext implements org.apache.thrift.TBase<DBEventP
         return false;
     }
 
-    boolean this_present_dataModel = true && this.isSetDataModel();
-    boolean that_present_dataModel = true && that.isSetDataModel();
-    if (this_present_dataModel || that_present_dataModel) {
-      if (!(this_present_dataModel && that_present_dataModel))
+    boolean this_present_entityType = true && this.isSetEntityType();
+    boolean that_present_entityType = true && that.isSetEntityType();
+    if (this_present_entityType || that_present_entityType) {
+      if (!(this_present_entityType && that_present_entityType))
         return false;
-      if (!this.dataModel.equals(that.dataModel))
+      if (!this.entityType.equals(that.entityType))
+        return false;
+    }
+
+    boolean this_present_entityDataModel = true && this.isSetEntityDataModel();
+    boolean that_present_entityDataModel = true && that.isSetEntityDataModel();
+    if (this_present_entityDataModel || that_present_entityDataModel) {
+      if (!(this_present_entityDataModel && that_present_entityDataModel))
+        return false;
+      if (!this.entityDataModel.equals(that.entityDataModel))
         return false;
     }
 
@@ -332,10 +402,15 @@ public class DBEventPublisherContext implements org.apache.thrift.TBase<DBEventP
     if (present_crudType)
       list.add(crudType.getValue());
 
-    boolean present_dataModel = true && (isSetDataModel());
-    list.add(present_dataModel);
-    if (present_dataModel)
-      list.add(dataModel);
+    boolean present_entityType = true && (isSetEntityType());
+    list.add(present_entityType);
+    if (present_entityType)
+      list.add(entityType.getValue());
+
+    boolean present_entityDataModel = true && (isSetEntityDataModel());
+    list.add(present_entityDataModel);
+    if (present_entityDataModel)
+      list.add(entityDataModel);
 
     return list.hashCode();
   }
@@ -358,12 +433,22 @@ public class DBEventPublisherContext implements org.apache.thrift.TBase<DBEventP
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetDataModel()).compareTo(other.isSetDataModel());
+    lastComparison = Boolean.valueOf(isSetEntityType()).compareTo(other.isSetEntityType());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetDataModel()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dataModel, other.dataModel);
+    if (isSetEntityType()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.entityType, other.entityType);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetEntityDataModel()).compareTo(other.isSetEntityDataModel());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetEntityDataModel()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.entityDataModel, other.entityDataModel);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -396,11 +481,19 @@ public class DBEventPublisherContext implements org.apache.thrift.TBase<DBEventP
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("dataModel:");
-    if (this.dataModel == null) {
+    sb.append("entityType:");
+    if (this.entityType == null) {
       sb.append("null");
     } else {
-      org.apache.thrift.TBaseHelper.toString(this.dataModel, sb);
+      sb.append(this.entityType);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("entityDataModel:");
+    if (this.entityDataModel == null) {
+      sb.append("null");
+    } else {
+      org.apache.thrift.TBaseHelper.toString(this.entityDataModel, sb);
     }
     first = false;
     sb.append(")");
@@ -413,8 +506,12 @@ public class DBEventPublisherContext implements org.apache.thrift.TBase<DBEventP
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'crudType' is unset! Struct:" + toString());
     }
 
-    if (!isSetDataModel()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'dataModel' is unset! Struct:" + toString());
+    if (!isSetEntityType()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'entityType' is unset! Struct:" + toString());
+    }
+
+    if (!isSetEntityDataModel()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'entityDataModel' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -462,10 +559,18 @@ public class DBEventPublisherContext implements org.apache.thrift.TBase<DBEventP
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // DATA_MODEL
+          case 2: // ENTITY_TYPE
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.entityType = org.apache.airavata.model.dbevent.EntityType.findByValue(iprot.readI32());
+              struct.setEntityTypeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 3: // ENTITY_DATA_MODEL
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.dataModel = iprot.readBinary();
-              struct.setDataModelIsSet(true);
+              struct.entityDataModel = iprot.readBinary();
+              struct.setEntityDataModelIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -488,9 +593,14 @@ public class DBEventPublisherContext implements org.apache.thrift.TBase<DBEventP
         oprot.writeI32(struct.crudType.getValue());
         oprot.writeFieldEnd();
       }
-      if (struct.dataModel != null) {
-        oprot.writeFieldBegin(DATA_MODEL_FIELD_DESC);
-        oprot.writeBinary(struct.dataModel);
+      if (struct.entityType != null) {
+        oprot.writeFieldBegin(ENTITY_TYPE_FIELD_DESC);
+        oprot.writeI32(struct.entityType.getValue());
+        oprot.writeFieldEnd();
+      }
+      if (struct.entityDataModel != null) {
+        oprot.writeFieldBegin(ENTITY_DATA_MODEL_FIELD_DESC);
+        oprot.writeBinary(struct.entityDataModel);
         oprot.writeFieldEnd();
       }
       oprot.writeFieldStop();
@@ -511,7 +621,8 @@ public class DBEventPublisherContext implements org.apache.thrift.TBase<DBEventP
     public void write(org.apache.thrift.protocol.TProtocol prot, DBEventPublisherContext struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeI32(struct.crudType.getValue());
-      oprot.writeBinary(struct.dataModel);
+      oprot.writeI32(struct.entityType.getValue());
+      oprot.writeBinary(struct.entityDataModel);
     }
 
     @Override
@@ -519,8 +630,10 @@ public class DBEventPublisherContext implements org.apache.thrift.TBase<DBEventP
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.crudType = org.apache.airavata.model.dbevent.CrudType.findByValue(iprot.readI32());
       struct.setCrudTypeIsSet(true);
-      struct.dataModel = iprot.readBinary();
-      struct.setDataModelIsSet(true);
+      struct.entityType = org.apache.airavata.model.dbevent.EntityType.findByValue(iprot.readI32());
+      struct.setEntityTypeIsSet(true);
+      struct.entityDataModel = iprot.readBinary();
+      struct.setEntityDataModelIsSet(true);
     }
   }
 
