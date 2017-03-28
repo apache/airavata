@@ -9,21 +9,6 @@ public class DBEventManagerConstants {
     private final static String QUEUE_SUFFIX = ".queue";
     public final static String DB_EVENT_EXCHANGE_NAME = "db.event.exchange";
 
-    enum DBEventService{
-
-        USER_PROFILE("user.profile"),
-        SHARING("sharing"),
-        REGISTRY("registry");
-
-        private final String name;
-        DBEventService(String name) {
-            this.name = name;
-        }
-        public String toString() {
-            return this.name;
-        }
-    }
-
     /**
      * Get the queue-name of the service, given service-name as enum
      * @param dBEventService
