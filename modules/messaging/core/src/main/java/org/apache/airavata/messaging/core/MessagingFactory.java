@@ -69,15 +69,15 @@ public class MessagingFactory {
     }
 
 
-    public static Subscriber getDBEventSubscriber(final MessageHandler messageHandler, String queueName) throws AiravataException {
+    public static Subscriber getDBEventSubscriber(final MessageHandler messageHandler, String serviceName) throws AiravataException {
         RabbitMQProperties rProperties = getProperties();
         rProperties.setExchangeName(DBEventManagerConstants.DB_EVENT_EXCHANGE_NAME)
-                .setQueueName(queueName)
+                .setQueueName(DBEventManagerConstants.getQueueName(serviceName))
                 .setAutoAck(false);
         Subscriber subscriber = new RabbitMQSubscriber(rProperties);
         subscriber.listen(((connection, channel) -> new MessageConsumer(messageHandler, connection, channel)),
                 rProperties.getQueueName(),
-                new ArrayList<String>(){{add(DBEventManagerConstants.getRoutingKey(queueName));}});
+                new ArrayList<String>(){{add(DBEventManagerConstants.getRoutingKey(serviceName));}});
 
         return subscriber;
     }
