@@ -31,7 +31,7 @@ public class UserProfileSample {
             userProfileClient = ProfileServiceClientFactory.createUserProfileServiceClient(profileServiceServerHost, profileServiceServerPort);
 
             // test add-user-profile
-            testUserId = userProfileClient.addUserProfile(getUserProfile());     // (1) run this only once
+            testUserId = userProfileClient.addUserProfile(getUserProfile(null));     // (1) run this only once
             assert (testUserId != null) : "User creation failed. Null userId returned!";
             System.out.println("User created with userId: " + testUserId);
 
@@ -41,7 +41,7 @@ public class UserProfileSample {
             System.out.println("UserProfile: " + userProfile);
 
             // test update-user-profile : update name
-            userProfile = getUserProfile();
+            userProfile = getUserProfile(testUserId);
             String newUserName = userProfile.getUserName().replaceAll("username", "username-updated");
             userProfile.setUserName(newUserName);
             boolean updateSuccess = userProfileClient.updateUserProfile(userProfile);
@@ -75,10 +75,13 @@ public class UserProfileSample {
         }
     }
 
-    private static UserProfile getUserProfile() {
+    private static UserProfile getUserProfile(String userId) {
         // get random value for userId
         int userIdValue = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
 
+        if (userId != null) {
+            userIdValue = Integer.parseInt(userId.replaceAll("test-user-", ""));
+        }
         // construct userProfile object
         UserProfile userProfile = new UserProfile();
         userProfile.setUserModelVersion("model-" + userIdValue);
