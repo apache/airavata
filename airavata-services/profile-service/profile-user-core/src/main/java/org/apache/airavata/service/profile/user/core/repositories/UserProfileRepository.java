@@ -84,7 +84,6 @@ public class UserProfileRepository extends AbstractRepository<UserProfile, UserP
         if (resultList != null && resultList.size() > 0)
             userProfile =  resultList.get(0);
 
-
         return userProfile;
     }
 
