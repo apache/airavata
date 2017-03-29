@@ -68,8 +68,8 @@ public class UserProfileSample {
             // test-check-user-exist
             boolean userExists = userProfileClient.doesUserExist(newUserName, testGatewayId);
             assert (!userExists) : "User should not exist, but it does.";
-
-
+            System.out.println("User was deleted, hence does not exist!");
+            System.out.println("*** DONE ***");
         } catch (Exception ex) {
             logger.error("UserProfile client-sample Exception: " + ex, ex);
         }

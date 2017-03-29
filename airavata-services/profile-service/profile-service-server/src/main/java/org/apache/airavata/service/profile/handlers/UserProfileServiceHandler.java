@@ -53,7 +53,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
                 // replicate userProfile at end-places
                 ProfileServiceUtils.getDbEventPublisher().publish(
                         ProfileServiceUtils.getDBEventMessageContext(EntityType.USER_PROFILE, CrudType.CREATE, userProfile),
-                        DBEventManagerConstants.DB_EVENT_QUEUE
+                        DBEventManagerConstants.getRoutingKey(DBEventManagerConstants.DB_EVENT_SERVICE)
                 );
                 // return userId
                 return userProfile.getUserId();
