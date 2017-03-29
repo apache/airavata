@@ -6,6 +6,7 @@ import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.messaging.core.Subscriber;
 import org.apache.airavata.model.dbevent.DBEventMessage;
 import org.apache.airavata.model.dbevent.DBEventMessageContext;
 import org.apache.airavata.model.dbevent.DBEventSubscriber;
@@ -25,6 +26,8 @@ public class SharingServiceDBEventMessagingFactory {
 
     private static Publisher dbEventPublisher;
 
+    private static Subscriber sharingServiceDBEventSubscriber;
+
     /**
      * Get publisher for DB Event queue
      * Change access specifier as required
@@ -42,6 +45,19 @@ public class SharingServiceDBEventMessagingFactory {
             }
         }
         return dbEventPublisher;
+    }
+
+    public static Subscriber getDBEventSubscriber() throws AiravataException {
+        if(null != sharingServiceDBEventSubscriber){
+            synchronized (SharingServiceDBEventMessagingFactory.class){
+                if(null != sharingServiceDBEventSubscriber){
+                    log.info("Creating DB Event publisher.....");
+                    sharingServiceDBEventSubscriber = MessagingFactory.getDBEventSubscriber(new SharingServiceDBEventHandler(), DBEventService.SHARING.toString());
+                    log.info("DB Event publisher created");
+                }
+            }
+        }
+        return sharingServiceDBEventSubscriber;
     }
 
     /**
