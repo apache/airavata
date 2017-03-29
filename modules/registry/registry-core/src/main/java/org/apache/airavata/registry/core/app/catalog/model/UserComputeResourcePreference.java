@@ -64,7 +64,10 @@ public class UserComputeResourcePreference {
 
 
     @ManyToOne(cascade= CascadeType.MERGE)
-    @JoinColumn(name = "USER_ID")
+    @JoinColumns({
+        @JoinColumn(name = "USER_ID"),
+        @JoinColumn(name = "GATEWAY_ID")
+    })
     private UserResourceProfile userResouceProfile;
 
     /*User Id should be linked to user profile table once it is finalized and created*/
