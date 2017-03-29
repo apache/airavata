@@ -128,7 +128,8 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
             UserProfile userProfile = userProfileRepository.getUserProfileByNameAndGateWay(userName, gatewayId);
             if(userProfile != null)
                 return userProfile;
-            return null;
+            else
+                throw new Exception("User with userName: " + userName + ", in Gateway: " + gatewayId + ", does not exist.");
         } catch (Exception e) {
             logger.error("Error while retrieving user profile", e);
             UserProfileServiceException exception = new UserProfileServiceException();
