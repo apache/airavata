@@ -43,20 +43,17 @@ public class RabbitMQPublisher implements Publisher {
     private static final Logger log = LoggerFactory.getLogger(RabbitMQPublisher.class);
     private final RabbitMQProperties properties;
     private final Function<MessageContext, String> routingKeySupplier;
-    private final String routingKey;
     private Connection connection;
     private Channel channel;
 
     public RabbitMQPublisher(RabbitMQProperties properties, Function<MessageContext, String> routingKeySupplier) throws AiravataException {
         this.properties = properties;
         this.routingKeySupplier = routingKeySupplier;
-        routingKey = null;
         connect();
     }
 
-    public RabbitMQPublisher(RabbitMQProperties properties, String routingKey) throws AiravataException {
+    public RabbitMQPublisher(RabbitMQProperties properties) throws AiravataException {
         this.properties = properties;
-        this.routingKey = routingKey;
         routingKeySupplier = null;
         connect();
     }
@@ -101,10 +98,30 @@ public class RabbitMQPublisher implements Publisher {
             message.setMessageId(messageContext.getMessageId());
             message.setMessageType(messageContext.getType());
             message.setUpdatedTime(messageContext.getUpdatedTime().getTime());
-            String routingKey = this.routingKey;
-            if(null != routingKey){
-                routingKey = routingKeySupplier.apply(messageContext);
-            }
+            String routingKey = routingKeySupplier.apply(messageContext);
+//            log.info("publish messageId:" + messageContext.getMessageId() + ", messageType:" + messageContext.getType() + ", to routingKey:" + routingKey);
+            byte[] messageBody = ThriftUtils.serializeThriftObject(message);
+            send(messageBody, routingKey);
+        } catch (TException e) {
+            String msg = "Error while deserializing the object";
+            log.error(msg, e);
+            throw new AiravataException(msg, e);
+        } catch (Exception e) {
+            String msg = "Error while sending to rabbitmq";
+            log.error(msg, e);
+            throw new AiravataException(msg, e);
+        }
+    }
+
+    @Override
+    public void publish(MessageContext messageContext, String routingKey) throws AiravataException {
+        try {
+            byte[] body = ThriftUtils.serializeThriftObject(messageContext.getEvent());
+            Message message = new Message();
+            message.setEvent(body);
+            message.setMessageId(messageContext.getMessageId());
+            message.setMessageType(messageContext.getType());
+            message.setUpdatedTime(messageContext.getUpdatedTime().getTime());
 //            log.info("publish messageId:" + messageContext.getMessageId() + ", messageType:" + messageContext.getType() + ", to routingKey:" + routingKey);
             byte[] messageBody = ThriftUtils.serializeThriftObject(message);
             send(messageBody, routingKey);
