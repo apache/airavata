@@ -27,7 +27,7 @@ public class DBEventManagerRunner {
             DBEventManagerMessagingFactory.getDBEventSubscriber();
             log.debug("DB Event manager subscriber is listening");
         } catch (AiravataException e) {
-            e.printStackTrace();
+            log.error("Error starting DB Event Manager.", e);
         }
     }
 
