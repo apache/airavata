@@ -45,7 +45,10 @@ public class UserStoragePreference {
     private String computeResourceCSToken;
 
     @ManyToOne(cascade= CascadeType.MERGE)
-    @JoinColumn(name = "USER_ID")
+    @JoinColumns({
+            @JoinColumn(name = "USER_ID"),
+            @JoinColumn(name = "GATEWAY_ID")
+    })
     private UserResourceProfile userResourceProfile;
 
     public String getUserId() {
