@@ -60,18 +60,21 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                         case CREATE:
                             log.info("Creating user. User Id : " + user.getUserId());
                             sharingRegistryClient.createUser(user);
-
+                            break;
                         case READ:
                             //FIXME: Remove if not required
+                            break;
 
                         case UPDATE:
                             log.info("Updating user. User Id : " + user.getUserId());
                             sharingRegistryClient.updatedUser(user);
-
+                            break;
                         case DELETE:
                             log.info("Deleting user. User Id : " + user.getUserId());
                             sharingRegistryClient.deleteUser(user.getDomainId(), user.getUserId());
+                            break;
                     }
+                    break;
 
                 default: log.error("Handler not defined for " + dBEventMessageContext.getPublisher().getPublisherContext().getEntityType());
             }

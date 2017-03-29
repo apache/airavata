@@ -49,7 +49,7 @@ public class DBEventMessageHandler implements MessageHandler {
                 case SUBSCRIBER:
                     log.info("Registering " + dBEventMessageContext.getSubscriber().getSubscriberService() + " subscriber for " + dbEventMessage.getPublisherService());
                     DbEventManagerZkUtils.createDBEventMgrZkNode(curatorClient, dbEventMessage.getPublisherService(), dBEventMessageContext.getSubscriber().getSubscriberService());
-
+                    break;
                 case PUBLISHER:
                     List<String> subscribers = DbEventManagerZkUtils.getSubscribersForPublisher(curatorClient, dbEventMessage.getPublisherService());
                     if(subscribers.isEmpty()){
@@ -61,7 +61,7 @@ public class DBEventMessageHandler implements MessageHandler {
                     MessageContext messageCtx = new MessageContext(dBEventMessageContext.getPublisher().getPublisherContext(), MessageType.DB_EVENT, "", "");
                     messageCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
                     DBEventManagerMessagingFactory.getDBEventPublisher().publish(messageCtx, routingKey);
-
+                    break;
             }
 
             // close curatorClient
