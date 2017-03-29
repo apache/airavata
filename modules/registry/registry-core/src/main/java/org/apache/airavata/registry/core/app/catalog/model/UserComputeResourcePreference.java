@@ -35,6 +35,7 @@ public class UserComputeResourcePreference {
     @Id
     @Column(name = "RESOURCE_ID")
     private String resourceId;
+    @Id
     @Column(name = "GATEWAY_ID")
     private String gatewayID;
     @Column(name = "PREFERED_BATCH_QUEUE")

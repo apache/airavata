@@ -31,6 +31,7 @@ public class UserStoragePreference {
     @Id
     @Column(name = "USER_ID")
     private String userId;
+    @Id
     @Column(name = "GATEWAY_ID")
     private String gatewayID;
     @Id
