@@ -102,10 +102,10 @@ public class MessagingFactory {
         return publiser;
     }
 
-    public static Publisher getDBEventPublisher(String routingKey) throws AiravataException {
+    public static Publisher getDBEventPublisher() throws AiravataException {
         RabbitMQProperties rProperties = getProperties();
         rProperties.setExchangeName(DBEventManagerConstants.DB_EVENT_EXCHANGE_NAME);
-        return new RabbitMQPublisher(rProperties, routingKey);
+        return new RabbitMQPublisher(rProperties);
     }
 
     private static Publisher getExperimentPublisher(RabbitMQProperties rProperties) throws AiravataException {

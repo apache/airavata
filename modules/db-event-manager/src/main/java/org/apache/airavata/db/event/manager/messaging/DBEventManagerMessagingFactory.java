@@ -18,6 +18,8 @@ public class DBEventManagerMessagingFactory {
 
     private static Subscriber dbEventSubscriber;
 
+    private static Publisher dbEventPublisher;
+
     /**
      * Get DB Event subscriber
      * @return
@@ -25,26 +27,29 @@ public class DBEventManagerMessagingFactory {
      */
     public static Subscriber getDBEventSubscriber() throws AiravataException {
         if(null != dbEventSubscriber){
-            synchronized (dbEventSubscriber){
+            synchronized (DBEventManagerMessagingFactory.class){
                 if(null != dbEventSubscriber){
                     log.info("Creating DB Event subscriber.....");
                     dbEventSubscriber = MessagingFactory.getDBEventSubscriber(new DBEventMessageHandler(), DBEventManagerConstants.DB_EVENT_QUEUE);
-                    log.info("DB Event Service created");
+                    log.info("DB Event subscriber created");
                 }
             }
         }
         return dbEventSubscriber;
     }
 
-    /**
-     * Get DB Event publisher based on routing key
-     * @param routingKey
-     * @return
-     * @throws AiravataException
-     */
-    public static Publisher getDBEventPublisher(String routingKey) throws AiravataException {
-        log.info("Creating DB Event Publisher for routing key : " + routingKey);
-        return MessagingFactory.getDBEventPublisher(routingKey);
+
+    public static Publisher getDBEventPublisher() throws AiravataException {
+        if(null != dbEventPublisher){
+            synchronized (DBEventManagerMessagingFactory.class){
+                if(null != dbEventPublisher){
+                    log.info("Creating DB Event publisher.....");
+                    dbEventPublisher = MessagingFactory.getDBEventPublisher();
+                    log.info("DB Event publisher created");
+                }
+            }
+        }
+        return dbEventPublisher;
     }
 
 }

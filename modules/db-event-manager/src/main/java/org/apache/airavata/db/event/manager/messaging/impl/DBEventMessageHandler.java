@@ -57,7 +57,7 @@ public class DBEventMessageHandler implements MessageHandler {
                     log.info("Publishing " + dbEventMessage.getPublisherService() + " db event to " + subscribers.toString());
                     MessageContext messageCtx = new MessageContext(dBEventMessageContext.getPublisher().getPublisherContext(), MessageType.DB_EVENT, "", "");
                     messageCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-                    DBEventManagerMessagingFactory.getDBEventPublisher(routingKey).publish(messageCtx);
+                    DBEventManagerMessagingFactory.getDBEventPublisher().publish(messageCtx, routingKey);
 
 //                    for (String subscriber : subscribers){
 //                        log.info("Publishing " + dbEventMessage.getPublisherService() + " db event to " + subscriber);
@@ -79,9 +79,6 @@ public class DBEventMessageHandler implements MessageHandler {
         for(String subscriber : subscribers){
             sb.append(subscriber).append(separator);
         }
-        if(sb.length()>0){
-            return sb.substring(0, sb.length()-1);
-        }
-        return null;
+        return sb.substring(0, sb.length() - 1);
     }
 }
