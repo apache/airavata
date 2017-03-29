@@ -27,13 +27,13 @@ public class ProfileServiceUtils {
      */
     public static Publisher getDbEventPublisher() throws AiravataException {
         if (dbEventPublisher == null) {
-            dbEventPublisher = MessagingFactory.getDBEventPublisher(DBEventManagerConstants.DB_EVENT_SERVICE);
+            dbEventPublisher = MessagingFactory.getDBEventPublisher();
         }
         return dbEventPublisher;
     }
 
     /**
-     * Constructs the dbEventMessage
+     * Constructs the dbEventMessageContext
      * @param entityType
      * @param crudType
      * @param entityModel

@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.service.profile.handlers;
 
+import org.apache.airavata.common.utils.DBEventManagerConstants;
 import org.apache.airavata.model.dbevent.CrudType;
 import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.user.UserProfile;
@@ -51,7 +52,8 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
             if (null != userProfile) {
                 // replicate userProfile at end-places
                 ProfileServiceUtils.getDbEventPublisher().publish(
-                        ProfileServiceUtils.getDBEventMessageContext(EntityType.USER_PROFILE, CrudType.CREATE, userProfile)
+                        ProfileServiceUtils.getDBEventMessageContext(EntityType.USER_PROFILE, CrudType.CREATE, userProfile),
+                        DBEventManagerConstants.DB_EVENT_QUEUE
                 );
                 // return userId
                 return userProfile.getUserId();
