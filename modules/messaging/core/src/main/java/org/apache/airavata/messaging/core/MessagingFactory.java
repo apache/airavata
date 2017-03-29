@@ -71,9 +71,11 @@ public class MessagingFactory {
 
     public static Subscriber getDBEventSubscriber(final MessageHandler messageHandler, String serviceName) throws AiravataException {
         RabbitMQProperties rProperties = getProperties();
+
+        //FIXME: Set autoAck to false and handle possible situations
         rProperties.setExchangeName(DBEventManagerConstants.DB_EVENT_EXCHANGE_NAME)
                 .setQueueName(DBEventManagerConstants.getQueueName(serviceName))
-                .setAutoAck(false);
+                .setAutoAck(true);
         Subscriber subscriber = new RabbitMQSubscriber(rProperties);
         subscriber.listen(((connection, channel) -> new MessageConsumer(messageHandler, connection, channel)),
                 rProperties.getQueueName(),
