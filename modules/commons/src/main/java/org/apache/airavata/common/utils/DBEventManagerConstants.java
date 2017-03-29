@@ -1,11 +1,12 @@
 package org.apache.airavata.common.utils;
 
+import org.apache.airavata.model.dbevent.EntityType;
+
 /**
  * Created by Ajinkya on 3/22/17.
  */
 public class DBEventManagerConstants {
 
-    public static final String DB_EVENT_SERVICE = "db.event";
     private final static String QUEUE_SUFFIX = ".queue";
     public final static String DB_EVENT_EXCHANGE_NAME = "db.event.exchange";
 
@@ -27,7 +28,7 @@ public class DBEventManagerConstants {
      * @return
      */
     public static String getRoutingKey(String serviceName) {
-        if(serviceName.equals(DB_EVENT_SERVICE)){
+        if(serviceName.equals(DBEventService.DB_EVENT.toString())) {
             return serviceName;
         }
         return "#." + serviceName + ".#";
@@ -43,6 +44,20 @@ public class DBEventManagerConstants {
     }
 
     /**
+     * Get serviceName from EntityType
+     * @param entityType
+     * @return
+     */
+    public static String getDbEventServiceName(EntityType entityType) {
+        for (DBEventService service : DBEventService.values()) {
+            if (service.name().equals(entityType.name())) {
+                return service.toString();
+            }
+        }
+        return null;
+    }
+
+    /**
      * Get the service as enum, given the service-name as string
      * @param dbEventService
      * @return
@@ -55,4 +70,9 @@ public class DBEventManagerConstants {
         }
         return null;
     }
+
+//    public static void main(String[] args) {
+//        System.out.println(DBEventManagerConstants.getDbEventServiceName(EntityType.USER_PROFILE));
+//        System.out.println(DBEventService.REGISTRY);
+//    }
 }

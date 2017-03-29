@@ -58,7 +58,7 @@ public class ProfileServiceUtils {
 
             // set dbEventMessage with messageContext
             dbEventMessage.setDbEventType(DBEventType.PUBLISHER);
-            dbEventMessage.setPublisherService(DBEventManagerConstants.getQueueName(entityType.name()));
+            dbEventMessage.setPublisherService(DBEventManagerConstants.getDbEventServiceName(entityType));
             dbEventMessage.setMessageContext(dbMessageContext);
 
             // construct and return messageContext

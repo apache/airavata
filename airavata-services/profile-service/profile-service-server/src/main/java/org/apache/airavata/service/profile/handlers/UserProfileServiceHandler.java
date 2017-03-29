@@ -21,6 +21,7 @@
 package org.apache.airavata.service.profile.handlers;
 
 import org.apache.airavata.common.utils.DBEventManagerConstants;
+import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.model.dbevent.CrudType;
 import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.user.UserProfile;
@@ -53,13 +54,13 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
                 // replicate userProfile at end-places
                 ProfileServiceUtils.getDbEventPublisher().publish(
                         ProfileServiceUtils.getDBEventMessageContext(EntityType.USER_PROFILE, CrudType.CREATE, userProfile),
-                        DBEventManagerConstants.getRoutingKey(DBEventManagerConstants.DB_EVENT_SERVICE)
+                        DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString())
                 );
                 // return userId
                 return userProfile.getUserId();
             }
             return null;
-        } catch (Exception e){
+        } catch (Exception e) {
             logger.error("Error while creating user profile", e);
             UserProfileServiceException exception = new UserProfileServiceException();
             exception.setMessage("Error while creating user profile. More info : " + e.getMessage());
