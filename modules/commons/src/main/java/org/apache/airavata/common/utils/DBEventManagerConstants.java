@@ -5,7 +5,7 @@ package org.apache.airavata.common.utils;
  */
 public class DBEventManagerConstants {
 
-    public static final String DB_EVENT_QUEUE = "db.event.queue";
+    public static final String DB_EVENT_SERVICE = "db.event";
     private final static String QUEUE_SUFFIX = ".queue";
     public final static String DB_EVENT_EXCHANGE_NAME = "db.event.exchange";
 
@@ -19,15 +19,18 @@ public class DBEventManagerConstants {
     }
 
     /**
-     * Return routing key which is capable of consuming any message published with queueName in it.
-     * For example: let' say queueName is 'hello' function will return #.hello.#
+     * Return routing key which is capable of consuming any message published with serviceName in it.
+     * For example: let' say serviceName is 'hello' function will return #.hello.#
      * This queue can consume message with any of these routing keys 'q1.12.hello.q3', 'q1.hello', 'hello.q2' or just 'hello'
      * It just need to have 'hello' in it.
-     * @param queueName
+     * @param serviceName
      * @return
      */
-    public static String getRoutingKey(String queueName) {
-        return "#." + queueName + ".#";
+    public static String getRoutingKey(String serviceName) {
+        if(serviceName.equals(DB_EVENT_SERVICE)){
+            return serviceName;
+        }
+        return "#." + serviceName + ".#";
     }
 
     /**

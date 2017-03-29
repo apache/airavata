@@ -7,7 +7,6 @@ import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.dbevent.*;
-import org.apache.airavata.model.messaging.event.Message;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.thrift.TBase;
 import org.slf4j.Logger;
@@ -28,7 +27,7 @@ public class ProfileServiceUtils {
      */
     public static Publisher getDbEventPublisher() throws AiravataException {
         if (dbEventPublisher == null) {
-            dbEventPublisher = MessagingFactory.getDBEventPublisher(DBEventManagerConstants.DB_EVENT_QUEUE);
+            dbEventPublisher = MessagingFactory.getDBEventPublisher(DBEventManagerConstants.DB_EVENT_SERVICE);
         }
         return dbEventPublisher;
     }
