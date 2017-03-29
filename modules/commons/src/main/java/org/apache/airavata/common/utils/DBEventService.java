@@ -5,6 +5,7 @@ package org.apache.airavata.common.utils;
  */
 public enum DBEventService {
 
+    DB_EVENT("db.event"),
     USER_PROFILE("user.profile"),
     SHARING("sharing"),
     REGISTRY("registry");
