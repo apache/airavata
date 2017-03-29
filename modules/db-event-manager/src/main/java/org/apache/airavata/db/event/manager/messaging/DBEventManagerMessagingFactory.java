@@ -27,9 +27,9 @@ public class DBEventManagerMessagingFactory {
      * @throws AiravataException
      */
     public static Subscriber getDBEventSubscriber() throws AiravataException {
-        if(null != dbEventSubscriber){
+        if(null == dbEventSubscriber){
             synchronized (DBEventManagerMessagingFactory.class){
-                if(null != dbEventSubscriber){
+                if(null == dbEventSubscriber){
                     log.info("Creating DB Event subscriber.....");
                     dbEventSubscriber = MessagingFactory.getDBEventSubscriber(new DBEventMessageHandler(), DBEventService.DB_EVENT.toString());
                     log.info("DB Event subscriber created");
@@ -41,9 +41,9 @@ public class DBEventManagerMessagingFactory {
 
 
     public static Publisher getDBEventPublisher() throws AiravataException {
-        if(null != dbEventPublisher){
+        if(null == dbEventPublisher){
             synchronized (DBEventManagerMessagingFactory.class){
-                if(null != dbEventPublisher){
+                if(null == dbEventPublisher){
                     log.info("Creating DB Event publisher.....");
                     dbEventPublisher = MessagingFactory.getDBEventPublisher();
                     log.info("DB Event publisher created");
