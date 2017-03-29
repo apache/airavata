@@ -26,10 +26,12 @@ import java.io.Serializable;
 public class UserStoragePreferencePK implements Serializable {
 
     private String userId;
+    private String gatewayID;
     private String storageResourceId;
 
-    public UserStoragePreferencePK(String userId, String storageResourceId) {
+    public UserStoragePreferencePK(String userId, String gatewayID, String storageResourceId) {
         this.userId = userId;
+        this.gatewayID = gatewayID;
         this.storageResourceId = storageResourceId;
     }
 
@@ -38,12 +40,22 @@ public class UserStoragePreferencePK implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        return false;
+        if (this == o) return true;
+        if (!(o instanceof UserStoragePreferencePK)) return false;
+
+        UserStoragePreferencePK that = (UserStoragePreferencePK) o;
+
+        if (!userId.equals(that.userId)) return false;
+        if (!gatewayID.equals(that.gatewayID)) return false;
+        return storageResourceId.equals(that.storageResourceId);
     }
 
     @Override
     public int hashCode() {
-        return 1;
+        int result = userId.hashCode();
+        result = 31 * result + gatewayID.hashCode();
+        result = 31 * result + storageResourceId.hashCode();
+        return result;
     }
 
     public String getUserId() {
@@ -61,4 +73,8 @@ public class UserStoragePreferencePK implements Serializable {
     public void setStorageResourceId(String storageResourceId) {
         this.storageResourceId = storageResourceId;
     }
+
+    public String getGatewayID() { return gatewayID; }
+
+    public void setGatewayID(String gatewayID) { this.gatewayID = gatewayID; }
 }
