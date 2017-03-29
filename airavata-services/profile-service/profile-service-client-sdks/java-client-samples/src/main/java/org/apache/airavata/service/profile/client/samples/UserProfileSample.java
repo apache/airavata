@@ -106,5 +106,4 @@ public class UserProfileSample {
         nsfDemographics.addToRaces(race.AMERICAN_INDIAN_OR_ALASKAN_NATIVE);
         return nsfDemographics;
     }
-
 }
