@@ -19,9 +19,9 @@ import java.util.List;
 /**
  * Created by Ajinkya on 3/28/17.
  */
-public class SharingServiceDBEventPublisher {
+public class SharingServiceDBEventMessagingFactory {
 
-    private final static Logger log = LoggerFactory.getLogger(SharingServiceDBEventPublisher.class);
+    private final static Logger log = LoggerFactory.getLogger(SharingServiceDBEventMessagingFactory.class);
 
     private static Publisher dbEventPublisher;
 
@@ -33,7 +33,7 @@ public class SharingServiceDBEventPublisher {
      */
     private static Publisher getDBEventPublisher() throws AiravataException {
         if(null != dbEventPublisher){
-            synchronized (SharingServiceDBEventPublisher.class){
+            synchronized (SharingServiceDBEventMessagingFactory.class){
                 if(null != dbEventPublisher){
                     log.info("Creating DB Event publisher.....");
                     dbEventPublisher = MessagingFactory.getDBEventPublisher();
