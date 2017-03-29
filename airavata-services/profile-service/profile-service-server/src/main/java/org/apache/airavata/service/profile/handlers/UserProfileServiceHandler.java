@@ -49,7 +49,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
 
     public String addUserProfile(UserProfile userProfile) throws UserProfileServiceException {
         try{
-            userProfileRepository.create(userProfile);
+            userProfile = userProfileRepository.create(userProfile);
             if (null != userProfile) {
                 // replicate userProfile at end-places
                 ProfileServiceUtils.getDbEventPublisher().publish(
@@ -58,8 +58,9 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
                 );
                 // return userId
                 return userProfile.getUserId();
+            } else {
+                throw new Exception("User creation failed. Please try again.");
             }
-            return null;
         } catch (Exception e) {
             logger.error("Error while creating user profile", e);
             UserProfileServiceException exception = new UserProfileServiceException();
@@ -86,7 +87,8 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
             UserProfile userProfile = userProfileRepository.getUserProfileByIdAndGateWay(userId, gatewayId);
             if(userProfile != null)
                 return userProfile;
-            return null;
+            else
+                throw new Exception("User with userId: " + userId + ", in Gateway: " + gatewayId + ", does not exist.");
         } catch (Exception e) {
             logger.error("Error retrieving user profile by ID", e);
             UserProfileServiceException exception = new UserProfileServiceException();
@@ -95,7 +97,6 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
         }
     }
 
-    // FIXME: shouldn't deleteUserProfile require the gatewayId as well?
     public boolean deleteUserProfile(String userId) throws UserProfileServiceException {
         try{
             boolean deleteResult = userProfileRepository.delete(userId);
@@ -113,7 +114,8 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
             List<UserProfile> usersInGateway = userProfileRepository.getAllUserProfilesInGateway(gatewayId, offset, limit);
             if(usersInGateway != null)
                 return usersInGateway;
-            return null;
+            else
+                throw new Exception("There are no users for the requested gatewayId: " + gatewayId);
         } catch (Exception e) {
             logger.error("Error while retrieving user profile List", e);
             UserProfileServiceException exception = new UserProfileServiceException();
