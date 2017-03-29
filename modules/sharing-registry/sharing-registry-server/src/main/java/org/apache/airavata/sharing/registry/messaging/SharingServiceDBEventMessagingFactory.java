@@ -35,9 +35,9 @@ public class SharingServiceDBEventMessagingFactory {
      * @throws AiravataException
      */
     private static Publisher getDBEventPublisher() throws AiravataException {
-        if(null != dbEventPublisher){
+        if(null == dbEventPublisher){
             synchronized (SharingServiceDBEventMessagingFactory.class){
-                if(null != dbEventPublisher){
+                if(null == dbEventPublisher){
                     log.info("Creating DB Event publisher.....");
                     dbEventPublisher = MessagingFactory.getDBEventPublisher();
                     log.info("DB Event publisher created");
@@ -48,9 +48,9 @@ public class SharingServiceDBEventMessagingFactory {
     }
 
     public static Subscriber getDBEventSubscriber() throws AiravataException {
-        if(null != sharingServiceDBEventSubscriber){
+        if(null == sharingServiceDBEventSubscriber){
             synchronized (SharingServiceDBEventMessagingFactory.class){
-                if(null != sharingServiceDBEventSubscriber){
+                if(null == sharingServiceDBEventSubscriber){
                     log.info("Creating DB Event publisher.....");
                     sharingServiceDBEventSubscriber = MessagingFactory.getDBEventSubscriber(new SharingServiceDBEventHandler(), DBEventService.SHARING.toString());
                     log.info("DB Event publisher created");
