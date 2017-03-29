@@ -69,12 +69,10 @@ public class DbEventManagerZkUtils {
      */
     public static void createDBEventMgrZkNode(CuratorFramework curatorClient, String publisherNode, String subscriberNode) throws Exception {
         // get pub,sub queue names
-        String publisherQueue = DBEventManagerConstants.getQueueName(publisherNode);
-        String subscriberQueue = DBEventManagerConstants.getQueueName(subscriberNode);
 
         // construct ZK paths for pub,sub
-        String publisherZkPath = ZKPaths.makePath(Constants.DB_EVENT_MGR_ZK_PATH, publisherQueue);
-        String subscriberZkPath = ZKPaths.makePath(publisherZkPath, subscriberQueue);
+        String publisherZkPath = ZKPaths.makePath(Constants.DB_EVENT_MGR_ZK_PATH, publisherNode);
+        String subscriberZkPath = ZKPaths.makePath(publisherZkPath, subscriberNode);
 
         // construct byte-data(s) for pub, sub
         byte[] publisherZkData = publisherNode.getBytes();
@@ -99,8 +97,7 @@ public class DbEventManagerZkUtils {
     public static List<String> getSubscribersForPublisher(CuratorFramework curatorClient, String publisherNode) throws Exception {
 
         // construct ZK path for pub
-        String publisherQueue = DBEventManagerConstants.getQueueName(publisherNode);
-        String publisherZkPath = ZKPaths.makePath(Constants.DB_EVENT_MGR_ZK_PATH, publisherQueue);
+        String publisherZkPath = ZKPaths.makePath(Constants.DB_EVENT_MGR_ZK_PATH, publisherNode);
 
         // get children-list for pub
         List<String> subscriberList = curatorClient.getChildren().forPath(publisherZkPath);

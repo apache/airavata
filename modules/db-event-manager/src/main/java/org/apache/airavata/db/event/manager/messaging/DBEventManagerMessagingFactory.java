@@ -30,7 +30,7 @@ public class DBEventManagerMessagingFactory {
             synchronized (DBEventManagerMessagingFactory.class){
                 if(null != dbEventSubscriber){
                     log.info("Creating DB Event subscriber.....");
-                    dbEventSubscriber = MessagingFactory.getDBEventSubscriber(new DBEventMessageHandler(), DBEventManagerConstants.DB_EVENT_QUEUE);
+                    dbEventSubscriber = MessagingFactory.getDBEventSubscriber(new DBEventMessageHandler(), DBEventManagerConstants.DB_EVENT_SERVICE);
                     log.info("DB Event subscriber created");
                 }
             }

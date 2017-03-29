@@ -64,7 +64,7 @@ public class SharingServiceDBEventPublisher {
 
             MessageContext messageContext = new MessageContext(dbEventMessage, MessageType.DB_EVENT, "", "");
 
-            getDBEventPublisher().publish(messageContext, DBEventManagerConstants.DB_EVENT_QUEUE);
+            getDBEventPublisher().publish(messageContext, DBEventManagerConstants.DB_EVENT_SERVICE);
 
         }
 
