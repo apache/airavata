@@ -12,6 +12,7 @@ import org.apache.airavata.model.dbevent.DBEventMessage;
 import org.apache.airavata.model.dbevent.DBEventMessageContext;
 import org.apache.airavata.model.dbevent.DBEventType;
 import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.curator.framework.CuratorFramework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,7 @@ public class DBEventMessageHandler implements MessageHandler {
     public void onMessage(MessageContext messageContext) {
 
         log.info("Incoming DB event message. Message Id : " + messageContext.getMessageId());
-
+        CuratorFramework curatorClient = null;
         try {
 
             byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
@@ -40,15 +41,17 @@ public class DBEventMessageHandler implements MessageHandler {
             ThriftUtils.createThriftFromBytes(bytes, dbEventMessage);
 
             DBEventMessageContext dBEventMessageContext = dbEventMessage.getMessageContext();
+            curatorClient = DbEventManagerZkUtils.getCuratorClient();
+            curatorClient.start();
 
             switch (dbEventMessage.getDbEventType()){
 
                 case SUBSCRIBER:
                     log.info("Registering " + dBEventMessageContext.getSubscriber().getSubscriberService() + " subscriber for " + dbEventMessage.getPublisherService());
-                    DbEventManagerZkUtils.createDBEventMgrZkNode(DbEventManagerZkUtils.getCuratorClient(), dbEventMessage.getPublisherService(), dBEventMessageContext.getSubscriber().getSubscriberService());
+                    DbEventManagerZkUtils.createDBEventMgrZkNode(curatorClient, dbEventMessage.getPublisherService(), dBEventMessageContext.getSubscriber().getSubscriberService());
 
                 case PUBLISHER:
-                    List<String> subscribers = DbEventManagerZkUtils.getSubscribersForPublisher(DbEventManagerZkUtils.getCuratorClient(), dbEventMessage.getPublisherService());
+                    List<String> subscribers = DbEventManagerZkUtils.getSubscribersForPublisher(curatorClient, dbEventMessage.getPublisherService());
                     if(subscribers.isEmpty()){
                         log.error("No Subscribers registered for the service");
                         throw new DBEventManagerException("No Subscribers registered for the service");
@@ -61,8 +64,15 @@ public class DBEventMessageHandler implements MessageHandler {
 
             }
 
+            // close curatorClient
+            curatorClient.close();
+
         } catch (Exception e) {
             log.error("Error processing message.", e);
+        } finally {
+            if (curatorClient != null) {
+                curatorClient.close();
+            }
         }
     }
 
