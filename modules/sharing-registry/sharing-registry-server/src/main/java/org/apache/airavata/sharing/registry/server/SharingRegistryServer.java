@@ -22,7 +22,7 @@ package org.apache.airavata.sharing.registry.server;
 
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.sharing.registry.messaging.SharingServiceDBEventPublisher;
+import org.apache.airavata.sharing.registry.messaging.SharingServiceDBEventMessagingFactory;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.airavata.sharing.registry.utils.Constants;
 import org.apache.thrift.server.TServer;
@@ -66,7 +66,11 @@ public class SharingRegistryServer implements IServer {
         try {
             setStatus(IServer.ServerStatus.STARTING);
 
-            SharingServiceDBEventPublisher.registerSharingServiceWithPublishers(Constants.PUBLISHERS);
+            logger.info("Register sharing service with DB Event publishers");
+            SharingServiceDBEventMessagingFactory.registerSharingServiceWithPublishers(Constants.PUBLISHERS);
+
+            logger.info("Start sharing service DB Event subscriber");
+            SharingServiceDBEventMessagingFactory.getDBEventSubscriber();
 
             final int serverPort = Integer.parseInt(ServerSettings.getSetting(SHARING_REG_SERVER_PORT));
             final String serverHost = ServerSettings.getSetting(SHARING_REG_SERVER_HOST);
