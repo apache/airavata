@@ -36,7 +36,7 @@ public class SharingServiceDBEventPublisher {
             synchronized (SharingServiceDBEventPublisher.class){
                 if(null != dbEventPublisher){
                     log.info("Creating DB Event publisher.....");
-                    dbEventPublisher = MessagingFactory.getDBEventPublisher(DBEventManagerConstants.DB_EVENT_QUEUE);
+                    dbEventPublisher = MessagingFactory.getDBEventPublisher();
                     log.info("DB Event publisher created");
                 }
             }
@@ -64,7 +64,7 @@ public class SharingServiceDBEventPublisher {
 
             MessageContext messageContext = new MessageContext(dbEventMessage, MessageType.DB_EVENT, "", "");
 
-            getDBEventPublisher().publish(messageContext);
+            getDBEventPublisher().publish(messageContext, DBEventManagerConstants.DB_EVENT_QUEUE);
 
         }
 
