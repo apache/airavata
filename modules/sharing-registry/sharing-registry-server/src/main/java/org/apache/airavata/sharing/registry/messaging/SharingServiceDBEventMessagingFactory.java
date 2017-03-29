@@ -70,9 +70,9 @@ public class SharingServiceDBEventMessagingFactory {
 
         for(String publisher : publishers){
 
-            log.info("Sending service discovery message. Publisher : " + publisher + ", Subscriber : " + DBEventService.REGISTRY.toString());
+            log.info("Sending service discovery message. Publisher : " + publisher + ", Subscriber : " + DBEventService.SHARING.toString());
 
-            DBEventSubscriber dbEventSubscriber = new DBEventSubscriber(DBEventService.REGISTRY.toString());
+            DBEventSubscriber dbEventSubscriber = new DBEventSubscriber(DBEventService.SHARING.toString());
             DBEventMessageContext dbEventMessageContext = new DBEventMessageContext();
             dbEventMessageContext.setSubscriber(dbEventSubscriber);
 
