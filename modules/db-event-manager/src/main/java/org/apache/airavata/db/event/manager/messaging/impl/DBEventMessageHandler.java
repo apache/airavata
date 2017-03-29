@@ -1,5 +1,6 @@
 package org.apache.airavata.db.event.manager.messaging.impl;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.db.event.manager.messaging.DBEventManagerException;
@@ -27,12 +28,21 @@ import java.util.Map;
 public class DBEventMessageHandler implements MessageHandler {
 
     private final static Logger log = LoggerFactory.getLogger(DBEventMessageHandler.class);
+    private CuratorFramework curatorClient;
+
+    public DBEventMessageHandler() throws ApplicationSettingsException {
+        startCuratorClient();
+    }
+
+    private void startCuratorClient() throws ApplicationSettingsException {
+        curatorClient = DbEventManagerZkUtils.getCuratorClient();
+        curatorClient.start();
+    }
 
     @Override
     public void onMessage(MessageContext messageContext) {
 
         log.info("Incoming DB event message. Message Id : " + messageContext.getMessageId());
-        CuratorFramework curatorClient = null;
         try {
 
             byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
@@ -41,8 +51,6 @@ public class DBEventMessageHandler implements MessageHandler {
             ThriftUtils.createThriftFromBytes(bytes, dbEventMessage);
 
             DBEventMessageContext dBEventMessageContext = dbEventMessage.getMessageContext();
-            curatorClient = DbEventManagerZkUtils.getCuratorClient();
-            curatorClient.start();
 
             switch (dbEventMessage.getDbEventType()){
 
@@ -64,15 +72,8 @@ public class DBEventMessageHandler implements MessageHandler {
                     break;
             }
 
-            // close curatorClient
-            curatorClient.close();
-
         } catch (Exception e) {
             log.error("Error processing message.", e);
-        } finally {
-            if (curatorClient != null) {
-                curatorClient.close();
-            }
         }
     }
 
