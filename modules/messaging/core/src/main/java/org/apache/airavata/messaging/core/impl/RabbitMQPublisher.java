@@ -127,7 +127,9 @@ public class RabbitMQPublisher implements Publisher {
             message.setEvent(body);
             message.setMessageId(messageContext.getMessageId());
             message.setMessageType(messageContext.getType());
-            message.setUpdatedTime(messageContext.getUpdatedTime().getTime());
+            if (messageContext.getUpdatedTime() != null) {
+                message.setUpdatedTime(messageContext.getUpdatedTime().getTime());
+            }
 //            log.info("publish messageId:" + messageContext.getMessageId() + ", messageType:" + messageContext.getType() + ", to routingKey:" + routingKey);
             byte[] messageBody = ThriftUtils.serializeThriftObject(message);
             send(messageBody, routingKey);

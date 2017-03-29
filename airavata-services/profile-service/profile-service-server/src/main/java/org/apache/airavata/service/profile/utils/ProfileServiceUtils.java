@@ -62,7 +62,7 @@ public class ProfileServiceUtils {
             dbEventMessage.setMessageContext(dbMessageContext);
 
             // construct and return messageContext
-            return new MessageContext(dbEventMessage, MessageType.DB_EVENT, null, null);
+            return new MessageContext(dbEventMessage, MessageType.DB_EVENT, "", "");
         } catch (Exception ex) {
             throw new AiravataException(ex.getMessage(), ex);
         }

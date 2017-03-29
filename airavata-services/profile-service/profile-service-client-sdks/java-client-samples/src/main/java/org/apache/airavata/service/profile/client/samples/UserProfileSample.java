@@ -23,6 +23,18 @@ public class UserProfileSample {
     private static String testUserId = null;
     private static String testGatewayId = "test-client-gateway";
 
+    /**
+     * Performs the following operations in sequence:
+     *  1. create new user
+     *  2. find user created
+     *  3. update created user's name
+     *  4. find all users in gateway
+     *  5. find created user by name
+     *  6. delete created user
+     *  7. check if user exists
+     * @param args
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         try {
             String profileServiceServerHost = ProfileServiceClientUtil.getProfileServiceServerHost();
@@ -31,7 +43,7 @@ public class UserProfileSample {
             userProfileClient = ProfileServiceClientFactory.createUserProfileServiceClient(profileServiceServerHost, profileServiceServerPort);
 
             // test add-user-profile
-            testUserId = userProfileClient.addUserProfile(getUserProfile(null));     // (1) run this only once
+            testUserId = userProfileClient.addUserProfile(getUserProfile(null));
             assert (testUserId != null) : "User creation failed. Null userId returned!";
             System.out.println("User created with userId: " + testUserId);
 
@@ -51,8 +63,9 @@ public class UserProfileSample {
             // test get-all-userprofiles
             List<UserProfile> userProfileList = userProfileClient.getAllUserProfilesInGateway(testGatewayId, 0, 5);
             assert (userProfileList != null && !userProfileList.isEmpty()) : "Failed to retrieve users for gateway!";
+            System.out.println("Printing userList retrieved..");
             for (UserProfile userProfile1 : userProfileList) {
-                System.out.println("User found with userId: " + userProfile1.getUserId());
+                System.out.println("\t [UserProfile] userId: " + userProfile1.getUserId());
             }
 
             // test find-user-profile-by-name
