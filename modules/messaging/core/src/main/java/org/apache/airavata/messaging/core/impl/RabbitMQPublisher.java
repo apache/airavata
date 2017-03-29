@@ -113,6 +113,12 @@ public class RabbitMQPublisher implements Publisher {
         }
     }
 
+    /**
+     * This method is used only for publishing DB Events
+     * @param messageContext object of message context which will include actual db event and other information
+     * @param routingKey
+     * @throws AiravataException
+     */
     @Override
     public void publish(MessageContext messageContext, String routingKey) throws AiravataException {
         try {
