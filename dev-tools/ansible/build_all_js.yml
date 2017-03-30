@@ -1,0 +1,5 @@
+---
+
+ - include: all_vms_js.yml
+ - include: all_deploy_js.yml
+
