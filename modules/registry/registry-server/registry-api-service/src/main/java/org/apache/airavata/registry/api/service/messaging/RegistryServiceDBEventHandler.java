@@ -72,7 +72,7 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
 
             // check type of entity-type
             switch (publisherContext.getEntityType()) {
-                case GATEWAY: {
+                case TENANT: {
                     // construct gateway datamodel from message
                     Gateway gateway = new Gateway();
                     ThriftUtils.createThriftFromBytes(publisherContext.getEntityDataModel(), gateway);
