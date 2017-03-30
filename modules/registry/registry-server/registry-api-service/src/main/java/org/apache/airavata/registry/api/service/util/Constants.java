@@ -34,6 +34,6 @@ public class Constants {
 
     public static final List<String> DB_EVENT_SUBSCRIBERS = new ArrayList<String>(){
         {add(DBEventService.USER_PROFILE.toString());}
-        {add(DBEventService.GATEWAY.toString());}
+        {add(DBEventService.TENANT.toString());}
     };
 }
