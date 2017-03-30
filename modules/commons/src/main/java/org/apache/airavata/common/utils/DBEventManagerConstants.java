@@ -9,6 +9,7 @@ public class DBEventManagerConstants {
 
     private final static String QUEUE_SUFFIX = ".queue";
     public final static String DB_EVENT_EXCHANGE_NAME = "db.event.exchange";
+    public final static String ROUTING_KEY_SEPARATOR = ".";
 
     /**
      * Get the queue-name of the service, given service-name as enum
@@ -31,7 +32,7 @@ public class DBEventManagerConstants {
         if(serviceName.equals(DBEventService.DB_EVENT.toString())) {
             return serviceName;
         }
-        return "#." + serviceName + ".#";
+        return "#" + ROUTING_KEY_SEPARATOR + serviceName + ROUTING_KEY_SEPARATOR + "#";
     }
 
     /**

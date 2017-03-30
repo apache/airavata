@@ -2,6 +2,7 @@ package org.apache.airavata.db.event.manager.messaging.impl;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.DBEventManagerConstants;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.db.event.manager.messaging.DBEventManagerException;
 import org.apache.airavata.db.event.manager.messaging.DBEventManagerMessagingFactory;
@@ -72,6 +73,9 @@ public class DBEventMessageHandler implements MessageHandler {
                     break;
             }
 
+            log.info("Sending ack. Message Delivery Tag : " + messageContext.getDeliveryTag());
+            DBEventManagerMessagingFactory.getDBEventSubscriber().sendAck(messageContext.getDeliveryTag());
+
         } catch (Exception e) {
             log.error("Error processing message.", e);
         }
@@ -79,10 +83,9 @@ public class DBEventMessageHandler implements MessageHandler {
 
     private String getRoutingKeyFromList(final List<String> subscribers){
         StringBuilder sb = new StringBuilder();
-        String separator = ".";
         Collections.sort(subscribers);
         for(String subscriber : subscribers){
-            sb.append(subscriber).append(separator);
+            sb.append(subscriber).append(DBEventManagerConstants.ROUTING_KEY_SEPARATOR);
         }
         return sb.substring(0, sb.length() - 1);
     }
