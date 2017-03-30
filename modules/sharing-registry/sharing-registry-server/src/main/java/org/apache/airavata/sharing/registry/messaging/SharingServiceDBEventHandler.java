@@ -41,8 +41,6 @@ public class SharingServiceDBEventHandler implements MessageHandler {
 
             DBEventMessageContext dBEventMessageContext = dbEventMessage.getMessageContext();
 
-            dBEventMessageContext.getPublisher().getPublisherContext();
-
             switch (dBEventMessageContext.getPublisher().getPublisherContext().getEntityType()){
 
                 case USER_PROFILE :

@@ -66,7 +66,7 @@ public class DBEventMessageHandler implements MessageHandler {
                     }
                     String routingKey = getRoutingKeyFromList(subscribers);
                     log.info("Publishing " + dbEventMessage.getPublisherService() + " db event to " + subscribers.toString());
-                    MessageContext messageCtx = new MessageContext(dBEventMessageContext.getPublisher().getPublisherContext(), MessageType.DB_EVENT, "", "");
+                    MessageContext messageCtx = new MessageContext(dbEventMessage, MessageType.DB_EVENT, "", "");
                     messageCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
                     DBEventManagerMessagingFactory.getDBEventPublisher().publish(messageCtx, routingKey);
                     break;
