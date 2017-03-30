@@ -28,7 +28,8 @@ public enum DBEventService {
     DB_EVENT("db.event"),
     USER_PROFILE("user.profile"),
     SHARING("sharing"),
-    REGISTRY("registry");
+    REGISTRY("registry"),
+    GATEWAY("gateway");
 
     private final String name;
     DBEventService(String name) {
