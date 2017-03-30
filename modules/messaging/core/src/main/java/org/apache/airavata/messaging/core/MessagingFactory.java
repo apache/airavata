@@ -75,7 +75,7 @@ public class MessagingFactory {
         //FIXME: Set autoAck to false and handle possible situations
         rProperties.setExchangeName(DBEventManagerConstants.DB_EVENT_EXCHANGE_NAME)
                 .setQueueName(DBEventManagerConstants.getQueueName(serviceName))
-                .setAutoAck(true);
+                .setAutoAck(false);
         Subscriber subscriber = new RabbitMQSubscriber(rProperties);
         subscriber.listen(((connection, channel) -> new MessageConsumer(messageHandler, connection, channel)),
                 rProperties.getQueueName(),

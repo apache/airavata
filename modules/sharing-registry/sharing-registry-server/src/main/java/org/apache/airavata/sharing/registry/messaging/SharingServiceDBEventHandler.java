@@ -1,5 +1,6 @@
 package org.apache.airavata.sharing.registry.messaging;
 
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
@@ -77,10 +78,15 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                 default: log.error("Handler not defined for " + dBEventMessageContext.getPublisher().getPublisherContext().getEntityType());
             }
 
+            log.info("Sending ack. Message Delivery Tag : " + messageContext.getDeliveryTag());
+            SharingServiceDBEventMessagingFactory.getDBEventSubscriber().sendAck(messageContext.getDeliveryTag());
+
         } catch (TException e) {
             log.error("Error processing message.", e);
         } catch (ApplicationSettingsException e) {
             log.error("Error fetching application settings.", e);
+        } catch (AiravataException e) {
+            log.error("Error sending ack. Message Delivery Tag : " + messageContext.getDeliveryTag(), e);
         }
     }
 }
