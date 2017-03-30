@@ -20,12 +20,18 @@
 */
 package org.apache.airavata.service.profile.handlers;
 
+import org.apache.airavata.common.utils.DBEventManagerConstants;
+import org.apache.airavata.common.utils.DBEventService;
+import org.apache.airavata.model.dbevent.CrudType;
+import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.service.profile.commons.tenant.entities.GatewayEntity;
 import org.apache.airavata.service.profile.tenant.core.repositories.TenantProfileRepository;
 import org.apache.airavata.service.profile.tenant.cpi.TenantProfileService;
 import org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException;
 import org.apache.airavata.service.profile.tenant.cpi.profile_tenant_cpiConstants;
+import org.apache.airavata.service.profile.utils.ProfileServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +69,12 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
             tenantProfileRepository.create(gateway);
             if (gateway != null) {
                 logger.debug("Added Airavata Gateway with Id: " + gateway.getGatewayId());
+                // replicate tenant at end-places
+                ProfileServiceUtils.getDbEventPublisher().publish(
+                        ProfileServiceUtils.getDBEventMessageContext(EntityType.TENANT, CrudType.CREATE, gateway),
+                        DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString())
+                );
+                // return gatewayId
                 return gateway.getGatewayId();
             } else {
                 throw new Exception("Gateway object is null.");
@@ -80,6 +92,11 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
         try {
             if (tenantProfileRepository.update(updatedGateway) != null) {
                 logger.debug("Updated gateway-profile with ID: " + updatedGateway.getGatewayId());
+                // replicate tenant at end-places
+                ProfileServiceUtils.getDbEventPublisher().publish(
+                        ProfileServiceUtils.getDBEventMessageContext(EntityType.TENANT, CrudType.UPDATE, updatedGateway),
+                        DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString())
+                );
                 return true;
             } else {
                 return false;
@@ -112,7 +129,22 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     public boolean deleteGateway(String gatewayId) throws TenantProfileServiceException {
         try {
             logger.debug("Deleting Airavata gateway-profile with ID: " + gatewayId);
-            return tenantProfileRepository.delete(gatewayId);
+            boolean deleteSuccess = tenantProfileRepository.delete(gatewayId);
+            if (deleteSuccess) {
+                // delete tenant at end-places
+                ProfileServiceUtils.getDbEventPublisher().publish(
+                        ProfileServiceUtils.getDBEventMessageContext(EntityType.TENANT, CrudType.DELETE,
+                                // pass along gateway datamodel, with correct gatewayId;
+                                // approvalstatus is not used for delete, hence set dummy value
+                                new Gateway(
+                                    gatewayId,
+                                    GatewayApprovalStatus.DEACTIVATED
+                                )
+                        ),
+                        DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString())
+                );
+            }
+            return deleteSuccess;
         } catch (Exception ex) {
             logger.error("Error deleting gateway-profile, reason: " + ex.getMessage(), ex);
             TenantProfileServiceException exception = new TenantProfileServiceException();
