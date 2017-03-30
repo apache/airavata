@@ -32,6 +32,7 @@ import org.apache.airavata.model.dbevent.DBEventMessageContext;
 import org.apache.airavata.model.dbevent.DBEventSubscriber;
 import org.apache.airavata.model.dbevent.DBEventType;
 import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +62,7 @@ public class RegistryServiceDBEventMessagingFactory {
         return dbEventPublisher;
     }
 
-    public static Subscriber getDBEventSubscriber() throws AiravataException {
+    public static Subscriber getDBEventSubscriber() throws AiravataException, RegistryServiceException {
         if(null == registryServiceDBEventSubscriber){
             synchronized (RegistryServiceDBEventMessagingFactory.class){
                 if(null == registryServiceDBEventSubscriber){

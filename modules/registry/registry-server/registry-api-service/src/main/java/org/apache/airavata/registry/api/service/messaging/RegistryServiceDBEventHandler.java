@@ -32,6 +32,7 @@ import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.api.service.util.Constants;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -43,27 +44,31 @@ import org.slf4j.LoggerFactory;
 public class RegistryServiceDBEventHandler implements MessageHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(RegistryServiceDBEventHandler.class);
+    private final RegistryService.Client registryClient;
+
+    public RegistryServiceDBEventHandler() throws ApplicationSettingsException, RegistryServiceException {
+        // get server host, port
+        final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.REGISTRY_SERVER_PORT, "8960"));
+        final String serverHost = ServerSettings.getSetting(Constants.REGISTRY_SERVER_HOST);
+
+        // construct thrift-client
+        registryClient = RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
+    }
 
     @Override
     public void onMessage(MessageContext messageContext) {
         logger.info("RegistryServiceDBEventHandler | Received a new message!");
 
         try {
+            // construct dbeventmessage thrift datamodel
             byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
             DBEventMessage dbEventMessage = new DBEventMessage();
             ThriftUtils.createThriftFromBytes(bytes, dbEventMessage);
-
             logger.info("RegistryService received db-event-message from publisher: " + dbEventMessage.getPublisherService());
 
+            // get publisher context
             DBEventPublisherContext publisherContext = dbEventMessage.getMessageContext().getPublisher().getPublisherContext();
             logger.info("RegistryService, Replicated Entity: " + publisherContext.getEntityType());
-
-            // get server host, port
-            final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.REGISTRY_SERVER_PORT, "8960"));
-            final String serverHost = ServerSettings.getSetting(Constants.REGISTRY_SERVER_HOST);
-
-            // construct thrift-client
-            RegistryService.Client registryClient = RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
 
             // check type of entity-type
             switch (publisherContext.getEntityType()) {
