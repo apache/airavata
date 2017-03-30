@@ -1,5 +1,5 @@
 ---
-- name: install role pre-requireties
+- name: install role prerequisites
   yum: name=unzip state=latest update_cache=yes
   become: yes
 
