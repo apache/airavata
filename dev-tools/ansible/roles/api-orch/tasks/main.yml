@@ -56,7 +56,7 @@
     - "{{ api_server_port }}/tcp"
     - "{{ orchestrator_port }}/tcp"
     - "{{ cred_store_port }}/tcp"
-  become_user: root
+  become: yes
 
 - name: stop api-orch
   command: ./bin/airavata-server-stop.sh -f
