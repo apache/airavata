@@ -31,6 +31,7 @@ import org.apache.airavata.model.dbevent.DBEventMessageContext;
 import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
+import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.registry.models.User;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServer;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
@@ -45,6 +46,13 @@ import org.slf4j.LoggerFactory;
 public class SharingServiceDBEventHandler implements MessageHandler {
 
     private final static Logger log = LoggerFactory.getLogger(SharingServiceDBEventHandler.class);
+
+    private final SharingRegistryService.Client sharingRegistryClient;
+
+    SharingServiceDBEventHandler() throws ApplicationSettingsException, SharingRegistryException {
+        log.info("Starting sharing registry client.....");
+        sharingRegistryClient = SharingRegistryServiceClientFactory.createSharingRegistryClient(ServerSettings.getSetting(SharingRegistryServer.SHARING_REG_SERVER_HOST), Integer.parseInt(ServerSettings.getSetting(SharingRegistryServer.SHARING_REG_SERVER_PORT)));
+    }
 
     @Override
     public void onMessage(MessageContext messageContext) {
@@ -71,7 +79,6 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                     UserProfile  userProfile = new UserProfile();
                     ThriftUtils.createThriftFromBytes(dBEventMessageContext.getPublisher().getPublisherContext().getEntityDataModel(), userProfile);
 
-                    SharingRegistryService.Client sharingRegistryClient = SharingRegistryServiceClientFactory.createSharingRegistryClient(ServerSettings.getSetting(SharingRegistryServer.SHARING_REG_SERVER_HOST), Integer.parseInt(ServerSettings.getSetting(SharingRegistryServer.SHARING_REG_SERVER_PORT)));
                     User user = ThriftDataModelConversion.getUser(userProfile);
 
                     switch (dBEventMessageContext.getPublisher().getPublisherContext().getCrudType()){
