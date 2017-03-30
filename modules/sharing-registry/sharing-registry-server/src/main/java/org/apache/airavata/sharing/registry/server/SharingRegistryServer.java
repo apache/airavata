@@ -66,12 +66,6 @@ public class SharingRegistryServer implements IServer {
         try {
             setStatus(IServer.ServerStatus.STARTING);
 
-            logger.info("Register sharing service with DB Event publishers");
-            SharingServiceDBEventMessagingFactory.registerSharingServiceWithPublishers(Constants.PUBLISHERS);
-
-            logger.info("Start sharing service DB Event subscriber");
-            SharingServiceDBEventMessagingFactory.getDBEventSubscriber();
-
             final int serverPort = Integer.parseInt(ServerSettings.getSetting(SHARING_REG_SERVER_PORT));
             final String serverHost = ServerSettings.getSetting(SHARING_REG_SERVER_HOST);
             SharingRegistryService.Processor processor = new SharingRegistryService.Processor(new SharingRegistryServerHandler());
@@ -111,6 +105,13 @@ public class SharingRegistryServer implements IServer {
                     }
                 }
             }.start();
+
+            logger.info("Register sharing service with DB Event publishers");
+            SharingServiceDBEventMessagingFactory.registerSharingServiceWithPublishers(Constants.PUBLISHERS);
+
+            logger.info("Start sharing service DB Event subscriber");
+            SharingServiceDBEventMessagingFactory.getDBEventSubscriber();
+
         } catch (TTransportException e) {
             setStatus(IServer.ServerStatus.FAILED);
             throw new Exception("Error while starting the Sharing Registry service", e);
