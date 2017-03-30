@@ -30,7 +30,7 @@ import org.apache.thrift.TEnum;
 
 public enum EntityType implements org.apache.thrift.TEnum {
   USER_PROFILE(0),
-  GATEWAY(1),
+  TENANT(1),
   GROUP(2),
   PROJECT(3),
   EXPERIMENT(4),
@@ -60,7 +60,7 @@ public enum EntityType implements org.apache.thrift.TEnum {
       case 0:
         return USER_PROFILE;
       case 1:
-        return GATEWAY;
+        return TENANT;
       case 2:
         return GROUP;
       case 3:

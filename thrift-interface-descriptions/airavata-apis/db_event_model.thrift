@@ -34,7 +34,7 @@ enum CrudType {
 // type of db-entity being replicated
 enum EntityType {
     USER_PROFILE,
-    GATEWAY,
+    TENANT,
     GROUP,
     PROJECT,
     EXPERIMENT,

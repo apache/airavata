@@ -29,7 +29,7 @@ public enum DBEventService {
     USER_PROFILE("user.profile"),
     SHARING("sharing"),
     REGISTRY("registry"),
-    GATEWAY("gateway");
+    TENANT("tenant");
 
     private final String name;
     DBEventService(String name) {
