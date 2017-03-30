@@ -43,7 +43,7 @@ service UserProfileService {
   user_profile_model.UserProfile getUserProfileById(1: required string userId, 2: required string gatewayId)
                                                 throws (1:profile_user_cpi_errors.UserProfileServiceException userProfileException);
 
-  bool deleteUserProfile(1: required string userId)
+  bool deleteUserProfile(1: required string userId, 2: required string gatewayId)
                                                   throws (1:profile_user_cpi_errors.UserProfileServiceException userProfileException);
 
   list<user_profile_model.UserProfile> getAllUserProfilesInGateway (1: required string gatewayId, 2: required i32 offset, 3: required i32 limit)
