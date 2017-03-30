@@ -51,6 +51,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
         try{
             userProfile = userProfileRepository.create(userProfile);
             if (null != userProfile) {
+                logger.info("Added UserProfile with userId: " + userProfile.getUserId());
                 // replicate userProfile at end-places
                 ProfileServiceUtils.getDbEventPublisher().publish(
                         ProfileServiceUtils.getDBEventMessageContext(EntityType.USER_PROFILE, CrudType.CREATE, userProfile),
@@ -71,8 +72,15 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
 
     public boolean updateUserProfile(UserProfile userProfile) throws UserProfileServiceException, TException {
         try {
-            if(userProfileRepository.update(userProfile) != null)
+            if(userProfileRepository.update(userProfile) != null) {
+                logger.info("Updated UserProfile with userId: " + userProfile.getUserId());
+                // replicate userProfile at end-places
+                ProfileServiceUtils.getDbEventPublisher().publish(
+                        ProfileServiceUtils.getDBEventMessageContext(EntityType.USER_PROFILE, CrudType.UPDATE, userProfile),
+                        DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString())
+                );
                 return true;
+            }
             return false;
         } catch (Exception e) {
             logger.error("Error while Updating user profile", e);
@@ -97,10 +105,23 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
         }
     }
 
-    public boolean deleteUserProfile(String userId) throws UserProfileServiceException {
+    public boolean deleteUserProfile(String userId, String gatewayId) throws UserProfileServiceException {
         try{
-            boolean deleteResult = userProfileRepository.delete(userId);
-            return deleteResult;
+            // find user-profile
+            UserProfile userProfile = userProfileRepository.getUserProfileByIdAndGateWay(userId, gatewayId);
+
+            // delete user
+            boolean deleteSuccess = userProfileRepository.delete(userId);
+            logger.info("Delete UserProfile with userId: " + userId + ", " + (deleteSuccess? "Success!" : "Failed!"));
+
+            if (deleteSuccess) {
+                // delete userProfile at end-places
+                ProfileServiceUtils.getDbEventPublisher().publish(
+                        ProfileServiceUtils.getDBEventMessageContext(EntityType.USER_PROFILE, CrudType.DELETE, userProfile),
+                        DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString())
+                );
+            }
+            return deleteSuccess;
         } catch (Exception e) {
             logger.error("Error while deleting user profile", e);
             UserProfileServiceException exception = new UserProfileServiceException();
