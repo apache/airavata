@@ -24,6 +24,7 @@ import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
+import org.apache.airavata.registry.api.service.messaging.RegistryServiceDBEventMessagingFactory;
 import org.apache.airavata.registry.api.service.util.*;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
@@ -96,6 +97,12 @@ public class RegistryAPIServer implements IServer {
                     }
                 }
             }.start();
+
+            logger.info("Registring registry service with publishers for db-events.");
+            RegistryServiceDBEventMessagingFactory.registerRegistryServiceWithPublishers(Constants.DB_EVENT_SUBSCRIBERS);
+
+            logger.info("Starting registry service db-event-handler subscriber.");
+            RegistryServiceDBEventMessagingFactory.getDBEventSubscriber();
         } catch (TTransportException e) {
             logger.error(e.getMessage());
             setStatus(ServerStatus.FAILED);
