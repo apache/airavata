@@ -41,9 +41,9 @@
         group={{ group }}
 
 
-- name: Open firwall ports
+- name: Open firewall ports
   firewalld: port="{{ registry_port }}/tcp" zone=public permanent=true state=enabled immediate=yes
-  become_user: root
+  become: yes
 
 - name: stop registry
   command: ./bin/airavata-server-stop.sh -f
