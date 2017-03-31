@@ -74,7 +74,7 @@ public class UserProfileSample {
             System.out.println("UserProfile: " + userProfile);
 
             // test delete-user-profile
-            boolean deleteSuccess = userProfileClient.deleteUserProfile(testUserId);
+            boolean deleteSuccess = userProfileClient.deleteUserProfile(testUserId, testGatewayId);
             assert (deleteSuccess) : "Delete user failed for userId: " + testUserId;
             System.out.println("Successfully deleted user with userId: " + testUserId);
 

@@ -66,7 +66,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     @Override
     public String addGateway(Gateway gateway) throws TenantProfileServiceException {
         try {
-            tenantProfileRepository.create(gateway);
+            gateway = tenantProfileRepository.create(gateway);
             if (gateway != null) {
                 logger.debug("Added Airavata Gateway with Id: " + gateway.getGatewayId());
                 // replicate tenant at end-places
