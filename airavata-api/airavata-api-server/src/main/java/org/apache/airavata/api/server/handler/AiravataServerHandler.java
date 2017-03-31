@@ -4839,7 +4839,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             throw new AuthorizationException("User isn't authorized to delete user profile for this user");
         }
         try {
-            return getUserProfileServiceClient().deleteUserProfile(userId);
+            return getUserProfileServiceClient().deleteUserProfile(userId, null);
         } catch (Exception e) {
             String msg = "Error deleting user profile";
             logger.error(msg, e);
