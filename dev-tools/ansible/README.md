@@ -57,6 +57,30 @@ clouds:
   identity_api_version: 3
 ```
 
+4. Changes to ansible.cfg, ssh.cfg and inventories/jetstream/groupvars/all.yml :
+
+ansible.cfg:
+```
+[ssh_connection]
+ssh_args = -F ./ssh.cfg 
+```
+
+ssh.cfg:
+```
+Host 149.165.*.*
+ User centos
+ BatchMode yes
+ StrictHostKeyChecking no
+ UserKnownHostsFile=/dev/null
+ IdentityFile $ssh_key_location
+```
+
+inventories/jetstream/groupvars/all.yml :
+```
+js_public_key: /path/to/public/ssh/key
+```
+
+
 Once those pieces are in place, you should be able to deploy vm's via
 
 - `ansible-playbook -i inventories/jetstream all_vms_js.yml`
