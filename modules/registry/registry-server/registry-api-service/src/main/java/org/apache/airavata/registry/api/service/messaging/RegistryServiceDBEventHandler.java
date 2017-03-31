@@ -111,7 +111,8 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                     switch (publisherContext.getCrudType()) {
                         case CREATE: {
                             logger.info("Replicating addUser in Registry.");
-                            //TODO: find appropriate method
+                            registryClient.addUser(userProfile);
+                            logger.info("addUser Replication Success!");
                             break;
                         }
                         case UPDATE: {
