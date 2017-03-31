@@ -24,6 +24,7 @@
 */
 
 include "../data-models/airavata_data_models.thrift"
+include "../data-models/user-group-models/user_profile_model.thrift"
 include "../data-models/experiment-catalog-models/status_models.thrift"
 include "../data-models/experiment-catalog-models/job_model.thrift"
 include "../data-models/experiment-catalog-models/experiment_model.thrift"
@@ -2124,6 +2125,19 @@ service RegistryService {
 
                bool deleteUserResourceProfile(1: required string userId, 2: required string gatewayID)
                          throws (1: registry_api_errors.RegistryServiceException rse)
+
+               /**
+                * Adds a new User Profile.
+                *
+                * @param userProfile
+                *   The user profile to add.
+                *
+                * @return userId
+                *   Returns the userId of the user profile added.
+                *
+               */
+               string addUser(1: required user_profile_model.UserProfile userProfile)
+                        throws (1: registry_api_errors.RegistryServiceException rse)
 
                /**
                 * Add a Compute Resource Preference to a registered user resource profile.
