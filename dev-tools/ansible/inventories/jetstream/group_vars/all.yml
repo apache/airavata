@@ -3,6 +3,7 @@ ansible_connection: ssh
 ansible_user: centos
 #ansible_user: root
 #ansible_ssh_private_key_file: /Users/supun/Desktop/shameera-key.pem
+js_public_key: /home/jecoulte/.ssh/testkey.pub
 # ansible_ssh_private_key_file: /Users/syodage/Projects/airavata-ansible/shameera-aws.pem.txt
 
 user: centos
