@@ -72,6 +72,14 @@ public class RegistryAPIServer implements IServer {
                 serverTransport = new TServerSocket(inetSocketAddress);
             }
 
+            // db-event handlers
+            logger.info("Registring registry service with publishers for db-events.");
+            RegistryServiceDBEventMessagingFactory.registerRegistryServiceWithPublishers(Constants.DB_EVENT_SUBSCRIBERS);
+
+            logger.info("Starting registry service db-event-handler subscriber.");
+            RegistryServiceDBEventMessagingFactory.getDBEventSubscriber();
+
+            // thrift server start
             TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
             options.minWorkerThreads = Integer.parseInt(ServerSettings.getSetting(Constants.REGISTRY_SERVER_MIN_THREADS, "30"));
             server = new TThreadPoolServer(options.processor(orchestratorServerHandlerProcessor));
@@ -97,12 +105,6 @@ public class RegistryAPIServer implements IServer {
                     }
                 }
             }.start();
-
-            logger.info("Registring registry service with publishers for db-events.");
-            RegistryServiceDBEventMessagingFactory.registerRegistryServiceWithPublishers(Constants.DB_EVENT_SUBSCRIBERS);
-
-            logger.info("Starting registry service db-event-handler subscriber.");
-            RegistryServiceDBEventMessagingFactory.getDBEventSubscriber();
         } catch (TTransportException e) {
             logger.error(e.getMessage());
             setStatus(ServerStatus.FAILED);

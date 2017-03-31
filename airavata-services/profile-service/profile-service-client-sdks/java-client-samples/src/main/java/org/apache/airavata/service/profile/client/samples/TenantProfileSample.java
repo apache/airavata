@@ -27,7 +27,8 @@ public class TenantProfileSample {
 
             // test addGateway
             testGatewayId = tenantProfileClient.addGateway(getGateway(null));
-
+            assert (testGatewayId != null) : "Gateway creation failed!";
+            System.out.println("Gateway created with gatewayId: " + testGatewayId);
 
 
         } catch (Exception ex) {
