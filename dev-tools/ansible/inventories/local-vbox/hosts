@@ -1,15 +1,29 @@
 #NOTE: These are not really separate hosts, aside from the pga, but some variables depend
 # on these group definitions!
+[broker:children]
+zookeeper
+rabbitmq
+database
+
+[main:children]
+wso2_is
+api-orch
+gfac
+registry
+
 [zookeeper]
-192.168.56.99 ansible_user=root
+192.168.56.98 ansible_user=root
 
 [rabbitmq]
-192.168.56.99 ansible_user=root
+192.168.56.98 ansible_user=root
 
 [database]
-149.165.172.5 ansible_user=root
+192.168.56.98 ansible_user=root
 
 [api-orch]
+192.168.56.99 ansible_user=root
+
+[wso2_is]
 192.168.56.99 ansible_user=root
 
 [gfac]
