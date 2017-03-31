@@ -30,6 +30,12 @@ To deploy pga run following. see site.yml (playbook) file for other available ta
 
 - `ansible-playbook -i inventories/develop site.yml -t "pga"`
 
+## Local Deployment in VirtualBox
+
+Build three CentOS 7 VMs locally, on a host-only network (See README.md in inventories/local_vbox).
+
+- `ansible-playbook -i inventories/local-vbox local_deploy.yml`
+
 ## Jetstream-based deployment
 
 Deploying on Jetstream will require a few extra steps:
@@ -88,10 +94,6 @@ Once those pieces are in place, you should be able to deploy vm's via
 And deploy software them via:
 
 - `ansible-playbook -i inventories/jetstream all_deploy_js.yml`
-
-Or do both steps at once via:
-
-- `ansible-playbook -i inventories/jetstream build_all_js.yml`
 
 The same flags as above (-t, --start-at-task) are *quite* useful. 
 
