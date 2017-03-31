@@ -155,7 +155,7 @@ generate_thrift_stubs() {
     rm -rf ${JAVA_GEN_DIR}
 
     # Using thrify Java generator, generate the java classes based on components CPI.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java ${COMPONENT_THRIFT_FILE} || fail unable to generate java thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:generated_annotations=undated ${COMPONENT_THRIFT_FILE} || fail unable to generate java thrift classes
 
     # Remove generated model classes, airavata api thrift file will generate those.
     echo "Remove generated model classes ${JAVA_GEN_DIR}/org/airavata/apache/model"

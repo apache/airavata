@@ -51,6 +51,7 @@ import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.model.task.TaskModel;
+import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
@@ -3812,6 +3813,21 @@ public class RegistryServerHandler implements RegistryService.Iface {
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while retrieving user resource profile. More info : " + e.getMessage());
             throw exception;
+        }
+    }
+
+    @Override
+    public String addUser(UserProfile userProfile) throws RegistryServiceException, TException {
+        try {
+            //FIXME: figure out a way to get password
+            logger.info("Adding User in Registry: " + userProfile);
+            ExpCatResourceUtils.addUser(userProfile.getUserName(), null, userProfile.getGatewayId());
+            return userProfile.getUserId();
+        } catch (RegistryException ex) {
+            logger.error("Error while adding user in registry: " + ex, ex);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage("Error while adding user in registry: " + ex.getMessage());
+            throw rse;
         }
     }
 
