@@ -30,6 +30,47 @@ To deploy pga run following. see site.yml (playbook) file for other available ta
 
 - `ansible-playbook -i inventories/develop site.yml -t "pga"`
 
+## Jetstream-based deployment
+
+Deploying on Jetstream will require a few extra steps:
+
+1. You will need API access to Jetstream, which must be requested 
+as described here:
+https://iujetstream.atlassian.net/wiki/display/JWT/Using+the+Jetstream+API
+
+2. The 'shade' library will have to be added to your python environment. 
+For example, `sudo apt-get install python-shade` or `pip install shade`
+
+3. You will need to create a clouds.yaml file, which contains the 
+ following (similar to the openrc file described in the Jetstream wiki):
+
+```
+clouds:
+ tacc:
+  auth: 
+   username: value
+   auth_url: value
+   project_name: value
+   password: value 
+  user_domain_name: value
+  project_domain_name: value
+  identity_api_version: 3
+```
+
+Once those pieces are in place, you should be able to deploy vm's via
+
+- `ansible-playbook -i inventories/jetstream all_vms_js.yml`
+
+And deploy software them via:
+
+- `ansible-playbook -i inventories/jetstream all_deploy_js.yml`
+
+Or do both steps at once via:
+
+- `ansible-playbook -i inventories/jetstream build_all_js.yml`
+
+The same flags as above (-t, --start-at-task) are *quite* useful. 
+
 ## Configurations
 
 - Set correct private key file to `ansible_ssh_private_key_file` property in group_vars/all
