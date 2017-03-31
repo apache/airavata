@@ -26,6 +26,13 @@
       network: public
       interfaces:
         - private_subnet
+
+  - name: ensure key is present
+    os_keypair:
+      cloud: tacc
+      state: present
+      name: jetstream_key
+      public_key_file: "{{ js_public_key }}"
   
   - name: build blank nodes 
     os_server:
