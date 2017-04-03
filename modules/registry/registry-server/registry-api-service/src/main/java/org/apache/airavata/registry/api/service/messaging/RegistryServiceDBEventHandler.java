@@ -134,11 +134,11 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                 default: {
                     logger.error("Handler not defined for Entity: " + publisherContext.getEntityType());
                 }
-
-                // send ack for received message
-                logger.info("RegistryServiceDBEventHandler | Sending ack. Message Delivery Tag: " + messageContext.getDeliveryTag());
-                RegistryServiceDBEventMessagingFactory.getDBEventSubscriber().sendAck(messageContext.getDeliveryTag());
             }
+
+            // send ack for received message
+            logger.info("RegistryServiceDBEventHandler | Sending ack. Message Delivery Tag: " + messageContext.getDeliveryTag());
+            RegistryServiceDBEventMessagingFactory.getDBEventSubscriber().sendAck(messageContext.getDeliveryTag());
         } catch (TException ex) {
             logger.error("Error processing message: " + ex, ex);
         } catch (ApplicationSettingsException ex) {
