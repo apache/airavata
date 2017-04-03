@@ -2,7 +2,6 @@
 mysql_packages:
   - MariaDB-server
   - MariaDB-client
-mysql_root_password: "admin"
 
 mysql_databases:
     - "{{ app_catalog }}"
