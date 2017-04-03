@@ -123,48 +123,69 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                     Gateway gateway = new Gateway();
                     ThriftUtils.createThriftFromBytes(dBEventMessageContext.getPublisher().getPublisherContext().getEntityDataModel(), gateway);
 
-                    Domain domain = new Domain();
-                    domain.setDomainId(gateway.getGatewayId());
-                    domain.setName(gateway.getGatewayName());
-                    domain.setDescription("Domain entry for " + domain.name);
-                    sharingRegistryClient.createDomain(domain);
+                    switch (dBEventMessageContext.getPublisher().getPublisherContext().getCrudType()){
 
-                    //Creating Entity Types for each domain
-                    org.apache.airavata.sharing.registry.models.EntityType entityType = new org.apache.airavata.sharing.registry.models.EntityType();
-                    entityType.setEntityTypeId(domain.domainId+":PROJECT");
-                    entityType.setDomainId(domain.domainId);
-                    entityType.setName("PROJECT");
-                    entityType.setDescription("Project entity type");
-                    sharingRegistryClient.createEntityType(entityType);
+                        case CREATE:
 
-                    entityType = new org.apache.airavata.sharing.registry.models.EntityType();
-                    entityType.setEntityTypeId(domain.domainId+":EXPERIMENT");
-                    entityType.setDomainId(domain.domainId);
-                    entityType.setName("EXPERIMENT");
-                    entityType.setDescription("Experiment entity type");
-                    sharingRegistryClient.createEntityType(entityType);
+                            log.info("Creating domain. Id : " + gateway.getGatewayId());
 
-                    entityType = new org.apache.airavata.sharing.registry.models.EntityType();
-                    entityType.setEntityTypeId(domain.domainId+":FILE");
-                    entityType.setDomainId(domain.domainId);
-                    entityType.setName("FILE");
-                    entityType.setDescription("File entity type");
-                    sharingRegistryClient.createEntityType(entityType);
+                            Domain domain = new Domain();
+                            domain.setDomainId(gateway.getGatewayId());
+                            domain.setName(gateway.getGatewayName());
+                            domain.setDescription("Domain entry for " + domain.name);
+                            sharingRegistryClient.createDomain(domain);
+                            log.debug("Domain created. Id : " + gateway.getGatewayId());
 
-                    //Creating Permission Types for each domain
-                    PermissionType permissionType = new PermissionType();
-                    permissionType.setPermissionTypeId(domain.domainId+":READ");
-                    permissionType.setDomainId(domain.domainId);
-                    permissionType.setName("READ");
-                    permissionType.setDescription("Read permission type");
-                    sharingRegistryClient.createPermissionType(permissionType);
+                            //Creating Entity Types for each domain
+                            log.info("Creating entity type. Id : " + domain.domainId+":PROJECT");
+                            org.apache.airavata.sharing.registry.models.EntityType entityType = new org.apache.airavata.sharing.registry.models.EntityType();
+                            entityType.setEntityTypeId(domain.domainId+":PROJECT");
+                            entityType.setDomainId(domain.domainId);
+                            entityType.setName("PROJECT");
+                            entityType.setDescription("Project entity type");
+                            sharingRegistryClient.createEntityType(entityType);
+                            log.debug("Entity type created. Id : " + domain.domainId+":PROJECT");
 
-                    permissionType = new PermissionType();
-                    permissionType.setPermissionTypeId(domain.domainId+":WRITE");
-                    permissionType.setDomainId(domain.domainId);
-                    permissionType.setName("WRITE");
-                    permissionType.setDescription("Write permission type");
-                    sharingRegistryClient.createPermissionType(permissionType);
+                            log.info("Creating entity type. Id : " + domain.domainId+":EXPERIMENT");
+                            entityType = new org.apache.airavata.sharing.registry.models.EntityType();
+                            entityType.setEntityTypeId(domain.domainId+":EXPERIMENT");
+                            entityType.setDomainId(domain.domainId);
+                            entityType.setName("EXPERIMENT");
+                            entityType.setDescription("Experiment entity type");
+                            sharingRegistryClient.createEntityType(entityType);
+                            log.debug("Entity type created. Id : " + domain.domainId+":EXPERIMENT");
+
+                            log.info("Creating entity type. Id : " + domain.domainId+":FILE");
+                            entityType = new org.apache.airavata.sharing.registry.models.EntityType();
+                            entityType.setEntityTypeId(domain.domainId+":FILE");
+                            entityType.setDomainId(domain.domainId);
+                            entityType.setName("FILE");
+                            entityType.setDescription("File entity type");
+                            sharingRegistryClient.createEntityType(entityType);
+                            log.debug("Entity type created. Id : " + domain.domainId+":FILE");
+
+                            //Creating Permission Types for each domain
+                            log.info("Creating Permission Type. Id : " + domain.domainId+":READ");
+                            PermissionType permissionType = new PermissionType();
+                            permissionType.setPermissionTypeId(domain.domainId+":READ");
+                            permissionType.setDomainId(domain.domainId);
+                            permissionType.setName("READ");
+                            permissionType.setDescription("Read permission type");
+                            sharingRegistryClient.createPermissionType(permissionType);
+                            log.debug("Permission Type created. Id : " + domain.domainId+":READ");
+
+                            log.info("Creating Permission Type. Id : " + domain.domainId+":WRITE");
+                            permissionType = new PermissionType();
+                            permissionType.setPermissionTypeId(domain.domainId+":WRITE");
+                            permissionType.setDomainId(domain.domainId);
+                            permissionType.setName("WRITE");
+                            permissionType.setDescription("Write permission type");
+                            sharingRegistryClient.createPermissionType(permissionType);
+                            log.debug("Permission Type created. Id : " + domain.domainId+":WRITE");
+
+                            break;
+                    }
+
 
                     break;
 
