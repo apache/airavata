@@ -50,8 +50,8 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     @Override
     public String createDomain(Domain domain) throws SharingRegistryException, TException {
         try{
-            domain.setDomainId(domain.name);
-            if((new DomainRepository()).get(domain.domainId) != null)
+            domain.setDomainId(domain.getDomainId());
+            if((new DomainRepository()).get(domain.getDomainId()) != null)
                 throw new SharingRegistryException("There exist domain with given domain id");
 
             domain.setCreatedTime(System.currentTimeMillis());
