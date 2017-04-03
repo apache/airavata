@@ -21,12 +21,12 @@
       become: yes
       become_user: "{{user}}"
 
-- hosts: wso2is
-  tags: wso2is
-  roles:
-    - env_setup
-    - java
-    - wso2_is
+#- hosts: wso2is
+#  tags: wso2is
+#  roles:
+#    - env_setup
+#    - java
+#    - wso2_is
 
 - hosts: gfac
   tags: gfac, airavata
@@ -43,14 +43,15 @@
     - java
     - common
     - api-orch
-
-- hosts: registry
-  tags: registry, airavata
-  roles:
-    - env_setup
-    - java
-    - common
     - registry
+
+#- hosts: registry
+#  tags: registry, airavata
+#  roles:
+#    - env_setup
+#    - java
+#    - common
+#    - registry
 
 - hosts: pga
   tags: pga

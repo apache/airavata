@@ -53,7 +53,7 @@
       - { hostname: 'zookeeper', group: 'zookeeper', size: 'm1.small' }
       - { hostname: 'rabbitmq', group: 'rabbitmq', size: 'm1.small' }
       - { hostname: 'database', group: 'database', size: 'm1.small' }
-      - { hostname: 'wso2is', group: 'wso2is', size: 'm1.small' }
+#      - { hostname: 'wso2is', group: 'wso2is', size: 'm1.small' }
       - { hostname: 'gfac', group: 'gfac', size: 'm1.small' }
       - { hostname: 'api-orch', group: 'api-orch', size: 'm1.small' }
       - { hostname: 'registry', group: 'registry', size: 'm1.small' }
