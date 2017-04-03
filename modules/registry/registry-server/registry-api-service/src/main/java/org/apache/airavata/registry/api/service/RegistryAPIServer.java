@@ -53,12 +53,19 @@ public class RegistryAPIServer implements IServer {
     public void StartRegistryServer(RegistryService.Processor<RegistryServerHandler> orchestratorServerHandlerProcessor)
             throws Exception {
         // creating experiment catalog db
+        logger.info("Initializing ExperimentCatalog DB");
         ExperimentCatalogInitUtil.initializeDB();
+
         // creating app catalog db
+        logger.info("Initializing AppCatalog DB");
         AppCatalogInitUtil.initializeDB();
+
         // creating workflow catalog db
+        logger.info("Initializing WorkflowCatalog DB");
         WorkflowCatalogInitUtil.initializeDB();
+
         // creating replica catalog db
+        logger.info("Initializing ReplicaCatalog DB");
         ReplicaCatalogInitUtil.initializeDB();
 
         final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.REGISTRY_SERVER_PORT, "8960"));
