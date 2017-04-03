@@ -40,16 +40,16 @@
         owner={{ user }} group={{ group }}
 
 - name: Transfer airavata.jks KeyStore file
-  copy: src={{ keystore }}
-        dest="{{ keystores_location }}/{{ keystore }}"
+  copy: src={{ keystore_src_path }}
+        dest="{{ keystores_location }}/{{ keystore_src_path | basename }}"
         owner={{ user }} group={{ group }}
 
 - name: Transfer airavata_sym.jks KeyStore file
-  copy: src={{ cred_keystore }}
-        dest="{{ keystores_location }}/{{ cred_keystore }}"
+  copy: src={{ cred_keystore_src_path }}
+        dest="{{ keystores_location }}/{{ cred_keystore_src_path | basename }}"
         owner={{ user }} group={{ group }}
 
 - name: Transfer client trust store KeyStore file
-  copy: src={{ client_truststore }}
-        dest="{{ keystores_location }}/{{ client_truststore }}"
+  copy: src={{ client_truststore_src_path }}
+        dest="{{ keystores_location }}/{{ client_truststore_src_path | basename }}"
         owner={{ user }} group={{ group }}
