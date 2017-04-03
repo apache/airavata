@@ -55,6 +55,7 @@
 
     <modules>
         <module>profile-service</module>
+        <module>services-security</module>
     </modules>
 
     <properties>
