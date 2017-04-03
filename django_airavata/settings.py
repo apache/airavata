@@ -37,8 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_airavata_auth',
-    'django_airavata_workspace',
+    'django_airavata.apps.auth.apps.AuthConfig',
+    'django_airavata.apps.workspace.apps.WorkspaceConfig',
 ]
 
 MIDDLEWARE = [
@@ -49,11 +49,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_airavata_auth.middleware.authz_token_middleware',
-    'django_airavata_gateway.middleware.airavata_client',
+    'django_airavata.apps.auth.middleware.authz_token_middleware',
+    'django_airavata.middleware.airavata_client',
 ]
 
-ROOT_URLCONF = 'django_airavata_gateway.urls'
+ROOT_URLCONF = 'django_airavata.urls'
 
 TEMPLATES = [
     {
@@ -71,7 +71,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'django_airavata_gateway.wsgi.application'
+WSGI_APPLICATION = 'django_airavata.wsgi.application'
 
 
 # Database
@@ -124,7 +124,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 AUTHENTICATION_BACKENDS = [
-    'django_airavata_auth.backends.WSO2ISBackend'
+    'django_airavata.apps.auth.backends.WSO2ISBackend'
 ]
 
 WSO2IS_CLIENT_ID = 'fGwm3EW0EmaiV0jI6GBmmOiQ2Xca'
@@ -150,15 +150,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        'django_airavata_auth': {
-            'handlers': ['console'],
-            'level': 'DEBUG' if DEBUG else 'INFO'
-        },
-        'django_airavata_gateway': {
-            'handlers': ['console'],
-            'level': 'DEBUG' if DEBUG else 'INFO'
-        },
-        'django_airavata_workspace': {
+        'django_airavata': {
             'handlers': ['console'],
             'level': 'DEBUG' if DEBUG else 'INFO'
         },

@@ -20,8 +20,8 @@ from . import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^auth/', include('django_airavata_auth.urls')),
-    url(r'^workspace/', include('django_airavata_workspace.urls')),
+    url(r'^auth/', include('django_airavata.apps.auth.urls')),
+    url(r'^workspace/', include('django_airavata.apps.workspace.urls')),
     # This is just a dummy view to test authentication
     url(r'^$', views.home)
 ]
