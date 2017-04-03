@@ -21,7 +21,7 @@ public class UserProfileSample {
     private static final Logger logger = LoggerFactory.getLogger(UserProfileSample.class);
     private static UserProfileService.Client userProfileClient;
     private static String testUserId = null;
-    private static String testGatewayId = "test-client-gateway";
+    private static String testGatewayId = "test-gateway-1830144881";
 
     /**
      * Performs the following operations in sequence:
@@ -90,7 +90,7 @@ public class UserProfileSample {
 
     private static UserProfile getUserProfile(String userId) {
         // get random value for userId
-        int userIdValue = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
+        int userIdValue = ThreadLocalRandom.current().nextInt(1000);
 
         if (userId != null) {
             userIdValue = Integer.parseInt(userId.replaceAll("test-user-", ""));

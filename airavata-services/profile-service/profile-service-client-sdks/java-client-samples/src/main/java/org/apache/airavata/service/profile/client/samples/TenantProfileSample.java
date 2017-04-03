@@ -38,7 +38,7 @@ public class TenantProfileSample {
 
     private static Gateway getGateway(String gatewayId) {
         // get random value for userId
-        int gatewayIdValue = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
+        int gatewayIdValue = ThreadLocalRandom.current().nextInt(1000);
 
         if (gatewayId != null) {
             gatewayIdValue = Integer.parseInt(gatewayId.replaceAll("test-gateway-", ""));
