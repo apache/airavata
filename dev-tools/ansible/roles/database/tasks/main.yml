@@ -34,9 +34,55 @@
   yum: name="{{ item }}" state=latest update_cache=yes
   with_items: "{{ mysql_packages }}"
   become_user: root
+#" for vim
+
+- name: check if mysql has been updated
+  stat: path=/usr/share/mysql/SELinux/mariadb.pp
+  register: mysql_selinux_update
+
+- debug:
+    var: mysql_selinux_update
+
+- name: double check policycoreutils installed
+  yum: name=policycoreutils-python state=installed
+  when: mysql_selinux_update.stat.exists == False
+
+- name: Copy SELinux type enforcement file
+  copy: src=mysql-tmp.te dest=/tmp/
+  when: mysql_selinux_update.stat.exists == False
+
+- name: Compile SELinux module file
+  command: checkmodule -M -m -o /tmp/mysql-tmp.mod /tmp/mysql-tmp.te
+  when: mysql_selinux_update.stat.exists == False
+
+- name: Build SELinux policy package
+  command: semodule_package -o /tmp/mysql-tmp.pp -m /tmp/mysql-tmp.mod
+  when: mysql_selinux_update.stat.exists == False
+
+#- name: check if mysql has been updated
+#  stat: path=/tmp/mysql-tmp.pp
+#  register: mysql_pp
+#
+#- debug:
+#    var: mysql_pp
+
+- name: unLoad SELinux policy package
+  command: semodule -r mysql-tmp
+  when: mysql_selinux_update.stat.exists == False
+  become_user: root
+  ignore_errors: True
+
+- name: Load SELinux policy package
+  command: semodule -i /tmp/mysql-tmp.pp
+  when: mysql_selinux_update.stat.exists == False
+  become_user: root
+
+- name: Remove temporary files
+  file: path=/tmp/mysql-tmp.* state=absent
+  when: mysql_selinux_update.stat.exists == False
 
 # TODO: SELinux issue for 10.0.29 MariaDB, need to allow setgid/setuid.
-# See https://www.rootusers.com/how-to-fix-mariadb-10-0-29-selinux-update-failure/
+## See https://www.rootusers.com/how-to-fix-mariadb-10-0-29-selinux-update-failure/
 # and https://jira.mariadb.org/browse/MDEV-11789
 # For now I'm not adding to Ansible script since this bug should be fixed in next MariaDB release
 - name: start mariadb
