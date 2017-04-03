@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.registry.api.service;
 
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.registry.api.RegistryService;
@@ -79,13 +80,6 @@ public class RegistryAPIServer implements IServer {
                 serverTransport = new TServerSocket(inetSocketAddress);
             }
 
-            // db-event handlers
-            logger.info("Registring registry service with publishers for db-events.");
-            RegistryServiceDBEventMessagingFactory.registerRegistryServiceWithPublishers(Constants.DB_EVENT_SUBSCRIBERS);
-
-            logger.info("Starting registry service db-event-handler subscriber.");
-            RegistryServiceDBEventMessagingFactory.getDBEventSubscriber();
-
             // thrift server start
             TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
             options.minWorkerThreads = Integer.parseInt(ServerSettings.getSetting(Constants.REGISTRY_SERVER_MIN_THREADS, "30"));
@@ -109,6 +103,12 @@ public class RegistryAPIServer implements IServer {
                     if (server.isServing()){
                         setStatus(ServerStatus.STARTED);
                         logger.info("Started Registry Server on Port " + serverPort + " ...");
+
+                        // start db event handlers
+                        if (!startDatabaseEventHandlers()) {
+                            logger.error("Stopping Registry Server as DB event handlers failed to start!");
+                            server.stop();
+                        }
                     }
                 }
             }.start();
@@ -117,6 +117,21 @@ public class RegistryAPIServer implements IServer {
             setStatus(ServerStatus.FAILED);
             logger.error("Failed to start Registry server on port " + serverPort + " ...");
         }
+    }
+
+    private boolean startDatabaseEventHandlers() {
+        try {
+            // db-event handlers
+            logger.info("Registring registry service with publishers for db-events.");
+            RegistryServiceDBEventMessagingFactory.registerRegistryServiceWithPublishers(Constants.DB_EVENT_SUBSCRIBERS);
+
+            logger.info("Starting registry service db-event-handler subscriber.");
+            RegistryServiceDBEventMessagingFactory.getDBEventSubscriber();
+        } catch (Exception ex) {
+            logger.error("Failed to start database event handlers, reason: " + ex.getMessage(), ex);
+            return false;
+        }
+        return true;
     }
 
     public static void main(String[] args) {
