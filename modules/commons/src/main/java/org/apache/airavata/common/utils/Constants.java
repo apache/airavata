@@ -35,6 +35,8 @@ public final class Constants {
     public static final String IS_API_SECURED = "api.secured";
     public static final String SECURITY_MANAGER_CLASS = "security.manager.class";
     public static final String REMOTE_OAUTH_SERVER_URL = "remote.oauth.authorization.server";
+    public static final String REMOTE_OPENID_DISCOVERY_URL = "remote.openid.connect.discovery.url";
+    public static final String REMOTE_IDP_SERVICE_URL = "remote.idp.service.url";
     public static final String IS_TLS_ENABLED = "TLS.enabled";
     public static final String TLS_SERVER_PORT = "TLS.api.server.port";
     public static final String KEYSTORE_PATH = "keystore.path";

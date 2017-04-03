@@ -329,6 +329,15 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(Constants.REMOTE_OAUTH_SERVER_URL);
     }
 
+    public static String getRemoteOpenIdDiscoveryUrl() throws ApplicationSettingsException {
+        return getSetting(Constants.REMOTE_OPENID_DISCOVERY_URL);
+    }
+
+    public static String getRemoteIDPServiceUrl() throws ApplicationSettingsException {
+        return getSetting(Constants.REMOTE_IDP_SERVICE_URL);
+    }
+
+
     public static String getAuthorizationPoliyName() throws ApplicationSettingsException {
         return getSetting(Constants.AUTHORIZATION_POLICY_NAME);
     }
