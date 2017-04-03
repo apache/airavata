@@ -85,19 +85,30 @@ public class SharingServiceDBEventHandler implements MessageHandler {
 
                         case CREATE:
                             log.info("Creating user. User Id : " + user.getUserId());
+
                             sharingRegistryClient.createUser(user);
+                            log.debug("User created. User Id : " + user.getUserId());
+
                             break;
+
                         case READ:
                             //FIXME: Remove if not required
                             break;
 
                         case UPDATE:
                             log.info("Updating user. User Id : " + user.getUserId());
+
                             sharingRegistryClient.updatedUser(user);
+                            log.debug("User updated. User Id : " + user.getUserId());
+
                             break;
+
                         case DELETE:
                             log.info("Deleting user. User Id : " + user.getUserId());
+
                             sharingRegistryClient.deleteUser(user.getDomainId(), user.getUserId());
+                            log.debug("User deleted. User Id : " + user.getUserId());
+
                             break;
                     }
                     break;
