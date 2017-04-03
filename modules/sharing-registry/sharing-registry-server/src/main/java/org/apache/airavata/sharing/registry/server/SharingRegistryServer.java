@@ -87,18 +87,6 @@ public class SharingRegistryServer implements IServer {
             new Thread() {
                 public void run() {
                     server.serve();
-                    try {
-                        logger.info("Register sharing service with DB Event publishers");
-                        SharingServiceDBEventMessagingFactory.registerSharingServiceWithPublishers(Constants.PUBLISHERS);
-
-
-                        logger.info("Start sharing service DB Event subscriber");
-                        SharingServiceDBEventMessagingFactory.getDBEventSubscriber();
-                    } catch (AiravataException e) {
-                        e.printStackTrace();
-                    } catch (SharingRegistryException e) {
-                        e.printStackTrace();
-                    }
                     setStatus(IServer.ServerStatus.STOPPED);
                     logger.info("Sharing Registry Server Stopped.");
                 }
@@ -113,6 +101,20 @@ public class SharingRegistryServer implements IServer {
                         }
                     }
                     if (server.isServing()) {
+
+                        try {
+
+                            logger.info("Register sharing service with DB Event publishers");
+                            SharingServiceDBEventMessagingFactory.registerSharingServiceWithPublishers(Constants.PUBLISHERS);
+
+                            logger.info("Start sharing service DB Event subscriber");
+                            SharingServiceDBEventMessagingFactory.getDBEventSubscriber();
+
+                        } catch (AiravataException | SharingRegistryException e) {
+                            logger.error("Error starting sharing service. Error setting up DB event services.");
+                            server.stop();
+                        }
+
                         setStatus(IServer.ServerStatus.STARTED);
                         logger.info("Starting Sharing Registry Server on Port " + serverPort);
                         logger.info("Listening to Sharing Registry server clients ....");
