@@ -20,9 +20,11 @@
 */
 package org.apache.airavata.sharing.registry.server;
 
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.sharing.registry.messaging.SharingServiceDBEventMessagingFactory;
+import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.airavata.sharing.registry.utils.Constants;
 import org.apache.thrift.server.TServer;
@@ -85,6 +87,18 @@ public class SharingRegistryServer implements IServer {
             new Thread() {
                 public void run() {
                     server.serve();
+                    try {
+                        logger.info("Register sharing service with DB Event publishers");
+                        SharingServiceDBEventMessagingFactory.registerSharingServiceWithPublishers(Constants.PUBLISHERS);
+
+
+                        logger.info("Start sharing service DB Event subscriber");
+                        SharingServiceDBEventMessagingFactory.getDBEventSubscriber();
+                    } catch (AiravataException e) {
+                        e.printStackTrace();
+                    } catch (SharingRegistryException e) {
+                        e.printStackTrace();
+                    }
                     setStatus(IServer.ServerStatus.STOPPED);
                     logger.info("Sharing Registry Server Stopped.");
                 }
@@ -105,12 +119,6 @@ public class SharingRegistryServer implements IServer {
                     }
                 }
             }.start();
-
-            logger.info("Register sharing service with DB Event publishers");
-            SharingServiceDBEventMessagingFactory.registerSharingServiceWithPublishers(Constants.PUBLISHERS);
-
-            logger.info("Start sharing service DB Event subscriber");
-            SharingServiceDBEventMessagingFactory.getDBEventSubscriber();
 
         } catch (TTransportException e) {
             setStatus(IServer.ServerStatus.FAILED);
