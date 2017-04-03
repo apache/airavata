@@ -30,7 +30,10 @@ import org.apache.airavata.model.dbevent.DBEventMessage;
 import org.apache.airavata.model.dbevent.DBEventMessageContext;
 import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.user.UserProfile;
+import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
+import org.apache.airavata.sharing.registry.models.Domain;
+import org.apache.airavata.sharing.registry.models.PermissionType;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.registry.models.User;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServer;
@@ -85,21 +88,84 @@ public class SharingServiceDBEventHandler implements MessageHandler {
 
                         case CREATE:
                             log.info("Creating user. User Id : " + user.getUserId());
+
                             sharingRegistryClient.createUser(user);
+                            log.debug("User created. User Id : " + user.getUserId());
+
                             break;
+
                         case READ:
                             //FIXME: Remove if not required
                             break;
 
                         case UPDATE:
                             log.info("Updating user. User Id : " + user.getUserId());
+
                             sharingRegistryClient.updatedUser(user);
+                            log.debug("User updated. User Id : " + user.getUserId());
+
                             break;
+
                         case DELETE:
                             log.info("Deleting user. User Id : " + user.getUserId());
+
                             sharingRegistryClient.deleteUser(user.getDomainId(), user.getUserId());
+                            log.debug("User deleted. User Id : " + user.getUserId());
+
                             break;
                     }
+                    break;
+
+                case TENANT :
+
+                    log.info("Tenant specific DB Event communicated by " + dbEventMessage.getPublisherService());
+
+                    Gateway gateway = new Gateway();
+                    ThriftUtils.createThriftFromBytes(dBEventMessageContext.getPublisher().getPublisherContext().getEntityDataModel(), gateway);
+
+                    Domain domain = new Domain();
+                    domain.setDomainId(gateway.getGatewayId());
+                    domain.setName(gateway.getGatewayName());
+                    domain.setDescription("Domain entry for " + domain.name);
+                    sharingRegistryClient.createDomain(domain);
+
+                    //Creating Entity Types for each domain
+                    org.apache.airavata.sharing.registry.models.EntityType entityType = new org.apache.airavata.sharing.registry.models.EntityType();
+                    entityType.setEntityTypeId(domain.domainId+":PROJECT");
+                    entityType.setDomainId(domain.domainId);
+                    entityType.setName("PROJECT");
+                    entityType.setDescription("Project entity type");
+                    sharingRegistryClient.createEntityType(entityType);
+
+                    entityType = new org.apache.airavata.sharing.registry.models.EntityType();
+                    entityType.setEntityTypeId(domain.domainId+":EXPERIMENT");
+                    entityType.setDomainId(domain.domainId);
+                    entityType.setName("EXPERIMENT");
+                    entityType.setDescription("Experiment entity type");
+                    sharingRegistryClient.createEntityType(entityType);
+
+                    entityType = new org.apache.airavata.sharing.registry.models.EntityType();
+                    entityType.setEntityTypeId(domain.domainId+":FILE");
+                    entityType.setDomainId(domain.domainId);
+                    entityType.setName("FILE");
+                    entityType.setDescription("File entity type");
+                    sharingRegistryClient.createEntityType(entityType);
+
+                    //Creating Permission Types for each domain
+                    PermissionType permissionType = new PermissionType();
+                    permissionType.setPermissionTypeId(domain.domainId+":READ");
+                    permissionType.setDomainId(domain.domainId);
+                    permissionType.setName("READ");
+                    permissionType.setDescription("Read permission type");
+                    sharingRegistryClient.createPermissionType(permissionType);
+
+                    permissionType = new PermissionType();
+                    permissionType.setPermissionTypeId(domain.domainId+":WRITE");
+                    permissionType.setDomainId(domain.domainId);
+                    permissionType.setName("WRITE");
+                    permissionType.setDescription("Write permission type");
+                    sharingRegistryClient.createPermissionType(permissionType);
+
                     break;
 
                 default: log.error("Handler not defined for " + dBEventMessageContext.getPublisher().getPublisherContext().getEntityType());
