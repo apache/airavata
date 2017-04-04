@@ -55,7 +55,6 @@
   with_items:
     - "{{ groups['api-orch'] }}"
     - "{{ groups['gfac'] }}"
-    - "{{ groups['registry'] }}"
     - "localhost"
 
 - name: create new user {{ db_user }} with all privilege
