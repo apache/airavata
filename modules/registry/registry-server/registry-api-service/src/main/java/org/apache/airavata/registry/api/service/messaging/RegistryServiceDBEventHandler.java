@@ -140,7 +140,7 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                         logger.error("Handler not defined for Entity: " + publisherContext.getEntityType());
                     }
                 }
-            } catch (RegistryServiceException ex) {
+            } catch (DuplicateEntryException ex) {
                 // log this exception and proceed (do nothing)
                 // this exception is thrown mostly when messages are re-consumed, hence ignore
                 logger.warn("DuplicateEntryException while consuming db-event message, ex: " + ex.getMessage(), ex);
