@@ -28,6 +28,7 @@ import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.model.dbevent.DBEventMessage;
 import org.apache.airavata.model.dbevent.DBEventPublisherContext;
+import org.apache.airavata.model.error.DuplicateEntryException;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.registry.api.RegistryService;
@@ -70,72 +71,80 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
             DBEventPublisherContext publisherContext = dbEventMessage.getMessageContext().getPublisher().getPublisherContext();
             logger.info("RegistryService, Replicated Entity: " + publisherContext.getEntityType());
 
-            // check type of entity-type
-            switch (publisherContext.getEntityType()) {
-                case TENANT: {
-                    // construct gateway datamodel from message
-                    Gateway gateway = new Gateway();
-                    ThriftUtils.createThriftFromBytes(publisherContext.getEntityDataModel(), gateway);
+            // this try-block is mainly for catching DuplicateEntryException
+            try {
+                // check type of entity-type
+                switch (publisherContext.getEntityType()) {
+                    // Gateway related operations
+                    case TENANT: {
+                        // construct gateway datamodel from message
+                        Gateway gateway = new Gateway();
+                        ThriftUtils.createThriftFromBytes(publisherContext.getEntityDataModel(), gateway);
 
-                    // call service-methods based on CRUD type
-                    switch (publisherContext.getCrudType()) {
-                        case CREATE: {
-                            logger.info("Replicating addGateway in Registry.");
-                            registryClient.addGateway(gateway);
-                            logger.info("addGateway Replication Success!");
-                            break;
+                        // call service-methods based on CRUD type
+                        switch (publisherContext.getCrudType()) {
+                            case CREATE: {
+                                logger.info("Replicating addGateway in Registry.");
+                                registryClient.addGateway(gateway);
+                                logger.info("addGateway Replication Success!");
+                                break;
+                            }
+                            case UPDATE: {
+                                logger.info("Replicating updateGateway in Registry.");
+                                registryClient.updateGateway(gateway.getGatewayId(), gateway);
+                                logger.info("updateGateway Replication Success!");
+                                break;
+                            }
+                            case DELETE: {
+                                logger.info("Replicating deleteGateway in Registry.");
+                                registryClient.deleteGateway(gateway.getGatewayId());
+                                logger.info("deleteGateway Replication Success!");
+                                break;
+                            }
                         }
-                        case UPDATE: {
-                            logger.info("Replicating updateGateway in Registry.");
-                            registryClient.updateGateway(gateway.getGatewayId(), gateway);
-                            logger.info("updateGateway Replication Success!");
-                            break;
-                        }
-                        case DELETE: {
-                            logger.info("Replicating deleteGateway in Registry.");
-                            registryClient.deleteGateway(gateway.getGatewayId());
-                            logger.info("deleteGateway Replication Success!");
-                            break;
-                        }
+                        // break entity: gateway
+                        break;
                     }
-                    // break entity: gateway
-                    break;
-                }
 
-                case USER_PROFILE: {
-                    // construct userprofile datamodel from message
-                    UserProfile userProfile = new UserProfile();
-                    ThriftUtils.createThriftFromBytes(publisherContext.getEntityDataModel(), userProfile);
+                    // UserProfile related operations
+                    case USER_PROFILE: {
+                        // construct userprofile datamodel from message
+                        UserProfile userProfile = new UserProfile();
+                        ThriftUtils.createThriftFromBytes(publisherContext.getEntityDataModel(), userProfile);
 
-                    // call service-methods based on CRUD type
-                    switch (publisherContext.getCrudType()) {
-                        case CREATE: {
-                            logger.info("Replicating addUser in Registry.");
-                            registryClient.addUser(userProfile);
-                            logger.info("addUser Replication Success!");
-                            break;
+                        // call service-methods based on CRUD type
+                        switch (publisherContext.getCrudType()) {
+                            case CREATE: {
+                                logger.info("Replicating addUser in Registry.");
+                                registryClient.addUser(userProfile);
+                                logger.info("addUser Replication Success!");
+                                break;
+                            }
+                            case UPDATE: {
+                                logger.info("Replicating updateGateway in Registry.");
+                                //TODO: find appropriate method
+                                break;
+                            }
+                            case DELETE: {
+                                logger.info("Replicating deleteGateway in Registry.");
+                                //TODO: find appropriate method
+                                break;
+                            }
                         }
-                        case UPDATE: {
-                            logger.info("Replicating updateGateway in Registry.");
-                            //TODO: find appropriate method
-                            break;
-                        }
-                        case DELETE: {
-                            logger.info("Replicating deleteGateway in Registry.");
-                            //TODO: find appropriate method
-                            break;
-                        }
+                        // break entity: userprofile
+                        break;
                     }
-                    // break entity: userprofile
-                    break;
-                }
 
-                // no handler for entity
-                default: {
-                    logger.error("Handler not defined for Entity: " + publisherContext.getEntityType());
+                    // no handler for entity
+                    default: {
+                        logger.error("Handler not defined for Entity: " + publisherContext.getEntityType());
+                    }
                 }
+            } catch (DuplicateEntryException ex) {
+                // log this exception and proceed (do nothing)
+                // this exception is thrown mostly when messages are re-consumed, hence ignore
+                logger.error("DuplicateEntryException while consuming db-event message, ex: " + ex.getMessage(), ex);
             }
-
             // send ack for received message
             logger.info("RegistryServiceDBEventHandler | Sending ack. Message Delivery Tag: " + messageContext.getDeliveryTag());
             RegistryServiceDBEventMessagingFactory.getDBEventSubscriber().sendAck(messageContext.getDeliveryTag());
