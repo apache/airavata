@@ -725,6 +725,8 @@
                                 <exclude>**/*.jks</exclude>
                                 <exclude>**/*.pem</exclude>
                                 <exclude>**/*.pk8</exclude>
+                                <exclude>**/.idea/**/*</exclude>
+                                <exclude>airavata-api/airavata-client-sdks/**/*</exclude>
                             </excludes>
                         </configuration>
                         <executions>
