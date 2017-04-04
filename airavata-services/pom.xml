@@ -51,6 +51,11 @@
             <artifactId>airavata-server-configuration</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-data-models</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <modules>
