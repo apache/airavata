@@ -41,8 +41,7 @@ airavata_port: "8930"
 gateway_id: "default"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}"
-# TODO: fix this
-gateway_data_store_resource_id: "js-170-103.jetstream-cloud.org_6497a464-3121-4b64-a7cb-d195b0a26c19"
+gateway_data_store_resource_id: "149.165.156.148_13fd11a4-f2eb-4ba8-a2c7-0db07f96db6b"
 
 ## Portal related variables
 super_admin_portal: "false"
