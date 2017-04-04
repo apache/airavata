@@ -50,7 +50,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
      * *
      */
     @Override
-    public String createDomain(Domain domain) throws SharingRegistryException, TException {
+    public String createDomain(Domain domain) throws SharingRegistryException, DuplicateEntryException, TException {
         try{
             domain.setDomainId(domain.getDomainId());
             if((new DomainRepository()).get(domain.getDomainId()) != null)
@@ -128,7 +128,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
      * *
      */
     @Override
-    public String createUser(User user) throws SharingRegistryException, TException {
+    public String createUser(User user) throws SharingRegistryException, DuplicateEntryException, TException {
         try{
             UserPK userPK = new UserPK();
             userPK.setUserId(user.getUserId());
@@ -418,7 +418,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
      * *
      */
     @Override
-    public String createEntityType(EntityType entityType) throws SharingRegistryException, TException {
+    public String createEntityType(EntityType entityType) throws SharingRegistryException, DuplicateEntryException, TException {
         try{
             EntityTypePK entityTypePK = new EntityTypePK();
             entityTypePK.setDomainId(entityType.domainId);
@@ -498,7 +498,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
      * *
      */
     @Override
-    public String createPermissionType(PermissionType permissionType) throws SharingRegistryException, TException {
+    public String createPermissionType(PermissionType permissionType) throws SharingRegistryException, DuplicateEntryException, TException {
         try{
             PermissionTypePK permissionTypePK =  new PermissionTypePK();
             permissionTypePK.setDomainId(permissionType.domainId);
