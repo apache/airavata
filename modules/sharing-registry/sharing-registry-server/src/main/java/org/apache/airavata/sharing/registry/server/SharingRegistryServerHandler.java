@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 public class SharingRegistryServerHandler implements SharingRegistryService.Iface{
@@ -1022,17 +1023,19 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
         Field[] oldEntityFields = oldEntityClass.getDeclaredFields();
 
         for (Field field : oldEntityFields){
-            field.setAccessible(true);
-            Object o = newHT.get(field.getName());
-            if (o != null){
-                Field f = null;
-                try {
-                    f = oldEntityClass.getDeclaredField(field.getName());
-                    f.setAccessible(true);
-                    logger.debug("setting " + f.getName());
-                    f.set(oldEntity, o);
-                } catch (Exception e) {
-                    throw new SharingRegistryException(e.getMessage());
+            if (!Modifier.isFinal(field.getModifiers())) {
+                field.setAccessible(true);
+                Object o = newHT.get(field.getName());
+                if (o != null) {
+                    Field f = null;
+                    try {
+                        f = oldEntityClass.getDeclaredField(field.getName());
+                        f.setAccessible(true);
+                        logger.debug("setting " + f.getName());
+                        f.set(oldEntity, o);
+                    } catch (Exception e) {
+                        throw new SharingRegistryException(e.getMessage());
+                    }
                 }
             }
         }
