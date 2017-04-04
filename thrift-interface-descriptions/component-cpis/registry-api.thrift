@@ -80,7 +80,7 @@ service RegistryService {
        *
        **/
       string addGateway(1: required workspace_model.Gateway gateway)
-             throws (1: registry_api_errors.RegistryServiceException rse)
+             throws (1: registry_api_errors.RegistryServiceException rse, 2: airavata_errors.DuplicateEntryException dee)
 
 
       /**
@@ -2137,7 +2137,7 @@ service RegistryService {
                 *
                */
                string addUser(1: required user_profile_model.UserProfile userProfile)
-                        throws (1: registry_api_errors.RegistryServiceException rse)
+                        throws (1: registry_api_errors.RegistryServiceException rse, 2: airavata_errors.DuplicateEntryException dee)
 
                /**
                 * Add a Compute Resource Preference to a registered user resource profile.

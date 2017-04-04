@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.registry.api.service.handler;
 
+import com.sun.org.apache.bcel.internal.generic.DUP;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -3535,7 +3536,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Th unique identifier of the  newly registered gateway.
      */
     @Override
-    public String addGateway(Gateway gateway) throws RegistryServiceException, TException {
+    public String addGateway(Gateway gateway) throws RegistryServiceException, DuplicateEntryException, TException {
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             appCatalog = RegistryFactory.getAppCatalog();
@@ -3545,6 +3546,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             }
             // check if gateway exists
             if (isGatewayExist(gateway.getGatewayId())) {
+                System.out.println("Gateway with gatewayId: " + gateway.getGatewayId() + ", already exists in ExperimentCatalog.");
                 throw new DuplicateEntryException("Gateway with gatewayId: " + gateway.getGatewayId() + ", already exists in ExperimentCatalog.");
             }
             // check if gatewayresourceprofile exists
@@ -3829,7 +3831,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public String addUser(UserProfile userProfile) throws RegistryServiceException, TException {
+    public String addUser(UserProfile userProfile) throws RegistryServiceException, DuplicateEntryException, TException {
         try {
             //FIXME: figure out a way to get password
             logger.info("Adding User in Registry: " + userProfile);
