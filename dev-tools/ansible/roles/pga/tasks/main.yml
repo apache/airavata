@@ -84,8 +84,16 @@
     - https
   become: yes
 
-- name: copy httpd.conf file
+- name: copy virtual host config file
   template: src=pga-vhost.conf.j2 dest={{ httpd_confd_file_location[ansible_os_family] }} backup=yes
   become: yes
   notify:
     - restart httpd
+  when: not vhost_ssl
+
+- name: copy SSL enabled virtual host config file
+  template: src=pga-ssl-vhost.conf.j2 dest={{ httpd_confd_file_location[ansible_os_family] }} backup=yes
+  become: yes
+  notify:
+    - restart httpd
+  when: vhost_ssl
