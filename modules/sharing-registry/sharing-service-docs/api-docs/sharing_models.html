@@ -88,16 +88,12 @@ considered as a group in it's own right for implementation ease</p>
 </td></tr>
 <tr><td><code>UPDATED_TIME</code></td><td><code>7</code></td><td>
 </td></tr>
-  <tr>
-   <td><code>ENTITY_TYPE_ID</code></td>
-   <td><code>8</code></td>
-   <td>
-   </td>
-  </tr>
+<tr><td><code>ENTITY_TYPE_ID</code></td><td><code>8</code></td><td>
+</td></tr>
 </table></div>
 <div class="definition"><h3 id="Enum_SearchCondition">Enumeration: SearchCondition</h3>
 <p>Different search operators that can be used with the entity search fields</p>
- <li>EQUAL : Simply matches for equality. Applicable for name, and parent entity id</li>
+<li>EQUAL : Simply matches for equality. Applicable for name, and parent entity id</li>
 <li>LIKE : Check for the condition %$FIELD% condition. Applicable for name, and description</li>
 <li>FULL_TEXT : Does a full text search. Only applicable for the FULL_TEXT field.</li>
 <li>GTE : Greater than or equal. Only applicable for created time and updated time.</li>
@@ -114,12 +110,8 @@ considered as a group in it's own right for implementation ease</p>
 </td></tr>
 <tr><td><code>LTE</code></td><td><code>4</code></td><td>
 </td></tr>
-  <tr>
-   <td><code>NOT</code></td>
-   <td><code>5</code></td>
-   <td>
-   </td>
-  </tr>
+<tr><td><code>NOT</code></td><td><code>5</code></td><td>
+</td></tr>
 </table></div>
 <div class="definition"><h3 id="Enum_SharingType">Enumeration: SharingType</h3>
 <p>This is an internal enum type for managing sharings</p>
@@ -244,14 +236,7 @@ regarding the user.</p>
 <tr><td>10</td><td>originalEntityCreationTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>11</td><td>createdTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>12</td><td>updatedTime</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
- <tr>
-  <td>13</td>
-  <td>shared</td>
-  <td><code>bool</code></td>
-  <td></td>
-  <td>optional</td>
-  <td><code>false</code></td>
- </tr>
+<tr><td>13</td><td>shared</td><td><code>bool</code></td><td></td><td>optional</td><td><code>false</code></td></tr>
 </table><br/><p>Entity object which is used to register an entity in the system.</p>
 <li><b>entityId</b> : Entity id provided by the client</li>
 <li><b>domainId</b> : Domain id</li>
