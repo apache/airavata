@@ -66,6 +66,7 @@
 - name: double check policycoreutils installed
   yum: name=policycoreutils-python state=installed
   when: mysql_selinux_update.stat.exists == False
+  become_user: root
 
 - name: Copy SELinux type enforcement file
   copy: src=mysql-tmp.te dest=/tmp/
