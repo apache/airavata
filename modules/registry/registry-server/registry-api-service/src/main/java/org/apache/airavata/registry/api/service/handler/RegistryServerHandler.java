@@ -3543,7 +3543,19 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("Gateway id cannot be empty...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
+            // check if gateway exists
+            if (isGatewayExist(gateway.getGatewayId())) {
+                throw new DuplicateEntryException("Gateway with gatewayId: " + gateway.getGatewayId() + ", already exists in ExperimentCatalog.");
+            }
+            // check if gatewayresourceprofile exists
+            if (appCatalog.getGatewayProfile().isGatewayResourceProfileExists(gateway.getGatewayId())) {
+                throw new DuplicateEntryException("GatewayResourceProfile with gatewayId: " + gateway.getGatewayId() + ", already exists in AppCatalog.");
+            }
+
+            // add gateway in experimentCatalog
             String gatewayId = (String) experimentCatalog.add(ExpCatParentDataType.GATEWAY, gateway, gateway.getGatewayId());
+
+            // add gatewayresourceprofile in appCatalog
             GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
             gatewayResourceProfile.setGatewayID(gatewayId);
             appCatalog.getGatewayProfile().addGatewayResourceProfile(gatewayResourceProfile);
