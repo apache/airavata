@@ -46,7 +46,7 @@
 
 - name: set gfac private ip
   set_fact:
-    gfac_host: "{{ ansible_eth0.ipv4.address }}"
+    gfac_host: "{{ ansible_default_ipv4.address }}"
 
 - name: Copy Airavata server properties file
   template: src=airavata-server.properties.j2

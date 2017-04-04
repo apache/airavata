@@ -45,9 +45,11 @@
 
 - name: set api-orch private ip
   set_fact:
-    api_server_host: "{{ ansible_eth0.ipv4.address }}"
-    orchestrator_host: "{{ ansible_eth0.ipv4.address }}"
-    cred_store_server_host: "{{ ansible_eth0.ipv4.address }}"
+    api_server_host: "{{ ansible_default_ipv4.address }}"
+    orchestrator_host: "{{ ansible_default_ipv4.address }}"
+    cred_store_server_host: "{{ ansible_default_ipv4.address }}"
+    registry_host: "{{ ansible_default_ipv4.address }}"
+    sharing_registry_host: "{{ ansible_default_ipv4.address }}"
 
 
 - name: Copy Airavata server properties file
@@ -76,6 +78,7 @@
     - "{{ api_server_port }}/tcp"
     - "{{ orchestrator_port }}/tcp"
     - "{{ cred_store_port }}/tcp"
+    - "{{ registry_port }}/tcp"
   become_user: root
 
 - name: stop api-orch
