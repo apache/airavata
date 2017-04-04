@@ -3546,7 +3546,6 @@ public class RegistryServerHandler implements RegistryService.Iface {
             }
             // check if gateway exists
             if (isGatewayExist(gateway.getGatewayId())) {
-                System.out.println("Gateway with gatewayId: " + gateway.getGatewayId() + ", already exists in ExperimentCatalog.");
                 throw new DuplicateEntryException("Gateway with gatewayId: " + gateway.getGatewayId() + ", already exists in ExperimentCatalog.");
             }
             // check if gatewayresourceprofile exists
