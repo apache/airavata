@@ -143,7 +143,7 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
             } catch (DuplicateEntryException ex) {
                 // log this exception and proceed (do nothing)
                 // this exception is thrown mostly when messages are re-consumed, hence ignore
-                logger.error("DuplicateEntryException while consuming db-event message, ex: " + ex.getMessage(), ex);
+                logger.warn("DuplicateEntryException while consuming db-event message, ex: " + ex.getMessage(), ex);
             }
             // send ack for received message
             logger.info("RegistryServiceDBEventHandler | Sending ack. Message Delivery Tag: " + messageContext.getDeliveryTag());
