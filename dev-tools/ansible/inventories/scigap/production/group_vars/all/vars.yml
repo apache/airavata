@@ -111,6 +111,10 @@ monitor_email_password: "{{ vault_monitor_email_password }}"
 # PGA variables
 pga_repo: "https://github.com/apache/airavata-php-gateway.git"
 user_data_dir: "/var/www/portals/gateway-user-data"
+## Airavata Client related variables
+#airavata_server: "tls://gw77.iu.xsede.org"
+airavata_server: "tls://{{ groups['api-orch'][0] }}"
+airavata_port: "9930"
 
 # Sharing Registry related variables
 sharing_registry_host: "{{ groups['api-orch'][0] }}"
