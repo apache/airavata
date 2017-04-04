@@ -29,6 +29,7 @@ import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.model.dbevent.DBEventMessage;
 import org.apache.airavata.model.dbevent.DBEventMessageContext;
 import org.apache.airavata.model.dbevent.EntityType;
+import org.apache.airavata.model.error.DuplicateEntryException;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
@@ -72,124 +73,160 @@ public class SharingServiceDBEventHandler implements MessageHandler {
             log.info("DB Event message to sharing service from " + dbEventMessage.getPublisherService());
 
             DBEventMessageContext dBEventMessageContext = dbEventMessage.getMessageContext();
+            try{
+                switch (dBEventMessageContext.getPublisher().getPublisherContext().getEntityType()){
 
-            switch (dBEventMessageContext.getPublisher().getPublisherContext().getEntityType()){
+                    case USER_PROFILE :
 
-                case USER_PROFILE :
+                        log.info("User profile specific DB Event communicated by " + dbEventMessage.getPublisherService());
 
-                    log.info("User profile specific DB Event communicated by " + dbEventMessage.getPublisherService());
+                        UserProfile  userProfile = new UserProfile();
+                        ThriftUtils.createThriftFromBytes(dBEventMessageContext.getPublisher().getPublisherContext().getEntityDataModel(), userProfile);
 
-                    UserProfile  userProfile = new UserProfile();
-                    ThriftUtils.createThriftFromBytes(dBEventMessageContext.getPublisher().getPublisherContext().getEntityDataModel(), userProfile);
+                        User user = ThriftDataModelConversion.getUser(userProfile);
 
-                    User user = ThriftDataModelConversion.getUser(userProfile);
+                        switch (dBEventMessageContext.getPublisher().getPublisherContext().getCrudType()){
 
-                    switch (dBEventMessageContext.getPublisher().getPublisherContext().getCrudType()){
+                            case CREATE:
+                                log.info("Creating user. User Id : " + user.getUserId());
 
-                        case CREATE:
-                            log.info("Creating user. User Id : " + user.getUserId());
+                                sharingRegistryClient.createUser(user);
+                                log.debug("User created. User Id : " + user.getUserId());
 
-                            sharingRegistryClient.createUser(user);
-                            log.debug("User created. User Id : " + user.getUserId());
+                                break;
 
-                            break;
+                            case READ:
+                                //FIXME: Remove if not required
+                                break;
 
-                        case READ:
-                            //FIXME: Remove if not required
-                            break;
+                            case UPDATE:
+                                log.info("Updating user. User Id : " + user.getUserId());
 
-                        case UPDATE:
-                            log.info("Updating user. User Id : " + user.getUserId());
+                                sharingRegistryClient.updatedUser(user);
+                                log.debug("User updated. User Id : " + user.getUserId());
 
-                            sharingRegistryClient.updatedUser(user);
-                            log.debug("User updated. User Id : " + user.getUserId());
+                                break;
 
-                            break;
+                            case DELETE:
+                                log.info("Deleting user. User Id : " + user.getUserId());
 
-                        case DELETE:
-                            log.info("Deleting user. User Id : " + user.getUserId());
+                                sharingRegistryClient.deleteUser(user.getDomainId(), user.getUserId());
+                                log.debug("User deleted. User Id : " + user.getUserId());
 
-                            sharingRegistryClient.deleteUser(user.getDomainId(), user.getUserId());
-                            log.debug("User deleted. User Id : " + user.getUserId());
+                                break;
+                        }
+                        break;
 
-                            break;
-                    }
-                    break;
+                    case TENANT :
 
-                case TENANT :
+                        log.info("Tenant specific DB Event communicated by " + dbEventMessage.getPublisherService());
 
-                    log.info("Tenant specific DB Event communicated by " + dbEventMessage.getPublisherService());
+                        Gateway gateway = new Gateway();
+                        ThriftUtils.createThriftFromBytes(dBEventMessageContext.getPublisher().getPublisherContext().getEntityDataModel(), gateway);
 
-                    Gateway gateway = new Gateway();
-                    ThriftUtils.createThriftFromBytes(dBEventMessageContext.getPublisher().getPublisherContext().getEntityDataModel(), gateway);
+                        switch (dBEventMessageContext.getPublisher().getPublisherContext().getCrudType()){
 
-                    switch (dBEventMessageContext.getPublisher().getPublisherContext().getCrudType()){
+                            case CREATE:
+                                /*
+                                Following set of DB operations should happen in a transaction
+                                As these are thrift calls we cannot enforce this restriction
+                                If something goes wrong, message would get queued again and try to create
+                                 DB entities which are already present. We catch DuplicateEntryException and
+                                 log as a warning to handle such scenarios and move ahead.
+                                 */
 
-                        case CREATE:
+                                log.info("Creating domain. Id : " + gateway.getGatewayId());
 
-                            log.info("Creating domain. Id : " + gateway.getGatewayId());
+                                Domain domain = new Domain();
+                                domain.setDomainId(gateway.getGatewayId());
+                                domain.setName(gateway.getGatewayName());
+                                domain.setDescription("Domain entry for " + domain.name);
+                                try{
+                                    sharingRegistryClient.createDomain(domain);
+                                    log.debug("Domain created. Id : " + gateway.getGatewayId());
+                                } catch (DuplicateEntryException ex) {
+                                    log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Domain Id : " + gateway.getGatewayId(), ex);
+                                }
 
-                            Domain domain = new Domain();
-                            domain.setDomainId(gateway.getGatewayId());
-                            domain.setName(gateway.getGatewayName());
-                            domain.setDescription("Domain entry for " + domain.name);
-                            sharingRegistryClient.createDomain(domain);
-                            log.debug("Domain created. Id : " + gateway.getGatewayId());
+                                //Creating Entity Types for each domain
+                                log.info("Creating entity type. Id : " + domain.domainId+":PROJECT");
+                                org.apache.airavata.sharing.registry.models.EntityType entityType = new org.apache.airavata.sharing.registry.models.EntityType();
+                                entityType.setEntityTypeId(domain.domainId+":PROJECT");
+                                entityType.setDomainId(domain.domainId);
+                                entityType.setName("PROJECT");
+                                entityType.setDescription("Project entity type");
+                                try {
+                                    sharingRegistryClient.createEntityType(entityType);
+                                    log.debug("Entity type created. Id : " + domain.domainId+":PROJECT");
+                                } catch (DuplicateEntryException ex) {
+                                    log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Entity Id : " + domain.domainId+":PROJECT", ex);
+                                }
 
-                            //Creating Entity Types for each domain
-                            log.info("Creating entity type. Id : " + domain.domainId+":PROJECT");
-                            org.apache.airavata.sharing.registry.models.EntityType entityType = new org.apache.airavata.sharing.registry.models.EntityType();
-                            entityType.setEntityTypeId(domain.domainId+":PROJECT");
-                            entityType.setDomainId(domain.domainId);
-                            entityType.setName("PROJECT");
-                            entityType.setDescription("Project entity type");
-                            sharingRegistryClient.createEntityType(entityType);
-                            log.debug("Entity type created. Id : " + domain.domainId+":PROJECT");
+                                log.info("Creating entity type. Id : " + domain.domainId+":EXPERIMENT");
+                                entityType = new org.apache.airavata.sharing.registry.models.EntityType();
+                                entityType.setEntityTypeId(domain.domainId+":EXPERIMENT");
+                                entityType.setDomainId(domain.domainId);
+                                entityType.setName("EXPERIMENT");
+                                entityType.setDescription("Experiment entity type");
+                                try{
+                                    sharingRegistryClient.createEntityType(entityType);
+                                    log.debug("Entity type created. Id : " + domain.domainId+":EXPERIMENT");
+                                } catch (DuplicateEntryException ex) {
+                                    log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Entity Id : " + domain.domainId+":EXPERIMENT", ex);
+                                }
 
-                            log.info("Creating entity type. Id : " + domain.domainId+":EXPERIMENT");
-                            entityType = new org.apache.airavata.sharing.registry.models.EntityType();
-                            entityType.setEntityTypeId(domain.domainId+":EXPERIMENT");
-                            entityType.setDomainId(domain.domainId);
-                            entityType.setName("EXPERIMENT");
-                            entityType.setDescription("Experiment entity type");
-                            sharingRegistryClient.createEntityType(entityType);
-                            log.debug("Entity type created. Id : " + domain.domainId+":EXPERIMENT");
+                                log.info("Creating entity type. Id : " + domain.domainId+":FILE");
+                                entityType = new org.apache.airavata.sharing.registry.models.EntityType();
+                                entityType.setEntityTypeId(domain.domainId+":FILE");
+                                entityType.setDomainId(domain.domainId);
+                                entityType.setName("FILE");
+                                entityType.setDescription("File entity type");
+                                try {
+                                    sharingRegistryClient.createEntityType(entityType);
+                                    log.debug("Entity type created. Id : " + domain.domainId + ":FILE");
+                                } catch (DuplicateEntryException ex) {
+                                    log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Entity Id : " + domain.domainId+":FILE", ex);
+                                }
 
-                            log.info("Creating entity type. Id : " + domain.domainId+":FILE");
-                            entityType = new org.apache.airavata.sharing.registry.models.EntityType();
-                            entityType.setEntityTypeId(domain.domainId+":FILE");
-                            entityType.setDomainId(domain.domainId);
-                            entityType.setName("FILE");
-                            entityType.setDescription("File entity type");
-                            sharingRegistryClient.createEntityType(entityType);
-                            log.debug("Entity type created. Id : " + domain.domainId+":FILE");
+                                //Creating Permission Types for each domain
+                                log.info("Creating Permission Type. Id : " + domain.domainId+":READ");
+                                PermissionType permissionType = new PermissionType();
+                                permissionType.setPermissionTypeId(domain.domainId+":READ");
+                                permissionType.setDomainId(domain.domainId);
+                                permissionType.setName("READ");
+                                permissionType.setDescription("Read permission type");
+                                try {
+                                    sharingRegistryClient.createPermissionType(permissionType);
+                                    log.debug("Permission Type created. Id : " + domain.domainId + ":READ");
+                                } catch (DuplicateEntryException ex) {
+                                    log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Permission Id : " + domain.domainId+":READ", ex);
+                                }
 
-                            //Creating Permission Types for each domain
-                            log.info("Creating Permission Type. Id : " + domain.domainId+":READ");
-                            PermissionType permissionType = new PermissionType();
-                            permissionType.setPermissionTypeId(domain.domainId+":READ");
-                            permissionType.setDomainId(domain.domainId);
-                            permissionType.setName("READ");
-                            permissionType.setDescription("Read permission type");
-                            sharingRegistryClient.createPermissionType(permissionType);
-                            log.debug("Permission Type created. Id : " + domain.domainId+":READ");
+                                log.info("Creating Permission Type. Id : " + domain.domainId+":WRITE");
+                                permissionType = new PermissionType();
+                                permissionType.setPermissionTypeId(domain.domainId+":WRITE");
+                                permissionType.setDomainId(domain.domainId);
+                                permissionType.setName("WRITE");
+                                permissionType.setDescription("Write permission type");
+                                try {
+                                    sharingRegistryClient.createPermissionType(permissionType);
+                                    log.debug("Permission Type created. Id : " + domain.domainId + ":WRITE");
+                                } catch (DuplicateEntryException ex) {
+                                    log.warn("DuplicateEntryException while consuming TENANT create message, ex: " + ex.getMessage() + ", Permission Id : " + domain.domainId + ":WRITE", ex);
+                                }
 
-                            log.info("Creating Permission Type. Id : " + domain.domainId+":WRITE");
-                            permissionType = new PermissionType();
-                            permissionType.setPermissionTypeId(domain.domainId+":WRITE");
-                            permissionType.setDomainId(domain.domainId);
-                            permissionType.setName("WRITE");
-                            permissionType.setDescription("Write permission type");
-                            sharingRegistryClient.createPermissionType(permissionType);
-                            log.debug("Permission Type created. Id : " + domain.domainId+":WRITE");
-
-                            break;
-                    }
+                                break;
+                        }
 
 
-                    break;
+                        break;
 
-                default: log.error("Handler not defined for " + dBEventMessageContext.getPublisher().getPublisherContext().getEntityType());
+                    default: log.error("Handler not defined for " + dBEventMessageContext.getPublisher().getPublisherContext().getEntityType());
+                }
+            } catch (DuplicateEntryException ex) {
+                // log this exception and proceed (do nothing)
+                // this exception is thrown mostly when messages are re-consumed in case of some exception, hence ignore
+                log.warn("DuplicateEntryException while consuming db-event message, ex: " + ex.getMessage(), ex);
             }
 
             log.info("Sending ack. Message Delivery Tag : " + messageContext.getDeliveryTag());
