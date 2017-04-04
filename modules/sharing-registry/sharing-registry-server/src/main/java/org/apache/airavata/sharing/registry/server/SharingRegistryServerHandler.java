@@ -21,6 +21,7 @@
 package org.apache.airavata.sharing.registry.server;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.model.error.DuplicateEntryException;
 import org.apache.airavata.sharing.registry.db.entities.*;
 import org.apache.airavata.sharing.registry.db.repositories.*;
 import org.apache.airavata.sharing.registry.db.utils.DBConstants;
@@ -53,7 +54,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
         try{
             domain.setDomainId(domain.getDomainId());
             if((new DomainRepository()).get(domain.getDomainId()) != null)
-                throw new SharingRegistryException("There exist domain with given domain id");
+                throw new DuplicateEntryException("There exist domain with given domain id : " + domain.getDomainId());
 
             domain.setCreatedTime(System.currentTimeMillis());
             domain.setUpdatedTime(System.currentTimeMillis());
@@ -133,7 +134,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             userPK.setUserId(user.getUserId());
             userPK.setDomainId(user.domainId);
             if((new UserRepository()).get(userPK) != null)
-                throw new SharingRegistryException("There exist user with given user id");
+                throw new DuplicateEntryException("There exist user with given user id : " + user.getUserId());
 
             user.setCreatedTime(System.currentTimeMillis());
             user.setUpdatedTime(System.currentTimeMillis());
@@ -423,7 +424,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             entityTypePK.setDomainId(entityType.domainId);
             entityTypePK.setEntityTypeId(entityType.entityTypeId);
             if((new EntityTypeRepository()).get(entityTypePK) != null)
-                throw new SharingRegistryException("There exist EntityType with given EntityType id");
+                throw new DuplicateEntryException("There exist EntityType with given EntityType id : " + entityType.domainId);
 
             entityType.setCreatedTime(System.currentTimeMillis());
             entityType.setUpdatedTime(System.currentTimeMillis());
@@ -503,7 +504,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             permissionTypePK.setDomainId(permissionType.domainId);
             permissionTypePK.setPermissionTypeId(permissionType.permissionTypeId);
             if((new PermissionTypeRepository()).get(permissionTypePK) != null)
-                throw new SharingRegistryException("There exist PermissionType with given PermissionType id");
+                throw new DuplicateEntryException("There exist PermissionType with given PermissionType id : " + permissionType.domainId);
             permissionType.setCreatedTime(System.currentTimeMillis());
             permissionType.setUpdatedTime(System.currentTimeMillis());
             (new PermissionTypeRepository()).create(permissionType);
@@ -725,12 +726,15 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     }
 
     /**
-     * * Sharing Entity with Users and Groups
-     * *
      *
+     * @param domainId
      * @param entityId
      * @param userList
-     * @param permissionType
+     * @param permissionTypeId
+     * @param cascadePermission
+     * @return
+     * @throws SharingRegistryException
+     * @throws TException
      */
     @Override
     public boolean shareEntityWithUsers(String domainId, String entityId, List<String> userList, String permissionTypeId, boolean cascadePermission) throws SharingRegistryException, TException {
