@@ -24,12 +24,15 @@ import org.apache.airavata.common.utils.DBEventManagerConstants;
 import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.model.dbevent.CrudType;
 import org.apache.airavata.model.dbevent.EntityType;
+import org.apache.airavata.model.error.AuthorizationException;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.service.profile.commons.user.entities.UserProfileEntity;
 import org.apache.airavata.service.profile.user.core.repositories.UserProfileRepository;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
 import org.apache.airavata.service.profile.utils.ProfileServiceUtils;
+import org.apache.airavata.service.security.interceptor.SecurityCheck;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +50,9 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
         userProfileRepository = new UserProfileRepository(UserProfile.class, UserProfileEntity.class);
     }
 
-    public String addUserProfile(UserProfile userProfile) throws UserProfileServiceException {
+    @Override
+    @SecurityCheck
+    public String addUserProfile(AuthzToken authzToken, UserProfile userProfile) throws UserProfileServiceException, AuthorizationException, TException {
         try{
             userProfile = userProfileRepository.create(userProfile);
             if (null != userProfile) {
@@ -70,7 +75,9 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
         }
     }
 
-    public boolean updateUserProfile(UserProfile userProfile) throws UserProfileServiceException, TException {
+    @Override
+    @SecurityCheck
+    public boolean updateUserProfile(AuthzToken authzToken, UserProfile userProfile) throws UserProfileServiceException, AuthorizationException, TException {
         try {
             if(userProfileRepository.update(userProfile) != null) {
                 logger.info("Updated UserProfile with userId: " + userProfile.getUserId());
@@ -90,7 +97,9 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
         }
     }
 
-    public UserProfile getUserProfileById(String userId, String gatewayId) throws UserProfileServiceException {
+    @Override
+    @SecurityCheck
+    public UserProfile getUserProfileById(AuthzToken authzToken, String userId, String gatewayId) throws UserProfileServiceException, AuthorizationException, TException {
         try{
             UserProfile userProfile = userProfileRepository.getUserProfileByIdAndGateWay(userId, gatewayId);
             if(userProfile != null)
@@ -105,7 +114,9 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
         }
     }
 
-    public boolean deleteUserProfile(String userId, String gatewayId) throws UserProfileServiceException {
+    @Override
+    @SecurityCheck
+    public boolean deleteUserProfile(AuthzToken authzToken, String userId, String gatewayId) throws UserProfileServiceException, AuthorizationException, TException {
         try{
             // find user-profile
             UserProfile userProfile = userProfileRepository.getUserProfileByIdAndGateWay(userId, gatewayId);
@@ -130,7 +141,9 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
         }
     }
 
-    public List<UserProfile> getAllUserProfilesInGateway(String gatewayId, int offset, int limit) throws UserProfileServiceException {
+    @Override
+    @SecurityCheck
+    public List<UserProfile> getAllUserProfilesInGateway(AuthzToken authzToken, String gatewayId, int offset, int limit) throws UserProfileServiceException, AuthorizationException, TException {
         try{
             List<UserProfile> usersInGateway = userProfileRepository.getAllUserProfilesInGateway(gatewayId, offset, limit);
             if(usersInGateway != null)
@@ -145,8 +158,9 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
         }
     }
 
-
-    public UserProfile getUserProfileByName(String userName, String gatewayId) throws UserProfileServiceException {
+    @Override
+    @SecurityCheck
+    public UserProfile getUserProfileByName(AuthzToken authzToken, String userName, String gatewayId) throws UserProfileServiceException, AuthorizationException, TException {
         try{
             UserProfile userProfile = userProfileRepository.getUserProfileByNameAndGateWay(userName, gatewayId);
             if(userProfile != null)
@@ -161,7 +175,9 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
         }
     }
 
-    public boolean doesUserExist(String userName, String gatewayId) throws UserProfileServiceException, TException {
+    @Override
+    @SecurityCheck
+    public boolean doesUserExist(AuthzToken authzToken, String userName, String gatewayId) throws UserProfileServiceException, AuthorizationException, TException {
         try{
             UserProfile userProfile = userProfileRepository.getUserProfileByNameAndGateWay(userName, gatewayId);
             if (null != userProfile)

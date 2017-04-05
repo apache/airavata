@@ -24,6 +24,8 @@ import org.apache.airavata.common.utils.DBEventManagerConstants;
 import org.apache.airavata.common.utils.DBEventService;
 import org.apache.airavata.model.dbevent.CrudType;
 import org.apache.airavata.model.dbevent.EntityType;
+import org.apache.airavata.model.error.AuthorizationException;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.service.profile.commons.tenant.entities.GatewayEntity;
@@ -32,6 +34,8 @@ import org.apache.airavata.service.profile.tenant.cpi.TenantProfileService;
 import org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException;
 import org.apache.airavata.service.profile.tenant.cpi.profile_tenant_cpiConstants;
 import org.apache.airavata.service.profile.utils.ProfileServiceUtils;
+import org.apache.airavata.service.security.interceptor.SecurityCheck;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +56,8 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     }
 
     @Override
-    public String getAPIVersion() throws TenantProfileServiceException {
+    @SecurityCheck
+    public String getAPIVersion(AuthzToken authzToken) throws TenantProfileServiceException, AuthorizationException, TException {
         try {
             return profile_tenant_cpiConstants.TENANT_PROFILE_CPI_VERSION;
         } catch (Exception ex) {
@@ -64,7 +69,8 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     }
 
     @Override
-    public String addGateway(Gateway gateway) throws TenantProfileServiceException {
+    @SecurityCheck
+    public String addGateway(AuthzToken authzToken, Gateway gateway) throws TenantProfileServiceException, AuthorizationException, TException {
         try {
             gateway = tenantProfileRepository.create(gateway);
             if (gateway != null) {
@@ -88,7 +94,8 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     }
 
     @Override
-    public boolean updateGateway(Gateway updatedGateway) throws TenantProfileServiceException {
+    @SecurityCheck
+    public boolean updateGateway(AuthzToken authzToken, Gateway updatedGateway) throws TenantProfileServiceException, AuthorizationException, TException {
         try {
             if (tenantProfileRepository.update(updatedGateway) != null) {
                 logger.debug("Updated gateway-profile with ID: " + updatedGateway.getGatewayId());
@@ -110,7 +117,8 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     }
 
     @Override
-    public Gateway getGateway(String gatewayId) throws TenantProfileServiceException {
+    @SecurityCheck
+    public Gateway getGateway(AuthzToken authzToken, String gatewayId) throws TenantProfileServiceException, AuthorizationException, TException {
         try {
             Gateway gateway = tenantProfileRepository.getGateway(gatewayId);
             if (gateway == null) {
@@ -126,7 +134,8 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     }
 
     @Override
-    public boolean deleteGateway(String gatewayId) throws TenantProfileServiceException {
+    @SecurityCheck
+    public boolean deleteGateway(AuthzToken authzToken, String gatewayId) throws TenantProfileServiceException, AuthorizationException, TException {
         try {
             logger.debug("Deleting Airavata gateway-profile with ID: " + gatewayId);
             boolean deleteSuccess = tenantProfileRepository.delete(gatewayId);
@@ -137,8 +146,8 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
                                 // pass along gateway datamodel, with correct gatewayId;
                                 // approvalstatus is not used for delete, hence set dummy value
                                 new Gateway(
-                                    gatewayId,
-                                    GatewayApprovalStatus.DEACTIVATED
+                                        gatewayId,
+                                        GatewayApprovalStatus.DEACTIVATED
                                 )
                         ),
                         DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString())
@@ -154,7 +163,8 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     }
 
     @Override
-    public List<Gateway> getAllGateways() throws TenantProfileServiceException {
+    @SecurityCheck
+    public List<Gateway> getAllGateways(AuthzToken authzToken) throws TenantProfileServiceException, AuthorizationException, TException {
         try {
             return tenantProfileRepository.getAllGateways();
         } catch (Exception ex) {
@@ -166,7 +176,8 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     }
 
     @Override
-    public boolean isGatewayExist(String gatewayId) throws TenantProfileServiceException {
+    @SecurityCheck
+    public boolean isGatewayExist(AuthzToken authzToken, String gatewayId) throws TenantProfileServiceException, AuthorizationException, TException {
         try {
             Gateway gateway = tenantProfileRepository.getGateway(gatewayId);
             return gateway != null;
