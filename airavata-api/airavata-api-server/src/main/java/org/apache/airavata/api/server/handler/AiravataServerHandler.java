@@ -4780,7 +4780,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             throw new AuthorizationException("User isn't authorized to add user profile for this user and/or gateway");
         }
         try {
-            return getUserProfileServiceClient().addUserProfile(userProfile);
+            return getUserProfileServiceClient().addUserProfile(authzToken, userProfile);
         } catch (Exception e) {
             String msg = "Error adding user profile";
             logger.error(msg, e);
@@ -4802,7 +4802,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             throw new AuthorizationException("User isn't authorized to update user profile for this user and/or gateway");
         }
         try {
-            return getUserProfileServiceClient().updateUserProfile(userProfile);
+            return getUserProfileServiceClient().updateUserProfile(authzToken, userProfile);
         } catch (Exception e) {
             String msg = "Error updating user profile";
             logger.error(msg, e);
@@ -4818,7 +4818,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 
         try {
-            return getUserProfileServiceClient().getUserProfileById(userId, gatewayId);
+            return getUserProfileServiceClient().getUserProfileById(authzToken, userId, gatewayId);
         } catch (Exception e) {
             String msg = MessageFormat.format("Error getting user profile for [{0}] in [{1}]", userId, gatewayId);
             logger.error(msg, e);
@@ -4839,7 +4839,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             throw new AuthorizationException("User isn't authorized to delete user profile for this user");
         }
         try {
-            return getUserProfileServiceClient().deleteUserProfile(userId, null);
+            return getUserProfileServiceClient().deleteUserProfile(authzToken, userId, null);
         } catch (Exception e) {
             String msg = "Error deleting user profile";
             logger.error(msg, e);
@@ -4855,7 +4855,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 
         try {
-            return getUserProfileServiceClient().getAllUserProfilesInGateway(gatewayId, offset, limit);
+            return getUserProfileServiceClient().getAllUserProfilesInGateway(authzToken, gatewayId, offset, limit);
         } catch (Exception e) {
             String msg = MessageFormat.format("Error getting all user profiles for [{0}] with offset={1} and limit={2}", gatewayId, offset, limit);
             logger.error(msg, e);
@@ -4871,7 +4871,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 
         try {
-            return getUserProfileServiceClient().getUserProfileByName(userName, gatewayId);
+            return getUserProfileServiceClient().getUserProfileByName(authzToken, userName, gatewayId);
         } catch (Exception e) {
             String msg = MessageFormat.format("Error getting user profile for [{0}] in [{1}]", userName, gatewayId);
             logger.error(msg, e);
@@ -4887,7 +4887,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 
         try {
-            return getUserProfileServiceClient().doesUserExist(userName, gatewayId);
+            return getUserProfileServiceClient().doesUserExist(authzToken, userName, gatewayId);
         } catch (Exception e) {
             String msg = MessageFormat.format("Error checking if user profile exists for [{0}] in [{1}]", userName, gatewayId);
             logger.error(msg, e);
