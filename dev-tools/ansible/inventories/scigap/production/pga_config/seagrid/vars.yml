@@ -27,7 +27,7 @@ doc_root_dir: "/var/www/portals/{{ gateway_id }}"
 # TODO: disable SSL temporarily for testing
 #vhost_servername: "seagrid.org"
 #vhost_serveralias: "www.portal.seagrid.org"
-vhost_servername: "{{ groups['pga'][0][0] }}"
+vhost_servername: "gf4.ucs.indiana.edu"
 vhost_ssl: False
 # TODO: have Ansible manage these files as well
 ssl_certificate_file: "/etc/pki/tls/certs/seagrid_org_cert.cer"
