@@ -69,7 +69,7 @@
 <h3 id="Svc_SharingRegistryService">Service: SharingRegistryService</h3>
 <div class="definition"><h4 id="Fn_SharingRegistryService_createDomain">Function: SharingRegistryService.createDomain</h4>
 <pre><code>string</code> createDomain(<code><a href="sharing_models.html#Struct_Domain">sharing_models.Domain</a></code> domain)
-    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
+    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>, <code><a href="airavata_errors.html#Struct_DuplicateEntryException">airavata_errors.DuplicateEntryException</a></code>
 </pre><p>API method to create a new domain</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_updateDomain">Function: SharingRegistryService.updateDomain</h4>
 <pre><code>bool</code> updateDomain(<code><a href="sharing_models.html#Struct_Domain">sharing_models.Domain</a></code> domain)
@@ -94,7 +94,7 @@
 </pre><p>API method to get all domain.</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_createUser">Function: SharingRegistryService.createUser</h4>
 <pre><code>string</code> createUser(<code><a href="sharing_models.html#Struct_User">sharing_models.User</a></code> user)
-    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
+    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>, <code><a href="airavata_errors.html#Struct_DuplicateEntryException">airavata_errors.DuplicateEntryException</a></code>
 </pre><p>API method to register a user in the system</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_updatedUser">Function: SharingRegistryService.updatedUser</h4>
 <pre><code>bool</code> updatedUser(<code><a href="sharing_models.html#Struct_User">sharing_models.User</a></code> user)
@@ -192,7 +192,7 @@
 </pre><p>API method to remove a child group from parent group.</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_createEntityType">Function: SharingRegistryService.createEntityType</h4>
 <pre><code>string</code> createEntityType(<code><a href="sharing_models.html#Struct_EntityType">sharing_models.EntityType</a></code> entityType)
-    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
+    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>, <code><a href="airavata_errors.html#Struct_DuplicateEntryException">airavata_errors.DuplicateEntryException</a></code>
 </pre><p>API method to create a new entity type</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_updateEntityType">Function: SharingRegistryService.updateEntityType</h4>
 <pre><code>bool</code> updateEntityType(<code><a href="sharing_models.html#Struct_EntityType">sharing_models.EntityType</a></code> entityType)
@@ -264,7 +264,7 @@
 </pre><p>API method to get a list of shared groups given the entity id</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_createPermissionType">Function: SharingRegistryService.createPermissionType</h4>
 <pre><code>string</code> createPermissionType(<code><a href="sharing_models.html#Struct_PermissionType">sharing_models.PermissionType</a></code> permissionType)
-    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
+    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>, <code><a href="airavata_errors.html#Struct_DuplicateEntryException">airavata_errors.DuplicateEntryException</a></code>
 </pre><p>API method to create permission type</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_updatePermissionType">Function: SharingRegistryService.updatePermissionType</h4>
 <pre><code>bool</code> updatePermissionType(<code><a href="sharing_models.html#Struct_PermissionType">sharing_models.PermissionType</a></code> permissionType)

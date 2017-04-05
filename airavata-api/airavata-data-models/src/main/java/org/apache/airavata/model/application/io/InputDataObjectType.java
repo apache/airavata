@@ -23,15 +23,32 @@
  */
 package org.apache.airavata.model.application.io;
 
-import org.apache.thrift.EncodingUtils;
-import org.apache.thrift.protocol.TTupleProtocol;
 import org.apache.thrift.scheme.IScheme;
 import org.apache.thrift.scheme.SchemeFactory;
 import org.apache.thrift.scheme.StandardScheme;
-import org.apache.thrift.scheme.TupleScheme;
 
+import org.apache.thrift.scheme.TupleScheme;
+import org.apache.thrift.protocol.TTupleProtocol;
+import org.apache.thrift.protocol.TProtocolException;
+import org.apache.thrift.EncodingUtils;
+import org.apache.thrift.TException;
+import org.apache.thrift.async.AsyncMethodCallback;
+import org.apache.thrift.server.AbstractNonblockingServer.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.EnumMap;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.EnumSet;
+import java.util.Collections;
+import java.util.BitSet;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 import javax.annotation.Generated;
-import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked"})
 /**
@@ -76,7 +93,7 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
   private static final org.apache.thrift.protocol.TField REQUIRED_TO_ADDED_TO_COMMAND_LINE_FIELD_DESC = new org.apache.thrift.protocol.TField("requiredToAddedToCommandLine", org.apache.thrift.protocol.TType.BOOL, (short)10);
   private static final org.apache.thrift.protocol.TField DATA_STAGED_FIELD_DESC = new org.apache.thrift.protocol.TField("dataStaged", org.apache.thrift.protocol.TType.BOOL, (short)11);
   private static final org.apache.thrift.protocol.TField STORAGE_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("storageResourceId", org.apache.thrift.protocol.TType.STRING, (short)12);
-  private static final org.apache.thrift.protocol.TField IS_READ_ONLY_FIELD_DESC = new org.apache.thrift.protocol.TField("isReadOnly", org.apache.thrift.protocol.TType.BOOL, (short) 13);
+  private static final org.apache.thrift.protocol.TField IS_READ_ONLY_FIELD_DESC = new org.apache.thrift.protocol.TField("isReadOnly", org.apache.thrift.protocol.TType.BOOL, (short)13);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -115,8 +132,8 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
     IS_REQUIRED((short)9, "isRequired"),
     REQUIRED_TO_ADDED_TO_COMMAND_LINE((short)10, "requiredToAddedToCommandLine"),
     DATA_STAGED((short)11, "dataStaged"),
-    STORAGE_RESOURCE_ID((short) 12, "storageResourceId"),
-    IS_READ_ONLY((short) 13, "isReadOnly");
+    STORAGE_RESOURCE_ID((short)12, "storageResourceId"),
+    IS_READ_ONLY((short)13, "isReadOnly");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -204,7 +221,7 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
   private static final int __DATASTAGED_ISSET_ID = 4;
   private static final int __ISREADONLY_ISSET_ID = 5;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.VALUE, _Fields.TYPE, _Fields.APPLICATION_ARGUMENT, _Fields.STANDARD_INPUT, _Fields.USER_FRIENDLY_DESCRIPTION, _Fields.META_DATA, _Fields.INPUT_ORDER, _Fields.IS_REQUIRED, _Fields.REQUIRED_TO_ADDED_TO_COMMAND_LINE, _Fields.DATA_STAGED, _Fields.STORAGE_RESOURCE_ID, _Fields.IS_READ_ONLY};
+  private static final _Fields optionals[] = {_Fields.VALUE,_Fields.TYPE,_Fields.APPLICATION_ARGUMENT,_Fields.STANDARD_INPUT,_Fields.USER_FRIENDLY_DESCRIPTION,_Fields.META_DATA,_Fields.INPUT_ORDER,_Fields.IS_REQUIRED,_Fields.REQUIRED_TO_ADDED_TO_COMMAND_LINE,_Fields.DATA_STAGED,_Fields.STORAGE_RESOURCE_ID,_Fields.IS_READ_ONLY};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -232,8 +249,8 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.STORAGE_RESOURCE_ID, new org.apache.thrift.meta_data.FieldMetaData("storageResourceId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.IS_READ_ONLY, new org.apache.thrift.meta_data.FieldMetaData("isReadOnly", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+    tmpMap.put(_Fields.IS_READ_ONLY, new org.apache.thrift.meta_data.FieldMetaData("isReadOnly", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(InputDataObjectType.class, metaDataMap);
   }
@@ -601,9 +618,7 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
     __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ISREADONLY_ISSET_ID);
   }
 
-  /**
-   * Returns true if field isReadOnly is set (has been assigned a value) and false otherwise
-   */
+  /** Returns true if field isReadOnly is set (has been assigned a value) and false otherwise */
   public boolean isSetIsReadOnly() {
     return EncodingUtils.testBit(__isset_bitfield, __ISREADONLY_ISSET_ID);
   }
@@ -710,13 +725,13 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
       }
       break;
 
-      case IS_READ_ONLY:
-        if (value == null) {
-          unsetIsReadOnly();
-        } else {
-          setIsReadOnly((Boolean) value);
-        }
-        break;
+    case IS_READ_ONLY:
+      if (value == null) {
+        unsetIsReadOnly();
+      } else {
+        setIsReadOnly((Boolean)value);
+      }
+      break;
 
     }
   }
@@ -759,8 +774,8 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
     case STORAGE_RESOURCE_ID:
       return getStorageResourceId();
 
-      case IS_READ_ONLY:
-        return isIsReadOnly();
+    case IS_READ_ONLY:
+      return isIsReadOnly();
 
     }
     throw new IllegalStateException();
@@ -797,8 +812,8 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
       return isSetDataStaged();
     case STORAGE_RESOURCE_ID:
       return isSetStorageResourceId();
-      case IS_READ_ONLY:
-        return isSetIsReadOnly();
+    case IS_READ_ONLY:
+      return isSetIsReadOnly();
     }
     throw new IllegalStateException();
   }

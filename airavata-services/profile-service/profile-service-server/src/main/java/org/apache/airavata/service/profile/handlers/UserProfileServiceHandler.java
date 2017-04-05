@@ -20,11 +20,19 @@
 */
 package org.apache.airavata.service.profile.handlers;
 
+import org.apache.airavata.common.utils.DBEventManagerConstants;
+import org.apache.airavata.common.utils.DBEventService;
+import org.apache.airavata.model.dbevent.CrudType;
+import org.apache.airavata.model.dbevent.EntityType;
+import org.apache.airavata.model.error.AuthorizationException;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.service.profile.commons.user.entities.UserProfileEntity;
 import org.apache.airavata.service.profile.user.core.repositories.UserProfileRepository;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
+import org.apache.airavata.service.profile.utils.ProfileServiceUtils;
+import org.apache.airavata.service.security.interceptor.SecurityCheck;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,13 +50,24 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
         userProfileRepository = new UserProfileRepository(UserProfile.class, UserProfileEntity.class);
     }
 
-    public String addUserProfile(UserProfile userProfile) throws UserProfileServiceException {
+    @Override
+    @SecurityCheck
+    public String addUserProfile(AuthzToken authzToken, UserProfile userProfile) throws UserProfileServiceException, AuthorizationException, TException {
         try{
-            userProfileRepository.create(userProfile);
-            if (null != userProfile)
+            userProfile = userProfileRepository.create(userProfile);
+            if (null != userProfile) {
+                logger.info("Added UserProfile with userId: " + userProfile.getUserId());
+                // replicate userProfile at end-places
+                ProfileServiceUtils.getDbEventPublisher().publish(
+                        ProfileServiceUtils.getDBEventMessageContext(EntityType.USER_PROFILE, CrudType.CREATE, userProfile),
+                        DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString())
+                );
+                // return userId
                 return userProfile.getUserId();
-            return null;
-        } catch (Exception e){
+            } else {
+                throw new Exception("User creation failed. Please try again.");
+            }
+        } catch (Exception e) {
             logger.error("Error while creating user profile", e);
             UserProfileServiceException exception = new UserProfileServiceException();
             exception.setMessage("Error while creating user profile. More info : " + e.getMessage());
@@ -56,10 +75,19 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
         }
     }
 
-    public boolean updateUserProfile(UserProfile userProfile) throws UserProfileServiceException, TException {
+    @Override
+    @SecurityCheck
+    public boolean updateUserProfile(AuthzToken authzToken, UserProfile userProfile) throws UserProfileServiceException, AuthorizationException, TException {
         try {
-            if(userProfileRepository.update(userProfile) != null)
+            if(userProfileRepository.update(userProfile) != null) {
+                logger.info("Updated UserProfile with userId: " + userProfile.getUserId());
+                // replicate userProfile at end-places
+                ProfileServiceUtils.getDbEventPublisher().publish(
+                        ProfileServiceUtils.getDBEventMessageContext(EntityType.USER_PROFILE, CrudType.UPDATE, userProfile),
+                        DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString())
+                );
                 return true;
+            }
             return false;
         } catch (Exception e) {
             logger.error("Error while Updating user profile", e);
@@ -69,12 +97,15 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
         }
     }
 
-    public UserProfile getUserProfileById(String userId, String gatewayId) throws UserProfileServiceException {
+    @Override
+    @SecurityCheck
+    public UserProfile getUserProfileById(AuthzToken authzToken, String userId, String gatewayId) throws UserProfileServiceException, AuthorizationException, TException {
         try{
             UserProfile userProfile = userProfileRepository.getUserProfileByIdAndGateWay(userId, gatewayId);
             if(userProfile != null)
                 return userProfile;
-            return null;
+            else
+                throw new Exception("User with userId: " + userId + ", in Gateway: " + gatewayId + ", does not exist.");
         } catch (Exception e) {
             logger.error("Error retrieving user profile by ID", e);
             UserProfileServiceException exception = new UserProfileServiceException();
@@ -83,11 +114,25 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
         }
     }
 
-    // FIXME: shouldn't deleteUserProfile require the gatewayId as well?
-    public boolean deleteUserProfile(String userId) throws UserProfileServiceException {
+    @Override
+    @SecurityCheck
+    public boolean deleteUserProfile(AuthzToken authzToken, String userId, String gatewayId) throws UserProfileServiceException, AuthorizationException, TException {
         try{
-            boolean deleteResult = userProfileRepository.delete(userId);
-            return deleteResult;
+            // find user-profile
+            UserProfile userProfile = userProfileRepository.getUserProfileByIdAndGateWay(userId, gatewayId);
+
+            // delete user
+            boolean deleteSuccess = userProfileRepository.delete(userId);
+            logger.info("Delete UserProfile with userId: " + userId + ", " + (deleteSuccess? "Success!" : "Failed!"));
+
+            if (deleteSuccess) {
+                // delete userProfile at end-places
+                ProfileServiceUtils.getDbEventPublisher().publish(
+                        ProfileServiceUtils.getDBEventMessageContext(EntityType.USER_PROFILE, CrudType.DELETE, userProfile),
+                        DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString())
+                );
+            }
+            return deleteSuccess;
         } catch (Exception e) {
             logger.error("Error while deleting user profile", e);
             UserProfileServiceException exception = new UserProfileServiceException();
@@ -96,12 +141,15 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
         }
     }
 
-    public List<UserProfile> getAllUserProfilesInGateway(String gatewayId, int offset, int limit) throws UserProfileServiceException {
+    @Override
+    @SecurityCheck
+    public List<UserProfile> getAllUserProfilesInGateway(AuthzToken authzToken, String gatewayId, int offset, int limit) throws UserProfileServiceException, AuthorizationException, TException {
         try{
             List<UserProfile> usersInGateway = userProfileRepository.getAllUserProfilesInGateway(gatewayId, offset, limit);
             if(usersInGateway != null)
                 return usersInGateway;
-            return null;
+            else
+                throw new Exception("There are no users for the requested gatewayId: " + gatewayId);
         } catch (Exception e) {
             logger.error("Error while retrieving user profile List", e);
             UserProfileServiceException exception = new UserProfileServiceException();
@@ -110,13 +158,15 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
         }
     }
 
-
-    public UserProfile getUserProfileByName(String userName, String gatewayId) throws UserProfileServiceException {
+    @Override
+    @SecurityCheck
+    public UserProfile getUserProfileByName(AuthzToken authzToken, String userName, String gatewayId) throws UserProfileServiceException, AuthorizationException, TException {
         try{
             UserProfile userProfile = userProfileRepository.getUserProfileByNameAndGateWay(userName, gatewayId);
             if(userProfile != null)
                 return userProfile;
-            return null;
+            else
+                throw new Exception("User with userName: " + userName + ", in Gateway: " + gatewayId + ", does not exist.");
         } catch (Exception e) {
             logger.error("Error while retrieving user profile", e);
             UserProfileServiceException exception = new UserProfileServiceException();
@@ -125,7 +175,9 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
         }
     }
 
-    public boolean doesUserExist(String userName, String gatewayId) throws UserProfileServiceException, TException {
+    @Override
+    @SecurityCheck
+    public boolean doesUserExist(AuthzToken authzToken, String userName, String gatewayId) throws UserProfileServiceException, AuthorizationException, TException {
         try{
             UserProfile userProfile = userProfileRepository.getUserProfileByNameAndGateWay(userName, gatewayId);
             if (null != userProfile)

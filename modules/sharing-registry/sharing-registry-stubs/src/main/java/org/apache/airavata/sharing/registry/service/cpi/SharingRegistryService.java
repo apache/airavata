@@ -44,7 +44,7 @@ public class SharingRegistryService {
      * 
      * @param domain
      */
-    public String createDomain(org.apache.airavata.sharing.registry.models.Domain domain) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
+    public String createDomain(org.apache.airavata.sharing.registry.models.Domain domain) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.airavata.model.error.DuplicateEntryException, org.apache.thrift.TException;
 
     /**
      * <p>API method to update a domain</p>
@@ -87,7 +87,7 @@ public class SharingRegistryService {
      * 
      * @param user
      */
-    public String createUser(org.apache.airavata.sharing.registry.models.User user) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
+    public String createUser(org.apache.airavata.sharing.registry.models.User user) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.airavata.model.error.DuplicateEntryException, org.apache.thrift.TException;
 
     /**
      * <p>API method to update existing user</p>
@@ -240,7 +240,7 @@ public class SharingRegistryService {
      * 
      * @param entityType
      */
-    public String createEntityType(org.apache.airavata.sharing.registry.models.EntityType entityType) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
+    public String createEntityType(org.apache.airavata.sharing.registry.models.EntityType entityType) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.airavata.model.error.DuplicateEntryException, org.apache.thrift.TException;
 
     /**
      * <p>API method to update entity type</p>
@@ -354,7 +354,7 @@ public class SharingRegistryService {
      * 
      * @param permissionType
      */
-    public String createPermissionType(org.apache.airavata.sharing.registry.models.PermissionType permissionType) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
+    public String createPermissionType(org.apache.airavata.sharing.registry.models.PermissionType permissionType) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.airavata.model.error.DuplicateEntryException, org.apache.thrift.TException;
 
     /**
      * <p>API method to update permission type</p>
@@ -572,7 +572,7 @@ public class SharingRegistryService {
       super(iprot, oprot);
     }
 
-    public String createDomain(org.apache.airavata.sharing.registry.models.Domain domain) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public String createDomain(org.apache.airavata.sharing.registry.models.Domain domain) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.airavata.model.error.DuplicateEntryException, org.apache.thrift.TException
     {
       send_createDomain(domain);
       return recv_createDomain();
@@ -585,7 +585,7 @@ public class SharingRegistryService {
       sendBase("createDomain", args);
     }
 
-    public String recv_createDomain() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public String recv_createDomain() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.airavata.model.error.DuplicateEntryException, org.apache.thrift.TException
     {
       createDomain_result result = new createDomain_result();
       receiveBase(result, "createDomain");
@@ -594,6 +594,9 @@ public class SharingRegistryService {
       }
       if (result.sre != null) {
         throw result.sre;
+      }
+      if (result.dee != null) {
+        throw result.dee;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "createDomain failed: unknown result");
     }
@@ -729,7 +732,7 @@ public class SharingRegistryService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getDomains failed: unknown result");
     }
 
-    public String createUser(org.apache.airavata.sharing.registry.models.User user) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public String createUser(org.apache.airavata.sharing.registry.models.User user) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.airavata.model.error.DuplicateEntryException, org.apache.thrift.TException
     {
       send_createUser(user);
       return recv_createUser();
@@ -742,7 +745,7 @@ public class SharingRegistryService {
       sendBase("createUser", args);
     }
 
-    public String recv_createUser() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public String recv_createUser() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.airavata.model.error.DuplicateEntryException, org.apache.thrift.TException
     {
       createUser_result result = new createUser_result();
       receiveBase(result, "createUser");
@@ -751,6 +754,9 @@ public class SharingRegistryService {
       }
       if (result.sre != null) {
         throw result.sre;
+      }
+      if (result.dee != null) {
+        throw result.dee;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "createUser failed: unknown result");
     }
@@ -1218,7 +1224,7 @@ public class SharingRegistryService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "removeChildGroupFromParentGroup failed: unknown result");
     }
 
-    public String createEntityType(org.apache.airavata.sharing.registry.models.EntityType entityType) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public String createEntityType(org.apache.airavata.sharing.registry.models.EntityType entityType) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.airavata.model.error.DuplicateEntryException, org.apache.thrift.TException
     {
       send_createEntityType(entityType);
       return recv_createEntityType();
@@ -1231,7 +1237,7 @@ public class SharingRegistryService {
       sendBase("createEntityType", args);
     }
 
-    public String recv_createEntityType() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public String recv_createEntityType() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.airavata.model.error.DuplicateEntryException, org.apache.thrift.TException
     {
       createEntityType_result result = new createEntityType_result();
       receiveBase(result, "createEntityType");
@@ -1240,6 +1246,9 @@ public class SharingRegistryService {
       }
       if (result.sre != null) {
         throw result.sre;
+      }
+      if (result.dee != null) {
+        throw result.dee;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "createEntityType failed: unknown result");
     }
@@ -1598,7 +1607,7 @@ public class SharingRegistryService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getListOfSharedGroups failed: unknown result");
     }
 
-    public String createPermissionType(org.apache.airavata.sharing.registry.models.PermissionType permissionType) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public String createPermissionType(org.apache.airavata.sharing.registry.models.PermissionType permissionType) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.airavata.model.error.DuplicateEntryException, org.apache.thrift.TException
     {
       send_createPermissionType(permissionType);
       return recv_createPermissionType();
@@ -1611,7 +1620,7 @@ public class SharingRegistryService {
       sendBase("createPermissionType", args);
     }
 
-    public String recv_createPermissionType() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public String recv_createPermissionType() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.airavata.model.error.DuplicateEntryException, org.apache.thrift.TException
     {
       createPermissionType_result result = new createPermissionType_result();
       receiveBase(result, "createPermissionType");
@@ -1620,6 +1629,9 @@ public class SharingRegistryService {
       }
       if (result.sre != null) {
         throw result.sre;
+      }
+      if (result.dee != null) {
+        throw result.dee;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "createPermissionType failed: unknown result");
     }
@@ -1946,7 +1958,7 @@ public class SharingRegistryService {
         prot.writeMessageEnd();
       }
 
-      public String getResult() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException {
+      public String getResult() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.airavata.model.error.DuplicateEntryException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -2141,7 +2153,7 @@ public class SharingRegistryService {
         prot.writeMessageEnd();
       }
 
-      public String getResult() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException {
+      public String getResult() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.airavata.model.error.DuplicateEntryException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -2789,7 +2801,7 @@ public class SharingRegistryService {
         prot.writeMessageEnd();
       }
 
-      public String getResult() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException {
+      public String getResult() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.airavata.model.error.DuplicateEntryException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -3285,7 +3297,7 @@ public class SharingRegistryService {
         prot.writeMessageEnd();
       }
 
-      public String getResult() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException {
+      public String getResult() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.airavata.model.error.DuplicateEntryException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -3765,6 +3777,8 @@ public class SharingRegistryService {
           result.success = iface.createDomain(args.domain);
         } catch (org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
           result.sre = sre;
+        } catch (org.apache.airavata.model.error.DuplicateEntryException dee) {
+          result.dee = dee;
         }
         return result;
       }
@@ -3912,6 +3926,8 @@ public class SharingRegistryService {
           result.success = iface.createUser(args.user);
         } catch (org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
           result.sre = sre;
+        } catch (org.apache.airavata.model.error.DuplicateEntryException dee) {
+          result.dee = dee;
         }
         return result;
       }
@@ -4350,6 +4366,8 @@ public class SharingRegistryService {
           result.success = iface.createEntityType(args.entityType);
         } catch (org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
           result.sre = sre;
+        } catch (org.apache.airavata.model.error.DuplicateEntryException dee) {
+          result.dee = dee;
         }
         return result;
       }
@@ -4692,6 +4710,8 @@ public class SharingRegistryService {
           result.success = iface.createPermissionType(args.permissionType);
         } catch (org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
           result.sre = sre;
+        } catch (org.apache.airavata.model.error.DuplicateEntryException dee) {
+          result.dee = dee;
         }
         return result;
       }
@@ -5042,6 +5062,11 @@ public class SharingRegistryService {
                         result.setSreIsSet(true);
                         msg = result;
             }
+            else             if (e instanceof org.apache.airavata.model.error.DuplicateEntryException) {
+                        result.dee = (org.apache.airavata.model.error.DuplicateEntryException) e;
+                        result.setDeeIsSet(true);
+                        msg = result;
+            }
              else 
             {
               msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
@@ -5385,6 +5410,11 @@ public class SharingRegistryService {
             if (e instanceof org.apache.airavata.sharing.registry.models.SharingRegistryException) {
                         result.sre = (org.apache.airavata.sharing.registry.models.SharingRegistryException) e;
                         result.setSreIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.DuplicateEntryException) {
+                        result.dee = (org.apache.airavata.model.error.DuplicateEntryException) e;
+                        result.setDeeIsSet(true);
                         msg = result;
             }
              else 
@@ -6417,6 +6447,11 @@ public class SharingRegistryService {
                         result.setSreIsSet(true);
                         msg = result;
             }
+            else             if (e instanceof org.apache.airavata.model.error.DuplicateEntryException) {
+                        result.dee = (org.apache.airavata.model.error.DuplicateEntryException) e;
+                        result.setDeeIsSet(true);
+                        msg = result;
+            }
              else 
             {
               msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
@@ -7219,6 +7254,11 @@ public class SharingRegistryService {
             if (e instanceof org.apache.airavata.sharing.registry.models.SharingRegistryException) {
                         result.sre = (org.apache.airavata.sharing.registry.models.SharingRegistryException) e;
                         result.setSreIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.DuplicateEntryException) {
+                        result.dee = (org.apache.airavata.model.error.DuplicateEntryException) e;
+                        result.setDeeIsSet(true);
                         msg = result;
             }
              else 
@@ -8190,6 +8230,7 @@ public class SharingRegistryService {
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
     private static final org.apache.thrift.protocol.TField SRE_FIELD_DESC = new org.apache.thrift.protocol.TField("sre", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField DEE_FIELD_DESC = new org.apache.thrift.protocol.TField("dee", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -8199,11 +8240,13 @@ public class SharingRegistryService {
 
     public String success; // required
     public org.apache.airavata.sharing.registry.models.SharingRegistryException sre; // required
+    public org.apache.airavata.model.error.DuplicateEntryException dee; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
-      SRE((short)1, "sre");
+      SRE((short)1, "sre"),
+      DEE((short)2, "dee");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -8222,6 +8265,8 @@ public class SharingRegistryService {
             return SUCCESS;
           case 1: // SRE
             return SRE;
+          case 2: // DEE
+            return DEE;
           default:
             return null;
         }
@@ -8269,6 +8314,8 @@ public class SharingRegistryService {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.SRE, new org.apache.thrift.meta_data.FieldMetaData("sre", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.DEE, new org.apache.thrift.meta_data.FieldMetaData("dee", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(createDomain_result.class, metaDataMap);
     }
@@ -8278,11 +8325,13 @@ public class SharingRegistryService {
 
     public createDomain_result(
       String success,
-      org.apache.airavata.sharing.registry.models.SharingRegistryException sre)
+      org.apache.airavata.sharing.registry.models.SharingRegistryException sre,
+      org.apache.airavata.model.error.DuplicateEntryException dee)
     {
       this();
       this.success = success;
       this.sre = sre;
+      this.dee = dee;
     }
 
     /**
@@ -8295,6 +8344,9 @@ public class SharingRegistryService {
       if (other.isSetSre()) {
         this.sre = new org.apache.airavata.sharing.registry.models.SharingRegistryException(other.sre);
       }
+      if (other.isSetDee()) {
+        this.dee = new org.apache.airavata.model.error.DuplicateEntryException(other.dee);
+      }
     }
 
     public createDomain_result deepCopy() {
@@ -8305,6 +8357,7 @@ public class SharingRegistryService {
     public void clear() {
       this.success = null;
       this.sre = null;
+      this.dee = null;
     }
 
     public String getSuccess() {
@@ -8355,6 +8408,30 @@ public class SharingRegistryService {
       }
     }
 
+    public org.apache.airavata.model.error.DuplicateEntryException getDee() {
+      return this.dee;
+    }
+
+    public createDomain_result setDee(org.apache.airavata.model.error.DuplicateEntryException dee) {
+      this.dee = dee;
+      return this;
+    }
+
+    public void unsetDee() {
+      this.dee = null;
+    }
+
+    /** Returns true if field dee is set (has been assigned a value) and false otherwise */
+    public boolean isSetDee() {
+      return this.dee != null;
+    }
+
+    public void setDeeIsSet(boolean value) {
+      if (!value) {
+        this.dee = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -8373,6 +8450,14 @@ public class SharingRegistryService {
         }
         break;
 
+      case DEE:
+        if (value == null) {
+          unsetDee();
+        } else {
+          setDee((org.apache.airavata.model.error.DuplicateEntryException)value);
+        }
+        break;
+
       }
     }
 
@@ -8383,6 +8468,9 @@ public class SharingRegistryService {
 
       case SRE:
         return getSre();
+
+      case DEE:
+        return getDee();
 
       }
       throw new IllegalStateException();
@@ -8399,6 +8487,8 @@ public class SharingRegistryService {
         return isSetSuccess();
       case SRE:
         return isSetSre();
+      case DEE:
+        return isSetDee();
       }
       throw new IllegalStateException();
     }
@@ -8434,6 +8524,15 @@ public class SharingRegistryService {
           return false;
       }
 
+      boolean this_present_dee = true && this.isSetDee();
+      boolean that_present_dee = true && that.isSetDee();
+      if (this_present_dee || that_present_dee) {
+        if (!(this_present_dee && that_present_dee))
+          return false;
+        if (!this.dee.equals(that.dee))
+          return false;
+      }
+
       return true;
     }
 
@@ -8450,6 +8549,11 @@ public class SharingRegistryService {
       list.add(present_sre);
       if (present_sre)
         list.add(sre);
+
+      boolean present_dee = true && (isSetDee());
+      list.add(present_dee);
+      if (present_dee)
+        list.add(dee);
 
       return list.hashCode();
     }
@@ -8478,6 +8582,16 @@ public class SharingRegistryService {
       }
       if (isSetSre()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sre, other.sre);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetDee()).compareTo(other.isSetDee());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetDee()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dee, other.dee);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -8515,6 +8629,14 @@ public class SharingRegistryService {
         sb.append("null");
       } else {
         sb.append(this.sre);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("dee:");
+      if (this.dee == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.dee);
       }
       first = false;
       sb.append(")");
@@ -8577,6 +8699,15 @@ public class SharingRegistryService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 2: // DEE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.dee = new org.apache.airavata.model.error.DuplicateEntryException();
+                struct.dee.read(iprot);
+                struct.setDeeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -8600,6 +8731,11 @@ public class SharingRegistryService {
         if (struct.sre != null) {
           oprot.writeFieldBegin(SRE_FIELD_DESC);
           struct.sre.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.dee != null) {
+          oprot.writeFieldBegin(DEE_FIELD_DESC);
+          struct.dee.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -8626,19 +8762,25 @@ public class SharingRegistryService {
         if (struct.isSetSre()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetDee()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetSuccess()) {
           oprot.writeString(struct.success);
         }
         if (struct.isSetSre()) {
           struct.sre.write(oprot);
         }
+        if (struct.isSetDee()) {
+          struct.dee.write(oprot);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, createDomain_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.success = iprot.readString();
           struct.setSuccessIsSet(true);
@@ -8647,6 +8789,11 @@ public class SharingRegistryService {
           struct.sre = new org.apache.airavata.sharing.registry.models.SharingRegistryException();
           struct.sre.read(iprot);
           struct.setSreIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.dee = new org.apache.airavata.model.error.DuplicateEntryException();
+          struct.dee.read(iprot);
+          struct.setDeeIsSet(true);
         }
       }
     }
@@ -13286,6 +13433,7 @@ public class SharingRegistryService {
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
     private static final org.apache.thrift.protocol.TField SRE_FIELD_DESC = new org.apache.thrift.protocol.TField("sre", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField DEE_FIELD_DESC = new org.apache.thrift.protocol.TField("dee", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -13295,11 +13443,13 @@ public class SharingRegistryService {
 
     public String success; // required
     public org.apache.airavata.sharing.registry.models.SharingRegistryException sre; // required
+    public org.apache.airavata.model.error.DuplicateEntryException dee; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
-      SRE((short)1, "sre");
+      SRE((short)1, "sre"),
+      DEE((short)2, "dee");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -13318,6 +13468,8 @@ public class SharingRegistryService {
             return SUCCESS;
           case 1: // SRE
             return SRE;
+          case 2: // DEE
+            return DEE;
           default:
             return null;
         }
@@ -13365,6 +13517,8 @@ public class SharingRegistryService {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.SRE, new org.apache.thrift.meta_data.FieldMetaData("sre", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.DEE, new org.apache.thrift.meta_data.FieldMetaData("dee", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(createUser_result.class, metaDataMap);
     }
@@ -13374,11 +13528,13 @@ public class SharingRegistryService {
 
     public createUser_result(
       String success,
-      org.apache.airavata.sharing.registry.models.SharingRegistryException sre)
+      org.apache.airavata.sharing.registry.models.SharingRegistryException sre,
+      org.apache.airavata.model.error.DuplicateEntryException dee)
     {
       this();
       this.success = success;
       this.sre = sre;
+      this.dee = dee;
     }
 
     /**
@@ -13391,6 +13547,9 @@ public class SharingRegistryService {
       if (other.isSetSre()) {
         this.sre = new org.apache.airavata.sharing.registry.models.SharingRegistryException(other.sre);
       }
+      if (other.isSetDee()) {
+        this.dee = new org.apache.airavata.model.error.DuplicateEntryException(other.dee);
+      }
     }
 
     public createUser_result deepCopy() {
@@ -13401,6 +13560,7 @@ public class SharingRegistryService {
     public void clear() {
       this.success = null;
       this.sre = null;
+      this.dee = null;
     }
 
     public String getSuccess() {
@@ -13451,6 +13611,30 @@ public class SharingRegistryService {
       }
     }
 
+    public org.apache.airavata.model.error.DuplicateEntryException getDee() {
+      return this.dee;
+    }
+
+    public createUser_result setDee(org.apache.airavata.model.error.DuplicateEntryException dee) {
+      this.dee = dee;
+      return this;
+    }
+
+    public void unsetDee() {
+      this.dee = null;
+    }
+
+    /** Returns true if field dee is set (has been assigned a value) and false otherwise */
+    public boolean isSetDee() {
+      return this.dee != null;
+    }
+
+    public void setDeeIsSet(boolean value) {
+      if (!value) {
+        this.dee = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -13469,6 +13653,14 @@ public class SharingRegistryService {
         }
         break;
 
+      case DEE:
+        if (value == null) {
+          unsetDee();
+        } else {
+          setDee((org.apache.airavata.model.error.DuplicateEntryException)value);
+        }
+        break;
+
       }
     }
 
@@ -13479,6 +13671,9 @@ public class SharingRegistryService {
 
       case SRE:
         return getSre();
+
+      case DEE:
+        return getDee();
 
       }
       throw new IllegalStateException();
@@ -13495,6 +13690,8 @@ public class SharingRegistryService {
         return isSetSuccess();
       case SRE:
         return isSetSre();
+      case DEE:
+        return isSetDee();
       }
       throw new IllegalStateException();
     }
@@ -13530,6 +13727,15 @@ public class SharingRegistryService {
           return false;
       }
 
+      boolean this_present_dee = true && this.isSetDee();
+      boolean that_present_dee = true && that.isSetDee();
+      if (this_present_dee || that_present_dee) {
+        if (!(this_present_dee && that_present_dee))
+          return false;
+        if (!this.dee.equals(that.dee))
+          return false;
+      }
+
       return true;
     }
 
@@ -13546,6 +13752,11 @@ public class SharingRegistryService {
       list.add(present_sre);
       if (present_sre)
         list.add(sre);
+
+      boolean present_dee = true && (isSetDee());
+      list.add(present_dee);
+      if (present_dee)
+        list.add(dee);
 
       return list.hashCode();
     }
@@ -13574,6 +13785,16 @@ public class SharingRegistryService {
       }
       if (isSetSre()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sre, other.sre);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetDee()).compareTo(other.isSetDee());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetDee()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dee, other.dee);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -13611,6 +13832,14 @@ public class SharingRegistryService {
         sb.append("null");
       } else {
         sb.append(this.sre);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("dee:");
+      if (this.dee == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.dee);
       }
       first = false;
       sb.append(")");
@@ -13673,6 +13902,15 @@ public class SharingRegistryService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 2: // DEE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.dee = new org.apache.airavata.model.error.DuplicateEntryException();
+                struct.dee.read(iprot);
+                struct.setDeeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -13696,6 +13934,11 @@ public class SharingRegistryService {
         if (struct.sre != null) {
           oprot.writeFieldBegin(SRE_FIELD_DESC);
           struct.sre.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.dee != null) {
+          oprot.writeFieldBegin(DEE_FIELD_DESC);
+          struct.dee.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -13722,19 +13965,25 @@ public class SharingRegistryService {
         if (struct.isSetSre()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetDee()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetSuccess()) {
           oprot.writeString(struct.success);
         }
         if (struct.isSetSre()) {
           struct.sre.write(oprot);
         }
+        if (struct.isSetDee()) {
+          struct.dee.write(oprot);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, createUser_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.success = iprot.readString();
           struct.setSuccessIsSet(true);
@@ -13743,6 +13992,11 @@ public class SharingRegistryService {
           struct.sre = new org.apache.airavata.sharing.registry.models.SharingRegistryException();
           struct.sre.read(iprot);
           struct.setSreIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.dee = new org.apache.airavata.model.error.DuplicateEntryException();
+          struct.dee.read(iprot);
+          struct.setDeeIsSet(true);
         }
       }
     }
@@ -30775,6 +31029,7 @@ public class SharingRegistryService {
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
     private static final org.apache.thrift.protocol.TField SRE_FIELD_DESC = new org.apache.thrift.protocol.TField("sre", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField DEE_FIELD_DESC = new org.apache.thrift.protocol.TField("dee", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -30784,11 +31039,13 @@ public class SharingRegistryService {
 
     public String success; // required
     public org.apache.airavata.sharing.registry.models.SharingRegistryException sre; // required
+    public org.apache.airavata.model.error.DuplicateEntryException dee; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
-      SRE((short)1, "sre");
+      SRE((short)1, "sre"),
+      DEE((short)2, "dee");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -30807,6 +31064,8 @@ public class SharingRegistryService {
             return SUCCESS;
           case 1: // SRE
             return SRE;
+          case 2: // DEE
+            return DEE;
           default:
             return null;
         }
@@ -30854,6 +31113,8 @@ public class SharingRegistryService {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.SRE, new org.apache.thrift.meta_data.FieldMetaData("sre", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.DEE, new org.apache.thrift.meta_data.FieldMetaData("dee", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(createEntityType_result.class, metaDataMap);
     }
@@ -30863,11 +31124,13 @@ public class SharingRegistryService {
 
     public createEntityType_result(
       String success,
-      org.apache.airavata.sharing.registry.models.SharingRegistryException sre)
+      org.apache.airavata.sharing.registry.models.SharingRegistryException sre,
+      org.apache.airavata.model.error.DuplicateEntryException dee)
     {
       this();
       this.success = success;
       this.sre = sre;
+      this.dee = dee;
     }
 
     /**
@@ -30880,6 +31143,9 @@ public class SharingRegistryService {
       if (other.isSetSre()) {
         this.sre = new org.apache.airavata.sharing.registry.models.SharingRegistryException(other.sre);
       }
+      if (other.isSetDee()) {
+        this.dee = new org.apache.airavata.model.error.DuplicateEntryException(other.dee);
+      }
     }
 
     public createEntityType_result deepCopy() {
@@ -30890,6 +31156,7 @@ public class SharingRegistryService {
     public void clear() {
       this.success = null;
       this.sre = null;
+      this.dee = null;
     }
 
     public String getSuccess() {
@@ -30940,6 +31207,30 @@ public class SharingRegistryService {
       }
     }
 
+    public org.apache.airavata.model.error.DuplicateEntryException getDee() {
+      return this.dee;
+    }
+
+    public createEntityType_result setDee(org.apache.airavata.model.error.DuplicateEntryException dee) {
+      this.dee = dee;
+      return this;
+    }
+
+    public void unsetDee() {
+      this.dee = null;
+    }
+
+    /** Returns true if field dee is set (has been assigned a value) and false otherwise */
+    public boolean isSetDee() {
+      return this.dee != null;
+    }
+
+    public void setDeeIsSet(boolean value) {
+      if (!value) {
+        this.dee = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -30958,6 +31249,14 @@ public class SharingRegistryService {
         }
         break;
 
+      case DEE:
+        if (value == null) {
+          unsetDee();
+        } else {
+          setDee((org.apache.airavata.model.error.DuplicateEntryException)value);
+        }
+        break;
+
       }
     }
 
@@ -30968,6 +31267,9 @@ public class SharingRegistryService {
 
       case SRE:
         return getSre();
+
+      case DEE:
+        return getDee();
 
       }
       throw new IllegalStateException();
@@ -30984,6 +31286,8 @@ public class SharingRegistryService {
         return isSetSuccess();
       case SRE:
         return isSetSre();
+      case DEE:
+        return isSetDee();
       }
       throw new IllegalStateException();
     }
@@ -31019,6 +31323,15 @@ public class SharingRegistryService {
           return false;
       }
 
+      boolean this_present_dee = true && this.isSetDee();
+      boolean that_present_dee = true && that.isSetDee();
+      if (this_present_dee || that_present_dee) {
+        if (!(this_present_dee && that_present_dee))
+          return false;
+        if (!this.dee.equals(that.dee))
+          return false;
+      }
+
       return true;
     }
 
@@ -31035,6 +31348,11 @@ public class SharingRegistryService {
       list.add(present_sre);
       if (present_sre)
         list.add(sre);
+
+      boolean present_dee = true && (isSetDee());
+      list.add(present_dee);
+      if (present_dee)
+        list.add(dee);
 
       return list.hashCode();
     }
@@ -31063,6 +31381,16 @@ public class SharingRegistryService {
       }
       if (isSetSre()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sre, other.sre);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetDee()).compareTo(other.isSetDee());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetDee()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dee, other.dee);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -31100,6 +31428,14 @@ public class SharingRegistryService {
         sb.append("null");
       } else {
         sb.append(this.sre);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("dee:");
+      if (this.dee == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.dee);
       }
       first = false;
       sb.append(")");
@@ -31162,6 +31498,15 @@ public class SharingRegistryService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 2: // DEE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.dee = new org.apache.airavata.model.error.DuplicateEntryException();
+                struct.dee.read(iprot);
+                struct.setDeeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -31185,6 +31530,11 @@ public class SharingRegistryService {
         if (struct.sre != null) {
           oprot.writeFieldBegin(SRE_FIELD_DESC);
           struct.sre.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.dee != null) {
+          oprot.writeFieldBegin(DEE_FIELD_DESC);
+          struct.dee.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -31211,19 +31561,25 @@ public class SharingRegistryService {
         if (struct.isSetSre()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetDee()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetSuccess()) {
           oprot.writeString(struct.success);
         }
         if (struct.isSetSre()) {
           struct.sre.write(oprot);
         }
+        if (struct.isSetDee()) {
+          struct.dee.write(oprot);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, createEntityType_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.success = iprot.readString();
           struct.setSuccessIsSet(true);
@@ -31232,6 +31588,11 @@ public class SharingRegistryService {
           struct.sre = new org.apache.airavata.sharing.registry.models.SharingRegistryException();
           struct.sre.read(iprot);
           struct.setSreIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.dee = new org.apache.airavata.model.error.DuplicateEntryException();
+          struct.dee.read(iprot);
+          struct.setDeeIsSet(true);
         }
       }
     }
@@ -44187,6 +44548,7 @@ public class SharingRegistryService {
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
     private static final org.apache.thrift.protocol.TField SRE_FIELD_DESC = new org.apache.thrift.protocol.TField("sre", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField DEE_FIELD_DESC = new org.apache.thrift.protocol.TField("dee", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -44196,11 +44558,13 @@ public class SharingRegistryService {
 
     public String success; // required
     public org.apache.airavata.sharing.registry.models.SharingRegistryException sre; // required
+    public org.apache.airavata.model.error.DuplicateEntryException dee; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
-      SRE((short)1, "sre");
+      SRE((short)1, "sre"),
+      DEE((short)2, "dee");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -44219,6 +44583,8 @@ public class SharingRegistryService {
             return SUCCESS;
           case 1: // SRE
             return SRE;
+          case 2: // DEE
+            return DEE;
           default:
             return null;
         }
@@ -44266,6 +44632,8 @@ public class SharingRegistryService {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.SRE, new org.apache.thrift.meta_data.FieldMetaData("sre", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.DEE, new org.apache.thrift.meta_data.FieldMetaData("dee", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(createPermissionType_result.class, metaDataMap);
     }
@@ -44275,11 +44643,13 @@ public class SharingRegistryService {
 
     public createPermissionType_result(
       String success,
-      org.apache.airavata.sharing.registry.models.SharingRegistryException sre)
+      org.apache.airavata.sharing.registry.models.SharingRegistryException sre,
+      org.apache.airavata.model.error.DuplicateEntryException dee)
     {
       this();
       this.success = success;
       this.sre = sre;
+      this.dee = dee;
     }
 
     /**
@@ -44292,6 +44662,9 @@ public class SharingRegistryService {
       if (other.isSetSre()) {
         this.sre = new org.apache.airavata.sharing.registry.models.SharingRegistryException(other.sre);
       }
+      if (other.isSetDee()) {
+        this.dee = new org.apache.airavata.model.error.DuplicateEntryException(other.dee);
+      }
     }
 
     public createPermissionType_result deepCopy() {
@@ -44302,6 +44675,7 @@ public class SharingRegistryService {
     public void clear() {
       this.success = null;
       this.sre = null;
+      this.dee = null;
     }
 
     public String getSuccess() {
@@ -44352,6 +44726,30 @@ public class SharingRegistryService {
       }
     }
 
+    public org.apache.airavata.model.error.DuplicateEntryException getDee() {
+      return this.dee;
+    }
+
+    public createPermissionType_result setDee(org.apache.airavata.model.error.DuplicateEntryException dee) {
+      this.dee = dee;
+      return this;
+    }
+
+    public void unsetDee() {
+      this.dee = null;
+    }
+
+    /** Returns true if field dee is set (has been assigned a value) and false otherwise */
+    public boolean isSetDee() {
+      return this.dee != null;
+    }
+
+    public void setDeeIsSet(boolean value) {
+      if (!value) {
+        this.dee = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -44370,6 +44768,14 @@ public class SharingRegistryService {
         }
         break;
 
+      case DEE:
+        if (value == null) {
+          unsetDee();
+        } else {
+          setDee((org.apache.airavata.model.error.DuplicateEntryException)value);
+        }
+        break;
+
       }
     }
 
@@ -44380,6 +44786,9 @@ public class SharingRegistryService {
 
       case SRE:
         return getSre();
+
+      case DEE:
+        return getDee();
 
       }
       throw new IllegalStateException();
@@ -44396,6 +44805,8 @@ public class SharingRegistryService {
         return isSetSuccess();
       case SRE:
         return isSetSre();
+      case DEE:
+        return isSetDee();
       }
       throw new IllegalStateException();
     }
@@ -44431,6 +44842,15 @@ public class SharingRegistryService {
           return false;
       }
 
+      boolean this_present_dee = true && this.isSetDee();
+      boolean that_present_dee = true && that.isSetDee();
+      if (this_present_dee || that_present_dee) {
+        if (!(this_present_dee && that_present_dee))
+          return false;
+        if (!this.dee.equals(that.dee))
+          return false;
+      }
+
       return true;
     }
 
@@ -44447,6 +44867,11 @@ public class SharingRegistryService {
       list.add(present_sre);
       if (present_sre)
         list.add(sre);
+
+      boolean present_dee = true && (isSetDee());
+      list.add(present_dee);
+      if (present_dee)
+        list.add(dee);
 
       return list.hashCode();
     }
@@ -44475,6 +44900,16 @@ public class SharingRegistryService {
       }
       if (isSetSre()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sre, other.sre);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetDee()).compareTo(other.isSetDee());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetDee()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dee, other.dee);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -44512,6 +44947,14 @@ public class SharingRegistryService {
         sb.append("null");
       } else {
         sb.append(this.sre);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("dee:");
+      if (this.dee == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.dee);
       }
       first = false;
       sb.append(")");
@@ -44574,6 +45017,15 @@ public class SharingRegistryService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 2: // DEE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.dee = new org.apache.airavata.model.error.DuplicateEntryException();
+                struct.dee.read(iprot);
+                struct.setDeeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -44597,6 +45049,11 @@ public class SharingRegistryService {
         if (struct.sre != null) {
           oprot.writeFieldBegin(SRE_FIELD_DESC);
           struct.sre.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.dee != null) {
+          oprot.writeFieldBegin(DEE_FIELD_DESC);
+          struct.dee.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -44623,19 +45080,25 @@ public class SharingRegistryService {
         if (struct.isSetSre()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetDee()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetSuccess()) {
           oprot.writeString(struct.success);
         }
         if (struct.isSetSre()) {
           struct.sre.write(oprot);
         }
+        if (struct.isSetDee()) {
+          struct.dee.write(oprot);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, createPermissionType_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.success = iprot.readString();
           struct.setSuccessIsSet(true);
@@ -44644,6 +45107,11 @@ public class SharingRegistryService {
           struct.sre = new org.apache.airavata.sharing.registry.models.SharingRegistryException();
           struct.sre.read(iprot);
           struct.setSreIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.dee = new org.apache.airavata.model.error.DuplicateEntryException();
+          struct.dee.read(iprot);
+          struct.setDeeIsSet(true);
         }
       }
     }

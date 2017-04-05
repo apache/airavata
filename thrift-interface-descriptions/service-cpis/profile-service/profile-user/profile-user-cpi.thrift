@@ -23,6 +23,8 @@
  *
 */
 
+include "../../../airavata-apis/airavata_errors.thrift"
+include "../../../airavata-apis/security_model.thrift"
 include "../../../data-models/user-group-models/user_profile_model.thrift"
 include "profile_user_cpi_errors.thrift"
 
@@ -34,25 +36,45 @@ const string USER_PROFILE_CPI_NAME = "UserProfileService"
 
 service UserProfileService {
 
-  string addUserProfile (1: required user_profile_model.UserProfile userProfile)
-                        throws (1:profile_user_cpi_errors.UserProfileServiceException userProfileException);
+  string addUserProfile (1: required security_model.AuthzToken authzToken,
+                         2: required user_profile_model.UserProfile userProfile)
+                      throws (1: profile_user_cpi_errors.UserProfileServiceException upe,
+                              2: airavata_errors.AuthorizationException ae);
 
-  bool updateUserProfile (1: required user_profile_model.UserProfile userProfile)
-                          throws (1:profile_user_cpi_errors.UserProfileServiceException userProfileException);
+  bool updateUserProfile (1: required security_model.AuthzToken authzToken,
+                          2: required user_profile_model.UserProfile userProfile)
+                       throws (1: profile_user_cpi_errors.UserProfileServiceException upe,
+                               2: airavata_errors.AuthorizationException ae);
 
-  user_profile_model.UserProfile getUserProfileById(1: required string userId, 2: required string gatewayId)
-                                                throws (1:profile_user_cpi_errors.UserProfileServiceException userProfileException);
+  user_profile_model.UserProfile getUserProfileById (1: required security_model.AuthzToken authzToken,
+                                                     2: required string userId,
+                                                     3: required string gatewayId)
+                                                  throws (1: profile_user_cpi_errors.UserProfileServiceException upe,
+                                                          2: airavata_errors.AuthorizationException ae);
 
-  bool deleteUserProfile(1: required string userId)
-                                                  throws (1:profile_user_cpi_errors.UserProfileServiceException userProfileException);
+  bool deleteUserProfile (1: required security_model.AuthzToken authzToken,
+                          2: required string userId,
+                          3: required string gatewayId)
+                       throws (1: profile_user_cpi_errors.UserProfileServiceException upe,
+                               2: airavata_errors.AuthorizationException ae);
 
-  list<user_profile_model.UserProfile> getAllUserProfilesInGateway (1: required string gatewayId, 2: required i32 offset, 3: required i32 limit)
-                          throws (1:profile_user_cpi_errors.UserProfileServiceException userProfileException);
+  list<user_profile_model.UserProfile> getAllUserProfilesInGateway (1: required security_model.AuthzToken authzToken,
+                                                                    2: required string gatewayId,
+                                                                    3: required i32 offset,
+                                                                    4: required i32 limit)
+                                                                 throws (1: profile_user_cpi_errors.UserProfileServiceException upe,
+                                                                         2: airavata_errors.AuthorizationException ae);
 
- user_profile_model.UserProfile getUserProfileByName(1: required string userName, 2: required string gatewayId)
-                                                throws (1:profile_user_cpi_errors.UserProfileServiceException userProfileException);
+ user_profile_model.UserProfile getUserProfileByName (1: required security_model.AuthzToken authzToken,
+                                                      2: required string userName,
+                                                      3: required string gatewayId)
+                                                   throws (1: profile_user_cpi_errors.UserProfileServiceException upe,
+                                                           2: airavata_errors.AuthorizationException ae);
 
-   bool doesUserExist(1: required string userName, 2: required string gatewayId)
-                                                   throws (1:profile_user_cpi_errors.UserProfileServiceException userProfileException);
+ bool doesUserExist (1: required security_model.AuthzToken authzToken,
+                     2: required string userName,
+                     3: required string gatewayId)
+                  throws (1: profile_user_cpi_errors.UserProfileServiceException upe,
+                          2: airavata_errors.AuthorizationException ae);
 
 }
