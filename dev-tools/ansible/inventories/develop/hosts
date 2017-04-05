@@ -33,3 +33,6 @@ gw56.iu.xsede.org ansible_user=airavata
 
 [dev-pga]
 gw54.iu.xsede.org  ansible_user=pga
+
+[dev-keycloak]
+149.165.171.11 ansible_user=centos
