@@ -16,9 +16,5 @@ gf5.ucs.indiana.edu
 [gfac]
 gf6.ucs.indiana.edu
 
-[pga:children]
-pga-seagrid
-
-[pga-seagrid]
+[pga]
 gf4.ucs.indiana.edu
-

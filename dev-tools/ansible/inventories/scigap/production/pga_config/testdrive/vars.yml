@@ -1,0 +1,57 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+pga_repo: "https://github.com/apache/airavata-php-gateway.git"
+git_branch: "master"
+user: "pga"
+group: "pga"
+doc_root_dir: "/var/www/portals/testdrive"
+vhost_servername: "testdrive.airavata.org"
+vhost_serveralias: "www.testdrive.airavata.org"
+vhost_ssl: True
+# TODO: have Ansible manage these files as well
+ssl_certificate_file: "/etc/pki/tls/certs/testdrive_airavata_org_cert.cer"
+ssl_certificate_chain_file: "/etc/pki/tls/certs/testdrive_airavata_org_interm.cer"
+ssl_certificate_key_file: "/etc/pki/tls/private/testdrive-airavata.key"
+
+## WSO2 IS related variables
+tenant_domain: "prod.testdrive"
+admin_username: "tdaadmin"
+admin_password: "{{ vault_admin_password }}"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+gateway_id: "default"
+# relative to document root dir
+experiment_data_dir: "{{ user_data_dir }}/testdrive"
+# TODO: this is only for testing, we'll need to update this again during the real migration
+gateway_data_store_resource_id: "gf4.ucs.indiana.edu_71a8409a-0713-4a45-985f-22847f63df4e"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCUF51b2cYYqqadLHL9M/oPY0ZHZlWbdOdaIgjpzIzMnO7M9hKrHVY2pqyLPvqCLzaunxITPWsTqw0E8hwub4ttGLAx/O4kIf+BgyZK7iuwXWhI7u85/o58IfrD4B+jVCYKRNayuLR+lJWsiOeS6HSlunpTKTEhFGeOHn2UzdbLfgWYQ3VUFDtKN1oDPDT78ml5c2RCibJ21jltpevVfEtCUctERpTfniWSuQZggP1qiLNa1+PfiJ3mGsEzJFDntQvQetdinaAbEaT7+sctS8nBNjapkmYMf6tBl3S0bLttYPH51f8lUQAFaAzrestO1JpJNnIeY01/S3MWIlAWASnn"
+
+## Portal related variables
+super_admin_portal: "false"
+admin_emails: "['sgg@iu.edu','eroma.abeysinghe@gmail.com','supun.nakandala@gmail.com']"
+portal_email_username: "pga.airavata@gmail.com"
+portal_email_password: "{{ vault_portal_email_password }}"
+#portal_theme: "base"
+#portal_theme_repo: ""
+portal_title: "Airavata Test Drive"
+...
