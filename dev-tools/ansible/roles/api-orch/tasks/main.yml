@@ -76,6 +76,7 @@
   firewalld: port={{ item }} zone=public permanent=true state=enabled immediate=yes
   with_items:
     - "{{ api_server_port }}/tcp"
+    - "{{ api_server_tls_port }}/tcp"
     - "{{ orchestrator_port }}/tcp"
     - "{{ cred_store_port }}/tcp"
     - "{{ registry_port }}/tcp"
