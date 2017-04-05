@@ -80,4 +80,15 @@ public class SharingRepository extends AbstractRepository<Sharing, SharingEntity
         query += " ORDER BY p.createdTime DESC";
         return select(query, 0, -1).size() > 0;
     }
+
+    public int getSharedCount(String domainId, String entityId) throws SharingRegistryException {
+        String query = "SELECT p from " + SharingEntity.class.getSimpleName() + " as p";
+        query += " WHERE ";
+        query += "p." + DBConstants.SharingTable.DOMAIN_ID + " = '" + domainId + "' AND ";
+        query += "p." + DBConstants.SharingTable.ENTITY_ID + " = '" + entityId + "' AND ";
+        String permissionTypeIdString = (new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId);
+        query += "p." + DBConstants.SharingTable.PERMISSION_TYPE_ID + " <> '" + permissionTypeIdString + "' AND ";
+        query += "p." + DBConstants.SharingTable.SHARING_TYPE + " <> '" + SharingType.INDIRECT_CASCADING + "'";
+        return select(query, 0, -1).size();
+    }
 }

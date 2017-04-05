@@ -76,23 +76,6 @@ public class ProjectRegistry {
             resource.setProjectId(project.getProjectID());
             resource.setUserName(project.getOwner());
             resource.save();
-            List<String> sharedGroups = project.getSharedGroups();
-            if (sharedGroups != null && !sharedGroups.isEmpty()){
-                for (String group : sharedGroups){
-                    //TODO - add shared groups
-                    logger.info("Groups are not supported at the moment...");
-                }
-            }
-
-            List<String> sharedUsers = project.getSharedUsers();
-            if (sharedUsers != null && !sharedUsers.isEmpty()){
-                for (String username : sharedUsers){
-                    ProjectUserResource pr = (ProjectUserResource)projectResource.
-                            create(ResourceType.PROJECT_USER);
-                    pr.setUserName(username);
-                    pr.save();
-                }
-            }
         }catch (Exception e){
             logger.error("Error while saving project to registry", e);
            throw new RegistryException(e);
@@ -110,15 +93,7 @@ public class ProjectRegistry {
             ProjectResource existingProject = workerResource.getProject(projectId);
             existingProject.setDescription(project.getDescription());
             existingProject.setName(project.getName());
-//            existingProject.setGateway(gatewayResource);
-            UserResource user = (UserResource) ExpCatResourceUtils.getUser(project.getOwner(),gatewayResource.getGatewayId());
-            if (!gatewayResource.isExists(ResourceType.GATEWAY_WORKER, user.getUserName())){
-                workerResource = ExpCatResourceUtils.addGatewayWorker(gatewayResource, user);
-            }else {
-                workerResource = (WorkerResource) ExpCatResourceUtils.getWorker(
-                        gatewayResource.getGatewayId(), user.getUserName());
-            }
-            WorkerResource worker = new WorkerResource(project.getOwner(), gatewayResource.getGatewayId());
+            WorkerResource worker = new WorkerResource(project.getOwner(), project.getGatewayId());
             existingProject.setWorker(worker);
             existingProject.save();
             ProjectUserResource resource = (ProjectUserResource)existingProject.create(
@@ -126,23 +101,6 @@ public class ProjectRegistry {
             resource.setProjectId(projectId);
             resource.setUserName(project.getOwner());
             resource.save();
-            List<String> sharedGroups = project.getSharedGroups();
-            if (sharedGroups != null && !sharedGroups.isEmpty()){
-                for (String group : sharedGroups){
-                    //TODO - add shared groups
-                    logger.info("Groups are not supported at the moment...");
-                }
-            }
-
-            List<String> sharedUsers = project.getSharedUsers();
-            if (sharedUsers != null && !sharedUsers.isEmpty()){
-                for (String username : sharedUsers){
-                    ProjectUserResource pr = (ProjectUserResource)existingProject.create(
-                            ResourceType.PROJECT_USER);
-                    pr.setUserName(username);
-                    pr.save();
-                }
-            }
         }catch (Exception e){
             logger.error("Error while saving project to registry", e);
            throw new RegistryException(e);

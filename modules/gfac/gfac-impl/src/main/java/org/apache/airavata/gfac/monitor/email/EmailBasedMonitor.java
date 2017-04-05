@@ -279,6 +279,12 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
                 if (taskContext != null) {
                     process(jobStatusResult, taskContext);
                     processedMessages.add(message);
+
+                } else if (!jobStatusResult.isAuthoritative()
+                        && (new Date()).getTime() - message.getSentDate().getTime() > 1000 * 60 * 5) {
+                    //marking old custom Airavata emails as read
+                    processedMessages.add(message);
+                    log.info("Marking old Airavata custom emails as read, message subject --> {}", message.getSubject());
                 } else {
                     // we can get JobExecutionContext null in multiple Gfac instances environment,
                     // where this job is not submitted by this Gfac instance hence we ignore this message.
@@ -337,42 +343,88 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
         ProcessContext parentProcessContext = taskContext.getParentProcessContext();
         JobModel jobModel = parentProcessContext.getJobModel();
         String jobDetails = "JobName : " + jobStatusResult.getJobName() + ", JobId : " + jobStatusResult.getJobId();
-        // TODO - Handle all other valid JobStates
-        if (resultState == JobState.COMPLETE) {
-            jobMonitorMap.remove(jobStatusResult.getJobId());
-	        jobStatus.setJobState(JobState.COMPLETE);
-	        jobStatus.setReason("Complete email received");
-            jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-	        runOutflowTasks = true;
-            log.info("[EJM]: Job Complete email received , removed job from job monitoring. " + jobDetails);
-        }else if (resultState == JobState.QUEUED) {
-	        // nothing special thing to do, update the status change to rabbit mq at the end of this method.
-	        jobStatus.setJobState(JobState.QUEUED);
-	        jobStatus.setReason("Queue email received");
-            jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-	        log.info("[EJM]: Job Queued email received, " + jobDetails);
-        }else if (resultState == JobState.ACTIVE) {
-            // nothing special thing to do, update the status change to rabbit mq at the end of this method.
-	        jobStatus.setJobState(JobState.ACTIVE);
-	        jobStatus.setReason("Active email received");
-            jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-            log.info("[EJM]: Job Active email received, " + jobDetails);
-        }else if (resultState == JobState.FAILED) {
-            jobMonitorMap.remove(jobStatusResult.getJobId());
-            runOutflowTasks = true;
-	        jobStatus.setJobState(JobState.FAILED);
-	        jobStatus.setReason("Failed email received");
-            jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-            log.info("[EJM]: Job failed email received , removed job from job monitoring. " + jobDetails);
-        }else if (resultState == JobState.CANCELED) {
-            jobMonitorMap.remove(jobStatusResult.getJobId());
-            jobStatus.setJobState(JobState.CANCELED);
-	        jobStatus.setReason("Canceled email received");
-            jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-	        log.info("[EJM]: Job canceled mail received, removed job from job monitoring. " + jobDetails);
-	        runOutflowTasks = true; // we run out flow and this will move process to cancel state.
+
+        JobState currentState = null;
+        List<JobStatus> jobStatusList = jobModel.getJobStatuses();
+        if (jobStatusList != null && jobStatusList.size() > 0) {
+            JobStatus lastStatus = jobStatusList.get(0);
+            for (JobStatus temp : jobStatusList) {
+                if (temp.getTimeOfStateChange() >= lastStatus.getTimeOfStateChange()) {
+                    lastStatus = temp;
+                }
+            }
+            currentState = lastStatus.getJobState();
         }
-	    if (jobStatus.getJobState() != null) {
+
+        // TODO - Handle all other valid JobStates
+        // FIXME - What if non-authoritative email comes later (getting accumulated in the email account)
+        if (resultState == JobState.COMPLETE) {
+            if (jobStatusResult.isAuthoritative()) {
+                if (currentState != null && currentState == JobState.COMPLETE) {
+                    jobMonitorMap.remove(jobStatusResult.getJobId());
+                    runOutflowTasks = false;
+                    log.info("[EJM]: Authoritative job Complete email received after early Airavata custom complete email," +
+                            " removed job from job monitoring. " + jobDetails);
+                } else {
+                    jobMonitorMap.remove(jobStatusResult.getJobId());
+                    runOutflowTasks = true;
+                    jobStatus.setJobState(JobState.COMPLETE);
+                    jobStatus.setReason("Complete email received");
+                    jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                    log.info("[EJM]: Authoritative job Complete email received , removed job from job monitoring. " + jobDetails);
+                }
+            } else {
+                runOutflowTasks = true;
+                jobStatus.setJobState(JobState.COMPLETE);
+                jobStatus.setReason("Complete email received");
+                jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                log.info("[EJM]: Non Authoritative Job Complete email received. " + jobDetails);
+            }
+        }else if (resultState == JobState.QUEUED) {
+            //It is possible that we will get an early complete message from custom Airavata emails instead from the
+            //scheduler
+            if (currentState != JobState.COMPLETE) {
+                // nothing special thing to do, update the status change to rabbit mq at the end of this method.
+                jobStatus.setJobState(JobState.QUEUED);
+                jobStatus.setReason("Queue email received");
+                jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                log.info("[EJM]: Job Queued email received, " + jobDetails);
+            }
+        }else if (resultState == JobState.ACTIVE) {
+            //It is possible that we will get an early complete message from custom Airavata emails instead from the
+            //scheduler
+            if (currentState != JobState.COMPLETE) {
+                // nothing special thing to do, update the status change to rabbit mq at the end of this method.
+                jobStatus.setJobState(JobState.ACTIVE);
+                jobStatus.setReason("Active email received");
+                jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                log.info("[EJM]: Job Active email received, " + jobDetails);
+            }
+        }else if (resultState == JobState.FAILED) {
+            //It is possible that we will get an early complete message from custom Airavata emails instead from the
+            //scheduler
+            if (currentState != JobState.COMPLETE) {
+                jobMonitorMap.remove(jobStatusResult.getJobId());
+                runOutflowTasks = true;
+                jobStatus.setJobState(JobState.FAILED);
+                jobStatus.setReason("Failed email received");
+                jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                log.info("[EJM]: Job failed email received , removed job from job monitoring. " + jobDetails);
+            }
+        }else if (resultState == JobState.CANCELED) {
+            //It is possible that we will get an early complete message from custom Airavata emails instead from the
+            //scheduler
+            if (currentState != JobState.COMPLETE) {
+                jobMonitorMap.remove(jobStatusResult.getJobId());
+                jobStatus.setJobState(JobState.CANCELED);
+                jobStatus.setReason("Canceled email received");
+                jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                log.info("[EJM]: Job canceled mail received, removed job from job monitoring. " + jobDetails);
+                runOutflowTasks = true; // we run out flow and this will move process to cancel state.
+            }
+        }
+
+        if (jobStatus.getJobState() != null) {
 		    try {
 			    jobModel.setJobStatuses(Arrays.asList(jobStatus));
 			    log.info("[EJM]: Publishing status changes to amqp. " + jobDetails);

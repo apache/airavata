@@ -76,7 +76,6 @@ public class LSFEmailParser implements EmailParser {
                 return JobState.FAILED;
             default:
                 return JobState.UNKNOWN;
-
         }
     }
 }
