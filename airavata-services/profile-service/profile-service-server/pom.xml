@@ -26,6 +26,11 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.airavata</groupId>
+            <artifactId>services-security</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
             <artifactId>profile-service-stubs</artifactId>
             <version>${project.version}</version>
         </dependency>
