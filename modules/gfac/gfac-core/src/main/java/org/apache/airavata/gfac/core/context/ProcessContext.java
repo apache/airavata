@@ -447,23 +447,24 @@ public class ProcessContext {
 	}
 
 	public String getComputeResourceCredentialToken(){
-		if (isUseUserCRPref() &&
-				userComputeResourcePreference != null &&
-				isValid(userComputeResourcePreference.getResourceSpecificCredentialStoreToken())) {
-			return userComputeResourcePreference.getResourceSpecificCredentialStoreToken();
-		} else if (isValid(gatewayComputeResourcePreference.getResourceSpecificCredentialStoreToken())) {
-			return gatewayComputeResourcePreference.getResourceSpecificCredentialStoreToken();
+		if (isUseUserCRPref()) {
+			if (userComputeResourcePreference != null &&
+					isValid(userComputeResourcePreference.getResourceSpecificCredentialStoreToken())) {
+				return userComputeResourcePreference.getResourceSpecificCredentialStoreToken();
+			} else {
+				return userResourceProfile.getCredentialStoreToken();
+			}
 		} else {
-			return gatewayResourceProfile.getCredentialStoreToken();
+			if (isValid(gatewayComputeResourcePreference.getResourceSpecificCredentialStoreToken())) {
+				return gatewayComputeResourcePreference.getResourceSpecificCredentialStoreToken();
+			} else {
+				return gatewayResourceProfile.getCredentialStoreToken();
+			}
 		}
 	}
 
 	public String getStorageResourceCredentialToken(){
-		if (isUseUserCRPref() &&
-				userStoragePreference != null &&
-				isValid(userStoragePreference.getResourceSpecificCredentialStoreToken())) {
-			return userStoragePreference.getResourceSpecificCredentialStoreToken();
-		} else if (isValid(gatewayStorageResourcePreference.getResourceSpecificCredentialStoreToken())) {
+		if (isValid(gatewayStorageResourcePreference.getResourceSpecificCredentialStoreToken())) {
 			return gatewayStorageResourcePreference.getResourceSpecificCredentialStoreToken();
 		} else {
 			return gatewayResourceProfile.getCredentialStoreToken();
@@ -606,33 +607,15 @@ public class ProcessContext {
 	}
 
 	public String getStorageResourceLoginUserName(){
-		if (isUseUserCRPref() &&
-				userStoragePreference != null &&
-				isValid(userStoragePreference.getLoginUserName())) {
-			return userStoragePreference.getLoginUserName();
-		} else {
-			return gatewayStorageResourcePreference.getLoginUserName();
-		}
+		return gatewayStorageResourcePreference.getLoginUserName();
 	}
 
 	public String getStorageFileSystemRootLocation(){
-		if (isUseUserCRPref() &&
-				userStoragePreference != null &&
-				isValid(userStoragePreference.getFileSystemRootLocation())) {
-			return userStoragePreference.getFileSystemRootLocation();
-		} else {
-			return gatewayStorageResourcePreference.getFileSystemRootLocation();
-		}
+		return gatewayStorageResourcePreference.getFileSystemRootLocation();
 	}
 
 	public String getStorageResourceId() {
-		if (isUseUserCRPref() &&
-				userStoragePreference != null &&
-				isValid(userStoragePreference.getStorageResourceId())) {
-			return userStoragePreference.getStorageResourceId();
-		} else {
-			return gatewayStorageResourcePreference.getStorageResourceId();
-		}
+		return gatewayStorageResourcePreference.getStorageResourceId();
 	}
 
 	private ComputationalResourceSchedulingModel getProcessCRSchedule() {

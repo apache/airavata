@@ -6,4 +6,4 @@ Requirement
 * pip install flask-restful
 
 Sample CURL Command
-curl -X POST -d "job_id=ABC&job_name=Test&status=0&emails[]=supun.nakandala@gmail.com,eabeysin@iu.edu" http://localhost:8089/job_status
+curl -X POST -d "job_id=ABC&job_name=Test&status=0&emails[]=supun.nakandala@gmail.com&emails[]=eabeysin@iu.edu" http://localhost:8089/job_status

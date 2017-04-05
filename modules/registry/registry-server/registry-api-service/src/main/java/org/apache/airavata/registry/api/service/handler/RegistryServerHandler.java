@@ -3412,7 +3412,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throw exception;
         }
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            experimentCatalog = RegistryFactory.getExperimentCatalog(updatedProject.getGatewayId());
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.PROJECT, projectId)){
                 logger.error("Project does not exist in the system. Please provide a valid project ID...");
                 ProjectNotFoundException exception = new ProjectNotFoundException();

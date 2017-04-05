@@ -40,6 +40,12 @@
 <li><a href="#Fn_SharingRegistryService_getPermissionTypes">getPermissionTypes</a></li>
 <li><a href="#Fn_SharingRegistryService_getUser">getUser</a></li>
 <li><a href="#Fn_SharingRegistryService_getUsers">getUsers</a></li>
+<li><a href="#Fn_SharingRegistryService_isDomainExists">isDomainExists</a></li>
+<li><a href="#Fn_SharingRegistryService_isEntityExists">isEntityExists</a></li>
+<li><a href="#Fn_SharingRegistryService_isEntityTypeExists">isEntityTypeExists</a></li>
+<li><a href="#Fn_SharingRegistryService_isGroupExists">isGroupExists</a></li>
+<li><a href="#Fn_SharingRegistryService_isPermissionExists">isPermissionExists</a></li>
+<li><a href="#Fn_SharingRegistryService_isUserExists">isUserExists</a></li>
 <li><a href="#Fn_SharingRegistryService_removeChildGroupFromParentGroup">removeChildGroupFromParentGroup</a></li>
 <li><a href="#Fn_SharingRegistryService_removeUsersFromGroup">removeUsersFromGroup</a></li>
 <li><a href="#Fn_SharingRegistryService_revokeEntitySharingFromGroups">revokeEntitySharingFromGroups</a></li>
@@ -69,6 +75,10 @@
 <pre><code>bool</code> updateDomain(<code><a href="sharing_models.html#Struct_Domain">sharing_models.Domain</a></code> domain)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to update a domain</p>
+<br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_isDomainExists">Function: SharingRegistryService.isDomainExists</h4>
+<pre><code>bool</code> isDomainExists(<code>string</code> domainId)
+    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
+</pre><p>API method to check Domain Exists</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_deleteDomain">Function: SharingRegistryService.deleteDomain</h4>
 <pre><code>bool</code> deleteDomain(<code>string</code> domainId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
@@ -90,6 +100,11 @@
 <pre><code>bool</code> updatedUser(<code><a href="sharing_models.html#Struct_User">sharing_models.User</a></code> user)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to update existing user</p>
+<br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_isUserExists">Function: SharingRegistryService.isUserExists</h4>
+<pre><code>bool</code> isUserExists(<code>string</code> domainId,
+                  <code>string</code> userId)
+    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
+</pre><p>API method to check User Exists</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_deleteUser">Function: SharingRegistryService.deleteUser</h4>
 <pre><code>bool</code> deleteUser(<code>string</code> domainId,
                 <code>string</code> userId)
@@ -117,6 +132,11 @@
 <pre><code>bool</code> updateGroup(<code><a href="sharing_models.html#Struct_UserGroup">sharing_models.UserGroup</a></code> group)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to update a group</p>
+<br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_isGroupExists">Function: SharingRegistryService.isGroupExists</h4>
+<pre><code>bool</code> isGroupExists(<code>string</code> domainId,
+                   <code>string</code> groupId)
+    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
+</pre><p>API method to check Group Exists</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_deleteGroup">Function: SharingRegistryService.deleteGroup</h4>
 <pre><code>bool</code> deleteGroup(<code>string</code> domainId,
                  <code>string</code> groupId)
@@ -178,6 +198,11 @@
 <pre><code>bool</code> updateEntityType(<code><a href="sharing_models.html#Struct_EntityType">sharing_models.EntityType</a></code> entityType)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to update entity type</p>
+<br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_isEntityTypeExists">Function: SharingRegistryService.isEntityTypeExists</h4>
+<pre><code>bool</code> isEntityTypeExists(<code>string</code> domainId,
+                        <code>string</code> entityTypeId)
+    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
+</pre><p>API method to check EntityType Exists</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_deleteEntityType">Function: SharingRegistryService.deleteEntityType</h4>
 <pre><code>bool</code> deleteEntityType(<code>string</code> domainId,
                       <code>string</code> entityTypeId)
@@ -202,6 +227,11 @@
 <pre><code>bool</code> updateEntity(<code><a href="sharing_models.html#Struct_Entity">sharing_models.Entity</a></code> entity)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to update entity</p>
+<br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_isEntityExists">Function: SharingRegistryService.isEntityExists</h4>
+<pre><code>bool</code> isEntityExists(<code>string</code> domainId,
+                    <code>string</code> entityId)
+    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
+</pre><p>API method to check Entity Exists</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_deleteEntity">Function: SharingRegistryService.deleteEntity</h4>
 <pre><code>bool</code> deleteEntity(<code>string</code> domainId,
                   <code>string</code> entityId)
@@ -240,6 +270,11 @@
 <pre><code>bool</code> updatePermissionType(<code><a href="sharing_models.html#Struct_PermissionType">sharing_models.PermissionType</a></code> permissionType)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to update permission type</p>
+<br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_isPermissionExists">Function: SharingRegistryService.isPermissionExists</h4>
+<pre><code>bool</code> isPermissionExists(<code>string</code> dimainId,
+                        <code>string</code> permissionId)
+    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
+</pre><p>API method to check Permission Exists</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_deletePermissionType">Function: SharingRegistryService.deletePermissionType</h4>
 <pre><code>bool</code> deletePermissionType(<code>string</code> domainId,
                           <code>string</code> permissionTypeId)

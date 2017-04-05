@@ -1,0 +1,23 @@
+[zookeeper]
+149.165.168.5 ansible_user=centos
+
+[rabbitmq]
+149.165.168.5 ansible_user=centos
+
+[database]
+149.165.172.163 ansible_user=centos
+
+[api-orch]
+149.165.168.5 ansible_user=centos
+
+[gfac]
+149.165.168.5 ansible_user=centos
+
+# NOTE: the registry is NOT deployed separately from the API server, but some
+# of the playbooks assume that there is a 'registry' group, so this entry
+# needs to be here as a workaround
+[registry]
+149.165.168.5 ansible_user=centos
+
+[pga]
+149.165.156.52 ansible_user=centos
