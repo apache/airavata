@@ -113,3 +113,9 @@ resources:
 
   - jobManagerType: FORK
     commandOutputParser: org.apache.airavata.gfac.impl.job.ForkOutputParser
+
+  - jobManagerType: AIRAVATA_CUSTOM
+    commandOutputParser: org.apache.airavata.gfac.impl.job.AiravataCustomCommandOutputParser
+    emailParser: org.apache.airavata.gfac.monitor.email.parser.AiravataCustomMailParser
+    resourceEmailAddresses:
+      - gw56jobs@scigap.org

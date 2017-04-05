@@ -20,6 +20,7 @@ import org.apache.thrift.TEnum;
  * <li>OWNER_ID : Owner of the entity</li>
  * <li>CREATED_TIME : Created time of the entity</li>
  * <li>UPDATED_TIME : Updated time of the entity</li>
+ * <li>SHARED_COUNT : Number of directly shared users and groups</li>
  * 
  */
 public enum EntitySearchField implements org.apache.thrift.TEnum {
@@ -31,7 +32,8 @@ public enum EntitySearchField implements org.apache.thrift.TEnum {
   PERMISSION_TYPE_ID(5),
   CREATED_TIME(6),
   UPDATED_TIME(7),
-  ENTITY_TYPE_ID(8);
+  ENTITY_TYPE_ID(8),
+  SHARED_COUNT(9);
 
   private final int value;
 
@@ -70,6 +72,8 @@ public enum EntitySearchField implements org.apache.thrift.TEnum {
         return UPDATED_TIME;
       case 8:
         return ENTITY_TYPE_ID;
+      case 9:
+        return SHARED_COUNT;
       default:
         return null;
     }

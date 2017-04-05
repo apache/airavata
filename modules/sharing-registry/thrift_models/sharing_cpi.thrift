@@ -33,6 +33,10 @@ service SharingRegistryService {
     */
     bool updateDomain(1: required sharing_models.Domain domain) throws (1: sharing_models.SharingRegistryException sre)
     /**
+     <p>API method to check Domain Exists</p>
+    */
+    bool isDomainExists(1: required string domainId) throws (1: sharing_models.SharingRegistryException sre)
+    /**
      <p>API method to delete domain</p>
     */
     bool deleteDomain(1: required string domainId) throws (1: sharing_models.SharingRegistryException sre)
@@ -53,6 +57,10 @@ service SharingRegistryService {
      <p>API method to update existing user</p>
     */
     bool updatedUser(1: required sharing_models.User user) throws (1: sharing_models.SharingRegistryException sre)
+    /**
+     <p>API method to check User Exists</p>
+    */
+    bool isUserExists(1: required string domainId, 2: required string userId) throws (1: sharing_models.SharingRegistryException sre)
     /**
      <p>API method to delete user</p>
     */
@@ -77,6 +85,10 @@ service SharingRegistryService {
      <p>API method to update a group</p>
     */
     bool updateGroup(1: required sharing_models.UserGroup group) throws (1: sharing_models.SharingRegistryException sre)
+    /**
+     <p>API method to check Group Exists</p>
+    */
+    bool isGroupExists(1: required string domainId, 2: required string groupId) throws (1: sharing_models.SharingRegistryException sre)
     /**
      <p>API method to delete a group</p>
     */
@@ -124,6 +136,10 @@ service SharingRegistryService {
     */
     bool updateEntityType(1: required sharing_models.EntityType entityType) throws (1: sharing_models.SharingRegistryException sre)
     /**
+     <p>API method to check EntityType Exists</p>
+    */
+    bool isEntityTypeExists(1: required string domainId, 2: required string entityTypeId) throws (1: sharing_models.SharingRegistryException sre)
+    /**
      <p>API method to delete entity type</p>
     */
     bool deleteEntityType(1: required string domainId, 2: required string entityTypeId) throws (1: sharing_models.SharingRegistryException sre)
@@ -145,6 +161,10 @@ service SharingRegistryService {
      <p>API method to update entity</p>
     */
     bool updateEntity(1: required sharing_models.Entity entity) throws (1: sharing_models.SharingRegistryException sre)
+    /**
+     <p>API method to check Entity Exists</p>
+    */
+    bool isEntityExists(1: required string domainId, 2: required string entityId) throws (1: sharing_models.SharingRegistryException sre)
     /**
      <p>API method to delete entity</p>
     */
@@ -174,6 +194,10 @@ service SharingRegistryService {
      <p>API method to update permission type</p>
     */
     bool updatePermissionType(1: required sharing_models.PermissionType permissionType) throws (1: sharing_models.SharingRegistryException sre)
+    /**
+     <p>API method to check Permission Exists</p>
+    */
+    bool isPermissionExists(1: required string dimainId, 2: required string permissionId) throws (1: sharing_models.SharingRegistryException sre)
     /**
      <p>API method to delete permission type</p>
     */

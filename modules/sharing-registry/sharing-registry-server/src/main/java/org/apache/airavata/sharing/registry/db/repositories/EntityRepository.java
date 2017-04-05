@@ -121,6 +121,12 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
                 }else{
                     query += "E.UPDATED_TIME <= " + Integer.parseInt(searchCriteria.getValue().trim()) + " AND ";
                 }
+            } else if (searchCriteria.getSearchField().equals(EntitySearchField.SHARED_COUNT)) {
+                if (searchCriteria.getSearchCondition().equals(SearchCondition.GTE)) {
+                    query += "E.SHARED_COUNT >= " + Integer.parseInt(searchCriteria.getValue().trim()) + " AND ";
+                } else {
+                    query += "E.SHARED_COUNT <= " + Integer.parseInt(searchCriteria.getValue().trim()) + " AND ";
+                }
             }
         }
 
@@ -145,8 +151,8 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
             entity.setDescription((String)(rs[6]));
             entity.setBinaryData((byte[]) (rs[7]));
             entity.setFullText((String) (rs[8]));
-            entity.setOriginalEntityCreationTime((long)(rs[9]));
-            entity.setShared((boolean) rs[10]);
+            entity.setSharedCount((long) rs[9]);
+            entity.setOriginalEntityCreationTime((long) (rs[10]));
             entity.setCreatedTime((long) (rs[11]));
             entity.setUpdatedTime((long) (rs[12]));
 

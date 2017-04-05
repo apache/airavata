@@ -1,7 +1,7 @@
 ---
 mysql_packages:
-  - mariadb-server
-  - mariadb
+  - MariaDB-server
+  - MariaDB-client
 mysql_root_password: "admin"
 
 mysql_databases:
@@ -10,6 +10,7 @@ mysql_databases:
     - "{{ replica_catalog }}"
     - "{{ workflow_catalog }}"
     - "{{ credential_store }}"
+    - "{{ sharing_catalog }}"
 
 mysql_privs:
     - "{{ app_catalog }}.*:ALL"
@@ -17,5 +18,6 @@ mysql_privs:
     - "{{ replica_catalog }}.*:ALL"
     - "{{ workflow_catalog }}.*:ALL"
     - "{{ credential_store }}.*:ALL"
+    - "{{ sharing_catalog }}.*:ALL"
 
 ...

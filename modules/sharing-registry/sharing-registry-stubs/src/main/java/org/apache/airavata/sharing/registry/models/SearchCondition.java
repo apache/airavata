@@ -16,8 +16,8 @@ import org.apache.thrift.TEnum;
  * <li>EQUAL : Simply matches for equality. Applicable for name, and parent entity id</li>
  * <li>LIKE : Check for the condition %$FIELD% condition. Applicable for name, and description</li>
  * <li>FULL_TEXT : Does a full text search. Only applicable for the FULL_TEXT field.</li>
- * <li>GTE : Greater than or equal. Only applicable for created time and updated time.</li>
- * <li>LTE : Less than or equal. Only applicable for created time and updated time.</li>
+ * <li>GTE : Greater than or equal. Only applicable for created time, updated time and shared count.</li>
+ * <li>LTE : Less than or equal. Only applicable for created time, updated time and shared count.</li>
  * 
  */
 public enum SearchCondition implements org.apache.thrift.TEnum {
