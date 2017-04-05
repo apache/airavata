@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.registry.api.service.handler;
 
+import com.sun.org.apache.bcel.internal.generic.DUP;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -51,6 +52,7 @@ import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.QueueStatusModel;
 import org.apache.airavata.model.task.TaskModel;
+import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
@@ -3534,7 +3536,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Th unique identifier of the  newly registered gateway.
      */
     @Override
-    public String addGateway(Gateway gateway) throws RegistryServiceException, TException {
+    public String addGateway(Gateway gateway) throws RegistryServiceException, DuplicateEntryException, TException {
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             appCatalog = RegistryFactory.getAppCatalog();
@@ -3542,7 +3544,19 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("Gateway id cannot be empty...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
+            // check if gateway exists
+            if (isGatewayExist(gateway.getGatewayId())) {
+                throw new DuplicateEntryException("Gateway with gatewayId: " + gateway.getGatewayId() + ", already exists in ExperimentCatalog.");
+            }
+            // check if gatewayresourceprofile exists
+            if (appCatalog.getGatewayProfile().isGatewayResourceProfileExists(gateway.getGatewayId())) {
+                throw new DuplicateEntryException("GatewayResourceProfile with gatewayId: " + gateway.getGatewayId() + ", already exists in AppCatalog.");
+            }
+
+            // add gateway in experimentCatalog
             String gatewayId = (String) experimentCatalog.add(ExpCatParentDataType.GATEWAY, gateway, gateway.getGatewayId());
+
+            // add gatewayresourceprofile in appCatalog
             GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
             gatewayResourceProfile.setGatewayID(gatewayId);
             appCatalog.getGatewayProfile().addGatewayResourceProfile(gatewayResourceProfile);
@@ -3812,6 +3826,25 @@ public class RegistryServerHandler implements RegistryService.Iface {
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while retrieving user resource profile. More info : " + e.getMessage());
             throw exception;
+        }
+    }
+
+    @Override
+    public String addUser(UserProfile userProfile) throws RegistryServiceException, DuplicateEntryException, TException {
+        try {
+            //FIXME: figure out a way to get password
+            logger.info("Adding User in Registry: " + userProfile);
+            if (isUserExists(userProfile.getGatewayId(), userProfile.getUserName())) {
+                throw new DuplicateEntryException("User already exists, with userName: " +
+                        userProfile.getUserName() + ", and gatewayId: " + userProfile.getGatewayId());
+            }
+            ExpCatResourceUtils.addUser(userProfile.getUserName(), null, userProfile.getGatewayId());
+            return userProfile.getUserId();
+        } catch (RegistryException ex) {
+            logger.error("Error while adding user in registry: " + ex, ex);
+            RegistryServiceException rse = new RegistryServiceException();
+            rse.setMessage("Error while adding user in registry: " + ex.getMessage());
+            throw rse;
         }
     }
 

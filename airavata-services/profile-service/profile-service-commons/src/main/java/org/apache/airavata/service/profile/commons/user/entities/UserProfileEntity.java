@@ -38,7 +38,7 @@ public class UserProfileEntity {
     private String orginationAffiliation;
     private Date creationTime;
     private Date lastAccessTime;
-    private long validUntil;
+    private Date validUntil;
     private String state;
     private String comments;
     private List<String> labeledURI;
@@ -89,6 +89,7 @@ public class UserProfileEntity {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="USER_PROFILE_EMAIL", joinColumns = @JoinColumn(name="AIRAVATA_INTERNAL_USER_ID"))
+    @Column(name = "EMAILS")
     public List<String> getEmails() {
         return emails;
     }
@@ -117,6 +118,7 @@ public class UserProfileEntity {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="USER_PROFILE_PHONE", joinColumns = @JoinColumn(name="AIRAVATA_INTERNAL_USER_ID"))
+    @Column(name = "PHONES")
     public List<String> getPhones() {
         return phones;
     }
@@ -136,6 +138,7 @@ public class UserProfileEntity {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="USER_PROFILE_NATIONALITY", joinColumns = @JoinColumn(name="AIRAVATA_INTERNAL_USER_ID"))
+    @Column(name = "NATIONALITY")
     public List<String> getNationality() {
         return nationality;
     }
@@ -181,11 +184,11 @@ public class UserProfileEntity {
     }
 
     @Column(name = "VALID_UNTIL")
-    public long getValidUntil() {
+    public Date getValidUntil() {
         return validUntil;
     }
 
-    public void setValidUntil(long validUntil) {
+    public void setValidUntil(Date validUntil) {
         this.validUntil = validUntil;
     }
 
@@ -210,6 +213,7 @@ public class UserProfileEntity {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="USER_PROFILE_LABELED_URI", joinColumns = @JoinColumn(name="AIRAVATA_INTERNAL_USER_ID"))
+    @Column(name = "LABELED_URI")
     public List<String> getLabeledURI() {
         return labeledURI;
     }
@@ -237,7 +241,8 @@ public class UserProfileEntity {
         this.timeZone = timeZone;
     }
 
-    @OneToOne(targetEntity = NSFDemographicsEntity.class, cascade = CascadeType.ALL, mappedBy = "userProfile", fetch = FetchType.EAGER)
+    @OneToOne(targetEntity = NSFDemographicsEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "userProfile", fetch = FetchType.EAGER)
     public NSFDemographicsEntity getNsfDemographics() {
         return nsfDemographics;
     }

@@ -36,7 +36,8 @@ public enum MessageType implements org.apache.thrift.TEnum {
   JOB(4),
   LAUNCHPROCESS(5),
   TERMINATEPROCESS(6),
-  PROCESSOUTPUT(7);
+  PROCESSOUTPUT(7),
+  DB_EVENT(8);
 
   private final int value;
 
@@ -73,6 +74,8 @@ public enum MessageType implements org.apache.thrift.TEnum {
         return TERMINATEPROCESS;
       case 7:
         return PROCESSOUTPUT;
+      case 8:
+        return DB_EVENT;
       default:
         return null;
     }

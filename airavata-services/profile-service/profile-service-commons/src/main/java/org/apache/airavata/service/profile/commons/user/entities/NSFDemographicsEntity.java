@@ -54,6 +54,7 @@ public class NSFDemographicsEntity {
 
     @ElementCollection
     @CollectionTable(name="NSF_DEMOGRAPHIC_ETHNICITY", joinColumns = @JoinColumn(name="AIRAVATA_INTERNAL_USER_ID"))
+    @Column(name = "ETHNICITIES")
     public List<String> getEthnicities() {
         return ethnicities;
     }
@@ -64,6 +65,7 @@ public class NSFDemographicsEntity {
 
     @ElementCollection
     @CollectionTable(name="NSF_DEMOGRAPHIC_RACE", joinColumns = @JoinColumn(name="AIRAVATA_INTERNAL_USER_ID"))
+    @Column(name = "RACES")
     public List<String> getRaces() {
         return races;
     }
@@ -74,6 +76,7 @@ public class NSFDemographicsEntity {
 
     @ElementCollection
     @CollectionTable(name="NSF_DEMOGRAPHIC_DISABILITY", joinColumns = @JoinColumn(name="AIRAVATA_INTERNAL_USER_ID"))
+    @Column(name = "DISABILITIES")
     public List<String> getDisabilities() {
         return disabilities;
     }
@@ -90,5 +93,17 @@ public class NSFDemographicsEntity {
 
     public void setUserProfile(UserProfileEntity userProfile) {
         this.userProfile = userProfile;
+    }
+
+    @Override
+    public String toString() {
+        return "NSFDemographicsEntity{" +
+                "airavataInternalUserId='" + airavataInternalUserId + '\'' +
+                ", gender='" + gender + '\'' +
+                ", ethnicities=" + ethnicities +
+                ", races=" + races +
+                ", disabilities=" + disabilities +
+                ", userProfile=" + userProfile +
+                '}';
     }
 }

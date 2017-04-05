@@ -20,9 +20,13 @@
 */
 package org.apache.airavata.sharing.registry.server;
 
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.sharing.registry.messaging.SharingServiceDBEventMessagingFactory;
+import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
+import org.apache.airavata.sharing.registry.utils.Constants;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
@@ -63,6 +67,7 @@ public class SharingRegistryServer implements IServer {
     public void start() throws Exception {
         try {
             setStatus(IServer.ServerStatus.STARTING);
+
             final int serverPort = Integer.parseInt(ServerSettings.getSetting(SHARING_REG_SERVER_PORT));
             final String serverHost = ServerSettings.getSetting(SHARING_REG_SERVER_HOST);
             SharingRegistryService.Processor processor = new SharingRegistryService.Processor(new SharingRegistryServerHandler());
@@ -96,12 +101,27 @@ public class SharingRegistryServer implements IServer {
                         }
                     }
                     if (server.isServing()) {
+
+                        try {
+
+                            logger.info("Register sharing service with DB Event publishers");
+                            SharingServiceDBEventMessagingFactory.registerSharingServiceWithPublishers(Constants.PUBLISHERS);
+
+                            logger.info("Start sharing service DB Event subscriber");
+                            SharingServiceDBEventMessagingFactory.getDBEventSubscriber();
+
+                        } catch (AiravataException | SharingRegistryException e) {
+                            logger.error("Error starting sharing service. Error setting up DB event services.");
+                            server.stop();
+                        }
+
                         setStatus(IServer.ServerStatus.STARTED);
                         logger.info("Starting Sharing Registry Server on Port " + serverPort);
                         logger.info("Listening to Sharing Registry server clients ....");
                     }
                 }
             }.start();
+
         } catch (TTransportException e) {
             setStatus(IServer.ServerStatus.FAILED);
             throw new Exception("Error while starting the Sharing Registry service", e);

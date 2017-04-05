@@ -21,6 +21,7 @@
 package org.apache.airavata.sharing.registry.server;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.model.error.DuplicateEntryException;
 import org.apache.airavata.sharing.registry.db.entities.*;
 import org.apache.airavata.sharing.registry.db.repositories.*;
 import org.apache.airavata.sharing.registry.db.utils.DBConstants;
@@ -49,11 +50,11 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
      * *
      */
     @Override
-    public String createDomain(Domain domain) throws SharingRegistryException, TException {
+    public String createDomain(Domain domain) throws SharingRegistryException, DuplicateEntryException, TException {
         try{
             domain.setDomainId(domain.name);
             if((new DomainRepository()).get(domain.domainId) != null)
-                throw new SharingRegistryException("There exist domain with given domain id");
+                throw new DuplicateEntryException("There exist domain with given domain id");
 
             domain.setCreatedTime(System.currentTimeMillis());
             domain.setUpdatedTime(System.currentTimeMillis());
@@ -142,13 +143,13 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
      * *
      */
     @Override
-    public String createUser(User user) throws SharingRegistryException, TException {
+    public String createUser(User user) throws SharingRegistryException, DuplicateEntryException, TException {
         try{
             UserPK userPK = new UserPK();
             userPK.setUserId(user.getUserId());
             userPK.setDomainId(user.domainId);
             if((new UserRepository()).get(userPK) != null)
-                throw new SharingRegistryException("There exist user with given user id");
+                throw new DuplicateEntryException("There exist user with given user id");
 
             user.setCreatedTime(System.currentTimeMillis());
             user.setUpdatedTime(System.currentTimeMillis());
@@ -310,9 +311,12 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     }
 
     /**
-     * <p>API method to check Group Exists</p>
-     *
-     * @param group
+     * API method to check Group Exists
+     * @param domainId
+     * @param groupId
+     * @return
+     * @throws SharingRegistryException
+     * @throws TException
      */
     @Override
     public boolean isGroupExists(String domainId, String groupId) throws SharingRegistryException, TException {
@@ -468,13 +472,13 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
      * *
      */
     @Override
-    public String createEntityType(EntityType entityType) throws SharingRegistryException, TException {
+    public String createEntityType(EntityType entityType) throws SharingRegistryException, DuplicateEntryException, TException {
         try{
             EntityTypePK entityTypePK = new EntityTypePK();
             entityTypePK.setDomainId(entityType.domainId);
             entityTypePK.setEntityTypeId(entityType.entityTypeId);
             if((new EntityTypeRepository()).get(entityTypePK) != null)
-                throw new SharingRegistryException("There exist EntityType with given EntityType id");
+                throw new DuplicateEntryException("There exist EntityType with given EntityType id");
 
             entityType.setCreatedTime(System.currentTimeMillis());
             entityType.setUpdatedTime(System.currentTimeMillis());
@@ -566,13 +570,13 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
      * *
      */
     @Override
-    public String createPermissionType(PermissionType permissionType) throws SharingRegistryException, TException {
+    public String createPermissionType(PermissionType permissionType) throws SharingRegistryException, DuplicateEntryException, TException {
         try{
             PermissionTypePK permissionTypePK =  new PermissionTypePK();
             permissionTypePK.setDomainId(permissionType.domainId);
             permissionTypePK.setPermissionTypeId(permissionType.permissionTypeId);
             if((new PermissionTypeRepository()).get(permissionTypePK) != null)
-                throw new SharingRegistryException("There exist PermissionType with given PermissionType id");
+                throw new DuplicateEntryException("There exist PermissionType with given PermissionType id");
             permissionType.setCreatedTime(System.currentTimeMillis());
             permissionType.setUpdatedTime(System.currentTimeMillis());
             (new PermissionTypeRepository()).create(permissionType);
@@ -662,13 +666,13 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
      * *
      */
     @Override
-    public String createEntity(Entity entity) throws SharingRegistryException, TException {
+    public String createEntity(Entity entity) throws SharingRegistryException, DuplicateEntryException, TException {
         try{
             EntityPK entityPK = new EntityPK();
             entityPK.setDomainId(entity.domainId);
             entityPK.setEntityId(entity.entityId);
             if((new EntityRepository()).get(entityPK) != null)
-                throw new SharingRegistryException("There exist Entity with given Entity id");
+                throw new DuplicateEntryException("There exist Entity with given Entity id");
 
             UserPK userPK = new UserPK();
             userPK.setDomainId(entity.domainId);
@@ -731,9 +735,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     @Override
     public boolean updateEntity(Entity entity) throws SharingRegistryException, TException {
         try{
-            //checks whether the entity is shared with anyone
-            entity.setShared((new UserGroupRepository()).isShared(entity.domainId, entity.entityId));
-
+            //TODO Check for permission changes
             entity.setUpdatedTime(System.currentTimeMillis());
             EntityPK entityPK = new EntityPK();
             entityPK.setDomainId(entity.domainId);
@@ -831,24 +833,20 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     }
 
     /**
-     * * Sharing Entity with Users and Groups
-     * *
-     *
+     * Sharing Entity with Users and Groups
+     * @param domainId
      * @param entityId
      * @param userList
-     * @param permissionType
+     * @param permissionTypeId
+     * @param cascadePermission
+     * @return
+     * @throws SharingRegistryException
+     * @throws TException
      */
     @Override
     public boolean shareEntityWithUsers(String domainId, String entityId, List<String> userList, String permissionTypeId, boolean cascadePermission) throws SharingRegistryException, TException {
         try{
-            boolean result = shareEntity(domainId, entityId, userList, permissionTypeId, cascadePermission);
-            EntityPK entityPK = new EntityPK();
-            entityPK.setEntityId(entityId);
-            entityPK.setDomainId(domainId);
-            Entity entity = (new EntityRepository()).get(entityPK);
-            entity.setShared(true);
-            (new EntityRepository()).update(entity);
-            return result;
+            return shareEntity(domainId, entityId, userList, permissionTypeId, cascadePermission);
         }catch (SharingRegistryException ex) {
             logger.error(ex.getMessage(), ex);
             throw ex;
@@ -858,16 +856,8 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     @Override
     public boolean shareEntityWithGroups(String domainId, String entityId, List<String> groupList, String permissionTypeId, boolean cascadePermission) throws SharingRegistryException, TException {
         try{
-            boolean result = shareEntity(domainId, entityId, groupList, permissionTypeId, cascadePermission);
-            EntityPK entityPK = new EntityPK();
-            entityPK.setEntityId(entityId);
-            entityPK.setDomainId(domainId);
-            Entity entity = (new EntityRepository()).get(entityPK);
-            entity.setShared(true);
-            (new EntityRepository()).update(entity);
-            return result;
+            return shareEntity(domainId, entityId, groupList, permissionTypeId, cascadePermission);
         }catch (SharingRegistryException ex) {
-
             logger.error(ex.getMessage(), ex);
             throw ex;
         }
@@ -944,14 +934,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             if(permissionTypeId.equals((new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId))){
                 throw new SharingRegistryException(OWNER_PERMISSION_NAME + " permission cannot be assigned or removed");
             }
-            boolean result = revokeEntitySharing(domainId, entityId, userList, permissionTypeId);
-            EntityPK entityPK = new EntityPK();
-            entityPK.setEntityId(entityId);
-            entityPK.setDomainId(domainId);
-            Entity entity = (new EntityRepository()).get(entityPK);
-            entity.setShared((new UserGroupRepository()).isShared(domainId, entityId));
-            (new EntityRepository()).update(entity);
-            return result;
+            return revokeEntitySharing(domainId, entityId, userList, permissionTypeId);
         }catch (SharingRegistryException ex) {
             logger.error(ex.getMessage(), ex);
             throw ex;
@@ -965,14 +948,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             if(permissionTypeId.equals((new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId))){
                 throw new SharingRegistryException(OWNER_PERMISSION_NAME + " permission cannot be assigned or removed");
             }
-            boolean result = revokeEntitySharing(domainId, entityId, groupList, permissionTypeId);
-            EntityPK entityPK = new EntityPK();
-            entityPK.setEntityId(entityId);
-            entityPK.setDomainId(domainId);
-            Entity entity = (new EntityRepository()).get(entityPK);
-            entity.setShared((new UserGroupRepository()).isShared(domainId, entityId));
-            (new EntityRepository()).update(entity);
-            return result;
+            return revokeEntitySharing(domainId, entityId, groupList, permissionTypeId);
         }catch (SharingRegistryException ex) {
             logger.error(ex.getMessage(), ex);
             throw ex;
@@ -1001,8 +977,6 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
                 throw new SharingRegistryException(OWNER_PERMISSION_NAME + " permission cannot be removed");
             }
 
-            SharingRepository sharingRepository = new SharingRepository();
-
             //revoking permission for the entity
             for(String groupId : groupOrUserList){
                 SharingPK sharingPK = new SharingPK();
@@ -1012,7 +986,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
                 sharingPK.setInheritedParentId(entityId);
                 sharingPK.setDomainId(domainId);
 
-                sharingRepository.delete(sharingPK);
+                (new SharingRepository()).delete(sharingPK);
             }
 
             //revoking permission from inheritance
@@ -1028,7 +1002,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
                     sharingPK.setInheritedParentId(entityId);
                     sharingPK.setDomainId(domainId);
 
-                    sharingRepository.delete(sharingPK);
+                    (new SharingRepository()).delete(sharingPK);
                 }
             }
 
