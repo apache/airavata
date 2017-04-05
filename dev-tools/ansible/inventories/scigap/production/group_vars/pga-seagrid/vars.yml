@@ -44,8 +44,9 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 gateway_id: "seagrid"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}/seagrid"
-# TODO: fix this
-gateway_data_store_resource_id: "149.165.156.11_b5f26430-14d5-4372-8a7e-39b125aa640b"
+# TODO: this is only for testing, we'll need to update this again during the real migration
+gateway_data_store_resource_id: "gf4.ucs.indiana.edu_71a8409a-0713-4a45-985f-22847f63df4e"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCApfdud3cJ7rx44M41gEKVgRfefk/Vd/7dIp9Xr9juX4jqmGuLoZR+hk287Hmbps6hZv23Av97XkCLldH0pueDekthcBDo4cRiQMDBp9NLz/9muqYVBl985psEbazYygagy/q/3ebi4CVEYVd4cHBee1V3GYyuJS2RklF0s/Otyf8x8auJSMniHGbTbVqtFlEOYuPdXlRBfH37k55N7+2iXKsIVvgn1MDweHEbQWJMx2LDCkLfJitreTiwcuST55w6N/n8WYZM2t+ie3BJEr6tcGAVIuyxj7CbMYMziM/hM5J+oQGPY/IBtiNZoxiZ0DeAC9SiEvE9fbTEW2iRWnQL"
 
 ## Portal related variables
 super_admin_portal: "false"
