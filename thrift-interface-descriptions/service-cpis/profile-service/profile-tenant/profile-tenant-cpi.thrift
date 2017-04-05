@@ -23,6 +23,8 @@
  *
 */
 
+include "../../../airavata-apis/airavata_errors.thrift"
+include "../../../airavata-apis/security_model.thrift"
 include "../../../data-models/experiment-catalog-models/workspace_model.thrift"
 include "profile_tenant_cpi_errors.thrift"
 
@@ -33,24 +35,36 @@ const string TENANT_PROFILE_CPI_NAME = "TenantProfileService"
 
 service TenantProfileService {
 
-    string getAPIVersion()
-                        throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tenantProfileException)
+    string getAPIVersion (1: required security_model.AuthzToken authzToken)
+                       throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tpe,
+                               2: airavata_errors.AuthorizationException ae)
 
-    string addGateway (1: required workspace_model.Gateway gateway)
-                        throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tenantProfileException)
+    string addGateway (1: required security_model.AuthzToken authzToken,
+                       2: required workspace_model.Gateway gateway)
+                    throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tpe,
+                            2: airavata_errors.AuthorizationException ae)
 
-    bool updateGateway(1: required workspace_model.Gateway updatedGateway)
-                        throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tenantProfileException)
+    bool updateGateway (1: required security_model.AuthzToken authzToken,
+                        2: required workspace_model.Gateway updatedGateway)
+                     throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tpe,
+                             2: airavata_errors.AuthorizationException ae)
 
-    workspace_model.Gateway getGateway (1: required string gatewayId)
-                        throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tenantProfileException)
+    workspace_model.Gateway getGateway (1: required security_model.AuthzToken authzToken,
+                                        2: required string gatewayId)
+                                     throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tpe,
+                                             2: airavata_errors.AuthorizationException ae)
 
-    bool deleteGateway(1: required string gatewayId)
-                        throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tenantProfileException)
+    bool deleteGateway (1: required security_model.AuthzToken authzToken,
+                        2: required string gatewayId)
+                     throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tpe,
+                             2: airavata_errors.AuthorizationException ae)
 
-    list<workspace_model.Gateway> getAllGateways()
-                        throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tenantProfileException)
+    list<workspace_model.Gateway> getAllGateways (1: required security_model.AuthzToken authzToken)
+                                               throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tpe,
+                                                       2: airavata_errors.AuthorizationException ae)
 
-    bool isGatewayExist(1: required string gatewayId)
-                        throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tenantProfileException)
+    bool isGatewayExist (1: required security_model.AuthzToken authzToken,
+                         2: required string gatewayId)
+                      throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tpe,
+                              2: airavata_errors.AuthorizationException ae)
 }
