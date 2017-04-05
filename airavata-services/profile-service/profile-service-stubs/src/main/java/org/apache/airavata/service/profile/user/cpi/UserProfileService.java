@@ -55,37 +55,37 @@ public class UserProfileService {
 
   public interface Iface {
 
-    public String addUserProfile(org.apache.airavata.model.user.UserProfile userProfile) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException;
+    public String addUserProfile(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userProfile) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
-    public boolean updateUserProfile(org.apache.airavata.model.user.UserProfile userProfile) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException;
+    public boolean updateUserProfile(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userProfile) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
-    public org.apache.airavata.model.user.UserProfile getUserProfileById(String userId, String gatewayId) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException;
+    public org.apache.airavata.model.user.UserProfile getUserProfileById(org.apache.airavata.model.security.AuthzToken authzToken, String userId, String gatewayId) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
-    public boolean deleteUserProfile(String userId, String gatewayId) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException;
+    public boolean deleteUserProfile(org.apache.airavata.model.security.AuthzToken authzToken, String userId, String gatewayId) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
-    public List<org.apache.airavata.model.user.UserProfile> getAllUserProfilesInGateway(String gatewayId, int offset, int limit) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException;
+    public List<org.apache.airavata.model.user.UserProfile> getAllUserProfilesInGateway(org.apache.airavata.model.security.AuthzToken authzToken, String gatewayId, int offset, int limit) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
-    public org.apache.airavata.model.user.UserProfile getUserProfileByName(String userName, String gatewayId) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException;
+    public org.apache.airavata.model.user.UserProfile getUserProfileByName(org.apache.airavata.model.security.AuthzToken authzToken, String userName, String gatewayId) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
-    public boolean doesUserExist(String userName, String gatewayId) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException;
+    public boolean doesUserExist(org.apache.airavata.model.security.AuthzToken authzToken, String userName, String gatewayId) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
   }
 
   public interface AsyncIface {
 
-    public void addUserProfile(org.apache.airavata.model.user.UserProfile userProfile, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void addUserProfile(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userProfile, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void updateUserProfile(org.apache.airavata.model.user.UserProfile userProfile, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void updateUserProfile(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userProfile, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void getUserProfileById(String userId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void getUserProfileById(org.apache.airavata.model.security.AuthzToken authzToken, String userId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void deleteUserProfile(String userId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void deleteUserProfile(org.apache.airavata.model.security.AuthzToken authzToken, String userId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void getAllUserProfilesInGateway(String gatewayId, int offset, int limit, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void getAllUserProfilesInGateway(org.apache.airavata.model.security.AuthzToken authzToken, String gatewayId, int offset, int limit, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void getUserProfileByName(String userName, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void getUserProfileByName(org.apache.airavata.model.security.AuthzToken authzToken, String userName, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void doesUserExist(String userName, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void doesUserExist(org.apache.airavata.model.security.AuthzToken authzToken, String userName, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -109,190 +109,218 @@ public class UserProfileService {
       super(iprot, oprot);
     }
 
-    public String addUserProfile(org.apache.airavata.model.user.UserProfile userProfile) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException
+    public String addUserProfile(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userProfile) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
-      send_addUserProfile(userProfile);
+      send_addUserProfile(authzToken, userProfile);
       return recv_addUserProfile();
     }
 
-    public void send_addUserProfile(org.apache.airavata.model.user.UserProfile userProfile) throws org.apache.thrift.TException
+    public void send_addUserProfile(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userProfile) throws org.apache.thrift.TException
     {
       addUserProfile_args args = new addUserProfile_args();
+      args.setAuthzToken(authzToken);
       args.setUserProfile(userProfile);
       sendBase("addUserProfile", args);
     }
 
-    public String recv_addUserProfile() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException
+    public String recv_addUserProfile() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
       addUserProfile_result result = new addUserProfile_result();
       receiveBase(result, "addUserProfile");
       if (result.isSetSuccess()) {
         return result.success;
       }
-      if (result.userProfileException != null) {
-        throw result.userProfileException;
+      if (result.upe != null) {
+        throw result.upe;
+      }
+      if (result.ae != null) {
+        throw result.ae;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "addUserProfile failed: unknown result");
     }
 
-    public boolean updateUserProfile(org.apache.airavata.model.user.UserProfile userProfile) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException
+    public boolean updateUserProfile(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userProfile) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
-      send_updateUserProfile(userProfile);
+      send_updateUserProfile(authzToken, userProfile);
       return recv_updateUserProfile();
     }
 
-    public void send_updateUserProfile(org.apache.airavata.model.user.UserProfile userProfile) throws org.apache.thrift.TException
+    public void send_updateUserProfile(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userProfile) throws org.apache.thrift.TException
     {
       updateUserProfile_args args = new updateUserProfile_args();
+      args.setAuthzToken(authzToken);
       args.setUserProfile(userProfile);
       sendBase("updateUserProfile", args);
     }
 
-    public boolean recv_updateUserProfile() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException
+    public boolean recv_updateUserProfile() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
       updateUserProfile_result result = new updateUserProfile_result();
       receiveBase(result, "updateUserProfile");
       if (result.isSetSuccess()) {
         return result.success;
       }
-      if (result.userProfileException != null) {
-        throw result.userProfileException;
+      if (result.upe != null) {
+        throw result.upe;
+      }
+      if (result.ae != null) {
+        throw result.ae;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "updateUserProfile failed: unknown result");
     }
 
-    public org.apache.airavata.model.user.UserProfile getUserProfileById(String userId, String gatewayId) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException
+    public org.apache.airavata.model.user.UserProfile getUserProfileById(org.apache.airavata.model.security.AuthzToken authzToken, String userId, String gatewayId) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
-      send_getUserProfileById(userId, gatewayId);
+      send_getUserProfileById(authzToken, userId, gatewayId);
       return recv_getUserProfileById();
     }
 
-    public void send_getUserProfileById(String userId, String gatewayId) throws org.apache.thrift.TException
+    public void send_getUserProfileById(org.apache.airavata.model.security.AuthzToken authzToken, String userId, String gatewayId) throws org.apache.thrift.TException
     {
       getUserProfileById_args args = new getUserProfileById_args();
+      args.setAuthzToken(authzToken);
       args.setUserId(userId);
       args.setGatewayId(gatewayId);
       sendBase("getUserProfileById", args);
     }
 
-    public org.apache.airavata.model.user.UserProfile recv_getUserProfileById() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException
+    public org.apache.airavata.model.user.UserProfile recv_getUserProfileById() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
       getUserProfileById_result result = new getUserProfileById_result();
       receiveBase(result, "getUserProfileById");
       if (result.isSetSuccess()) {
         return result.success;
       }
-      if (result.userProfileException != null) {
-        throw result.userProfileException;
+      if (result.upe != null) {
+        throw result.upe;
+      }
+      if (result.ae != null) {
+        throw result.ae;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getUserProfileById failed: unknown result");
     }
 
-    public boolean deleteUserProfile(String userId, String gatewayId) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException
+    public boolean deleteUserProfile(org.apache.airavata.model.security.AuthzToken authzToken, String userId, String gatewayId) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
-      send_deleteUserProfile(userId, gatewayId);
+      send_deleteUserProfile(authzToken, userId, gatewayId);
       return recv_deleteUserProfile();
     }
 
-    public void send_deleteUserProfile(String userId, String gatewayId) throws org.apache.thrift.TException
+    public void send_deleteUserProfile(org.apache.airavata.model.security.AuthzToken authzToken, String userId, String gatewayId) throws org.apache.thrift.TException
     {
       deleteUserProfile_args args = new deleteUserProfile_args();
+      args.setAuthzToken(authzToken);
       args.setUserId(userId);
       args.setGatewayId(gatewayId);
       sendBase("deleteUserProfile", args);
     }
 
-    public boolean recv_deleteUserProfile() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException
+    public boolean recv_deleteUserProfile() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
       deleteUserProfile_result result = new deleteUserProfile_result();
       receiveBase(result, "deleteUserProfile");
       if (result.isSetSuccess()) {
         return result.success;
       }
-      if (result.userProfileException != null) {
-        throw result.userProfileException;
+      if (result.upe != null) {
+        throw result.upe;
+      }
+      if (result.ae != null) {
+        throw result.ae;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "deleteUserProfile failed: unknown result");
     }
 
-    public List<org.apache.airavata.model.user.UserProfile> getAllUserProfilesInGateway(String gatewayId, int offset, int limit) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException
+    public List<org.apache.airavata.model.user.UserProfile> getAllUserProfilesInGateway(org.apache.airavata.model.security.AuthzToken authzToken, String gatewayId, int offset, int limit) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
-      send_getAllUserProfilesInGateway(gatewayId, offset, limit);
+      send_getAllUserProfilesInGateway(authzToken, gatewayId, offset, limit);
       return recv_getAllUserProfilesInGateway();
     }
 
-    public void send_getAllUserProfilesInGateway(String gatewayId, int offset, int limit) throws org.apache.thrift.TException
+    public void send_getAllUserProfilesInGateway(org.apache.airavata.model.security.AuthzToken authzToken, String gatewayId, int offset, int limit) throws org.apache.thrift.TException
     {
       getAllUserProfilesInGateway_args args = new getAllUserProfilesInGateway_args();
+      args.setAuthzToken(authzToken);
       args.setGatewayId(gatewayId);
       args.setOffset(offset);
       args.setLimit(limit);
       sendBase("getAllUserProfilesInGateway", args);
     }
 
-    public List<org.apache.airavata.model.user.UserProfile> recv_getAllUserProfilesInGateway() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException
+    public List<org.apache.airavata.model.user.UserProfile> recv_getAllUserProfilesInGateway() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
       getAllUserProfilesInGateway_result result = new getAllUserProfilesInGateway_result();
       receiveBase(result, "getAllUserProfilesInGateway");
       if (result.isSetSuccess()) {
         return result.success;
       }
-      if (result.userProfileException != null) {
-        throw result.userProfileException;
+      if (result.upe != null) {
+        throw result.upe;
+      }
+      if (result.ae != null) {
+        throw result.ae;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getAllUserProfilesInGateway failed: unknown result");
     }
 
-    public org.apache.airavata.model.user.UserProfile getUserProfileByName(String userName, String gatewayId) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException
+    public org.apache.airavata.model.user.UserProfile getUserProfileByName(org.apache.airavata.model.security.AuthzToken authzToken, String userName, String gatewayId) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
-      send_getUserProfileByName(userName, gatewayId);
+      send_getUserProfileByName(authzToken, userName, gatewayId);
       return recv_getUserProfileByName();
     }
 
-    public void send_getUserProfileByName(String userName, String gatewayId) throws org.apache.thrift.TException
+    public void send_getUserProfileByName(org.apache.airavata.model.security.AuthzToken authzToken, String userName, String gatewayId) throws org.apache.thrift.TException
     {
       getUserProfileByName_args args = new getUserProfileByName_args();
+      args.setAuthzToken(authzToken);
       args.setUserName(userName);
       args.setGatewayId(gatewayId);
       sendBase("getUserProfileByName", args);
     }
 
-    public org.apache.airavata.model.user.UserProfile recv_getUserProfileByName() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException
+    public org.apache.airavata.model.user.UserProfile recv_getUserProfileByName() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
       getUserProfileByName_result result = new getUserProfileByName_result();
       receiveBase(result, "getUserProfileByName");
       if (result.isSetSuccess()) {
         return result.success;
       }
-      if (result.userProfileException != null) {
-        throw result.userProfileException;
+      if (result.upe != null) {
+        throw result.upe;
+      }
+      if (result.ae != null) {
+        throw result.ae;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getUserProfileByName failed: unknown result");
     }
 
-    public boolean doesUserExist(String userName, String gatewayId) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException
+    public boolean doesUserExist(org.apache.airavata.model.security.AuthzToken authzToken, String userName, String gatewayId) throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
-      send_doesUserExist(userName, gatewayId);
+      send_doesUserExist(authzToken, userName, gatewayId);
       return recv_doesUserExist();
     }
 
-    public void send_doesUserExist(String userName, String gatewayId) throws org.apache.thrift.TException
+    public void send_doesUserExist(org.apache.airavata.model.security.AuthzToken authzToken, String userName, String gatewayId) throws org.apache.thrift.TException
     {
       doesUserExist_args args = new doesUserExist_args();
+      args.setAuthzToken(authzToken);
       args.setUserName(userName);
       args.setGatewayId(gatewayId);
       sendBase("doesUserExist", args);
     }
 
-    public boolean recv_doesUserExist() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException
+    public boolean recv_doesUserExist() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
       doesUserExist_result result = new doesUserExist_result();
       receiveBase(result, "doesUserExist");
       if (result.isSetSuccess()) {
         return result.success;
       }
-      if (result.userProfileException != null) {
-        throw result.userProfileException;
+      if (result.upe != null) {
+        throw result.upe;
+      }
+      if (result.ae != null) {
+        throw result.ae;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "doesUserExist failed: unknown result");
     }
@@ -315,29 +343,32 @@ public class UserProfileService {
       super(protocolFactory, clientManager, transport);
     }
 
-    public void addUserProfile(org.apache.airavata.model.user.UserProfile userProfile, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void addUserProfile(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userProfile, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      addUserProfile_call method_call = new addUserProfile_call(userProfile, resultHandler, this, ___protocolFactory, ___transport);
+      addUserProfile_call method_call = new addUserProfile_call(authzToken, userProfile, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class addUserProfile_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private org.apache.airavata.model.security.AuthzToken authzToken;
       private org.apache.airavata.model.user.UserProfile userProfile;
-      public addUserProfile_call(org.apache.airavata.model.user.UserProfile userProfile, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public addUserProfile_call(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userProfile, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
+        this.authzToken = authzToken;
         this.userProfile = userProfile;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("addUserProfile", org.apache.thrift.protocol.TMessageType.CALL, 0));
         addUserProfile_args args = new addUserProfile_args();
+        args.setAuthzToken(authzToken);
         args.setUserProfile(userProfile);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public String getResult() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException {
+      public String getResult() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -347,29 +378,32 @@ public class UserProfileService {
       }
     }
 
-    public void updateUserProfile(org.apache.airavata.model.user.UserProfile userProfile, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void updateUserProfile(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userProfile, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      updateUserProfile_call method_call = new updateUserProfile_call(userProfile, resultHandler, this, ___protocolFactory, ___transport);
+      updateUserProfile_call method_call = new updateUserProfile_call(authzToken, userProfile, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class updateUserProfile_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private org.apache.airavata.model.security.AuthzToken authzToken;
       private org.apache.airavata.model.user.UserProfile userProfile;
-      public updateUserProfile_call(org.apache.airavata.model.user.UserProfile userProfile, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public updateUserProfile_call(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userProfile, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
+        this.authzToken = authzToken;
         this.userProfile = userProfile;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("updateUserProfile", org.apache.thrift.protocol.TMessageType.CALL, 0));
         updateUserProfile_args args = new updateUserProfile_args();
+        args.setAuthzToken(authzToken);
         args.setUserProfile(userProfile);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public boolean getResult() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException {
+      public boolean getResult() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -379,18 +413,20 @@ public class UserProfileService {
       }
     }
 
-    public void getUserProfileById(String userId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void getUserProfileById(org.apache.airavata.model.security.AuthzToken authzToken, String userId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      getUserProfileById_call method_call = new getUserProfileById_call(userId, gatewayId, resultHandler, this, ___protocolFactory, ___transport);
+      getUserProfileById_call method_call = new getUserProfileById_call(authzToken, userId, gatewayId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class getUserProfileById_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private org.apache.airavata.model.security.AuthzToken authzToken;
       private String userId;
       private String gatewayId;
-      public getUserProfileById_call(String userId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public getUserProfileById_call(org.apache.airavata.model.security.AuthzToken authzToken, String userId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
+        this.authzToken = authzToken;
         this.userId = userId;
         this.gatewayId = gatewayId;
       }
@@ -398,13 +434,14 @@ public class UserProfileService {
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getUserProfileById", org.apache.thrift.protocol.TMessageType.CALL, 0));
         getUserProfileById_args args = new getUserProfileById_args();
+        args.setAuthzToken(authzToken);
         args.setUserId(userId);
         args.setGatewayId(gatewayId);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public org.apache.airavata.model.user.UserProfile getResult() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException {
+      public org.apache.airavata.model.user.UserProfile getResult() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -414,18 +451,20 @@ public class UserProfileService {
       }
     }
 
-    public void deleteUserProfile(String userId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void deleteUserProfile(org.apache.airavata.model.security.AuthzToken authzToken, String userId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      deleteUserProfile_call method_call = new deleteUserProfile_call(userId, gatewayId, resultHandler, this, ___protocolFactory, ___transport);
+      deleteUserProfile_call method_call = new deleteUserProfile_call(authzToken, userId, gatewayId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class deleteUserProfile_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private org.apache.airavata.model.security.AuthzToken authzToken;
       private String userId;
       private String gatewayId;
-      public deleteUserProfile_call(String userId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public deleteUserProfile_call(org.apache.airavata.model.security.AuthzToken authzToken, String userId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
+        this.authzToken = authzToken;
         this.userId = userId;
         this.gatewayId = gatewayId;
       }
@@ -433,13 +472,14 @@ public class UserProfileService {
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("deleteUserProfile", org.apache.thrift.protocol.TMessageType.CALL, 0));
         deleteUserProfile_args args = new deleteUserProfile_args();
+        args.setAuthzToken(authzToken);
         args.setUserId(userId);
         args.setGatewayId(gatewayId);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public boolean getResult() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException {
+      public boolean getResult() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -449,19 +489,21 @@ public class UserProfileService {
       }
     }
 
-    public void getAllUserProfilesInGateway(String gatewayId, int offset, int limit, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void getAllUserProfilesInGateway(org.apache.airavata.model.security.AuthzToken authzToken, String gatewayId, int offset, int limit, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      getAllUserProfilesInGateway_call method_call = new getAllUserProfilesInGateway_call(gatewayId, offset, limit, resultHandler, this, ___protocolFactory, ___transport);
+      getAllUserProfilesInGateway_call method_call = new getAllUserProfilesInGateway_call(authzToken, gatewayId, offset, limit, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class getAllUserProfilesInGateway_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private org.apache.airavata.model.security.AuthzToken authzToken;
       private String gatewayId;
       private int offset;
       private int limit;
-      public getAllUserProfilesInGateway_call(String gatewayId, int offset, int limit, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public getAllUserProfilesInGateway_call(org.apache.airavata.model.security.AuthzToken authzToken, String gatewayId, int offset, int limit, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
+        this.authzToken = authzToken;
         this.gatewayId = gatewayId;
         this.offset = offset;
         this.limit = limit;
@@ -470,6 +512,7 @@ public class UserProfileService {
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getAllUserProfilesInGateway", org.apache.thrift.protocol.TMessageType.CALL, 0));
         getAllUserProfilesInGateway_args args = new getAllUserProfilesInGateway_args();
+        args.setAuthzToken(authzToken);
         args.setGatewayId(gatewayId);
         args.setOffset(offset);
         args.setLimit(limit);
@@ -477,7 +520,7 @@ public class UserProfileService {
         prot.writeMessageEnd();
       }
 
-      public List<org.apache.airavata.model.user.UserProfile> getResult() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException {
+      public List<org.apache.airavata.model.user.UserProfile> getResult() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -487,18 +530,20 @@ public class UserProfileService {
       }
     }
 
-    public void getUserProfileByName(String userName, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void getUserProfileByName(org.apache.airavata.model.security.AuthzToken authzToken, String userName, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      getUserProfileByName_call method_call = new getUserProfileByName_call(userName, gatewayId, resultHandler, this, ___protocolFactory, ___transport);
+      getUserProfileByName_call method_call = new getUserProfileByName_call(authzToken, userName, gatewayId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class getUserProfileByName_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private org.apache.airavata.model.security.AuthzToken authzToken;
       private String userName;
       private String gatewayId;
-      public getUserProfileByName_call(String userName, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public getUserProfileByName_call(org.apache.airavata.model.security.AuthzToken authzToken, String userName, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
+        this.authzToken = authzToken;
         this.userName = userName;
         this.gatewayId = gatewayId;
       }
@@ -506,13 +551,14 @@ public class UserProfileService {
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getUserProfileByName", org.apache.thrift.protocol.TMessageType.CALL, 0));
         getUserProfileByName_args args = new getUserProfileByName_args();
+        args.setAuthzToken(authzToken);
         args.setUserName(userName);
         args.setGatewayId(gatewayId);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public org.apache.airavata.model.user.UserProfile getResult() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException {
+      public org.apache.airavata.model.user.UserProfile getResult() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -522,18 +568,20 @@ public class UserProfileService {
       }
     }
 
-    public void doesUserExist(String userName, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void doesUserExist(org.apache.airavata.model.security.AuthzToken authzToken, String userName, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      doesUserExist_call method_call = new doesUserExist_call(userName, gatewayId, resultHandler, this, ___protocolFactory, ___transport);
+      doesUserExist_call method_call = new doesUserExist_call(authzToken, userName, gatewayId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class doesUserExist_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private org.apache.airavata.model.security.AuthzToken authzToken;
       private String userName;
       private String gatewayId;
-      public doesUserExist_call(String userName, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public doesUserExist_call(org.apache.airavata.model.security.AuthzToken authzToken, String userName, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
+        this.authzToken = authzToken;
         this.userName = userName;
         this.gatewayId = gatewayId;
       }
@@ -541,13 +589,14 @@ public class UserProfileService {
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("doesUserExist", org.apache.thrift.protocol.TMessageType.CALL, 0));
         doesUserExist_args args = new doesUserExist_args();
+        args.setAuthzToken(authzToken);
         args.setUserName(userName);
         args.setGatewayId(gatewayId);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public boolean getResult() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.thrift.TException {
+      public boolean getResult() throws org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -596,9 +645,11 @@ public class UserProfileService {
       public addUserProfile_result getResult(I iface, addUserProfile_args args) throws org.apache.thrift.TException {
         addUserProfile_result result = new addUserProfile_result();
         try {
-          result.success = iface.addUserProfile(args.userProfile);
-        } catch (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException) {
-          result.userProfileException = userProfileException;
+          result.success = iface.addUserProfile(args.authzToken, args.userProfile);
+        } catch (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe) {
+          result.upe = upe;
+        } catch (org.apache.airavata.model.error.AuthorizationException ae) {
+          result.ae = ae;
         }
         return result;
       }
@@ -620,10 +671,12 @@ public class UserProfileService {
       public updateUserProfile_result getResult(I iface, updateUserProfile_args args) throws org.apache.thrift.TException {
         updateUserProfile_result result = new updateUserProfile_result();
         try {
-          result.success = iface.updateUserProfile(args.userProfile);
+          result.success = iface.updateUserProfile(args.authzToken, args.userProfile);
           result.setSuccessIsSet(true);
-        } catch (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException) {
-          result.userProfileException = userProfileException;
+        } catch (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe) {
+          result.upe = upe;
+        } catch (org.apache.airavata.model.error.AuthorizationException ae) {
+          result.ae = ae;
         }
         return result;
       }
@@ -645,9 +698,11 @@ public class UserProfileService {
       public getUserProfileById_result getResult(I iface, getUserProfileById_args args) throws org.apache.thrift.TException {
         getUserProfileById_result result = new getUserProfileById_result();
         try {
-          result.success = iface.getUserProfileById(args.userId, args.gatewayId);
-        } catch (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException) {
-          result.userProfileException = userProfileException;
+          result.success = iface.getUserProfileById(args.authzToken, args.userId, args.gatewayId);
+        } catch (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe) {
+          result.upe = upe;
+        } catch (org.apache.airavata.model.error.AuthorizationException ae) {
+          result.ae = ae;
         }
         return result;
       }
@@ -669,10 +724,12 @@ public class UserProfileService {
       public deleteUserProfile_result getResult(I iface, deleteUserProfile_args args) throws org.apache.thrift.TException {
         deleteUserProfile_result result = new deleteUserProfile_result();
         try {
-          result.success = iface.deleteUserProfile(args.userId, args.gatewayId);
+          result.success = iface.deleteUserProfile(args.authzToken, args.userId, args.gatewayId);
           result.setSuccessIsSet(true);
-        } catch (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException) {
-          result.userProfileException = userProfileException;
+        } catch (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe) {
+          result.upe = upe;
+        } catch (org.apache.airavata.model.error.AuthorizationException ae) {
+          result.ae = ae;
         }
         return result;
       }
@@ -694,9 +751,11 @@ public class UserProfileService {
       public getAllUserProfilesInGateway_result getResult(I iface, getAllUserProfilesInGateway_args args) throws org.apache.thrift.TException {
         getAllUserProfilesInGateway_result result = new getAllUserProfilesInGateway_result();
         try {
-          result.success = iface.getAllUserProfilesInGateway(args.gatewayId, args.offset, args.limit);
-        } catch (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException) {
-          result.userProfileException = userProfileException;
+          result.success = iface.getAllUserProfilesInGateway(args.authzToken, args.gatewayId, args.offset, args.limit);
+        } catch (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe) {
+          result.upe = upe;
+        } catch (org.apache.airavata.model.error.AuthorizationException ae) {
+          result.ae = ae;
         }
         return result;
       }
@@ -718,9 +777,11 @@ public class UserProfileService {
       public getUserProfileByName_result getResult(I iface, getUserProfileByName_args args) throws org.apache.thrift.TException {
         getUserProfileByName_result result = new getUserProfileByName_result();
         try {
-          result.success = iface.getUserProfileByName(args.userName, args.gatewayId);
-        } catch (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException) {
-          result.userProfileException = userProfileException;
+          result.success = iface.getUserProfileByName(args.authzToken, args.userName, args.gatewayId);
+        } catch (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe) {
+          result.upe = upe;
+        } catch (org.apache.airavata.model.error.AuthorizationException ae) {
+          result.ae = ae;
         }
         return result;
       }
@@ -742,10 +803,12 @@ public class UserProfileService {
       public doesUserExist_result getResult(I iface, doesUserExist_args args) throws org.apache.thrift.TException {
         doesUserExist_result result = new doesUserExist_result();
         try {
-          result.success = iface.doesUserExist(args.userName, args.gatewayId);
+          result.success = iface.doesUserExist(args.authzToken, args.userName, args.gatewayId);
           result.setSuccessIsSet(true);
-        } catch (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException) {
-          result.userProfileException = userProfileException;
+        } catch (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe) {
+          result.upe = upe;
+        } catch (org.apache.airavata.model.error.AuthorizationException ae) {
+          result.ae = ae;
         }
         return result;
       }
@@ -802,8 +865,13 @@ public class UserProfileService {
             org.apache.thrift.TBase msg;
             addUserProfile_result result = new addUserProfile_result();
             if (e instanceof org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException) {
-                        result.userProfileException = (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException) e;
-                        result.setUserProfileExceptionIsSet(true);
+                        result.upe = (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException) e;
+                        result.setUpeIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AuthorizationException) {
+                        result.ae = (org.apache.airavata.model.error.AuthorizationException) e;
+                        result.setAeIsSet(true);
                         msg = result;
             }
              else 
@@ -827,7 +895,7 @@ public class UserProfileService {
       }
 
       public void start(I iface, addUserProfile_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
-        iface.addUserProfile(args.userProfile,resultHandler);
+        iface.addUserProfile(args.authzToken, args.userProfile,resultHandler);
       }
     }
 
@@ -860,8 +928,13 @@ public class UserProfileService {
             org.apache.thrift.TBase msg;
             updateUserProfile_result result = new updateUserProfile_result();
             if (e instanceof org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException) {
-                        result.userProfileException = (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException) e;
-                        result.setUserProfileExceptionIsSet(true);
+                        result.upe = (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException) e;
+                        result.setUpeIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AuthorizationException) {
+                        result.ae = (org.apache.airavata.model.error.AuthorizationException) e;
+                        result.setAeIsSet(true);
                         msg = result;
             }
              else 
@@ -885,7 +958,7 @@ public class UserProfileService {
       }
 
       public void start(I iface, updateUserProfile_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
-        iface.updateUserProfile(args.userProfile,resultHandler);
+        iface.updateUserProfile(args.authzToken, args.userProfile,resultHandler);
       }
     }
 
@@ -917,8 +990,13 @@ public class UserProfileService {
             org.apache.thrift.TBase msg;
             getUserProfileById_result result = new getUserProfileById_result();
             if (e instanceof org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException) {
-                        result.userProfileException = (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException) e;
-                        result.setUserProfileExceptionIsSet(true);
+                        result.upe = (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException) e;
+                        result.setUpeIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AuthorizationException) {
+                        result.ae = (org.apache.airavata.model.error.AuthorizationException) e;
+                        result.setAeIsSet(true);
                         msg = result;
             }
              else 
@@ -942,7 +1020,7 @@ public class UserProfileService {
       }
 
       public void start(I iface, getUserProfileById_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.user.UserProfile> resultHandler) throws TException {
-        iface.getUserProfileById(args.userId, args.gatewayId,resultHandler);
+        iface.getUserProfileById(args.authzToken, args.userId, args.gatewayId,resultHandler);
       }
     }
 
@@ -975,8 +1053,13 @@ public class UserProfileService {
             org.apache.thrift.TBase msg;
             deleteUserProfile_result result = new deleteUserProfile_result();
             if (e instanceof org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException) {
-                        result.userProfileException = (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException) e;
-                        result.setUserProfileExceptionIsSet(true);
+                        result.upe = (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException) e;
+                        result.setUpeIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AuthorizationException) {
+                        result.ae = (org.apache.airavata.model.error.AuthorizationException) e;
+                        result.setAeIsSet(true);
                         msg = result;
             }
              else 
@@ -1000,7 +1083,7 @@ public class UserProfileService {
       }
 
       public void start(I iface, deleteUserProfile_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
-        iface.deleteUserProfile(args.userId, args.gatewayId,resultHandler);
+        iface.deleteUserProfile(args.authzToken, args.userId, args.gatewayId,resultHandler);
       }
     }
 
@@ -1032,8 +1115,13 @@ public class UserProfileService {
             org.apache.thrift.TBase msg;
             getAllUserProfilesInGateway_result result = new getAllUserProfilesInGateway_result();
             if (e instanceof org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException) {
-                        result.userProfileException = (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException) e;
-                        result.setUserProfileExceptionIsSet(true);
+                        result.upe = (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException) e;
+                        result.setUpeIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AuthorizationException) {
+                        result.ae = (org.apache.airavata.model.error.AuthorizationException) e;
+                        result.setAeIsSet(true);
                         msg = result;
             }
              else 
@@ -1057,7 +1145,7 @@ public class UserProfileService {
       }
 
       public void start(I iface, getAllUserProfilesInGateway_args args, org.apache.thrift.async.AsyncMethodCallback<List<org.apache.airavata.model.user.UserProfile>> resultHandler) throws TException {
-        iface.getAllUserProfilesInGateway(args.gatewayId, args.offset, args.limit,resultHandler);
+        iface.getAllUserProfilesInGateway(args.authzToken, args.gatewayId, args.offset, args.limit,resultHandler);
       }
     }
 
@@ -1089,8 +1177,13 @@ public class UserProfileService {
             org.apache.thrift.TBase msg;
             getUserProfileByName_result result = new getUserProfileByName_result();
             if (e instanceof org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException) {
-                        result.userProfileException = (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException) e;
-                        result.setUserProfileExceptionIsSet(true);
+                        result.upe = (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException) e;
+                        result.setUpeIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AuthorizationException) {
+                        result.ae = (org.apache.airavata.model.error.AuthorizationException) e;
+                        result.setAeIsSet(true);
                         msg = result;
             }
              else 
@@ -1114,7 +1207,7 @@ public class UserProfileService {
       }
 
       public void start(I iface, getUserProfileByName_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.user.UserProfile> resultHandler) throws TException {
-        iface.getUserProfileByName(args.userName, args.gatewayId,resultHandler);
+        iface.getUserProfileByName(args.authzToken, args.userName, args.gatewayId,resultHandler);
       }
     }
 
@@ -1147,8 +1240,13 @@ public class UserProfileService {
             org.apache.thrift.TBase msg;
             doesUserExist_result result = new doesUserExist_result();
             if (e instanceof org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException) {
-                        result.userProfileException = (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException) e;
-                        result.setUserProfileExceptionIsSet(true);
+                        result.upe = (org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException) e;
+                        result.setUpeIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AuthorizationException) {
+                        result.ae = (org.apache.airavata.model.error.AuthorizationException) e;
+                        result.setAeIsSet(true);
                         msg = result;
             }
              else 
@@ -1172,7 +1270,7 @@ public class UserProfileService {
       }
 
       public void start(I iface, doesUserExist_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
-        iface.doesUserExist(args.userName, args.gatewayId,resultHandler);
+        iface.doesUserExist(args.authzToken, args.userName, args.gatewayId,resultHandler);
       }
     }
 
@@ -1181,7 +1279,8 @@ public class UserProfileService {
   public static class addUserProfile_args implements org.apache.thrift.TBase<addUserProfile_args, addUserProfile_args._Fields>, java.io.Serializable, Cloneable, Comparable<addUserProfile_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("addUserProfile_args");
 
-    private static final org.apache.thrift.protocol.TField USER_PROFILE_FIELD_DESC = new org.apache.thrift.protocol.TField("userProfile", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField AUTHZ_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("authzToken", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField USER_PROFILE_FIELD_DESC = new org.apache.thrift.protocol.TField("userProfile", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -1189,11 +1288,13 @@ public class UserProfileService {
       schemes.put(TupleScheme.class, new addUserProfile_argsTupleSchemeFactory());
     }
 
+    public org.apache.airavata.model.security.AuthzToken authzToken; // required
     public org.apache.airavata.model.user.UserProfile userProfile; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      USER_PROFILE((short)1, "userProfile");
+      AUTHZ_TOKEN((short)1, "authzToken"),
+      USER_PROFILE((short)2, "userProfile");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -1208,7 +1309,9 @@ public class UserProfileService {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // USER_PROFILE
+          case 1: // AUTHZ_TOKEN
+            return AUTHZ_TOKEN;
+          case 2: // USER_PROFILE
             return USER_PROFILE;
           default:
             return null;
@@ -1253,6 +1356,8 @@ public class UserProfileService {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.AUTHZ_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("authzToken", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.security.AuthzToken.class)));
       tmpMap.put(_Fields.USER_PROFILE, new org.apache.thrift.meta_data.FieldMetaData("userProfile", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.user.UserProfile.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -1263,9 +1368,11 @@ public class UserProfileService {
     }
 
     public addUserProfile_args(
+      org.apache.airavata.model.security.AuthzToken authzToken,
       org.apache.airavata.model.user.UserProfile userProfile)
     {
       this();
+      this.authzToken = authzToken;
       this.userProfile = userProfile;
     }
 
@@ -1273,6 +1380,9 @@ public class UserProfileService {
      * Performs a deep copy on <i>other</i>.
      */
     public addUserProfile_args(addUserProfile_args other) {
+      if (other.isSetAuthzToken()) {
+        this.authzToken = new org.apache.airavata.model.security.AuthzToken(other.authzToken);
+      }
       if (other.isSetUserProfile()) {
         this.userProfile = new org.apache.airavata.model.user.UserProfile(other.userProfile);
       }
@@ -1284,7 +1394,32 @@ public class UserProfileService {
 
     @Override
     public void clear() {
+      this.authzToken = null;
       this.userProfile = null;
+    }
+
+    public org.apache.airavata.model.security.AuthzToken getAuthzToken() {
+      return this.authzToken;
+    }
+
+    public addUserProfile_args setAuthzToken(org.apache.airavata.model.security.AuthzToken authzToken) {
+      this.authzToken = authzToken;
+      return this;
+    }
+
+    public void unsetAuthzToken() {
+      this.authzToken = null;
+    }
+
+    /** Returns true if field authzToken is set (has been assigned a value) and false otherwise */
+    public boolean isSetAuthzToken() {
+      return this.authzToken != null;
+    }
+
+    public void setAuthzTokenIsSet(boolean value) {
+      if (!value) {
+        this.authzToken = null;
+      }
     }
 
     public org.apache.airavata.model.user.UserProfile getUserProfile() {
@@ -1313,6 +1448,14 @@ public class UserProfileService {
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case AUTHZ_TOKEN:
+        if (value == null) {
+          unsetAuthzToken();
+        } else {
+          setAuthzToken((org.apache.airavata.model.security.AuthzToken)value);
+        }
+        break;
+
       case USER_PROFILE:
         if (value == null) {
           unsetUserProfile();
@@ -1326,6 +1469,9 @@ public class UserProfileService {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case AUTHZ_TOKEN:
+        return getAuthzToken();
+
       case USER_PROFILE:
         return getUserProfile();
 
@@ -1340,6 +1486,8 @@ public class UserProfileService {
       }
 
       switch (field) {
+      case AUTHZ_TOKEN:
+        return isSetAuthzToken();
       case USER_PROFILE:
         return isSetUserProfile();
       }
@@ -1359,6 +1507,15 @@ public class UserProfileService {
       if (that == null)
         return false;
 
+      boolean this_present_authzToken = true && this.isSetAuthzToken();
+      boolean that_present_authzToken = true && that.isSetAuthzToken();
+      if (this_present_authzToken || that_present_authzToken) {
+        if (!(this_present_authzToken && that_present_authzToken))
+          return false;
+        if (!this.authzToken.equals(that.authzToken))
+          return false;
+      }
+
       boolean this_present_userProfile = true && this.isSetUserProfile();
       boolean that_present_userProfile = true && that.isSetUserProfile();
       if (this_present_userProfile || that_present_userProfile) {
@@ -1374,6 +1531,11 @@ public class UserProfileService {
     @Override
     public int hashCode() {
       List<Object> list = new ArrayList<Object>();
+
+      boolean present_authzToken = true && (isSetAuthzToken());
+      list.add(present_authzToken);
+      if (present_authzToken)
+        list.add(authzToken);
 
       boolean present_userProfile = true && (isSetUserProfile());
       list.add(present_userProfile);
@@ -1391,6 +1553,16 @@ public class UserProfileService {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetAuthzToken()).compareTo(other.isSetAuthzToken());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAuthzToken()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authzToken, other.authzToken);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetUserProfile()).compareTo(other.isSetUserProfile());
       if (lastComparison != 0) {
         return lastComparison;
@@ -1421,6 +1593,14 @@ public class UserProfileService {
       StringBuilder sb = new StringBuilder("addUserProfile_args(");
       boolean first = true;
 
+      sb.append("authzToken:");
+      if (this.authzToken == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.authzToken);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("userProfile:");
       if (this.userProfile == null) {
         sb.append("null");
@@ -1434,10 +1614,16 @@ public class UserProfileService {
 
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
+      if (authzToken == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'authzToken' was not present! Struct: " + toString());
+      }
       if (userProfile == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'userProfile' was not present! Struct: " + toString());
       }
       // check for sub-struct validity
+      if (authzToken != null) {
+        authzToken.validate();
+      }
       if (userProfile != null) {
         userProfile.validate();
       }
@@ -1477,7 +1663,16 @@ public class UserProfileService {
             break;
           }
           switch (schemeField.id) {
-            case 1: // USER_PROFILE
+            case 1: // AUTHZ_TOKEN
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+                struct.authzToken.read(iprot);
+                struct.setAuthzTokenIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // USER_PROFILE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.userProfile = new org.apache.airavata.model.user.UserProfile();
                 struct.userProfile.read(iprot);
@@ -1501,6 +1696,11 @@ public class UserProfileService {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.authzToken != null) {
+          oprot.writeFieldBegin(AUTHZ_TOKEN_FIELD_DESC);
+          struct.authzToken.write(oprot);
+          oprot.writeFieldEnd();
+        }
         if (struct.userProfile != null) {
           oprot.writeFieldBegin(USER_PROFILE_FIELD_DESC);
           struct.userProfile.write(oprot);
@@ -1523,12 +1723,16 @@ public class UserProfileService {
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, addUserProfile_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
+        struct.authzToken.write(oprot);
         struct.userProfile.write(oprot);
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, addUserProfile_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+        struct.authzToken.read(iprot);
+        struct.setAuthzTokenIsSet(true);
         struct.userProfile = new org.apache.airavata.model.user.UserProfile();
         struct.userProfile.read(iprot);
         struct.setUserProfileIsSet(true);
@@ -1541,7 +1745,8 @@ public class UserProfileService {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("addUserProfile_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
-    private static final org.apache.thrift.protocol.TField USER_PROFILE_EXCEPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("userProfileException", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField UPE_FIELD_DESC = new org.apache.thrift.protocol.TField("upe", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField AE_FIELD_DESC = new org.apache.thrift.protocol.TField("ae", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -1550,12 +1755,14 @@ public class UserProfileService {
     }
 
     public String success; // required
-    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException; // required
+    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe; // required
+    public org.apache.airavata.model.error.AuthorizationException ae; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
-      USER_PROFILE_EXCEPTION((short)1, "userProfileException");
+      UPE((short)1, "upe"),
+      AE((short)2, "ae");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -1572,8 +1779,10 @@ public class UserProfileService {
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
-          case 1: // USER_PROFILE_EXCEPTION
-            return USER_PROFILE_EXCEPTION;
+          case 1: // UPE
+            return UPE;
+          case 2: // AE
+            return AE;
           default:
             return null;
         }
@@ -1619,7 +1828,9 @@ public class UserProfileService {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-      tmpMap.put(_Fields.USER_PROFILE_EXCEPTION, new org.apache.thrift.meta_data.FieldMetaData("userProfileException", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+      tmpMap.put(_Fields.UPE, new org.apache.thrift.meta_data.FieldMetaData("upe", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.AE, new org.apache.thrift.meta_data.FieldMetaData("ae", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(addUserProfile_result.class, metaDataMap);
@@ -1630,11 +1841,13 @@ public class UserProfileService {
 
     public addUserProfile_result(
       String success,
-      org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException)
+      org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe,
+      org.apache.airavata.model.error.AuthorizationException ae)
     {
       this();
       this.success = success;
-      this.userProfileException = userProfileException;
+      this.upe = upe;
+      this.ae = ae;
     }
 
     /**
@@ -1644,8 +1857,11 @@ public class UserProfileService {
       if (other.isSetSuccess()) {
         this.success = other.success;
       }
-      if (other.isSetUserProfileException()) {
-        this.userProfileException = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException(other.userProfileException);
+      if (other.isSetUpe()) {
+        this.upe = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException(other.upe);
+      }
+      if (other.isSetAe()) {
+        this.ae = new org.apache.airavata.model.error.AuthorizationException(other.ae);
       }
     }
 
@@ -1656,7 +1872,8 @@ public class UserProfileService {
     @Override
     public void clear() {
       this.success = null;
-      this.userProfileException = null;
+      this.upe = null;
+      this.ae = null;
     }
 
     public String getSuccess() {
@@ -1683,27 +1900,51 @@ public class UserProfileService {
       }
     }
 
-    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException getUserProfileException() {
-      return this.userProfileException;
+    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException getUpe() {
+      return this.upe;
     }
 
-    public addUserProfile_result setUserProfileException(org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException) {
-      this.userProfileException = userProfileException;
+    public addUserProfile_result setUpe(org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe) {
+      this.upe = upe;
       return this;
     }
 
-    public void unsetUserProfileException() {
-      this.userProfileException = null;
+    public void unsetUpe() {
+      this.upe = null;
     }
 
-    /** Returns true if field userProfileException is set (has been assigned a value) and false otherwise */
-    public boolean isSetUserProfileException() {
-      return this.userProfileException != null;
+    /** Returns true if field upe is set (has been assigned a value) and false otherwise */
+    public boolean isSetUpe() {
+      return this.upe != null;
     }
 
-    public void setUserProfileExceptionIsSet(boolean value) {
+    public void setUpeIsSet(boolean value) {
       if (!value) {
-        this.userProfileException = null;
+        this.upe = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AuthorizationException getAe() {
+      return this.ae;
+    }
+
+    public addUserProfile_result setAe(org.apache.airavata.model.error.AuthorizationException ae) {
+      this.ae = ae;
+      return this;
+    }
+
+    public void unsetAe() {
+      this.ae = null;
+    }
+
+    /** Returns true if field ae is set (has been assigned a value) and false otherwise */
+    public boolean isSetAe() {
+      return this.ae != null;
+    }
+
+    public void setAeIsSet(boolean value) {
+      if (!value) {
+        this.ae = null;
       }
     }
 
@@ -1717,11 +1958,19 @@ public class UserProfileService {
         }
         break;
 
-      case USER_PROFILE_EXCEPTION:
+      case UPE:
         if (value == null) {
-          unsetUserProfileException();
+          unsetUpe();
         } else {
-          setUserProfileException((org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException)value);
+          setUpe((org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException)value);
+        }
+        break;
+
+      case AE:
+        if (value == null) {
+          unsetAe();
+        } else {
+          setAe((org.apache.airavata.model.error.AuthorizationException)value);
         }
         break;
 
@@ -1733,8 +1982,11 @@ public class UserProfileService {
       case SUCCESS:
         return getSuccess();
 
-      case USER_PROFILE_EXCEPTION:
-        return getUserProfileException();
+      case UPE:
+        return getUpe();
+
+      case AE:
+        return getAe();
 
       }
       throw new IllegalStateException();
@@ -1749,8 +2001,10 @@ public class UserProfileService {
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
-      case USER_PROFILE_EXCEPTION:
-        return isSetUserProfileException();
+      case UPE:
+        return isSetUpe();
+      case AE:
+        return isSetAe();
       }
       throw new IllegalStateException();
     }
@@ -1777,12 +2031,21 @@ public class UserProfileService {
           return false;
       }
 
-      boolean this_present_userProfileException = true && this.isSetUserProfileException();
-      boolean that_present_userProfileException = true && that.isSetUserProfileException();
-      if (this_present_userProfileException || that_present_userProfileException) {
-        if (!(this_present_userProfileException && that_present_userProfileException))
+      boolean this_present_upe = true && this.isSetUpe();
+      boolean that_present_upe = true && that.isSetUpe();
+      if (this_present_upe || that_present_upe) {
+        if (!(this_present_upe && that_present_upe))
           return false;
-        if (!this.userProfileException.equals(that.userProfileException))
+        if (!this.upe.equals(that.upe))
+          return false;
+      }
+
+      boolean this_present_ae = true && this.isSetAe();
+      boolean that_present_ae = true && that.isSetAe();
+      if (this_present_ae || that_present_ae) {
+        if (!(this_present_ae && that_present_ae))
+          return false;
+        if (!this.ae.equals(that.ae))
           return false;
       }
 
@@ -1798,10 +2061,15 @@ public class UserProfileService {
       if (present_success)
         list.add(success);
 
-      boolean present_userProfileException = true && (isSetUserProfileException());
-      list.add(present_userProfileException);
-      if (present_userProfileException)
-        list.add(userProfileException);
+      boolean present_upe = true && (isSetUpe());
+      list.add(present_upe);
+      if (present_upe)
+        list.add(upe);
+
+      boolean present_ae = true && (isSetAe());
+      list.add(present_ae);
+      if (present_ae)
+        list.add(ae);
 
       return list.hashCode();
     }
@@ -1824,12 +2092,22 @@ public class UserProfileService {
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetUserProfileException()).compareTo(other.isSetUserProfileException());
+      lastComparison = Boolean.valueOf(isSetUpe()).compareTo(other.isSetUpe());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetUserProfileException()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userProfileException, other.userProfileException);
+      if (isSetUpe()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.upe, other.upe);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAe()).compareTo(other.isSetAe());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAe()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ae, other.ae);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -1862,11 +2140,19 @@ public class UserProfileService {
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("userProfileException:");
-      if (this.userProfileException == null) {
+      sb.append("upe:");
+      if (this.upe == null) {
         sb.append("null");
       } else {
-        sb.append(this.userProfileException);
+        sb.append(this.upe);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ae:");
+      if (this.ae == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ae);
       }
       first = false;
       sb.append(")");
@@ -1920,11 +2206,20 @@ public class UserProfileService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 1: // USER_PROFILE_EXCEPTION
+            case 1: // UPE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.userProfileException = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
-                struct.userProfileException.read(iprot);
-                struct.setUserProfileExceptionIsSet(true);
+                struct.upe = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
+                struct.upe.read(iprot);
+                struct.setUpeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // AE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+                struct.ae.read(iprot);
+                struct.setAeIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -1949,9 +2244,14 @@ public class UserProfileService {
           oprot.writeString(struct.success);
           oprot.writeFieldEnd();
         }
-        if (struct.userProfileException != null) {
-          oprot.writeFieldBegin(USER_PROFILE_EXCEPTION_FIELD_DESC);
-          struct.userProfileException.write(oprot);
+        if (struct.upe != null) {
+          oprot.writeFieldBegin(UPE_FIELD_DESC);
+          struct.upe.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ae != null) {
+          oprot.writeFieldBegin(AE_FIELD_DESC);
+          struct.ae.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -1975,30 +2275,41 @@ public class UserProfileService {
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        if (struct.isSetUserProfileException()) {
+        if (struct.isSetUpe()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetAe()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetSuccess()) {
           oprot.writeString(struct.success);
         }
-        if (struct.isSetUserProfileException()) {
-          struct.userProfileException.write(oprot);
+        if (struct.isSetUpe()) {
+          struct.upe.write(oprot);
+        }
+        if (struct.isSetAe()) {
+          struct.ae.write(oprot);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, addUserProfile_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.success = iprot.readString();
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.userProfileException = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
-          struct.userProfileException.read(iprot);
-          struct.setUserProfileExceptionIsSet(true);
+          struct.upe = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
+          struct.upe.read(iprot);
+          struct.setUpeIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+          struct.ae.read(iprot);
+          struct.setAeIsSet(true);
         }
       }
     }
@@ -2008,7 +2319,8 @@ public class UserProfileService {
   public static class updateUserProfile_args implements org.apache.thrift.TBase<updateUserProfile_args, updateUserProfile_args._Fields>, java.io.Serializable, Cloneable, Comparable<updateUserProfile_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateUserProfile_args");
 
-    private static final org.apache.thrift.protocol.TField USER_PROFILE_FIELD_DESC = new org.apache.thrift.protocol.TField("userProfile", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField AUTHZ_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("authzToken", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField USER_PROFILE_FIELD_DESC = new org.apache.thrift.protocol.TField("userProfile", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -2016,11 +2328,13 @@ public class UserProfileService {
       schemes.put(TupleScheme.class, new updateUserProfile_argsTupleSchemeFactory());
     }
 
+    public org.apache.airavata.model.security.AuthzToken authzToken; // required
     public org.apache.airavata.model.user.UserProfile userProfile; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      USER_PROFILE((short)1, "userProfile");
+      AUTHZ_TOKEN((short)1, "authzToken"),
+      USER_PROFILE((short)2, "userProfile");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -2035,7 +2349,9 @@ public class UserProfileService {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // USER_PROFILE
+          case 1: // AUTHZ_TOKEN
+            return AUTHZ_TOKEN;
+          case 2: // USER_PROFILE
             return USER_PROFILE;
           default:
             return null;
@@ -2080,6 +2396,8 @@ public class UserProfileService {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.AUTHZ_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("authzToken", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.security.AuthzToken.class)));
       tmpMap.put(_Fields.USER_PROFILE, new org.apache.thrift.meta_data.FieldMetaData("userProfile", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.user.UserProfile.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -2090,9 +2408,11 @@ public class UserProfileService {
     }
 
     public updateUserProfile_args(
+      org.apache.airavata.model.security.AuthzToken authzToken,
       org.apache.airavata.model.user.UserProfile userProfile)
     {
       this();
+      this.authzToken = authzToken;
       this.userProfile = userProfile;
     }
 
@@ -2100,6 +2420,9 @@ public class UserProfileService {
      * Performs a deep copy on <i>other</i>.
      */
     public updateUserProfile_args(updateUserProfile_args other) {
+      if (other.isSetAuthzToken()) {
+        this.authzToken = new org.apache.airavata.model.security.AuthzToken(other.authzToken);
+      }
       if (other.isSetUserProfile()) {
         this.userProfile = new org.apache.airavata.model.user.UserProfile(other.userProfile);
       }
@@ -2111,7 +2434,32 @@ public class UserProfileService {
 
     @Override
     public void clear() {
+      this.authzToken = null;
       this.userProfile = null;
+    }
+
+    public org.apache.airavata.model.security.AuthzToken getAuthzToken() {
+      return this.authzToken;
+    }
+
+    public updateUserProfile_args setAuthzToken(org.apache.airavata.model.security.AuthzToken authzToken) {
+      this.authzToken = authzToken;
+      return this;
+    }
+
+    public void unsetAuthzToken() {
+      this.authzToken = null;
+    }
+
+    /** Returns true if field authzToken is set (has been assigned a value) and false otherwise */
+    public boolean isSetAuthzToken() {
+      return this.authzToken != null;
+    }
+
+    public void setAuthzTokenIsSet(boolean value) {
+      if (!value) {
+        this.authzToken = null;
+      }
     }
 
     public org.apache.airavata.model.user.UserProfile getUserProfile() {
@@ -2140,6 +2488,14 @@ public class UserProfileService {
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case AUTHZ_TOKEN:
+        if (value == null) {
+          unsetAuthzToken();
+        } else {
+          setAuthzToken((org.apache.airavata.model.security.AuthzToken)value);
+        }
+        break;
+
       case USER_PROFILE:
         if (value == null) {
           unsetUserProfile();
@@ -2153,6 +2509,9 @@ public class UserProfileService {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case AUTHZ_TOKEN:
+        return getAuthzToken();
+
       case USER_PROFILE:
         return getUserProfile();
 
@@ -2167,6 +2526,8 @@ public class UserProfileService {
       }
 
       switch (field) {
+      case AUTHZ_TOKEN:
+        return isSetAuthzToken();
       case USER_PROFILE:
         return isSetUserProfile();
       }
@@ -2186,6 +2547,15 @@ public class UserProfileService {
       if (that == null)
         return false;
 
+      boolean this_present_authzToken = true && this.isSetAuthzToken();
+      boolean that_present_authzToken = true && that.isSetAuthzToken();
+      if (this_present_authzToken || that_present_authzToken) {
+        if (!(this_present_authzToken && that_present_authzToken))
+          return false;
+        if (!this.authzToken.equals(that.authzToken))
+          return false;
+      }
+
       boolean this_present_userProfile = true && this.isSetUserProfile();
       boolean that_present_userProfile = true && that.isSetUserProfile();
       if (this_present_userProfile || that_present_userProfile) {
@@ -2201,6 +2571,11 @@ public class UserProfileService {
     @Override
     public int hashCode() {
       List<Object> list = new ArrayList<Object>();
+
+      boolean present_authzToken = true && (isSetAuthzToken());
+      list.add(present_authzToken);
+      if (present_authzToken)
+        list.add(authzToken);
 
       boolean present_userProfile = true && (isSetUserProfile());
       list.add(present_userProfile);
@@ -2218,6 +2593,16 @@ public class UserProfileService {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetAuthzToken()).compareTo(other.isSetAuthzToken());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAuthzToken()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authzToken, other.authzToken);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetUserProfile()).compareTo(other.isSetUserProfile());
       if (lastComparison != 0) {
         return lastComparison;
@@ -2248,6 +2633,14 @@ public class UserProfileService {
       StringBuilder sb = new StringBuilder("updateUserProfile_args(");
       boolean first = true;
 
+      sb.append("authzToken:");
+      if (this.authzToken == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.authzToken);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("userProfile:");
       if (this.userProfile == null) {
         sb.append("null");
@@ -2261,10 +2654,16 @@ public class UserProfileService {
 
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
+      if (authzToken == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'authzToken' was not present! Struct: " + toString());
+      }
       if (userProfile == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'userProfile' was not present! Struct: " + toString());
       }
       // check for sub-struct validity
+      if (authzToken != null) {
+        authzToken.validate();
+      }
       if (userProfile != null) {
         userProfile.validate();
       }
@@ -2304,7 +2703,16 @@ public class UserProfileService {
             break;
           }
           switch (schemeField.id) {
-            case 1: // USER_PROFILE
+            case 1: // AUTHZ_TOKEN
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+                struct.authzToken.read(iprot);
+                struct.setAuthzTokenIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // USER_PROFILE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.userProfile = new org.apache.airavata.model.user.UserProfile();
                 struct.userProfile.read(iprot);
@@ -2328,6 +2736,11 @@ public class UserProfileService {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.authzToken != null) {
+          oprot.writeFieldBegin(AUTHZ_TOKEN_FIELD_DESC);
+          struct.authzToken.write(oprot);
+          oprot.writeFieldEnd();
+        }
         if (struct.userProfile != null) {
           oprot.writeFieldBegin(USER_PROFILE_FIELD_DESC);
           struct.userProfile.write(oprot);
@@ -2350,12 +2763,16 @@ public class UserProfileService {
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, updateUserProfile_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
+        struct.authzToken.write(oprot);
         struct.userProfile.write(oprot);
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, updateUserProfile_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+        struct.authzToken.read(iprot);
+        struct.setAuthzTokenIsSet(true);
         struct.userProfile = new org.apache.airavata.model.user.UserProfile();
         struct.userProfile.read(iprot);
         struct.setUserProfileIsSet(true);
@@ -2368,7 +2785,8 @@ public class UserProfileService {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateUserProfile_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)0);
-    private static final org.apache.thrift.protocol.TField USER_PROFILE_EXCEPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("userProfileException", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField UPE_FIELD_DESC = new org.apache.thrift.protocol.TField("upe", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField AE_FIELD_DESC = new org.apache.thrift.protocol.TField("ae", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -2377,12 +2795,14 @@ public class UserProfileService {
     }
 
     public boolean success; // required
-    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException; // required
+    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe; // required
+    public org.apache.airavata.model.error.AuthorizationException ae; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
-      USER_PROFILE_EXCEPTION((short)1, "userProfileException");
+      UPE((short)1, "upe"),
+      AE((short)2, "ae");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -2399,8 +2819,10 @@ public class UserProfileService {
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
-          case 1: // USER_PROFILE_EXCEPTION
-            return USER_PROFILE_EXCEPTION;
+          case 1: // UPE
+            return UPE;
+          case 2: // AE
+            return AE;
           default:
             return null;
         }
@@ -2448,7 +2870,9 @@ public class UserProfileService {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
-      tmpMap.put(_Fields.USER_PROFILE_EXCEPTION, new org.apache.thrift.meta_data.FieldMetaData("userProfileException", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+      tmpMap.put(_Fields.UPE, new org.apache.thrift.meta_data.FieldMetaData("upe", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.AE, new org.apache.thrift.meta_data.FieldMetaData("ae", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateUserProfile_result.class, metaDataMap);
@@ -2459,12 +2883,14 @@ public class UserProfileService {
 
     public updateUserProfile_result(
       boolean success,
-      org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException)
+      org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe,
+      org.apache.airavata.model.error.AuthorizationException ae)
     {
       this();
       this.success = success;
       setSuccessIsSet(true);
-      this.userProfileException = userProfileException;
+      this.upe = upe;
+      this.ae = ae;
     }
 
     /**
@@ -2473,8 +2899,11 @@ public class UserProfileService {
     public updateUserProfile_result(updateUserProfile_result other) {
       __isset_bitfield = other.__isset_bitfield;
       this.success = other.success;
-      if (other.isSetUserProfileException()) {
-        this.userProfileException = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException(other.userProfileException);
+      if (other.isSetUpe()) {
+        this.upe = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException(other.upe);
+      }
+      if (other.isSetAe()) {
+        this.ae = new org.apache.airavata.model.error.AuthorizationException(other.ae);
       }
     }
 
@@ -2486,7 +2915,8 @@ public class UserProfileService {
     public void clear() {
       setSuccessIsSet(false);
       this.success = false;
-      this.userProfileException = null;
+      this.upe = null;
+      this.ae = null;
     }
 
     public boolean isSuccess() {
@@ -2512,27 +2942,51 @@ public class UserProfileService {
       __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SUCCESS_ISSET_ID, value);
     }
 
-    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException getUserProfileException() {
-      return this.userProfileException;
+    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException getUpe() {
+      return this.upe;
     }
 
-    public updateUserProfile_result setUserProfileException(org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException) {
-      this.userProfileException = userProfileException;
+    public updateUserProfile_result setUpe(org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe) {
+      this.upe = upe;
       return this;
     }
 
-    public void unsetUserProfileException() {
-      this.userProfileException = null;
+    public void unsetUpe() {
+      this.upe = null;
     }
 
-    /** Returns true if field userProfileException is set (has been assigned a value) and false otherwise */
-    public boolean isSetUserProfileException() {
-      return this.userProfileException != null;
+    /** Returns true if field upe is set (has been assigned a value) and false otherwise */
+    public boolean isSetUpe() {
+      return this.upe != null;
     }
 
-    public void setUserProfileExceptionIsSet(boolean value) {
+    public void setUpeIsSet(boolean value) {
       if (!value) {
-        this.userProfileException = null;
+        this.upe = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AuthorizationException getAe() {
+      return this.ae;
+    }
+
+    public updateUserProfile_result setAe(org.apache.airavata.model.error.AuthorizationException ae) {
+      this.ae = ae;
+      return this;
+    }
+
+    public void unsetAe() {
+      this.ae = null;
+    }
+
+    /** Returns true if field ae is set (has been assigned a value) and false otherwise */
+    public boolean isSetAe() {
+      return this.ae != null;
+    }
+
+    public void setAeIsSet(boolean value) {
+      if (!value) {
+        this.ae = null;
       }
     }
 
@@ -2546,11 +3000,19 @@ public class UserProfileService {
         }
         break;
 
-      case USER_PROFILE_EXCEPTION:
+      case UPE:
         if (value == null) {
-          unsetUserProfileException();
+          unsetUpe();
         } else {
-          setUserProfileException((org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException)value);
+          setUpe((org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException)value);
+        }
+        break;
+
+      case AE:
+        if (value == null) {
+          unsetAe();
+        } else {
+          setAe((org.apache.airavata.model.error.AuthorizationException)value);
         }
         break;
 
@@ -2562,8 +3024,11 @@ public class UserProfileService {
       case SUCCESS:
         return isSuccess();
 
-      case USER_PROFILE_EXCEPTION:
-        return getUserProfileException();
+      case UPE:
+        return getUpe();
+
+      case AE:
+        return getAe();
 
       }
       throw new IllegalStateException();
@@ -2578,8 +3043,10 @@ public class UserProfileService {
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
-      case USER_PROFILE_EXCEPTION:
-        return isSetUserProfileException();
+      case UPE:
+        return isSetUpe();
+      case AE:
+        return isSetAe();
       }
       throw new IllegalStateException();
     }
@@ -2606,12 +3073,21 @@ public class UserProfileService {
           return false;
       }
 
-      boolean this_present_userProfileException = true && this.isSetUserProfileException();
-      boolean that_present_userProfileException = true && that.isSetUserProfileException();
-      if (this_present_userProfileException || that_present_userProfileException) {
-        if (!(this_present_userProfileException && that_present_userProfileException))
+      boolean this_present_upe = true && this.isSetUpe();
+      boolean that_present_upe = true && that.isSetUpe();
+      if (this_present_upe || that_present_upe) {
+        if (!(this_present_upe && that_present_upe))
           return false;
-        if (!this.userProfileException.equals(that.userProfileException))
+        if (!this.upe.equals(that.upe))
+          return false;
+      }
+
+      boolean this_present_ae = true && this.isSetAe();
+      boolean that_present_ae = true && that.isSetAe();
+      if (this_present_ae || that_present_ae) {
+        if (!(this_present_ae && that_present_ae))
+          return false;
+        if (!this.ae.equals(that.ae))
           return false;
       }
 
@@ -2627,10 +3103,15 @@ public class UserProfileService {
       if (present_success)
         list.add(success);
 
-      boolean present_userProfileException = true && (isSetUserProfileException());
-      list.add(present_userProfileException);
-      if (present_userProfileException)
-        list.add(userProfileException);
+      boolean present_upe = true && (isSetUpe());
+      list.add(present_upe);
+      if (present_upe)
+        list.add(upe);
+
+      boolean present_ae = true && (isSetAe());
+      list.add(present_ae);
+      if (present_ae)
+        list.add(ae);
 
       return list.hashCode();
     }
@@ -2653,12 +3134,22 @@ public class UserProfileService {
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetUserProfileException()).compareTo(other.isSetUserProfileException());
+      lastComparison = Boolean.valueOf(isSetUpe()).compareTo(other.isSetUpe());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetUserProfileException()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userProfileException, other.userProfileException);
+      if (isSetUpe()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.upe, other.upe);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAe()).compareTo(other.isSetAe());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAe()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ae, other.ae);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -2687,11 +3178,19 @@ public class UserProfileService {
       sb.append(this.success);
       first = false;
       if (!first) sb.append(", ");
-      sb.append("userProfileException:");
-      if (this.userProfileException == null) {
+      sb.append("upe:");
+      if (this.upe == null) {
         sb.append("null");
       } else {
-        sb.append(this.userProfileException);
+        sb.append(this.upe);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ae:");
+      if (this.ae == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ae);
       }
       first = false;
       sb.append(")");
@@ -2747,11 +3246,20 @@ public class UserProfileService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 1: // USER_PROFILE_EXCEPTION
+            case 1: // UPE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.userProfileException = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
-                struct.userProfileException.read(iprot);
-                struct.setUserProfileExceptionIsSet(true);
+                struct.upe = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
+                struct.upe.read(iprot);
+                struct.setUpeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // AE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+                struct.ae.read(iprot);
+                struct.setAeIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -2776,9 +3284,14 @@ public class UserProfileService {
           oprot.writeBool(struct.success);
           oprot.writeFieldEnd();
         }
-        if (struct.userProfileException != null) {
-          oprot.writeFieldBegin(USER_PROFILE_EXCEPTION_FIELD_DESC);
-          struct.userProfileException.write(oprot);
+        if (struct.upe != null) {
+          oprot.writeFieldBegin(UPE_FIELD_DESC);
+          struct.upe.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ae != null) {
+          oprot.writeFieldBegin(AE_FIELD_DESC);
+          struct.ae.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -2802,30 +3315,41 @@ public class UserProfileService {
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        if (struct.isSetUserProfileException()) {
+        if (struct.isSetUpe()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetAe()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetSuccess()) {
           oprot.writeBool(struct.success);
         }
-        if (struct.isSetUserProfileException()) {
-          struct.userProfileException.write(oprot);
+        if (struct.isSetUpe()) {
+          struct.upe.write(oprot);
+        }
+        if (struct.isSetAe()) {
+          struct.ae.write(oprot);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, updateUserProfile_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.success = iprot.readBool();
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.userProfileException = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
-          struct.userProfileException.read(iprot);
-          struct.setUserProfileExceptionIsSet(true);
+          struct.upe = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
+          struct.upe.read(iprot);
+          struct.setUpeIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+          struct.ae.read(iprot);
+          struct.setAeIsSet(true);
         }
       }
     }
@@ -2835,8 +3359,9 @@ public class UserProfileService {
   public static class getUserProfileById_args implements org.apache.thrift.TBase<getUserProfileById_args, getUserProfileById_args._Fields>, java.io.Serializable, Cloneable, Comparable<getUserProfileById_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getUserProfileById_args");
 
-    private static final org.apache.thrift.protocol.TField USER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("userId", org.apache.thrift.protocol.TType.STRING, (short)1);
-    private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField AUTHZ_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("authzToken", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField USER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("userId", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)3);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -2844,13 +3369,15 @@ public class UserProfileService {
       schemes.put(TupleScheme.class, new getUserProfileById_argsTupleSchemeFactory());
     }
 
+    public org.apache.airavata.model.security.AuthzToken authzToken; // required
     public String userId; // required
     public String gatewayId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      USER_ID((short)1, "userId"),
-      GATEWAY_ID((short)2, "gatewayId");
+      AUTHZ_TOKEN((short)1, "authzToken"),
+      USER_ID((short)2, "userId"),
+      GATEWAY_ID((short)3, "gatewayId");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -2865,9 +3392,11 @@ public class UserProfileService {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // USER_ID
+          case 1: // AUTHZ_TOKEN
+            return AUTHZ_TOKEN;
+          case 2: // USER_ID
             return USER_ID;
-          case 2: // GATEWAY_ID
+          case 3: // GATEWAY_ID
             return GATEWAY_ID;
           default:
             return null;
@@ -2912,6 +3441,8 @@ public class UserProfileService {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.AUTHZ_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("authzToken", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.security.AuthzToken.class)));
       tmpMap.put(_Fields.USER_ID, new org.apache.thrift.meta_data.FieldMetaData("userId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -2924,10 +3455,12 @@ public class UserProfileService {
     }
 
     public getUserProfileById_args(
+      org.apache.airavata.model.security.AuthzToken authzToken,
       String userId,
       String gatewayId)
     {
       this();
+      this.authzToken = authzToken;
       this.userId = userId;
       this.gatewayId = gatewayId;
     }
@@ -2936,6 +3469,9 @@ public class UserProfileService {
      * Performs a deep copy on <i>other</i>.
      */
     public getUserProfileById_args(getUserProfileById_args other) {
+      if (other.isSetAuthzToken()) {
+        this.authzToken = new org.apache.airavata.model.security.AuthzToken(other.authzToken);
+      }
       if (other.isSetUserId()) {
         this.userId = other.userId;
       }
@@ -2950,8 +3486,33 @@ public class UserProfileService {
 
     @Override
     public void clear() {
+      this.authzToken = null;
       this.userId = null;
       this.gatewayId = null;
+    }
+
+    public org.apache.airavata.model.security.AuthzToken getAuthzToken() {
+      return this.authzToken;
+    }
+
+    public getUserProfileById_args setAuthzToken(org.apache.airavata.model.security.AuthzToken authzToken) {
+      this.authzToken = authzToken;
+      return this;
+    }
+
+    public void unsetAuthzToken() {
+      this.authzToken = null;
+    }
+
+    /** Returns true if field authzToken is set (has been assigned a value) and false otherwise */
+    public boolean isSetAuthzToken() {
+      return this.authzToken != null;
+    }
+
+    public void setAuthzTokenIsSet(boolean value) {
+      if (!value) {
+        this.authzToken = null;
+      }
     }
 
     public String getUserId() {
@@ -3004,6 +3565,14 @@ public class UserProfileService {
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case AUTHZ_TOKEN:
+        if (value == null) {
+          unsetAuthzToken();
+        } else {
+          setAuthzToken((org.apache.airavata.model.security.AuthzToken)value);
+        }
+        break;
+
       case USER_ID:
         if (value == null) {
           unsetUserId();
@@ -3025,6 +3594,9 @@ public class UserProfileService {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case AUTHZ_TOKEN:
+        return getAuthzToken();
+
       case USER_ID:
         return getUserId();
 
@@ -3042,6 +3614,8 @@ public class UserProfileService {
       }
 
       switch (field) {
+      case AUTHZ_TOKEN:
+        return isSetAuthzToken();
       case USER_ID:
         return isSetUserId();
       case GATEWAY_ID:
@@ -3062,6 +3636,15 @@ public class UserProfileService {
     public boolean equals(getUserProfileById_args that) {
       if (that == null)
         return false;
+
+      boolean this_present_authzToken = true && this.isSetAuthzToken();
+      boolean that_present_authzToken = true && that.isSetAuthzToken();
+      if (this_present_authzToken || that_present_authzToken) {
+        if (!(this_present_authzToken && that_present_authzToken))
+          return false;
+        if (!this.authzToken.equals(that.authzToken))
+          return false;
+      }
 
       boolean this_present_userId = true && this.isSetUserId();
       boolean that_present_userId = true && that.isSetUserId();
@@ -3088,6 +3671,11 @@ public class UserProfileService {
     public int hashCode() {
       List<Object> list = new ArrayList<Object>();
 
+      boolean present_authzToken = true && (isSetAuthzToken());
+      list.add(present_authzToken);
+      if (present_authzToken)
+        list.add(authzToken);
+
       boolean present_userId = true && (isSetUserId());
       list.add(present_userId);
       if (present_userId)
@@ -3109,6 +3697,16 @@ public class UserProfileService {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetAuthzToken()).compareTo(other.isSetAuthzToken());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAuthzToken()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authzToken, other.authzToken);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetUserId()).compareTo(other.isSetUserId());
       if (lastComparison != 0) {
         return lastComparison;
@@ -3149,6 +3747,14 @@ public class UserProfileService {
       StringBuilder sb = new StringBuilder("getUserProfileById_args(");
       boolean first = true;
 
+      sb.append("authzToken:");
+      if (this.authzToken == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.authzToken);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("userId:");
       if (this.userId == null) {
         sb.append("null");
@@ -3170,6 +3776,9 @@ public class UserProfileService {
 
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
+      if (authzToken == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'authzToken' was not present! Struct: " + toString());
+      }
       if (userId == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'userId' was not present! Struct: " + toString());
       }
@@ -3177,6 +3786,9 @@ public class UserProfileService {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' was not present! Struct: " + toString());
       }
       // check for sub-struct validity
+      if (authzToken != null) {
+        authzToken.validate();
+      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -3213,7 +3825,16 @@ public class UserProfileService {
             break;
           }
           switch (schemeField.id) {
-            case 1: // USER_ID
+            case 1: // AUTHZ_TOKEN
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+                struct.authzToken.read(iprot);
+                struct.setAuthzTokenIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // USER_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.userId = iprot.readString();
                 struct.setUserIdIsSet(true);
@@ -3221,7 +3842,7 @@ public class UserProfileService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 2: // GATEWAY_ID
+            case 3: // GATEWAY_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.gatewayId = iprot.readString();
                 struct.setGatewayIdIsSet(true);
@@ -3244,6 +3865,11 @@ public class UserProfileService {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.authzToken != null) {
+          oprot.writeFieldBegin(AUTHZ_TOKEN_FIELD_DESC);
+          struct.authzToken.write(oprot);
+          oprot.writeFieldEnd();
+        }
         if (struct.userId != null) {
           oprot.writeFieldBegin(USER_ID_FIELD_DESC);
           oprot.writeString(struct.userId);
@@ -3271,6 +3897,7 @@ public class UserProfileService {
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, getUserProfileById_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
+        struct.authzToken.write(oprot);
         oprot.writeString(struct.userId);
         oprot.writeString(struct.gatewayId);
       }
@@ -3278,6 +3905,9 @@ public class UserProfileService {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, getUserProfileById_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+        struct.authzToken.read(iprot);
+        struct.setAuthzTokenIsSet(true);
         struct.userId = iprot.readString();
         struct.setUserIdIsSet(true);
         struct.gatewayId = iprot.readString();
@@ -3291,7 +3921,8 @@ public class UserProfileService {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getUserProfileById_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
-    private static final org.apache.thrift.protocol.TField USER_PROFILE_EXCEPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("userProfileException", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField UPE_FIELD_DESC = new org.apache.thrift.protocol.TField("upe", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField AE_FIELD_DESC = new org.apache.thrift.protocol.TField("ae", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -3300,12 +3931,14 @@ public class UserProfileService {
     }
 
     public org.apache.airavata.model.user.UserProfile success; // required
-    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException; // required
+    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe; // required
+    public org.apache.airavata.model.error.AuthorizationException ae; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
-      USER_PROFILE_EXCEPTION((short)1, "userProfileException");
+      UPE((short)1, "upe"),
+      AE((short)2, "ae");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -3322,8 +3955,10 @@ public class UserProfileService {
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
-          case 1: // USER_PROFILE_EXCEPTION
-            return USER_PROFILE_EXCEPTION;
+          case 1: // UPE
+            return UPE;
+          case 2: // AE
+            return AE;
           default:
             return null;
         }
@@ -3369,7 +4004,9 @@ public class UserProfileService {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.user.UserProfile.class)));
-      tmpMap.put(_Fields.USER_PROFILE_EXCEPTION, new org.apache.thrift.meta_data.FieldMetaData("userProfileException", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+      tmpMap.put(_Fields.UPE, new org.apache.thrift.meta_data.FieldMetaData("upe", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.AE, new org.apache.thrift.meta_data.FieldMetaData("ae", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getUserProfileById_result.class, metaDataMap);
@@ -3380,11 +4017,13 @@ public class UserProfileService {
 
     public getUserProfileById_result(
       org.apache.airavata.model.user.UserProfile success,
-      org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException)
+      org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe,
+      org.apache.airavata.model.error.AuthorizationException ae)
     {
       this();
       this.success = success;
-      this.userProfileException = userProfileException;
+      this.upe = upe;
+      this.ae = ae;
     }
 
     /**
@@ -3394,8 +4033,11 @@ public class UserProfileService {
       if (other.isSetSuccess()) {
         this.success = new org.apache.airavata.model.user.UserProfile(other.success);
       }
-      if (other.isSetUserProfileException()) {
-        this.userProfileException = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException(other.userProfileException);
+      if (other.isSetUpe()) {
+        this.upe = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException(other.upe);
+      }
+      if (other.isSetAe()) {
+        this.ae = new org.apache.airavata.model.error.AuthorizationException(other.ae);
       }
     }
 
@@ -3406,7 +4048,8 @@ public class UserProfileService {
     @Override
     public void clear() {
       this.success = null;
-      this.userProfileException = null;
+      this.upe = null;
+      this.ae = null;
     }
 
     public org.apache.airavata.model.user.UserProfile getSuccess() {
@@ -3433,27 +4076,51 @@ public class UserProfileService {
       }
     }
 
-    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException getUserProfileException() {
-      return this.userProfileException;
+    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException getUpe() {
+      return this.upe;
     }
 
-    public getUserProfileById_result setUserProfileException(org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException) {
-      this.userProfileException = userProfileException;
+    public getUserProfileById_result setUpe(org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe) {
+      this.upe = upe;
       return this;
     }
 
-    public void unsetUserProfileException() {
-      this.userProfileException = null;
+    public void unsetUpe() {
+      this.upe = null;
     }
 
-    /** Returns true if field userProfileException is set (has been assigned a value) and false otherwise */
-    public boolean isSetUserProfileException() {
-      return this.userProfileException != null;
+    /** Returns true if field upe is set (has been assigned a value) and false otherwise */
+    public boolean isSetUpe() {
+      return this.upe != null;
     }
 
-    public void setUserProfileExceptionIsSet(boolean value) {
+    public void setUpeIsSet(boolean value) {
       if (!value) {
-        this.userProfileException = null;
+        this.upe = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AuthorizationException getAe() {
+      return this.ae;
+    }
+
+    public getUserProfileById_result setAe(org.apache.airavata.model.error.AuthorizationException ae) {
+      this.ae = ae;
+      return this;
+    }
+
+    public void unsetAe() {
+      this.ae = null;
+    }
+
+    /** Returns true if field ae is set (has been assigned a value) and false otherwise */
+    public boolean isSetAe() {
+      return this.ae != null;
+    }
+
+    public void setAeIsSet(boolean value) {
+      if (!value) {
+        this.ae = null;
       }
     }
 
@@ -3467,11 +4134,19 @@ public class UserProfileService {
         }
         break;
 
-      case USER_PROFILE_EXCEPTION:
+      case UPE:
         if (value == null) {
-          unsetUserProfileException();
+          unsetUpe();
         } else {
-          setUserProfileException((org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException)value);
+          setUpe((org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException)value);
+        }
+        break;
+
+      case AE:
+        if (value == null) {
+          unsetAe();
+        } else {
+          setAe((org.apache.airavata.model.error.AuthorizationException)value);
         }
         break;
 
@@ -3483,8 +4158,11 @@ public class UserProfileService {
       case SUCCESS:
         return getSuccess();
 
-      case USER_PROFILE_EXCEPTION:
-        return getUserProfileException();
+      case UPE:
+        return getUpe();
+
+      case AE:
+        return getAe();
 
       }
       throw new IllegalStateException();
@@ -3499,8 +4177,10 @@ public class UserProfileService {
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
-      case USER_PROFILE_EXCEPTION:
-        return isSetUserProfileException();
+      case UPE:
+        return isSetUpe();
+      case AE:
+        return isSetAe();
       }
       throw new IllegalStateException();
     }
@@ -3527,12 +4207,21 @@ public class UserProfileService {
           return false;
       }
 
-      boolean this_present_userProfileException = true && this.isSetUserProfileException();
-      boolean that_present_userProfileException = true && that.isSetUserProfileException();
-      if (this_present_userProfileException || that_present_userProfileException) {
-        if (!(this_present_userProfileException && that_present_userProfileException))
+      boolean this_present_upe = true && this.isSetUpe();
+      boolean that_present_upe = true && that.isSetUpe();
+      if (this_present_upe || that_present_upe) {
+        if (!(this_present_upe && that_present_upe))
           return false;
-        if (!this.userProfileException.equals(that.userProfileException))
+        if (!this.upe.equals(that.upe))
+          return false;
+      }
+
+      boolean this_present_ae = true && this.isSetAe();
+      boolean that_present_ae = true && that.isSetAe();
+      if (this_present_ae || that_present_ae) {
+        if (!(this_present_ae && that_present_ae))
+          return false;
+        if (!this.ae.equals(that.ae))
           return false;
       }
 
@@ -3548,10 +4237,15 @@ public class UserProfileService {
       if (present_success)
         list.add(success);
 
-      boolean present_userProfileException = true && (isSetUserProfileException());
-      list.add(present_userProfileException);
-      if (present_userProfileException)
-        list.add(userProfileException);
+      boolean present_upe = true && (isSetUpe());
+      list.add(present_upe);
+      if (present_upe)
+        list.add(upe);
+
+      boolean present_ae = true && (isSetAe());
+      list.add(present_ae);
+      if (present_ae)
+        list.add(ae);
 
       return list.hashCode();
     }
@@ -3574,12 +4268,22 @@ public class UserProfileService {
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetUserProfileException()).compareTo(other.isSetUserProfileException());
+      lastComparison = Boolean.valueOf(isSetUpe()).compareTo(other.isSetUpe());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetUserProfileException()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userProfileException, other.userProfileException);
+      if (isSetUpe()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.upe, other.upe);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAe()).compareTo(other.isSetAe());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAe()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ae, other.ae);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -3612,11 +4316,19 @@ public class UserProfileService {
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("userProfileException:");
-      if (this.userProfileException == null) {
+      sb.append("upe:");
+      if (this.upe == null) {
         sb.append("null");
       } else {
-        sb.append(this.userProfileException);
+        sb.append(this.upe);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ae:");
+      if (this.ae == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ae);
       }
       first = false;
       sb.append(")");
@@ -3674,11 +4386,20 @@ public class UserProfileService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 1: // USER_PROFILE_EXCEPTION
+            case 1: // UPE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.userProfileException = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
-                struct.userProfileException.read(iprot);
-                struct.setUserProfileExceptionIsSet(true);
+                struct.upe = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
+                struct.upe.read(iprot);
+                struct.setUpeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // AE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+                struct.ae.read(iprot);
+                struct.setAeIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -3703,9 +4424,14 @@ public class UserProfileService {
           struct.success.write(oprot);
           oprot.writeFieldEnd();
         }
-        if (struct.userProfileException != null) {
-          oprot.writeFieldBegin(USER_PROFILE_EXCEPTION_FIELD_DESC);
-          struct.userProfileException.write(oprot);
+        if (struct.upe != null) {
+          oprot.writeFieldBegin(UPE_FIELD_DESC);
+          struct.upe.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ae != null) {
+          oprot.writeFieldBegin(AE_FIELD_DESC);
+          struct.ae.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -3729,31 +4455,42 @@ public class UserProfileService {
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        if (struct.isSetUserProfileException()) {
+        if (struct.isSetUpe()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetAe()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetSuccess()) {
           struct.success.write(oprot);
         }
-        if (struct.isSetUserProfileException()) {
-          struct.userProfileException.write(oprot);
+        if (struct.isSetUpe()) {
+          struct.upe.write(oprot);
+        }
+        if (struct.isSetAe()) {
+          struct.ae.write(oprot);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, getUserProfileById_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.success = new org.apache.airavata.model.user.UserProfile();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.userProfileException = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
-          struct.userProfileException.read(iprot);
-          struct.setUserProfileExceptionIsSet(true);
+          struct.upe = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
+          struct.upe.read(iprot);
+          struct.setUpeIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+          struct.ae.read(iprot);
+          struct.setAeIsSet(true);
         }
       }
     }
@@ -3763,8 +4500,9 @@ public class UserProfileService {
   public static class deleteUserProfile_args implements org.apache.thrift.TBase<deleteUserProfile_args, deleteUserProfile_args._Fields>, java.io.Serializable, Cloneable, Comparable<deleteUserProfile_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("deleteUserProfile_args");
 
-    private static final org.apache.thrift.protocol.TField USER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("userId", org.apache.thrift.protocol.TType.STRING, (short)1);
-    private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField AUTHZ_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("authzToken", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField USER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("userId", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)3);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -3772,13 +4510,15 @@ public class UserProfileService {
       schemes.put(TupleScheme.class, new deleteUserProfile_argsTupleSchemeFactory());
     }
 
+    public org.apache.airavata.model.security.AuthzToken authzToken; // required
     public String userId; // required
     public String gatewayId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      USER_ID((short)1, "userId"),
-      GATEWAY_ID((short)2, "gatewayId");
+      AUTHZ_TOKEN((short)1, "authzToken"),
+      USER_ID((short)2, "userId"),
+      GATEWAY_ID((short)3, "gatewayId");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -3793,9 +4533,11 @@ public class UserProfileService {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // USER_ID
+          case 1: // AUTHZ_TOKEN
+            return AUTHZ_TOKEN;
+          case 2: // USER_ID
             return USER_ID;
-          case 2: // GATEWAY_ID
+          case 3: // GATEWAY_ID
             return GATEWAY_ID;
           default:
             return null;
@@ -3840,6 +4582,8 @@ public class UserProfileService {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.AUTHZ_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("authzToken", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.security.AuthzToken.class)));
       tmpMap.put(_Fields.USER_ID, new org.apache.thrift.meta_data.FieldMetaData("userId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -3852,10 +4596,12 @@ public class UserProfileService {
     }
 
     public deleteUserProfile_args(
+      org.apache.airavata.model.security.AuthzToken authzToken,
       String userId,
       String gatewayId)
     {
       this();
+      this.authzToken = authzToken;
       this.userId = userId;
       this.gatewayId = gatewayId;
     }
@@ -3864,6 +4610,9 @@ public class UserProfileService {
      * Performs a deep copy on <i>other</i>.
      */
     public deleteUserProfile_args(deleteUserProfile_args other) {
+      if (other.isSetAuthzToken()) {
+        this.authzToken = new org.apache.airavata.model.security.AuthzToken(other.authzToken);
+      }
       if (other.isSetUserId()) {
         this.userId = other.userId;
       }
@@ -3878,8 +4627,33 @@ public class UserProfileService {
 
     @Override
     public void clear() {
+      this.authzToken = null;
       this.userId = null;
       this.gatewayId = null;
+    }
+
+    public org.apache.airavata.model.security.AuthzToken getAuthzToken() {
+      return this.authzToken;
+    }
+
+    public deleteUserProfile_args setAuthzToken(org.apache.airavata.model.security.AuthzToken authzToken) {
+      this.authzToken = authzToken;
+      return this;
+    }
+
+    public void unsetAuthzToken() {
+      this.authzToken = null;
+    }
+
+    /** Returns true if field authzToken is set (has been assigned a value) and false otherwise */
+    public boolean isSetAuthzToken() {
+      return this.authzToken != null;
+    }
+
+    public void setAuthzTokenIsSet(boolean value) {
+      if (!value) {
+        this.authzToken = null;
+      }
     }
 
     public String getUserId() {
@@ -3932,6 +4706,14 @@ public class UserProfileService {
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case AUTHZ_TOKEN:
+        if (value == null) {
+          unsetAuthzToken();
+        } else {
+          setAuthzToken((org.apache.airavata.model.security.AuthzToken)value);
+        }
+        break;
+
       case USER_ID:
         if (value == null) {
           unsetUserId();
@@ -3953,6 +4735,9 @@ public class UserProfileService {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case AUTHZ_TOKEN:
+        return getAuthzToken();
+
       case USER_ID:
         return getUserId();
 
@@ -3970,6 +4755,8 @@ public class UserProfileService {
       }
 
       switch (field) {
+      case AUTHZ_TOKEN:
+        return isSetAuthzToken();
       case USER_ID:
         return isSetUserId();
       case GATEWAY_ID:
@@ -3990,6 +4777,15 @@ public class UserProfileService {
     public boolean equals(deleteUserProfile_args that) {
       if (that == null)
         return false;
+
+      boolean this_present_authzToken = true && this.isSetAuthzToken();
+      boolean that_present_authzToken = true && that.isSetAuthzToken();
+      if (this_present_authzToken || that_present_authzToken) {
+        if (!(this_present_authzToken && that_present_authzToken))
+          return false;
+        if (!this.authzToken.equals(that.authzToken))
+          return false;
+      }
 
       boolean this_present_userId = true && this.isSetUserId();
       boolean that_present_userId = true && that.isSetUserId();
@@ -4016,6 +4812,11 @@ public class UserProfileService {
     public int hashCode() {
       List<Object> list = new ArrayList<Object>();
 
+      boolean present_authzToken = true && (isSetAuthzToken());
+      list.add(present_authzToken);
+      if (present_authzToken)
+        list.add(authzToken);
+
       boolean present_userId = true && (isSetUserId());
       list.add(present_userId);
       if (present_userId)
@@ -4037,6 +4838,16 @@ public class UserProfileService {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetAuthzToken()).compareTo(other.isSetAuthzToken());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAuthzToken()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authzToken, other.authzToken);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetUserId()).compareTo(other.isSetUserId());
       if (lastComparison != 0) {
         return lastComparison;
@@ -4077,6 +4888,14 @@ public class UserProfileService {
       StringBuilder sb = new StringBuilder("deleteUserProfile_args(");
       boolean first = true;
 
+      sb.append("authzToken:");
+      if (this.authzToken == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.authzToken);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("userId:");
       if (this.userId == null) {
         sb.append("null");
@@ -4098,6 +4917,9 @@ public class UserProfileService {
 
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
+      if (authzToken == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'authzToken' was not present! Struct: " + toString());
+      }
       if (userId == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'userId' was not present! Struct: " + toString());
       }
@@ -4105,6 +4927,9 @@ public class UserProfileService {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' was not present! Struct: " + toString());
       }
       // check for sub-struct validity
+      if (authzToken != null) {
+        authzToken.validate();
+      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -4141,7 +4966,16 @@ public class UserProfileService {
             break;
           }
           switch (schemeField.id) {
-            case 1: // USER_ID
+            case 1: // AUTHZ_TOKEN
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+                struct.authzToken.read(iprot);
+                struct.setAuthzTokenIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // USER_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.userId = iprot.readString();
                 struct.setUserIdIsSet(true);
@@ -4149,7 +4983,7 @@ public class UserProfileService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 2: // GATEWAY_ID
+            case 3: // GATEWAY_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.gatewayId = iprot.readString();
                 struct.setGatewayIdIsSet(true);
@@ -4172,6 +5006,11 @@ public class UserProfileService {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.authzToken != null) {
+          oprot.writeFieldBegin(AUTHZ_TOKEN_FIELD_DESC);
+          struct.authzToken.write(oprot);
+          oprot.writeFieldEnd();
+        }
         if (struct.userId != null) {
           oprot.writeFieldBegin(USER_ID_FIELD_DESC);
           oprot.writeString(struct.userId);
@@ -4199,6 +5038,7 @@ public class UserProfileService {
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, deleteUserProfile_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
+        struct.authzToken.write(oprot);
         oprot.writeString(struct.userId);
         oprot.writeString(struct.gatewayId);
       }
@@ -4206,6 +5046,9 @@ public class UserProfileService {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, deleteUserProfile_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+        struct.authzToken.read(iprot);
+        struct.setAuthzTokenIsSet(true);
         struct.userId = iprot.readString();
         struct.setUserIdIsSet(true);
         struct.gatewayId = iprot.readString();
@@ -4219,7 +5062,8 @@ public class UserProfileService {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("deleteUserProfile_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)0);
-    private static final org.apache.thrift.protocol.TField USER_PROFILE_EXCEPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("userProfileException", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField UPE_FIELD_DESC = new org.apache.thrift.protocol.TField("upe", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField AE_FIELD_DESC = new org.apache.thrift.protocol.TField("ae", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -4228,12 +5072,14 @@ public class UserProfileService {
     }
 
     public boolean success; // required
-    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException; // required
+    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe; // required
+    public org.apache.airavata.model.error.AuthorizationException ae; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
-      USER_PROFILE_EXCEPTION((short)1, "userProfileException");
+      UPE((short)1, "upe"),
+      AE((short)2, "ae");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -4250,8 +5096,10 @@ public class UserProfileService {
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
-          case 1: // USER_PROFILE_EXCEPTION
-            return USER_PROFILE_EXCEPTION;
+          case 1: // UPE
+            return UPE;
+          case 2: // AE
+            return AE;
           default:
             return null;
         }
@@ -4299,7 +5147,9 @@ public class UserProfileService {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
-      tmpMap.put(_Fields.USER_PROFILE_EXCEPTION, new org.apache.thrift.meta_data.FieldMetaData("userProfileException", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+      tmpMap.put(_Fields.UPE, new org.apache.thrift.meta_data.FieldMetaData("upe", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.AE, new org.apache.thrift.meta_data.FieldMetaData("ae", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(deleteUserProfile_result.class, metaDataMap);
@@ -4310,12 +5160,14 @@ public class UserProfileService {
 
     public deleteUserProfile_result(
       boolean success,
-      org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException)
+      org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe,
+      org.apache.airavata.model.error.AuthorizationException ae)
     {
       this();
       this.success = success;
       setSuccessIsSet(true);
-      this.userProfileException = userProfileException;
+      this.upe = upe;
+      this.ae = ae;
     }
 
     /**
@@ -4324,8 +5176,11 @@ public class UserProfileService {
     public deleteUserProfile_result(deleteUserProfile_result other) {
       __isset_bitfield = other.__isset_bitfield;
       this.success = other.success;
-      if (other.isSetUserProfileException()) {
-        this.userProfileException = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException(other.userProfileException);
+      if (other.isSetUpe()) {
+        this.upe = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException(other.upe);
+      }
+      if (other.isSetAe()) {
+        this.ae = new org.apache.airavata.model.error.AuthorizationException(other.ae);
       }
     }
 
@@ -4337,7 +5192,8 @@ public class UserProfileService {
     public void clear() {
       setSuccessIsSet(false);
       this.success = false;
-      this.userProfileException = null;
+      this.upe = null;
+      this.ae = null;
     }
 
     public boolean isSuccess() {
@@ -4363,27 +5219,51 @@ public class UserProfileService {
       __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SUCCESS_ISSET_ID, value);
     }
 
-    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException getUserProfileException() {
-      return this.userProfileException;
+    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException getUpe() {
+      return this.upe;
     }
 
-    public deleteUserProfile_result setUserProfileException(org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException) {
-      this.userProfileException = userProfileException;
+    public deleteUserProfile_result setUpe(org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe) {
+      this.upe = upe;
       return this;
     }
 
-    public void unsetUserProfileException() {
-      this.userProfileException = null;
+    public void unsetUpe() {
+      this.upe = null;
     }
 
-    /** Returns true if field userProfileException is set (has been assigned a value) and false otherwise */
-    public boolean isSetUserProfileException() {
-      return this.userProfileException != null;
+    /** Returns true if field upe is set (has been assigned a value) and false otherwise */
+    public boolean isSetUpe() {
+      return this.upe != null;
     }
 
-    public void setUserProfileExceptionIsSet(boolean value) {
+    public void setUpeIsSet(boolean value) {
       if (!value) {
-        this.userProfileException = null;
+        this.upe = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AuthorizationException getAe() {
+      return this.ae;
+    }
+
+    public deleteUserProfile_result setAe(org.apache.airavata.model.error.AuthorizationException ae) {
+      this.ae = ae;
+      return this;
+    }
+
+    public void unsetAe() {
+      this.ae = null;
+    }
+
+    /** Returns true if field ae is set (has been assigned a value) and false otherwise */
+    public boolean isSetAe() {
+      return this.ae != null;
+    }
+
+    public void setAeIsSet(boolean value) {
+      if (!value) {
+        this.ae = null;
       }
     }
 
@@ -4397,11 +5277,19 @@ public class UserProfileService {
         }
         break;
 
-      case USER_PROFILE_EXCEPTION:
+      case UPE:
         if (value == null) {
-          unsetUserProfileException();
+          unsetUpe();
         } else {
-          setUserProfileException((org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException)value);
+          setUpe((org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException)value);
+        }
+        break;
+
+      case AE:
+        if (value == null) {
+          unsetAe();
+        } else {
+          setAe((org.apache.airavata.model.error.AuthorizationException)value);
         }
         break;
 
@@ -4413,8 +5301,11 @@ public class UserProfileService {
       case SUCCESS:
         return isSuccess();
 
-      case USER_PROFILE_EXCEPTION:
-        return getUserProfileException();
+      case UPE:
+        return getUpe();
+
+      case AE:
+        return getAe();
 
       }
       throw new IllegalStateException();
@@ -4429,8 +5320,10 @@ public class UserProfileService {
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
-      case USER_PROFILE_EXCEPTION:
-        return isSetUserProfileException();
+      case UPE:
+        return isSetUpe();
+      case AE:
+        return isSetAe();
       }
       throw new IllegalStateException();
     }
@@ -4457,12 +5350,21 @@ public class UserProfileService {
           return false;
       }
 
-      boolean this_present_userProfileException = true && this.isSetUserProfileException();
-      boolean that_present_userProfileException = true && that.isSetUserProfileException();
-      if (this_present_userProfileException || that_present_userProfileException) {
-        if (!(this_present_userProfileException && that_present_userProfileException))
+      boolean this_present_upe = true && this.isSetUpe();
+      boolean that_present_upe = true && that.isSetUpe();
+      if (this_present_upe || that_present_upe) {
+        if (!(this_present_upe && that_present_upe))
           return false;
-        if (!this.userProfileException.equals(that.userProfileException))
+        if (!this.upe.equals(that.upe))
+          return false;
+      }
+
+      boolean this_present_ae = true && this.isSetAe();
+      boolean that_present_ae = true && that.isSetAe();
+      if (this_present_ae || that_present_ae) {
+        if (!(this_present_ae && that_present_ae))
+          return false;
+        if (!this.ae.equals(that.ae))
           return false;
       }
 
@@ -4478,10 +5380,15 @@ public class UserProfileService {
       if (present_success)
         list.add(success);
 
-      boolean present_userProfileException = true && (isSetUserProfileException());
-      list.add(present_userProfileException);
-      if (present_userProfileException)
-        list.add(userProfileException);
+      boolean present_upe = true && (isSetUpe());
+      list.add(present_upe);
+      if (present_upe)
+        list.add(upe);
+
+      boolean present_ae = true && (isSetAe());
+      list.add(present_ae);
+      if (present_ae)
+        list.add(ae);
 
       return list.hashCode();
     }
@@ -4504,12 +5411,22 @@ public class UserProfileService {
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetUserProfileException()).compareTo(other.isSetUserProfileException());
+      lastComparison = Boolean.valueOf(isSetUpe()).compareTo(other.isSetUpe());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetUserProfileException()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userProfileException, other.userProfileException);
+      if (isSetUpe()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.upe, other.upe);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAe()).compareTo(other.isSetAe());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAe()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ae, other.ae);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -4538,11 +5455,19 @@ public class UserProfileService {
       sb.append(this.success);
       first = false;
       if (!first) sb.append(", ");
-      sb.append("userProfileException:");
-      if (this.userProfileException == null) {
+      sb.append("upe:");
+      if (this.upe == null) {
         sb.append("null");
       } else {
-        sb.append(this.userProfileException);
+        sb.append(this.upe);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ae:");
+      if (this.ae == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ae);
       }
       first = false;
       sb.append(")");
@@ -4598,11 +5523,20 @@ public class UserProfileService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 1: // USER_PROFILE_EXCEPTION
+            case 1: // UPE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.userProfileException = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
-                struct.userProfileException.read(iprot);
-                struct.setUserProfileExceptionIsSet(true);
+                struct.upe = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
+                struct.upe.read(iprot);
+                struct.setUpeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // AE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+                struct.ae.read(iprot);
+                struct.setAeIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -4627,9 +5561,14 @@ public class UserProfileService {
           oprot.writeBool(struct.success);
           oprot.writeFieldEnd();
         }
-        if (struct.userProfileException != null) {
-          oprot.writeFieldBegin(USER_PROFILE_EXCEPTION_FIELD_DESC);
-          struct.userProfileException.write(oprot);
+        if (struct.upe != null) {
+          oprot.writeFieldBegin(UPE_FIELD_DESC);
+          struct.upe.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ae != null) {
+          oprot.writeFieldBegin(AE_FIELD_DESC);
+          struct.ae.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -4653,30 +5592,41 @@ public class UserProfileService {
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        if (struct.isSetUserProfileException()) {
+        if (struct.isSetUpe()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetAe()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetSuccess()) {
           oprot.writeBool(struct.success);
         }
-        if (struct.isSetUserProfileException()) {
-          struct.userProfileException.write(oprot);
+        if (struct.isSetUpe()) {
+          struct.upe.write(oprot);
+        }
+        if (struct.isSetAe()) {
+          struct.ae.write(oprot);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, deleteUserProfile_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.success = iprot.readBool();
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.userProfileException = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
-          struct.userProfileException.read(iprot);
-          struct.setUserProfileExceptionIsSet(true);
+          struct.upe = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
+          struct.upe.read(iprot);
+          struct.setUpeIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+          struct.ae.read(iprot);
+          struct.setAeIsSet(true);
         }
       }
     }
@@ -4686,9 +5636,10 @@ public class UserProfileService {
   public static class getAllUserProfilesInGateway_args implements org.apache.thrift.TBase<getAllUserProfilesInGateway_args, getAllUserProfilesInGateway_args._Fields>, java.io.Serializable, Cloneable, Comparable<getAllUserProfilesInGateway_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getAllUserProfilesInGateway_args");
 
-    private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)1);
-    private static final org.apache.thrift.protocol.TField OFFSET_FIELD_DESC = new org.apache.thrift.protocol.TField("offset", org.apache.thrift.protocol.TType.I32, (short)2);
-    private static final org.apache.thrift.protocol.TField LIMIT_FIELD_DESC = new org.apache.thrift.protocol.TField("limit", org.apache.thrift.protocol.TType.I32, (short)3);
+    private static final org.apache.thrift.protocol.TField AUTHZ_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("authzToken", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField OFFSET_FIELD_DESC = new org.apache.thrift.protocol.TField("offset", org.apache.thrift.protocol.TType.I32, (short)3);
+    private static final org.apache.thrift.protocol.TField LIMIT_FIELD_DESC = new org.apache.thrift.protocol.TField("limit", org.apache.thrift.protocol.TType.I32, (short)4);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -4696,15 +5647,17 @@ public class UserProfileService {
       schemes.put(TupleScheme.class, new getAllUserProfilesInGateway_argsTupleSchemeFactory());
     }
 
+    public org.apache.airavata.model.security.AuthzToken authzToken; // required
     public String gatewayId; // required
     public int offset; // required
     public int limit; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      GATEWAY_ID((short)1, "gatewayId"),
-      OFFSET((short)2, "offset"),
-      LIMIT((short)3, "limit");
+      AUTHZ_TOKEN((short)1, "authzToken"),
+      GATEWAY_ID((short)2, "gatewayId"),
+      OFFSET((short)3, "offset"),
+      LIMIT((short)4, "limit");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -4719,11 +5672,13 @@ public class UserProfileService {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // GATEWAY_ID
+          case 1: // AUTHZ_TOKEN
+            return AUTHZ_TOKEN;
+          case 2: // GATEWAY_ID
             return GATEWAY_ID;
-          case 2: // OFFSET
+          case 3: // OFFSET
             return OFFSET;
-          case 3: // LIMIT
+          case 4: // LIMIT
             return LIMIT;
           default:
             return null;
@@ -4771,6 +5726,8 @@ public class UserProfileService {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.AUTHZ_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("authzToken", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.security.AuthzToken.class)));
       tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.OFFSET, new org.apache.thrift.meta_data.FieldMetaData("offset", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -4785,11 +5742,13 @@ public class UserProfileService {
     }
 
     public getAllUserProfilesInGateway_args(
+      org.apache.airavata.model.security.AuthzToken authzToken,
       String gatewayId,
       int offset,
       int limit)
     {
       this();
+      this.authzToken = authzToken;
       this.gatewayId = gatewayId;
       this.offset = offset;
       setOffsetIsSet(true);
@@ -4802,6 +5761,9 @@ public class UserProfileService {
      */
     public getAllUserProfilesInGateway_args(getAllUserProfilesInGateway_args other) {
       __isset_bitfield = other.__isset_bitfield;
+      if (other.isSetAuthzToken()) {
+        this.authzToken = new org.apache.airavata.model.security.AuthzToken(other.authzToken);
+      }
       if (other.isSetGatewayId()) {
         this.gatewayId = other.gatewayId;
       }
@@ -4815,11 +5777,36 @@ public class UserProfileService {
 
     @Override
     public void clear() {
+      this.authzToken = null;
       this.gatewayId = null;
       setOffsetIsSet(false);
       this.offset = 0;
       setLimitIsSet(false);
       this.limit = 0;
+    }
+
+    public org.apache.airavata.model.security.AuthzToken getAuthzToken() {
+      return this.authzToken;
+    }
+
+    public getAllUserProfilesInGateway_args setAuthzToken(org.apache.airavata.model.security.AuthzToken authzToken) {
+      this.authzToken = authzToken;
+      return this;
+    }
+
+    public void unsetAuthzToken() {
+      this.authzToken = null;
+    }
+
+    /** Returns true if field authzToken is set (has been assigned a value) and false otherwise */
+    public boolean isSetAuthzToken() {
+      return this.authzToken != null;
+    }
+
+    public void setAuthzTokenIsSet(boolean value) {
+      if (!value) {
+        this.authzToken = null;
+      }
     }
 
     public String getGatewayId() {
@@ -4894,6 +5881,14 @@ public class UserProfileService {
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case AUTHZ_TOKEN:
+        if (value == null) {
+          unsetAuthzToken();
+        } else {
+          setAuthzToken((org.apache.airavata.model.security.AuthzToken)value);
+        }
+        break;
+
       case GATEWAY_ID:
         if (value == null) {
           unsetGatewayId();
@@ -4923,6 +5918,9 @@ public class UserProfileService {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case AUTHZ_TOKEN:
+        return getAuthzToken();
+
       case GATEWAY_ID:
         return getGatewayId();
 
@@ -4943,6 +5941,8 @@ public class UserProfileService {
       }
 
       switch (field) {
+      case AUTHZ_TOKEN:
+        return isSetAuthzToken();
       case GATEWAY_ID:
         return isSetGatewayId();
       case OFFSET:
@@ -4965,6 +5965,15 @@ public class UserProfileService {
     public boolean equals(getAllUserProfilesInGateway_args that) {
       if (that == null)
         return false;
+
+      boolean this_present_authzToken = true && this.isSetAuthzToken();
+      boolean that_present_authzToken = true && that.isSetAuthzToken();
+      if (this_present_authzToken || that_present_authzToken) {
+        if (!(this_present_authzToken && that_present_authzToken))
+          return false;
+        if (!this.authzToken.equals(that.authzToken))
+          return false;
+      }
 
       boolean this_present_gatewayId = true && this.isSetGatewayId();
       boolean that_present_gatewayId = true && that.isSetGatewayId();
@@ -5000,6 +6009,11 @@ public class UserProfileService {
     public int hashCode() {
       List<Object> list = new ArrayList<Object>();
 
+      boolean present_authzToken = true && (isSetAuthzToken());
+      list.add(present_authzToken);
+      if (present_authzToken)
+        list.add(authzToken);
+
       boolean present_gatewayId = true && (isSetGatewayId());
       list.add(present_gatewayId);
       if (present_gatewayId)
@@ -5026,6 +6040,16 @@ public class UserProfileService {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetAuthzToken()).compareTo(other.isSetAuthzToken());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAuthzToken()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authzToken, other.authzToken);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetGatewayId()).compareTo(other.isSetGatewayId());
       if (lastComparison != 0) {
         return lastComparison;
@@ -5076,6 +6100,14 @@ public class UserProfileService {
       StringBuilder sb = new StringBuilder("getAllUserProfilesInGateway_args(");
       boolean first = true;
 
+      sb.append("authzToken:");
+      if (this.authzToken == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.authzToken);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("gatewayId:");
       if (this.gatewayId == null) {
         sb.append("null");
@@ -5097,12 +6129,18 @@ public class UserProfileService {
 
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
+      if (authzToken == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'authzToken' was not present! Struct: " + toString());
+      }
       if (gatewayId == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' was not present! Struct: " + toString());
       }
       // alas, we cannot check 'offset' because it's a primitive and you chose the non-beans generator.
       // alas, we cannot check 'limit' because it's a primitive and you chose the non-beans generator.
       // check for sub-struct validity
+      if (authzToken != null) {
+        authzToken.validate();
+      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -5141,7 +6179,16 @@ public class UserProfileService {
             break;
           }
           switch (schemeField.id) {
-            case 1: // GATEWAY_ID
+            case 1: // AUTHZ_TOKEN
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+                struct.authzToken.read(iprot);
+                struct.setAuthzTokenIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // GATEWAY_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.gatewayId = iprot.readString();
                 struct.setGatewayIdIsSet(true);
@@ -5149,7 +6196,7 @@ public class UserProfileService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 2: // OFFSET
+            case 3: // OFFSET
               if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
                 struct.offset = iprot.readI32();
                 struct.setOffsetIsSet(true);
@@ -5157,7 +6204,7 @@ public class UserProfileService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 3: // LIMIT
+            case 4: // LIMIT
               if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
                 struct.limit = iprot.readI32();
                 struct.setLimitIsSet(true);
@@ -5186,6 +6233,11 @@ public class UserProfileService {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.authzToken != null) {
+          oprot.writeFieldBegin(AUTHZ_TOKEN_FIELD_DESC);
+          struct.authzToken.write(oprot);
+          oprot.writeFieldEnd();
+        }
         if (struct.gatewayId != null) {
           oprot.writeFieldBegin(GATEWAY_ID_FIELD_DESC);
           oprot.writeString(struct.gatewayId);
@@ -5214,6 +6266,7 @@ public class UserProfileService {
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, getAllUserProfilesInGateway_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
+        struct.authzToken.write(oprot);
         oprot.writeString(struct.gatewayId);
         oprot.writeI32(struct.offset);
         oprot.writeI32(struct.limit);
@@ -5222,6 +6275,9 @@ public class UserProfileService {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, getAllUserProfilesInGateway_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+        struct.authzToken.read(iprot);
+        struct.setAuthzTokenIsSet(true);
         struct.gatewayId = iprot.readString();
         struct.setGatewayIdIsSet(true);
         struct.offset = iprot.readI32();
@@ -5237,7 +6293,8 @@ public class UserProfileService {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getAllUserProfilesInGateway_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.LIST, (short)0);
-    private static final org.apache.thrift.protocol.TField USER_PROFILE_EXCEPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("userProfileException", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField UPE_FIELD_DESC = new org.apache.thrift.protocol.TField("upe", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField AE_FIELD_DESC = new org.apache.thrift.protocol.TField("ae", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -5246,12 +6303,14 @@ public class UserProfileService {
     }
 
     public List<org.apache.airavata.model.user.UserProfile> success; // required
-    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException; // required
+    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe; // required
+    public org.apache.airavata.model.error.AuthorizationException ae; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
-      USER_PROFILE_EXCEPTION((short)1, "userProfileException");
+      UPE((short)1, "upe"),
+      AE((short)2, "ae");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -5268,8 +6327,10 @@ public class UserProfileService {
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
-          case 1: // USER_PROFILE_EXCEPTION
-            return USER_PROFILE_EXCEPTION;
+          case 1: // UPE
+            return UPE;
+          case 2: // AE
+            return AE;
           default:
             return null;
         }
@@ -5316,7 +6377,9 @@ public class UserProfileService {
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
               new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.user.UserProfile.class))));
-      tmpMap.put(_Fields.USER_PROFILE_EXCEPTION, new org.apache.thrift.meta_data.FieldMetaData("userProfileException", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+      tmpMap.put(_Fields.UPE, new org.apache.thrift.meta_data.FieldMetaData("upe", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.AE, new org.apache.thrift.meta_data.FieldMetaData("ae", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getAllUserProfilesInGateway_result.class, metaDataMap);
@@ -5327,11 +6390,13 @@ public class UserProfileService {
 
     public getAllUserProfilesInGateway_result(
       List<org.apache.airavata.model.user.UserProfile> success,
-      org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException)
+      org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe,
+      org.apache.airavata.model.error.AuthorizationException ae)
     {
       this();
       this.success = success;
-      this.userProfileException = userProfileException;
+      this.upe = upe;
+      this.ae = ae;
     }
 
     /**
@@ -5345,8 +6410,11 @@ public class UserProfileService {
         }
         this.success = __this__success;
       }
-      if (other.isSetUserProfileException()) {
-        this.userProfileException = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException(other.userProfileException);
+      if (other.isSetUpe()) {
+        this.upe = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException(other.upe);
+      }
+      if (other.isSetAe()) {
+        this.ae = new org.apache.airavata.model.error.AuthorizationException(other.ae);
       }
     }
 
@@ -5357,7 +6425,8 @@ public class UserProfileService {
     @Override
     public void clear() {
       this.success = null;
-      this.userProfileException = null;
+      this.upe = null;
+      this.ae = null;
     }
 
     public int getSuccessSize() {
@@ -5399,27 +6468,51 @@ public class UserProfileService {
       }
     }
 
-    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException getUserProfileException() {
-      return this.userProfileException;
+    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException getUpe() {
+      return this.upe;
     }
 
-    public getAllUserProfilesInGateway_result setUserProfileException(org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException) {
-      this.userProfileException = userProfileException;
+    public getAllUserProfilesInGateway_result setUpe(org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe) {
+      this.upe = upe;
       return this;
     }
 
-    public void unsetUserProfileException() {
-      this.userProfileException = null;
+    public void unsetUpe() {
+      this.upe = null;
     }
 
-    /** Returns true if field userProfileException is set (has been assigned a value) and false otherwise */
-    public boolean isSetUserProfileException() {
-      return this.userProfileException != null;
+    /** Returns true if field upe is set (has been assigned a value) and false otherwise */
+    public boolean isSetUpe() {
+      return this.upe != null;
     }
 
-    public void setUserProfileExceptionIsSet(boolean value) {
+    public void setUpeIsSet(boolean value) {
       if (!value) {
-        this.userProfileException = null;
+        this.upe = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AuthorizationException getAe() {
+      return this.ae;
+    }
+
+    public getAllUserProfilesInGateway_result setAe(org.apache.airavata.model.error.AuthorizationException ae) {
+      this.ae = ae;
+      return this;
+    }
+
+    public void unsetAe() {
+      this.ae = null;
+    }
+
+    /** Returns true if field ae is set (has been assigned a value) and false otherwise */
+    public boolean isSetAe() {
+      return this.ae != null;
+    }
+
+    public void setAeIsSet(boolean value) {
+      if (!value) {
+        this.ae = null;
       }
     }
 
@@ -5433,11 +6526,19 @@ public class UserProfileService {
         }
         break;
 
-      case USER_PROFILE_EXCEPTION:
+      case UPE:
         if (value == null) {
-          unsetUserProfileException();
+          unsetUpe();
         } else {
-          setUserProfileException((org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException)value);
+          setUpe((org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException)value);
+        }
+        break;
+
+      case AE:
+        if (value == null) {
+          unsetAe();
+        } else {
+          setAe((org.apache.airavata.model.error.AuthorizationException)value);
         }
         break;
 
@@ -5449,8 +6550,11 @@ public class UserProfileService {
       case SUCCESS:
         return getSuccess();
 
-      case USER_PROFILE_EXCEPTION:
-        return getUserProfileException();
+      case UPE:
+        return getUpe();
+
+      case AE:
+        return getAe();
 
       }
       throw new IllegalStateException();
@@ -5465,8 +6569,10 @@ public class UserProfileService {
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
-      case USER_PROFILE_EXCEPTION:
-        return isSetUserProfileException();
+      case UPE:
+        return isSetUpe();
+      case AE:
+        return isSetAe();
       }
       throw new IllegalStateException();
     }
@@ -5493,12 +6599,21 @@ public class UserProfileService {
           return false;
       }
 
-      boolean this_present_userProfileException = true && this.isSetUserProfileException();
-      boolean that_present_userProfileException = true && that.isSetUserProfileException();
-      if (this_present_userProfileException || that_present_userProfileException) {
-        if (!(this_present_userProfileException && that_present_userProfileException))
+      boolean this_present_upe = true && this.isSetUpe();
+      boolean that_present_upe = true && that.isSetUpe();
+      if (this_present_upe || that_present_upe) {
+        if (!(this_present_upe && that_present_upe))
           return false;
-        if (!this.userProfileException.equals(that.userProfileException))
+        if (!this.upe.equals(that.upe))
+          return false;
+      }
+
+      boolean this_present_ae = true && this.isSetAe();
+      boolean that_present_ae = true && that.isSetAe();
+      if (this_present_ae || that_present_ae) {
+        if (!(this_present_ae && that_present_ae))
+          return false;
+        if (!this.ae.equals(that.ae))
           return false;
       }
 
@@ -5514,10 +6629,15 @@ public class UserProfileService {
       if (present_success)
         list.add(success);
 
-      boolean present_userProfileException = true && (isSetUserProfileException());
-      list.add(present_userProfileException);
-      if (present_userProfileException)
-        list.add(userProfileException);
+      boolean present_upe = true && (isSetUpe());
+      list.add(present_upe);
+      if (present_upe)
+        list.add(upe);
+
+      boolean present_ae = true && (isSetAe());
+      list.add(present_ae);
+      if (present_ae)
+        list.add(ae);
 
       return list.hashCode();
     }
@@ -5540,12 +6660,22 @@ public class UserProfileService {
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetUserProfileException()).compareTo(other.isSetUserProfileException());
+      lastComparison = Boolean.valueOf(isSetUpe()).compareTo(other.isSetUpe());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetUserProfileException()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userProfileException, other.userProfileException);
+      if (isSetUpe()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.upe, other.upe);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAe()).compareTo(other.isSetAe());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAe()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ae, other.ae);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -5578,11 +6708,19 @@ public class UserProfileService {
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("userProfileException:");
-      if (this.userProfileException == null) {
+      sb.append("upe:");
+      if (this.upe == null) {
         sb.append("null");
       } else {
-        sb.append(this.userProfileException);
+        sb.append(this.upe);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ae:");
+      if (this.ae == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ae);
       }
       first = false;
       sb.append(")");
@@ -5647,11 +6785,20 @@ public class UserProfileService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 1: // USER_PROFILE_EXCEPTION
+            case 1: // UPE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.userProfileException = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
-                struct.userProfileException.read(iprot);
-                struct.setUserProfileExceptionIsSet(true);
+                struct.upe = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
+                struct.upe.read(iprot);
+                struct.setUpeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // AE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+                struct.ae.read(iprot);
+                struct.setAeIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -5683,9 +6830,14 @@ public class UserProfileService {
           }
           oprot.writeFieldEnd();
         }
-        if (struct.userProfileException != null) {
-          oprot.writeFieldBegin(USER_PROFILE_EXCEPTION_FIELD_DESC);
-          struct.userProfileException.write(oprot);
+        if (struct.upe != null) {
+          oprot.writeFieldBegin(UPE_FIELD_DESC);
+          struct.upe.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ae != null) {
+          oprot.writeFieldBegin(AE_FIELD_DESC);
+          struct.ae.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -5709,10 +6861,13 @@ public class UserProfileService {
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        if (struct.isSetUserProfileException()) {
+        if (struct.isSetUpe()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetAe()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
@@ -5722,15 +6877,18 @@ public class UserProfileService {
             }
           }
         }
-        if (struct.isSetUserProfileException()) {
-          struct.userProfileException.write(oprot);
+        if (struct.isSetUpe()) {
+          struct.upe.write(oprot);
+        }
+        if (struct.isSetAe()) {
+          struct.ae.write(oprot);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, getAllUserProfilesInGateway_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           {
             org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
@@ -5746,9 +6904,14 @@ public class UserProfileService {
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.userProfileException = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
-          struct.userProfileException.read(iprot);
-          struct.setUserProfileExceptionIsSet(true);
+          struct.upe = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
+          struct.upe.read(iprot);
+          struct.setUpeIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+          struct.ae.read(iprot);
+          struct.setAeIsSet(true);
         }
       }
     }
@@ -5758,8 +6921,9 @@ public class UserProfileService {
   public static class getUserProfileByName_args implements org.apache.thrift.TBase<getUserProfileByName_args, getUserProfileByName_args._Fields>, java.io.Serializable, Cloneable, Comparable<getUserProfileByName_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getUserProfileByName_args");
 
-    private static final org.apache.thrift.protocol.TField USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userName", org.apache.thrift.protocol.TType.STRING, (short)1);
-    private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField AUTHZ_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("authzToken", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userName", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)3);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -5767,13 +6931,15 @@ public class UserProfileService {
       schemes.put(TupleScheme.class, new getUserProfileByName_argsTupleSchemeFactory());
     }
 
+    public org.apache.airavata.model.security.AuthzToken authzToken; // required
     public String userName; // required
     public String gatewayId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      USER_NAME((short)1, "userName"),
-      GATEWAY_ID((short)2, "gatewayId");
+      AUTHZ_TOKEN((short)1, "authzToken"),
+      USER_NAME((short)2, "userName"),
+      GATEWAY_ID((short)3, "gatewayId");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -5788,9 +6954,11 @@ public class UserProfileService {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // USER_NAME
+          case 1: // AUTHZ_TOKEN
+            return AUTHZ_TOKEN;
+          case 2: // USER_NAME
             return USER_NAME;
-          case 2: // GATEWAY_ID
+          case 3: // GATEWAY_ID
             return GATEWAY_ID;
           default:
             return null;
@@ -5835,6 +7003,8 @@ public class UserProfileService {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.AUTHZ_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("authzToken", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.security.AuthzToken.class)));
       tmpMap.put(_Fields.USER_NAME, new org.apache.thrift.meta_data.FieldMetaData("userName", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -5847,10 +7017,12 @@ public class UserProfileService {
     }
 
     public getUserProfileByName_args(
+      org.apache.airavata.model.security.AuthzToken authzToken,
       String userName,
       String gatewayId)
     {
       this();
+      this.authzToken = authzToken;
       this.userName = userName;
       this.gatewayId = gatewayId;
     }
@@ -5859,6 +7031,9 @@ public class UserProfileService {
      * Performs a deep copy on <i>other</i>.
      */
     public getUserProfileByName_args(getUserProfileByName_args other) {
+      if (other.isSetAuthzToken()) {
+        this.authzToken = new org.apache.airavata.model.security.AuthzToken(other.authzToken);
+      }
       if (other.isSetUserName()) {
         this.userName = other.userName;
       }
@@ -5873,8 +7048,33 @@ public class UserProfileService {
 
     @Override
     public void clear() {
+      this.authzToken = null;
       this.userName = null;
       this.gatewayId = null;
+    }
+
+    public org.apache.airavata.model.security.AuthzToken getAuthzToken() {
+      return this.authzToken;
+    }
+
+    public getUserProfileByName_args setAuthzToken(org.apache.airavata.model.security.AuthzToken authzToken) {
+      this.authzToken = authzToken;
+      return this;
+    }
+
+    public void unsetAuthzToken() {
+      this.authzToken = null;
+    }
+
+    /** Returns true if field authzToken is set (has been assigned a value) and false otherwise */
+    public boolean isSetAuthzToken() {
+      return this.authzToken != null;
+    }
+
+    public void setAuthzTokenIsSet(boolean value) {
+      if (!value) {
+        this.authzToken = null;
+      }
     }
 
     public String getUserName() {
@@ -5927,6 +7127,14 @@ public class UserProfileService {
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case AUTHZ_TOKEN:
+        if (value == null) {
+          unsetAuthzToken();
+        } else {
+          setAuthzToken((org.apache.airavata.model.security.AuthzToken)value);
+        }
+        break;
+
       case USER_NAME:
         if (value == null) {
           unsetUserName();
@@ -5948,6 +7156,9 @@ public class UserProfileService {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case AUTHZ_TOKEN:
+        return getAuthzToken();
+
       case USER_NAME:
         return getUserName();
 
@@ -5965,6 +7176,8 @@ public class UserProfileService {
       }
 
       switch (field) {
+      case AUTHZ_TOKEN:
+        return isSetAuthzToken();
       case USER_NAME:
         return isSetUserName();
       case GATEWAY_ID:
@@ -5985,6 +7198,15 @@ public class UserProfileService {
     public boolean equals(getUserProfileByName_args that) {
       if (that == null)
         return false;
+
+      boolean this_present_authzToken = true && this.isSetAuthzToken();
+      boolean that_present_authzToken = true && that.isSetAuthzToken();
+      if (this_present_authzToken || that_present_authzToken) {
+        if (!(this_present_authzToken && that_present_authzToken))
+          return false;
+        if (!this.authzToken.equals(that.authzToken))
+          return false;
+      }
 
       boolean this_present_userName = true && this.isSetUserName();
       boolean that_present_userName = true && that.isSetUserName();
@@ -6011,6 +7233,11 @@ public class UserProfileService {
     public int hashCode() {
       List<Object> list = new ArrayList<Object>();
 
+      boolean present_authzToken = true && (isSetAuthzToken());
+      list.add(present_authzToken);
+      if (present_authzToken)
+        list.add(authzToken);
+
       boolean present_userName = true && (isSetUserName());
       list.add(present_userName);
       if (present_userName)
@@ -6032,6 +7259,16 @@ public class UserProfileService {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetAuthzToken()).compareTo(other.isSetAuthzToken());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAuthzToken()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authzToken, other.authzToken);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetUserName()).compareTo(other.isSetUserName());
       if (lastComparison != 0) {
         return lastComparison;
@@ -6072,6 +7309,14 @@ public class UserProfileService {
       StringBuilder sb = new StringBuilder("getUserProfileByName_args(");
       boolean first = true;
 
+      sb.append("authzToken:");
+      if (this.authzToken == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.authzToken);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("userName:");
       if (this.userName == null) {
         sb.append("null");
@@ -6093,6 +7338,9 @@ public class UserProfileService {
 
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
+      if (authzToken == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'authzToken' was not present! Struct: " + toString());
+      }
       if (userName == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'userName' was not present! Struct: " + toString());
       }
@@ -6100,6 +7348,9 @@ public class UserProfileService {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' was not present! Struct: " + toString());
       }
       // check for sub-struct validity
+      if (authzToken != null) {
+        authzToken.validate();
+      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -6136,7 +7387,16 @@ public class UserProfileService {
             break;
           }
           switch (schemeField.id) {
-            case 1: // USER_NAME
+            case 1: // AUTHZ_TOKEN
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+                struct.authzToken.read(iprot);
+                struct.setAuthzTokenIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // USER_NAME
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.userName = iprot.readString();
                 struct.setUserNameIsSet(true);
@@ -6144,7 +7404,7 @@ public class UserProfileService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 2: // GATEWAY_ID
+            case 3: // GATEWAY_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.gatewayId = iprot.readString();
                 struct.setGatewayIdIsSet(true);
@@ -6167,6 +7427,11 @@ public class UserProfileService {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.authzToken != null) {
+          oprot.writeFieldBegin(AUTHZ_TOKEN_FIELD_DESC);
+          struct.authzToken.write(oprot);
+          oprot.writeFieldEnd();
+        }
         if (struct.userName != null) {
           oprot.writeFieldBegin(USER_NAME_FIELD_DESC);
           oprot.writeString(struct.userName);
@@ -6194,6 +7459,7 @@ public class UserProfileService {
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, getUserProfileByName_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
+        struct.authzToken.write(oprot);
         oprot.writeString(struct.userName);
         oprot.writeString(struct.gatewayId);
       }
@@ -6201,6 +7467,9 @@ public class UserProfileService {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, getUserProfileByName_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+        struct.authzToken.read(iprot);
+        struct.setAuthzTokenIsSet(true);
         struct.userName = iprot.readString();
         struct.setUserNameIsSet(true);
         struct.gatewayId = iprot.readString();
@@ -6214,7 +7483,8 @@ public class UserProfileService {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getUserProfileByName_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
-    private static final org.apache.thrift.protocol.TField USER_PROFILE_EXCEPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("userProfileException", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField UPE_FIELD_DESC = new org.apache.thrift.protocol.TField("upe", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField AE_FIELD_DESC = new org.apache.thrift.protocol.TField("ae", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -6223,12 +7493,14 @@ public class UserProfileService {
     }
 
     public org.apache.airavata.model.user.UserProfile success; // required
-    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException; // required
+    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe; // required
+    public org.apache.airavata.model.error.AuthorizationException ae; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
-      USER_PROFILE_EXCEPTION((short)1, "userProfileException");
+      UPE((short)1, "upe"),
+      AE((short)2, "ae");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -6245,8 +7517,10 @@ public class UserProfileService {
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
-          case 1: // USER_PROFILE_EXCEPTION
-            return USER_PROFILE_EXCEPTION;
+          case 1: // UPE
+            return UPE;
+          case 2: // AE
+            return AE;
           default:
             return null;
         }
@@ -6292,7 +7566,9 @@ public class UserProfileService {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.user.UserProfile.class)));
-      tmpMap.put(_Fields.USER_PROFILE_EXCEPTION, new org.apache.thrift.meta_data.FieldMetaData("userProfileException", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+      tmpMap.put(_Fields.UPE, new org.apache.thrift.meta_data.FieldMetaData("upe", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.AE, new org.apache.thrift.meta_data.FieldMetaData("ae", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getUserProfileByName_result.class, metaDataMap);
@@ -6303,11 +7579,13 @@ public class UserProfileService {
 
     public getUserProfileByName_result(
       org.apache.airavata.model.user.UserProfile success,
-      org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException)
+      org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe,
+      org.apache.airavata.model.error.AuthorizationException ae)
     {
       this();
       this.success = success;
-      this.userProfileException = userProfileException;
+      this.upe = upe;
+      this.ae = ae;
     }
 
     /**
@@ -6317,8 +7595,11 @@ public class UserProfileService {
       if (other.isSetSuccess()) {
         this.success = new org.apache.airavata.model.user.UserProfile(other.success);
       }
-      if (other.isSetUserProfileException()) {
-        this.userProfileException = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException(other.userProfileException);
+      if (other.isSetUpe()) {
+        this.upe = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException(other.upe);
+      }
+      if (other.isSetAe()) {
+        this.ae = new org.apache.airavata.model.error.AuthorizationException(other.ae);
       }
     }
 
@@ -6329,7 +7610,8 @@ public class UserProfileService {
     @Override
     public void clear() {
       this.success = null;
-      this.userProfileException = null;
+      this.upe = null;
+      this.ae = null;
     }
 
     public org.apache.airavata.model.user.UserProfile getSuccess() {
@@ -6356,27 +7638,51 @@ public class UserProfileService {
       }
     }
 
-    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException getUserProfileException() {
-      return this.userProfileException;
+    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException getUpe() {
+      return this.upe;
     }
 
-    public getUserProfileByName_result setUserProfileException(org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException) {
-      this.userProfileException = userProfileException;
+    public getUserProfileByName_result setUpe(org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe) {
+      this.upe = upe;
       return this;
     }
 
-    public void unsetUserProfileException() {
-      this.userProfileException = null;
+    public void unsetUpe() {
+      this.upe = null;
     }
 
-    /** Returns true if field userProfileException is set (has been assigned a value) and false otherwise */
-    public boolean isSetUserProfileException() {
-      return this.userProfileException != null;
+    /** Returns true if field upe is set (has been assigned a value) and false otherwise */
+    public boolean isSetUpe() {
+      return this.upe != null;
     }
 
-    public void setUserProfileExceptionIsSet(boolean value) {
+    public void setUpeIsSet(boolean value) {
       if (!value) {
-        this.userProfileException = null;
+        this.upe = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AuthorizationException getAe() {
+      return this.ae;
+    }
+
+    public getUserProfileByName_result setAe(org.apache.airavata.model.error.AuthorizationException ae) {
+      this.ae = ae;
+      return this;
+    }
+
+    public void unsetAe() {
+      this.ae = null;
+    }
+
+    /** Returns true if field ae is set (has been assigned a value) and false otherwise */
+    public boolean isSetAe() {
+      return this.ae != null;
+    }
+
+    public void setAeIsSet(boolean value) {
+      if (!value) {
+        this.ae = null;
       }
     }
 
@@ -6390,11 +7696,19 @@ public class UserProfileService {
         }
         break;
 
-      case USER_PROFILE_EXCEPTION:
+      case UPE:
         if (value == null) {
-          unsetUserProfileException();
+          unsetUpe();
         } else {
-          setUserProfileException((org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException)value);
+          setUpe((org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException)value);
+        }
+        break;
+
+      case AE:
+        if (value == null) {
+          unsetAe();
+        } else {
+          setAe((org.apache.airavata.model.error.AuthorizationException)value);
         }
         break;
 
@@ -6406,8 +7720,11 @@ public class UserProfileService {
       case SUCCESS:
         return getSuccess();
 
-      case USER_PROFILE_EXCEPTION:
-        return getUserProfileException();
+      case UPE:
+        return getUpe();
+
+      case AE:
+        return getAe();
 
       }
       throw new IllegalStateException();
@@ -6422,8 +7739,10 @@ public class UserProfileService {
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
-      case USER_PROFILE_EXCEPTION:
-        return isSetUserProfileException();
+      case UPE:
+        return isSetUpe();
+      case AE:
+        return isSetAe();
       }
       throw new IllegalStateException();
     }
@@ -6450,12 +7769,21 @@ public class UserProfileService {
           return false;
       }
 
-      boolean this_present_userProfileException = true && this.isSetUserProfileException();
-      boolean that_present_userProfileException = true && that.isSetUserProfileException();
-      if (this_present_userProfileException || that_present_userProfileException) {
-        if (!(this_present_userProfileException && that_present_userProfileException))
+      boolean this_present_upe = true && this.isSetUpe();
+      boolean that_present_upe = true && that.isSetUpe();
+      if (this_present_upe || that_present_upe) {
+        if (!(this_present_upe && that_present_upe))
           return false;
-        if (!this.userProfileException.equals(that.userProfileException))
+        if (!this.upe.equals(that.upe))
+          return false;
+      }
+
+      boolean this_present_ae = true && this.isSetAe();
+      boolean that_present_ae = true && that.isSetAe();
+      if (this_present_ae || that_present_ae) {
+        if (!(this_present_ae && that_present_ae))
+          return false;
+        if (!this.ae.equals(that.ae))
           return false;
       }
 
@@ -6471,10 +7799,15 @@ public class UserProfileService {
       if (present_success)
         list.add(success);
 
-      boolean present_userProfileException = true && (isSetUserProfileException());
-      list.add(present_userProfileException);
-      if (present_userProfileException)
-        list.add(userProfileException);
+      boolean present_upe = true && (isSetUpe());
+      list.add(present_upe);
+      if (present_upe)
+        list.add(upe);
+
+      boolean present_ae = true && (isSetAe());
+      list.add(present_ae);
+      if (present_ae)
+        list.add(ae);
 
       return list.hashCode();
     }
@@ -6497,12 +7830,22 @@ public class UserProfileService {
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetUserProfileException()).compareTo(other.isSetUserProfileException());
+      lastComparison = Boolean.valueOf(isSetUpe()).compareTo(other.isSetUpe());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetUserProfileException()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userProfileException, other.userProfileException);
+      if (isSetUpe()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.upe, other.upe);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAe()).compareTo(other.isSetAe());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAe()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ae, other.ae);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -6535,11 +7878,19 @@ public class UserProfileService {
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("userProfileException:");
-      if (this.userProfileException == null) {
+      sb.append("upe:");
+      if (this.upe == null) {
         sb.append("null");
       } else {
-        sb.append(this.userProfileException);
+        sb.append(this.upe);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ae:");
+      if (this.ae == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ae);
       }
       first = false;
       sb.append(")");
@@ -6597,11 +7948,20 @@ public class UserProfileService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 1: // USER_PROFILE_EXCEPTION
+            case 1: // UPE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.userProfileException = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
-                struct.userProfileException.read(iprot);
-                struct.setUserProfileExceptionIsSet(true);
+                struct.upe = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
+                struct.upe.read(iprot);
+                struct.setUpeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // AE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+                struct.ae.read(iprot);
+                struct.setAeIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -6626,9 +7986,14 @@ public class UserProfileService {
           struct.success.write(oprot);
           oprot.writeFieldEnd();
         }
-        if (struct.userProfileException != null) {
-          oprot.writeFieldBegin(USER_PROFILE_EXCEPTION_FIELD_DESC);
-          struct.userProfileException.write(oprot);
+        if (struct.upe != null) {
+          oprot.writeFieldBegin(UPE_FIELD_DESC);
+          struct.upe.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ae != null) {
+          oprot.writeFieldBegin(AE_FIELD_DESC);
+          struct.ae.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -6652,31 +8017,42 @@ public class UserProfileService {
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        if (struct.isSetUserProfileException()) {
+        if (struct.isSetUpe()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetAe()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetSuccess()) {
           struct.success.write(oprot);
         }
-        if (struct.isSetUserProfileException()) {
-          struct.userProfileException.write(oprot);
+        if (struct.isSetUpe()) {
+          struct.upe.write(oprot);
+        }
+        if (struct.isSetAe()) {
+          struct.ae.write(oprot);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, getUserProfileByName_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.success = new org.apache.airavata.model.user.UserProfile();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.userProfileException = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
-          struct.userProfileException.read(iprot);
-          struct.setUserProfileExceptionIsSet(true);
+          struct.upe = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
+          struct.upe.read(iprot);
+          struct.setUpeIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+          struct.ae.read(iprot);
+          struct.setAeIsSet(true);
         }
       }
     }
@@ -6686,8 +8062,9 @@ public class UserProfileService {
   public static class doesUserExist_args implements org.apache.thrift.TBase<doesUserExist_args, doesUserExist_args._Fields>, java.io.Serializable, Cloneable, Comparable<doesUserExist_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("doesUserExist_args");
 
-    private static final org.apache.thrift.protocol.TField USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userName", org.apache.thrift.protocol.TType.STRING, (short)1);
-    private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField AUTHZ_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("authzToken", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userName", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)3);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -6695,13 +8072,15 @@ public class UserProfileService {
       schemes.put(TupleScheme.class, new doesUserExist_argsTupleSchemeFactory());
     }
 
+    public org.apache.airavata.model.security.AuthzToken authzToken; // required
     public String userName; // required
     public String gatewayId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      USER_NAME((short)1, "userName"),
-      GATEWAY_ID((short)2, "gatewayId");
+      AUTHZ_TOKEN((short)1, "authzToken"),
+      USER_NAME((short)2, "userName"),
+      GATEWAY_ID((short)3, "gatewayId");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -6716,9 +8095,11 @@ public class UserProfileService {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // USER_NAME
+          case 1: // AUTHZ_TOKEN
+            return AUTHZ_TOKEN;
+          case 2: // USER_NAME
             return USER_NAME;
-          case 2: // GATEWAY_ID
+          case 3: // GATEWAY_ID
             return GATEWAY_ID;
           default:
             return null;
@@ -6763,6 +8144,8 @@ public class UserProfileService {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.AUTHZ_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("authzToken", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.security.AuthzToken.class)));
       tmpMap.put(_Fields.USER_NAME, new org.apache.thrift.meta_data.FieldMetaData("userName", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -6775,10 +8158,12 @@ public class UserProfileService {
     }
 
     public doesUserExist_args(
+      org.apache.airavata.model.security.AuthzToken authzToken,
       String userName,
       String gatewayId)
     {
       this();
+      this.authzToken = authzToken;
       this.userName = userName;
       this.gatewayId = gatewayId;
     }
@@ -6787,6 +8172,9 @@ public class UserProfileService {
      * Performs a deep copy on <i>other</i>.
      */
     public doesUserExist_args(doesUserExist_args other) {
+      if (other.isSetAuthzToken()) {
+        this.authzToken = new org.apache.airavata.model.security.AuthzToken(other.authzToken);
+      }
       if (other.isSetUserName()) {
         this.userName = other.userName;
       }
@@ -6801,8 +8189,33 @@ public class UserProfileService {
 
     @Override
     public void clear() {
+      this.authzToken = null;
       this.userName = null;
       this.gatewayId = null;
+    }
+
+    public org.apache.airavata.model.security.AuthzToken getAuthzToken() {
+      return this.authzToken;
+    }
+
+    public doesUserExist_args setAuthzToken(org.apache.airavata.model.security.AuthzToken authzToken) {
+      this.authzToken = authzToken;
+      return this;
+    }
+
+    public void unsetAuthzToken() {
+      this.authzToken = null;
+    }
+
+    /** Returns true if field authzToken is set (has been assigned a value) and false otherwise */
+    public boolean isSetAuthzToken() {
+      return this.authzToken != null;
+    }
+
+    public void setAuthzTokenIsSet(boolean value) {
+      if (!value) {
+        this.authzToken = null;
+      }
     }
 
     public String getUserName() {
@@ -6855,6 +8268,14 @@ public class UserProfileService {
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case AUTHZ_TOKEN:
+        if (value == null) {
+          unsetAuthzToken();
+        } else {
+          setAuthzToken((org.apache.airavata.model.security.AuthzToken)value);
+        }
+        break;
+
       case USER_NAME:
         if (value == null) {
           unsetUserName();
@@ -6876,6 +8297,9 @@ public class UserProfileService {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case AUTHZ_TOKEN:
+        return getAuthzToken();
+
       case USER_NAME:
         return getUserName();
 
@@ -6893,6 +8317,8 @@ public class UserProfileService {
       }
 
       switch (field) {
+      case AUTHZ_TOKEN:
+        return isSetAuthzToken();
       case USER_NAME:
         return isSetUserName();
       case GATEWAY_ID:
@@ -6913,6 +8339,15 @@ public class UserProfileService {
     public boolean equals(doesUserExist_args that) {
       if (that == null)
         return false;
+
+      boolean this_present_authzToken = true && this.isSetAuthzToken();
+      boolean that_present_authzToken = true && that.isSetAuthzToken();
+      if (this_present_authzToken || that_present_authzToken) {
+        if (!(this_present_authzToken && that_present_authzToken))
+          return false;
+        if (!this.authzToken.equals(that.authzToken))
+          return false;
+      }
 
       boolean this_present_userName = true && this.isSetUserName();
       boolean that_present_userName = true && that.isSetUserName();
@@ -6939,6 +8374,11 @@ public class UserProfileService {
     public int hashCode() {
       List<Object> list = new ArrayList<Object>();
 
+      boolean present_authzToken = true && (isSetAuthzToken());
+      list.add(present_authzToken);
+      if (present_authzToken)
+        list.add(authzToken);
+
       boolean present_userName = true && (isSetUserName());
       list.add(present_userName);
       if (present_userName)
@@ -6960,6 +8400,16 @@ public class UserProfileService {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetAuthzToken()).compareTo(other.isSetAuthzToken());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAuthzToken()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authzToken, other.authzToken);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetUserName()).compareTo(other.isSetUserName());
       if (lastComparison != 0) {
         return lastComparison;
@@ -7000,6 +8450,14 @@ public class UserProfileService {
       StringBuilder sb = new StringBuilder("doesUserExist_args(");
       boolean first = true;
 
+      sb.append("authzToken:");
+      if (this.authzToken == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.authzToken);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("userName:");
       if (this.userName == null) {
         sb.append("null");
@@ -7021,6 +8479,9 @@ public class UserProfileService {
 
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
+      if (authzToken == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'authzToken' was not present! Struct: " + toString());
+      }
       if (userName == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'userName' was not present! Struct: " + toString());
       }
@@ -7028,6 +8489,9 @@ public class UserProfileService {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' was not present! Struct: " + toString());
       }
       // check for sub-struct validity
+      if (authzToken != null) {
+        authzToken.validate();
+      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -7064,7 +8528,16 @@ public class UserProfileService {
             break;
           }
           switch (schemeField.id) {
-            case 1: // USER_NAME
+            case 1: // AUTHZ_TOKEN
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+                struct.authzToken.read(iprot);
+                struct.setAuthzTokenIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // USER_NAME
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.userName = iprot.readString();
                 struct.setUserNameIsSet(true);
@@ -7072,7 +8545,7 @@ public class UserProfileService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 2: // GATEWAY_ID
+            case 3: // GATEWAY_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.gatewayId = iprot.readString();
                 struct.setGatewayIdIsSet(true);
@@ -7095,6 +8568,11 @@ public class UserProfileService {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.authzToken != null) {
+          oprot.writeFieldBegin(AUTHZ_TOKEN_FIELD_DESC);
+          struct.authzToken.write(oprot);
+          oprot.writeFieldEnd();
+        }
         if (struct.userName != null) {
           oprot.writeFieldBegin(USER_NAME_FIELD_DESC);
           oprot.writeString(struct.userName);
@@ -7122,6 +8600,7 @@ public class UserProfileService {
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, doesUserExist_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
+        struct.authzToken.write(oprot);
         oprot.writeString(struct.userName);
         oprot.writeString(struct.gatewayId);
       }
@@ -7129,6 +8608,9 @@ public class UserProfileService {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, doesUserExist_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+        struct.authzToken.read(iprot);
+        struct.setAuthzTokenIsSet(true);
         struct.userName = iprot.readString();
         struct.setUserNameIsSet(true);
         struct.gatewayId = iprot.readString();
@@ -7142,7 +8624,8 @@ public class UserProfileService {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("doesUserExist_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)0);
-    private static final org.apache.thrift.protocol.TField USER_PROFILE_EXCEPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("userProfileException", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField UPE_FIELD_DESC = new org.apache.thrift.protocol.TField("upe", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField AE_FIELD_DESC = new org.apache.thrift.protocol.TField("ae", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -7151,12 +8634,14 @@ public class UserProfileService {
     }
 
     public boolean success; // required
-    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException; // required
+    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe; // required
+    public org.apache.airavata.model.error.AuthorizationException ae; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
-      USER_PROFILE_EXCEPTION((short)1, "userProfileException");
+      UPE((short)1, "upe"),
+      AE((short)2, "ae");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -7173,8 +8658,10 @@ public class UserProfileService {
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
-          case 1: // USER_PROFILE_EXCEPTION
-            return USER_PROFILE_EXCEPTION;
+          case 1: // UPE
+            return UPE;
+          case 2: // AE
+            return AE;
           default:
             return null;
         }
@@ -7222,7 +8709,9 @@ public class UserProfileService {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
-      tmpMap.put(_Fields.USER_PROFILE_EXCEPTION, new org.apache.thrift.meta_data.FieldMetaData("userProfileException", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+      tmpMap.put(_Fields.UPE, new org.apache.thrift.meta_data.FieldMetaData("upe", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.AE, new org.apache.thrift.meta_data.FieldMetaData("ae", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(doesUserExist_result.class, metaDataMap);
@@ -7233,12 +8722,14 @@ public class UserProfileService {
 
     public doesUserExist_result(
       boolean success,
-      org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException)
+      org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe,
+      org.apache.airavata.model.error.AuthorizationException ae)
     {
       this();
       this.success = success;
       setSuccessIsSet(true);
-      this.userProfileException = userProfileException;
+      this.upe = upe;
+      this.ae = ae;
     }
 
     /**
@@ -7247,8 +8738,11 @@ public class UserProfileService {
     public doesUserExist_result(doesUserExist_result other) {
       __isset_bitfield = other.__isset_bitfield;
       this.success = other.success;
-      if (other.isSetUserProfileException()) {
-        this.userProfileException = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException(other.userProfileException);
+      if (other.isSetUpe()) {
+        this.upe = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException(other.upe);
+      }
+      if (other.isSetAe()) {
+        this.ae = new org.apache.airavata.model.error.AuthorizationException(other.ae);
       }
     }
 
@@ -7260,7 +8754,8 @@ public class UserProfileService {
     public void clear() {
       setSuccessIsSet(false);
       this.success = false;
-      this.userProfileException = null;
+      this.upe = null;
+      this.ae = null;
     }
 
     public boolean isSuccess() {
@@ -7286,27 +8781,51 @@ public class UserProfileService {
       __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SUCCESS_ISSET_ID, value);
     }
 
-    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException getUserProfileException() {
-      return this.userProfileException;
+    public org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException getUpe() {
+      return this.upe;
     }
 
-    public doesUserExist_result setUserProfileException(org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException userProfileException) {
-      this.userProfileException = userProfileException;
+    public doesUserExist_result setUpe(org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException upe) {
+      this.upe = upe;
       return this;
     }
 
-    public void unsetUserProfileException() {
-      this.userProfileException = null;
+    public void unsetUpe() {
+      this.upe = null;
     }
 
-    /** Returns true if field userProfileException is set (has been assigned a value) and false otherwise */
-    public boolean isSetUserProfileException() {
-      return this.userProfileException != null;
+    /** Returns true if field upe is set (has been assigned a value) and false otherwise */
+    public boolean isSetUpe() {
+      return this.upe != null;
     }
 
-    public void setUserProfileExceptionIsSet(boolean value) {
+    public void setUpeIsSet(boolean value) {
       if (!value) {
-        this.userProfileException = null;
+        this.upe = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AuthorizationException getAe() {
+      return this.ae;
+    }
+
+    public doesUserExist_result setAe(org.apache.airavata.model.error.AuthorizationException ae) {
+      this.ae = ae;
+      return this;
+    }
+
+    public void unsetAe() {
+      this.ae = null;
+    }
+
+    /** Returns true if field ae is set (has been assigned a value) and false otherwise */
+    public boolean isSetAe() {
+      return this.ae != null;
+    }
+
+    public void setAeIsSet(boolean value) {
+      if (!value) {
+        this.ae = null;
       }
     }
 
@@ -7320,11 +8839,19 @@ public class UserProfileService {
         }
         break;
 
-      case USER_PROFILE_EXCEPTION:
+      case UPE:
         if (value == null) {
-          unsetUserProfileException();
+          unsetUpe();
         } else {
-          setUserProfileException((org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException)value);
+          setUpe((org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException)value);
+        }
+        break;
+
+      case AE:
+        if (value == null) {
+          unsetAe();
+        } else {
+          setAe((org.apache.airavata.model.error.AuthorizationException)value);
         }
         break;
 
@@ -7336,8 +8863,11 @@ public class UserProfileService {
       case SUCCESS:
         return isSuccess();
 
-      case USER_PROFILE_EXCEPTION:
-        return getUserProfileException();
+      case UPE:
+        return getUpe();
+
+      case AE:
+        return getAe();
 
       }
       throw new IllegalStateException();
@@ -7352,8 +8882,10 @@ public class UserProfileService {
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
-      case USER_PROFILE_EXCEPTION:
-        return isSetUserProfileException();
+      case UPE:
+        return isSetUpe();
+      case AE:
+        return isSetAe();
       }
       throw new IllegalStateException();
     }
@@ -7380,12 +8912,21 @@ public class UserProfileService {
           return false;
       }
 
-      boolean this_present_userProfileException = true && this.isSetUserProfileException();
-      boolean that_present_userProfileException = true && that.isSetUserProfileException();
-      if (this_present_userProfileException || that_present_userProfileException) {
-        if (!(this_present_userProfileException && that_present_userProfileException))
+      boolean this_present_upe = true && this.isSetUpe();
+      boolean that_present_upe = true && that.isSetUpe();
+      if (this_present_upe || that_present_upe) {
+        if (!(this_present_upe && that_present_upe))
           return false;
-        if (!this.userProfileException.equals(that.userProfileException))
+        if (!this.upe.equals(that.upe))
+          return false;
+      }
+
+      boolean this_present_ae = true && this.isSetAe();
+      boolean that_present_ae = true && that.isSetAe();
+      if (this_present_ae || that_present_ae) {
+        if (!(this_present_ae && that_present_ae))
+          return false;
+        if (!this.ae.equals(that.ae))
           return false;
       }
 
@@ -7401,10 +8942,15 @@ public class UserProfileService {
       if (present_success)
         list.add(success);
 
-      boolean present_userProfileException = true && (isSetUserProfileException());
-      list.add(present_userProfileException);
-      if (present_userProfileException)
-        list.add(userProfileException);
+      boolean present_upe = true && (isSetUpe());
+      list.add(present_upe);
+      if (present_upe)
+        list.add(upe);
+
+      boolean present_ae = true && (isSetAe());
+      list.add(present_ae);
+      if (present_ae)
+        list.add(ae);
 
       return list.hashCode();
     }
@@ -7427,12 +8973,22 @@ public class UserProfileService {
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetUserProfileException()).compareTo(other.isSetUserProfileException());
+      lastComparison = Boolean.valueOf(isSetUpe()).compareTo(other.isSetUpe());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetUserProfileException()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userProfileException, other.userProfileException);
+      if (isSetUpe()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.upe, other.upe);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAe()).compareTo(other.isSetAe());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAe()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ae, other.ae);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -7461,11 +9017,19 @@ public class UserProfileService {
       sb.append(this.success);
       first = false;
       if (!first) sb.append(", ");
-      sb.append("userProfileException:");
-      if (this.userProfileException == null) {
+      sb.append("upe:");
+      if (this.upe == null) {
         sb.append("null");
       } else {
-        sb.append(this.userProfileException);
+        sb.append(this.upe);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ae:");
+      if (this.ae == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ae);
       }
       first = false;
       sb.append(")");
@@ -7521,11 +9085,20 @@ public class UserProfileService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 1: // USER_PROFILE_EXCEPTION
+            case 1: // UPE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.userProfileException = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
-                struct.userProfileException.read(iprot);
-                struct.setUserProfileExceptionIsSet(true);
+                struct.upe = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
+                struct.upe.read(iprot);
+                struct.setUpeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // AE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+                struct.ae.read(iprot);
+                struct.setAeIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -7550,9 +9123,14 @@ public class UserProfileService {
           oprot.writeBool(struct.success);
           oprot.writeFieldEnd();
         }
-        if (struct.userProfileException != null) {
-          oprot.writeFieldBegin(USER_PROFILE_EXCEPTION_FIELD_DESC);
-          struct.userProfileException.write(oprot);
+        if (struct.upe != null) {
+          oprot.writeFieldBegin(UPE_FIELD_DESC);
+          struct.upe.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ae != null) {
+          oprot.writeFieldBegin(AE_FIELD_DESC);
+          struct.ae.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -7576,30 +9154,41 @@ public class UserProfileService {
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        if (struct.isSetUserProfileException()) {
+        if (struct.isSetUpe()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetAe()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetSuccess()) {
           oprot.writeBool(struct.success);
         }
-        if (struct.isSetUserProfileException()) {
-          struct.userProfileException.write(oprot);
+        if (struct.isSetUpe()) {
+          struct.upe.write(oprot);
+        }
+        if (struct.isSetAe()) {
+          struct.ae.write(oprot);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, doesUserExist_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.success = iprot.readBool();
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.userProfileException = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
-          struct.userProfileException.read(iprot);
-          struct.setUserProfileExceptionIsSet(true);
+          struct.upe = new org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException();
+          struct.upe.read(iprot);
+          struct.setUpeIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+          struct.ae.read(iprot);
+          struct.setAeIsSet(true);
         }
       }
     }
