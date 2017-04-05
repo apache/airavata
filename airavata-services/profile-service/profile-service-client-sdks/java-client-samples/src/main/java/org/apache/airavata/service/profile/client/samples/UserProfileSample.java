@@ -1,5 +1,6 @@
 package org.apache.airavata.service.profile.client.samples;
 
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.*;
 import org.apache.airavata.model.workspace.User;
 import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
@@ -21,7 +22,8 @@ public class UserProfileSample {
     private static final Logger logger = LoggerFactory.getLogger(UserProfileSample.class);
     private static UserProfileService.Client userProfileClient;
     private static String testUserId = null;
-    private static String testGatewayId = "test-gateway-1830144881";
+    private static String testGatewayId = "test-gateway-465";
+    private static AuthzToken authzToken = new AuthzToken("empy_token");
 
     /**
      * Performs the following operations in sequence:
@@ -43,12 +45,12 @@ public class UserProfileSample {
             userProfileClient = ProfileServiceClientFactory.createUserProfileServiceClient(profileServiceServerHost, profileServiceServerPort);
 
             // test add-user-profile
-            testUserId = userProfileClient.addUserProfile(getUserProfile(null));
+            testUserId = userProfileClient.addUserProfile(authzToken, getUserProfile(null));
             assert (testUserId != null) : "User creation failed. Null userId returned!";
             System.out.println("User created with userId: " + testUserId);
 
             // test find-user-profile
-            UserProfile userProfile = userProfileClient.getUserProfileById(testUserId, testGatewayId);
+            UserProfile userProfile = userProfileClient.getUserProfileById(authzToken, testUserId, testGatewayId);
             assert (userProfile != null) : "Could not find user with userId: " + testUserId + ", and gatewayID: " + testGatewayId;
             System.out.println("UserProfile: " + userProfile);
 
@@ -56,12 +58,12 @@ public class UserProfileSample {
             userProfile = getUserProfile(testUserId);
             String newUserName = userProfile.getUserName().replaceAll("username", "username-updated");
             userProfile.setUserName(newUserName);
-            boolean updateSuccess = userProfileClient.updateUserProfile(userProfile);
+            boolean updateSuccess = userProfileClient.updateUserProfile(authzToken, userProfile);
             assert (updateSuccess) : "User update with new userName: [" + newUserName + "], Failed!";
             System.out.println("User update with new userName: [" + newUserName + "], Successful!");
 
             // test get-all-userprofiles
-            List<UserProfile> userProfileList = userProfileClient.getAllUserProfilesInGateway(testGatewayId, 0, 5);
+            List<UserProfile> userProfileList = userProfileClient.getAllUserProfilesInGateway(authzToken, testGatewayId, 0, 5);
             assert (userProfileList != null && !userProfileList.isEmpty()) : "Failed to retrieve users for gateway!";
             System.out.println("Printing userList retrieved..");
             for (UserProfile userProfile1 : userProfileList) {
@@ -69,17 +71,17 @@ public class UserProfileSample {
             }
 
             // test find-user-profile-by-name
-            userProfile = userProfileClient.getUserProfileByName(newUserName, testGatewayId);
+            userProfile = userProfileClient.getUserProfileByName(authzToken, newUserName, testGatewayId);
             assert (userProfile != null) : "Could not find user with userName: " + newUserName;
             System.out.println("UserProfile: " + userProfile);
 
             // test delete-user-profile
-            boolean deleteSuccess = userProfileClient.deleteUserProfile(testUserId, testGatewayId);
+            boolean deleteSuccess = userProfileClient.deleteUserProfile(authzToken, testUserId, testGatewayId);
             assert (deleteSuccess) : "Delete user failed for userId: " + testUserId;
             System.out.println("Successfully deleted user with userId: " + testUserId);
 
             // test-check-user-exist
-            boolean userExists = userProfileClient.doesUserExist(newUserName, testGatewayId);
+            boolean userExists = userProfileClient.doesUserExist(authzToken, newUserName, testGatewayId);
             assert (!userExists) : "User should not exist, but it does.";
             System.out.println("User was deleted, hence does not exist!");
             System.out.println("*** DONE ***");
