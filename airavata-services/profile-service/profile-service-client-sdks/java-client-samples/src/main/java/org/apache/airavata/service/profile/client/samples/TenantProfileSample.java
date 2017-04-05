@@ -1,5 +1,6 @@
 package org.apache.airavata.service.profile.client.samples;
 
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
@@ -17,6 +18,7 @@ public class TenantProfileSample {
     private static final Logger logger = LoggerFactory.getLogger(TenantProfileSample.class);
     private static TenantProfileService.Client tenantProfileClient;
     private static String testGatewayId = null;
+    private static AuthzToken authzToken = new AuthzToken("empy_token");
 
     public static void main(String[] args) throws Exception {
         try {
@@ -26,7 +28,7 @@ public class TenantProfileSample {
             tenantProfileClient = ProfileServiceClientFactory.createTenantProfileServiceClient(profileServiceServerHost, profileServiceServerPort);
 
             // test addGateway
-            testGatewayId = tenantProfileClient.addGateway(getGateway(null));
+            testGatewayId = tenantProfileClient.addGateway(authzToken, getGateway("465"));
             assert (testGatewayId != null) : "Gateway creation failed!";
             System.out.println("Gateway created with gatewayId: " + testGatewayId);
 
