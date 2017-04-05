@@ -45,7 +45,7 @@ gateway_data_store_resource_id: "149.165.156.11_b5f26430-14d5-4372-8a7e-39b125aa
 
 ## Portal related variables
 super_admin_portal: "false"
-admin_emails: "'sgg@iu.edu'"
+admin_emails: "['sgg@iu.edu']"
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
 ...

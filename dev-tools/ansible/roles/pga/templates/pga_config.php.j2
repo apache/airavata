@@ -186,18 +186,18 @@ return array(
         /**
          * Set the name of theme in use here
          */
-        'theme' => 'base',
+        'theme' => '{{ portal_theme }}',
 
         /**
          * Portal title
          */
-        'portal-title' => 'Airavata PHP Gateway',
+        'portal-title' => '{{ portal_title }}',
 
         /**
          * Email address of the portal admin. Portal admin well get email notifications for events
          * such as new user creation
          */
-        'admin-emails' => [{{ admin_emails }}],
+        'admin-emails' => {{ admin_emails }},
 
         /**
          * Email account that the portal should login to send emails
