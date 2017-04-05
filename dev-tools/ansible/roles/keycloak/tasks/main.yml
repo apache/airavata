@@ -1,0 +1,69 @@
+---
+# Download keycloak distribution
+- name: Download and unarchive keycloak
+  unarchive: src="{{ keycloak_downlaod_url }}"
+      dest="{{ user_home }}"
+      copy=no
+      owner="{{ user }}"
+      group="{{ group }}"
+
+# Setup Mysql database for keycloak
+- name: add database module to keycloak
+  command: mkdir {{user_home}}/{{ keycloak_install_dir }}/modules/system/layers/keycloak/org/mysql
+
+- name: add db folder structure to keycloak
+  command: mkdir {{user_home}}/{{ keycloak_install_dir }}/modules/system/layers/keycloak/org/mysql/main
+
+- name: Download and unarchive mysql jdbc driver
+  unarchive: src="{{ mysql_db_connector_download_url }}"
+      dest="{{ user_home }}"
+      copy=no
+      owner="{{ user }}"
+      group="{{ group }}"
+
+- name: move jdbc connector to keycloak module
+  command: mv {{user_home}}/{{keycloak_db_connector_name}}/{{keycloak_db_connector_name}}-bin.jar {{user_home}}/{{ keycloak_install_dir }}/modules/system/layers/keycloak/org/mysql/main/
+
+- name: copy jdbc module configuration file
+  template: >
+    src=module.j2
+    dest="{{user_home}}/{{ keycloak_install_dir }}/modules/system/layers/keycloak/org/mysql/main/module.xml"
+    owner="{{ user }}"
+    group="{{ group }}"
+    mode="u=rw,g=r,o=r"
+
+- name: copy configuration file
+  template: >
+    src=standalone-ha.xml.j2
+    dest="{{ user_home }}/{{ keycloak_install_dir }}/standalone/configuration/standalone-ha.xml"
+    owner="{{ user }}"
+    group="{{ group }}"
+    mode="u=rw,g=r,o=r"
+
+# setup init script for keycloak, starts the server after reboot
+- name: copy init script file
+  template: >
+    src=keycloak.j2
+    dest="/etc/init.d/keycloak"
+    owner="{{ user }}"
+    group="{{ group }}"
+    mode="u=rwx,g=r,o=r"
+  become: yes
+  become_user: root
+
+- name: add init script to chkconfig and startup on boot
+  command: chkconfig --level 345 keycloak on
+  become: yes
+  become_user: root
+
+#- name: open keycloak HTTP port
+#  firewalld: port=8080/tcp zone=public permanent=true state=enabled immediate=yes
+#  become: yes
+
+# start keycloak Identity server
+- name: start Keycloak server
+  service: name=keycloak state=restarted
+  become: yes
+  become_user: root
+
+...

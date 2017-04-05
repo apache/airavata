@@ -1,0 +1,7 @@
+---
+keycloak_version: "2.5.4.Final"
+keycloak_downlaod_url: "https://downloads.jboss.org/keycloak/{{keycloak_version}}/keycloak-{{keycloak_version}}.tar.gz"
+keycloak_install_dir: "keycloak-{{keycloak_version}}"
+keycloak_db_connector_name: "mysql-connector-java-5.1.41"
+mysql_db_connector_download_url: "https://dev.mysql.com/get/Downloads/Connector-J/{{keycloak_db_connector_name}}.tar.gz"
+...
