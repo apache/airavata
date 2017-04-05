@@ -105,3 +105,9 @@
   notify:
     - restart httpd
   when: vhost_ssl
+
+- name: copy pga user's SSH key for the gateway data store
+  authorized_key:
+    user: "{{user}}"
+    key: "{{ gateway_data_store_ssh_public_key }}"
+  when: gateway_data_store_ssh_public_key != ""
