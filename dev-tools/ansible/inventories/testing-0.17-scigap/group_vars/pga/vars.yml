@@ -46,7 +46,7 @@ gateway_data_store_resource_id: "js-170-103.jetstream-cloud.org_6497a464-3121-4b
 
 ## Portal related variables
 super_admin_portal: "true"
-admin_emails: "'sgg@iu.edu'"
+admin_emails: "['sgg@iu.edu']"
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
 ...

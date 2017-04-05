@@ -69,8 +69,16 @@
   template: src=pga_config.php.j2 dest="{{ doc_root_dir }}/app/config/pga_config.php"
   become: yes
 
+- name: Checkout the portal theme (if a custom theme is defined)
+  git:
+   repo: "{{ portal_theme_repo }}"
+   dest: "{{ doc_root_dir }}/public/themes/{{ portal_theme }}"
+   version: "master"
+   update: yes
+  when: portal_theme_repo != ""
+
 - name: give read permissions to doc root
-  file: path="{{ doc_root_dir }}" state=directory mode=0755 recurse=yes
+  file: path="{{ doc_root_dir }}" state=directory mode=a+rX recurse=yes
   become: yes
 
 - name: give write permissions to storage dir
