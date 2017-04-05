@@ -643,7 +643,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     @Override
     public boolean updateEntity(Entity entity) throws SharingRegistryException, TException {
         try{
-            //TODO Check for permission changes
+            //checks whether the entity is shared with anyone
+            entity.setShared((new UserGroupRepository()).isShared(entity.domainId, entity.entityId));
+
             entity.setUpdatedTime(System.currentTimeMillis());
             EntityPK entityPK = new EntityPK();
             entityPK.setDomainId(entity.domainId);
@@ -732,7 +734,14 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     @Override
     public boolean shareEntityWithUsers(String domainId, String entityId, List<String> userList, String permissionTypeId, boolean cascadePermission) throws SharingRegistryException, TException {
         try{
-            return shareEntity(domainId, entityId, userList, permissionTypeId, cascadePermission);
+            boolean result = shareEntity(domainId, entityId, userList, permissionTypeId, cascadePermission);
+            EntityPK entityPK = new EntityPK();
+            entityPK.setEntityId(entityId);
+            entityPK.setDomainId(domainId);
+            Entity entity = (new EntityRepository()).get(entityPK);
+            entity.setShared(true);
+            (new EntityRepository()).update(entity);
+            return result;
         }catch (SharingRegistryException ex) {
             logger.error(ex.getMessage(), ex);
             throw ex;
@@ -742,8 +751,16 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     @Override
     public boolean shareEntityWithGroups(String domainId, String entityId, List<String> groupList, String permissionTypeId, boolean cascadePermission) throws SharingRegistryException, TException {
         try{
-            return shareEntity(domainId, entityId, groupList, permissionTypeId, cascadePermission);
+            boolean result = shareEntity(domainId, entityId, groupList, permissionTypeId, cascadePermission);
+            EntityPK entityPK = new EntityPK();
+            entityPK.setEntityId(entityId);
+            entityPK.setDomainId(domainId);
+            Entity entity = (new EntityRepository()).get(entityPK);
+            entity.setShared(true);
+            (new EntityRepository()).update(entity);
+            return result;
         }catch (SharingRegistryException ex) {
+
             logger.error(ex.getMessage(), ex);
             throw ex;
         }
@@ -813,7 +830,14 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             if(permissionTypeId.equals((new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId))){
                 throw new SharingRegistryException(OWNER_PERMISSION_NAME + " permission cannot be assigned or removed");
             }
-            return revokeEntitySharing(domainId, entityId, userList, permissionTypeId);
+            boolean result = revokeEntitySharing(domainId, entityId, userList, permissionTypeId);
+            EntityPK entityPK = new EntityPK();
+            entityPK.setEntityId(entityId);
+            entityPK.setDomainId(domainId);
+            Entity entity = (new EntityRepository()).get(entityPK);
+            entity.setShared((new UserGroupRepository()).isShared(domainId, entityId));
+            (new EntityRepository()).update(entity);
+            return result;
         }catch (SharingRegistryException ex) {
             logger.error(ex.getMessage(), ex);
             throw ex;
@@ -827,7 +851,14 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             if(permissionTypeId.equals((new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId))){
                 throw new SharingRegistryException(OWNER_PERMISSION_NAME + " permission cannot be assigned or removed");
             }
-            return revokeEntitySharing(domainId, entityId, groupList, permissionTypeId);
+            boolean result = revokeEntitySharing(domainId, entityId, groupList, permissionTypeId);
+            EntityPK entityPK = new EntityPK();
+            entityPK.setEntityId(entityId);
+            entityPK.setDomainId(domainId);
+            Entity entity = (new EntityRepository()).get(entityPK);
+            entity.setShared((new UserGroupRepository()).isShared(domainId, entityId));
+            (new EntityRepository()).update(entity);
+            return result;
         }catch (SharingRegistryException ex) {
             logger.error(ex.getMessage(), ex);
             throw ex;
@@ -856,6 +887,8 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
                 throw new SharingRegistryException(OWNER_PERMISSION_NAME + " permission cannot be removed");
             }
 
+            SharingRepository sharingRepository = new SharingRepository();
+
             //revoking permission for the entity
             for(String groupId : groupOrUserList){
                 SharingPK sharingPK = new SharingPK();
@@ -865,7 +898,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
                 sharingPK.setInheritedParentId(entityId);
                 sharingPK.setDomainId(domainId);
 
-                (new SharingRepository()).delete(sharingPK);
+                sharingRepository.delete(sharingPK);
             }
 
             //revoking permission from inheritance
@@ -881,7 +914,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
                     sharingPK.setInheritedParentId(entityId);
                     sharingPK.setDomainId(domainId);
 
-                    (new SharingRepository()).delete(sharingPK);
+                    sharingRepository.delete(sharingPK);
                 }
             }
             return true;

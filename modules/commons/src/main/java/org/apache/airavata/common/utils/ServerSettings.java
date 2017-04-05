@@ -129,6 +129,10 @@ public class ServerSettings extends ApplicationSettings {
     public static final String USER_PROFILE_SERVER_HOST = "user.profile.server.host";
     public static final String USER_PROFILE_SERVER_PORT = "user.profile.server.port";
 
+    // Profile Service Constants
+    public static final String PROFILE_SERVICE_SERVER_HOST = "profile.service.server.host";
+    public static final String PROFILE_SERVICE_SERVER_PORT = "profile.service.server.port";
+
     /* Caching */
     private static final String SESSION_CACHE_ACCESS_TIME_OUT = "ssh.session.cache.access.timeout";
 
