@@ -279,6 +279,12 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
                 if (taskContext != null) {
                     process(jobStatusResult, taskContext);
                     processedMessages.add(message);
+
+                } else if (!jobStatusResult.isAuthoritative()
+                        && (new Date()).getTime() - message.getSentDate().getTime() > 1000 * 60 * 5) {
+                    //marking old custom Airavata emails as read
+                    processedMessages.add(message);
+                    log.info("Marking old Airavata custom emails as read, message subject --> {}", message.getSubject());
                 } else {
                     // we can get JobExecutionContext null in multiple Gfac instances environment,
                     // where this job is not submitted by this Gfac instance hence we ignore this message.
@@ -357,14 +363,15 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
                 if (currentState != null && currentState == JobState.COMPLETE) {
                     jobMonitorMap.remove(jobStatusResult.getJobId());
                     runOutflowTasks = false;
-                    log.info("[EJM]: Job Complete email received , removed job from job monitoring. " + jobDetails);
+                    log.info("[EJM]: Authoritative job Complete email received after early Airavata custom complete email," +
+                            " removed job from job monitoring. " + jobDetails);
                 } else {
                     jobMonitorMap.remove(jobStatusResult.getJobId());
                     runOutflowTasks = true;
                     jobStatus.setJobState(JobState.COMPLETE);
                     jobStatus.setReason("Complete email received");
                     jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                    log.info("[EJM]: Job Complete email received , removed job from job monitoring. " + jobDetails);
+                    log.info("[EJM]: Authoritative job Complete email received , removed job from job monitoring. " + jobDetails);
                 }
             } else {
                 runOutflowTasks = true;

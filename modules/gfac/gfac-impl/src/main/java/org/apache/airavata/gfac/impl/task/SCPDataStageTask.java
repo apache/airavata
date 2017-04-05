@@ -150,7 +150,7 @@ public class SCPDataStageTask implements Task {
                 return status;
             }
 
-            authenticationInfo = Factory.getStorageSSHKeyAuthentication(processContext);
+            authenticationInfo = Factory.getComputerResourceSSHKeyAuthentication(processContext);
             status = new TaskStatus(TaskState.COMPLETED);
 
             ServerInfo serverInfo = processContext.getComputeResourceServerInfo();

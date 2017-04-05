@@ -1418,7 +1418,7 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.isReadOnly = iprot.readBool();
               struct.setIsReadOnlyIsSet(true);
-            } else {
+            } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;

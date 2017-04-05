@@ -1,16 +1,11 @@
 ---
-ansible_connection: ssh
-# ansible_user: centos
-ansible_user: root
-ansible_ssh_private_key_file: /Users/supun/Desktop/shameera-key.pem
-# ansible_ssh_private_key_file: /Users/syodage/Projects/airavata-ansible/shameera-aws.pem.txt
 
 user: centos
 group: centos
 user_home: "/home/{{ user }}"
 
 # deployment related variables
-deployment_dir: "{{ user_home }}/dev-deployment"
+deployment_dir: "{{ user_home }}/deployment"
 airavata_source_dir: "{{ user_home }}/source"
 airavata_repo: "https://git-wip-us.apache.org/repos/asf/airavata.git"
 airavata_dist: "apache-airavata-server-0.17-SNAPSHOT"
@@ -22,7 +17,7 @@ git_branch: develop
 db_server: "{{ groups['database'][0] }}"
 db_server_port: "3306"
 db_user: "airavata"
-db_password: "airavata"
+db_password: "{{ vault_db_password }}"
 app_catalog: "app_catalog"
 exp_catalog: "exp_catalog"
 replica_catalog: "replica_catalog"
@@ -33,7 +28,7 @@ credential_store: "credential_store"
 mysql_connector_jar: "mysql-connector-java-5.1.37-bin.jar"
 
 # Rabbitmq related vareables
-rabbitmq_server: "{{ groups['rabbitmq'][0] }}"
+rabbitmq_server: "{{ ansible_fqdn }}"
 rabbitmq_vhost: "develop"
 rabbitmq_user: "airavata"
 rabbitmq_password: "airavata"
@@ -57,12 +52,13 @@ orchestrator_name: "orchestrator-node0"
 orchestrator_host: "{{ansible_fqdn}}"
 orchestrator_port: "8940"
 api_orch_dir: "{{ deployment_dir }}/api-orchestrator"
+api_orch_server_names: "api-orch"
 
 # registry related variables
 registry_name: regserver-node0
-registry_host: "{{groups['registry'][0]}}"
+registry_host: "{{ ansible_fqdn }}"
 registry_port: 8970
-registry_dir: "{{ deployment_dir }}/registry"
+#registry_dir: "{{ deployment_dir }}/registry"
 default_gateway: "php_reference_gateway"
 
 # Credential and keystore related variables
@@ -89,3 +85,7 @@ gfac_dir: "{{ deployment_dir }}/gfac-instance"
 # Monitoring variables
 monitor_email_address: "test.airavata@gmail.com"
 monitor_email_password: "airavata"
+
+# Sharing Registry related variables
+sharing_registry_host: "{{ ansible_fqdn }}"
+sharing_registry_port: 7878

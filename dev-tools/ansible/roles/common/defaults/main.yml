@@ -1,0 +1,3 @@
+keystore_src_path: "airavata.jks"
+client_truststore_src_path: "airavata.jks"
+cred_keystore_src_path: "airavata_sym.jks"
