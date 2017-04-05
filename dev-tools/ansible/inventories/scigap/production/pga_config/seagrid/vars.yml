@@ -27,12 +27,15 @@ doc_root_dir: "/var/www/portals/{{ gateway_id }}"
 # TODO: disable SSL temporarily for testing
 #vhost_servername: "seagrid.org"
 #vhost_serveralias: "www.portal.seagrid.org"
-vhost_servername: "gf4.ucs.indiana.edu"
-vhost_ssl: False
+vhost_servername: "beta.seagrid.org"
+vhost_ssl: True
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/pki/tls/certs/seagrid_org_cert.cer"
-ssl_certificate_chain_file: "/etc/pki/tls/certs/seagrid_org_interm.cer"
-ssl_certificate_key_file: "/etc/pki/tls/private/portal.seagrid.key"
+#ssl_certificate_file: "/etc/pki/tls/certs/seagrid_org_cert.cer"
+#ssl_certificate_chain_file: "/etc/pki/tls/certs/seagrid_org_interm.cer"
+#ssl_certificate_key_file: "/etc/pki/tls/private/portal.seagrid.key"
+ssl_certificate_file: "/etc/letsencrypt/live/beta.seagrid.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/beta.seagrid.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/beta.seagrid.org/privkey.pem"
 
 ## WSO2 IS related variables
 tenant_domain: "prod.seagrid"
