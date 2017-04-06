@@ -39,6 +39,10 @@ admin_username: "tdaadmin"
 admin_password: "SciDeploy"
 oauth_client_key: "RuLl_Uw7i_KXaLoAGJkiasTfyBYa"
 oauth_client_secret: "vD9yi2ANkChzgWiih3RahrIcfsoa"
+admin_role_name: "admin"
+admin_readonly_role_name: "admin-read-only"
+user_role_name: "gateway-user"
+initial_role_name: "user-pending"
 
 ## Airavata Client related variables
 #airavata_server: "tls://gw77.iu.xsede.org"

@@ -22,5 +22,11 @@
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/seagrid"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/testdrive"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/scigap"
+- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/iugateway"
+- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/phasta"
+- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/nsg"
+- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/oscer"
+- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/oiitandy"
+- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/simvascular"
 
 ...
