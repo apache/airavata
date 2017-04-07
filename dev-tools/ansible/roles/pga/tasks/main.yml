@@ -75,7 +75,7 @@
    dest: "{{ doc_root_dir }}/public/themes/{{ portal_theme }}"
    version: "master"
    update: yes
-  when: portal_theme_repo != ""
+  when: portal_theme != "base"
 
 - name: give read permissions to doc root
   file: path="{{ doc_root_dir }}" state=directory mode=a+rX recurse=yes
