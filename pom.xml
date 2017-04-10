@@ -204,6 +204,17 @@
                 <role>PMC member</role>
             </roles>
         </developer>
+	<developer>
+            <id>goshenoy</id>
+            <name>Gourav Ganesh Shenoy</name>
+            <email>goshenoy@apache.org</email>
+            <timezone>-5</timezone>
+            <organization>Indiana University</organization>
+            <organizationUrl>http://iub.edu</organizationUrl>
+            <roles>
+                <role>committer</role>
+            </roles>
+        </developer>
         <developer>
             <id>heshan</id>
             <name>Heshan Suriyarachchi</name>
