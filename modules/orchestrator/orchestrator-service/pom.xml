@@ -48,11 +48,6 @@
             <version>${thrift.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>${org.slf4j.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-orchestrator-core</artifactId>
             <version>${project.version}</version>
