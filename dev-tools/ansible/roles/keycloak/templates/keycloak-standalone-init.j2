@@ -9,21 +9,18 @@
 
 # Start the service Keycloak
 start() {
-        initlog -c "echo -n Starting Keycloak server: "
-        nohup /{{ user_home }}/{{ keycloak_install_dir }}/bin/standalone.sh -b 0.0.0.0 --server-config=standalone-ha.xml &
+        nohup {{ user_home }}/{{ keycloak_install_dir }}/bin/standalone.sh -b 0.0.0.0 &
         ### Create the lock file ###
         touch /var/lock/subsys/keycloak
-        success $"keycloak server running"
-        echo
+        echo $"keycloak server running"
 }
 
 # Restart the service FOO
 stop() {
-        initlog -c "echo -n Stopping keycloak server: "
-        killproc keycloak
+        ps aux | grep keycloak | grep -v grep | awk '{print $2}' | xargs kill
         ### Now, delete the lock file ###
         rm -f /var/lock/subsys/keycloak
-        echo
+        echo $"keycloak server stopped"
 }
 
 ### main logic ###

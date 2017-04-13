@@ -19,6 +19,7 @@ There are ansible roles to install Airavata pre-requisites (RabbitMQ, Zookeeper,
 - **registry** Setup and deploy registry component.
 - **api-orch** :- Setup and deploy Api-Orch components.
 - **pga** :- Setup and deploy Airavata PHP Gateway.
+- **keycloak** :- Setup and deploy Keycloak Identity management server. (Note: Check roles/keycloak/README.md for details)
 
 ## Useful commands
 
