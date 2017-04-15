@@ -25,9 +25,9 @@
   become: yes
 
 - name: start httpd
-  service: name={{ httpd_name[ansible_os_family] }} state=started
+  service: name={{ httpd_name[ansible_os_family] }} state=started enabled=yes
   become: yes
 
 - name: restart httpd
-  service: name={{ httpd_name[ansible_os_family] }} state=restarted
+  service: name={{ httpd_name[ansible_os_family] }} state=restarted enabled=yes
   become: yes
