@@ -35,21 +35,21 @@ import java.util.List;
 
 public class MigrationManager {
 
-    private ArrayList<ISLoginCredentialsDAO> adminCredentials = new ArrayList<ISLoginCredentialsDAO>();
+    private ArrayList<Wso2ISLoginCredentialsDAO> adminCredentials = new ArrayList<Wso2ISLoginCredentialsDAO>();
 
     /*Add the credentials for all the tenants from which the profile should be migrated to Airavata DB*/
 
     public void setISLoginCredentials(){
-        adminCredentials.add(new ISLoginCredentialsDAO("prod.seagrid","UserName","Password"));
+        adminCredentials.add(new Wso2ISLoginCredentialsDAO("prod.seagrid","UserName","Password"));
         // new credential records here...
     }
 
     /* Method used to fetch all the user profiles from the registered tenants */
 
-    public List<UserProfileDAO> getUserProfilesFromIS(){
+    public List<UserProfileDAO> getUserProfilesFromWso2IS(){
         ArrayList<UserProfileDAO> userProfileList = new ArrayList<UserProfileDAO>();
-        for(ISLoginCredentialsDAO creds:adminCredentials){
-            RemoteUserStoreManagerServiceStub isClient = IdentityServerClient.getAdminServiceClient(creds.getLoginUserName(),creds.getLoginPassword(),"RemoteUserStoreManagerService");
+        for(Wso2ISLoginCredentialsDAO creds:adminCredentials){
+            RemoteUserStoreManagerServiceStub isClient = Wso2IdentityServerClient.getAdminServiceClient(creds.getLoginUserName(),creds.getLoginPassword(),"RemoteUserStoreManagerService");
             String[] userList;
             System.out.println("Fetching User Profiles for " + creds.getGateway() + " tenant ...");
             try {
@@ -129,7 +129,7 @@ public class MigrationManager {
     public static void main(String[] args) {
         MigrationManager migrationManager = new MigrationManager();
         migrationManager.setISLoginCredentials();
-        List<UserProfileDAO> userProfileList = migrationManager.getUserProfilesFromIS();
+        List<UserProfileDAO> userProfileList = migrationManager.getUserProfilesFromWso2IS();
         try {
             migrationManager.migrateUserProfilesToAiravata(userProfileList);
         } catch (TException e) {

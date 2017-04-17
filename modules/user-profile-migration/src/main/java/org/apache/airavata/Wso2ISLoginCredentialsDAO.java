@@ -22,7 +22,7 @@
 
 package org.apache.airavata;
 
-public class ISLoginCredentialsDAO {
+public class Wso2ISLoginCredentialsDAO {
     public String getGateway() {
         return Gateway;
     }
@@ -51,7 +51,7 @@ public class ISLoginCredentialsDAO {
     private String loginUserName;
     private String loginPassword;
 
-    public ISLoginCredentialsDAO(String gateway, String loginUserName, String loginPassword) {
+    public Wso2ISLoginCredentialsDAO(String gateway, String loginUserName, String loginPassword) {
         Gateway = gateway;
         this.loginUserName = loginUserName;
         this.loginPassword = loginPassword;

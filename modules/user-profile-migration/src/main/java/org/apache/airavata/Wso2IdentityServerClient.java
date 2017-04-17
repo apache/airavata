@@ -32,7 +32,7 @@ import java.io.File;
  */
 
 
-public class IdentityServerClient {
+public class Wso2IdentityServerClient {
     /**
      * Server url of the WSO2 Carbon Server
      */
