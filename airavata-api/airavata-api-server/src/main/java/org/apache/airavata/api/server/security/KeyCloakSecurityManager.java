@@ -182,7 +182,9 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
     }
 
     private String[] getUserRolesFromOAuthToken(String username, String token, String gatewayId) throws Exception {
-        String openIdConnectUrl = ServerSettings.getRemoteOpenIdDiscoveryUrl();
+        GatewayResourceProfile gwrp = getRegistryServiceClient().getGatewayResourceProfile(gatewayId);
+        String identityServerRealm = gwrp.getIdentityServerTenant();
+        String openIdConnectUrl = getOpenIDConfigurationUrl(identityServerRealm);
         JSONObject openIdConnectConfig = new JSONObject(getFromUrl(openIdConnectUrl, token));
         String userInfoEndPoint = openIdConnectConfig.getString("userinfo_endpoint");
         JSONObject userInfo = new JSONObject(getFromUrl(userInfoEndPoint, token));
@@ -191,10 +193,8 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
         }
         String userId = userInfo.getString("sub");
 
-        GatewayResourceProfile gwrp = getRegistryServiceClient().getGatewayResourceProfile(gatewayId);
-        String identityServerRelam = gwrp.getIdentityServerTenant();
         String userRoleMappingUrl = ServerSettings.getRemoteIDPServiceUrl() + "/admin/realms/"
-                + identityServerRelam + "/users/"
+                + identityServerRealm + "/users/"
                 + userId + "/role-mappings/realm";
         JSONArray roleMappings = new JSONArray(getFromUrl(userRoleMappingUrl, getAdminAccessToken(gatewayId)));
         String[] roles = new String[roleMappings.length()];
@@ -203,6 +203,10 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
         }
 
         return roles;
+    }
+
+    private String getOpenIDConfigurationUrl(String realm) throws ApplicationSettingsException {
+        return ServerSettings.getRemoteIDPServiceUrl() + "/realms/" + realm + "/.well-known/openid-configuration";
     }
 
     public String getFromUrl(String urlToRead, String token) throws Exception {

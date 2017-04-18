@@ -42,10 +42,11 @@ zookeeper_url: "{{ groups['zookeeper'][0] }}:{{ zookeeper_client_port }}"
 api_server_name: "apiserver-node0"
 api_server_host: "{{ansible_fqdn}}"
 api_server_port: "8930"
-api_secured: "false"
+api_secured: "true"
 tls_enable: "false"
 api_server_tls_port: "9930"
 enable_sharing: "true"
+remote_idp_service_url: "https://iam.scigap.org/auth"
 
 # Orchestrator  related variables
 orchestrator_name: "orchestrator-node0"
