@@ -26,6 +26,7 @@
 # See https://github.com/ansible/ansible/issues/9065 for more info.
 ---
 - hosts: pga
+  name: Create/update pga for gateway {{ gateway_id }}
   vars_files:
     - "{{ vars_dir }}/vars.yml"
     - "{{ vars_dir }}/vault.yml"
