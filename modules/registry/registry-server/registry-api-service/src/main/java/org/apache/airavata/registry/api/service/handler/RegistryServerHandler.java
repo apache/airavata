@@ -20,7 +20,6 @@
 */
 package org.apache.airavata.registry.api.service.handler;
 
-import com.sun.org.apache.bcel.internal.generic.DUP;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -1959,6 +1958,22 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throw exception;
         }
     }
+
+    @Override
+    public List<DataProductModel> searchDataProductsByName(String gatewayId, String userId, String productName, int limit, int offset) throws RegistryServiceException, TException {
+        try {
+            dataCatalog = RegistryFactory.getReplicaCatalog();
+            List<DataProductModel> dataProductModels = dataCatalog.searchDataProductsByName(gatewayId, userId, productName, limit, offset);
+            return dataProductModels;
+        } catch (RegistryException e) {
+            String msg = "Error in searching the data products for name " + productName + ".";
+            logger.error(msg, e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
 
     @Override
     public String registerReplicaLocation(DataReplicaLocationModel replicaLocationModel) throws RegistryServiceException, TException {
