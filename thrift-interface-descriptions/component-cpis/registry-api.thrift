@@ -2434,4 +2434,8 @@ service RegistryService {
               list<replica_catalog_models.DataProductModel> getChildDataProducts(1: required  string productUri)
                             throws (1: registry_api_errors.RegistryServiceException rse)
 
+              list<replica_catalog_models.DataProductModel> searchDataProductsByName(1: required  string gatewayId,
+               2: required string userId, 3: required string productName, 4: required i32 limit, 5: required i32 offset)
+                                          throws (1: registry_api_errors.RegistryServiceException rse)
+
 }
