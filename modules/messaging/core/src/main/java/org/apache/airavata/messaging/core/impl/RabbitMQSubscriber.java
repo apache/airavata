@@ -149,6 +149,7 @@ public class RabbitMQSubscriber implements Subscriber {
     private void addShutdownListener() {
         connection.addShutdownListener(new ShutdownListener() {
             public void shutdownCompleted(ShutdownSignalException cause) {
+                log.error("RabbitMQ connection " + connection + " for " + properties.getExchangeName() + " has been shut down", cause);
             }
         });
     }
