@@ -50,6 +50,13 @@ default.registry.user=admin
 default.registry.password=admin
 default.registry.password.hash.method=SHA
 default.registry.gateway={{ default_gateway }}
+super.tenant.gatewayId={{ default_gateway }}
+
+# Properties for cluster status monitoring
+# cluster status monitoring job repeat time in seconds
+cluster.status.monitoring.enable=false
+cluster.status.monitoring.repeat.time=18000
+
 
 ###########################################################################
 #  Application Catalog DB Configuration
