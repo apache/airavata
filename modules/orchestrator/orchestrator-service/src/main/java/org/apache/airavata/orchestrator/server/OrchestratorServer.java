@@ -115,8 +115,11 @@ public class OrchestratorServer implements IServer {
 
 	@Override
 	public void start() throws Exception {
-        //starting cluster status monitoring
-        startClusterStatusMonitoring();
+		if (ServerSettings.enableClusterStatusMonitoring()) {
+			//starting cluster status monitoring
+			startClusterStatusMonitoring();
+		}
+
 
 		setStatus(ServerStatus.STARTING);
 		OrchestratorService.Processor<OrchestratorServerHandler> orchestratorService =

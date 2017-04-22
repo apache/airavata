@@ -413,6 +413,10 @@ public class ApplicationSettings {
         return getSetting("cluster.status.monitoring.repeat.time");
     }
 
+    public static Boolean enableClusterStatusMonitoring() throws ApplicationSettingsException {
+        return getSetting("cluster.status.monitoring.enable").equalsIgnoreCase("true");
+    }
+
     public static String getUserProfileServerHost() throws ApplicationSettingsException {
         return getSetting(ServerSettings.USER_PROFILE_SERVER_HOST);
     }
