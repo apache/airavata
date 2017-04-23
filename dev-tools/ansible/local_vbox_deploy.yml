@@ -1,0 +1,24 @@
+---
+
+- hosts: broker
+  roles:
+    - env_setup
+    - java
+    - {role: zookeeper, tags: zookeeper}
+    - {role: rabbitmq, tags: rabbitmq}
+    - {role: database, become: yes, become_user: {{user}}}
+
+- hosts: main-airavata
+  roles:
+    - env_setup
+    - java
+    - {role: wso2_is, tags: wso2_is}
+    - { role: common, tags: commmon }
+    - { role: gfac, tags: gfac }
+    - { role: api-orch, tags: api-orch }
+    - { role: registry, tags: registry }
+
+- hosts: pga
+  roles:
+    - env_setup
+    - { role: pga, tags: pga }

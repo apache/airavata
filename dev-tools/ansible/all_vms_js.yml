@@ -1,0 +1,59 @@
+---
+
+- hosts: localhost
+
+  tasks:
+
+  - name: create a private network
+    os_network:
+      cloud: tacc
+      external: no
+      name: private
+
+  - name: create a subnet within private network
+    os_subnet: 
+      state: present
+      network_name: private
+      name: private_subnet
+      cidr: 10.0.0.0/24
+      cloud: tacc
+  
+  - name: create a router on the private network
+    os_router:
+      cloud: tacc
+      state: present
+      name: simple_router
+      network: public
+      interfaces:
+        - private_subnet
+
+  - name: ensure key is present
+    os_keypair:
+      cloud: tacc
+      state: present
+      name: jetstream_key
+      public_key_file: "{{ js_public_key }}"
+  
+  - name: build blank nodes 
+    os_server:
+      state: present
+      name: '{{ item.hostname }}'
+      cloud: tacc
+      image: 1790e5c8-315a-4b9b-8b1f-46e47330d3cc
+      key_name: jetstream_key
+      timeout: 900
+      flavor: m1.small
+      meta:
+        hostname: '{{ item.hostname }}'
+        group: '{{ item.group }}'
+      auto_ip: yes
+      network: private
+    with_items: # maybe this should go in group_vars?
+      - { hostname: 'pga', group: 'pga', size: 'm1.small' }
+      - { hostname: 'zookeeper', group: 'zookeeper', size: 'm1.small' }
+      - { hostname: 'rabbitmq', group: 'rabbitmq', size: 'm1.small' }
+      - { hostname: 'database', group: 'database', size: 'm1.small' }
+#      - { hostname: 'wso2is', group: 'wso2is', size: 'm1.small' }
+      - { hostname: 'gfac', group: 'gfac', size: 'm1.small' }
+      - { hostname: 'api-orch', group: 'api-orch', size: 'm1.small' }
+      - { hostname: 'registry', group: 'registry', size: 'm1.small' }

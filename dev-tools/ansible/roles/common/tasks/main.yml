@@ -1,10 +1,10 @@
 ---
-- name: Install Airavata pre-requireties
+- name: Install Airavata prerequisites
   yum: name={{ item }} state=latest update_cache=yes
   with_items:
     - git
     - maven
-  become_user: root
+  become: yes
 
 # Setup airavata source
 - name: Create deployment directory {{ deployment_dir }}
