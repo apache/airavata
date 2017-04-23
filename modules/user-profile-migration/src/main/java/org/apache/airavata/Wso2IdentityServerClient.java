@@ -55,7 +55,7 @@ public class Wso2IdentityServerClient {
     /**
      * Server url of the WSO2 Carbon Server
      */
-    private static String SEVER_URL = "URL for Identity server";
+    private static String SEVER_URL = "https://idp.scigap.org:9443/services/";
 
 
     public static RemoteUserStoreManagerServiceStub getAdminServiceClient(String adminUserName, String adminPassword, String adminService){
@@ -68,22 +68,22 @@ public class Wso2IdentityServerClient {
          * because the private key and certificate file are not committed to GitHub,
          * which are needed to run the client */
 
-//        String trustStore = System.getProperty("user.dir") + File.separator +
-//                "modules" + File.separator + "user-profile-migration" + File.separator +
-//                "src" + File.separator + "main" + File.separator +
-//                "resources" + File.separator + "wso2carbon.jks";
-//        System.out.println("file path : " + trustStore);
-//
-//        /**
-//         * Call to https://localhost:9443/services/   uses HTTPS protocol.
-//         * Therefore we to validate the server certificate or CA chain. The server certificate is looked up in the
-//         * trust store.
-//         * Following code sets what trust-store to look for and its JKs password.
-//         */
-//
-//        System.setProperty("javax.net.ssl.trustStore",  trustStore );
-//
-//        System.setProperty("javax.net.ssl.trustStorePassword", "wso2carbon");
+        String trustStore = System.getProperty("user.dir") + File.separator +
+                "modules" + File.separator + "user-profile-migration" + File.separator +
+                "src" + File.separator + "main" + File.separator +
+                "resources" + File.separator + "wso2carbon.jks";
+        System.out.println("file path : " + trustStore);
+
+        /**
+         * Call to https://localhost:9443/services/   uses HTTPS protocol.
+         * Therefore we to validate the server certificate or CA chain. The server certificate is looked up in the
+         * trust store.
+         * Following code sets what trust-store to look for and its JKs password.
+         */
+
+        System.setProperty("javax.net.ssl.trustStore",  trustStore );
+
+        System.setProperty("javax.net.ssl.trustStorePassword", "wso2carbon");
 
         /**
          * Axis2 configuration context

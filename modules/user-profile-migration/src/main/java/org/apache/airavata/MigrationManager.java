@@ -38,7 +38,7 @@ public class MigrationManager {
     /*Add the credentials for all the tenants from which the profile should be migrated to Airavata DB*/
 
     public void setISLoginCredentials(){
-        adminCredentials.add(new Wso2ISLoginCredentialsDAO("prod.seagrid","UserName","Password"));
+        adminCredentials.add(new Wso2ISLoginCredentialsDAO("prod.seagrid","username","password"));
         // new credential records here...
     }
 
@@ -54,13 +54,13 @@ public class MigrationManager {
                 userList = isClient.getUserList("http://wso2.org/claims/givenname", "*", "default");
                 System.out.println("FirstName\tLastName\tEmail\t\t\tuserName\tCountry\tOrganization\tphone");
                 String[] claims = {"http://wso2.org/claims/givenname",
-                                    "http://wso2.org/claims/lastname",
-                                    "http://wso2.org/claims/emailaddress",
-                                    "http://wso2.org/claims/country",
-                                    "http://wso2.org/claims/organization",
-                                    "http://wso2.org/claims/mobile",
-                                    "http://wso2.org/claims/telephone",
-                                    "http://wso2.org/claims/streetaddress"};
+                        "http://wso2.org/claims/lastname",
+                        "http://wso2.org/claims/emailaddress",
+                        "http://wso2.org/claims/country",
+                        "http://wso2.org/claims/organization",
+                        "http://wso2.org/claims/mobile",
+                        "http://wso2.org/claims/telephone",
+                        "http://wso2.org/claims/streetaddress"};
                 for (String user : userList) {
                     UserProfileDAO userProfile = new UserProfileDAO();
                     ClaimValue[] retrievedClaimValues = isClient.getUserClaimValuesForClaims(user, claims, null);
@@ -124,12 +124,21 @@ public class MigrationManager {
         return false;
     }
 
+    private void migrateUserProfilesToKeycloak(List<UserProfileDAO> Wso2ISProfileList){
+        KeycloakIdentityServerClient client = new KeycloakIdentityServerClient("https://iam.scigap.org/auth",
+                "master",
+                "SuperRealmUsername",
+                "MasterRealmPassword");
+        client.migrateUserStore(Wso2ISProfileList,"keycloakTargetRealm","tempPassword");
+    }
+
     public static void main(String[] args) {
         MigrationManager migrationManager = new MigrationManager();
         migrationManager.setISLoginCredentials();
         List<UserProfileDAO> userProfileList = migrationManager.getUserProfilesFromWso2IS();
         try {
             migrationManager.migrateUserProfilesToAiravata(userProfileList);
+            migrationManager.migrateUserProfilesToKeycloak(userProfileList);
         } catch (TException e) {
             e.printStackTrace();
         } catch (ApplicationSettingsException e) {
