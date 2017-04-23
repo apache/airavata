@@ -173,7 +173,8 @@ public class InstallCert {
         }
 
         public X509Certificate[] getAcceptedIssuers() {
-            throw new UnsupportedOperationException();
+            return new X509Certificate[0];
+            //throw new UnsupportedOperationException();
         }
 
         public void checkClientTrusted(X509Certificate[] chain, String authType)
@@ -189,4 +190,3 @@ public class InstallCert {
     }
 
 }
-
