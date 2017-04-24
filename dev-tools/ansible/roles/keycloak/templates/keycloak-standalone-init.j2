@@ -1,0 +1,46 @@
+#!/bin/bash
+#
+# chkconfig: 35 90 12
+# description: keycloak server
+#
+
+# Get function from functions library
+. /etc/init.d/functions
+
+# Start the service Keycloak
+start() {
+        nohup {{ user_home }}/{{ keycloak_install_dir }}/bin/standalone.sh -b 0.0.0.0 &
+        ### Create the lock file ###
+        touch /var/lock/subsys/keycloak
+        echo $"keycloak server running"
+}
+
+# Restart the service FOO
+stop() {
+        ps aux | grep keycloak | grep -v grep | awk '{print $2}' | xargs kill
+        ### Now, delete the lock file ###
+        rm -f /var/lock/subsys/keycloak
+        echo $"keycloak server stopped"
+}
+
+### main logic ###
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  status)
+        status keycloak
+        ;;
+  restart|reload|condrestart)
+        stop
+        start
+        ;;
+  *)
+        echo $"Usage: $0 {start|stop|restart|reload|status}"
+        exit 1
+esac
+
+exit 0

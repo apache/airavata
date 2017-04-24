@@ -92,3 +92,12 @@ monitor_email_password: "airavata"
 
 # PGA variables
 pga_repo: "https://github.com/apache/airavata-php-gateway.git"
+
+# Keycloak Identity server variables
+keycloak_db_host: "localhost"
+keycloak_db_port: "3306"
+keycloak_db_schema_name: "keycloak"
+keycloak_db_url: "jdbc:mysql://{{keycloak_db_host}}:{{keycloak_db_port}}/{{keycloak_db_schema_name}}"
+keycloak_db_username: "keycloak"
+keycloak_db_password: "AiravataKeycloakDB@123"
+keycloak_db_pool_size: "20"
