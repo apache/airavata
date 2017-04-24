@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<module xmlns="urn:jboss:module:1.3" name="org.mysql">
+
+    <resources>
+        <resource-root path="{{keycloak_db_connector_name}}-bin.jar"/>
+    </resources>
+
+    <dependencies>
+        <module name="javax.api"/>
+        <module name="javax.transaction.api"/>
+    </dependencies>
+</module>
