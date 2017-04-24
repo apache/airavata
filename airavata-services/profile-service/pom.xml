@@ -33,6 +33,7 @@
         <module>profile-tenant-core</module>
         <module>profile-service-server</module>
         <module>profile-service-client-sdks</module>
+        <module>iam-admin-services-core</module>
     </modules>
     
 </project>
