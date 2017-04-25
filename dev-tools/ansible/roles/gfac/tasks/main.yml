@@ -62,6 +62,13 @@
             group={{ group }}
             mode="u=rw,g=r,o=r"
 
+- name: Copy logback configuration file
+  template: src=logback.xml.j2
+            dest="{{ gfac_dir }}/{{ airavata_dist }}/bin/logback.xml"
+            owner={{ user }}
+            group={{ group }}
+            mode="u=rw,g=r,o=r"
+
 - name: Copy Mysql jar to lib
   copy: src="{{ mysql_connector_jar }}"
         dest="{{ gfac_dir }}/{{ airavata_dist }}/lib/{{ mysql_connector_jar }}"
@@ -79,7 +86,7 @@
            removes="{{ gfac_dir }}/{{ airavata_dist }}/bin/server_start_*"
 
 - name: start gfac
-  command: ./bin/airavata-server-start.sh gfac -d
+  command: ./bin/airavata-server-start.sh gfac -d -log "{{ gfac_log_dir }}/output.log"
            chdir="{{ gfac_dir }}/{{ airavata_dist }}/"
            creates="{{ gfac_dir }}/{{ airavata_dist }}/bin/server_start_*"
 
