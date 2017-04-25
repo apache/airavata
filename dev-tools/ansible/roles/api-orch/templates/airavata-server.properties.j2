@@ -297,10 +297,6 @@ keystore.password={{ keystore_passwd }}
 #### trust store configuration ####
 trust.store={{ keystores_location }}/{{ client_truststore_src_path | basename }}
 trust.store.password=airavata
-#### remote authorization server url ####
-remote.oauth.authorization.server=https://idp.scigap.org:9443/services/
-#### xacml based authorization policy ####
-authorization.policy=airavata-default-xacml-policy
 #### authorization cache related configuration ####
 authz.cache.enabled=true
 authz.cache.manager.class=org.apache.airavata.api.server.security.authzcache.DefaultAuthzCacheManager

@@ -59,7 +59,12 @@ return array(
         /**
          * OAuth Grant Type (password or authorization_code)
          */
-        'oauth-grant-type' => 'password',
+        'oauth-grant-type' => '{{ oauth_grant_type }}',
+
+        /**
+         * For OIDC servers that support the discovery protocol.
+         */
+        'openid-connect-discovery-url' => '{{ oidc_discovery_url }}',
 
         /**
          * Identity server domain

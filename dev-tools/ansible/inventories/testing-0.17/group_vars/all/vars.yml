@@ -84,7 +84,6 @@ default_gateway: "php_reference_gateway"
 
 # Credential and keystore related variables
 #authorization_server: "https://{{ groups['wso2is'][0]}}:9443/services/"
-authorization_server: "https://idp.scigap.org:9443/services/"
 keystore_src_path: "{{inventory_dir}}/files/airavata.jks"
 keystore_passwd: "airavata"
 client_truststore_src_path: "{{inventory_dir}}/files/airavata.jks"
