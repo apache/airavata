@@ -18,5 +18,4 @@
 # under the License.
 #
 
-api_orch_server_names: "api-orch"
-api_orch_log_dir: "../logs"
+gfac_log_dir: "../logs"

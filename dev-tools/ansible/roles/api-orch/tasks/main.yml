@@ -66,6 +66,13 @@
             group={{ group }}
             mode="u=rw,g=r,o=r"
 
+- name: Copy logback configuration file
+  template: src=logback.xml.j2
+            dest="{{ api_orch_dir }}/{{ airavata_dist }}/bin/logback.xml"
+            owner={{ user }}
+            group={{ group }}
+            mode="u=rw,g=r,o=r"
+
 - name: Copy Mysql jar to lib
   copy: src={{ mysql_connector_jar }}
         dest="{{ api_orch_dir }}/{{ airavata_dist }}/lib/{{ mysql_connector_jar }}"
@@ -88,7 +95,7 @@
            removes="{{ api_orch_dir }}/{{ airavata_dist }}/bin/server_start_*"
 
 - name: start api-orch
-  command: ./bin/airavata-server-start.sh api-orch -d
+  command: ./bin/airavata-server-start.sh api-orch -d -log "{{ api_orch_log_dir }}/output.log"
            chdir="{{ api_orch_dir }}/{{ airavata_dist }}/"
            creates="{{ api_orch_dir }}/{{ airavata_dist }}/bin/server_start_*"
 
