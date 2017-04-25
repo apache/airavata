@@ -522,6 +522,8 @@ public class WorkerResource extends AbstractExpCatResource {
                 for (String id : accessibleIds)
                     query += ("'" + id + "'" + ",");
                 query = query.substring(0, query.length() - 1) + ") AND ";
+            }else{
+                return new ArrayList<>();
             }
 
             if (filters != null && filters.size() != 0) {
@@ -613,6 +615,8 @@ public class WorkerResource extends AbstractExpCatResource {
                 for (String id : accessibleIds)
                     query += ("'" + id + "'" + ",");
                 query = query.substring(0, query.length() - 1) + ") AND ";
+            }else{
+                return new ArrayList<>();
             }
 
             if (filters.get(ExperimentStatusConstants.STATE) != null) {
