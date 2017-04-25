@@ -41,8 +41,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 gateway_id: "georgiastate"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}/georgia-state"
-# TODO: this is only for testing, we'll need to update this again during the real migration
-gateway_data_store_resource_id: "gf4.ucs.indiana.edu_71a8409a-0713-4a45-985f-22847f63df4e"
+gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCFSg9IEgsXlGhgPkj4hPuON30rbE3/gUUn4K3NVvBFKLyQQ8Pm/NR6dZmFglQR1HxBRSnq4WmH3EVyxHuT7MkQDAjTkclEuhaRjcYN0nua8g4dI9SgO9DeqbOyurVIuw/YChP5nC+6/ubMyzYPr6Z5xU5QHZI/QlVG4nz3joMIKkRXt/bsaEvv+/nzED/j6FTdK6P6dg1ESkNVZUPqhtWpwuC28Et7/86jcEObJedwx8geLoxKogPZ6kqO+Q/WUHDtMpFYtwuPaiYuN3Pb/GCvnDRsSoFmtRU+UH1UIdEy0piYUuBW+5aCv/PbH/UtHFg1Y1942TYCXv4rl1i/KW1z"
 
 ## Portal related variables

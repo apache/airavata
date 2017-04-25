@@ -41,8 +41,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 gateway_id: "cinetvtech"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}/cinet-virginiatech"
-# TODO: this is only for testing, we'll need to update this again during the real migration
-gateway_data_store_resource_id: "gf4.ucs.indiana.edu_71a8409a-0713-4a45-985f-22847f63df4e"
+gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCpt0ai3Z7TGUNFM8heCPsQAZJkSik+PCa3QD5ej+sApXfiZZoFdjLswXAFcRbsD4RyCMnKFQ4st9e6+1LT8nHG3dd5uHjtBI2FFBaDg5JrIAuQj40nkdCII12gbXLu4uKCjKJ3NThn/AFQjpw0TvzFLusDd7/Xb+xBpMdobHHqngDqG8Y8fA1pbHtB5BgcAuWp3TZ/s1PL5cEhS0yZ8cVBTnSYK87o6hh0Pn4tlyU29lyLRPz43aHvjkKBN0VNwJlyOtCgr+Gj4TzlRvHXgLTn7yg1w7L6/V5LFpH2cealS92qfoBJpQ9IBAi5hX4yokEopCBsXyx78+n5E2hW05xR"
 
 ## Portal related variables
