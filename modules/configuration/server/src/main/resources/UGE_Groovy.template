@@ -11,7 +11,7 @@
    if (standardOutFile != null && standardOutFile != "") out.print '#$ -o ' + standardOutFile + '\n'
    if (standardErrorFile != null && standardErrorFile != "") out.print '#$ -e ' + standardErrorFile + '\n'
    if (nodes != null && nodes != "" && processPerNode != null && processPerNode != "")
-        out.print '#$ -pe ' + processPerNode + 'way' + (12 * nodes)
+        out.print '#$ -pe orte ' + processPerNode
 %>
 #\$ -V
 #\$ -m beas
@@ -21,6 +21,7 @@
    if (workingDirectory != null && workingDirectory != "")  out.print 'cd ' + workingDirectory +'\n'
    if (preJobCommands != null) for(pjc in preJobCommands)  out.print pjc +'\n'
    if (jobSubmitterCommand != null && jobSubmitterCommand != "")  out.print jobSubmitterCommand + ' '
+   if (processPerNode != null && processPerNode != "")  out.print processPerNode + ' '
    if (executablePath != null && executablePath != "")  out.print  executablePath + ' '
    if (inputs != null) for(input in inputs)  out.print input + ' '
    out.print '\n'
