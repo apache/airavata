@@ -20,7 +20,7 @@
 
 ---
 - name: Create root directory
-  file: path="{{ doc_root_dir }}" state=directory
+  file: path="{{ doc_root_dir }}" state=directory owner="{{user}}" group="{{group}}"
   become: yes
 
 - include: install_deps_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml
@@ -33,6 +33,7 @@
    update: yes
    force: yes
   become: yes
+  become_user: "{{user}}"
 
 - name: Create user data dir {{ user_data_dir }}
   file: path="{{ user_data_dir }}" state=directory owner="{{user}}" group="{{group}}" mode=0777 recurse=yes follow=yes
@@ -87,10 +88,11 @@
 - name: Run composer update
   composer: command=update working_dir="{{ doc_root_dir }}"
   become: yes
+  become_user: "{{user}}"
 
 # step 6: Change pga configurations
 - name: Copy pga config file
-  template: src=pga_config.php.j2 dest="{{ doc_root_dir }}/app/config/pga_config.php"
+  template: src=pga_config.php.j2 dest="{{ doc_root_dir }}/app/config/pga_config.php" owner="{{user}}" group="{{group}}"
   become: yes
 
 - name: Checkout the portal theme (if a custom theme is defined)
@@ -100,9 +102,11 @@
    version: "master"
    update: yes
   when: portal_theme != "base"
+  become: yes
+  become_user: "{{user}}"
 
 - name: give read permissions to doc root
-  file: path="{{ doc_root_dir }}" state=directory mode=a+rX recurse=yes
+  file: path="{{ doc_root_dir }}" state=directory mode=a+rX owner="{{user}}" group="{{group}}" recurse=yes
   become: yes
 
 - name: give write permissions to storage dir
