@@ -27,9 +27,9 @@ doc_root_dir: "/var/www/portals/southdakota"
 vhost_servername: "sciencegateway.usd.edu"
 vhost_ssl: True
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/pki/tls/certs/cybergateway_usd_edu_cert.cer"
-ssl_certificate_chain_file: "/etc/pki/tls/certs/cybergateway_usd_edu_interm.cer"
-ssl_certificate_key_file: "/etc/pki/tls/private/cybergateway.usd.key"
+ssl_certificate_file: "/etc/pki/tls/certs/sciencegateway_usd_edu_cert.cer"
+ssl_certificate_chain_file: "/etc/pki/tls/certs/sciencegateway_usd_edu_interm.cer"
+ssl_certificate_key_file: "/etc/pki/tls/private/southdakota-sg.key"
 
 ## WSO2 IS related variables
 tenant_domain: "southdakota.edu"
@@ -52,5 +52,5 @@ portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
 portal_theme: "usd-cybergateway-theme"
 portal_theme_repo: "https://github.com/SciGaP/usd-cybergateway-theme.git"
-portal_title: "South Dakota Cybergateway"
+portal_title: "South Dakota Sciencegateway"
 ...
