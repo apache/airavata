@@ -37,8 +37,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 gateway_id: "simvascular"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}/simvascular"
-# TODO: this is only for testing, we'll need to update this again during the real migration
-gateway_data_store_resource_id: "gf4.ucs.indiana.edu_71a8409a-0713-4a45-985f-22847f63df4e"
+gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
 gateway_data_store_ssh_public_key: ""
 
 ## Portal related variables

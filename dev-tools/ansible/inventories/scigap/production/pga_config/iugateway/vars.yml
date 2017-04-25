@@ -41,8 +41,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 gateway_id: "iugateway"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}/iugateway"
-# TODO: this is only for testing, we'll need to update this again during the real migration
-gateway_data_store_resource_id: "gf4.ucs.indiana.edu_71a8409a-0713-4a45-985f-22847f63df4e"
+gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCjKGnDVSWXJynfzyOOcACuXG8KdIaPvx1idpsMeioYAX+T+W2wK86tHfD2B9QxzmrcjvAZD7/GvTcMotBUQ+5nJyFyYkRDKL5XtC2HWaMijCmsGFgODfc+i3E274Cw9oYAamRPTCUShoqogd9jzW8gaIzTy+2sU5R/dYAUeiHM2ov9SpIJXNuCoT12R948iUd3b2amnBIJvy/DnhorLXz7MQ70l9cWQp986ZVOS32JRUZhk/2nLHQLxP9cwjP3kVXEtoaOZc3lwypOzdA/xJq4pRTb4s8mZ4SaQIzHBPBYneU85+P6j7cjlV3UeN+0YwvnXe1iWaoUuoUFrNmzudlf"
 
 ## Portal related variables

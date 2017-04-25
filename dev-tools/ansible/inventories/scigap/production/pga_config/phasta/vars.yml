@@ -41,8 +41,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 gateway_id: "phasta"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}/phasta"
-# TODO: this is only for testing, we'll need to update this again during the real migration
-gateway_data_store_resource_id: "gf4.ucs.indiana.edu_71a8409a-0713-4a45-985f-22847f63df4e"
+gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCIvxQcdWfZPnXgM1mU++kTuX2ydkQ5BxK0w4stY9qEwJDUoRxF6nstTFBEDkhS34/oBYsJIH9IM4UPxiiplwoIPSYRpqI24pmVNnfJakcsFmxeSVmQRI7SztedXca9IAn9DelJZyORonYsfbsYIDQNzAiMUVs+K9l4flZUqVIZwYrrKfDbd2StC3DUvCugKgJk+v+XsRUxGsebk8wqE273GYPtMt4bdTQFZMfCLg52pXUqrK8RTbL+WdB7uCVXAGC2vu7OsI5+BJSVVUUPiA3vS9oiuZS9qPAYEwowEs+RMl56sGLh5udvhMxaSDn4zqWKTo/LNXcO2p2Y9sit90LD"
 
 ## Portal related variables

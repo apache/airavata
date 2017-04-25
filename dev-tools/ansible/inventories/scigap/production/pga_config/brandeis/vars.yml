@@ -37,8 +37,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 gateway_id: "brandeis"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}/brandeis"
-# TODO: this is only for testing, we'll need to update this again during the real migration
-gateway_data_store_resource_id: "gf4.ucs.indiana.edu_71a8409a-0713-4a45-985f-22847f63df4e"
+gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCnenzHr90GmK9nGzUFVr2Xt0F8dVtqFTU/nSpEK22M0LcBWDJuX2lGw6tz/gU+j5SRAEu2HJnHb67DbvPG+DAEiCYf4sm94GBHljGjySlvDzC8uZGmOzRE3KCzDan5XnHHHQqXL+HJAOzkODVLhxEpN0AOq90Q+Og+vhJlmGJk6WIdjebBfVd0xcHp0nKFzB54F7f0cVubnt5XOE6rMZTb812RSHIIWVk1s5StVbpiDZMzwRJ4tBd1Oe+4DVSTJyn6SdEN18x2KoFeR6BrM8L5QiXhR8GhXj8MyoQLF5+m6q9Drp76n3qw2GMjGgmC8jdwFFOKRiIKM47u9sGrtljX"
 
 ## Portal related variables
