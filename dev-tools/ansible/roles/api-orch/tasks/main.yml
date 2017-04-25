@@ -73,6 +73,9 @@
             group={{ group }}
             mode="u=rw,g=r,o=r"
 
+- name: create logs directory
+  file: path="{{ api_orch_log_dir }}" state=directory owner={{ user }} group={{ group }}
+
 - name: Copy Mysql jar to lib
   copy: src={{ mysql_connector_jar }}
         dest="{{ api_orch_dir }}/{{ airavata_dist }}/lib/{{ mysql_connector_jar }}"
