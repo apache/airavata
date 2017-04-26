@@ -101,7 +101,7 @@
    dest: "{{ doc_root_dir }}/public/themes/{{ portal_theme }}"
    version: "master"
    update: yes
-  when: portal_theme != "base"
+  when: portal_theme != "base" and portal_theme_repo != ""
   become: yes
   become_user: "{{user}}"
 
@@ -127,14 +127,14 @@
   become: yes
 
 - name: copy virtual host config file
-  template: src=pga-vhost.conf.j2 dest={{ httpd_confd_file_location[ansible_os_family] }} backup=yes
+  template: src={{ pga_vhost_template }} dest={{ httpd_confd_file_location[ansible_os_family] }} backup=yes
   become: yes
   notify:
     - restart httpd
   when: not vhost_ssl
 
 - name: copy SSL enabled virtual host config file
-  template: src=pga-ssl-vhost.conf.j2 dest={{ httpd_confd_file_location[ansible_os_family] }} backup=yes
+  template: src={{ pga_ssl_vhost_template }} dest={{ httpd_confd_file_location[ansible_os_family] }} backup=yes
   become: yes
   notify:
     - restart httpd
