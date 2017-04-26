@@ -52,6 +52,8 @@ gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62
 # Not using gateway storage right now
 #gateway_data_store_ssh_public_key: ""
 
+data_sharing_enabled: "false"
+
 ## Portal related variables
 super_admin_portal: "true"
 admin_emails: "['eroma.abeysinghe@gmail.com','sgg@iu.edu']"
