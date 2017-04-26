@@ -33,6 +33,9 @@ httpd_log_dir:
  Debian: /var/log/apache2
  RedHat: /var/log/httpd
 
+pga_vhost_template: "pga-vhost.conf.j2"
+pga_ssl_vhost_template: "pga-ssl-vhost.conf.j2"
+
 ## WSO2 IS related variables
 tenant_domain: "prod.testdrive"
 admin_username: "tdaadmin"
