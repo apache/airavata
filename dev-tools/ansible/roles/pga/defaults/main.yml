@@ -56,6 +56,7 @@ gateway_id: "{{ default_gateway }}"
 experiment_data_dir: "{{ user_data_dir }}"
 gateway_data_store_resource_id: "js-170-103.jetstream-cloud.org_6497a464-3121-4b64-a7cb-d195b0a26c19"
 gateway_data_store_ssh_public_key: ""
+data_sharing_enabled: "true"
 
 ## Portal related variables
 super_admin_portal: "true"
