@@ -35,8 +35,8 @@
   become: yes
   become_user: "{{user}}"
 
-- name: Create user data dir {{ user_data_dir }}
-  file: path="{{ user_data_dir }}" state=directory owner="{{user}}" group="{{group}}" mode=0777 recurse=yes follow=yes
+- name: Create experiment data dir {{ experiment_data_dir }}
+  file: path="{{ experiment_data_dir }}" state=directory owner="{{user}}" group="{{group}}" mode=0777 recurse=yes follow=yes
   become: yes
 
 # SELinux configuration
