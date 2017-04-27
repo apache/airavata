@@ -19,6 +19,7 @@
  */
 package org.apache.airavata.registry.core.experiment.catalog.resources;
 
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
@@ -522,7 +523,7 @@ public class WorkerResource extends AbstractExpCatResource {
                 for (String id : accessibleIds)
                     query += ("'" + id + "'" + ",");
                 query = query.substring(0, query.length() - 1) + ") AND ";
-            }else{
+            }else if(ServerSettings.isEnableSharing() && (accessibleIds==null || accessibleIds.size()==0)){
                 return new ArrayList<>();
             }
 
@@ -615,7 +616,7 @@ public class WorkerResource extends AbstractExpCatResource {
                 for (String id : accessibleIds)
                     query += ("'" + id + "'" + ",");
                 query = query.substring(0, query.length() - 1) + ") AND ";
-            }else{
+            }else if(ServerSettings.isEnableSharing() && (accessibleIds==null || accessibleIds.size()==0)){
                 return new ArrayList<>();
             }
 
