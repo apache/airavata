@@ -21,9 +21,11 @@
 
 package org.apache.airavata.service.profile.handlers;
 
+import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.service.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.iam_admin_services_cpiConstants;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
@@ -49,6 +51,18 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     @Override
     public String setUpGateway(AuthzToken authzToken, Gateway gateway) throws IamAdminServicesException, AuthorizationException {
+        PasswordCredential isSuperAdminCredentials = new PasswordCredential();
+        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
+        try{
+            keycloakclient.addTenant(isSuperAdminCredentials,gateway);
+            if(!keycloakclient.createTenantAdminAccount(isSuperAdminCredentials,gateway)){
+                logger.error("Admin account creation failed !!, please refer error logs for reason");
+            }
+            Gateway gatewayWithIdAndSecret = keycloakclient.configureClient(isSuperAdminCredentials,gateway);
+            //return gatewayWithIdAndSecret;
+        } catch (IamAdminServicesException ex){
+            logger.error("Gateway Setup Failed, reason: " + ex.getCause(), ex);
+        }
         return null;
     }
 }
