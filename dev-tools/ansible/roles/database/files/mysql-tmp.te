@@ -1,0 +1,9 @@
+module mysql-tmp 1.0;
+
+require {
+	type mysqld_safe_t;
+	class capability { setgid setuid };
+}
+
+#============= mysqld_safe_t ==============
+allow mysqld_safe_t self:capability { setgid setuid };
