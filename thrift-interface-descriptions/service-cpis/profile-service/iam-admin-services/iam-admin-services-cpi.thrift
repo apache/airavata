@@ -39,7 +39,7 @@ service IamAdminServices {
                        throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
                                2: airavata_errors.AuthorizationException ae)
 
-    string setUpGateway (1: required security_model.AuthzToken authzToken,
+    workspace_model.Gateway setUpGateway (1: required security_model.AuthzToken authzToken,
                        2: required workspace_model.Gateway gateway)
                     throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
                             2: airavata_errors.AuthorizationException ae)
