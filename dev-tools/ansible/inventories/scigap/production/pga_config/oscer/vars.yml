@@ -51,5 +51,5 @@ portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
 portal_theme: "oscer"
 portal_theme_repo: "https://github.com/SciGaP/ou-gateway-theme"
-portal_title: "OU CyberGateway"
+portal_title: "OU Science Gateway"
 ...
