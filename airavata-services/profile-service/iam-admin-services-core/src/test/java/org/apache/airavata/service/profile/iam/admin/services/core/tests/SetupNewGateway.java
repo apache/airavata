@@ -17,7 +17,6 @@ public class SetupNewGateway {
     private final static Logger logger = LoggerFactory.getLogger(SetupNewGateway.class);
 
     public static void main(String[] args) {
-
     }
 
     public static void setUpGateway(){
