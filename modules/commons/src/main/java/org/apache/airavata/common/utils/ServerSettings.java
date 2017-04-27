@@ -133,6 +133,10 @@ public class ServerSettings extends ApplicationSettings {
     public static final String PROFILE_SERVICE_SERVER_HOST = "profile.service.server.host";
     public static final String PROFILE_SERVICE_SERVER_PORT = "profile.service.server.port";
 
+    // Iam Server Constants
+    public static final String IAM_SERVER_URL = "iam.server.url";
+    public static final String NEW_GATEWAY_ADMIN_TEMP_PASSWORD="new.gateway.admin.temp.password";
+
     /* Caching */
     private static final String SESSION_CACHE_ACCESS_TIME_OUT = "ssh.session.cache.access.timeout";
 
