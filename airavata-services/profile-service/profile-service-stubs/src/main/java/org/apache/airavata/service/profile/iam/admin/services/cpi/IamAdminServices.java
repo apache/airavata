@@ -57,11 +57,11 @@ public class IamAdminServices {
 
     public String getAPIVersion(org.apache.airavata.model.security.AuthzToken authzToken) throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
-    public org.apache.airavata.model.workspace.Gateway setUpGateway(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.workspace.Gateway gateway) throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
+    public org.apache.airavata.model.workspace.Gateway setUpGateway(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.workspace.Gateway gateway, org.apache.airavata.model.credential.store.PasswordCredential isSuperAdminCredentials) throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
-    public boolean registerUser(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails) throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
+    public boolean registerUser(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails, org.apache.airavata.model.credential.store.PasswordCredential isRealmAdminCredentials, String newPassword) throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
-    public boolean enableUser(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails) throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
+    public boolean enableUser(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails, org.apache.airavata.model.credential.store.PasswordCredential isRealmAdminCredentials) throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
   }
 
@@ -69,11 +69,11 @@ public class IamAdminServices {
 
     public void getAPIVersion(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void setUpGateway(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.workspace.Gateway gateway, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void setUpGateway(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.workspace.Gateway gateway, org.apache.airavata.model.credential.store.PasswordCredential isSuperAdminCredentials, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void registerUser(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void registerUser(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails, org.apache.airavata.model.credential.store.PasswordCredential isRealmAdminCredentials, String newPassword, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void enableUser(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void enableUser(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails, org.apache.airavata.model.credential.store.PasswordCredential isRealmAdminCredentials, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -126,17 +126,18 @@ public class IamAdminServices {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getAPIVersion failed: unknown result");
     }
 
-    public org.apache.airavata.model.workspace.Gateway setUpGateway(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.workspace.Gateway gateway) throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
+    public org.apache.airavata.model.workspace.Gateway setUpGateway(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.workspace.Gateway gateway, org.apache.airavata.model.credential.store.PasswordCredential isSuperAdminCredentials) throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
-      send_setUpGateway(authzToken, gateway);
+      send_setUpGateway(authzToken, gateway, isSuperAdminCredentials);
       return recv_setUpGateway();
     }
 
-    public void send_setUpGateway(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.workspace.Gateway gateway) throws org.apache.thrift.TException
+    public void send_setUpGateway(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.workspace.Gateway gateway, org.apache.airavata.model.credential.store.PasswordCredential isSuperAdminCredentials) throws org.apache.thrift.TException
     {
       setUpGateway_args args = new setUpGateway_args();
       args.setAuthzToken(authzToken);
       args.setGateway(gateway);
+      args.setIsSuperAdminCredentials(isSuperAdminCredentials);
       sendBase("setUpGateway", args);
     }
 
@@ -156,17 +157,19 @@ public class IamAdminServices {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "setUpGateway failed: unknown result");
     }
 
-    public boolean registerUser(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails) throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
+    public boolean registerUser(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails, org.apache.airavata.model.credential.store.PasswordCredential isRealmAdminCredentials, String newPassword) throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
-      send_registerUser(authzToken, userDetails);
+      send_registerUser(authzToken, userDetails, isRealmAdminCredentials, newPassword);
       return recv_registerUser();
     }
 
-    public void send_registerUser(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails) throws org.apache.thrift.TException
+    public void send_registerUser(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails, org.apache.airavata.model.credential.store.PasswordCredential isRealmAdminCredentials, String newPassword) throws org.apache.thrift.TException
     {
       registerUser_args args = new registerUser_args();
       args.setAuthzToken(authzToken);
       args.setUserDetails(userDetails);
+      args.setIsRealmAdminCredentials(isRealmAdminCredentials);
+      args.setNewPassword(newPassword);
       sendBase("registerUser", args);
     }
 
@@ -186,17 +189,18 @@ public class IamAdminServices {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "registerUser failed: unknown result");
     }
 
-    public boolean enableUser(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails) throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
+    public boolean enableUser(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails, org.apache.airavata.model.credential.store.PasswordCredential isRealmAdminCredentials) throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
-      send_enableUser(authzToken, userDetails);
+      send_enableUser(authzToken, userDetails, isRealmAdminCredentials);
       return recv_enableUser();
     }
 
-    public void send_enableUser(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails) throws org.apache.thrift.TException
+    public void send_enableUser(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails, org.apache.airavata.model.credential.store.PasswordCredential isRealmAdminCredentials) throws org.apache.thrift.TException
     {
       enableUser_args args = new enableUser_args();
       args.setAuthzToken(authzToken);
       args.setUserDetails(userDetails);
+      args.setIsRealmAdminCredentials(isRealmAdminCredentials);
       sendBase("enableUser", args);
     }
 
@@ -266,9 +270,9 @@ public class IamAdminServices {
       }
     }
 
-    public void setUpGateway(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.workspace.Gateway gateway, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void setUpGateway(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.workspace.Gateway gateway, org.apache.airavata.model.credential.store.PasswordCredential isSuperAdminCredentials, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      setUpGateway_call method_call = new setUpGateway_call(authzToken, gateway, resultHandler, this, ___protocolFactory, ___transport);
+      setUpGateway_call method_call = new setUpGateway_call(authzToken, gateway, isSuperAdminCredentials, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -276,10 +280,12 @@ public class IamAdminServices {
     public static class setUpGateway_call extends org.apache.thrift.async.TAsyncMethodCall {
       private org.apache.airavata.model.security.AuthzToken authzToken;
       private org.apache.airavata.model.workspace.Gateway gateway;
-      public setUpGateway_call(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.workspace.Gateway gateway, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private org.apache.airavata.model.credential.store.PasswordCredential isSuperAdminCredentials;
+      public setUpGateway_call(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.workspace.Gateway gateway, org.apache.airavata.model.credential.store.PasswordCredential isSuperAdminCredentials, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.authzToken = authzToken;
         this.gateway = gateway;
+        this.isSuperAdminCredentials = isSuperAdminCredentials;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
@@ -287,6 +293,7 @@ public class IamAdminServices {
         setUpGateway_args args = new setUpGateway_args();
         args.setAuthzToken(authzToken);
         args.setGateway(gateway);
+        args.setIsSuperAdminCredentials(isSuperAdminCredentials);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -301,9 +308,9 @@ public class IamAdminServices {
       }
     }
 
-    public void registerUser(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void registerUser(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails, org.apache.airavata.model.credential.store.PasswordCredential isRealmAdminCredentials, String newPassword, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      registerUser_call method_call = new registerUser_call(authzToken, userDetails, resultHandler, this, ___protocolFactory, ___transport);
+      registerUser_call method_call = new registerUser_call(authzToken, userDetails, isRealmAdminCredentials, newPassword, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -311,10 +318,14 @@ public class IamAdminServices {
     public static class registerUser_call extends org.apache.thrift.async.TAsyncMethodCall {
       private org.apache.airavata.model.security.AuthzToken authzToken;
       private org.apache.airavata.model.user.UserProfile userDetails;
-      public registerUser_call(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private org.apache.airavata.model.credential.store.PasswordCredential isRealmAdminCredentials;
+      private String newPassword;
+      public registerUser_call(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails, org.apache.airavata.model.credential.store.PasswordCredential isRealmAdminCredentials, String newPassword, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.authzToken = authzToken;
         this.userDetails = userDetails;
+        this.isRealmAdminCredentials = isRealmAdminCredentials;
+        this.newPassword = newPassword;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
@@ -322,6 +333,8 @@ public class IamAdminServices {
         registerUser_args args = new registerUser_args();
         args.setAuthzToken(authzToken);
         args.setUserDetails(userDetails);
+        args.setIsRealmAdminCredentials(isRealmAdminCredentials);
+        args.setNewPassword(newPassword);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -336,9 +349,9 @@ public class IamAdminServices {
       }
     }
 
-    public void enableUser(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void enableUser(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails, org.apache.airavata.model.credential.store.PasswordCredential isRealmAdminCredentials, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      enableUser_call method_call = new enableUser_call(authzToken, userDetails, resultHandler, this, ___protocolFactory, ___transport);
+      enableUser_call method_call = new enableUser_call(authzToken, userDetails, isRealmAdminCredentials, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -346,10 +359,12 @@ public class IamAdminServices {
     public static class enableUser_call extends org.apache.thrift.async.TAsyncMethodCall {
       private org.apache.airavata.model.security.AuthzToken authzToken;
       private org.apache.airavata.model.user.UserProfile userDetails;
-      public enableUser_call(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private org.apache.airavata.model.credential.store.PasswordCredential isRealmAdminCredentials;
+      public enableUser_call(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails, org.apache.airavata.model.credential.store.PasswordCredential isRealmAdminCredentials, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.authzToken = authzToken;
         this.userDetails = userDetails;
+        this.isRealmAdminCredentials = isRealmAdminCredentials;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
@@ -357,6 +372,7 @@ public class IamAdminServices {
         enableUser_args args = new enableUser_args();
         args.setAuthzToken(authzToken);
         args.setUserDetails(userDetails);
+        args.setIsRealmAdminCredentials(isRealmAdminCredentials);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -433,7 +449,7 @@ public class IamAdminServices {
       public setUpGateway_result getResult(I iface, setUpGateway_args args) throws org.apache.thrift.TException {
         setUpGateway_result result = new setUpGateway_result();
         try {
-          result.success = iface.setUpGateway(args.authzToken, args.gateway);
+          result.success = iface.setUpGateway(args.authzToken, args.gateway, args.isSuperAdminCredentials);
         } catch (org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException Idse) {
           result.Idse = Idse;
         } catch (org.apache.airavata.model.error.AuthorizationException ae) {
@@ -459,7 +475,7 @@ public class IamAdminServices {
       public registerUser_result getResult(I iface, registerUser_args args) throws org.apache.thrift.TException {
         registerUser_result result = new registerUser_result();
         try {
-          result.success = iface.registerUser(args.authzToken, args.userDetails);
+          result.success = iface.registerUser(args.authzToken, args.userDetails, args.isRealmAdminCredentials, args.newPassword);
           result.setSuccessIsSet(true);
         } catch (org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException Idse) {
           result.Idse = Idse;
@@ -486,7 +502,7 @@ public class IamAdminServices {
       public enableUser_result getResult(I iface, enableUser_args args) throws org.apache.thrift.TException {
         enableUser_result result = new enableUser_result();
         try {
-          result.success = iface.enableUser(args.authzToken, args.userDetails);
+          result.success = iface.enableUser(args.authzToken, args.userDetails, args.isRealmAdminCredentials);
           result.setSuccessIsSet(true);
         } catch (org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException Idse) {
           result.Idse = Idse;
@@ -637,7 +653,7 @@ public class IamAdminServices {
       }
 
       public void start(I iface, setUpGateway_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.workspace.Gateway> resultHandler) throws TException {
-        iface.setUpGateway(args.authzToken, args.gateway,resultHandler);
+        iface.setUpGateway(args.authzToken, args.gateway, args.isSuperAdminCredentials,resultHandler);
       }
     }
 
@@ -700,7 +716,7 @@ public class IamAdminServices {
       }
 
       public void start(I iface, registerUser_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
-        iface.registerUser(args.authzToken, args.userDetails,resultHandler);
+        iface.registerUser(args.authzToken, args.userDetails, args.isRealmAdminCredentials, args.newPassword,resultHandler);
       }
     }
 
@@ -763,7 +779,7 @@ public class IamAdminServices {
       }
 
       public void start(I iface, enableUser_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
-        iface.enableUser(args.authzToken, args.userDetails,resultHandler);
+        iface.enableUser(args.authzToken, args.userDetails, args.isRealmAdminCredentials,resultHandler);
       }
     }
 
@@ -1708,6 +1724,7 @@ public class IamAdminServices {
 
     private static final org.apache.thrift.protocol.TField AUTHZ_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("authzToken", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField GATEWAY_FIELD_DESC = new org.apache.thrift.protocol.TField("gateway", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField IS_SUPER_ADMIN_CREDENTIALS_FIELD_DESC = new org.apache.thrift.protocol.TField("isSuperAdminCredentials", org.apache.thrift.protocol.TType.STRUCT, (short)3);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -1717,11 +1734,13 @@ public class IamAdminServices {
 
     public org.apache.airavata.model.security.AuthzToken authzToken; // required
     public org.apache.airavata.model.workspace.Gateway gateway; // required
+    public org.apache.airavata.model.credential.store.PasswordCredential isSuperAdminCredentials; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       AUTHZ_TOKEN((short)1, "authzToken"),
-      GATEWAY((short)2, "gateway");
+      GATEWAY((short)2, "gateway"),
+      IS_SUPER_ADMIN_CREDENTIALS((short)3, "isSuperAdminCredentials");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -1740,6 +1759,8 @@ public class IamAdminServices {
             return AUTHZ_TOKEN;
           case 2: // GATEWAY
             return GATEWAY;
+          case 3: // IS_SUPER_ADMIN_CREDENTIALS
+            return IS_SUPER_ADMIN_CREDENTIALS;
           default:
             return null;
         }
@@ -1787,6 +1808,8 @@ public class IamAdminServices {
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.security.AuthzToken.class)));
       tmpMap.put(_Fields.GATEWAY, new org.apache.thrift.meta_data.FieldMetaData("gateway", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.workspace.Gateway.class)));
+      tmpMap.put(_Fields.IS_SUPER_ADMIN_CREDENTIALS, new org.apache.thrift.meta_data.FieldMetaData("isSuperAdminCredentials", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.credential.store.PasswordCredential.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(setUpGateway_args.class, metaDataMap);
     }
@@ -1796,11 +1819,13 @@ public class IamAdminServices {
 
     public setUpGateway_args(
       org.apache.airavata.model.security.AuthzToken authzToken,
-      org.apache.airavata.model.workspace.Gateway gateway)
+      org.apache.airavata.model.workspace.Gateway gateway,
+      org.apache.airavata.model.credential.store.PasswordCredential isSuperAdminCredentials)
     {
       this();
       this.authzToken = authzToken;
       this.gateway = gateway;
+      this.isSuperAdminCredentials = isSuperAdminCredentials;
     }
 
     /**
@@ -1813,6 +1838,9 @@ public class IamAdminServices {
       if (other.isSetGateway()) {
         this.gateway = new org.apache.airavata.model.workspace.Gateway(other.gateway);
       }
+      if (other.isSetIsSuperAdminCredentials()) {
+        this.isSuperAdminCredentials = new org.apache.airavata.model.credential.store.PasswordCredential(other.isSuperAdminCredentials);
+      }
     }
 
     public setUpGateway_args deepCopy() {
@@ -1823,6 +1851,7 @@ public class IamAdminServices {
     public void clear() {
       this.authzToken = null;
       this.gateway = null;
+      this.isSuperAdminCredentials = null;
     }
 
     public org.apache.airavata.model.security.AuthzToken getAuthzToken() {
@@ -1873,6 +1902,30 @@ public class IamAdminServices {
       }
     }
 
+    public org.apache.airavata.model.credential.store.PasswordCredential getIsSuperAdminCredentials() {
+      return this.isSuperAdminCredentials;
+    }
+
+    public setUpGateway_args setIsSuperAdminCredentials(org.apache.airavata.model.credential.store.PasswordCredential isSuperAdminCredentials) {
+      this.isSuperAdminCredentials = isSuperAdminCredentials;
+      return this;
+    }
+
+    public void unsetIsSuperAdminCredentials() {
+      this.isSuperAdminCredentials = null;
+    }
+
+    /** Returns true if field isSuperAdminCredentials is set (has been assigned a value) and false otherwise */
+    public boolean isSetIsSuperAdminCredentials() {
+      return this.isSuperAdminCredentials != null;
+    }
+
+    public void setIsSuperAdminCredentialsIsSet(boolean value) {
+      if (!value) {
+        this.isSuperAdminCredentials = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case AUTHZ_TOKEN:
@@ -1891,6 +1944,14 @@ public class IamAdminServices {
         }
         break;
 
+      case IS_SUPER_ADMIN_CREDENTIALS:
+        if (value == null) {
+          unsetIsSuperAdminCredentials();
+        } else {
+          setIsSuperAdminCredentials((org.apache.airavata.model.credential.store.PasswordCredential)value);
+        }
+        break;
+
       }
     }
 
@@ -1901,6 +1962,9 @@ public class IamAdminServices {
 
       case GATEWAY:
         return getGateway();
+
+      case IS_SUPER_ADMIN_CREDENTIALS:
+        return getIsSuperAdminCredentials();
 
       }
       throw new IllegalStateException();
@@ -1917,6 +1981,8 @@ public class IamAdminServices {
         return isSetAuthzToken();
       case GATEWAY:
         return isSetGateway();
+      case IS_SUPER_ADMIN_CREDENTIALS:
+        return isSetIsSuperAdminCredentials();
       }
       throw new IllegalStateException();
     }
@@ -1952,6 +2018,15 @@ public class IamAdminServices {
           return false;
       }
 
+      boolean this_present_isSuperAdminCredentials = true && this.isSetIsSuperAdminCredentials();
+      boolean that_present_isSuperAdminCredentials = true && that.isSetIsSuperAdminCredentials();
+      if (this_present_isSuperAdminCredentials || that_present_isSuperAdminCredentials) {
+        if (!(this_present_isSuperAdminCredentials && that_present_isSuperAdminCredentials))
+          return false;
+        if (!this.isSuperAdminCredentials.equals(that.isSuperAdminCredentials))
+          return false;
+      }
+
       return true;
     }
 
@@ -1968,6 +2043,11 @@ public class IamAdminServices {
       list.add(present_gateway);
       if (present_gateway)
         list.add(gateway);
+
+      boolean present_isSuperAdminCredentials = true && (isSetIsSuperAdminCredentials());
+      list.add(present_isSuperAdminCredentials);
+      if (present_isSuperAdminCredentials)
+        list.add(isSuperAdminCredentials);
 
       return list.hashCode();
     }
@@ -1996,6 +2076,16 @@ public class IamAdminServices {
       }
       if (isSetGateway()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gateway, other.gateway);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetIsSuperAdminCredentials()).compareTo(other.isSetIsSuperAdminCredentials());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetIsSuperAdminCredentials()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.isSuperAdminCredentials, other.isSuperAdminCredentials);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -2035,6 +2125,14 @@ public class IamAdminServices {
         sb.append(this.gateway);
       }
       first = false;
+      if (!first) sb.append(", ");
+      sb.append("isSuperAdminCredentials:");
+      if (this.isSuperAdminCredentials == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.isSuperAdminCredentials);
+      }
+      first = false;
       sb.append(")");
       return sb.toString();
     }
@@ -2047,12 +2145,18 @@ public class IamAdminServices {
       if (gateway == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'gateway' was not present! Struct: " + toString());
       }
+      if (isSuperAdminCredentials == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'isSuperAdminCredentials' was not present! Struct: " + toString());
+      }
       // check for sub-struct validity
       if (authzToken != null) {
         authzToken.validate();
       }
       if (gateway != null) {
         gateway.validate();
+      }
+      if (isSuperAdminCredentials != null) {
+        isSuperAdminCredentials.validate();
       }
     }
 
@@ -2108,6 +2212,15 @@ public class IamAdminServices {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 3: // IS_SUPER_ADMIN_CREDENTIALS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.isSuperAdminCredentials = new org.apache.airavata.model.credential.store.PasswordCredential();
+                struct.isSuperAdminCredentials.read(iprot);
+                struct.setIsSuperAdminCredentialsIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -2133,6 +2246,11 @@ public class IamAdminServices {
           struct.gateway.write(oprot);
           oprot.writeFieldEnd();
         }
+        if (struct.isSuperAdminCredentials != null) {
+          oprot.writeFieldBegin(IS_SUPER_ADMIN_CREDENTIALS_FIELD_DESC);
+          struct.isSuperAdminCredentials.write(oprot);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -2152,6 +2270,7 @@ public class IamAdminServices {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         struct.authzToken.write(oprot);
         struct.gateway.write(oprot);
+        struct.isSuperAdminCredentials.write(oprot);
       }
 
       @Override
@@ -2163,6 +2282,9 @@ public class IamAdminServices {
         struct.gateway = new org.apache.airavata.model.workspace.Gateway();
         struct.gateway.read(iprot);
         struct.setGatewayIsSet(true);
+        struct.isSuperAdminCredentials = new org.apache.airavata.model.credential.store.PasswordCredential();
+        struct.isSuperAdminCredentials.read(iprot);
+        struct.setIsSuperAdminCredentialsIsSet(true);
       }
     }
 
@@ -2753,6 +2875,8 @@ public class IamAdminServices {
 
     private static final org.apache.thrift.protocol.TField AUTHZ_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("authzToken", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField USER_DETAILS_FIELD_DESC = new org.apache.thrift.protocol.TField("userDetails", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField IS_REALM_ADMIN_CREDENTIALS_FIELD_DESC = new org.apache.thrift.protocol.TField("isRealmAdminCredentials", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+    private static final org.apache.thrift.protocol.TField NEW_PASSWORD_FIELD_DESC = new org.apache.thrift.protocol.TField("newPassword", org.apache.thrift.protocol.TType.STRING, (short)4);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -2762,11 +2886,15 @@ public class IamAdminServices {
 
     public org.apache.airavata.model.security.AuthzToken authzToken; // required
     public org.apache.airavata.model.user.UserProfile userDetails; // required
+    public org.apache.airavata.model.credential.store.PasswordCredential isRealmAdminCredentials; // required
+    public String newPassword; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       AUTHZ_TOKEN((short)1, "authzToken"),
-      USER_DETAILS((short)2, "userDetails");
+      USER_DETAILS((short)2, "userDetails"),
+      IS_REALM_ADMIN_CREDENTIALS((short)3, "isRealmAdminCredentials"),
+      NEW_PASSWORD((short)4, "newPassword");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -2785,6 +2913,10 @@ public class IamAdminServices {
             return AUTHZ_TOKEN;
           case 2: // USER_DETAILS
             return USER_DETAILS;
+          case 3: // IS_REALM_ADMIN_CREDENTIALS
+            return IS_REALM_ADMIN_CREDENTIALS;
+          case 4: // NEW_PASSWORD
+            return NEW_PASSWORD;
           default:
             return null;
         }
@@ -2832,6 +2964,10 @@ public class IamAdminServices {
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.security.AuthzToken.class)));
       tmpMap.put(_Fields.USER_DETAILS, new org.apache.thrift.meta_data.FieldMetaData("userDetails", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.user.UserProfile.class)));
+      tmpMap.put(_Fields.IS_REALM_ADMIN_CREDENTIALS, new org.apache.thrift.meta_data.FieldMetaData("isRealmAdminCredentials", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.credential.store.PasswordCredential.class)));
+      tmpMap.put(_Fields.NEW_PASSWORD, new org.apache.thrift.meta_data.FieldMetaData("newPassword", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(registerUser_args.class, metaDataMap);
     }
@@ -2841,11 +2977,15 @@ public class IamAdminServices {
 
     public registerUser_args(
       org.apache.airavata.model.security.AuthzToken authzToken,
-      org.apache.airavata.model.user.UserProfile userDetails)
+      org.apache.airavata.model.user.UserProfile userDetails,
+      org.apache.airavata.model.credential.store.PasswordCredential isRealmAdminCredentials,
+      String newPassword)
     {
       this();
       this.authzToken = authzToken;
       this.userDetails = userDetails;
+      this.isRealmAdminCredentials = isRealmAdminCredentials;
+      this.newPassword = newPassword;
     }
 
     /**
@@ -2858,6 +2998,12 @@ public class IamAdminServices {
       if (other.isSetUserDetails()) {
         this.userDetails = new org.apache.airavata.model.user.UserProfile(other.userDetails);
       }
+      if (other.isSetIsRealmAdminCredentials()) {
+        this.isRealmAdminCredentials = new org.apache.airavata.model.credential.store.PasswordCredential(other.isRealmAdminCredentials);
+      }
+      if (other.isSetNewPassword()) {
+        this.newPassword = other.newPassword;
+      }
     }
 
     public registerUser_args deepCopy() {
@@ -2868,6 +3014,8 @@ public class IamAdminServices {
     public void clear() {
       this.authzToken = null;
       this.userDetails = null;
+      this.isRealmAdminCredentials = null;
+      this.newPassword = null;
     }
 
     public org.apache.airavata.model.security.AuthzToken getAuthzToken() {
@@ -2918,6 +3066,54 @@ public class IamAdminServices {
       }
     }
 
+    public org.apache.airavata.model.credential.store.PasswordCredential getIsRealmAdminCredentials() {
+      return this.isRealmAdminCredentials;
+    }
+
+    public registerUser_args setIsRealmAdminCredentials(org.apache.airavata.model.credential.store.PasswordCredential isRealmAdminCredentials) {
+      this.isRealmAdminCredentials = isRealmAdminCredentials;
+      return this;
+    }
+
+    public void unsetIsRealmAdminCredentials() {
+      this.isRealmAdminCredentials = null;
+    }
+
+    /** Returns true if field isRealmAdminCredentials is set (has been assigned a value) and false otherwise */
+    public boolean isSetIsRealmAdminCredentials() {
+      return this.isRealmAdminCredentials != null;
+    }
+
+    public void setIsRealmAdminCredentialsIsSet(boolean value) {
+      if (!value) {
+        this.isRealmAdminCredentials = null;
+      }
+    }
+
+    public String getNewPassword() {
+      return this.newPassword;
+    }
+
+    public registerUser_args setNewPassword(String newPassword) {
+      this.newPassword = newPassword;
+      return this;
+    }
+
+    public void unsetNewPassword() {
+      this.newPassword = null;
+    }
+
+    /** Returns true if field newPassword is set (has been assigned a value) and false otherwise */
+    public boolean isSetNewPassword() {
+      return this.newPassword != null;
+    }
+
+    public void setNewPasswordIsSet(boolean value) {
+      if (!value) {
+        this.newPassword = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case AUTHZ_TOKEN:
@@ -2936,6 +3132,22 @@ public class IamAdminServices {
         }
         break;
 
+      case IS_REALM_ADMIN_CREDENTIALS:
+        if (value == null) {
+          unsetIsRealmAdminCredentials();
+        } else {
+          setIsRealmAdminCredentials((org.apache.airavata.model.credential.store.PasswordCredential)value);
+        }
+        break;
+
+      case NEW_PASSWORD:
+        if (value == null) {
+          unsetNewPassword();
+        } else {
+          setNewPassword((String)value);
+        }
+        break;
+
       }
     }
 
@@ -2946,6 +3158,12 @@ public class IamAdminServices {
 
       case USER_DETAILS:
         return getUserDetails();
+
+      case IS_REALM_ADMIN_CREDENTIALS:
+        return getIsRealmAdminCredentials();
+
+      case NEW_PASSWORD:
+        return getNewPassword();
 
       }
       throw new IllegalStateException();
@@ -2962,6 +3180,10 @@ public class IamAdminServices {
         return isSetAuthzToken();
       case USER_DETAILS:
         return isSetUserDetails();
+      case IS_REALM_ADMIN_CREDENTIALS:
+        return isSetIsRealmAdminCredentials();
+      case NEW_PASSWORD:
+        return isSetNewPassword();
       }
       throw new IllegalStateException();
     }
@@ -2997,6 +3219,24 @@ public class IamAdminServices {
           return false;
       }
 
+      boolean this_present_isRealmAdminCredentials = true && this.isSetIsRealmAdminCredentials();
+      boolean that_present_isRealmAdminCredentials = true && that.isSetIsRealmAdminCredentials();
+      if (this_present_isRealmAdminCredentials || that_present_isRealmAdminCredentials) {
+        if (!(this_present_isRealmAdminCredentials && that_present_isRealmAdminCredentials))
+          return false;
+        if (!this.isRealmAdminCredentials.equals(that.isRealmAdminCredentials))
+          return false;
+      }
+
+      boolean this_present_newPassword = true && this.isSetNewPassword();
+      boolean that_present_newPassword = true && that.isSetNewPassword();
+      if (this_present_newPassword || that_present_newPassword) {
+        if (!(this_present_newPassword && that_present_newPassword))
+          return false;
+        if (!this.newPassword.equals(that.newPassword))
+          return false;
+      }
+
       return true;
     }
 
@@ -3013,6 +3253,16 @@ public class IamAdminServices {
       list.add(present_userDetails);
       if (present_userDetails)
         list.add(userDetails);
+
+      boolean present_isRealmAdminCredentials = true && (isSetIsRealmAdminCredentials());
+      list.add(present_isRealmAdminCredentials);
+      if (present_isRealmAdminCredentials)
+        list.add(isRealmAdminCredentials);
+
+      boolean present_newPassword = true && (isSetNewPassword());
+      list.add(present_newPassword);
+      if (present_newPassword)
+        list.add(newPassword);
 
       return list.hashCode();
     }
@@ -3041,6 +3291,26 @@ public class IamAdminServices {
       }
       if (isSetUserDetails()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userDetails, other.userDetails);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetIsRealmAdminCredentials()).compareTo(other.isSetIsRealmAdminCredentials());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetIsRealmAdminCredentials()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.isRealmAdminCredentials, other.isRealmAdminCredentials);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetNewPassword()).compareTo(other.isSetNewPassword());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetNewPassword()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.newPassword, other.newPassword);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -3080,6 +3350,22 @@ public class IamAdminServices {
         sb.append(this.userDetails);
       }
       first = false;
+      if (!first) sb.append(", ");
+      sb.append("isRealmAdminCredentials:");
+      if (this.isRealmAdminCredentials == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.isRealmAdminCredentials);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("newPassword:");
+      if (this.newPassword == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.newPassword);
+      }
+      first = false;
       sb.append(")");
       return sb.toString();
     }
@@ -3092,12 +3378,21 @@ public class IamAdminServices {
       if (userDetails == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'userDetails' was not present! Struct: " + toString());
       }
+      if (isRealmAdminCredentials == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'isRealmAdminCredentials' was not present! Struct: " + toString());
+      }
+      if (newPassword == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'newPassword' was not present! Struct: " + toString());
+      }
       // check for sub-struct validity
       if (authzToken != null) {
         authzToken.validate();
       }
       if (userDetails != null) {
         userDetails.validate();
+      }
+      if (isRealmAdminCredentials != null) {
+        isRealmAdminCredentials.validate();
       }
     }
 
@@ -3153,6 +3448,23 @@ public class IamAdminServices {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 3: // IS_REALM_ADMIN_CREDENTIALS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.isRealmAdminCredentials = new org.apache.airavata.model.credential.store.PasswordCredential();
+                struct.isRealmAdminCredentials.read(iprot);
+                struct.setIsRealmAdminCredentialsIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 4: // NEW_PASSWORD
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.newPassword = iprot.readString();
+                struct.setNewPasswordIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -3178,6 +3490,16 @@ public class IamAdminServices {
           struct.userDetails.write(oprot);
           oprot.writeFieldEnd();
         }
+        if (struct.isRealmAdminCredentials != null) {
+          oprot.writeFieldBegin(IS_REALM_ADMIN_CREDENTIALS_FIELD_DESC);
+          struct.isRealmAdminCredentials.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.newPassword != null) {
+          oprot.writeFieldBegin(NEW_PASSWORD_FIELD_DESC);
+          oprot.writeString(struct.newPassword);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -3197,6 +3519,8 @@ public class IamAdminServices {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         struct.authzToken.write(oprot);
         struct.userDetails.write(oprot);
+        struct.isRealmAdminCredentials.write(oprot);
+        oprot.writeString(struct.newPassword);
       }
 
       @Override
@@ -3208,6 +3532,11 @@ public class IamAdminServices {
         struct.userDetails = new org.apache.airavata.model.user.UserProfile();
         struct.userDetails.read(iprot);
         struct.setUserDetailsIsSet(true);
+        struct.isRealmAdminCredentials = new org.apache.airavata.model.credential.store.PasswordCredential();
+        struct.isRealmAdminCredentials.read(iprot);
+        struct.setIsRealmAdminCredentialsIsSet(true);
+        struct.newPassword = iprot.readString();
+        struct.setNewPasswordIsSet(true);
       }
     }
 
@@ -3793,6 +4122,7 @@ public class IamAdminServices {
 
     private static final org.apache.thrift.protocol.TField AUTHZ_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("authzToken", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField USER_DETAILS_FIELD_DESC = new org.apache.thrift.protocol.TField("userDetails", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField IS_REALM_ADMIN_CREDENTIALS_FIELD_DESC = new org.apache.thrift.protocol.TField("isRealmAdminCredentials", org.apache.thrift.protocol.TType.STRUCT, (short)3);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -3802,11 +4132,13 @@ public class IamAdminServices {
 
     public org.apache.airavata.model.security.AuthzToken authzToken; // required
     public org.apache.airavata.model.user.UserProfile userDetails; // required
+    public org.apache.airavata.model.credential.store.PasswordCredential isRealmAdminCredentials; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       AUTHZ_TOKEN((short)1, "authzToken"),
-      USER_DETAILS((short)2, "userDetails");
+      USER_DETAILS((short)2, "userDetails"),
+      IS_REALM_ADMIN_CREDENTIALS((short)3, "isRealmAdminCredentials");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -3825,6 +4157,8 @@ public class IamAdminServices {
             return AUTHZ_TOKEN;
           case 2: // USER_DETAILS
             return USER_DETAILS;
+          case 3: // IS_REALM_ADMIN_CREDENTIALS
+            return IS_REALM_ADMIN_CREDENTIALS;
           default:
             return null;
         }
@@ -3872,6 +4206,8 @@ public class IamAdminServices {
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.security.AuthzToken.class)));
       tmpMap.put(_Fields.USER_DETAILS, new org.apache.thrift.meta_data.FieldMetaData("userDetails", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.user.UserProfile.class)));
+      tmpMap.put(_Fields.IS_REALM_ADMIN_CREDENTIALS, new org.apache.thrift.meta_data.FieldMetaData("isRealmAdminCredentials", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.credential.store.PasswordCredential.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(enableUser_args.class, metaDataMap);
     }
@@ -3881,11 +4217,13 @@ public class IamAdminServices {
 
     public enableUser_args(
       org.apache.airavata.model.security.AuthzToken authzToken,
-      org.apache.airavata.model.user.UserProfile userDetails)
+      org.apache.airavata.model.user.UserProfile userDetails,
+      org.apache.airavata.model.credential.store.PasswordCredential isRealmAdminCredentials)
     {
       this();
       this.authzToken = authzToken;
       this.userDetails = userDetails;
+      this.isRealmAdminCredentials = isRealmAdminCredentials;
     }
 
     /**
@@ -3898,6 +4236,9 @@ public class IamAdminServices {
       if (other.isSetUserDetails()) {
         this.userDetails = new org.apache.airavata.model.user.UserProfile(other.userDetails);
       }
+      if (other.isSetIsRealmAdminCredentials()) {
+        this.isRealmAdminCredentials = new org.apache.airavata.model.credential.store.PasswordCredential(other.isRealmAdminCredentials);
+      }
     }
 
     public enableUser_args deepCopy() {
@@ -3908,6 +4249,7 @@ public class IamAdminServices {
     public void clear() {
       this.authzToken = null;
       this.userDetails = null;
+      this.isRealmAdminCredentials = null;
     }
 
     public org.apache.airavata.model.security.AuthzToken getAuthzToken() {
@@ -3958,6 +4300,30 @@ public class IamAdminServices {
       }
     }
 
+    public org.apache.airavata.model.credential.store.PasswordCredential getIsRealmAdminCredentials() {
+      return this.isRealmAdminCredentials;
+    }
+
+    public enableUser_args setIsRealmAdminCredentials(org.apache.airavata.model.credential.store.PasswordCredential isRealmAdminCredentials) {
+      this.isRealmAdminCredentials = isRealmAdminCredentials;
+      return this;
+    }
+
+    public void unsetIsRealmAdminCredentials() {
+      this.isRealmAdminCredentials = null;
+    }
+
+    /** Returns true if field isRealmAdminCredentials is set (has been assigned a value) and false otherwise */
+    public boolean isSetIsRealmAdminCredentials() {
+      return this.isRealmAdminCredentials != null;
+    }
+
+    public void setIsRealmAdminCredentialsIsSet(boolean value) {
+      if (!value) {
+        this.isRealmAdminCredentials = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case AUTHZ_TOKEN:
@@ -3976,6 +4342,14 @@ public class IamAdminServices {
         }
         break;
 
+      case IS_REALM_ADMIN_CREDENTIALS:
+        if (value == null) {
+          unsetIsRealmAdminCredentials();
+        } else {
+          setIsRealmAdminCredentials((org.apache.airavata.model.credential.store.PasswordCredential)value);
+        }
+        break;
+
       }
     }
 
@@ -3986,6 +4360,9 @@ public class IamAdminServices {
 
       case USER_DETAILS:
         return getUserDetails();
+
+      case IS_REALM_ADMIN_CREDENTIALS:
+        return getIsRealmAdminCredentials();
 
       }
       throw new IllegalStateException();
@@ -4002,6 +4379,8 @@ public class IamAdminServices {
         return isSetAuthzToken();
       case USER_DETAILS:
         return isSetUserDetails();
+      case IS_REALM_ADMIN_CREDENTIALS:
+        return isSetIsRealmAdminCredentials();
       }
       throw new IllegalStateException();
     }
@@ -4037,6 +4416,15 @@ public class IamAdminServices {
           return false;
       }
 
+      boolean this_present_isRealmAdminCredentials = true && this.isSetIsRealmAdminCredentials();
+      boolean that_present_isRealmAdminCredentials = true && that.isSetIsRealmAdminCredentials();
+      if (this_present_isRealmAdminCredentials || that_present_isRealmAdminCredentials) {
+        if (!(this_present_isRealmAdminCredentials && that_present_isRealmAdminCredentials))
+          return false;
+        if (!this.isRealmAdminCredentials.equals(that.isRealmAdminCredentials))
+          return false;
+      }
+
       return true;
     }
 
@@ -4053,6 +4441,11 @@ public class IamAdminServices {
       list.add(present_userDetails);
       if (present_userDetails)
         list.add(userDetails);
+
+      boolean present_isRealmAdminCredentials = true && (isSetIsRealmAdminCredentials());
+      list.add(present_isRealmAdminCredentials);
+      if (present_isRealmAdminCredentials)
+        list.add(isRealmAdminCredentials);
 
       return list.hashCode();
     }
@@ -4081,6 +4474,16 @@ public class IamAdminServices {
       }
       if (isSetUserDetails()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userDetails, other.userDetails);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetIsRealmAdminCredentials()).compareTo(other.isSetIsRealmAdminCredentials());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetIsRealmAdminCredentials()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.isRealmAdminCredentials, other.isRealmAdminCredentials);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -4120,6 +4523,14 @@ public class IamAdminServices {
         sb.append(this.userDetails);
       }
       first = false;
+      if (!first) sb.append(", ");
+      sb.append("isRealmAdminCredentials:");
+      if (this.isRealmAdminCredentials == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.isRealmAdminCredentials);
+      }
+      first = false;
       sb.append(")");
       return sb.toString();
     }
@@ -4132,12 +4543,18 @@ public class IamAdminServices {
       if (userDetails == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'userDetails' was not present! Struct: " + toString());
       }
+      if (isRealmAdminCredentials == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'isRealmAdminCredentials' was not present! Struct: " + toString());
+      }
       // check for sub-struct validity
       if (authzToken != null) {
         authzToken.validate();
       }
       if (userDetails != null) {
         userDetails.validate();
+      }
+      if (isRealmAdminCredentials != null) {
+        isRealmAdminCredentials.validate();
       }
     }
 
@@ -4193,6 +4610,15 @@ public class IamAdminServices {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 3: // IS_REALM_ADMIN_CREDENTIALS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.isRealmAdminCredentials = new org.apache.airavata.model.credential.store.PasswordCredential();
+                struct.isRealmAdminCredentials.read(iprot);
+                struct.setIsRealmAdminCredentialsIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -4218,6 +4644,11 @@ public class IamAdminServices {
           struct.userDetails.write(oprot);
           oprot.writeFieldEnd();
         }
+        if (struct.isRealmAdminCredentials != null) {
+          oprot.writeFieldBegin(IS_REALM_ADMIN_CREDENTIALS_FIELD_DESC);
+          struct.isRealmAdminCredentials.write(oprot);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -4237,6 +4668,7 @@ public class IamAdminServices {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         struct.authzToken.write(oprot);
         struct.userDetails.write(oprot);
+        struct.isRealmAdminCredentials.write(oprot);
       }
 
       @Override
@@ -4248,6 +4680,9 @@ public class IamAdminServices {
         struct.userDetails = new org.apache.airavata.model.user.UserProfile();
         struct.userDetails.read(iprot);
         struct.setUserDetailsIsSet(true);
+        struct.isRealmAdminCredentials = new org.apache.airavata.model.credential.store.PasswordCredential();
+        struct.isRealmAdminCredentials.read(iprot);
+        struct.setIsRealmAdminCredentialsIsSet(true);
       }
     }
 
