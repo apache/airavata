@@ -27,6 +27,7 @@ include "../../../airavata-apis/airavata_errors.thrift"
 include "../../../airavata-apis/security_model.thrift"
 include "../../../data-models/experiment-catalog-models/workspace_model.thrift"
 include "../../../data-models/user-group-models/user_profile_model.thrift"
+include "../../../data-models/credential-store-models/credential_store_data_models.thrift"
 include "iam_admin_services_cpi_errors.thrift"
 
 namespace java org.apache.airavata.service.profile.iam.admin.services.cpi
@@ -41,17 +42,21 @@ service IamAdminServices {
                                2: airavata_errors.AuthorizationException ae)
 
     workspace_model.Gateway setUpGateway (1: required security_model.AuthzToken authzToken,
-                       2: required workspace_model.Gateway gateway)
+                       2: required workspace_model.Gateway gateway
+                       3: required credential_store_data_models.PasswordCredential isSuperAdminCredentials)
                     throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
                             2: airavata_errors.AuthorizationException ae)
 
     bool registerUser(1: required security_model.AuthzToken authzToken,
-                        2: required user_profile_model.UserProfile userDetails)
+                        2: required user_profile_model.UserProfile userDetails
+                        3: required credential_store_data_models.PasswordCredential isRealmAdminCredentials
+                        4: required string newPassword)
                         throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
                                                     2: airavata_errors.AuthorizationException ae)
 
     bool enableUser(1: required security_model.AuthzToken authzToken,
-                            2: required user_profile_model.UserProfile userDetails)
+                            2: required user_profile_model.UserProfile userDetails
+                            3: required credential_store_data_models.PasswordCredential isRealmAdminCredentials)
                             throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
                                                         2: airavata_errors.AuthorizationException ae)
 

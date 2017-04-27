@@ -24,11 +24,14 @@ package org.apache.airavata.service.profile.handlers;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.service.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.iam_admin_services_cpiConstants;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
+import org.apache.airavata.service.security.interceptor.SecurityCheck;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,8 +53,8 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     }
 
     @Override
-    public String setUpGateway(AuthzToken authzToken, Gateway gateway) throws IamAdminServicesException, AuthorizationException {
-        PasswordCredential isSuperAdminCredentials = new PasswordCredential();
+    @SecurityCheck
+    public Gateway setUpGateway(AuthzToken authzToken, Gateway gateway, PasswordCredential isSuperAdminCredentials) throws IamAdminServicesException, AuthorizationException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         try{
             keycloakclient.addTenant(isSuperAdminCredentials,gateway);
@@ -59,10 +62,41 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
                 logger.error("Admin account creation failed !!, please refer error logs for reason");
             }
             Gateway gatewayWithIdAndSecret = keycloakclient.configureClient(isSuperAdminCredentials,gateway);
-            //return gatewayWithIdAndSecret;
+            return gatewayWithIdAndSecret;
         } catch (IamAdminServicesException ex){
             logger.error("Gateway Setup Failed, reason: " + ex.getCause(), ex);
+            throw ex;
         }
-        return null;
+    }
+
+    //ToDo: Will only be secure when using SSL between PGA and Airavata
+    @Override
+    @SecurityCheck
+    public boolean registerUser(AuthzToken authzToken, UserProfile userDetails, PasswordCredential isRealmAdminCredentials, String newPassword) throws IamAdminServicesException, AuthorizationException {
+        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
+        try{
+            if(keycloakclient.createUser(isRealmAdminCredentials,userDetails,newPassword))
+                return true;
+            else
+                return false;
+        } catch (IamAdminServicesException ex){
+            logger.error("Error while registering user into Identity Server, reason: " + ex.getCause(), ex);
+            throw ex;
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    public boolean enableUser(AuthzToken authzToken, UserProfile userDetails, PasswordCredential isRealmAdminCredentials) throws IamAdminServicesException, AuthorizationException {
+        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
+        try{
+            if(keycloakclient.enableUserAccount(isRealmAdminCredentials,userDetails))
+                return true;
+            else
+                return false;
+        } catch (IamAdminServicesException ex){
+            logger.error("Error while enabling user account, reason: " + ex.getCause(), ex);
+            throw ex;
+        }
     }
 }
