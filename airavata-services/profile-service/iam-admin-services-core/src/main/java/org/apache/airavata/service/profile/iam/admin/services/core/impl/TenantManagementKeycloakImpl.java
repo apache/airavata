@@ -33,12 +33,9 @@ import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class TenantManagementKeycloakImpl implements TenantManagementInterface {
 
@@ -100,6 +97,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         return realmDetails;
     }
 
+    @Override
     public boolean createTenantAdminAccount(PasswordCredential isSuperAdminPasswordCreds, Gateway gatewayDetails) throws IamAdminServicesException{
         try{
             Keycloak client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), "master", isSuperAdminPasswordCreds);
@@ -153,6 +151,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         }
     }
 
+    @Override
     public Gateway configureClient(PasswordCredential isSuperAdminPasswordCreds, Gateway gatewayDetails) throws IamAdminServicesException{
         try{
             Keycloak client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), "master", isSuperAdminPasswordCreds);
@@ -194,6 +193,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         }
     }
 
+    @Override
     public boolean createUser(PasswordCredential realmAdminCreds, UserProfile userProfile, String newPassword) throws IamAdminServicesException{
         try{
             Keycloak client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), userProfile.getGatewayId(), realmAdminCreds);
@@ -232,6 +232,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         return false;
     }
 
+    @Override
     public boolean enableUserAccount(PasswordCredential realmAdminAccount, UserProfile userDetails) throws IamAdminServicesException{
         try{
             Keycloak client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), userDetails.getGatewayId(), realmAdminAccount);
