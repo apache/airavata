@@ -25,7 +25,11 @@ user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/simvascular"
 vhost_servername: "gateway.simvascular.org"
-vhost_ssl: False
+vhost_ssl: True
+# TODO: have Ansible manage these files as well
+ssl_certificate_file: "/etc/letsencrypt/live/gateway.simvascular.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/gateway.simvascular.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/gateway.simvascular.org/privkey.pem"
 
 ## WSO2 IS related variables
 tenant_domain: "airavata.simvascular"
