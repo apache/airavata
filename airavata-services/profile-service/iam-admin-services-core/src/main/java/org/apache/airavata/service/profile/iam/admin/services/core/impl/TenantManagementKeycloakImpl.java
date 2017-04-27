@@ -44,10 +44,10 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
     private static Keycloak getClient(String adminUrl, String realm, PasswordCredential AdminPasswordCreds) {
 
         return Keycloak.getInstance(
-                            adminUrl,
-                            realm, // the realm to log in to
-                            AdminPasswordCreds.getLoginUserName(), AdminPasswordCreds.getPassword(),  // the user
-                            "admin-cli"); // admin-cli is the client ID used for keycloak admin operations.
+                adminUrl,
+                realm, // the realm to log in to
+                AdminPasswordCreds.getLoginUserName(), AdminPasswordCreds.getPassword(),  // the user
+                "admin-cli"); // admin-cli is the client ID used for keycloak admin operations.
     }
 
     @Override

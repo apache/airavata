@@ -17,7 +17,7 @@ public class SetupNewGateway {
     private final static Logger logger = LoggerFactory.getLogger(SetupNewGateway.class);
 
     public static void main(String[] args) {
-        UserRegistration();
+
     }
 
     public static void setUpGateway(){
@@ -27,12 +27,12 @@ public class SetupNewGateway {
         testGateway.setIdentityServerUserName("mavenTest");
         testGateway.setGatewayAdminFirstName("Maven");
         testGateway.setGatewayAdminLastName("Test");
-        testGateway.setGatewayAdminEmail("bhandar.anuj@gmail.com");
+        testGateway.setGatewayAdminEmail("some.man@gmail.com");
         PasswordCredential superAdminCreds = new PasswordCredential();
         superAdminCreds.setGatewayId(testGateway.getGatewayId());
         superAdminCreds.setDescription("test credentials for IS admin creation");
-        superAdminCreds.setLoginUserName("airavataAdmin");
-        superAdminCreds.setPassword("Airavata@123");
+        superAdminCreds.setLoginUserName("SomeAdmin");
+        superAdminCreds.setPassword("SomePassord");
         superAdminCreds.setPortalUserName("superAdmin");
         TenantManagementKeycloakImpl client = new TenantManagementKeycloakImpl();
         try {
@@ -50,9 +50,9 @@ public class SetupNewGateway {
      public static void UserRegistration(){
          UserProfile user = new UserProfile();
          user.setUserId("testuser");
-         user.setUserName("Anuj Bhandar");
+         user.setUserName("Some Man");
          List<String> emails = new ArrayList<>();
-         emails.add("anuj.bhandar@outlook.com");
+         emails.add("some.man@outlook.com");
          user.setGatewayId("maven.test.gateway");
          user.setEmails(emails);
         PasswordCredential tenantAdminCreds = new PasswordCredential();

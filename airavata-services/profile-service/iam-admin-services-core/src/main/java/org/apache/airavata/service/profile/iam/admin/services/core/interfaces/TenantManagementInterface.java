@@ -22,6 +22,7 @@
 package org.apache.airavata.service.profile.iam.admin.services.core.interfaces;
 
 import org.apache.airavata.model.credential.store.PasswordCredential;
+import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 
@@ -32,8 +33,45 @@ public interface TenantManagementInterface {
      *
      * @param isSuperAdminPasswordCreds identity server super admin credentials
      * @param gatewayDetails gateway details from workspace catalog
-     * @return Realm object.
+     * @return Gateway object.
      */
-    public Gateway addTenant(PasswordCredential isSuperAdminPasswordCreds, Gateway gatewayDetails) throws IamAdminServicesException;
+    Gateway addTenant(PasswordCredential isSuperAdminPasswordCreds, Gateway gatewayDetails) throws IamAdminServicesException;
+
+    /**
+     * Method to add tenant Admin account in Identity Server.
+     *
+     * @param isSuperAdminPasswordCreds identity server super admin credentials
+     * @param gatewayDetails gateway details from workspace catalog
+     * @return Gateway object.
+     */
+    boolean createTenantAdminAccount(PasswordCredential isSuperAdminPasswordCreds, Gateway gatewayDetails) throws IamAdminServicesException;
+
+    /**
+     * Method to configure application client in Identity Server
+     *
+     * @param isSuperAdminPasswordCreds identity server super admin credentials
+     * @param gatewayDetails gateway details from workspace catalog
+     * @return Gateway object.
+     */
+    Gateway configureClient(PasswordCredential isSuperAdminPasswordCreds, Gateway gatewayDetails) throws IamAdminServicesException;
+
+    /**
+     * Method to configure application client in Identity Server
+     *
+     * @param realmAdminCreds identity server realm admin credentials
+     * @param userProfile gateway details from workspace catalog
+     * @param newPassword
+     * @return Gateway object.
+     */
+    boolean createUser(PasswordCredential realmAdminCreds, UserProfile userProfile, String newPassword) throws IamAdminServicesException;
+
+    /**
+     * Method to enable user in Identity Server
+     *
+     * @param realmAdminAccount identity server realm admin credentials
+     * @param userDetails gateway details from workspace catalog
+     * @return boolean.
+     */
+    boolean enableUserAccount(PasswordCredential realmAdminAccount, UserProfile userDetails) throws IamAdminServicesException;
 
 }
