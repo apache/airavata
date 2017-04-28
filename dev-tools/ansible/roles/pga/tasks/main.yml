@@ -1,61 +1,123 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
 ---
 - name: Create root directory
-  file: path="{{ doc_root_dir }}" state=directory
+  file: path="{{ doc_root_dir }}" state=directory owner="{{user}}" group="{{group}}"
   become: yes
 
 - include: install_deps_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml
 
-# - name: Check previous deployments
-#   stat: path="{{ doc_root_dir }}" get_md5=no get_checksum=no
-#   register: check
-
-# Why? if it's new, we just created this dir above...
-# if not, can just pull from the git repo in the next task...
-#- name: delete previous deployments 
-#  file: path="{{ doc_root_dir }}" state=absent
-
 - name: Git clone php gateway
-  git: 
+  git:
    repo: "{{ pga_repo }}"
-   dest: "{{ doc_root_dir }}" 
+   dest: "{{ doc_root_dir }}"
    version: "{{ git_branch }}"
    update: yes
    force: yes
   become: yes
+  become_user: "{{user}}"
 
-- name: Create user data dir {{ user_data_dir }}
-  file: path="{{ user_data_dir }}" state=directory owner="{{user}}" group="{{group}}" mode=0777 recurse=yes
+- name: Create experiment data dir {{ experiment_data_dir }}
+  file: path="{{ experiment_data_dir }}" state=directory owner="{{user}}" group="{{group}}" mode=0777 recurse=yes follow=yes
   become: yes
 
-# - name: Allow selinux outbound connection from web server
-  # command: setsebool -P httpd_can_network_connect 1
-
-#SHOULD MAKE A PROFILE RATHER THAN DISABLING. SELINUX IS *GOOD*
-# going to permissive from enforcing doesn't require a reboot
-# permissive allows all, but still logs, allowing easy build
-# of a working profile.
-- name: set selinux permissive
-  selinux: state=permissive policy=default
+# SELinux configuration
+- name: set selinux to enforcing
+  selinux: state=enforcing policy=targeted
   become: yes
-  register: selinux_disable
+  when: ansible_os_family == "RedHat"
+
+- name: set selinux context to allow read on public directory
+  sefcontext:
+    target: "{{ doc_root_dir }}/public(/.*)?"
+    setype: httpd_sys_content_t
+    state: present
+  become: yes
+  notify:
+    - restart httpd
+  when: ansible_os_family == "RedHat"
+
+- name: set selinux context to allow read/write on storage directory
+  sefcontext:
+    target: "{{ doc_root_dir }}/app/storage(/.*)?"
+    setype: httpd_sys_rw_content_t
+    state: present
+  become: yes
+  notify:
+    - restart httpd
+  when: ansible_os_family == "RedHat"
+
+- name: set selinux context to allow read/write on the user data directory
+  sefcontext:
+    target: "{{ user_data_dir }}(/.*)?"
+    setype: httpd_sys_rw_content_t
+    state: present
+  become: yes
+  notify:
+    - restart httpd
+  when: ansible_os_family == "RedHat"
+
+- name: allow httpd to connect out to the network
+  seboolean:
+    name: httpd_can_network_connect
+    state: yes
+    persistent: yes
+  become: yes
+  notify:
+    - restart httpd
   when: ansible_os_family == "RedHat"
 
 - name: Run composer update
   composer: command=update working_dir="{{ doc_root_dir }}"
   become: yes
+  become_user: "{{user}}"
 
 # step 6: Change pga configurations
 - name: Copy pga config file
-  template: src=pga_config.php.j2 dest="{{ doc_root_dir }}/app/config/pga_config.php"
+  template: src=pga_config.php.j2 dest="{{ doc_root_dir }}/app/config/pga_config.php" owner="{{user}}" group="{{group}}"
   become: yes
 
+- name: Checkout the portal theme (if a custom theme is defined)
+  git:
+   repo: "{{ portal_theme_repo }}"
+   dest: "{{ doc_root_dir }}/public/themes/{{ portal_theme }}"
+   version: "master"
+   update: yes
+  when: portal_theme != "base" and portal_theme_repo != ""
+  become: yes
+  become_user: "{{user}}"
+
 - name: give read permissions to doc root
-  file: path="{{ doc_root_dir }}" state=directory mode=0755 recurse=yes
+  file: path="{{ doc_root_dir }}" state=directory mode=a+rX owner="{{user}}" group="{{group}}" recurse=yes
   become: yes
 
 - name: give write permissions to storage dir
   file: path="{{ doc_root_dir }}/app/storage" state=directory mode=0777 owner="{{user}}" group="{{group}}" recurse=yes
   become: yes
+
+# For SELinux, need to apply file contexts, but I'm not sure why since the contexts were created before the files/directories
+- name: run restorecon on those directories
+  command: restorecon -R {{ doc_root_dir }} {{ user_data_dir }}
+  become: yes
+  when: ansible_os_family == "RedHat"
 
 - name: Enable https and http service on public zone
   firewalld: service="{{ item }}" permanent=true state=enabled zone=public immediate=True
@@ -64,8 +126,29 @@
     - https
   become: yes
 
-- name: copy httpd.conf file
-  template: src=pga-vhost.conf.j2 dest={{ httpd_confd_file_location[ansible_os_family] }} backup=yes
+- name: copy virtual host config file
+  template: src={{ pga_vhost_template }} dest={{ httpd_confd_file_location[ansible_os_family] }} backup=yes
   become: yes
   notify:
     - restart httpd
+  when: not vhost_ssl
+
+- name: copy SSL enabled virtual host config file
+  template: src={{ pga_ssl_vhost_template }} dest={{ httpd_confd_file_location[ansible_os_family] }} backup=yes
+  become: yes
+  notify:
+    - restart httpd
+  when: vhost_ssl
+
+- name: copy default virtual host file
+  copy: src=default.conf dest={{ httpd_confd_file_location[ansible_os_family] }} backup=yes
+  become: yes
+  notify:
+    - restart httpd
+
+- name: copy pga user's SSH key for the gateway data store
+  authorized_key:
+    user: "{{user}}"
+    key: "{{ gateway_data_store_ssh_public_key }}"
+  become: yes
+  when: gateway_data_store_ssh_public_key != ""

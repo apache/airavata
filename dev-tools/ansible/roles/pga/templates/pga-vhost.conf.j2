@@ -1,5 +1,8 @@
 <VirtualHost *:80>
     ServerName {{ vhost_servername }}
+    {% if vhost_serveralias is defined %}
+    ServerAlias {{ vhost_serveralias }}
+    {% endif %}
 
     DocumentRoot {{ doc_root_dir }}/public
     <Directory "{{ doc_root_dir }}/public">

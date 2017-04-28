@@ -18,6 +18,8 @@
 # under the License.
 
 . `dirname $0`/setenv.sh
+# Capture user's working dir before changing directory
+CWD="$PWD"
 cd ${AIRAVATA_HOME}/bin
 LOGO_FILE="logo.txt"
 
@@ -29,6 +31,8 @@ IS_DAEMON_MODE=false
 LOGO=true
 IS_SUBSET=false
 SUBSET=""
+DEFAULT_LOG_FILE="${AIRAVATA_HOME}/logs/output.log"
+LOG_FILE=$DEFAULT_LOG_FILE
 
 # parse command arguments
 for var in "$@"
@@ -64,6 +68,15 @@ do
 	        LOGO=false
             shift
         ;;
+        -log)
+            shift
+            LOG_FILE="$1"
+            shift
+            # If relative path, expand to absolute path using the user's $CWD
+            if [ -z "`echo "$LOG_FILE" | egrep "^/"`" ]; then
+                LOG_FILE="${CWD}/${LOG_FILE}"
+            fi
+        ;;
         -h)
             echo "Usage: airavata-server-start.sh [server-name/s] [command-options]"
             echo "Server names:"
@@ -80,6 +93,7 @@ do
             echo "  -nologo             Do not show airavata logo"
             echo "  -security           Enable Java 2 security"
 	        echo "  --<key>[=<value>]   Server setting(s) to override or introduce (overrides values in airavata-server.properties)"
+	        echo "  -log <LOG_FILE>     Where to redirect stdout/stderr (defaults to $DEFAULT_LOG_FILE)"
             echo "  -h                  Display this help and exit"
             shift
             exit 0
@@ -114,8 +128,9 @@ fi
 
 if ${IS_DAEMON_MODE} ; then
 	echo "Starting airavata server/s in daemon mode..."
+	echo "Redirecting output to $LOG_FILE"
 	nohup java ${JAVA_OPTS} -classpath "${AIRAVATA_CLASSPATH}" \
-    org.apache.airavata.server.ServerMain ${AIRAVATA_COMMAND} $* > /dev/null 2>&1 &
+    org.apache.airavata.server.ServerMain ${AIRAVATA_COMMAND} $* >> $LOG_FILE 2>&1 &
 else
 	java ${JAVA_OPTS} -classpath "${AIRAVATA_CLASSPATH}" \
     org.apache.airavata.server.ServerMain ${AIRAVATA_COMMAND} $*
