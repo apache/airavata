@@ -140,6 +140,12 @@
     - restart httpd
   when: vhost_ssl
 
+- name: copy default virtual host file
+  copy: src=default.conf dest={{ httpd_confd_file_location[ansible_os_family] }} backup=yes
+  become: yes
+  notify:
+    - restart httpd
+
 - name: copy pga user's SSH key for the gateway data store
   authorized_key:
     user: "{{user}}"
