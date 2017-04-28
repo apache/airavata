@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,11 +16,10 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.registry.core.experiment.catalog.resources;
 
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
@@ -524,6 +523,8 @@ public class WorkerResource extends AbstractExpCatResource {
                 for (String id : accessibleIds)
                     query += ("'" + id + "'" + ",");
                 query = query.substring(0, query.length() - 1) + ") AND ";
+            }else if(ServerSettings.isEnableSharing() && (accessibleIds==null || accessibleIds.size()==0)){
+                return new ArrayList<>();
             }
 
             if (filters != null && filters.size() != 0) {
@@ -615,6 +616,8 @@ public class WorkerResource extends AbstractExpCatResource {
                 for (String id : accessibleIds)
                     query += ("'" + id + "'" + ",");
                 query = query.substring(0, query.length() - 1) + ") AND ";
+            }else if(ServerSettings.isEnableSharing() && (accessibleIds==null || accessibleIds.size()==0)){
+                return new ArrayList<>();
             }
 
             if (filters.get(ExperimentStatusConstants.STATE) != null) {
