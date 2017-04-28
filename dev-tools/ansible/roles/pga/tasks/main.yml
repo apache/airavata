@@ -141,7 +141,7 @@
   when: vhost_ssl
 
 - name: copy default virtual host file
-  copy: src=default.conf dest={{ httpd_confd_file_location[ansible_os_family] }} backup=yes
+  copy: src=default.conf dest={{ default_conf_file_location[ansible_os_family] }} backup=yes
   become: yes
   notify:
     - restart httpd
