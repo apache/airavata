@@ -26,6 +26,9 @@ vhost_ssl: False
 httpd_confd_file_location:
  RedHat: "/etc/httpd/conf.d/pga-{{ gateway_id }}.conf"
  Debian: "/etc/apache2/sites-available/pga-{{ gateway_id }}.conf"
+default_conf_file_location:
+ RedHat: "/etc/httpd/conf.d/default.conf"
+ Debian: "/etc/apache2/sites-available/default.conf"
 httpd_name:
  Debian: apache2
  RedHat: httpd
