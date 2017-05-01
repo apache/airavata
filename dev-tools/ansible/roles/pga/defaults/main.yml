@@ -49,6 +49,7 @@ admin_role_name: "admin"
 admin_readonly_role_name: "admin-read-only"
 user_role_name: "gateway-user"
 initial_role_name: "user-pending"
+auth_verify_peer: "true"
 
 ## Airavata Client related variables
 #airavata_server: "tls://gw77.iu.xsede.org"
