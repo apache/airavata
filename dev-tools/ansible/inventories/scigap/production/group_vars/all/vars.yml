@@ -66,7 +66,7 @@ zookeeper_url: "{{ groups['zookeeper'][0] }}:{{ zookeeper_client_port }}"
 api_server_name: "apiserver-node0"
 api_server_host: "{{ groups['api-orch'][0] }}"
 api_server_port: "8930"
-api_secured: "true"
+api_secured: "false"
 tls_enable: "true"
 api_server_tls_port: "9930"
 enable_sharing: "true"
@@ -117,6 +117,8 @@ user_data_dir: "/var/www/portals/gateway-user-data"
 #airavata_server: "tls://gw77.iu.xsede.org"
 airavata_server: "tls://{{ groups['api-orch'][0] }}"
 airavata_port: "9930"
+# FIXME: temporarily turn off SSL verification for WSO2 IS
+auth_verify_peer: "false"
 
 # Sharing Registry related variables
 sharing_registry_host: "{{ groups['api-orch'][0] }}"
