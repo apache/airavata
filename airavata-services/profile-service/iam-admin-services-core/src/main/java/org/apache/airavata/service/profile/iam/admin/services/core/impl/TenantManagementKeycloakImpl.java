@@ -174,6 +174,18 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             String[] defaultRoles = {"gateway-user"};
             pgaClient.setDefaultRoles(defaultRoles);
             List<String> redirectUris = new ArrayList<>();
+            if(gatewayDetails.getGatewayURL()!=null){
+                if(gatewayDetails.getGatewayURL().endsWith("/")){
+                    redirectUris.add(gatewayDetails.getGatewayURL() + "callback-url");
+                } else {
+                    redirectUris.add(gatewayDetails.getGatewayURL() + "/callback-url");
+                }
+            } else {
+                logger.error("Request for Realm Client Creation failed, callback URL not present");
+                IamAdminServicesException ex = new IamAdminServicesException();
+                ex.setMessage("Gateway Url field in GatewayProfile cannot be empty, Relam Client creation failed");
+                throw ex;
+            }
             redirectUris.add("http://accord.scigap.org/callback-url");
             pgaClient.setRedirectUris(redirectUris);
             pgaClient.setPublicClient(false);
