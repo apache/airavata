@@ -317,10 +317,10 @@ profile.service.server.host=localhost
 profile.service.server.port=8962
 profile_service=org.apache.airavata.service.profile.server.ProfileServiceServer
 # mysql properties
-credential.store.jdbc.url=jdbc:mysql://{{ db_server }}:3306/{{ profile_service }}
-credential.store.jdbc.user={{ db_user }}
-credential.store.jdbc.password={{ db_password }}
-credential.store.jdbc.driver=com.mysql.jdbc.Driver
+profile.service.jdbc.url=jdbc:mysql://{{ db_server }}:3306/{{ profile_service }}
+profile.service.jdbc.user={{ db_user }}
+profile.service.jdbc.password={{ db_password }}
+profile.service.jdbc.driver=com.mysql.jdbc.Driver
 profile.service.validationQuery=SELECT 1
 
 ###########################################################################
