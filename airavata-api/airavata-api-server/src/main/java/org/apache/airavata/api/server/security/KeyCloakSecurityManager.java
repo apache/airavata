@@ -132,7 +132,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
         String subject = authzToken.getClaimsMap().get(Constants.USER_NAME);
         String accessToken = authzToken.getAccessToken();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        String action = metaData.get(Constants.API_METHOD_NAME);
+        String action = "/airavata/" + metaData.get(Constants.API_METHOD_NAME);
         try {
             if (!ServerSettings.isAPISecured()) {
                 return true;
