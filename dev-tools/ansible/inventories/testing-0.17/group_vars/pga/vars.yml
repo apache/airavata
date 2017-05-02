@@ -20,19 +20,22 @@
 
 ---
 pga_repo: "https://github.com/apache/airavata-php-gateway.git"
-git_branch: "develop"
-pga_user: "pga"
-pga_group: "pga"
+git_branch: "keycloak-integration"
+user: "pga"
+group: "pga"
 doc_root_dir: "/var/www/html/php-gateway"
 user_data_dir: "/var/www/user_data"
-#vhost_servername: "{{ groups['pga'][0] }}"
+vhost_servername: "{{ groups['pga'][0] }}"
+vhost_ssl: False
 
-## WSO2 IS related variables
-tenant_domain: "prod.seagrid"
+## Keycloak related variables
+tenant_domain: "test.seagrid"
 admin_username: "admin"
 admin_password: "{{ vault_admin_password }}"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
+oauth_grant_type: "password"
+oidc_discovery_url: "https://iam.scigap.org/auth/realms/test.seagrid/.well-known/openid-configuration"
 
 ## Airavata Client related variables
 #airavata_server: "tls://gw77.iu.xsede.org"

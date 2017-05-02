@@ -286,7 +286,7 @@ zookeeper.timeout=30000
 ## API Security Configuration
 ########################################################################
 api.secured={{ api_secured }}
-security.manager.class=org.apache.airavata.api.server.security.DefaultAiravataSecurityManager
+security.manager.class=org.apache.airavata.api.server.security.KeyCloakSecurityManager
 ### TLS related configuration ####
 TLS.enabled={{ tls_enable }}
 TLS.api.server.port={{ api_server_tls_port }}
@@ -297,14 +297,34 @@ keystore.password={{ keystore_passwd }}
 #### trust store configuration ####
 trust.store={{ keystores_location }}/{{ client_truststore_src_path | basename }}
 trust.store.password=airavata
-#### remote authorization server url ####
-remote.oauth.authorization.server=https://idp.scigap.org:9443/services/
-#### xacml based authorization policy ####
-authorization.policy=airavata-default-xacml-policy
 #### authorization cache related configuration ####
 authz.cache.enabled=true
 authz.cache.manager.class=org.apache.airavata.api.server.security.authzcache.DefaultAuthzCacheManager
 in.memory.cache.size=1000
-
 #### remote idp service url for KeyCloak based setup####
 remote.idp.service.url={{ remote_idp_service_url }}
+
+# Kafka Logging related configuration
+isRunningOnAws=false
+kafka.broker.list=localhost:9092
+kafka.topic.prefix=local
+enable.kafka.logging=false
+
+###########################################################################
+# Profile Service Configuration
+###########################################################################
+profile.service.server.host=localhost
+profile.service.server.port=8962
+profile_service=org.apache.airavata.service.profile.server.ProfileServiceServer
+# mysql properties
+credential.store.jdbc.url=jdbc:mysql://{{ db_server }}:3306/{{ profile_service }}
+credential.store.jdbc.user={{ db_user }}
+credential.store.jdbc.password={{ db_password }}
+credential.store.jdbc.driver=com.mysql.jdbc.Driver
+profile.service.validationQuery=SELECT 1
+
+###########################################################################
+# Iam Admin services Configuration
+###########################################################################
+iam.server.url=https://iam.scigap.org/auth
+new.gateway.admin.temp.password=Password@123

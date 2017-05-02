@@ -48,396 +48,6 @@ final class DataProductType {
   );
 }
 
-class DataProductModel {
-  static $_TSPEC;
-
-  /**
-   * @var string
-   */
-  public $productUri = null;
-  /**
-   * @var string
-   */
-  public $gatewayId = null;
-  /**
-   * @var string
-   */
-  public $parentProductUri = null;
-  /**
-   * @var string
-   */
-  public $productName = null;
-  /**
-   * @var string
-   */
-  public $productDescription = null;
-  /**
-   * @var string
-   */
-  public $ownerName = null;
-  /**
-   * @var int
-   */
-  public $dataProductType = null;
-  /**
-   * @var int
-   */
-  public $productSize = null;
-  /**
-   * @var int
-   */
-  public $creationTime = null;
-  /**
-   * @var int
-   */
-  public $lastModifiedTime = null;
-  /**
-   * @var array
-   */
-  public $productMetadata = null;
-  /**
-   * @var \Airavata\Model\Data\Replica\DataReplicaLocationModel[]
-   */
-  public $replicaLocations = null;
-
-  public function __construct($vals=null) {
-    if (!isset(self::$_TSPEC)) {
-      self::$_TSPEC = array(
-        1 => array(
-          'var' => 'productUri',
-          'type' => TType::STRING,
-          ),
-        2 => array(
-          'var' => 'gatewayId',
-          'type' => TType::STRING,
-          ),
-        3 => array(
-          'var' => 'parentProductUri',
-          'type' => TType::STRING,
-          ),
-        4 => array(
-          'var' => 'productName',
-          'type' => TType::STRING,
-          ),
-        5 => array(
-          'var' => 'productDescription',
-          'type' => TType::STRING,
-          ),
-        6 => array(
-          'var' => 'ownerName',
-          'type' => TType::STRING,
-          ),
-        7 => array(
-          'var' => 'dataProductType',
-          'type' => TType::I32,
-          ),
-        8 => array(
-          'var' => 'productSize',
-          'type' => TType::I32,
-          ),
-        9 => array(
-          'var' => 'creationTime',
-          'type' => TType::I64,
-          ),
-        10 => array(
-          'var' => 'lastModifiedTime',
-          'type' => TType::I64,
-          ),
-        11 => array(
-          'var' => 'productMetadata',
-          'type' => TType::MAP,
-          'ktype' => TType::STRING,
-          'vtype' => TType::STRING,
-          'key' => array(
-            'type' => TType::STRING,
-          ),
-          'val' => array(
-            'type' => TType::STRING,
-            ),
-          ),
-        12 => array(
-          'var' => 'replicaLocations',
-          'type' => TType::LST,
-          'etype' => TType::STRUCT,
-          'elem' => array(
-            'type' => TType::STRUCT,
-            'class' => '\Airavata\Model\Data\Replica\DataReplicaLocationModel',
-            ),
-          ),
-        );
-    }
-    if (is_array($vals)) {
-      if (isset($vals['productUri'])) {
-        $this->productUri = $vals['productUri'];
-      }
-      if (isset($vals['gatewayId'])) {
-        $this->gatewayId = $vals['gatewayId'];
-      }
-      if (isset($vals['parentProductUri'])) {
-        $this->parentProductUri = $vals['parentProductUri'];
-      }
-      if (isset($vals['productName'])) {
-        $this->productName = $vals['productName'];
-      }
-      if (isset($vals['productDescription'])) {
-        $this->productDescription = $vals['productDescription'];
-      }
-      if (isset($vals['ownerName'])) {
-        $this->ownerName = $vals['ownerName'];
-      }
-      if (isset($vals['dataProductType'])) {
-        $this->dataProductType = $vals['dataProductType'];
-      }
-      if (isset($vals['productSize'])) {
-        $this->productSize = $vals['productSize'];
-      }
-      if (isset($vals['creationTime'])) {
-        $this->creationTime = $vals['creationTime'];
-      }
-      if (isset($vals['lastModifiedTime'])) {
-        $this->lastModifiedTime = $vals['lastModifiedTime'];
-      }
-      if (isset($vals['productMetadata'])) {
-        $this->productMetadata = $vals['productMetadata'];
-      }
-      if (isset($vals['replicaLocations'])) {
-        $this->replicaLocations = $vals['replicaLocations'];
-      }
-    }
-  }
-
-  public function getName() {
-    return 'DataProductModel';
-  }
-
-  public function read($input)
-  {
-    $xfer = 0;
-    $fname = null;
-    $ftype = 0;
-    $fid = 0;
-    $xfer += $input->readStructBegin($fname);
-    while (true)
-    {
-      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
-      if ($ftype == TType::STOP) {
-        break;
-      }
-      switch ($fid)
-      {
-        case 1:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->productUri);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 2:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->gatewayId);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 3:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->parentProductUri);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 4:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->productName);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 5:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->productDescription);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 6:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->ownerName);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 7:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->dataProductType);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 8:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->productSize);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 9:
-          if ($ftype == TType::I64) {
-            $xfer += $input->readI64($this->creationTime);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 10:
-          if ($ftype == TType::I64) {
-            $xfer += $input->readI64($this->lastModifiedTime);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 11:
-          if ($ftype == TType::MAP) {
-            $this->productMetadata = array();
-            $_size0 = 0;
-            $_ktype1 = 0;
-            $_vtype2 = 0;
-            $xfer += $input->readMapBegin($_ktype1, $_vtype2, $_size0);
-            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
-            {
-              $key5 = '';
-              $val6 = '';
-              $xfer += $input->readString($key5);
-              $xfer += $input->readString($val6);
-              $this->productMetadata[$key5] = $val6;
-            }
-            $xfer += $input->readMapEnd();
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 12:
-          if ($ftype == TType::LST) {
-            $this->replicaLocations = array();
-            $_size7 = 0;
-            $_etype10 = 0;
-            $xfer += $input->readListBegin($_etype10, $_size7);
-            for ($_i11 = 0; $_i11 < $_size7; ++$_i11)
-            {
-              $elem12 = null;
-              $elem12 = new \Airavata\Model\Data\Replica\DataReplicaLocationModel();
-              $xfer += $elem12->read($input);
-              $this->replicaLocations []= $elem12;
-            }
-            $xfer += $input->readListEnd();
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        default:
-          $xfer += $input->skip($ftype);
-          break;
-      }
-      $xfer += $input->readFieldEnd();
-    }
-    $xfer += $input->readStructEnd();
-    return $xfer;
-  }
-
-  public function write($output) {
-    $xfer = 0;
-    $xfer += $output->writeStructBegin('DataProductModel');
-    if ($this->productUri !== null) {
-      $xfer += $output->writeFieldBegin('productUri', TType::STRING, 1);
-      $xfer += $output->writeString($this->productUri);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->gatewayId !== null) {
-      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 2);
-      $xfer += $output->writeString($this->gatewayId);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->parentProductUri !== null) {
-      $xfer += $output->writeFieldBegin('parentProductUri', TType::STRING, 3);
-      $xfer += $output->writeString($this->parentProductUri);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->productName !== null) {
-      $xfer += $output->writeFieldBegin('productName', TType::STRING, 4);
-      $xfer += $output->writeString($this->productName);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->productDescription !== null) {
-      $xfer += $output->writeFieldBegin('productDescription', TType::STRING, 5);
-      $xfer += $output->writeString($this->productDescription);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->ownerName !== null) {
-      $xfer += $output->writeFieldBegin('ownerName', TType::STRING, 6);
-      $xfer += $output->writeString($this->ownerName);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->dataProductType !== null) {
-      $xfer += $output->writeFieldBegin('dataProductType', TType::I32, 7);
-      $xfer += $output->writeI32($this->dataProductType);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->productSize !== null) {
-      $xfer += $output->writeFieldBegin('productSize', TType::I32, 8);
-      $xfer += $output->writeI32($this->productSize);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->creationTime !== null) {
-      $xfer += $output->writeFieldBegin('creationTime', TType::I64, 9);
-      $xfer += $output->writeI64($this->creationTime);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->lastModifiedTime !== null) {
-      $xfer += $output->writeFieldBegin('lastModifiedTime', TType::I64, 10);
-      $xfer += $output->writeI64($this->lastModifiedTime);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->productMetadata !== null) {
-      if (!is_array($this->productMetadata)) {
-        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
-      }
-      $xfer += $output->writeFieldBegin('productMetadata', TType::MAP, 11);
-      {
-        $output->writeMapBegin(TType::STRING, TType::STRING, count($this->productMetadata));
-        {
-          foreach ($this->productMetadata as $kiter13 => $viter14)
-          {
-            $xfer += $output->writeString($kiter13);
-            $xfer += $output->writeString($viter14);
-          }
-        }
-        $output->writeMapEnd();
-      }
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->replicaLocations !== null) {
-      if (!is_array($this->replicaLocations)) {
-        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
-      }
-      $xfer += $output->writeFieldBegin('replicaLocations', TType::LST, 12);
-      {
-        $output->writeListBegin(TType::STRUCT, count($this->replicaLocations));
-        {
-          foreach ($this->replicaLocations as $iter15)
-          {
-            $xfer += $iter15->write($output);
-          }
-        }
-        $output->writeListEnd();
-      }
-      $xfer += $output->writeFieldEnd();
-    }
-    $xfer += $output->writeFieldStop();
-    $xfer += $output->writeStructEnd();
-    return $xfer;
-  }
-
-}
-
 class DataReplicaLocationModel {
   static $_TSPEC;
 
@@ -690,17 +300,17 @@ class DataReplicaLocationModel {
         case 12:
           if ($ftype == TType::MAP) {
             $this->replicaMetadata = array();
-            $_size16 = 0;
-            $_ktype17 = 0;
-            $_vtype18 = 0;
-            $xfer += $input->readMapBegin($_ktype17, $_vtype18, $_size16);
-            for ($_i20 = 0; $_i20 < $_size16; ++$_i20)
+            $_size0 = 0;
+            $_ktype1 = 0;
+            $_vtype2 = 0;
+            $xfer += $input->readMapBegin($_ktype1, $_vtype2, $_size0);
+            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
             {
-              $key21 = '';
-              $val22 = '';
-              $xfer += $input->readString($key21);
-              $xfer += $input->readString($val22);
-              $this->replicaMetadata[$key21] = $val22;
+              $key5 = '';
+              $val6 = '';
+              $xfer += $input->readString($key5);
+              $xfer += $input->readString($val6);
+              $this->replicaMetadata[$key5] = $val6;
             }
             $xfer += $input->readMapEnd();
           } else {
@@ -783,13 +393,403 @@ class DataReplicaLocationModel {
       {
         $output->writeMapBegin(TType::STRING, TType::STRING, count($this->replicaMetadata));
         {
-          foreach ($this->replicaMetadata as $kiter23 => $viter24)
+          foreach ($this->replicaMetadata as $kiter7 => $viter8)
           {
-            $xfer += $output->writeString($kiter23);
-            $xfer += $output->writeString($viter24);
+            $xfer += $output->writeString($kiter7);
+            $xfer += $output->writeString($viter8);
           }
         }
         $output->writeMapEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class DataProductModel {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $productUri = null;
+  /**
+   * @var string
+   */
+  public $gatewayId = null;
+  /**
+   * @var string
+   */
+  public $parentProductUri = null;
+  /**
+   * @var string
+   */
+  public $productName = null;
+  /**
+   * @var string
+   */
+  public $productDescription = null;
+  /**
+   * @var string
+   */
+  public $ownerName = null;
+  /**
+   * @var int
+   */
+  public $dataProductType = null;
+  /**
+   * @var int
+   */
+  public $productSize = null;
+  /**
+   * @var int
+   */
+  public $creationTime = null;
+  /**
+   * @var int
+   */
+  public $lastModifiedTime = null;
+  /**
+   * @var array
+   */
+  public $productMetadata = null;
+  /**
+   * @var \Airavata\Model\Data\Replica\DataReplicaLocationModel[]
+   */
+  public $replicaLocations = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'productUri',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'gatewayId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'parentProductUri',
+          'type' => TType::STRING,
+          ),
+        4 => array(
+          'var' => 'productName',
+          'type' => TType::STRING,
+          ),
+        5 => array(
+          'var' => 'productDescription',
+          'type' => TType::STRING,
+          ),
+        6 => array(
+          'var' => 'ownerName',
+          'type' => TType::STRING,
+          ),
+        7 => array(
+          'var' => 'dataProductType',
+          'type' => TType::I32,
+          ),
+        8 => array(
+          'var' => 'productSize',
+          'type' => TType::I32,
+          ),
+        9 => array(
+          'var' => 'creationTime',
+          'type' => TType::I64,
+          ),
+        10 => array(
+          'var' => 'lastModifiedTime',
+          'type' => TType::I64,
+          ),
+        11 => array(
+          'var' => 'productMetadata',
+          'type' => TType::MAP,
+          'ktype' => TType::STRING,
+          'vtype' => TType::STRING,
+          'key' => array(
+            'type' => TType::STRING,
+          ),
+          'val' => array(
+            'type' => TType::STRING,
+            ),
+          ),
+        12 => array(
+          'var' => 'replicaLocations',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\Data\Replica\DataReplicaLocationModel',
+            ),
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['productUri'])) {
+        $this->productUri = $vals['productUri'];
+      }
+      if (isset($vals['gatewayId'])) {
+        $this->gatewayId = $vals['gatewayId'];
+      }
+      if (isset($vals['parentProductUri'])) {
+        $this->parentProductUri = $vals['parentProductUri'];
+      }
+      if (isset($vals['productName'])) {
+        $this->productName = $vals['productName'];
+      }
+      if (isset($vals['productDescription'])) {
+        $this->productDescription = $vals['productDescription'];
+      }
+      if (isset($vals['ownerName'])) {
+        $this->ownerName = $vals['ownerName'];
+      }
+      if (isset($vals['dataProductType'])) {
+        $this->dataProductType = $vals['dataProductType'];
+      }
+      if (isset($vals['productSize'])) {
+        $this->productSize = $vals['productSize'];
+      }
+      if (isset($vals['creationTime'])) {
+        $this->creationTime = $vals['creationTime'];
+      }
+      if (isset($vals['lastModifiedTime'])) {
+        $this->lastModifiedTime = $vals['lastModifiedTime'];
+      }
+      if (isset($vals['productMetadata'])) {
+        $this->productMetadata = $vals['productMetadata'];
+      }
+      if (isset($vals['replicaLocations'])) {
+        $this->replicaLocations = $vals['replicaLocations'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'DataProductModel';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->productUri);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->parentProductUri);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->productName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->productDescription);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 6:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->ownerName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 7:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->dataProductType);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 8:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->productSize);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 9:
+          if ($ftype == TType::I64) {
+            $xfer += $input->readI64($this->creationTime);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 10:
+          if ($ftype == TType::I64) {
+            $xfer += $input->readI64($this->lastModifiedTime);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 11:
+          if ($ftype == TType::MAP) {
+            $this->productMetadata = array();
+            $_size9 = 0;
+            $_ktype10 = 0;
+            $_vtype11 = 0;
+            $xfer += $input->readMapBegin($_ktype10, $_vtype11, $_size9);
+            for ($_i13 = 0; $_i13 < $_size9; ++$_i13)
+            {
+              $key14 = '';
+              $val15 = '';
+              $xfer += $input->readString($key14);
+              $xfer += $input->readString($val15);
+              $this->productMetadata[$key14] = $val15;
+            }
+            $xfer += $input->readMapEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 12:
+          if ($ftype == TType::LST) {
+            $this->replicaLocations = array();
+            $_size16 = 0;
+            $_etype19 = 0;
+            $xfer += $input->readListBegin($_etype19, $_size16);
+            for ($_i20 = 0; $_i20 < $_size16; ++$_i20)
+            {
+              $elem21 = null;
+              $elem21 = new \Airavata\Model\Data\Replica\DataReplicaLocationModel();
+              $xfer += $elem21->read($input);
+              $this->replicaLocations []= $elem21;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('DataProductModel');
+    if ($this->productUri !== null) {
+      $xfer += $output->writeFieldBegin('productUri', TType::STRING, 1);
+      $xfer += $output->writeString($this->productUri);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayId !== null) {
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 2);
+      $xfer += $output->writeString($this->gatewayId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->parentProductUri !== null) {
+      $xfer += $output->writeFieldBegin('parentProductUri', TType::STRING, 3);
+      $xfer += $output->writeString($this->parentProductUri);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->productName !== null) {
+      $xfer += $output->writeFieldBegin('productName', TType::STRING, 4);
+      $xfer += $output->writeString($this->productName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->productDescription !== null) {
+      $xfer += $output->writeFieldBegin('productDescription', TType::STRING, 5);
+      $xfer += $output->writeString($this->productDescription);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ownerName !== null) {
+      $xfer += $output->writeFieldBegin('ownerName', TType::STRING, 6);
+      $xfer += $output->writeString($this->ownerName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->dataProductType !== null) {
+      $xfer += $output->writeFieldBegin('dataProductType', TType::I32, 7);
+      $xfer += $output->writeI32($this->dataProductType);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->productSize !== null) {
+      $xfer += $output->writeFieldBegin('productSize', TType::I32, 8);
+      $xfer += $output->writeI32($this->productSize);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->creationTime !== null) {
+      $xfer += $output->writeFieldBegin('creationTime', TType::I64, 9);
+      $xfer += $output->writeI64($this->creationTime);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->lastModifiedTime !== null) {
+      $xfer += $output->writeFieldBegin('lastModifiedTime', TType::I64, 10);
+      $xfer += $output->writeI64($this->lastModifiedTime);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->productMetadata !== null) {
+      if (!is_array($this->productMetadata)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('productMetadata', TType::MAP, 11);
+      {
+        $output->writeMapBegin(TType::STRING, TType::STRING, count($this->productMetadata));
+        {
+          foreach ($this->productMetadata as $kiter22 => $viter23)
+          {
+            $xfer += $output->writeString($kiter22);
+            $xfer += $output->writeString($viter23);
+          }
+        }
+        $output->writeMapEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->replicaLocations !== null) {
+      if (!is_array($this->replicaLocations)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('replicaLocations', TType::LST, 12);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->replicaLocations));
+        {
+          foreach ($this->replicaLocations as $iter24)
+          {
+            $xfer += $iter24->write($output);
+          }
+        }
+        $output->writeListEnd();
       }
       $xfer += $output->writeFieldEnd();
     }

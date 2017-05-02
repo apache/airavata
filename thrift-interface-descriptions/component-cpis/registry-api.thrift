@@ -24,7 +24,7 @@
 */
 
 include "../data-models/airavata_data_models.thrift"
-include "../data-models/user-group-models/user_profile_model.thrift"
+include "../data-models/user-tenant-group-models/user_profile_model.thrift"
 include "../data-models/experiment-catalog-models/status_models.thrift"
 include "../data-models/experiment-catalog-models/job_model.thrift"
 include "../data-models/experiment-catalog-models/experiment_model.thrift"

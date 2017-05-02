@@ -49,6 +49,7 @@ class MessageType:
   LAUNCHPROCESS = 5
   TERMINATEPROCESS = 6
   PROCESSOUTPUT = 7
+  DB_EVENT = 8
 
   _VALUES_TO_NAMES = {
     0: "EXPERIMENT",
@@ -59,6 +60,7 @@ class MessageType:
     5: "LAUNCHPROCESS",
     6: "TERMINATEPROCESS",
     7: "PROCESSOUTPUT",
+    8: "DB_EVENT",
   }
 
   _NAMES_TO_VALUES = {
@@ -70,6 +72,7 @@ class MessageType:
     "LAUNCHPROCESS": 5,
     "TERMINATEPROCESS": 6,
     "PROCESSOUTPUT": 7,
+    "DB_EVENT": 8,
   }
 
 
