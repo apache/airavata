@@ -76,7 +76,6 @@ public class ServerSettings extends ApplicationSettings {
     private static final java.lang.String SHARING_REGISTRY_PORT = "sharing.registry.server.port";
     private static final java.lang.String SHARING_REGISTRY_HOST = "sharing.registry.server.host";
 
-    private static String USER_PROFILE_MONGODB_HOST = "userprofile.mongodb.host";
     private static String USER_PROFILE_MONGODB_PORT = "userprofile.mongodb.port";
 
     private static final String REGISTRY_DB_URL = "registry.jdbc.url";
@@ -426,14 +425,6 @@ public class ServerSettings extends ApplicationSettings {
 
     public static int getCacheSize() throws ApplicationSettingsException {
         return Integer.valueOf(getSetting(Constants.IN_MEMORY_CACHE_SIZE));
-    }
-
-    public static String getUserProfileMongodbHost() throws ApplicationSettingsException{
-        return getSetting(USER_PROFILE_MONGODB_HOST);
-    }
-
-    public static int getUserProfileMongodbPort() throws ApplicationSettingsException{
-        return Integer.parseInt(getSetting(USER_PROFILE_MONGODB_PORT));
     }
 
     public static String getLocalDataLocation() {
