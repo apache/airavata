@@ -21,6 +21,8 @@
 ---
 doc_root_dir: "/var/www/{{ gateway_id }}"
 user_data_dir: "/var/www/user_data"
+# real_user_data_dir is the same as user_data_dir but without symbolic links in it
+real_user_data_dir: "{{ user_data_dir }}"
 vhost_servername: "{{ groups['pga'][0] }}"
 vhost_ssl: False
 httpd_confd_file_location:
