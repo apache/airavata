@@ -32,8 +32,9 @@ include "experiment-catalog-models/scheduling_model.thrift"
 include "experiment-catalog-models/status_models.thrift"
 include "resource-catalog-models/data_movement_models.thrift"
 include "replica-catalog-models/replica_catalog_models.thrift"
-include "user-group-models/user_profile_model.thrift"
-include "user-group-models/group_manager_model.thrift"
+include "user-tenant-group-models/user_profile_model.thrift"
+include "user-tenant-group-models/group_manager_model.thrift"
+include "user-tenant-group-models/tenant_profile_model.thrift"
 include "credential-store-models/credential_store_data_models.thrift"
 
 namespace java org.apache.airavata.model

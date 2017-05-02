@@ -4139,6 +4139,12 @@ interface AiravataIf {
    * *  Externally assertable unique identifier. SAML (primarly in higher education, academic) tends to keep
    * *   user name less opaque. OpenID Connect maintains them to be opaque.
    * *
+   * * firstName, middleName, lastName:
+   * *  First and Last names as assertede by the user
+   * *
+   * * namePrefix, nameSuffix:
+   * *  prefix and suffix to the users name as asserted by the user
+   * *
    * * emails:
    * *   Email identifier are Verified, REQUIRED and MULTIVALUED
    * *
@@ -4221,6 +4227,12 @@ interface AiravataIf {
    * * userId:
    * *  Externally assertable unique identifier. SAML (primarly in higher education, academic) tends to keep
    * *   user name less opaque. OpenID Connect maintains them to be opaque.
+   * *
+   * * firstName, middleName, lastName:
+   * *  First and Last names as assertede by the user
+   * *
+   * * namePrefix, nameSuffix:
+   * *  prefix and suffix to the users name as asserted by the user
    * *
    * * emails:
    * *   Email identifier are Verified, REQUIRED and MULTIVALUED

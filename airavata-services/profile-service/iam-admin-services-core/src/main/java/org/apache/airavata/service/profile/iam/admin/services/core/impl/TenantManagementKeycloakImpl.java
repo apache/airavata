@@ -216,8 +216,8 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             Keycloak client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), userProfile.getGatewayId(), realmAdminCreds);
             UserRepresentation user = new UserRepresentation();
             user.setUsername(userProfile.getUserId());
-            //ToDo: userProfile donot have firstname and lastname, putting Full name in keycloak's firstname field.
-            user.setFirstName(userProfile.getUserName());
+            user.setFirstName(userProfile.getFirstName());
+            user.setLastName(userProfile.getLastName());
             // Always takes the first value
             List<String> emails = userProfile.getEmails();
             user.setEmail(emails.get(0));
@@ -272,8 +272,8 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         try{
             Keycloak client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), userProfile.getGatewayId(), realmAdminCreds);
             List<UserRepresentation> retrieveUserList = client.realm(userProfile.getGatewayId()).users().search(userProfile.getUserId(),
-                    userProfile.getUserName(),
-                    null,
+                    userProfile.getFirstName(),
+                    userProfile.getLastName(),
                     userProfile.getEmails().get(0),
                     0, 1);
             if(!retrieveUserList.isEmpty())

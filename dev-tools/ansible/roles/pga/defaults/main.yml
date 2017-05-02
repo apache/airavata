@@ -26,6 +26,9 @@ vhost_ssl: False
 httpd_confd_file_location:
  RedHat: "/etc/httpd/conf.d/pga-{{ gateway_id }}.conf"
  Debian: "/etc/apache2/sites-available/pga-{{ gateway_id }}.conf"
+default_conf_file_location:
+ RedHat: "/etc/httpd/conf.d/default.conf"
+ Debian: "/etc/apache2/sites-available/default.conf"
 httpd_name:
  Debian: apache2
  RedHat: httpd
@@ -42,6 +45,8 @@ admin_username: "tdaadmin"
 admin_password: "SciDeploy"
 oauth_client_key: "RuLl_Uw7i_KXaLoAGJkiasTfyBYa"
 oauth_client_secret: "vD9yi2ANkChzgWiih3RahrIcfsoa"
+oauth_grant_type: "password"
+oauth_service_url: "https://iam.scigap.org/auth"
 admin_role_name: "admin"
 admin_readonly_role_name: "admin-read-only"
 user_role_name: "gateway-user"

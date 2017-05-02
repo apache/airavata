@@ -611,6 +611,103 @@ const char* AuthorizationException::what() const throw() {
 }
 
 
+DuplicateEntryException::~DuplicateEntryException() throw() {
+}
+
+
+void DuplicateEntryException::__set_message(const std::string& val) {
+  this->message = val;
+}
+
+uint32_t DuplicateEntryException::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_message = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->message);
+          isset_message = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_message)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t DuplicateEntryException::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("DuplicateEntryException");
+
+  xfer += oprot->writeFieldBegin("message", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->message);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(DuplicateEntryException &a, DuplicateEntryException &b) {
+  using ::std::swap;
+  swap(a.message, b.message);
+}
+
+DuplicateEntryException::DuplicateEntryException(const DuplicateEntryException& other12) : TException() {
+  message = other12.message;
+}
+DuplicateEntryException& DuplicateEntryException::operator=(const DuplicateEntryException& other13) {
+  message = other13.message;
+  return *this;
+}
+void DuplicateEntryException::printTo(std::ostream& out) const {
+  using ::apache::thrift::to_string;
+  out << "DuplicateEntryException(";
+  out << "message=" << to_string(message);
+  out << ")";
+}
+
+const char* DuplicateEntryException::what() const throw() {
+  try {
+    std::stringstream ss;
+    ss << "TException - service has thrown: " << *this;
+    this->thriftTExceptionMessageHolder_ = ss.str();
+    return this->thriftTExceptionMessageHolder_.c_str();
+  } catch (const std::exception&) {
+    return "TException - service has thrown: DuplicateEntryException";
+  }
+}
+
+
 AiravataClientException::~AiravataClientException() throw() {
 }
 
@@ -648,9 +745,9 @@ uint32_t AiravataClientException::read(::apache::thrift::protocol::TProtocol* ip
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast12;
-          xfer += iprot->readI32(ecast12);
-          this->airavataErrorType = (AiravataErrorType::type)ecast12;
+          int32_t ecast14;
+          xfer += iprot->readI32(ecast14);
+          this->airavataErrorType = (AiravataErrorType::type)ecast14;
           isset_airavataErrorType = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -704,15 +801,15 @@ void swap(AiravataClientException &a, AiravataClientException &b) {
   swap(a.__isset, b.__isset);
 }
 
-AiravataClientException::AiravataClientException(const AiravataClientException& other13) : TException() {
-  airavataErrorType = other13.airavataErrorType;
-  parameter = other13.parameter;
-  __isset = other13.__isset;
+AiravataClientException::AiravataClientException(const AiravataClientException& other15) : TException() {
+  airavataErrorType = other15.airavataErrorType;
+  parameter = other15.parameter;
+  __isset = other15.__isset;
 }
-AiravataClientException& AiravataClientException::operator=(const AiravataClientException& other14) {
-  airavataErrorType = other14.airavataErrorType;
-  parameter = other14.parameter;
-  __isset = other14.__isset;
+AiravataClientException& AiravataClientException::operator=(const AiravataClientException& other16) {
+  airavataErrorType = other16.airavataErrorType;
+  parameter = other16.parameter;
+  __isset = other16.__isset;
   return *this;
 }
 void AiravataClientException::printTo(std::ostream& out) const {
@@ -826,15 +923,15 @@ void swap(ValidatorResult &a, ValidatorResult &b) {
   swap(a.__isset, b.__isset);
 }
 
-ValidatorResult::ValidatorResult(const ValidatorResult& other15) {
-  result = other15.result;
-  errorDetails = other15.errorDetails;
-  __isset = other15.__isset;
+ValidatorResult::ValidatorResult(const ValidatorResult& other17) {
+  result = other17.result;
+  errorDetails = other17.errorDetails;
+  __isset = other17.__isset;
 }
-ValidatorResult& ValidatorResult::operator=(const ValidatorResult& other16) {
-  result = other16.result;
-  errorDetails = other16.errorDetails;
-  __isset = other16.__isset;
+ValidatorResult& ValidatorResult::operator=(const ValidatorResult& other18) {
+  result = other18.result;
+  errorDetails = other18.errorDetails;
+  __isset = other18.__isset;
   return *this;
 }
 void ValidatorResult::printTo(std::ostream& out) const {
@@ -893,14 +990,14 @@ uint32_t ValidationResults::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->validationResultList.clear();
-            uint32_t _size17;
-            ::apache::thrift::protocol::TType _etype20;
-            xfer += iprot->readListBegin(_etype20, _size17);
-            this->validationResultList.resize(_size17);
-            uint32_t _i21;
-            for (_i21 = 0; _i21 < _size17; ++_i21)
+            uint32_t _size19;
+            ::apache::thrift::protocol::TType _etype22;
+            xfer += iprot->readListBegin(_etype22, _size19);
+            this->validationResultList.resize(_size19);
+            uint32_t _i23;
+            for (_i23 = 0; _i23 < _size19; ++_i23)
             {
-              xfer += this->validationResultList[_i21].read(iprot);
+              xfer += this->validationResultList[_i23].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -937,10 +1034,10 @@ uint32_t ValidationResults::write(::apache::thrift::protocol::TProtocol* oprot) 
   xfer += oprot->writeFieldBegin("validationResultList", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->validationResultList.size()));
-    std::vector<ValidatorResult> ::const_iterator _iter22;
-    for (_iter22 = this->validationResultList.begin(); _iter22 != this->validationResultList.end(); ++_iter22)
+    std::vector<ValidatorResult> ::const_iterator _iter24;
+    for (_iter24 = this->validationResultList.begin(); _iter24 != this->validationResultList.end(); ++_iter24)
     {
-      xfer += (*_iter22).write(oprot);
+      xfer += (*_iter24).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -957,13 +1054,13 @@ void swap(ValidationResults &a, ValidationResults &b) {
   swap(a.validationResultList, b.validationResultList);
 }
 
-ValidationResults::ValidationResults(const ValidationResults& other23) {
-  validationState = other23.validationState;
-  validationResultList = other23.validationResultList;
+ValidationResults::ValidationResults(const ValidationResults& other25) {
+  validationState = other25.validationState;
+  validationResultList = other25.validationResultList;
 }
-ValidationResults& ValidationResults::operator=(const ValidationResults& other24) {
-  validationState = other24.validationState;
-  validationResultList = other24.validationResultList;
+ValidationResults& ValidationResults::operator=(const ValidationResults& other26) {
+  validationState = other26.validationState;
+  validationResultList = other26.validationResultList;
   return *this;
 }
 void ValidationResults::printTo(std::ostream& out) const {
@@ -1066,15 +1163,15 @@ void swap(LaunchValidationException &a, LaunchValidationException &b) {
   swap(a.__isset, b.__isset);
 }
 
-LaunchValidationException::LaunchValidationException(const LaunchValidationException& other25) : TException() {
-  validationResult = other25.validationResult;
-  errorMessage = other25.errorMessage;
-  __isset = other25.__isset;
+LaunchValidationException::LaunchValidationException(const LaunchValidationException& other27) : TException() {
+  validationResult = other27.validationResult;
+  errorMessage = other27.errorMessage;
+  __isset = other27.__isset;
 }
-LaunchValidationException& LaunchValidationException::operator=(const LaunchValidationException& other26) {
-  validationResult = other26.validationResult;
-  errorMessage = other26.errorMessage;
-  __isset = other26.__isset;
+LaunchValidationException& LaunchValidationException::operator=(const LaunchValidationException& other28) {
+  validationResult = other28.validationResult;
+  errorMessage = other28.errorMessage;
+  __isset = other28.__isset;
   return *this;
 }
 void LaunchValidationException::printTo(std::ostream& out) const {
@@ -1134,9 +1231,9 @@ uint32_t AiravataSystemException::read(::apache::thrift::protocol::TProtocol* ip
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast27;
-          xfer += iprot->readI32(ecast27);
-          this->airavataErrorType = (AiravataErrorType::type)ecast27;
+          int32_t ecast29;
+          xfer += iprot->readI32(ecast29);
+          this->airavataErrorType = (AiravataErrorType::type)ecast29;
           isset_airavataErrorType = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -1190,15 +1287,15 @@ void swap(AiravataSystemException &a, AiravataSystemException &b) {
   swap(a.__isset, b.__isset);
 }
 
-AiravataSystemException::AiravataSystemException(const AiravataSystemException& other28) : TException() {
-  airavataErrorType = other28.airavataErrorType;
-  message = other28.message;
-  __isset = other28.__isset;
+AiravataSystemException::AiravataSystemException(const AiravataSystemException& other30) : TException() {
+  airavataErrorType = other30.airavataErrorType;
+  message = other30.message;
+  __isset = other30.__isset;
 }
-AiravataSystemException& AiravataSystemException::operator=(const AiravataSystemException& other29) {
-  airavataErrorType = other29.airavataErrorType;
-  message = other29.message;
-  __isset = other29.__isset;
+AiravataSystemException& AiravataSystemException::operator=(const AiravataSystemException& other31) {
+  airavataErrorType = other31.airavataErrorType;
+  message = other31.message;
+  __isset = other31.__isset;
   return *this;
 }
 void AiravataSystemException::printTo(std::ostream& out) const {

@@ -59,17 +59,22 @@ return array(
         /**
          * OAuth Grant Type (password or authorization_code)
          */
-        'oauth-grant-type' => 'password',
+        'oauth-grant-type' => '{{ oauth_grant_type }}',
 
         /**
-         * Identity server domain
+         * OAuth call back url (only if the grant type is authorization_code)
          */
-        'server' => 'idp.scigap.org',
+        'oauth-callback-url' => 'http://localhost/callback-url',
+
+        /**
+         * For OIDC servers that support the discovery protocol.
+         */
+        'openid-connect-discovery-url' => '{{ oidc_discovery_url }}',
 
         /**
          * Identity server url
          */
-        'service-url' => 'https://idp.scigap.org:9443/',
+        'service-url' => '{{ oauth_service_url }}',
 
         /**
          * Enable HTTPS server verification
@@ -79,12 +84,7 @@ return array(
         /**
          * Path to the server certificate file
          */
-        'cafile-path' => app_path() . '/resources/security/idp_scigap_org.pem',
-
-        /**
-         * Allow self signed server certificates
-         */
-        'allow-self-signed-cert' => false
+        'cafile-path' => app_path() . '/resources/security/incommon_rsa_server_ca.pem',
     ],
 
 

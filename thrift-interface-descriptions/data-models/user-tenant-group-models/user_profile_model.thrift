@@ -129,6 +129,12 @@ struct NSFDemographics {
  *  Externally assertable unique identifier. SAML (primarly in higher education, academic) tends to keep
  *   user name less opaque. OpenID Connect maintains them to be opaque.
  *
+ * firstName, middleName, lastName:
+ *  First and Last names as assertede by the user
+ *
+ * namePrefix, nameSuffix:
+ *  prefix and suffix to the users name as asserted by the user
+ *
  * emails:
  *   Email identifier are Verified, REQUIRED and MULTIVALUED
  *
@@ -167,20 +173,25 @@ struct UserProfile {
     3: required string userId,
     4: required string gatewayId,
     5: required list<string> emails,
-    6: optional string userName,
-    7: optional string orcidId,
-    8: optional list<string> phones,
-    9: optional string country,
-    10: optional list<string> nationality,
-    11: optional string homeOrganization,
-    12: optional string orginationAffiliation,
-    13: required i64 creationTime,
-    14: required i64 lastAccessTime,
-    15: required i64 validUntil,
-    16: required Status State,
-    17: optional string comments,
-    18: optional list<string> labeledURI,
-    19: optional string gpgKey,
-    20: optional string timeZone,
-    21: optional NSFDemographics nsfDemographics
+    6: required string firstName,
+    7: required string lastName,
+    8: optional string middleName,
+    9: optional string namePrefix,
+    10: optional string nameSuffix,
+    11: optional string userName,
+    12: optional string orcidId,
+    13: optional list<string> phones,
+    14: optional string country,
+    15: optional list<string> nationality,
+    16: optional string homeOrganization,
+    17: optional string orginationAffiliation,
+    18: required i64 creationTime,
+    19: required i64 lastAccessTime,
+    20: required i64 validUntil,
+    21: required Status State,
+    22: optional string comments,
+    23: optional list<string> labeledURI,
+    24: optional string gpgKey,
+    25: optional string timeZone,
+    26: optional NSFDemographics nsfDemographics
 }

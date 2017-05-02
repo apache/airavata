@@ -280,7 +280,7 @@ zookeeper.timeout=30000
 ## API Security Configuration
 ########################################################################
 api.secured={{ api_secured }}
-security.manager.class=org.apache.airavata.api.server.security.DefaultAiravataSecurityManager
+security.manager.class=org.apache.airavata.api.server.security.KeyCloakSecurityManager
 ### TLS related configuration ####
 TLS.enabled={{ tls_enable }}
 TLS.api.server.port={{ api_server_tls_port }}
@@ -291,10 +291,6 @@ keystore.password={{ keystore_passwd }}
 #### trust store configuration ####
 trust.store={{ keystores_location }}/{{ client_truststore_src_path | basename }}
 trust.store.password=airavata
-#### remote authorization server url ####
-remote.oauth.authorization.server=https://idp.scigap.org:9443/services/
-#### xacml based authorization policy ####
-authorization.policy=airavata-default-xacml-policy
 #### authorization cache related configuration ####
 authz.cache.enabled=true
 authz.cache.manager.class=org.apache.airavata.api.server.security.authzcache.DefaultAuthzCacheManager
