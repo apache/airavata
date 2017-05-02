@@ -51,7 +51,7 @@ final class ResourceJobManagerType {
     3 => 'LSF',
     4 => 'UGE',
     5 => 'CLOUD',
-      6 => 'AIRAVATA_CUSTOM',
+    6 => 'AIRAVATA_CUSTOM',
   );
 }
 

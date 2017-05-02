@@ -25,7 +25,7 @@ namespace py apache.airavata.model.appcatalog.userresourceprofile
 
 include "compute_resource_model.thrift"
 include "data_movement_models.thrift"
-include "../user-group-models/user_profile_model.thrift"
+include "../user-tenant-group-models/user_profile_model.thrift"
 
 /**
  * User specific preferences for a Computer Resource
