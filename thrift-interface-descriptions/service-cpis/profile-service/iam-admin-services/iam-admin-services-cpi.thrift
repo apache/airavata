@@ -31,6 +31,7 @@ include "../../../data-models/credential-store-models/credential_store_data_mode
 include "iam_admin_services_cpi_errors.thrift"
 
 namespace java org.apache.airavata.service.profile.iam.admin.services.cpi
+namespace php Airavata.Service.Iam.Admin.Services.CPI
 
 const string IAM_ADMIN_SERVICES_CPI_VERSION = "0.17"
 const string IAM_ADMIN_SERVICES_CPI_NAME = "IamAdminServices"
