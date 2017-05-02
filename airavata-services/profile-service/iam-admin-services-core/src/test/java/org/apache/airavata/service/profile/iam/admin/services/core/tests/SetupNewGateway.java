@@ -17,6 +17,7 @@ public class SetupNewGateway {
     private final static Logger logger = LoggerFactory.getLogger(SetupNewGateway.class);
 
     public static void main(String[] args) {
+        findUser();
     }
 
     public static void setUpGateway(){
@@ -30,8 +31,8 @@ public class SetupNewGateway {
         PasswordCredential superAdminCreds = new PasswordCredential();
         superAdminCreds.setGatewayId(testGateway.getGatewayId());
         superAdminCreds.setDescription("test credentials for IS admin creation");
-        superAdminCreds.setLoginUserName("SomeAdmin");
-        superAdminCreds.setPassword("SomePassord");
+        superAdminCreds.setLoginUserName("airavataAdmin");
+        superAdminCreds.setPassword("Airavata@123");
         superAdminCreds.setPortalUserName("superAdmin");
         TenantManagementKeycloakImpl client = new TenantManagementKeycloakImpl();
         try {
@@ -65,6 +66,49 @@ public class SetupNewGateway {
          try {
              client.createUser(tenantAdminCreds,user,"test@123");
              client.enableUserAccount(tenantAdminCreds,user);
+         } catch (IamAdminServicesException e) {
+             e.printStackTrace();
+         }
+     }
+
+     public static void resetPassword(){
+         UserProfile user = new UserProfile();
+         user.setUserId("testuser");
+         List<String> emails = new ArrayList<>();
+         emails.add("some.man@outlook.com");
+         user.setGatewayId("maven.test.gateway");
+         user.setEmails(emails);
+         TenantManagementKeycloakImpl client = new TenantManagementKeycloakImpl();
+         try {
+             PasswordCredential tenantAdminCreds = new PasswordCredential();
+             tenantAdminCreds.setGatewayId(user.getGatewayId());
+             tenantAdminCreds.setDescription("test credentials for tenant admin creation");
+             tenantAdminCreds.setLoginUserName("mavenTest");
+             tenantAdminCreds.setPassword("Test@1234");
+             tenantAdminCreds.setPortalUserName("TenantAdmin");
+             client.resetUserPassword(tenantAdminCreds,user,"test@123");
+         } catch (IamAdminServicesException e) {
+             e.printStackTrace();
+         }
+     }
+
+     public static void findUser(){
+         UserProfile user = new UserProfile();
+
+         List<String> emails = new ArrayList<>();
+         emails.add("some.man@outlook.com");
+         user.setGatewayId("maven.test.gateway");
+         user.setEmails(emails);
+         TenantManagementKeycloakImpl client = new TenantManagementKeycloakImpl();
+         try {
+             PasswordCredential tenantAdminCreds = new PasswordCredential();
+             tenantAdminCreds.setGatewayId(user.getGatewayId());
+             tenantAdminCreds.setDescription("test credentials for tenant admin creation");
+             tenantAdminCreds.setLoginUserName("mavenTest");
+             tenantAdminCreds.setPassword("Test@1234");
+             tenantAdminCreds.setPortalUserName("TenantAdmin");
+             List<UserProfile> list = client.findUser(tenantAdminCreds,"maven.test.gateway","some.man@outlook.com",null);
+             System.out.println(list.get(0).getUserId());
          } catch (IamAdminServicesException e) {
              e.printStackTrace();
          }

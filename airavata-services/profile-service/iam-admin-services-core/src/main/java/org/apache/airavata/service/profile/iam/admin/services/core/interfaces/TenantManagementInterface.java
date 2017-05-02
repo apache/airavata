@@ -26,6 +26,8 @@ import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 
+import java.util.List;
+
 public interface TenantManagementInterface {
 
     /**
@@ -56,7 +58,7 @@ public interface TenantManagementInterface {
     Gateway configureClient(PasswordCredential isSuperAdminPasswordCreds, Gateway gatewayDetails) throws IamAdminServicesException;
 
     /**
-     * Method to configure application client in Identity Server
+     * Method to create user in Identity Server
      *
      * @param realmAdminCreds identity server realm admin credentials
      * @param userProfile gateway details from workspace catalog
@@ -73,5 +75,26 @@ public interface TenantManagementInterface {
      * @return boolean.
      */
     boolean enableUserAccount(PasswordCredential realmAdminAccount, UserProfile userDetails) throws IamAdminServicesException;
+
+    /**
+     * Method to reset user password in Identity Server
+     *
+     * @param realmAdminCreds identity server realm admin credentials
+     * @param userProfile set only available data in userProfile, ex: gatewayID (required), userId(optional) and email(required)
+     * @param newPassword
+     * @return Gateway object.
+     */
+    boolean resetUserPassword(PasswordCredential realmAdminCreds, UserProfile userProfile, String newPassword) throws IamAdminServicesException;
+
+    /**
+     * Method to find user in Identity Server
+     *
+     * @param realmAdminCreds identity server realm admin credentials
+     * @param gatewayID required
+     * @param email required
+     * @param userName can be null
+     * @return Gateway object.
+     */
+    List<UserProfile> findUser(PasswordCredential realmAdminCreds, String gatewayID, String email, String userName) throws IamAdminServicesException;
 
 }

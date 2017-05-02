@@ -35,6 +35,8 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     private final static Logger logger = LoggerFactory.getLogger(IamAdminServicesHandler.class);
@@ -64,7 +66,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             Gateway gatewayWithIdAndSecret = keycloakclient.configureClient(isSuperAdminCredentials,gateway);
             return gatewayWithIdAndSecret;
         } catch (IamAdminServicesException ex){
-            logger.error("Gateway Setup Failed, reason: " + ex.getCause(), ex);
+            logger.error("Gateway Setup Failed, reason: " + ex.getMessage(), ex);
             throw ex;
         }
     }
@@ -80,7 +82,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             else
                 return false;
         } catch (IamAdminServicesException ex){
-            logger.error("Error while registering user into Identity Server, reason: " + ex.getCause(), ex);
+            logger.error("Error while registering user into Identity Server, reason: " + ex.getMessage(), ex);
             throw ex;
         }
     }
@@ -95,7 +97,34 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             else
                 return false;
         } catch (IamAdminServicesException ex){
-            logger.error("Error while enabling user account, reason: " + ex.getCause(), ex);
+            logger.error("Error while enabling user account, reason: " + ex.getMessage(), ex);
+            throw ex;
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    public boolean resetUserPassword(AuthzToken authzToken, UserProfile userDetails, PasswordCredential isRealmAdminCredentials, String newPassword) throws IamAdminServicesException, AuthorizationException, TException {
+        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
+        try{
+            if(keycloakclient.resetUserPassword(isRealmAdminCredentials,userDetails,newPassword))
+                return true;
+            else
+                return false;
+        } catch (IamAdminServicesException ex){
+            logger.error("Error while resetting user password in Identity Server, reason: " + ex.getMessage(), ex);
+            throw ex;
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    public List<UserProfile> findUsers(AuthzToken authzToken, String gatewayID, String email, String userId, PasswordCredential isRealmAdminCredentials) throws IamAdminServicesException, AuthorizationException, TException {
+        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
+        try{
+            return keycloakclient.findUser(isRealmAdminCredentials,gatewayID,email,userId);
+        } catch (IamAdminServicesException ex){
+            logger.error("Error while retrieving users from Identity Server, reason: " + ex.getMessage(), ex);
             throw ex;
         }
     }
