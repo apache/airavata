@@ -119,7 +119,6 @@ public class ServerMain {
 			serverList.add(API_SERVER);
 			serverList.add(ORCHESTRATOR);
 			serverList.add(GFAC_SERVER);
-			serverList.add(USER_PROFILE);
 			serverList.add(PROFILE_SERVICE);
 		} else if (serverList.indexOf(API_ORCH) > -1) {
 			serverList.clear();
@@ -128,6 +127,7 @@ public class ServerMain {
 			serverList.add(SHARING_SERVER);
 			serverList.add(API_SERVER);
 			serverList.add(ORCHESTRATOR);
+			serverList.add(PROFILE_SERVICE);
 		} else if (serverList.indexOf(EXECUTION) > -1) {
 			serverList.clear();
 			serverList.add(GFAC_SERVER);
