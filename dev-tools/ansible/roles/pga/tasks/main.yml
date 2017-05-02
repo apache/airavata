@@ -67,7 +67,8 @@
 
 - name: set selinux context to allow read/write on the user data directory
   sefcontext:
-    target: "{{ user_data_dir }}(/.*)?"
+    # For SELinux file contexts, the real path without symbolic links must be used
+    target: "{{ real_user_data_dir }}(/.*)?"
     setype: httpd_sys_rw_content_t
     state: present
   become: yes
