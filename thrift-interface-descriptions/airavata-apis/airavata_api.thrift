@@ -43,8 +43,8 @@ include "../data-models/resource-catalog-models/user_resource_profile_model.thri
 include "../data-models/resource-catalog-models/data_movement_models.thrift"
 include "../data-models/workflow-models/workflow_data_model.thrift"
 include "../data-models/replica-catalog-models/replica_catalog_models.thrift"
-include "../data-models/user-group-models/group_manager_model.thrift"
-include "../data-models/user-group-models/user_profile_model.thrift"
+include "../data-models/user-tenant-group-models/group_manager_model.thrift"
+include "../data-models/user-tenant-group-models/user_profile_model.thrift"
 
 namespace java org.apache.airavata.api
 namespace php Airavata.API

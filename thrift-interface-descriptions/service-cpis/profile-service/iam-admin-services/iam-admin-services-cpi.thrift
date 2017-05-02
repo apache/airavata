@@ -26,7 +26,7 @@
 include "../../../airavata-apis/airavata_errors.thrift"
 include "../../../airavata-apis/security_model.thrift"
 include "../../../data-models/experiment-catalog-models/workspace_model.thrift"
-include "../../../data-models/user-group-models/user_profile_model.thrift"
+include "../../../data-models/user-tenant-group-models/user_profile_model.thrift"
 include "../../../data-models/credential-store-models/credential_store_data_models.thrift"
 include "iam_admin_services_cpi_errors.thrift"
 
