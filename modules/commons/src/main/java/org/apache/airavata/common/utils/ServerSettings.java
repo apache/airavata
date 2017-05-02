@@ -336,7 +336,7 @@ public class ServerSettings extends ApplicationSettings {
     }
 
     public static String getRemoteIDPServiceUrl() throws ApplicationSettingsException {
-        return getSetting(Constants.REMOTE_IDP_SERVICE_URL);
+        return getSetting(ServerSettings.IAM_SERVER_URL);
     }
 
 
