@@ -30,6 +30,7 @@ mysql_databases:
     - "{{ workflow_catalog }}"
     - "{{ credential_store }}"
     - "{{ sharing_catalog }}"
+    - "{{ profile_service }}"
 
 mysql_privs:
     - "{{ app_catalog }}.*:ALL"
@@ -38,5 +39,6 @@ mysql_privs:
     - "{{ workflow_catalog }}.*:ALL"
     - "{{ credential_store }}.*:ALL"
     - "{{ sharing_catalog }}.*:ALL"
+    - "{{ profile_service }}.*:ALL"
 
 ...
