@@ -214,8 +214,10 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
         URL url = new URL(urlToRead);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
-        String bearerAuth = "Bearer " + token;
-        conn.setRequestProperty("Authorization", bearerAuth);
+        if (token != null) {
+            String bearerAuth = "Bearer " + token;
+            conn.setRequestProperty("Authorization", bearerAuth);
+        }
         BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         String line;
         while ((line = rd.readLine()) != null) {
@@ -225,13 +227,16 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
         return result.toString();
     }
 
-    private String getAdminAccessToken(String gatewayId) throws TException, ApplicationSettingsException, IOException {
+    private String getAdminAccessToken(String gatewayId) throws Exception {
         CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
         GatewayResourceProfile gwrp = getRegistryServiceClient().getGatewayResourceProfile(gatewayId);
+        String identityServerRealm = gwrp.getIdentityServerTenant();
+        String openIdConnectUrl = getOpenIDConfigurationUrl(identityServerRealm);
+        JSONObject openIdConnectConfig = new JSONObject(getFromUrl(openIdConnectUrl, null));
         PasswordCredential credential = csClient.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
         String username = credential.getLoginUserName();
         String password = credential.getPassword();
-        String urlString = ServerSettings.getRemoteIDPServiceUrl() + "/realms/master/protocol/openid-connect/token";
+        String urlString = openIdConnectConfig.getString("token_endpoint");
         StringBuilder result = new StringBuilder();
         URL url = new URL(urlString);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
