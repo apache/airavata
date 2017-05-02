@@ -23,6 +23,9 @@ package org.apache.airavata.service.profile.server;
 
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.service.profile.handlers.IamAdminServicesHandler;
+import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
+import org.apache.airavata.service.profile.iam.admin.services.cpi.iam_admin_services_cpiConstants;
 import org.apache.airavata.service.profile.tenant.cpi.profile_tenant_cpiConstants;
 import org.apache.airavata.service.profile.handlers.TenantProfileServiceHandler;
 import org.apache.airavata.service.profile.handlers.UserProfileServiceHandler;
@@ -84,11 +87,13 @@ public class ProfileServiceServer implements IServer {
             // create multiple processors for each profile-service
             UserProfileService.Processor userProfileProcessor = new UserProfileService.Processor(new UserProfileServiceHandler());
             TenantProfileService.Processor teneantProfileProcessor = new TenantProfileService.Processor(new TenantProfileServiceHandler());
+            IamAdminServices.Processor iamAdminServicesProcessor = new IamAdminServices.Processor(new IamAdminServicesHandler());
 
             // create a multiplexed processor
             TMultiplexedProcessor profileServiceProcessor = new TMultiplexedProcessor();
             profileServiceProcessor.registerProcessor(profile_user_cpiConstants.USER_PROFILE_CPI_NAME, userProfileProcessor);
             profileServiceProcessor.registerProcessor(profile_tenant_cpiConstants.TENANT_PROFILE_CPI_NAME, teneantProfileProcessor);
+            profileServiceProcessor.registerProcessor(iam_admin_services_cpiConstants.IAM_ADMIN_SERVICES_CPI_NAME, iamAdminServicesProcessor);
 
             TServerTransport serverTransport;
 
