@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class TenantManagementKeycloakImpl implements TenantManagementInterface {
@@ -65,12 +66,12 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             client.realms().create(realmWithRoles);
             return gatewayDetails;
         } catch (ApplicationSettingsException ex) {
-            logger.error("Error getting values from property file, reason: " + ex.getCause(), ex);
+            logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
             IamAdminServicesException exception = new IamAdminServicesException();
             exception.setMessage("Error getting Iam server Url from property file, reason: " + ex.getMessage());
             throw exception;
         } catch (Exception ex){
-            logger.error("Error creating Realm in Keycloak Server, reason: " + ex.getCause(), ex);
+            logger.error("Error creating Realm in Keycloak Server, reason: " + ex.getMessage(), ex);
             IamAdminServicesException exception = new IamAdminServicesException();
             exception.setMessage("Error creating Realm in Keycloak Server, reason: " + ex.getMessage());
             throw exception;
@@ -91,6 +92,10 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         gatewayUserRole.setName("gateway-user");
         gatewayUserRole.setDescription("default role for PGA users");
         defaultRoles.add(gatewayUserRole);
+        RoleRepresentation pendingUserRole = new RoleRepresentation();
+        pendingUserRole.setName("user-pending");
+        pendingUserRole.setDescription("role for newly registered PGA users");
+        defaultRoles.add(pendingUserRole);
         RolesRepresentation rolesRepresentation = new RolesRepresentation();
         rolesRepresentation.setRealm(defaultRoles);
         realmDetails.setRoles(rolesRepresentation);
@@ -139,12 +144,12 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                 return false;
             }
         }catch (ApplicationSettingsException ex) {
-            logger.error("Error getting values from property file, reason: " + ex.getCause(), ex);
+            logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
             IamAdminServicesException exception = new IamAdminServicesException();
             exception.setMessage("Error getting values from property file, reason " + ex.getMessage());
             throw exception;
         }catch (Exception ex){
-            logger.error("Error creating Realm Admin Account in keycloak server, reason: " + ex.getCause(), ex);
+            logger.error("Error creating Realm Admin Account in keycloak server, reason: " + ex.getMessage(), ex);
             IamAdminServicesException exception = new IamAdminServicesException();
             exception.setMessage("Error creating Realm Admin Account in keycloak server, reason: " + ex.getMessage());
             throw exception;
@@ -186,7 +191,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                 return null;
             }
         }catch (ApplicationSettingsException ex) {
-            logger.error("Error getting values from property file, reason: " + ex.getCause(), ex);
+            logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
             IamAdminServicesException exception = new IamAdminServicesException();
             exception.setMessage("Error getting values from property file, reason " + ex.getMessage());
             throw exception;
@@ -224,7 +229,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                 return false;
             }
         }catch (ApplicationSettingsException ex) {
-            logger.error("Error getting values from property file, reason: " + ex.getCause(), ex);
+            logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
             IamAdminServicesException exception = new IamAdminServicesException();
             exception.setMessage("Error getting values from property file, reason " + ex.getMessage());
             throw exception;
@@ -244,11 +249,80 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             userResource.update(profile);
             return true;
         } catch (ApplicationSettingsException ex) {
-            logger.error("Error getting values from property file, reason: " + ex.getCause(), ex);
+            logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
             IamAdminServicesException exception = new IamAdminServicesException();
             exception.setMessage("Error getting values from property file, reason " + ex.getMessage());
             throw exception;
         }
     }
 
+    public boolean resetUserPassword(PasswordCredential realmAdminCreds, UserProfile userProfile, String newPassword) throws IamAdminServicesException{
+        try{
+            Keycloak client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), userProfile.getGatewayId(), realmAdminCreds);
+            List<UserRepresentation> retrieveUserList = client.realm(userProfile.getGatewayId()).users().search(userProfile.getUserId(),
+                    userProfile.getUserName(),
+                    null,
+                    userProfile.getEmails().get(0),
+                    0, 1);
+            if(!retrieveUserList.isEmpty())
+            {
+                UserResource retrievedUser = client.realm(userProfile.getGatewayId()).users().get(retrieveUserList.get(0).getId());
+                CredentialRepresentation credential = new CredentialRepresentation();
+                credential.setType(CredentialRepresentation.PASSWORD);
+                credential.setValue(newPassword);
+                credential.setTemporary(false);
+                retrievedUser.resetPassword(credential);
+                return true;
+            }else{
+                logger.error("requested User not found");
+                return false;
+            }
+        } catch (ApplicationSettingsException ex) {
+            logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
+            IamAdminServicesException exception = new IamAdminServicesException();
+            exception.setMessage("Error getting values from property file, reason " + ex.getMessage());
+            throw exception;
+        } catch (Exception ex){
+            logger.error("Error resetting user password in keycloak server, reason: " + ex.getMessage(), ex);
+            IamAdminServicesException exception = new IamAdminServicesException();
+            exception.setMessage("Error resetting user password in keycloak server, reason: " + ex.getMessage());
+            throw exception;
+        }
+    }
+
+    public List<UserProfile> findUser(PasswordCredential realmAdminCreds, String gatewayID, String email, String userName) throws IamAdminServicesException{
+        try{
+            Keycloak client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), gatewayID, realmAdminCreds);
+            List<UserRepresentation> retrieveUserList = client.realm(gatewayID).users().search(userName,
+                    null,
+                    null,
+                    email,
+                    0, 1);
+            if(!retrieveUserList.isEmpty())
+            {
+                List<UserProfile> userList = new ArrayList<>();
+                for(UserRepresentation user : retrieveUserList){
+                    UserProfile profile = new UserProfile();
+                    profile.setUserId(user.getUsername());
+                    profile.setUserName(user.getFirstName());
+                    profile.setEmails(Arrays.asList(new String[]{user.getEmail()}));
+                    userList.add(profile);
+                }
+                return userList;
+            }else{
+                logger.error("requested User not found");
+                return null;
+            }
+        } catch (ApplicationSettingsException ex) {
+            logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
+            IamAdminServicesException exception = new IamAdminServicesException();
+            exception.setMessage("Error getting values from property file, reason " + ex.getMessage());
+            throw exception;
+        } catch (Exception ex){
+            logger.error("Error finding user in keycloak server, reason: " + ex.getMessage(), ex);
+            IamAdminServicesException exception = new IamAdminServicesException();
+            exception.setMessage("Error finding user in keycloak server, reason: " + ex.getMessage());
+            throw exception;
+        }
+    }
 }

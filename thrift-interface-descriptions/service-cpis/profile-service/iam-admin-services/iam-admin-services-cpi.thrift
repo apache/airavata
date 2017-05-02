@@ -41,6 +41,7 @@ service IamAdminServices {
                        throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
                                2: airavata_errors.AuthorizationException ae)
 
+
     workspace_model.Gateway setUpGateway (1: required security_model.AuthzToken authzToken,
                        2: required workspace_model.Gateway gateway
                        3: required credential_store_data_models.PasswordCredential isSuperAdminCredentials)
@@ -59,5 +60,22 @@ service IamAdminServices {
                             3: required credential_store_data_models.PasswordCredential isRealmAdminCredentials)
                             throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
                                                         2: airavata_errors.AuthorizationException ae)
+
+    /* set only available data in userProfile, ex: gatewayID (required), userId(optional) and email(required). */
+    bool resetUserPassword(1: required security_model.AuthzToken authzToken,
+                            2: required user_profile_model.UserProfile userDetails
+                            3: required credential_store_data_models.PasswordCredential isRealmAdminCredentials
+                            4: required string newPassword)
+                            throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
+                                                        2: airavata_errors.AuthorizationException ae)
+
+    /*userId can be null*/
+    list<user_profile_model.UserProfile> findUsers(1: required security_model.AuthzToken authzToken,
+                                2: required string gatewayID,
+                                3: required string email,
+                                4: required string userId,
+                                5: required credential_store_data_models.PasswordCredential isRealmAdminCredentials)
+                                throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
+                                                            2: airavata_errors.AuthorizationException ae)
 
 }
