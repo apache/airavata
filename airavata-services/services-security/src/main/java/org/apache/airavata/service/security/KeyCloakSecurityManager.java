@@ -18,9 +18,8 @@
  * under the License.
  *
 */
-package org.apache.airavata.api.server.security;
+package org.apache.airavata.service.security;
 
-import org.apache.airavata.api.server.security.authzcache.*;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -30,11 +29,12 @@ import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.security.AuthzToken;
-import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.airavata.security.util.TrustStoreManager;
+import org.apache.airavata.service.security.authzcache.*;
+import org.apache.airavata.registry.api.RegistryService;
 import org.apache.thrift.TException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -42,7 +42,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
