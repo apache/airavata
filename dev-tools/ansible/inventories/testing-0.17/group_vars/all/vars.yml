@@ -44,6 +44,7 @@ replica_catalog: "master_replica_catalog"
 sharing_catalog: "sharing_catalog"
 workflow_catalog: "master_wf_catalog"
 credential_store: "master_credential_store"
+profile_service: "profile_service"
 
 mysql_connector_jar: "mysql-connector-java-5.1.37-bin.jar"
 
