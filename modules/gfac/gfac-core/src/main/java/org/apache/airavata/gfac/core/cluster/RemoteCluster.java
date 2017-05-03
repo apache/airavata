@@ -23,7 +23,6 @@ import com.jcraft.jsch.Session;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
-import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
 import org.apache.airavata.model.status.JobStatus;
 
 import java.util.List;
@@ -77,6 +76,17 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 							  Session session ,
 							  DIRECTION inOrOut,
 							  boolean ignoreEmptyFile) throws GFacException;
+
+	/**
+	 * This method can be used to get the file name of a file giving the extension. It assumes that there will be only
+	 * one file with that extension. In case if there are more than one file one random file name from the matching ones
+	 * will be returned.
+	 * @param fileExtension
+	 * @param parentPath
+	 * @param session
+	 * @return
+	 */
+	public String getFileNameFromExtension(String fileExtension, String parentPath, Session session) throws GFacException;
 
 	/**
 	 * This will create directories in computing resources
