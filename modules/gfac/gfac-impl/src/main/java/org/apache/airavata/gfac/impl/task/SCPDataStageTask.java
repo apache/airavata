@@ -133,6 +133,20 @@ public class SCPDataStageTask implements Task {
             URI sourceURI = new URI(subTaskModel.getSource());
             String fileName = sourceURI.getPath().substring(sourceURI.getPath().lastIndexOf(File.separator) + 1,
                     sourceURI.getPath().length());
+
+            authenticationInfo = Factory.getComputerResourceSSHKeyAuthentication(processContext);
+            ServerInfo serverInfo = processContext.getComputeResourceServerInfo();
+            Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
+
+            //Wildcard for file name. Has to find the correct name.
+            if(fileName.startsWith("*.")){
+                String temp = taskContext.getParentProcessContext().getDataMovementRemoteCluster()
+                        .getFileNameFromExtension(fileName.substring(2), inputPath, sshSession);
+                if(temp != null && temp != ""){
+                    fileName = temp;
+                }
+            }
+
             URI destinationURI = null;
             if (subTaskModel.getDestination().startsWith("dummy")) {
                 destinationURI = TaskUtils.getDestinationURI(taskContext, hostName, inputPath, fileName);
@@ -149,11 +163,9 @@ public class SCPDataStageTask implements Task {
                 return status;
             }
 
-            authenticationInfo = Factory.getComputerResourceSSHKeyAuthentication(processContext);
+
             status = new TaskStatus(TaskState.COMPLETED);
 
-            ServerInfo serverInfo = processContext.getComputeResourceServerInfo();
-            Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
             if (processState == ProcessState.INPUT_DATA_STAGING) {
                 inputDataStaging(taskContext, sshSession, sourceURI, destinationURI);
                 status.setReason("Successfully staged input data");
