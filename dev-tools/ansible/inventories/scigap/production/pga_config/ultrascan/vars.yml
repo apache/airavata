@@ -48,9 +48,8 @@ user_role_name: "airavata-user"
 gateway_id: "Ultrascan_Production"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}/ultrascan"
-gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
-# Not using gateway storage right now
-#gateway_data_store_ssh_public_key: ""
+gateway_data_store_resource_id: "gf4.ucs.indiana.edu_5ef8ddd3-2a2a-48ca-9c5f-becce690c6c1"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCHxpxod4TZ9Iy0TyqEK1uyKEeq41QRUlD9sHZmuF3aeXpbnleOW1F8NQrpUuzCrcT+xb8Owam8rCB3xe73ZWzf4BJBjt8MJ481kGgufZzzIAuTHcewEzjoabTrg+3b8eQsq9uWyJc96/SEzKlryOkyZL6MptCE8kbcquD/Jo6ADMpAAS9rDmSaWg5dPbITrF2o2r1cHKeHkri45b6+ih63Mf/pYhbHTPsheaQu3Kyk1YmdP25pgzD65SMZSeZan8St4mPDdGMOwfvjIkhvoyPXoyaCqTwnQ3bfwlL/xmbxtGWPax73pgitlhtKynRRWgse8uc6rIQxzXsKkAHbB/R3"
 
 data_sharing_enabled: "false"
 
