@@ -138,15 +138,6 @@ public class SCPDataStageTask implements Task {
             ServerInfo serverInfo = processContext.getComputeResourceServerInfo();
             Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
 
-            //Wildcard for file name. Has to find the correct name.
-            if(fileName.startsWith("*.")){
-                String temp = taskContext.getParentProcessContext().getDataMovementRemoteCluster()
-                        .getFileNameFromExtension(fileName.substring(2), inputPath, sshSession);
-                if(temp != null && temp != ""){
-                    fileName = temp;
-                }
-            }
-
             URI destinationURI = null;
             if (subTaskModel.getDestination().startsWith("dummy")) {
                 destinationURI = TaskUtils.getDestinationURI(taskContext, hostName, inputPath, fileName);
@@ -163,11 +154,26 @@ public class SCPDataStageTask implements Task {
                 return status;
             }
 
-
             status = new TaskStatus(TaskState.COMPLETED);
 
+            //Wildcard for file name. Has to find the correct name.
+            if(fileName.startsWith("*.")){
+                String destParentPath = (new File(destinationURI.getPath())).getParentFile().getPath();
+                String temp = taskContext.getParentProcessContext().getDataMovementRemoteCluster()
+                        .getFileNameFromExtension(fileName.substring(2), destParentPath, sshSession);
+                if(temp != null && temp != ""){
+                    fileName = temp;
+                }
+                if(destParentPath.endsWith(File.separator)){
+                    destinationURI = new URI(destParentPath + fileName);
+                }else{
+                    destinationURI = new URI(destParentPath + File.separator + fileName);
+                }
+
+            }
+
             if (processState == ProcessState.INPUT_DATA_STAGING) {
-                inputDataStaging(taskContext, sshSession, sourceURI, destinationURI);
+                    inputDataStaging(taskContext, sshSession, sourceURI, destinationURI);
                 status.setReason("Successfully staged input data");
             } else if (processState == ProcessState.OUTPUT_DATA_STAGING) {
                 makeDir(taskContext, destinationURI);
