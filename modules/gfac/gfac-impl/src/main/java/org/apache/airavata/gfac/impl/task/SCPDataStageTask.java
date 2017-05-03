@@ -159,8 +159,9 @@ public class SCPDataStageTask implements Task {
             //Wildcard for file name. Has to find the correct name.
             if(fileName.startsWith("*.")){
                 String destParentPath = (new File(destinationURI.getPath())).getParentFile().getPath();
+                String sourceParentPath = (new File(sourceURI.getPath())).getParentFile().getPath();
                 String temp = taskContext.getParentProcessContext().getDataMovementRemoteCluster()
-                        .getFileNameFromExtension(fileName.substring(2), destParentPath, sshSession);
+                        .getFileNameFromExtension(fileName.substring(2), sourceParentPath, sshSession);
                 if(temp != null && temp != ""){
                     fileName = temp;
                 }
