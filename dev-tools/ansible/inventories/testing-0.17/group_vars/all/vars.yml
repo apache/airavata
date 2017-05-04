@@ -109,3 +109,7 @@ monitor_email_password: "airavata"
 # Sharing Registry related variables
 sharing_registry_host: "{{ ansible_fqdn }}"
 sharing_registry_port: 7878
+
+# Profile Service related variables
+profile_service_host: "{{ ansible_fqdn }}"
+profile_service_port: 8962
