@@ -313,8 +313,8 @@ enable.kafka.logging=false
 ###########################################################################
 # Profile Service Configuration
 ###########################################################################
-profile.service.server.host=localhost
-profile.service.server.port=8962
+profile.service.server.host={{ profile_service_host }}
+profile.service.server.port={{ profile_service_port }}
 profile_service=org.apache.airavata.service.profile.server.ProfileServiceServer
 # mysql properties
 profile.service.jdbc.url=jdbc:mysql://{{ db_server }}:3306/{{ profile_service }}
