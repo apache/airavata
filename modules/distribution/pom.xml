@@ -243,6 +243,13 @@
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-api-server</artifactId>
             <version>${project.version}</version>
+            <!-- This httpcore version prevents IamAdminServices Keycloak REST client from working -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents.wso2</groupId>
+                    <artifactId>httpcore</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
@@ -508,6 +515,12 @@
             <groupId>org.apache.airavata</groupId>
             <artifactId>profile-service-server</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <!-- Needed for IamAdminServices Keycloak client -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.2</version>
         </dependency>
         <!-- ======================== Sample =================== -->
         <dependency>
