@@ -21,7 +21,7 @@ public class ThriftDataModelConversion {
         User user = new User();
         user.setUserId(userProfile.getUserId());
         user.setDomainId(userProfile.getGatewayId());
-        user.setUserName(userProfile.getUserName());
+        user.setUserName(userProfile.getFirstName() + " " + userProfile.getLastName());
         user.setEmail(userProfile.getEmails().get(0));
         return user;
     }

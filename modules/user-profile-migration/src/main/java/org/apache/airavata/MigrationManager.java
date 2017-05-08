@@ -110,7 +110,8 @@ public class MigrationManager {
         UserProfile airavataUserProfile = new UserProfile();
         // Here are the data associations...
         for(UserProfileDAO ISProfile : ISProfileList){
-            airavataUserProfile.setUserName(ISProfile.getFirstName()+" "+ISProfile.getLastName());
+            airavataUserProfile.setFirstName(ISProfile.getFirstName());
+            airavataUserProfile.setLastName(ISProfile.getLastName());
             airavataUserProfile.setUserId(ISProfile.getUserName());
             airavataUserProfile.setGatewayId(ISProfile.getGatewayID());
             List<String> emails = new ArrayList<String>();

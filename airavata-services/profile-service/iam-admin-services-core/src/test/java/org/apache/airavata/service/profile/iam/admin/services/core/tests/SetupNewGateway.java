@@ -50,7 +50,8 @@ public class SetupNewGateway {
      public static void UserRegistration(){
          UserProfile user = new UserProfile();
          user.setUserId("testuser");
-         user.setUserName("Some Man");
+         user.setFirstName("test-firstname");
+         user.setLastName("test-lastname");
          List<String> emails = new ArrayList<>();
          emails.add("some.man@outlook.com");
          user.setGatewayId("maven.test.gateway");

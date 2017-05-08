@@ -56,11 +56,11 @@ public class UserProfileSample {
 
             // test update-user-profile : update name
             userProfile = getUserProfile(testUserId);
-            String newUserName = userProfile.getUserName().replaceAll("username", "username-updated");
-            userProfile.setUserName(newUserName);
+            String newFName = userProfile.getFirstName().replaceAll("fname", "fname-updated");
+            userProfile.setFirstName(newFName);
             boolean updateSuccess = userProfileClient.updateUserProfile(authzToken, userProfile);
-            assert (updateSuccess) : "User update with new userName: [" + newUserName + "], Failed!";
-            System.out.println("User update with new userName: [" + newUserName + "], Successful!");
+            assert (updateSuccess) : "User update with new firstName: [" + newFName + "], Failed!";
+            System.out.println("User update with new firstName: [" + newFName + "], Successful!");
 
             // test get-all-userprofiles
             List<UserProfile> userProfileList = userProfileClient.getAllUserProfilesInGateway(authzToken, testGatewayId, 0, 5);
@@ -70,18 +70,13 @@ public class UserProfileSample {
                 System.out.println("\t [UserProfile] userId: " + userProfile1.getUserId());
             }
 
-            // test find-user-profile-by-name
-            userProfile = userProfileClient.getUserProfileByName(authzToken, newUserName, testGatewayId);
-            assert (userProfile != null) : "Could not find user with userName: " + newUserName;
-            System.out.println("UserProfile: " + userProfile);
-
             // test delete-user-profile
             boolean deleteSuccess = userProfileClient.deleteUserProfile(authzToken, testUserId, testGatewayId);
             assert (deleteSuccess) : "Delete user failed for userId: " + testUserId;
             System.out.println("Successfully deleted user with userId: " + testUserId);
 
             // test-check-user-exist
-            boolean userExists = userProfileClient.doesUserExist(authzToken, newUserName, testGatewayId);
+            boolean userExists = userProfileClient.doesUserExist(authzToken, testUserId, testGatewayId);
             assert (!userExists) : "User should not exist, but it does.";
             System.out.println("User was deleted, hence does not exist!");
             System.out.println("*** DONE ***");
@@ -102,10 +97,11 @@ public class UserProfileSample {
         userProfile.setUserModelVersion("model-" + userIdValue);
         userProfile.setAiravataInternalUserId("test-user-internal-" + userIdValue);
         userProfile.setUserId("test-user-" + userIdValue);
+        userProfile.setFirstName("test-user-fname");
+        userProfile.setLastName("test-user-lname");
         userProfile.setGatewayId(testGatewayId);
         userProfile.addToEmails("test-user-" + userIdValue + "@domain1.com");
         userProfile.addToEmails("test-user-" + userIdValue + "@domain2.com");
-        userProfile.setUserName("test-username-" + userIdValue);
         userProfile.setCreationTime(new Date().getTime());
         userProfile.setLastAccessTime(new Date().getTime());
         userProfile.setValidUntil(new Date().getTime());

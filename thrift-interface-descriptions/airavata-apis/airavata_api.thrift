@@ -3498,13 +3498,7 @@ bool createGroup(1: required security_model.AuthzToken authzToken, 2: required g
                         3: airavata_errors.AiravataSystemException ase,
                         4: airavata_errors.AuthorizationException ae)
 
-    user_profile_model.UserProfile getUserProfileByName(1: required security_model.AuthzToken authzToken, 2: required string userName, 3: required string gatewayId)
-                throws (1: airavata_errors.InvalidRequestException ire,
-                        2: airavata_errors.AiravataClientException ace,
-                        3: airavata_errors.AiravataSystemException ase,
-                        4: airavata_errors.AuthorizationException ae)
-
-    bool doesUserProfileExist(1: required security_model.AuthzToken authzToken, 2: required string userName, 3: required string gatewayId)
+    bool doesUserProfileExist(1: required security_model.AuthzToken authzToken, 2: required string userId, 3: required string gatewayId)
                 throws (1: airavata_errors.InvalidRequestException ire,
                         2: airavata_errors.AiravataClientException ace,
                         3: airavata_errors.AiravataSystemException ase,

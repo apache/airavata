@@ -316,7 +316,8 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                 for(UserRepresentation user : retrieveUserList){
                     UserProfile profile = new UserProfile();
                     profile.setUserId(user.getUsername());
-                    profile.setUserName(user.getFirstName());
+                    profile.setFirstName(user.getFirstName());
+                    profile.setLastName(user.getLastName());
                     profile.setEmails(Arrays.asList(new String[]{user.getEmail()}));
                     userList.add(profile);
                 }
