@@ -3848,11 +3848,11 @@ public class RegistryServerHandler implements RegistryService.Iface {
         try {
             //FIXME: figure out a way to get password
             logger.info("Adding User in Registry: " + userProfile);
-            if (isUserExists(userProfile.getGatewayId(), userProfile.getUserName())) {
-                throw new DuplicateEntryException("User already exists, with userName: " +
-                        userProfile.getUserName() + ", and gatewayId: " + userProfile.getGatewayId());
+            if (isUserExists(userProfile.getGatewayId(), userProfile.getUserId())) {
+                throw new DuplicateEntryException("User already exists, with userId: " +
+                        userProfile.getUserId() + ", and gatewayId: " + userProfile.getGatewayId());
             }
-            ExpCatResourceUtils.addUser(userProfile.getUserName(), null, userProfile.getGatewayId());
+            ExpCatResourceUtils.addUser(userProfile.getUserId(), null, userProfile.getGatewayId());
             return userProfile.getUserId();
         } catch (RegistryException ex) {
             logger.error("Error while adding user in registry: " + ex, ex);

@@ -16,10 +16,6 @@ public class QueryConstants {
     public static final String FIND_ALL_USER_PROFILES_BY_GATEWAY_ID = "SELECT u FROM UserProfileEntity u " +
             "where u.gatewayId LIKE :" + UserProfile._Fields.GATEWAY_ID.getFieldName() + "";
 
-    public static final String FIND_USER_PROFILE_BY_USER_NAME = "SELECT u FROM UserProfileEntity u " +
-            "where u.userName LIKE :" + UserProfile._Fields.USER_NAME.getFieldName() + " " +
-            "AND u.gatewayId LIKE :" + UserProfile._Fields.GATEWAY_ID.getFieldName() + "";
-
     public static final String FIND_GATEWAY_BY_ID = "SELECT g FROM GatewayEntity g " +
             "where g.gatewayId LIKE :" + Gateway._Fields.GATEWAY_ID.getFieldName() + "";
 

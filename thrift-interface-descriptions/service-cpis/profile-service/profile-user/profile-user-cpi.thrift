@@ -65,14 +65,8 @@ service UserProfileService {
                                                                  throws (1: profile_user_cpi_errors.UserProfileServiceException upe,
                                                                          2: airavata_errors.AuthorizationException ae);
 
- user_profile_model.UserProfile getUserProfileByName (1: required security_model.AuthzToken authzToken,
-                                                      2: required string userName,
-                                                      3: required string gatewayId)
-                                                   throws (1: profile_user_cpi_errors.UserProfileServiceException upe,
-                                                           2: airavata_errors.AuthorizationException ae);
-
  bool doesUserExist (1: required security_model.AuthzToken authzToken,
-                     2: required string userName,
+                     2: required string userId,
                      3: required string gatewayId)
                   throws (1: profile_user_cpi_errors.UserProfileServiceException upe,
                           2: airavata_errors.AuthorizationException ae);

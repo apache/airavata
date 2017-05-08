@@ -159,30 +159,10 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
     }
 
     @Override
-    @SecurityCheck
-    public UserProfile getUserProfileByName(AuthzToken authzToken, String userName, String gatewayId) throws UserProfileServiceException, AuthorizationException, TException {
+    public boolean doesUserExist(AuthzToken authzToken, String userId, String gatewayId) throws UserProfileServiceException, AuthorizationException, TException {
         try{
-            UserProfile userProfile = userProfileRepository.getUserProfileByNameAndGateWay(userName, gatewayId);
-            if(userProfile != null)
-                return userProfile;
-            else
-                throw new Exception("User with userName: " + userName + ", in Gateway: " + gatewayId + ", does not exist.");
-        } catch (Exception e) {
-            logger.error("Error while retrieving user profile", e);
-            UserProfileServiceException exception = new UserProfileServiceException();
-            exception.setMessage("Error while retrieving user profile. More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    public boolean doesUserExist(AuthzToken authzToken, String userName, String gatewayId) throws UserProfileServiceException, AuthorizationException, TException {
-        try{
-            UserProfile userProfile = userProfileRepository.getUserProfileByNameAndGateWay(userName, gatewayId);
-            if (null != userProfile)
-                return true;
-            return false;
+            UserProfile userProfile = userProfileRepository.getUserProfileByIdAndGateWay(userId, gatewayId);
+            return null != userProfile;
         } catch (Exception e) {
             logger.error("Error while finding user profile", e);
             UserProfileServiceException exception = new UserProfileServiceException();

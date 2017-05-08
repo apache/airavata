@@ -4871,22 +4871,6 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public UserProfile getUserProfileByName(AuthzToken authzToken, String userName, String gatewayId)
-            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-
-        try {
-            return getUserProfileServiceClient().getUserProfileByName(authzToken, userName, gatewayId);
-        } catch (Exception e) {
-            String msg = MessageFormat.format("Error getting user profile for [{0}] in [{1}]", userName, gatewayId);
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    @Override
-    @SecurityCheck
     public boolean doesUserProfileExist(AuthzToken authzToken, String userName, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 
