@@ -25,6 +25,7 @@
   with_items:
     - git
     - httpd
+    - mod_ssl
     - php
     - php-soap
     - libselinux-python
