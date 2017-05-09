@@ -522,6 +522,12 @@ public class GFacUtils {
                 if (jobSubmissionTaskModel.getWallTime() > 0) {
                     groovyMap.add(Script.MAX_WALL_TIME,
                             GFacUtils.maxWallTimeCalculator(jobSubmissionTaskModel.getWallTime()));
+                    if (resourceJobManager != null) {
+                        if (resourceJobManager.getResourceJobManagerType().equals(ResourceJobManagerType.LSF)) {
+                            groovyMap.add(Script.MAX_WALL_TIME,
+                                    GFacUtils.maxWallTimeCalculatorForLSF(jobSubmissionTaskModel.getWallTime()));
+                        }
+                    }
                 }
             } catch (TException e) {
                 log.error("Error while getting job submission sub task model", e);
@@ -558,7 +564,7 @@ public class GFacUtils {
                 if (resourceJobManager != null) {
                     if (resourceJobManager.getResourceJobManagerType().equals(ResourceJobManagerType.LSF)) {
                         groovyMap.add(Script.MAX_WALL_TIME,
-                                GFacUtils.maxWallTimeCalculator(scheduling.getWallTimeLimit()));
+                                GFacUtils.maxWallTimeCalculatorForLSF(scheduling.getWallTimeLimit()));
                     }
                 }
             }
