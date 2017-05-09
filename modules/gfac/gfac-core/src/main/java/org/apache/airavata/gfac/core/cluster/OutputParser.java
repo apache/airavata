@@ -30,7 +30,7 @@ public interface OutputParser {
     /**
      * This can be used to parseSingleJob the result of a job submission to get the JobID
      * @param rawOutput
-     * @return
+     * @return the job id as a String, or null if no job id found
      */
     public String parseJobSubmission(String rawOutput)throws GFacException;
 
