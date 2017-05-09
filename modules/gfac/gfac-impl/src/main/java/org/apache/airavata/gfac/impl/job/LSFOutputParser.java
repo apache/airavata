@@ -40,7 +40,11 @@ public class LSFOutputParser implements OutputParser {
     @Override
     public String parseJobSubmission(String rawOutput) throws GFacException {
         logger.debug(rawOutput);
-        return rawOutput.substring(rawOutput.indexOf("<")+1,rawOutput.indexOf(">"));
+        if (rawOutput.indexOf("<") >= 0) {
+            return rawOutput.substring(rawOutput.indexOf("<")+1,rawOutput.indexOf(">"));
+        } else {
+            return null;
+        }
     }
 
     @Override
