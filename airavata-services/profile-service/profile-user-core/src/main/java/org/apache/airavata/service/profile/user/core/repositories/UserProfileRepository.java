@@ -47,7 +47,6 @@ public class UserProfileRepository extends AbstractRepository<UserProfile, UserP
     }
 
     public UserProfile getUserProfileByIdAndGateWay(String userId, String gatewayId)   {
-
         UserProfile userProfile = null;
 
         Map<String, Object> queryParam = new HashMap<String, Object>();
@@ -57,7 +56,6 @@ public class UserProfileRepository extends AbstractRepository<UserProfile, UserP
 
         if (resultList != null && resultList.size() > 0)
             userProfile =  resultList.get(0);
-
 
         return userProfile;
     }
