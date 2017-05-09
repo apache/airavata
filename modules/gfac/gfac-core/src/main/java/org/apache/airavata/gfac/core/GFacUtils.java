@@ -558,7 +558,7 @@ public class GFacUtils {
                 if (resourceJobManager != null) {
                     if (resourceJobManager.getResourceJobManagerType().equals(ResourceJobManagerType.LSF)) {
                         groovyMap.add(Script.MAX_WALL_TIME,
-                                GFacUtils.maxWallTimeCalculator(scheduling.getWallTimeLimit()));
+                                GFacUtils.maxWallTimeCalculatorForLSF(scheduling.getWallTimeLimit()));
                     }
                 }
             }
