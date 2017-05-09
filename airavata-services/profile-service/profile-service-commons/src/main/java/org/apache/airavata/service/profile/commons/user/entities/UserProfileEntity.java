@@ -31,7 +31,11 @@ public class UserProfileEntity {
     private String userId;
     private String gatewayId;
     private String userModelVersion;
-    private String userName;
+    private String firstName;
+    private String lastName;
+    private String middleName;
+    private String namePrefix;
+    private String nameSuffix;
     private String orcidId;
     private String country;
     private String homeOrganization;
@@ -98,13 +102,49 @@ public class UserProfileEntity {
         this.emails = emails;
     }
 
-    @Column(name = "USER_NAME")
-    public String getUserName() {
-        return userName;
+    @Column(name = "FIRST_NAME")
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    @Column(name = "LAST_NAME")
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    @Column(name = "MIDDLE_NAME")
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
+    @Column(name = "NAME_PREFIX")
+    public String getNamePrefix() {
+        return namePrefix;
+    }
+
+    public void setNamePrefix(String namePrefix) {
+        this.namePrefix = namePrefix;
+    }
+
+    @Column(name = "NAME_SUFFIX")
+    public String getNameSuffix() {
+        return nameSuffix;
+    }
+
+    public void setNameSuffix(String nameSuffix) {
+        this.nameSuffix = nameSuffix;
     }
 
     @Column(name = "ORCID_ID")
@@ -268,7 +308,11 @@ public class UserProfileEntity {
                 ", userId='" + userId + '\'' +
                 ", gatewayId='" + gatewayId + '\'' +
                 ", userModelVersion='" + userModelVersion + '\'' +
-                ", userName='" + userName + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", middleName='" + middleName + '\'' +
+                ", namePrefix='" + namePrefix + '\'' +
+                ", nameSuffix='" + nameSuffix + '\'' +
                 ", orcidId='" + orcidId + '\'' +
                 ", country='" + country + '\'' +
                 ", homeOrganization='" + homeOrganization + '\'' +

@@ -81,6 +81,7 @@ public class UserProfileSample {
             System.out.println("User was deleted, hence does not exist!");
             System.out.println("*** DONE ***");
         } catch (Exception ex) {
+            ex.printStackTrace();
             logger.error("UserProfile client-sample Exception: " + ex, ex);
         }
     }

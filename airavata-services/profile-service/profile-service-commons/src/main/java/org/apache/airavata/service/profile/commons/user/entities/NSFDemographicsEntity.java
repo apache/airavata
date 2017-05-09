@@ -103,7 +103,6 @@ public class NSFDemographicsEntity {
                 ", ethnicities=" + ethnicities +
                 ", races=" + races +
                 ", disabilities=" + disabilities +
-                ", userProfile=" + userProfile +
                 '}';
     }
 }
