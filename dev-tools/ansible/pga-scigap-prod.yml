@@ -24,6 +24,7 @@
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/georgiastate"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/iugateway"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/lsu"
+- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/nanoconfinement"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/nsg"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/oiitandy"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/oscer"
