@@ -299,7 +299,7 @@ trust.store={{ keystores_location }}/{{ client_truststore_src_path | basename }}
 trust.store.password=airavata
 #### authorization cache related configuration ####
 authz.cache.enabled=true
-authz.cache.manager.class=org.apache.airavata.api.server.security.authzcache.DefaultAuthzCacheManager
+authz.cache.manager.class=org.apache.airavata.service.security.authzcache.DefaultAuthzCacheManager
 in.memory.cache.size=1000
 #### remote idp service url for KeyCloak based setup####
 remote.idp.service.url={{ remote_idp_service_url }}
