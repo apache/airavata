@@ -74,12 +74,15 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
         try {
             gateway = tenantProfileRepository.create(gateway);
             if (gateway != null) {
-                logger.debug("Added Airavata Gateway with Id: " + gateway.getGatewayId());
-                // replicate tenant at end-places
-                ProfileServiceUtils.getDbEventPublisher().publish(
-                        ProfileServiceUtils.getDBEventMessageContext(EntityType.TENANT, CrudType.CREATE, gateway),
-                        DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString())
-                );
+                logger.info("Added Airavata Gateway with Id: " + gateway.getGatewayId());
+                // replicate tenant at end-places only if status is APPROVED
+                if (gateway.getGatewayApprovalStatus().equals(GatewayApprovalStatus.APPROVED)) {
+                    logger.info("Gateway with ID: {}, is now APPROVED, replicating to subscribers.", gateway.getGatewayId());
+                    ProfileServiceUtils.getDbEventPublisher().publish(
+                            ProfileServiceUtils.getDBEventMessageContext(EntityType.TENANT, CrudType.CREATE, gateway),
+                            DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString())
+                    );
+                }
                 // return gatewayId
                 return gateway.getGatewayId();
             } else {
