@@ -79,12 +79,13 @@ public interface TenantManagementInterface {
     /**
      * Method to reset user password in Identity Server
      *
-     * @param realmAdminCreds identity server realm admin credentials
-     * @param userProfile set only available data in userProfile, ex: gatewayID (required), userId(optional) and email(required)
+     * @param authToken for realm admin
+     * @param tenantId
+     * @param username
      * @param newPassword
-     * @return Gateway object.
+     * @return boolean
      */
-    boolean resetUserPassword(PasswordCredential realmAdminCreds, UserProfile userProfile, String newPassword) throws IamAdminServicesException;
+    boolean resetUserPassword(String authToken, String tenantId, String username, String newPassword) throws IamAdminServicesException;
 
     /**
      * Method to find user in Identity Server

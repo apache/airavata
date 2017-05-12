@@ -72,26 +72,26 @@ public class SetupNewGateway {
          }
      }
 
-     public static void resetPassword(){
-         UserProfile user = new UserProfile();
-         user.setUserId("testuser");
-         List<String> emails = new ArrayList<>();
-         emails.add("some.man@outlook.com");
-         user.setGatewayId("maven.test.gateway");
-         user.setEmails(emails);
-         TenantManagementKeycloakImpl client = new TenantManagementKeycloakImpl();
-         try {
-             PasswordCredential tenantAdminCreds = new PasswordCredential();
-             tenantAdminCreds.setGatewayId(user.getGatewayId());
-             tenantAdminCreds.setDescription("test credentials for tenant admin creation");
-             tenantAdminCreds.setLoginUserName("mavenTest");
-             tenantAdminCreds.setPassword("Test@1234");
-             tenantAdminCreds.setPortalUserName("TenantAdmin");
-             client.resetUserPassword(tenantAdminCreds,user,"test@123");
-         } catch (IamAdminServicesException e) {
-             e.printStackTrace();
-         }
-     }
+//     public static void resetPassword(){
+//         UserProfile user = new UserProfile();
+//         user.setUserId("testuser");
+//         List<String> emails = new ArrayList<>();
+//         emails.add("some.man@outlook.com");
+//         user.setGatewayId("maven.test.gateway");
+//         user.setEmails(emails);
+//         TenantManagementKeycloakImpl client = new TenantManagementKeycloakImpl();
+//         try {
+//             PasswordCredential tenantAdminCreds = new PasswordCredential();
+//             tenantAdminCreds.setGatewayId(user.getGatewayId());
+//             tenantAdminCreds.setDescription("test credentials for tenant admin creation");
+//             tenantAdminCreds.setLoginUserName("mavenTest");
+//             tenantAdminCreds.setPassword("Test@1234");
+//             tenantAdminCreds.setPortalUserName("TenantAdmin");
+//             client.resetUserPassword(tenantAdminCreds,user,"test@123");
+//         } catch (IamAdminServicesException e) {
+//             e.printStackTrace();
+//         }
+//     }
 
      public static void findUser(){
          UserProfile user = new UserProfile();
