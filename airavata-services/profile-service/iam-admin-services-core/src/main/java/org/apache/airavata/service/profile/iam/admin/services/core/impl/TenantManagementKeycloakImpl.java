@@ -51,6 +51,16 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                 "admin-cli"); // admin-cli is the client ID used for keycloak admin operations.
     }
 
+    private static Keycloak getClient(String adminUrl, String realm, String authToken) {
+
+        return Keycloak.getInstance(
+                adminUrl,
+                realm, // the realm to log in to
+                "admin-cli",
+                authToken // the realm admin's auth token
+            );
+    }
+
     @Override
     public Gateway addTenant(PasswordCredential isSuperAdminPasswordCreds, Gateway gatewayDetails) throws IamAdminServicesException {
         try {
@@ -268,17 +278,17 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         }
     }
 
-    public boolean resetUserPassword(PasswordCredential realmAdminCreds, UserProfile userProfile, String newPassword) throws IamAdminServicesException{
+    public boolean resetUserPassword(String authToken, String tenantId, String username, String newPassword) throws IamAdminServicesException{
         try{
-            Keycloak client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), userProfile.getGatewayId(), realmAdminCreds);
-            List<UserRepresentation> retrieveUserList = client.realm(userProfile.getGatewayId()).users().search(userProfile.getUserId(),
-                    userProfile.getFirstName(),
-                    userProfile.getLastName(),
-                    userProfile.getEmails().get(0),
+            Keycloak client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, authToken);
+            List<UserRepresentation> retrieveUserList = client.realm(tenantId).users().search(username,
+                    null,
+                    null,
+                    null,
                     0, 1);
             if(!retrieveUserList.isEmpty())
             {
-                UserResource retrievedUser = client.realm(userProfile.getGatewayId()).users().get(retrieveUserList.get(0).getId());
+                UserResource retrievedUser = client.realm(tenantId).users().get(retrieveUserList.get(0).getId());
                 CredentialRepresentation credential = new CredentialRepresentation();
                 credential.setType(CredentialRepresentation.PASSWORD);
                 credential.setValue(newPassword);

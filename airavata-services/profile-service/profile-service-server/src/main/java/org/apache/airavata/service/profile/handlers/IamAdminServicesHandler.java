@@ -104,10 +104,10 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     @Override
     @SecurityCheck
-    public boolean resetUserPassword(AuthzToken authzToken, UserProfile userDetails, PasswordCredential isRealmAdminCredentials, String newPassword) throws IamAdminServicesException, AuthorizationException, TException {
+    public boolean resetUserPassword(AuthzToken authzToken, String tenantId, String username, String newPassword) throws IamAdminServicesException, AuthorizationException, TException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         try{
-            if(keycloakclient.resetUserPassword(isRealmAdminCredentials,userDetails,newPassword))
+            if(keycloakclient.resetUserPassword(authzToken.getAccessToken(), tenantId, username, newPassword))
                 return true;
             else
                 return false;
