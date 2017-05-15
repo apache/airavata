@@ -3536,12 +3536,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getAllUserProfilesInGateway\n");
   }
 
-  void getUserProfileByName( ::apache::airavata::model::user::UserProfile& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId) {
-    // Your implementation goes here
-    printf("getUserProfileByName\n");
-  }
-
-  bool doesUserProfileExist(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId) {
+  bool doesUserProfileExist(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayId) {
     // Your implementation goes here
     printf("doesUserProfileExist\n");
   }

@@ -3499,20 +3499,11 @@ class Iface:
     """
     pass
 
-  def getUserProfileByName(self, authzToken, userName, gatewayId):
+  def doesUserProfileExist(self, authzToken, userId, gatewayId):
     """
     Parameters:
      - authzToken
-     - userName
-     - gatewayId
-    """
-    pass
-
-  def doesUserProfileExist(self, authzToken, userName, gatewayId):
-    """
-    Parameters:
-     - authzToken
-     - userName
+     - userId
      - gatewayId
     """
     pass
@@ -12884,64 +12875,21 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllUserProfilesInGateway failed: unknown result")
 
-  def getUserProfileByName(self, authzToken, userName, gatewayId):
+  def doesUserProfileExist(self, authzToken, userId, gatewayId):
     """
     Parameters:
      - authzToken
-     - userName
+     - userId
      - gatewayId
     """
-    self.send_getUserProfileByName(authzToken, userName, gatewayId)
-    return self.recv_getUserProfileByName()
-
-  def send_getUserProfileByName(self, authzToken, userName, gatewayId):
-    self._oprot.writeMessageBegin('getUserProfileByName', TMessageType.CALL, self._seqid)
-    args = getUserProfileByName_args()
-    args.authzToken = authzToken
-    args.userName = userName
-    args.gatewayId = gatewayId
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_getUserProfileByName(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = getUserProfileByName_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    if result.ire is not None:
-      raise result.ire
-    if result.ace is not None:
-      raise result.ace
-    if result.ase is not None:
-      raise result.ase
-    if result.ae is not None:
-      raise result.ae
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "getUserProfileByName failed: unknown result")
-
-  def doesUserProfileExist(self, authzToken, userName, gatewayId):
-    """
-    Parameters:
-     - authzToken
-     - userName
-     - gatewayId
-    """
-    self.send_doesUserProfileExist(authzToken, userName, gatewayId)
+    self.send_doesUserProfileExist(authzToken, userId, gatewayId)
     return self.recv_doesUserProfileExist()
 
-  def send_doesUserProfileExist(self, authzToken, userName, gatewayId):
+  def send_doesUserProfileExist(self, authzToken, userId, gatewayId):
     self._oprot.writeMessageBegin('doesUserProfileExist', TMessageType.CALL, self._seqid)
     args = doesUserProfileExist_args()
     args.authzToken = authzToken
-    args.userName = userName
+    args.userId = userId
     args.gatewayId = gatewayId
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
@@ -13149,7 +13097,6 @@ class Processor(Iface, TProcessor):
     self._processMap["getUserProfileById"] = Processor.process_getUserProfileById
     self._processMap["deleteUserProfile"] = Processor.process_deleteUserProfile
     self._processMap["getAllUserProfilesInGateway"] = Processor.process_getAllUserProfilesInGateway
-    self._processMap["getUserProfileByName"] = Processor.process_getUserProfileByName
     self._processMap["doesUserProfileExist"] = Processor.process_doesUserProfileExist
 
   def process(self, iprot, oprot):
@@ -18576,44 +18523,13 @@ class Processor(Iface, TProcessor):
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
-  def process_getUserProfileByName(self, seqid, iprot, oprot):
-    args = getUserProfileByName_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = getUserProfileByName_result()
-    try:
-      result.success = self._handler.getUserProfileByName(args.authzToken, args.userName, args.gatewayId)
-      msg_type = TMessageType.REPLY
-    except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
-      raise
-    except apache.airavata.api.error.ttypes.InvalidRequestException as ire:
-      msg_type = TMessageType.REPLY
-      result.ire = ire
-    except apache.airavata.api.error.ttypes.AiravataClientException as ace:
-      msg_type = TMessageType.REPLY
-      result.ace = ace
-    except apache.airavata.api.error.ttypes.AiravataSystemException as ase:
-      msg_type = TMessageType.REPLY
-      result.ase = ase
-    except apache.airavata.api.error.ttypes.AuthorizationException as ae:
-      msg_type = TMessageType.REPLY
-      result.ae = ae
-    except Exception as ex:
-      msg_type = TMessageType.EXCEPTION
-      logging.exception(ex)
-      result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
-    oprot.writeMessageBegin("getUserProfileByName", msg_type, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
   def process_doesUserProfileExist(self, seqid, iprot, oprot):
     args = doesUserProfileExist_args()
     args.read(iprot)
     iprot.readMessageEnd()
     result = doesUserProfileExist_result()
     try:
-      result.success = self._handler.doesUserProfileExist(args.authzToken, args.userName, args.gatewayId)
+      result.success = self._handler.doesUserProfileExist(args.authzToken, args.userId, args.gatewayId)
       msg_type = TMessageType.REPLY
     except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
       raise
@@ -56540,243 +56456,24 @@ class getAllUserProfilesInGateway_result:
   def __ne__(self, other):
     return not (self == other)
 
-class getUserProfileByName_args:
-  """
-  Attributes:
-   - authzToken
-   - userName
-   - gatewayId
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
-    (2, TType.STRING, 'userName', None, None, ), # 2
-    (3, TType.STRING, 'gatewayId', None, None, ), # 3
-  )
-
-  def __init__(self, authzToken=None, userName=None, gatewayId=None,):
-    self.authzToken = authzToken
-    self.userName = userName
-    self.gatewayId = gatewayId
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRUCT:
-          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
-          self.authzToken.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.userName = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRING:
-          self.gatewayId = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getUserProfileByName_args')
-    if self.authzToken is not None:
-      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
-      self.authzToken.write(oprot)
-      oprot.writeFieldEnd()
-    if self.userName is not None:
-      oprot.writeFieldBegin('userName', TType.STRING, 2)
-      oprot.writeString(self.userName)
-      oprot.writeFieldEnd()
-    if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 3)
-      oprot.writeString(self.gatewayId)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.authzToken is None:
-      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
-    if self.userName is None:
-      raise TProtocol.TProtocolException(message='Required field userName is unset!')
-    if self.gatewayId is None:
-      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.authzToken)
-    value = (value * 31) ^ hash(self.userName)
-    value = (value * 31) ^ hash(self.gatewayId)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class getUserProfileByName_result:
-  """
-  Attributes:
-   - success
-   - ire
-   - ace
-   - ase
-   - ae
-  """
-
-  thrift_spec = (
-    (0, TType.STRUCT, 'success', (apache.airavata.model.user.ttypes.UserProfile, apache.airavata.model.user.ttypes.UserProfile.thrift_spec), None, ), # 0
-    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
-    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
-    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
-    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
-  )
-
-  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
-    self.success = success
-    self.ire = ire
-    self.ace = ace
-    self.ase = ase
-    self.ae = ae
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.STRUCT:
-          self.success = apache.airavata.model.user.ttypes.UserProfile()
-          self.success.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
-          self.ire.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRUCT:
-          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
-          self.ace.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRUCT:
-          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
-          self.ase.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 4:
-        if ftype == TType.STRUCT:
-          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
-          self.ae.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getUserProfileByName_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.STRUCT, 0)
-      self.success.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ire is not None:
-      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
-      self.ire.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ace is not None:
-      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
-      self.ace.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ase is not None:
-      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
-      self.ase.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ae is not None:
-      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
-      self.ae.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.ire)
-    value = (value * 31) ^ hash(self.ace)
-    value = (value * 31) ^ hash(self.ase)
-    value = (value * 31) ^ hash(self.ae)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
 class doesUserProfileExist_args:
   """
   Attributes:
    - authzToken
-   - userName
+   - userId
    - gatewayId
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
-    (2, TType.STRING, 'userName', None, None, ), # 2
+    (2, TType.STRING, 'userId', None, None, ), # 2
     (3, TType.STRING, 'gatewayId', None, None, ), # 3
   )
 
-  def __init__(self, authzToken=None, userName=None, gatewayId=None,):
+  def __init__(self, authzToken=None, userId=None, gatewayId=None,):
     self.authzToken = authzToken
-    self.userName = userName
+    self.userId = userId
     self.gatewayId = gatewayId
 
   def read(self, iprot):
@@ -56796,7 +56493,7 @@ class doesUserProfileExist_args:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.userName = iprot.readString()
+          self.userId = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 3:
@@ -56818,9 +56515,9 @@ class doesUserProfileExist_args:
       oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
       self.authzToken.write(oprot)
       oprot.writeFieldEnd()
-    if self.userName is not None:
-      oprot.writeFieldBegin('userName', TType.STRING, 2)
-      oprot.writeString(self.userName)
+    if self.userId is not None:
+      oprot.writeFieldBegin('userId', TType.STRING, 2)
+      oprot.writeString(self.userId)
       oprot.writeFieldEnd()
     if self.gatewayId is not None:
       oprot.writeFieldBegin('gatewayId', TType.STRING, 3)
@@ -56832,8 +56529,8 @@ class doesUserProfileExist_args:
   def validate(self):
     if self.authzToken is None:
       raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
-    if self.userName is None:
-      raise TProtocol.TProtocolException(message='Required field userName is unset!')
+    if self.userId is None:
+      raise TProtocol.TProtocolException(message='Required field userId is unset!')
     if self.gatewayId is None:
       raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
     return
@@ -56842,7 +56539,7 @@ class doesUserProfileExist_args:
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.authzToken)
-    value = (value * 31) ^ hash(self.userName)
+    value = (value * 31) ^ hash(self.userId)
     value = (value * 31) ^ hash(self.gatewayId)
     return value
 

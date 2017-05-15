@@ -506,6 +506,11 @@ void ApplicationDeploymentDescription::__set_defaultCPUCount(const int32_t val) 
 __isset.defaultCPUCount = true;
 }
 
+void ApplicationDeploymentDescription::__set_defaultWalltime(const int32_t val) {
+  this->defaultWalltime = val;
+__isset.defaultWalltime = true;
+}
+
 void ApplicationDeploymentDescription::__set_editableByUser(const bool val) {
   this->editableByUser = val;
 __isset.editableByUser = true;
@@ -732,6 +737,14 @@ uint32_t ApplicationDeploymentDescription::read(::apache::thrift::protocol::TPro
         }
         break;
       case 16:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->defaultWalltime);
+          this->__isset.defaultWalltime = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 17:
         if (ftype == ::apache::thrift::protocol::T_BOOL) {
           xfer += iprot->readBool(this->editableByUser);
           this->__isset.editableByUser = true;
@@ -884,8 +897,13 @@ uint32_t ApplicationDeploymentDescription::write(::apache::thrift::protocol::TPr
     xfer += oprot->writeI32(this->defaultCPUCount);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.defaultWalltime) {
+    xfer += oprot->writeFieldBegin("defaultWalltime", ::apache::thrift::protocol::T_I32, 16);
+    xfer += oprot->writeI32(this->defaultWalltime);
+    xfer += oprot->writeFieldEnd();
+  }
   if (this->__isset.editableByUser) {
-    xfer += oprot->writeFieldBegin("editableByUser", ::apache::thrift::protocol::T_BOOL, 16);
+    xfer += oprot->writeFieldBegin("editableByUser", ::apache::thrift::protocol::T_BOOL, 17);
     xfer += oprot->writeBool(this->editableByUser);
     xfer += oprot->writeFieldEnd();
   }
@@ -911,6 +929,7 @@ void swap(ApplicationDeploymentDescription &a, ApplicationDeploymentDescription 
   swap(a.defaultQueueName, b.defaultQueueName);
   swap(a.defaultNodeCount, b.defaultNodeCount);
   swap(a.defaultCPUCount, b.defaultCPUCount);
+  swap(a.defaultWalltime, b.defaultWalltime);
   swap(a.editableByUser, b.editableByUser);
   swap(a.__isset, b.__isset);
 }
@@ -931,6 +950,7 @@ ApplicationDeploymentDescription::ApplicationDeploymentDescription(const Applica
   defaultQueueName = other43.defaultQueueName;
   defaultNodeCount = other43.defaultNodeCount;
   defaultCPUCount = other43.defaultCPUCount;
+  defaultWalltime = other43.defaultWalltime;
   editableByUser = other43.editableByUser;
   __isset = other43.__isset;
 }
@@ -950,6 +970,7 @@ ApplicationDeploymentDescription& ApplicationDeploymentDescription::operator=(co
   defaultQueueName = other44.defaultQueueName;
   defaultNodeCount = other44.defaultNodeCount;
   defaultCPUCount = other44.defaultCPUCount;
+  defaultWalltime = other44.defaultWalltime;
   editableByUser = other44.editableByUser;
   __isset = other44.__isset;
   return *this;
@@ -972,6 +993,7 @@ void ApplicationDeploymentDescription::printTo(std::ostream& out) const {
   out << ", " << "defaultQueueName="; (__isset.defaultQueueName ? (out << to_string(defaultQueueName)) : (out << "<null>"));
   out << ", " << "defaultNodeCount="; (__isset.defaultNodeCount ? (out << to_string(defaultNodeCount)) : (out << "<null>"));
   out << ", " << "defaultCPUCount="; (__isset.defaultCPUCount ? (out << to_string(defaultCPUCount)) : (out << "<null>"));
+  out << ", " << "defaultWalltime="; (__isset.defaultWalltime ? (out << to_string(defaultWalltime)) : (out << "<null>"));
   out << ", " << "editableByUser="; (__isset.editableByUser ? (out << to_string(editableByUser)) : (out << "<null>"));
   out << ")";
 }

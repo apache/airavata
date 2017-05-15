@@ -198,8 +198,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  UserProfile getUserProfileById(AuthzToken authzToken, string userId, string gatewayId)')
   print('  bool deleteUserProfile(AuthzToken authzToken, string userId)')
   print('   getAllUserProfilesInGateway(AuthzToken authzToken, string gatewayId, i32 offset, i32 limit)')
-  print('  UserProfile getUserProfileByName(AuthzToken authzToken, string userName, string gatewayId)')
-  print('  bool doesUserProfileExist(AuthzToken authzToken, string userName, string gatewayId)')
+  print('  bool doesUserProfileExist(AuthzToken authzToken, string userId, string gatewayId)')
   print('')
   sys.exit(0)
 
@@ -1299,12 +1298,6 @@ elif cmd == 'getAllUserProfilesInGateway':
     print('getAllUserProfilesInGateway requires 4 args')
     sys.exit(1)
   pp.pprint(client.getAllUserProfilesInGateway(eval(args[0]),args[1],eval(args[2]),eval(args[3]),))
-
-elif cmd == 'getUserProfileByName':
-  if len(args) != 3:
-    print('getUserProfileByName requires 3 args')
-    sys.exit(1)
-  pp.pprint(client.getUserProfileByName(eval(args[0]),args[1],args[2],))
 
 elif cmd == 'doesUserProfileExist':
   if len(args) != 3:

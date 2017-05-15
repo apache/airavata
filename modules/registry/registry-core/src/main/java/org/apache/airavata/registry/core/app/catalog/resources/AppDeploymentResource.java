@@ -49,6 +49,7 @@ public class AppDeploymentResource extends AppCatAbstractResource {
     private String defaultQueueName;
     private int defaultNodeCount;
     private int defaultCPUCount;
+    private int defaultWalltime;
     private boolean editableByUser;
     private ComputeResourceResource hostResource;
     private AppModuleResource moduleResource;
@@ -165,6 +166,14 @@ public class AppDeploymentResource extends AppCatAbstractResource {
 
     public void setEditableByUser(boolean editableByUser) {
         this.editableByUser = editableByUser;
+    }
+
+    public int getDefaultWalltime() {
+        return defaultWalltime;
+    }
+
+    public void setDefaultWalltime(int defaultWalltime) {
+        this.defaultWalltime = defaultWalltime;
     }
 
     @Override
@@ -460,6 +469,7 @@ public class AppDeploymentResource extends AppCatAbstractResource {
                 existingDeployment.setDefaultQueueName(defaultQueueName);
                 existingDeployment.setDefaultCPUCount(defaultCPUCount);
                 existingDeployment.setDefaultNodeCount(defaultNodeCount);
+                existingDeployment.setDefaultWalltime(defaultWalltime);
                 existingDeployment.setEditableByUser(editableByUser);
                 existingDeployment.setUpdateTime(AiravataUtils.getCurrentTimestamp());
                 em.merge(existingDeployment);
@@ -477,6 +487,7 @@ public class AppDeploymentResource extends AppCatAbstractResource {
                 deployment.setDefaultQueueName(defaultQueueName);
                 deployment.setDefaultCPUCount(defaultCPUCount);
                 deployment.setDefaultNodeCount(defaultNodeCount);
+                deployment.setDefaultWalltime(defaultWalltime);
                 deployment.setEditableByUser(editableByUser);
                 deployment.setCreationTime(AiravataUtils.getCurrentTimestamp());
                 em.persist(deployment);

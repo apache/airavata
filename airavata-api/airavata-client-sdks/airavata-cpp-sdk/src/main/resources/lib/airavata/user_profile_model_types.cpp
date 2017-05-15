@@ -431,11 +431,6 @@ void UserProfile::__set_nameSuffix(const std::string& val) {
 __isset.nameSuffix = true;
 }
 
-void UserProfile::__set_userName(const std::string& val) {
-  this->userName = val;
-__isset.userName = true;
-}
-
 void UserProfile::__set_orcidId(const std::string& val) {
   this->orcidId = val;
 __isset.orcidId = true;
@@ -633,21 +628,13 @@ uint32_t UserProfile::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 11:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->userName);
-          this->__isset.userName = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 12:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->orcidId);
           this->__isset.orcidId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 13:
+      case 12:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->phones.clear();
@@ -667,7 +654,7 @@ uint32_t UserProfile::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 14:
+      case 13:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->country);
           this->__isset.country = true;
@@ -675,7 +662,7 @@ uint32_t UserProfile::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 15:
+      case 14:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->nationality.clear();
@@ -695,7 +682,7 @@ uint32_t UserProfile::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 16:
+      case 15:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->homeOrganization);
           this->__isset.homeOrganization = true;
@@ -703,7 +690,7 @@ uint32_t UserProfile::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 17:
+      case 16:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->orginationAffiliation);
           this->__isset.orginationAffiliation = true;
@@ -711,7 +698,7 @@ uint32_t UserProfile::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 18:
+      case 17:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->creationTime);
           isset_creationTime = true;
@@ -719,7 +706,7 @@ uint32_t UserProfile::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 19:
+      case 18:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->lastAccessTime);
           isset_lastAccessTime = true;
@@ -727,7 +714,7 @@ uint32_t UserProfile::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 20:
+      case 19:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->validUntil);
           isset_validUntil = true;
@@ -735,7 +722,7 @@ uint32_t UserProfile::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 21:
+      case 20:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast39;
           xfer += iprot->readI32(ecast39);
@@ -745,7 +732,7 @@ uint32_t UserProfile::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 22:
+      case 21:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->comments);
           this->__isset.comments = true;
@@ -753,7 +740,7 @@ uint32_t UserProfile::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 23:
+      case 22:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->labeledURI.clear();
@@ -773,7 +760,7 @@ uint32_t UserProfile::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 24:
+      case 23:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->gpgKey);
           this->__isset.gpgKey = true;
@@ -781,7 +768,7 @@ uint32_t UserProfile::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 25:
+      case 24:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->timeZone);
           this->__isset.timeZone = true;
@@ -789,7 +776,7 @@ uint32_t UserProfile::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 26:
+      case 25:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->nsfDemographics.read(iprot);
           this->__isset.nsfDemographics = true;
@@ -887,18 +874,13 @@ uint32_t UserProfile::write(::apache::thrift::protocol::TProtocol* oprot) const 
     xfer += oprot->writeString(this->nameSuffix);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.userName) {
-    xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 11);
-    xfer += oprot->writeString(this->userName);
-    xfer += oprot->writeFieldEnd();
-  }
   if (this->__isset.orcidId) {
-    xfer += oprot->writeFieldBegin("orcidId", ::apache::thrift::protocol::T_STRING, 12);
+    xfer += oprot->writeFieldBegin("orcidId", ::apache::thrift::protocol::T_STRING, 11);
     xfer += oprot->writeString(this->orcidId);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.phones) {
-    xfer += oprot->writeFieldBegin("phones", ::apache::thrift::protocol::T_LIST, 13);
+    xfer += oprot->writeFieldBegin("phones", ::apache::thrift::protocol::T_LIST, 12);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->phones.size()));
       std::vector<std::string> ::const_iterator _iter46;
@@ -911,12 +893,12 @@ uint32_t UserProfile::write(::apache::thrift::protocol::TProtocol* oprot) const 
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.country) {
-    xfer += oprot->writeFieldBegin("country", ::apache::thrift::protocol::T_STRING, 14);
+    xfer += oprot->writeFieldBegin("country", ::apache::thrift::protocol::T_STRING, 13);
     xfer += oprot->writeString(this->country);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.nationality) {
-    xfer += oprot->writeFieldBegin("nationality", ::apache::thrift::protocol::T_LIST, 15);
+    xfer += oprot->writeFieldBegin("nationality", ::apache::thrift::protocol::T_LIST, 14);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->nationality.size()));
       std::vector<std::string> ::const_iterator _iter47;
@@ -929,38 +911,38 @@ uint32_t UserProfile::write(::apache::thrift::protocol::TProtocol* oprot) const 
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.homeOrganization) {
-    xfer += oprot->writeFieldBegin("homeOrganization", ::apache::thrift::protocol::T_STRING, 16);
+    xfer += oprot->writeFieldBegin("homeOrganization", ::apache::thrift::protocol::T_STRING, 15);
     xfer += oprot->writeString(this->homeOrganization);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.orginationAffiliation) {
-    xfer += oprot->writeFieldBegin("orginationAffiliation", ::apache::thrift::protocol::T_STRING, 17);
+    xfer += oprot->writeFieldBegin("orginationAffiliation", ::apache::thrift::protocol::T_STRING, 16);
     xfer += oprot->writeString(this->orginationAffiliation);
     xfer += oprot->writeFieldEnd();
   }
-  xfer += oprot->writeFieldBegin("creationTime", ::apache::thrift::protocol::T_I64, 18);
+  xfer += oprot->writeFieldBegin("creationTime", ::apache::thrift::protocol::T_I64, 17);
   xfer += oprot->writeI64(this->creationTime);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("lastAccessTime", ::apache::thrift::protocol::T_I64, 19);
+  xfer += oprot->writeFieldBegin("lastAccessTime", ::apache::thrift::protocol::T_I64, 18);
   xfer += oprot->writeI64(this->lastAccessTime);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("validUntil", ::apache::thrift::protocol::T_I64, 20);
+  xfer += oprot->writeFieldBegin("validUntil", ::apache::thrift::protocol::T_I64, 19);
   xfer += oprot->writeI64(this->validUntil);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("State", ::apache::thrift::protocol::T_I32, 21);
+  xfer += oprot->writeFieldBegin("State", ::apache::thrift::protocol::T_I32, 20);
   xfer += oprot->writeI32((int32_t)this->State);
   xfer += oprot->writeFieldEnd();
 
   if (this->__isset.comments) {
-    xfer += oprot->writeFieldBegin("comments", ::apache::thrift::protocol::T_STRING, 22);
+    xfer += oprot->writeFieldBegin("comments", ::apache::thrift::protocol::T_STRING, 21);
     xfer += oprot->writeString(this->comments);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.labeledURI) {
-    xfer += oprot->writeFieldBegin("labeledURI", ::apache::thrift::protocol::T_LIST, 23);
+    xfer += oprot->writeFieldBegin("labeledURI", ::apache::thrift::protocol::T_LIST, 22);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->labeledURI.size()));
       std::vector<std::string> ::const_iterator _iter48;
@@ -973,17 +955,17 @@ uint32_t UserProfile::write(::apache::thrift::protocol::TProtocol* oprot) const 
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.gpgKey) {
-    xfer += oprot->writeFieldBegin("gpgKey", ::apache::thrift::protocol::T_STRING, 24);
+    xfer += oprot->writeFieldBegin("gpgKey", ::apache::thrift::protocol::T_STRING, 23);
     xfer += oprot->writeString(this->gpgKey);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.timeZone) {
-    xfer += oprot->writeFieldBegin("timeZone", ::apache::thrift::protocol::T_STRING, 25);
+    xfer += oprot->writeFieldBegin("timeZone", ::apache::thrift::protocol::T_STRING, 24);
     xfer += oprot->writeString(this->timeZone);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.nsfDemographics) {
-    xfer += oprot->writeFieldBegin("nsfDemographics", ::apache::thrift::protocol::T_STRUCT, 26);
+    xfer += oprot->writeFieldBegin("nsfDemographics", ::apache::thrift::protocol::T_STRUCT, 25);
     xfer += this->nsfDemographics.write(oprot);
     xfer += oprot->writeFieldEnd();
   }
@@ -1004,7 +986,6 @@ void swap(UserProfile &a, UserProfile &b) {
   swap(a.middleName, b.middleName);
   swap(a.namePrefix, b.namePrefix);
   swap(a.nameSuffix, b.nameSuffix);
-  swap(a.userName, b.userName);
   swap(a.orcidId, b.orcidId);
   swap(a.phones, b.phones);
   swap(a.country, b.country);
@@ -1034,7 +1015,6 @@ UserProfile::UserProfile(const UserProfile& other49) {
   middleName = other49.middleName;
   namePrefix = other49.namePrefix;
   nameSuffix = other49.nameSuffix;
-  userName = other49.userName;
   orcidId = other49.orcidId;
   phones = other49.phones;
   country = other49.country;
@@ -1063,7 +1043,6 @@ UserProfile& UserProfile::operator=(const UserProfile& other50) {
   middleName = other50.middleName;
   namePrefix = other50.namePrefix;
   nameSuffix = other50.nameSuffix;
-  userName = other50.userName;
   orcidId = other50.orcidId;
   phones = other50.phones;
   country = other50.country;
@@ -1095,7 +1074,6 @@ void UserProfile::printTo(std::ostream& out) const {
   out << ", " << "middleName="; (__isset.middleName ? (out << to_string(middleName)) : (out << "<null>"));
   out << ", " << "namePrefix="; (__isset.namePrefix ? (out << to_string(namePrefix)) : (out << "<null>"));
   out << ", " << "nameSuffix="; (__isset.nameSuffix ? (out << to_string(nameSuffix)) : (out << "<null>"));
-  out << ", " << "userName="; (__isset.userName ? (out << to_string(userName)) : (out << "<null>"));
   out << ", " << "orcidId="; (__isset.orcidId ? (out << to_string(orcidId)) : (out << "<null>"));
   out << ", " << "phones="; (__isset.phones ? (out << to_string(phones)) : (out << "<null>"));
   out << ", " << "country="; (__isset.country ? (out << to_string(country)) : (out << "<null>"));

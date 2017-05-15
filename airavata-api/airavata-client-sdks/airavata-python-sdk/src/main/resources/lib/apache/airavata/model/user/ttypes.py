@@ -397,7 +397,6 @@ class UserProfile:
    - middleName
    - namePrefix
    - nameSuffix
-   - userName
    - orcidId
    - phones
    - country
@@ -427,25 +426,24 @@ class UserProfile:
     (8, TType.STRING, 'middleName', None, None, ), # 8
     (9, TType.STRING, 'namePrefix', None, None, ), # 9
     (10, TType.STRING, 'nameSuffix', None, None, ), # 10
-    (11, TType.STRING, 'userName', None, None, ), # 11
-    (12, TType.STRING, 'orcidId', None, None, ), # 12
-    (13, TType.LIST, 'phones', (TType.STRING,None), None, ), # 13
-    (14, TType.STRING, 'country', None, None, ), # 14
-    (15, TType.LIST, 'nationality', (TType.STRING,None), None, ), # 15
-    (16, TType.STRING, 'homeOrganization', None, None, ), # 16
-    (17, TType.STRING, 'orginationAffiliation', None, None, ), # 17
-    (18, TType.I64, 'creationTime', None, None, ), # 18
-    (19, TType.I64, 'lastAccessTime', None, None, ), # 19
-    (20, TType.I64, 'validUntil', None, None, ), # 20
-    (21, TType.I32, 'State', None, None, ), # 21
-    (22, TType.STRING, 'comments', None, None, ), # 22
-    (23, TType.LIST, 'labeledURI', (TType.STRING,None), None, ), # 23
-    (24, TType.STRING, 'gpgKey', None, None, ), # 24
-    (25, TType.STRING, 'timeZone', None, None, ), # 25
-    (26, TType.STRUCT, 'nsfDemographics', (NSFDemographics, NSFDemographics.thrift_spec), None, ), # 26
+    (11, TType.STRING, 'orcidId', None, None, ), # 11
+    (12, TType.LIST, 'phones', (TType.STRING,None), None, ), # 12
+    (13, TType.STRING, 'country', None, None, ), # 13
+    (14, TType.LIST, 'nationality', (TType.STRING,None), None, ), # 14
+    (15, TType.STRING, 'homeOrganization', None, None, ), # 15
+    (16, TType.STRING, 'orginationAffiliation', None, None, ), # 16
+    (17, TType.I64, 'creationTime', None, None, ), # 17
+    (18, TType.I64, 'lastAccessTime', None, None, ), # 18
+    (19, TType.I64, 'validUntil', None, None, ), # 19
+    (20, TType.I32, 'State', None, None, ), # 20
+    (21, TType.STRING, 'comments', None, None, ), # 21
+    (22, TType.LIST, 'labeledURI', (TType.STRING,None), None, ), # 22
+    (23, TType.STRING, 'gpgKey', None, None, ), # 23
+    (24, TType.STRING, 'timeZone', None, None, ), # 24
+    (25, TType.STRUCT, 'nsfDemographics', (NSFDemographics, NSFDemographics.thrift_spec), None, ), # 25
   )
 
-  def __init__(self, userModelVersion=thrift_spec[1][4], airavataInternalUserId=thrift_spec[2][4], userId=None, gatewayId=None, emails=None, firstName=None, lastName=None, middleName=None, namePrefix=None, nameSuffix=None, userName=None, orcidId=None, phones=None, country=None, nationality=None, homeOrganization=None, orginationAffiliation=None, creationTime=None, lastAccessTime=None, validUntil=None, State=None, comments=None, labeledURI=None, gpgKey=None, timeZone=None, nsfDemographics=None,):
+  def __init__(self, userModelVersion=thrift_spec[1][4], airavataInternalUserId=thrift_spec[2][4], userId=None, gatewayId=None, emails=None, firstName=None, lastName=None, middleName=None, namePrefix=None, nameSuffix=None, orcidId=None, phones=None, country=None, nationality=None, homeOrganization=None, orginationAffiliation=None, creationTime=None, lastAccessTime=None, validUntil=None, State=None, comments=None, labeledURI=None, gpgKey=None, timeZone=None, nsfDemographics=None,):
     self.userModelVersion = userModelVersion
     self.airavataInternalUserId = airavataInternalUserId
     self.userId = userId
@@ -456,7 +454,6 @@ class UserProfile:
     self.middleName = middleName
     self.namePrefix = namePrefix
     self.nameSuffix = nameSuffix
-    self.userName = userName
     self.orcidId = orcidId
     self.phones = phones
     self.country = country
@@ -539,15 +536,10 @@ class UserProfile:
           iprot.skip(ftype)
       elif fid == 11:
         if ftype == TType.STRING:
-          self.userName = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 12:
-        if ftype == TType.STRING:
           self.orcidId = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 13:
+      elif fid == 12:
         if ftype == TType.LIST:
           self.phones = []
           (_etype30, _size27) = iprot.readListBegin()
@@ -557,12 +549,12 @@ class UserProfile:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 14:
+      elif fid == 13:
         if ftype == TType.STRING:
           self.country = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 15:
+      elif fid == 14:
         if ftype == TType.LIST:
           self.nationality = []
           (_etype36, _size33) = iprot.readListBegin()
@@ -572,42 +564,42 @@ class UserProfile:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 16:
+      elif fid == 15:
         if ftype == TType.STRING:
           self.homeOrganization = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 17:
+      elif fid == 16:
         if ftype == TType.STRING:
           self.orginationAffiliation = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 18:
+      elif fid == 17:
         if ftype == TType.I64:
           self.creationTime = iprot.readI64()
         else:
           iprot.skip(ftype)
-      elif fid == 19:
+      elif fid == 18:
         if ftype == TType.I64:
           self.lastAccessTime = iprot.readI64()
         else:
           iprot.skip(ftype)
-      elif fid == 20:
+      elif fid == 19:
         if ftype == TType.I64:
           self.validUntil = iprot.readI64()
         else:
           iprot.skip(ftype)
-      elif fid == 21:
+      elif fid == 20:
         if ftype == TType.I32:
           self.State = iprot.readI32()
         else:
           iprot.skip(ftype)
-      elif fid == 22:
+      elif fid == 21:
         if ftype == TType.STRING:
           self.comments = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 23:
+      elif fid == 22:
         if ftype == TType.LIST:
           self.labeledURI = []
           (_etype42, _size39) = iprot.readListBegin()
@@ -617,17 +609,17 @@ class UserProfile:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 24:
+      elif fid == 23:
         if ftype == TType.STRING:
           self.gpgKey = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 25:
+      elif fid == 24:
         if ftype == TType.STRING:
           self.timeZone = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 26:
+      elif fid == 25:
         if ftype == TType.STRUCT:
           self.nsfDemographics = NSFDemographics()
           self.nsfDemographics.read(iprot)
@@ -686,77 +678,73 @@ class UserProfile:
       oprot.writeFieldBegin('nameSuffix', TType.STRING, 10)
       oprot.writeString(self.nameSuffix)
       oprot.writeFieldEnd()
-    if self.userName is not None:
-      oprot.writeFieldBegin('userName', TType.STRING, 11)
-      oprot.writeString(self.userName)
-      oprot.writeFieldEnd()
     if self.orcidId is not None:
-      oprot.writeFieldBegin('orcidId', TType.STRING, 12)
+      oprot.writeFieldBegin('orcidId', TType.STRING, 11)
       oprot.writeString(self.orcidId)
       oprot.writeFieldEnd()
     if self.phones is not None:
-      oprot.writeFieldBegin('phones', TType.LIST, 13)
+      oprot.writeFieldBegin('phones', TType.LIST, 12)
       oprot.writeListBegin(TType.STRING, len(self.phones))
       for iter46 in self.phones:
         oprot.writeString(iter46)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.country is not None:
-      oprot.writeFieldBegin('country', TType.STRING, 14)
+      oprot.writeFieldBegin('country', TType.STRING, 13)
       oprot.writeString(self.country)
       oprot.writeFieldEnd()
     if self.nationality is not None:
-      oprot.writeFieldBegin('nationality', TType.LIST, 15)
+      oprot.writeFieldBegin('nationality', TType.LIST, 14)
       oprot.writeListBegin(TType.STRING, len(self.nationality))
       for iter47 in self.nationality:
         oprot.writeString(iter47)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.homeOrganization is not None:
-      oprot.writeFieldBegin('homeOrganization', TType.STRING, 16)
+      oprot.writeFieldBegin('homeOrganization', TType.STRING, 15)
       oprot.writeString(self.homeOrganization)
       oprot.writeFieldEnd()
     if self.orginationAffiliation is not None:
-      oprot.writeFieldBegin('orginationAffiliation', TType.STRING, 17)
+      oprot.writeFieldBegin('orginationAffiliation', TType.STRING, 16)
       oprot.writeString(self.orginationAffiliation)
       oprot.writeFieldEnd()
     if self.creationTime is not None:
-      oprot.writeFieldBegin('creationTime', TType.I64, 18)
+      oprot.writeFieldBegin('creationTime', TType.I64, 17)
       oprot.writeI64(self.creationTime)
       oprot.writeFieldEnd()
     if self.lastAccessTime is not None:
-      oprot.writeFieldBegin('lastAccessTime', TType.I64, 19)
+      oprot.writeFieldBegin('lastAccessTime', TType.I64, 18)
       oprot.writeI64(self.lastAccessTime)
       oprot.writeFieldEnd()
     if self.validUntil is not None:
-      oprot.writeFieldBegin('validUntil', TType.I64, 20)
+      oprot.writeFieldBegin('validUntil', TType.I64, 19)
       oprot.writeI64(self.validUntil)
       oprot.writeFieldEnd()
     if self.State is not None:
-      oprot.writeFieldBegin('State', TType.I32, 21)
+      oprot.writeFieldBegin('State', TType.I32, 20)
       oprot.writeI32(self.State)
       oprot.writeFieldEnd()
     if self.comments is not None:
-      oprot.writeFieldBegin('comments', TType.STRING, 22)
+      oprot.writeFieldBegin('comments', TType.STRING, 21)
       oprot.writeString(self.comments)
       oprot.writeFieldEnd()
     if self.labeledURI is not None:
-      oprot.writeFieldBegin('labeledURI', TType.LIST, 23)
+      oprot.writeFieldBegin('labeledURI', TType.LIST, 22)
       oprot.writeListBegin(TType.STRING, len(self.labeledURI))
       for iter48 in self.labeledURI:
         oprot.writeString(iter48)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.gpgKey is not None:
-      oprot.writeFieldBegin('gpgKey', TType.STRING, 24)
+      oprot.writeFieldBegin('gpgKey', TType.STRING, 23)
       oprot.writeString(self.gpgKey)
       oprot.writeFieldEnd()
     if self.timeZone is not None:
-      oprot.writeFieldBegin('timeZone', TType.STRING, 25)
+      oprot.writeFieldBegin('timeZone', TType.STRING, 24)
       oprot.writeString(self.timeZone)
       oprot.writeFieldEnd()
     if self.nsfDemographics is not None:
-      oprot.writeFieldBegin('nsfDemographics', TType.STRUCT, 26)
+      oprot.writeFieldBegin('nsfDemographics', TType.STRUCT, 25)
       self.nsfDemographics.write(oprot)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -800,7 +788,6 @@ class UserProfile:
     value = (value * 31) ^ hash(self.middleName)
     value = (value * 31) ^ hash(self.namePrefix)
     value = (value * 31) ^ hash(self.nameSuffix)
-    value = (value * 31) ^ hash(self.userName)
     value = (value * 31) ^ hash(self.orcidId)
     value = (value * 31) ^ hash(self.phones)
     value = (value * 31) ^ hash(self.country)
