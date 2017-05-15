@@ -357,5 +357,9 @@ struct ComputeResourceDescription {
     11: optional i32 maxMemoryPerNode,
     12: optional bool gatewayUsageReporting,
     13: optional string gatewayUsageModuleLoadCommand,
-    14: optional string gatewayUsageExecutable
+    14: optional string gatewayUsageExecutable,
+    15: optional i32 cpusPerNode,
+    16: optional i32 defaultNodeCount,
+    17: optional i32 defaultCPUCount,
+    18: optional i32 defaultWallltime,
 }

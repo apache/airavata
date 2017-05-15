@@ -190,11 +190,10 @@ inline std::ostream& operator<<(std::ostream& out, const NSFDemographics& obj)
 }
 
 typedef struct _UserProfile__isset {
-  _UserProfile__isset() : middleName(false), namePrefix(false), nameSuffix(false), userName(false), orcidId(false), phones(false), country(false), nationality(false), homeOrganization(false), orginationAffiliation(false), comments(false), labeledURI(false), gpgKey(false), timeZone(false), nsfDemographics(false) {}
+  _UserProfile__isset() : middleName(false), namePrefix(false), nameSuffix(false), orcidId(false), phones(false), country(false), nationality(false), homeOrganization(false), orginationAffiliation(false), comments(false), labeledURI(false), gpgKey(false), timeZone(false), nsfDemographics(false) {}
   bool middleName :1;
   bool namePrefix :1;
   bool nameSuffix :1;
-  bool userName :1;
   bool orcidId :1;
   bool phones :1;
   bool country :1;
@@ -213,7 +212,7 @@ class UserProfile {
 
   UserProfile(const UserProfile&);
   UserProfile& operator=(const UserProfile&);
-  UserProfile() : userModelVersion("1.0"), airavataInternalUserId("DO_NOT_SET_AT_CLIENTS"), userId(), gatewayId(), firstName(), lastName(), middleName(), namePrefix(), nameSuffix(), userName(), orcidId(), country(), homeOrganization(), orginationAffiliation(), creationTime(0), lastAccessTime(0), validUntil(0), State((Status::type)0), comments(), gpgKey(), timeZone() {
+  UserProfile() : userModelVersion("1.0"), airavataInternalUserId("DO_NOT_SET_AT_CLIENTS"), userId(), gatewayId(), firstName(), lastName(), middleName(), namePrefix(), nameSuffix(), orcidId(), country(), homeOrganization(), orginationAffiliation(), creationTime(0), lastAccessTime(0), validUntil(0), State((Status::type)0), comments(), gpgKey(), timeZone() {
   }
 
   virtual ~UserProfile() throw();
@@ -227,7 +226,6 @@ class UserProfile {
   std::string middleName;
   std::string namePrefix;
   std::string nameSuffix;
-  std::string userName;
   std::string orcidId;
   std::vector<std::string>  phones;
   std::string country;
@@ -265,8 +263,6 @@ class UserProfile {
   void __set_namePrefix(const std::string& val);
 
   void __set_nameSuffix(const std::string& val);
-
-  void __set_userName(const std::string& val);
 
   void __set_orcidId(const std::string& val);
 
@@ -325,10 +321,6 @@ class UserProfile {
     if (__isset.nameSuffix != rhs.__isset.nameSuffix)
       return false;
     else if (__isset.nameSuffix && !(nameSuffix == rhs.nameSuffix))
-      return false;
-    if (__isset.userName != rhs.__isset.userName)
-      return false;
-    else if (__isset.userName && !(userName == rhs.userName))
       return false;
     if (__isset.orcidId != rhs.__isset.orcidId)
       return false;
