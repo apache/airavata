@@ -541,6 +541,10 @@ public class AppCatalogJPAUtils {
             computeResourceResource.setCreatedTime(o.getCreationTime());
             computeResourceResource.setEnabled(o.getEnabled());
             computeResourceResource.setMaxMemoryPerNode(o.getMaxMemoryPerNode());
+            computeResourceResource.setCpusPerNode(o.getCpusPerNode());
+            computeResourceResource.setDefaultNodeCount(o.getDefaultNodeCount());
+            computeResourceResource.setDefaultCPUCount(o.getDefaultCPUCount());
+            computeResourceResource.setDefaultWalltime(o.getDefaultWalltime());
             computeResourceResource.setGatewayUsageExec(o.getGatewayUsageExec());
             computeResourceResource.setGatewayUsageModLoadCMD(o.getGatewayUsageModLoadCMD());
             computeResourceResource.setGatewayUsageReporting(o.isGatewayUsageReporting());
@@ -780,6 +784,7 @@ public class AppCatalogJPAUtils {
             resource.setDefaultQueueName(o.getDefaultQueueName());
             resource.setDefaultNodeCount(o.getDefaultNodeCount());
             resource.setDefaultCPUCount(o.getDefaultCPUCount());
+            resource.setDefaultWalltime(o.getDefaultWalltime());
             resource.setEditableByUser(o.isEditableByUser());
             resource.setModuleResource((AppModuleResource) createApplicationModule(o.getApplicationModule()));
             resource.setHostResource((ComputeResourceResource) createComputeResource(o.getComputeResource()));

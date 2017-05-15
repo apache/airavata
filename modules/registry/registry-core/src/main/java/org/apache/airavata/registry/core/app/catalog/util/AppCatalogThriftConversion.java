@@ -51,6 +51,10 @@ public class AppCatalogThriftConversion {
         resource.setResourceDescription(description.getResourceDescription());
         resource.setResourceId(description.getComputeResourceId());
         resource.setMaxMemoryPerNode(description.getMaxMemoryPerNode());
+        resource.setCpusPerNode(description.getCpusPerNode());
+        resource.setDefaultNodeCount(description.getDefaultNodeCount());
+        resource.setDefaultCPUCount(description.getDefaultCPUCount());
+        resource.setDefaultWalltime(description.getDefaultWallltime());
         resource.setEnabled(description.isEnabled());
         resource.setGatewayUsageReporting(description.isGatewayUsageReporting());
         resource.setGatewayUsageExec(description.getGatewayUsageExecutable());
@@ -73,6 +77,10 @@ public class AppCatalogThriftConversion {
         description.setHostName(resource.getHostName());
         description.setResourceDescription(resource.getResourceDescription());
         description.setMaxMemoryPerNode(resource.getMaxMemoryPerNode());
+        description.setCpusPerNode(resource.getCpusPerNode());
+        description.setDefaultNodeCount(resource.getDefaultNodeCount());
+        description.setDefaultCPUCount(resource.getDefaultCPUCount());
+        description.setDefaultWallltime(resource.getDefaultWalltime());
         description.setEnabled(resource.isEnabled());
         description.setGatewayUsageReporting(resource.isGatewayUsageReporting());
         description.setGatewayUsageExecutable(resource.getGatewayUsageExec());
@@ -724,6 +732,7 @@ public class AppCatalogThriftConversion {
         description.setDefaultQueueName(resource.getDefaultQueueName());
         description.setDefaultCPUCount(resource.getDefaultCPUCount());
         description.setDefaultNodeCount(resource.getDefaultNodeCount());
+        description.setDefaultWalltime(resource.getDefaultWalltime());
         description.setEditableByUser(resource.isEditableByUser());
 
         ModuleLoadCmdResource cmdResource = new ModuleLoadCmdResource();
