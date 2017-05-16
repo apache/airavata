@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,26 +16,25 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
-
+ */
 package org.apache.airavata.testsuite.multitenantedairavata;
 
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.credential.store.store.impl.SSHCredentialWriter;
 import org.apache.airavata.credential.store.util.TokenGenerator;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.credential.store.CredentialOwnerType;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.testsuite.multitenantedairavata.utils.FrameworkUtils;
 import org.apache.airavata.testsuite.multitenantedairavata.utils.PropertyFileType;
@@ -59,7 +58,6 @@ public class GatewayRegister {
     private Map<String, String> projectMap;
     private String testUser;
     private String testProject;
-    private List<String> gatewaysToAvoid;
     private TestFrameworkProps properties;
     private AuthzToken authzToken;
 
@@ -73,7 +71,6 @@ public class GatewayRegister {
             testUser = properties.getTestUserName();
             testProject = properties.getTestProjectName();
             FrameworkUtils frameworkUtils = FrameworkUtils.getInstance();
-            gatewaysToAvoid = frameworkUtils.getGatewayListToAvoid(properties.getSkippedGateways());
             authzToken = new AuthzToken("emptyToken");
         }catch (Exception e){
             logger.error("Error while initializing setup step", e);
@@ -81,25 +78,33 @@ public class GatewayRegister {
         }
     }
 
-    public void createGateways() throws Exception{
+    public void createGateway() throws Exception{
         try {
             // read gateway count from properties file
-            gatewayCount = properties.getGcount();
+            List<GatewayResourceProfile> gateReourceProfiles = airavata.getAllGatewayResourceProfiles(authzToken);
+            for(GatewayResourceProfile gatewayResourceProfile : gateReourceProfiles){
+                if(gatewayResourceProfile.getGatewayID().equals(properties.getGname())){
+                    createProject(gatewayResourceProfile.getGatewayID());
+                    return;
+                }
+            }
+
             String genericGatewayName = properties.getGname();
             String genericGatewayDomain = properties.getGdomain();
-            for (int i = 0; i < gatewayCount; i++){
-                Gateway gateway = new Gateway();
-                String gatewayId = genericGatewayName + (i + 1);
-                gateway.setGatewayId(gatewayId);
-                gateway.setGatewayName(gatewayId);
-                gateway.setDomain(gatewayId + genericGatewayDomain);
-                airavata.addGateway(authzToken, gateway);
-                GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
-                gatewayResourceProfile.setGatewayID(gatewayId);
-                airavata.registerGatewayResourceProfile(authzToken, gatewayResourceProfile);
-                // create a project per each gateway
-                createProject(gatewayId);
-            }
+            Gateway gateway = new Gateway();
+            String gatewayId = genericGatewayName;
+            gateway.setGatewayId(gatewayId);
+            gateway.setGatewayName(gatewayId);
+            gateway.setDomain(gatewayId + genericGatewayDomain);
+            gateway.setGatewayApprovalStatus(GatewayApprovalStatus.APPROVED);
+            airavata.addGateway(authzToken, gateway);
+            String token = airavata.generateAndRegisterSSHKeys(authzToken, gatewayId, testUser, testUser, CredentialOwnerType.USER);
+            GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
+            gatewayResourceProfile.setCredentialStoreToken(token);
+            gatewayResourceProfile.setGatewayID(gatewayId);
+            airavata.registerGatewayResourceProfile(authzToken, gatewayResourceProfile);
+            createProject(gatewayId);
+
         } catch (AiravataSystemException e) {
             logger.error("Error while creating airavata client instance", e);
             throw new Exception("Error while creating airavata client instance", e);
@@ -115,12 +120,36 @@ public class GatewayRegister {
         }
     }
 
+    public GatewayResourceProfile getGatewayResourceProfile() throws Exception{
+        return airavata.getGatewayResourceProfile(authzToken, properties.getGname());
+
+    }
+
+    public Gateway getGateway(String gatewayId) throws Exception{
+        Gateway gateway = airavata.getGateway(authzToken, gatewayId);
+        return gateway;
+
+    }
+
     public void createProject (String gatewayId) throws Exception{
         Project project = new Project();
+        project.setGatewayId(gatewayId);
         project.setName(testProject);
         project.setOwner(testUser);
         String projectId = airavata.createProject(authzToken, gatewayId, project);
         projectMap.put(projectId, gatewayId);
+    }
+
+    public String writeToken() throws Exception{
+        String tokenWriteLocation = properties.getTokenFileLoc();
+        String fileName = tokenWriteLocation + File.separator + TestFrameworkConstants.CredentialStoreConstants.TOKEN_FILE_NAME;
+        Gateway gateway = airavata.getGateway(authzToken, properties.getGname());
+        PrintWriter tokenWriter = new PrintWriter(fileName, "UTF-8");
+        String token = TokenGenerator.generateToken(gateway.getGatewayId(), null);
+        tokenMap.put(gateway.getGatewayId(), token);
+        tokenWriter.println(gateway.getGatewayId() + ":" + token);
+        tokenWriter.close();
+        return gateway.getGatewayId() + ":" + token +"\n";
     }
 
     public void registerSSHKeys () throws Exception{
@@ -131,48 +160,39 @@ public class GatewayRegister {
 
             PrintWriter tokenWriter = new PrintWriter(fileName, "UTF-8");
             // credential store related functions are not in the current api, so need to call credential store directly
-            String jdbcURL = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.CS_JBDC_URL, PropertyFileType.AIRAVATA_CLIENT);
-            String jdbcDriver = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.CS_JBDC_DRIVER, PropertyFileType.AIRAVATA_CLIENT);
-            String userName = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.CS_DB_USERNAME, PropertyFileType.AIRAVATA_CLIENT);
-            String password = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.CS_DB_PWD, PropertyFileType.AIRAVATA_CLIENT);
+            String jdbcURL = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.CS_JBDC_URL, PropertyFileType.AIRAVATA_SERVER);
+            String jdbcDriver = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.CS_JBDC_DRIVER, PropertyFileType.AIRAVATA_SERVER);
+            String userName = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.CS_DB_USERNAME, PropertyFileType.AIRAVATA_SERVER);
+            String password = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.CS_DB_PWD, PropertyFileType.AIRAVATA_SERVER);
             String privateKeyPath = properties.getSshPrivateKeyLoc();
             String pubKeyPath = properties.getSshPubKeyLoc();
             String keyPassword = properties.getSshPassword();
             DBUtil dbUtil = new DBUtil(jdbcURL, userName, password, jdbcDriver);
             SSHCredentialWriter writer = new SSHCredentialWriter(dbUtil);
-            List<Gateway> allGateways = airavata.getAllGateways(authzToken);
-            for (Gateway gateway : allGateways){
-                boolean isgatewayValid = true;
-                for (String ovoidGateway : gatewaysToAvoid){
-                    if (gateway.getGatewayId().equals(ovoidGateway)){
-                        isgatewayValid = false;
-                        break;
-                    }
-                }
-                if (isgatewayValid) {
-                    SSHCredential sshCredential = new SSHCredential();
-                    sshCredential.setGateway(gateway.getGatewayId());
-                    String token = TokenGenerator.generateToken(gateway.getGatewayId(), null);
-                    sshCredential.setToken(token);
-                    sshCredential.setPortalUserName(testUser);
-                    FileInputStream privateKeyStream = new FileInputStream(privateKeyPath);
-                    File filePri = new File(privateKeyPath);
-                    byte[] bFilePri = new byte[(int) filePri.length()];
-                    privateKeyStream.read(bFilePri);
-                    FileInputStream pubKeyStream = new FileInputStream(pubKeyPath);
-                    File filePub = new File(pubKeyPath);
-                    byte[] bFilePub = new byte[(int) filePub.length()];
-                    pubKeyStream.read(bFilePub);
-                    privateKeyStream.close();
-                    pubKeyStream.close();
-                    sshCredential.setPrivateKey(bFilePri);
-                    sshCredential.setPublicKey(bFilePub);
-                    sshCredential.setPassphrase(keyPassword);
-                    writer.writeCredentials(sshCredential);
-                    tokenMap.put(gateway.getGatewayId(), token);
-                    tokenWriter.println(gateway.getGatewayId() + ":" + token);
-                }
-            }
+            Gateway gateway = airavata.getGateway(authzToken, properties.getGname());
+
+            SSHCredential sshCredential = new SSHCredential();
+            sshCredential.setGateway(gateway.getGatewayId());
+            String token = TokenGenerator.generateToken(gateway.getGatewayId(), null);
+            sshCredential.setToken(token);
+            sshCredential.setPortalUserName(testUser);
+            FileInputStream privateKeyStream = new FileInputStream(privateKeyPath);
+            File filePri = new File(privateKeyPath);
+            byte[] bFilePri = new byte[(int) filePri.length()];
+            privateKeyStream.read(bFilePri);
+            FileInputStream pubKeyStream = new FileInputStream(pubKeyPath);
+            File filePub = new File(pubKeyPath);
+            byte[] bFilePub = new byte[(int) filePub.length()];
+            pubKeyStream.read(bFilePub);
+            privateKeyStream.close();
+            pubKeyStream.close();
+            sshCredential.setPrivateKey(bFilePri);
+            sshCredential.setPublicKey(bFilePub);
+            sshCredential.setPassphrase(keyPassword);
+            writer.writeCredentials(sshCredential);
+            tokenMap.put(gateway.getGatewayId(), token);
+            tokenWriter.println(gateway.getGatewayId() + ":" + token);
+
             tokenWriter.close();
         } catch (ClassNotFoundException e) {
             logger.error("Unable to find mysql driver", e);
@@ -201,10 +221,11 @@ public class GatewayRegister {
         } catch (FileNotFoundException e) {
             logger.error("Could not find keys specified in the path", e);
             throw new Exception("Could not find keys specified in the path",e);
-        } catch (CredentialStoreException e) {
+        }catch (CredentialStoreException e) {
             logger.error("Error while saving SSH credentials", e);
             throw new Exception("Error while saving SSH credentials",e);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             logger.error("Error while saving SSH credentials", e);
             throw new Exception("Error while saving SSH credentials",e);
         }

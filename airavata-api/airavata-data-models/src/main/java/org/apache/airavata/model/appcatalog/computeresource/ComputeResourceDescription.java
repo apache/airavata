@@ -98,6 +98,10 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
   private static final org.apache.thrift.protocol.TField GATEWAY_USAGE_REPORTING_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayUsageReporting", org.apache.thrift.protocol.TType.BOOL, (short)12);
   private static final org.apache.thrift.protocol.TField GATEWAY_USAGE_MODULE_LOAD_COMMAND_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayUsageModuleLoadCommand", org.apache.thrift.protocol.TType.STRING, (short)13);
   private static final org.apache.thrift.protocol.TField GATEWAY_USAGE_EXECUTABLE_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayUsageExecutable", org.apache.thrift.protocol.TType.STRING, (short)14);
+  private static final org.apache.thrift.protocol.TField CPUS_PER_NODE_FIELD_DESC = new org.apache.thrift.protocol.TField("cpusPerNode", org.apache.thrift.protocol.TType.I32, (short)15);
+  private static final org.apache.thrift.protocol.TField DEFAULT_NODE_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultNodeCount", org.apache.thrift.protocol.TType.I32, (short)16);
+  private static final org.apache.thrift.protocol.TField DEFAULT_CPUCOUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultCPUCount", org.apache.thrift.protocol.TType.I32, (short)17);
+  private static final org.apache.thrift.protocol.TField DEFAULT_WALLLTIME_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultWallltime", org.apache.thrift.protocol.TType.I32, (short)18);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -119,6 +123,10 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
   private boolean gatewayUsageReporting; // optional
   private String gatewayUsageModuleLoadCommand; // optional
   private String gatewayUsageExecutable; // optional
+  private int cpusPerNode; // optional
+  private int defaultNodeCount; // optional
+  private int defaultCPUCount; // optional
+  private int defaultWallltime; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -135,7 +143,11 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
     MAX_MEMORY_PER_NODE((short)11, "maxMemoryPerNode"),
     GATEWAY_USAGE_REPORTING((short)12, "gatewayUsageReporting"),
     GATEWAY_USAGE_MODULE_LOAD_COMMAND((short)13, "gatewayUsageModuleLoadCommand"),
-    GATEWAY_USAGE_EXECUTABLE((short)14, "gatewayUsageExecutable");
+    GATEWAY_USAGE_EXECUTABLE((short)14, "gatewayUsageExecutable"),
+    CPUS_PER_NODE((short)15, "cpusPerNode"),
+    DEFAULT_NODE_COUNT((short)16, "defaultNodeCount"),
+    DEFAULT_CPUCOUNT((short)17, "defaultCPUCount"),
+    DEFAULT_WALLLTIME((short)18, "defaultWallltime");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -178,6 +190,14 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
           return GATEWAY_USAGE_MODULE_LOAD_COMMAND;
         case 14: // GATEWAY_USAGE_EXECUTABLE
           return GATEWAY_USAGE_EXECUTABLE;
+        case 15: // CPUS_PER_NODE
+          return CPUS_PER_NODE;
+        case 16: // DEFAULT_NODE_COUNT
+          return DEFAULT_NODE_COUNT;
+        case 17: // DEFAULT_CPUCOUNT
+          return DEFAULT_CPUCOUNT;
+        case 18: // DEFAULT_WALLLTIME
+          return DEFAULT_WALLLTIME;
         default:
           return null;
       }
@@ -221,8 +241,12 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
   private static final int __ENABLED_ISSET_ID = 0;
   private static final int __MAXMEMORYPERNODE_ISSET_ID = 1;
   private static final int __GATEWAYUSAGEREPORTING_ISSET_ID = 2;
+  private static final int __CPUSPERNODE_ISSET_ID = 3;
+  private static final int __DEFAULTNODECOUNT_ISSET_ID = 4;
+  private static final int __DEFAULTCPUCOUNT_ISSET_ID = 5;
+  private static final int __DEFAULTWALLLTIME_ISSET_ID = 6;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.HOST_ALIASES,_Fields.IP_ADDRESSES,_Fields.RESOURCE_DESCRIPTION,_Fields.ENABLED,_Fields.BATCH_QUEUES,_Fields.FILE_SYSTEMS,_Fields.JOB_SUBMISSION_INTERFACES,_Fields.DATA_MOVEMENT_INTERFACES,_Fields.MAX_MEMORY_PER_NODE,_Fields.GATEWAY_USAGE_REPORTING,_Fields.GATEWAY_USAGE_MODULE_LOAD_COMMAND,_Fields.GATEWAY_USAGE_EXECUTABLE};
+  private static final _Fields optionals[] = {_Fields.HOST_ALIASES,_Fields.IP_ADDRESSES,_Fields.RESOURCE_DESCRIPTION,_Fields.ENABLED,_Fields.BATCH_QUEUES,_Fields.FILE_SYSTEMS,_Fields.JOB_SUBMISSION_INTERFACES,_Fields.DATA_MOVEMENT_INTERFACES,_Fields.MAX_MEMORY_PER_NODE,_Fields.GATEWAY_USAGE_REPORTING,_Fields.GATEWAY_USAGE_MODULE_LOAD_COMMAND,_Fields.GATEWAY_USAGE_EXECUTABLE,_Fields.CPUS_PER_NODE,_Fields.DEFAULT_NODE_COUNT,_Fields.DEFAULT_CPUCOUNT,_Fields.DEFAULT_WALLLTIME};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -261,6 +285,14 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.GATEWAY_USAGE_EXECUTABLE, new org.apache.thrift.meta_data.FieldMetaData("gatewayUsageExecutable", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.CPUS_PER_NODE, new org.apache.thrift.meta_data.FieldMetaData("cpusPerNode", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.DEFAULT_NODE_COUNT, new org.apache.thrift.meta_data.FieldMetaData("defaultNodeCount", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.DEFAULT_CPUCOUNT, new org.apache.thrift.meta_data.FieldMetaData("defaultCPUCount", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.DEFAULT_WALLLTIME, new org.apache.thrift.meta_data.FieldMetaData("defaultWallltime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ComputeResourceDescription.class, metaDataMap);
   }
@@ -346,6 +378,10 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
     if (other.isSetGatewayUsageExecutable()) {
       this.gatewayUsageExecutable = other.gatewayUsageExecutable;
     }
+    this.cpusPerNode = other.cpusPerNode;
+    this.defaultNodeCount = other.defaultNodeCount;
+    this.defaultCPUCount = other.defaultCPUCount;
+    this.defaultWallltime = other.defaultWallltime;
   }
 
   public ComputeResourceDescription deepCopy() {
@@ -372,6 +408,14 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
     this.gatewayUsageReporting = false;
     this.gatewayUsageModuleLoadCommand = null;
     this.gatewayUsageExecutable = null;
+    setCpusPerNodeIsSet(false);
+    this.cpusPerNode = 0;
+    setDefaultNodeCountIsSet(false);
+    this.defaultNodeCount = 0;
+    setDefaultCPUCountIsSet(false);
+    this.defaultCPUCount = 0;
+    setDefaultWallltimeIsSet(false);
+    this.defaultWallltime = 0;
   }
 
   public String getComputeResourceId() {
@@ -779,6 +823,94 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
     }
   }
 
+  public int getCpusPerNode() {
+    return this.cpusPerNode;
+  }
+
+  public void setCpusPerNode(int cpusPerNode) {
+    this.cpusPerNode = cpusPerNode;
+    setCpusPerNodeIsSet(true);
+  }
+
+  public void unsetCpusPerNode() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __CPUSPERNODE_ISSET_ID);
+  }
+
+  /** Returns true if field cpusPerNode is set (has been assigned a value) and false otherwise */
+  public boolean isSetCpusPerNode() {
+    return EncodingUtils.testBit(__isset_bitfield, __CPUSPERNODE_ISSET_ID);
+  }
+
+  public void setCpusPerNodeIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __CPUSPERNODE_ISSET_ID, value);
+  }
+
+  public int getDefaultNodeCount() {
+    return this.defaultNodeCount;
+  }
+
+  public void setDefaultNodeCount(int defaultNodeCount) {
+    this.defaultNodeCount = defaultNodeCount;
+    setDefaultNodeCountIsSet(true);
+  }
+
+  public void unsetDefaultNodeCount() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __DEFAULTNODECOUNT_ISSET_ID);
+  }
+
+  /** Returns true if field defaultNodeCount is set (has been assigned a value) and false otherwise */
+  public boolean isSetDefaultNodeCount() {
+    return EncodingUtils.testBit(__isset_bitfield, __DEFAULTNODECOUNT_ISSET_ID);
+  }
+
+  public void setDefaultNodeCountIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __DEFAULTNODECOUNT_ISSET_ID, value);
+  }
+
+  public int getDefaultCPUCount() {
+    return this.defaultCPUCount;
+  }
+
+  public void setDefaultCPUCount(int defaultCPUCount) {
+    this.defaultCPUCount = defaultCPUCount;
+    setDefaultCPUCountIsSet(true);
+  }
+
+  public void unsetDefaultCPUCount() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __DEFAULTCPUCOUNT_ISSET_ID);
+  }
+
+  /** Returns true if field defaultCPUCount is set (has been assigned a value) and false otherwise */
+  public boolean isSetDefaultCPUCount() {
+    return EncodingUtils.testBit(__isset_bitfield, __DEFAULTCPUCOUNT_ISSET_ID);
+  }
+
+  public void setDefaultCPUCountIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __DEFAULTCPUCOUNT_ISSET_ID, value);
+  }
+
+  public int getDefaultWallltime() {
+    return this.defaultWallltime;
+  }
+
+  public void setDefaultWallltime(int defaultWallltime) {
+    this.defaultWallltime = defaultWallltime;
+    setDefaultWallltimeIsSet(true);
+  }
+
+  public void unsetDefaultWallltime() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __DEFAULTWALLLTIME_ISSET_ID);
+  }
+
+  /** Returns true if field defaultWallltime is set (has been assigned a value) and false otherwise */
+  public boolean isSetDefaultWallltime() {
+    return EncodingUtils.testBit(__isset_bitfield, __DEFAULTWALLLTIME_ISSET_ID);
+  }
+
+  public void setDefaultWallltimeIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __DEFAULTWALLLTIME_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case COMPUTE_RESOURCE_ID:
@@ -893,6 +1025,38 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       }
       break;
 
+    case CPUS_PER_NODE:
+      if (value == null) {
+        unsetCpusPerNode();
+      } else {
+        setCpusPerNode((Integer)value);
+      }
+      break;
+
+    case DEFAULT_NODE_COUNT:
+      if (value == null) {
+        unsetDefaultNodeCount();
+      } else {
+        setDefaultNodeCount((Integer)value);
+      }
+      break;
+
+    case DEFAULT_CPUCOUNT:
+      if (value == null) {
+        unsetDefaultCPUCount();
+      } else {
+        setDefaultCPUCount((Integer)value);
+      }
+      break;
+
+    case DEFAULT_WALLLTIME:
+      if (value == null) {
+        unsetDefaultWallltime();
+      } else {
+        setDefaultWallltime((Integer)value);
+      }
+      break;
+
     }
   }
 
@@ -940,6 +1104,18 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
     case GATEWAY_USAGE_EXECUTABLE:
       return getGatewayUsageExecutable();
 
+    case CPUS_PER_NODE:
+      return getCpusPerNode();
+
+    case DEFAULT_NODE_COUNT:
+      return getDefaultNodeCount();
+
+    case DEFAULT_CPUCOUNT:
+      return getDefaultCPUCount();
+
+    case DEFAULT_WALLLTIME:
+      return getDefaultWallltime();
+
     }
     throw new IllegalStateException();
   }
@@ -979,6 +1155,14 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       return isSetGatewayUsageModuleLoadCommand();
     case GATEWAY_USAGE_EXECUTABLE:
       return isSetGatewayUsageExecutable();
+    case CPUS_PER_NODE:
+      return isSetCpusPerNode();
+    case DEFAULT_NODE_COUNT:
+      return isSetDefaultNodeCount();
+    case DEFAULT_CPUCOUNT:
+      return isSetDefaultCPUCount();
+    case DEFAULT_WALLLTIME:
+      return isSetDefaultWallltime();
     }
     throw new IllegalStateException();
   }
@@ -1122,6 +1306,42 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
         return false;
     }
 
+    boolean this_present_cpusPerNode = true && this.isSetCpusPerNode();
+    boolean that_present_cpusPerNode = true && that.isSetCpusPerNode();
+    if (this_present_cpusPerNode || that_present_cpusPerNode) {
+      if (!(this_present_cpusPerNode && that_present_cpusPerNode))
+        return false;
+      if (this.cpusPerNode != that.cpusPerNode)
+        return false;
+    }
+
+    boolean this_present_defaultNodeCount = true && this.isSetDefaultNodeCount();
+    boolean that_present_defaultNodeCount = true && that.isSetDefaultNodeCount();
+    if (this_present_defaultNodeCount || that_present_defaultNodeCount) {
+      if (!(this_present_defaultNodeCount && that_present_defaultNodeCount))
+        return false;
+      if (this.defaultNodeCount != that.defaultNodeCount)
+        return false;
+    }
+
+    boolean this_present_defaultCPUCount = true && this.isSetDefaultCPUCount();
+    boolean that_present_defaultCPUCount = true && that.isSetDefaultCPUCount();
+    if (this_present_defaultCPUCount || that_present_defaultCPUCount) {
+      if (!(this_present_defaultCPUCount && that_present_defaultCPUCount))
+        return false;
+      if (this.defaultCPUCount != that.defaultCPUCount)
+        return false;
+    }
+
+    boolean this_present_defaultWallltime = true && this.isSetDefaultWallltime();
+    boolean that_present_defaultWallltime = true && that.isSetDefaultWallltime();
+    if (this_present_defaultWallltime || that_present_defaultWallltime) {
+      if (!(this_present_defaultWallltime && that_present_defaultWallltime))
+        return false;
+      if (this.defaultWallltime != that.defaultWallltime)
+        return false;
+    }
+
     return true;
   }
 
@@ -1198,6 +1418,26 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
     list.add(present_gatewayUsageExecutable);
     if (present_gatewayUsageExecutable)
       list.add(gatewayUsageExecutable);
+
+    boolean present_cpusPerNode = true && (isSetCpusPerNode());
+    list.add(present_cpusPerNode);
+    if (present_cpusPerNode)
+      list.add(cpusPerNode);
+
+    boolean present_defaultNodeCount = true && (isSetDefaultNodeCount());
+    list.add(present_defaultNodeCount);
+    if (present_defaultNodeCount)
+      list.add(defaultNodeCount);
+
+    boolean present_defaultCPUCount = true && (isSetDefaultCPUCount());
+    list.add(present_defaultCPUCount);
+    if (present_defaultCPUCount)
+      list.add(defaultCPUCount);
+
+    boolean present_defaultWallltime = true && (isSetDefaultWallltime());
+    list.add(present_defaultWallltime);
+    if (present_defaultWallltime)
+      list.add(defaultWallltime);
 
     return list.hashCode();
   }
@@ -1350,6 +1590,46 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetCpusPerNode()).compareTo(other.isSetCpusPerNode());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetCpusPerNode()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.cpusPerNode, other.cpusPerNode);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetDefaultNodeCount()).compareTo(other.isSetDefaultNodeCount());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDefaultNodeCount()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.defaultNodeCount, other.defaultNodeCount);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetDefaultCPUCount()).compareTo(other.isSetDefaultCPUCount());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDefaultCPUCount()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.defaultCPUCount, other.defaultCPUCount);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetDefaultWallltime()).compareTo(other.isSetDefaultWallltime());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDefaultWallltime()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.defaultWallltime, other.defaultWallltime);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -1491,6 +1771,30 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       } else {
         sb.append(this.gatewayUsageExecutable);
       }
+      first = false;
+    }
+    if (isSetCpusPerNode()) {
+      if (!first) sb.append(", ");
+      sb.append("cpusPerNode:");
+      sb.append(this.cpusPerNode);
+      first = false;
+    }
+    if (isSetDefaultNodeCount()) {
+      if (!first) sb.append(", ");
+      sb.append("defaultNodeCount:");
+      sb.append(this.defaultNodeCount);
+      first = false;
+    }
+    if (isSetDefaultCPUCount()) {
+      if (!first) sb.append(", ");
+      sb.append("defaultCPUCount:");
+      sb.append(this.defaultCPUCount);
+      first = false;
+    }
+    if (isSetDefaultWallltime()) {
+      if (!first) sb.append(", ");
+      sb.append("defaultWallltime:");
+      sb.append(this.defaultWallltime);
       first = false;
     }
     sb.append(")");
@@ -1723,6 +2027,38 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 15: // CPUS_PER_NODE
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.cpusPerNode = iprot.readI32();
+              struct.setCpusPerNodeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 16: // DEFAULT_NODE_COUNT
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.defaultNodeCount = iprot.readI32();
+              struct.setDefaultNodeCountIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 17: // DEFAULT_CPUCOUNT
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.defaultCPUCount = iprot.readI32();
+              struct.setDefaultCPUCountIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 18: // DEFAULT_WALLLTIME
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.defaultWallltime = iprot.readI32();
+              struct.setDefaultWallltimeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1867,6 +2203,26 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
           oprot.writeFieldEnd();
         }
       }
+      if (struct.isSetCpusPerNode()) {
+        oprot.writeFieldBegin(CPUS_PER_NODE_FIELD_DESC);
+        oprot.writeI32(struct.cpusPerNode);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetDefaultNodeCount()) {
+        oprot.writeFieldBegin(DEFAULT_NODE_COUNT_FIELD_DESC);
+        oprot.writeI32(struct.defaultNodeCount);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetDefaultCPUCount()) {
+        oprot.writeFieldBegin(DEFAULT_CPUCOUNT_FIELD_DESC);
+        oprot.writeI32(struct.defaultCPUCount);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetDefaultWallltime()) {
+        oprot.writeFieldBegin(DEFAULT_WALLLTIME_FIELD_DESC);
+        oprot.writeI32(struct.defaultWallltime);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1923,7 +2279,19 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       if (struct.isSetGatewayUsageExecutable()) {
         optionals.set(11);
       }
-      oprot.writeBitSet(optionals, 12);
+      if (struct.isSetCpusPerNode()) {
+        optionals.set(12);
+      }
+      if (struct.isSetDefaultNodeCount()) {
+        optionals.set(13);
+      }
+      if (struct.isSetDefaultCPUCount()) {
+        optionals.set(14);
+      }
+      if (struct.isSetDefaultWallltime()) {
+        optionals.set(15);
+      }
+      oprot.writeBitSet(optionals, 16);
       if (struct.isSetHostAliases()) {
         {
           oprot.writeI32(struct.hostAliases.size());
@@ -1997,6 +2365,18 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       if (struct.isSetGatewayUsageExecutable()) {
         oprot.writeString(struct.gatewayUsageExecutable);
       }
+      if (struct.isSetCpusPerNode()) {
+        oprot.writeI32(struct.cpusPerNode);
+      }
+      if (struct.isSetDefaultNodeCount()) {
+        oprot.writeI32(struct.defaultNodeCount);
+      }
+      if (struct.isSetDefaultCPUCount()) {
+        oprot.writeI32(struct.defaultCPUCount);
+      }
+      if (struct.isSetDefaultWallltime()) {
+        oprot.writeI32(struct.defaultWallltime);
+      }
     }
 
     @Override
@@ -2006,7 +2386,7 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       struct.setComputeResourceIdIsSet(true);
       struct.hostName = iprot.readString();
       struct.setHostNameIsSet(true);
-      BitSet incoming = iprot.readBitSet(12);
+      BitSet incoming = iprot.readBitSet(16);
       if (incoming.get(0)) {
         {
           org.apache.thrift.protocol.TList _list67 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
@@ -2113,6 +2493,22 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       if (incoming.get(11)) {
         struct.gatewayUsageExecutable = iprot.readString();
         struct.setGatewayUsageExecutableIsSet(true);
+      }
+      if (incoming.get(12)) {
+        struct.cpusPerNode = iprot.readI32();
+        struct.setCpusPerNodeIsSet(true);
+      }
+      if (incoming.get(13)) {
+        struct.defaultNodeCount = iprot.readI32();
+        struct.setDefaultNodeCountIsSet(true);
+      }
+      if (incoming.get(14)) {
+        struct.defaultCPUCount = iprot.readI32();
+        struct.setDefaultCPUCountIsSet(true);
+      }
+      if (incoming.get(15)) {
+        struct.defaultWallltime = iprot.readI32();
+        struct.setDefaultWallltimeIsSet(true);
       }
     }
   }

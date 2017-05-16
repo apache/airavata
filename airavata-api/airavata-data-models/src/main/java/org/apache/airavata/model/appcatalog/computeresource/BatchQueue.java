@@ -68,6 +68,10 @@ public class BatchQueue implements org.apache.thrift.TBase<BatchQueue, BatchQueu
   private static final org.apache.thrift.protocol.TField MAX_PROCESSORS_FIELD_DESC = new org.apache.thrift.protocol.TField("maxProcessors", org.apache.thrift.protocol.TType.I32, (short)5);
   private static final org.apache.thrift.protocol.TField MAX_JOBS_IN_QUEUE_FIELD_DESC = new org.apache.thrift.protocol.TField("maxJobsInQueue", org.apache.thrift.protocol.TType.I32, (short)6);
   private static final org.apache.thrift.protocol.TField MAX_MEMORY_FIELD_DESC = new org.apache.thrift.protocol.TField("maxMemory", org.apache.thrift.protocol.TType.I32, (short)7);
+  private static final org.apache.thrift.protocol.TField CPU_PER_NODE_FIELD_DESC = new org.apache.thrift.protocol.TField("cpuPerNode", org.apache.thrift.protocol.TType.I32, (short)8);
+  private static final org.apache.thrift.protocol.TField DEFAULT_NODE_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultNodeCount", org.apache.thrift.protocol.TType.I32, (short)9);
+  private static final org.apache.thrift.protocol.TField DEFAULT_CPUCOUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultCPUCount", org.apache.thrift.protocol.TType.I32, (short)10);
+  private static final org.apache.thrift.protocol.TField IS_DEFAULT_QUEUE_FIELD_DESC = new org.apache.thrift.protocol.TField("isDefaultQueue", org.apache.thrift.protocol.TType.BOOL, (short)11);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -82,6 +86,10 @@ public class BatchQueue implements org.apache.thrift.TBase<BatchQueue, BatchQueu
   private int maxProcessors; // optional
   private int maxJobsInQueue; // optional
   private int maxMemory; // optional
+  private int cpuPerNode; // optional
+  private int defaultNodeCount; // optional
+  private int defaultCPUCount; // optional
+  private boolean isDefaultQueue; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -91,7 +99,11 @@ public class BatchQueue implements org.apache.thrift.TBase<BatchQueue, BatchQueu
     MAX_NODES((short)4, "maxNodes"),
     MAX_PROCESSORS((short)5, "maxProcessors"),
     MAX_JOBS_IN_QUEUE((short)6, "maxJobsInQueue"),
-    MAX_MEMORY((short)7, "maxMemory");
+    MAX_MEMORY((short)7, "maxMemory"),
+    CPU_PER_NODE((short)8, "cpuPerNode"),
+    DEFAULT_NODE_COUNT((short)9, "defaultNodeCount"),
+    DEFAULT_CPUCOUNT((short)10, "defaultCPUCount"),
+    IS_DEFAULT_QUEUE((short)11, "isDefaultQueue");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -120,6 +132,14 @@ public class BatchQueue implements org.apache.thrift.TBase<BatchQueue, BatchQueu
           return MAX_JOBS_IN_QUEUE;
         case 7: // MAX_MEMORY
           return MAX_MEMORY;
+        case 8: // CPU_PER_NODE
+          return CPU_PER_NODE;
+        case 9: // DEFAULT_NODE_COUNT
+          return DEFAULT_NODE_COUNT;
+        case 10: // DEFAULT_CPUCOUNT
+          return DEFAULT_CPUCOUNT;
+        case 11: // IS_DEFAULT_QUEUE
+          return IS_DEFAULT_QUEUE;
         default:
           return null;
       }
@@ -165,8 +185,12 @@ public class BatchQueue implements org.apache.thrift.TBase<BatchQueue, BatchQueu
   private static final int __MAXPROCESSORS_ISSET_ID = 2;
   private static final int __MAXJOBSINQUEUE_ISSET_ID = 3;
   private static final int __MAXMEMORY_ISSET_ID = 4;
-  private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.QUEUE_DESCRIPTION,_Fields.MAX_RUN_TIME,_Fields.MAX_NODES,_Fields.MAX_PROCESSORS,_Fields.MAX_JOBS_IN_QUEUE,_Fields.MAX_MEMORY};
+  private static final int __CPUPERNODE_ISSET_ID = 5;
+  private static final int __DEFAULTNODECOUNT_ISSET_ID = 6;
+  private static final int __DEFAULTCPUCOUNT_ISSET_ID = 7;
+  private static final int __ISDEFAULTQUEUE_ISSET_ID = 8;
+  private short __isset_bitfield = 0;
+  private static final _Fields optionals[] = {_Fields.QUEUE_DESCRIPTION,_Fields.MAX_RUN_TIME,_Fields.MAX_NODES,_Fields.MAX_PROCESSORS,_Fields.MAX_JOBS_IN_QUEUE,_Fields.MAX_MEMORY,_Fields.CPU_PER_NODE,_Fields.DEFAULT_NODE_COUNT,_Fields.DEFAULT_CPUCOUNT,_Fields.IS_DEFAULT_QUEUE};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -184,6 +208,14 @@ public class BatchQueue implements org.apache.thrift.TBase<BatchQueue, BatchQueu
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.MAX_MEMORY, new org.apache.thrift.meta_data.FieldMetaData("maxMemory", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.CPU_PER_NODE, new org.apache.thrift.meta_data.FieldMetaData("cpuPerNode", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.DEFAULT_NODE_COUNT, new org.apache.thrift.meta_data.FieldMetaData("defaultNodeCount", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.DEFAULT_CPUCOUNT, new org.apache.thrift.meta_data.FieldMetaData("defaultCPUCount", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.IS_DEFAULT_QUEUE, new org.apache.thrift.meta_data.FieldMetaData("isDefaultQueue", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(BatchQueue.class, metaDataMap);
   }
@@ -214,6 +246,10 @@ public class BatchQueue implements org.apache.thrift.TBase<BatchQueue, BatchQueu
     this.maxProcessors = other.maxProcessors;
     this.maxJobsInQueue = other.maxJobsInQueue;
     this.maxMemory = other.maxMemory;
+    this.cpuPerNode = other.cpuPerNode;
+    this.defaultNodeCount = other.defaultNodeCount;
+    this.defaultCPUCount = other.defaultCPUCount;
+    this.isDefaultQueue = other.isDefaultQueue;
   }
 
   public BatchQueue deepCopy() {
@@ -234,6 +270,14 @@ public class BatchQueue implements org.apache.thrift.TBase<BatchQueue, BatchQueu
     this.maxJobsInQueue = 0;
     setMaxMemoryIsSet(false);
     this.maxMemory = 0;
+    setCpuPerNodeIsSet(false);
+    this.cpuPerNode = 0;
+    setDefaultNodeCountIsSet(false);
+    this.defaultNodeCount = 0;
+    setDefaultCPUCountIsSet(false);
+    this.defaultCPUCount = 0;
+    setIsDefaultQueueIsSet(false);
+    this.isDefaultQueue = false;
   }
 
   public String getQueueName() {
@@ -392,6 +436,94 @@ public class BatchQueue implements org.apache.thrift.TBase<BatchQueue, BatchQueu
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __MAXMEMORY_ISSET_ID, value);
   }
 
+  public int getCpuPerNode() {
+    return this.cpuPerNode;
+  }
+
+  public void setCpuPerNode(int cpuPerNode) {
+    this.cpuPerNode = cpuPerNode;
+    setCpuPerNodeIsSet(true);
+  }
+
+  public void unsetCpuPerNode() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __CPUPERNODE_ISSET_ID);
+  }
+
+  /** Returns true if field cpuPerNode is set (has been assigned a value) and false otherwise */
+  public boolean isSetCpuPerNode() {
+    return EncodingUtils.testBit(__isset_bitfield, __CPUPERNODE_ISSET_ID);
+  }
+
+  public void setCpuPerNodeIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __CPUPERNODE_ISSET_ID, value);
+  }
+
+  public int getDefaultNodeCount() {
+    return this.defaultNodeCount;
+  }
+
+  public void setDefaultNodeCount(int defaultNodeCount) {
+    this.defaultNodeCount = defaultNodeCount;
+    setDefaultNodeCountIsSet(true);
+  }
+
+  public void unsetDefaultNodeCount() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __DEFAULTNODECOUNT_ISSET_ID);
+  }
+
+  /** Returns true if field defaultNodeCount is set (has been assigned a value) and false otherwise */
+  public boolean isSetDefaultNodeCount() {
+    return EncodingUtils.testBit(__isset_bitfield, __DEFAULTNODECOUNT_ISSET_ID);
+  }
+
+  public void setDefaultNodeCountIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __DEFAULTNODECOUNT_ISSET_ID, value);
+  }
+
+  public int getDefaultCPUCount() {
+    return this.defaultCPUCount;
+  }
+
+  public void setDefaultCPUCount(int defaultCPUCount) {
+    this.defaultCPUCount = defaultCPUCount;
+    setDefaultCPUCountIsSet(true);
+  }
+
+  public void unsetDefaultCPUCount() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __DEFAULTCPUCOUNT_ISSET_ID);
+  }
+
+  /** Returns true if field defaultCPUCount is set (has been assigned a value) and false otherwise */
+  public boolean isSetDefaultCPUCount() {
+    return EncodingUtils.testBit(__isset_bitfield, __DEFAULTCPUCOUNT_ISSET_ID);
+  }
+
+  public void setDefaultCPUCountIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __DEFAULTCPUCOUNT_ISSET_ID, value);
+  }
+
+  public boolean isIsDefaultQueue() {
+    return this.isDefaultQueue;
+  }
+
+  public void setIsDefaultQueue(boolean isDefaultQueue) {
+    this.isDefaultQueue = isDefaultQueue;
+    setIsDefaultQueueIsSet(true);
+  }
+
+  public void unsetIsDefaultQueue() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ISDEFAULTQUEUE_ISSET_ID);
+  }
+
+  /** Returns true if field isDefaultQueue is set (has been assigned a value) and false otherwise */
+  public boolean isSetIsDefaultQueue() {
+    return EncodingUtils.testBit(__isset_bitfield, __ISDEFAULTQUEUE_ISSET_ID);
+  }
+
+  public void setIsDefaultQueueIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ISDEFAULTQUEUE_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case QUEUE_NAME:
@@ -450,6 +582,38 @@ public class BatchQueue implements org.apache.thrift.TBase<BatchQueue, BatchQueu
       }
       break;
 
+    case CPU_PER_NODE:
+      if (value == null) {
+        unsetCpuPerNode();
+      } else {
+        setCpuPerNode((Integer)value);
+      }
+      break;
+
+    case DEFAULT_NODE_COUNT:
+      if (value == null) {
+        unsetDefaultNodeCount();
+      } else {
+        setDefaultNodeCount((Integer)value);
+      }
+      break;
+
+    case DEFAULT_CPUCOUNT:
+      if (value == null) {
+        unsetDefaultCPUCount();
+      } else {
+        setDefaultCPUCount((Integer)value);
+      }
+      break;
+
+    case IS_DEFAULT_QUEUE:
+      if (value == null) {
+        unsetIsDefaultQueue();
+      } else {
+        setIsDefaultQueue((Boolean)value);
+      }
+      break;
+
     }
   }
 
@@ -476,6 +640,18 @@ public class BatchQueue implements org.apache.thrift.TBase<BatchQueue, BatchQueu
     case MAX_MEMORY:
       return getMaxMemory();
 
+    case CPU_PER_NODE:
+      return getCpuPerNode();
+
+    case DEFAULT_NODE_COUNT:
+      return getDefaultNodeCount();
+
+    case DEFAULT_CPUCOUNT:
+      return getDefaultCPUCount();
+
+    case IS_DEFAULT_QUEUE:
+      return isIsDefaultQueue();
+
     }
     throw new IllegalStateException();
   }
@@ -501,6 +677,14 @@ public class BatchQueue implements org.apache.thrift.TBase<BatchQueue, BatchQueu
       return isSetMaxJobsInQueue();
     case MAX_MEMORY:
       return isSetMaxMemory();
+    case CPU_PER_NODE:
+      return isSetCpuPerNode();
+    case DEFAULT_NODE_COUNT:
+      return isSetDefaultNodeCount();
+    case DEFAULT_CPUCOUNT:
+      return isSetDefaultCPUCount();
+    case IS_DEFAULT_QUEUE:
+      return isSetIsDefaultQueue();
     }
     throw new IllegalStateException();
   }
@@ -581,6 +765,42 @@ public class BatchQueue implements org.apache.thrift.TBase<BatchQueue, BatchQueu
         return false;
     }
 
+    boolean this_present_cpuPerNode = true && this.isSetCpuPerNode();
+    boolean that_present_cpuPerNode = true && that.isSetCpuPerNode();
+    if (this_present_cpuPerNode || that_present_cpuPerNode) {
+      if (!(this_present_cpuPerNode && that_present_cpuPerNode))
+        return false;
+      if (this.cpuPerNode != that.cpuPerNode)
+        return false;
+    }
+
+    boolean this_present_defaultNodeCount = true && this.isSetDefaultNodeCount();
+    boolean that_present_defaultNodeCount = true && that.isSetDefaultNodeCount();
+    if (this_present_defaultNodeCount || that_present_defaultNodeCount) {
+      if (!(this_present_defaultNodeCount && that_present_defaultNodeCount))
+        return false;
+      if (this.defaultNodeCount != that.defaultNodeCount)
+        return false;
+    }
+
+    boolean this_present_defaultCPUCount = true && this.isSetDefaultCPUCount();
+    boolean that_present_defaultCPUCount = true && that.isSetDefaultCPUCount();
+    if (this_present_defaultCPUCount || that_present_defaultCPUCount) {
+      if (!(this_present_defaultCPUCount && that_present_defaultCPUCount))
+        return false;
+      if (this.defaultCPUCount != that.defaultCPUCount)
+        return false;
+    }
+
+    boolean this_present_isDefaultQueue = true && this.isSetIsDefaultQueue();
+    boolean that_present_isDefaultQueue = true && that.isSetIsDefaultQueue();
+    if (this_present_isDefaultQueue || that_present_isDefaultQueue) {
+      if (!(this_present_isDefaultQueue && that_present_isDefaultQueue))
+        return false;
+      if (this.isDefaultQueue != that.isDefaultQueue)
+        return false;
+    }
+
     return true;
   }
 
@@ -622,6 +842,26 @@ public class BatchQueue implements org.apache.thrift.TBase<BatchQueue, BatchQueu
     list.add(present_maxMemory);
     if (present_maxMemory)
       list.add(maxMemory);
+
+    boolean present_cpuPerNode = true && (isSetCpuPerNode());
+    list.add(present_cpuPerNode);
+    if (present_cpuPerNode)
+      list.add(cpuPerNode);
+
+    boolean present_defaultNodeCount = true && (isSetDefaultNodeCount());
+    list.add(present_defaultNodeCount);
+    if (present_defaultNodeCount)
+      list.add(defaultNodeCount);
+
+    boolean present_defaultCPUCount = true && (isSetDefaultCPUCount());
+    list.add(present_defaultCPUCount);
+    if (present_defaultCPUCount)
+      list.add(defaultCPUCount);
+
+    boolean present_isDefaultQueue = true && (isSetIsDefaultQueue());
+    list.add(present_isDefaultQueue);
+    if (present_isDefaultQueue)
+      list.add(isDefaultQueue);
 
     return list.hashCode();
   }
@@ -704,6 +944,46 @@ public class BatchQueue implements org.apache.thrift.TBase<BatchQueue, BatchQueu
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetCpuPerNode()).compareTo(other.isSetCpuPerNode());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetCpuPerNode()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.cpuPerNode, other.cpuPerNode);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetDefaultNodeCount()).compareTo(other.isSetDefaultNodeCount());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDefaultNodeCount()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.defaultNodeCount, other.defaultNodeCount);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetDefaultCPUCount()).compareTo(other.isSetDefaultCPUCount());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDefaultCPUCount()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.defaultCPUCount, other.defaultCPUCount);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetIsDefaultQueue()).compareTo(other.isSetIsDefaultQueue());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetIsDefaultQueue()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.isDefaultQueue, other.isDefaultQueue);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -769,6 +1049,30 @@ public class BatchQueue implements org.apache.thrift.TBase<BatchQueue, BatchQueu
       if (!first) sb.append(", ");
       sb.append("maxMemory:");
       sb.append(this.maxMemory);
+      first = false;
+    }
+    if (isSetCpuPerNode()) {
+      if (!first) sb.append(", ");
+      sb.append("cpuPerNode:");
+      sb.append(this.cpuPerNode);
+      first = false;
+    }
+    if (isSetDefaultNodeCount()) {
+      if (!first) sb.append(", ");
+      sb.append("defaultNodeCount:");
+      sb.append(this.defaultNodeCount);
+      first = false;
+    }
+    if (isSetDefaultCPUCount()) {
+      if (!first) sb.append(", ");
+      sb.append("defaultCPUCount:");
+      sb.append(this.defaultCPUCount);
+      first = false;
+    }
+    if (isSetIsDefaultQueue()) {
+      if (!first) sb.append(", ");
+      sb.append("isDefaultQueue:");
+      sb.append(this.isDefaultQueue);
       first = false;
     }
     sb.append(")");
@@ -876,6 +1180,38 @@ public class BatchQueue implements org.apache.thrift.TBase<BatchQueue, BatchQueu
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 8: // CPU_PER_NODE
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.cpuPerNode = iprot.readI32();
+              struct.setCpuPerNodeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 9: // DEFAULT_NODE_COUNT
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.defaultNodeCount = iprot.readI32();
+              struct.setDefaultNodeCountIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 10: // DEFAULT_CPUCOUNT
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.defaultCPUCount = iprot.readI32();
+              struct.setDefaultCPUCountIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 11: // IS_DEFAULT_QUEUE
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct.isDefaultQueue = iprot.readBool();
+              struct.setIsDefaultQueueIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -926,6 +1262,26 @@ public class BatchQueue implements org.apache.thrift.TBase<BatchQueue, BatchQueu
         oprot.writeI32(struct.maxMemory);
         oprot.writeFieldEnd();
       }
+      if (struct.isSetCpuPerNode()) {
+        oprot.writeFieldBegin(CPU_PER_NODE_FIELD_DESC);
+        oprot.writeI32(struct.cpuPerNode);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetDefaultNodeCount()) {
+        oprot.writeFieldBegin(DEFAULT_NODE_COUNT_FIELD_DESC);
+        oprot.writeI32(struct.defaultNodeCount);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetDefaultCPUCount()) {
+        oprot.writeFieldBegin(DEFAULT_CPUCOUNT_FIELD_DESC);
+        oprot.writeI32(struct.defaultCPUCount);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetIsDefaultQueue()) {
+        oprot.writeFieldBegin(IS_DEFAULT_QUEUE_FIELD_DESC);
+        oprot.writeBool(struct.isDefaultQueue);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -963,7 +1319,19 @@ public class BatchQueue implements org.apache.thrift.TBase<BatchQueue, BatchQueu
       if (struct.isSetMaxMemory()) {
         optionals.set(5);
       }
-      oprot.writeBitSet(optionals, 6);
+      if (struct.isSetCpuPerNode()) {
+        optionals.set(6);
+      }
+      if (struct.isSetDefaultNodeCount()) {
+        optionals.set(7);
+      }
+      if (struct.isSetDefaultCPUCount()) {
+        optionals.set(8);
+      }
+      if (struct.isSetIsDefaultQueue()) {
+        optionals.set(9);
+      }
+      oprot.writeBitSet(optionals, 10);
       if (struct.isSetQueueDescription()) {
         oprot.writeString(struct.queueDescription);
       }
@@ -982,6 +1350,18 @@ public class BatchQueue implements org.apache.thrift.TBase<BatchQueue, BatchQueu
       if (struct.isSetMaxMemory()) {
         oprot.writeI32(struct.maxMemory);
       }
+      if (struct.isSetCpuPerNode()) {
+        oprot.writeI32(struct.cpuPerNode);
+      }
+      if (struct.isSetDefaultNodeCount()) {
+        oprot.writeI32(struct.defaultNodeCount);
+      }
+      if (struct.isSetDefaultCPUCount()) {
+        oprot.writeI32(struct.defaultCPUCount);
+      }
+      if (struct.isSetIsDefaultQueue()) {
+        oprot.writeBool(struct.isDefaultQueue);
+      }
     }
 
     @Override
@@ -989,7 +1369,7 @@ public class BatchQueue implements org.apache.thrift.TBase<BatchQueue, BatchQueu
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.queueName = iprot.readString();
       struct.setQueueNameIsSet(true);
-      BitSet incoming = iprot.readBitSet(6);
+      BitSet incoming = iprot.readBitSet(10);
       if (incoming.get(0)) {
         struct.queueDescription = iprot.readString();
         struct.setQueueDescriptionIsSet(true);
@@ -1013,6 +1393,22 @@ public class BatchQueue implements org.apache.thrift.TBase<BatchQueue, BatchQueu
       if (incoming.get(5)) {
         struct.maxMemory = iprot.readI32();
         struct.setMaxMemoryIsSet(true);
+      }
+      if (incoming.get(6)) {
+        struct.cpuPerNode = iprot.readI32();
+        struct.setCpuPerNodeIsSet(true);
+      }
+      if (incoming.get(7)) {
+        struct.defaultNodeCount = iprot.readI32();
+        struct.setDefaultNodeCountIsSet(true);
+      }
+      if (incoming.get(8)) {
+        struct.defaultCPUCount = iprot.readI32();
+        struct.setDefaultCPUCountIsSet(true);
+      }
+      if (incoming.get(9)) {
+        struct.isDefaultQueue = iprot.readBool();
+        struct.setIsDefaultQueueIsSet(true);
       }
     }
   }

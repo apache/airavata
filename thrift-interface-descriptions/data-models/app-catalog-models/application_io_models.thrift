@@ -77,7 +77,8 @@ struct InputDataObjectType {
     9: optional bool isRequired,
     10: optional bool requiredToAddedToCommandLine,
     11: optional bool dataStaged,
-    12: optional string storageResourceId
+    12: optional string storageResourceId,
+    13: optional bool isReadOnly
 }
 
 /**

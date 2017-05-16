@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
-
+ */
 package org.apache.airavata.gfac.impl.task;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -64,15 +62,15 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
             JobModel jobModel = processContext.getJobModel();
             jobModel.setTaskId(taskContext.getTaskId());
             RemoteCluster remoteCluster = processContext.getJobSubmissionRemoteCluster();
-            JobDescriptor jobDescriptor = GFacUtils.createJobDescriptor(processContext, taskContext);
-            jobModel.setJobName(jobDescriptor.getJobName());
+            GroovyMap groovyMap = GFacUtils.createGroovyMap(processContext, taskContext);
+            jobModel.setJobName(groovyMap.get(Script.JOB_NAME).toString());
             ResourceJobManager resourceJobManager = GFacUtils.getResourceJobManager(processContext);
             JobManagerConfiguration jConfig = null;
             if (resourceJobManager != null) {
                 jConfig = Factory.getJobManagerConfiguration(resourceJobManager);
             }
             JobStatus jobStatus = new JobStatus();
-	        File jobFile = GFacUtils.createJobFile(taskContext, jobDescriptor, jConfig);
+	        File jobFile = GFacUtils.createJobFile(groovyMap, taskContext, jConfig);
 	        if (jobFile != null && jobFile.exists()) {
                 jobModel.setJobDescription(FileUtils.readFileToString(jobFile));
 	            JobSubmissionOutput jobSubmissionOutput = remoteCluster.submitBatchJob(jobFile.getPath(),
@@ -136,15 +134,6 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         } catch (GFacException e) {
-            String msg = "Error occurred while creating job descriptor";
-            log.error(msg, e);
-            taskStatus.setState(TaskState.FAILED);
-            taskStatus.setReason(msg);
-            ErrorModel errorModel = new ErrorModel();
-            errorModel.setActualErrorMessage(e.getMessage());
-            errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
-        } catch (SSHApiException e) {
             String msg = "Error occurred while submitting the job";
             log.error(msg, e);
             taskStatus.setState(TaskState.FAILED);

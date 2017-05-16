@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.registry.cpi.utils;
 
 public class Constants {
@@ -52,6 +50,7 @@ public class Constants {
             public static final String USER_CONFIGURATION_DATA = "userConfigurationData";
             public static final String FROM_DATE = "fromDate";
             public static final String TO_DATE = "toDate";
+            public static final String RESOURCE_HOST_ID = "resourceHostId";
         }
 
         public final class UserConfigurationDataConstants {

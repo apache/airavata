@@ -39,21 +39,7 @@ enum DataProductType {
     COLLECTION,
 }
 
-struct DataProductModel {
-    1: optional string productUri,
-    2: optional string gatewayId,
-    3: optional string parentProductUri,
-    4: optional string productName,
-    5: optional string productDescription,
-    6: optional string ownerName,
-    7: optional DataProductType dataProductType,
-    8: optional i32 productSize,
-    9: optional i64 creationTime,
-    10: optional i64 lastModifiedTime,
-    11: optional map<string, string> productMetadata,
-    12: optional list<DataReplicaLocationModel> replicaLocations,
-}
-
+// THRIFT-3783 Put DataReplicaLocationModel before DataProductModel since DataProductModel references it
 struct DataReplicaLocationModel {
     1: optional string replicaId,
     2: optional string productUri,
@@ -67,4 +53,19 @@ struct DataReplicaLocationModel {
     10: optional string storageResourceId,
     11: optional string filePath,
     12: optional map<string, string> replicaMetadata
+}
+
+struct DataProductModel {
+    1: optional string productUri,
+    2: optional string gatewayId,
+    3: optional string parentProductUri,
+    4: optional string productName,
+    5: optional string productDescription,
+    6: optional string ownerName,
+    7: optional DataProductType dataProductType,
+    8: optional i32 productSize,
+    9: optional i64 creationTime,
+    10: optional i64 lastModifiedTime,
+    11: optional map<string, string> productMetadata,
+    12: optional list<DataReplicaLocationModel> replicaLocations,
 }

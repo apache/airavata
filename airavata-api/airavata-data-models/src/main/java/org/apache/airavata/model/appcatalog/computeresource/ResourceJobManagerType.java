@@ -52,7 +52,9 @@ public enum ResourceJobManagerType implements org.apache.thrift.TEnum {
   PBS(1),
   SLURM(2),
   LSF(3),
-  UGE(4);
+  UGE(4),
+  CLOUD(5),
+  AIRAVATA_CUSTOM(6);
 
   private final int value;
 
@@ -83,6 +85,10 @@ public enum ResourceJobManagerType implements org.apache.thrift.TEnum {
         return LSF;
       case 4:
         return UGE;
+      case 5:
+        return CLOUD;
+      case 6:
+        return AIRAVATA_CUSTOM;
       default:
         return null;
     }

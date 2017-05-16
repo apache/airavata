@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.client.samples;
 
 import org.apache.airavata.api.Airavata;
@@ -866,7 +864,7 @@ public class CreateLaunchExperiment {
 
     public static String cloneExperiment(Airavata.Client client, String expId) throws TException {
         try {
-            return client.cloneExperiment(new AuthzToken(""), expId, "cloneExperiment1");
+            return client.cloneExperiment(new AuthzToken(""), expId, "cloneExperiment1", null);
         } catch (TException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new TException(e);

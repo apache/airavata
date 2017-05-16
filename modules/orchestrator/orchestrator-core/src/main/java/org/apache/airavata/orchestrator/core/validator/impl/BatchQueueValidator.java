@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,8 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.orchestrator.core.validator.impl;
 
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
@@ -97,8 +96,8 @@ public class BatchQueueValidator implements JobMetadataValidator {
 
                         //Set the validation to false. Once all the queue's are looped, if nothing matches, then this gets passed.
                         queueNameResult.setResult(false);
-                        queueNameResult.setErrorDetails("The specified queue" + experimentQueueName +
-                                "does not exist. If you believe this is an error, contact the administrator to verify App-Catalog Configurations");
+                        queueNameResult.setErrorDetails("The specified queue " + experimentQueueName +
+                                " does not exist. If you believe this is an error, contact the administrator to verify App-Catalog Configurations");
                         for (BatchQueue queue : batchQueues) {
                             String resourceQueueName = queue.getQueueName();
                             int maxQueueRunTime = queue.getMaxRunTime();

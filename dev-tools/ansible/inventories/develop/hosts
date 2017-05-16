@@ -1,0 +1,35 @@
+---
+# inventory file : production
+
+[zookeeper]
+149.165.171.13
+
+[rabbitmq]
+149.165.171.12
+
+[database]
+149.165.171.1
+
+#[wso2is]
+#52.87.209.219
+
+[registry]
+149.165.171.0
+
+[api-orch]
+149.165.170.105
+
+[gfac]
+149.165.171.0
+
+[pga]
+149.165.170.103
+
+[local]
+localhost          ansible_connection=local
+
+[dev-airavata]
+gw56.iu.xsede.org ansible_user=airavata
+
+[dev-pga]
+gw54.iu.xsede.org  ansible_user=pga

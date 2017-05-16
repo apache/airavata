@@ -48,7 +48,7 @@ class ProcessModel {
   /**
    * @var \Airavata\Model\Status\ProcessStatus[]
    */
-  public $processStatus = null;
+  public $processStatuses = null;
   /**
    * @var string
    */
@@ -88,7 +88,7 @@ class ProcessModel {
   /**
    * @var \Airavata\Model\Commons\ErrorModel[]
    */
-  public $processError = null;
+  public $processErrors = null;
   /**
    * @var string
    */
@@ -121,6 +121,10 @@ class ProcessModel {
    * @var string
    */
   public $userName = null;
+  /**
+   * @var bool
+   */
+  public $useUserCRPref = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -142,7 +146,7 @@ class ProcessModel {
           'type' => TType::I64,
           ),
         5 => array(
-          'var' => 'processStatus',
+          'var' => 'processStatuses',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
           'elem' => array(
@@ -203,7 +207,7 @@ class ProcessModel {
           'type' => TType::STRING,
           ),
         15 => array(
-          'var' => 'processError',
+          'var' => 'processErrors',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
           'elem' => array(
@@ -247,6 +251,10 @@ class ProcessModel {
           'var' => 'userName',
           'type' => TType::STRING,
           ),
+        24 => array(
+          'var' => 'useUserCRPref',
+          'type' => TType::BOOL,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -262,8 +270,8 @@ class ProcessModel {
       if (isset($vals['lastUpdateTime'])) {
         $this->lastUpdateTime = $vals['lastUpdateTime'];
       }
-      if (isset($vals['processStatus'])) {
-        $this->processStatus = $vals['processStatus'];
+      if (isset($vals['processStatuses'])) {
+        $this->processStatuses = $vals['processStatuses'];
       }
       if (isset($vals['processDetail'])) {
         $this->processDetail = $vals['processDetail'];
@@ -292,8 +300,8 @@ class ProcessModel {
       if (isset($vals['taskDag'])) {
         $this->taskDag = $vals['taskDag'];
       }
-      if (isset($vals['processError'])) {
-        $this->processError = $vals['processError'];
+      if (isset($vals['processErrors'])) {
+        $this->processErrors = $vals['processErrors'];
       }
       if (isset($vals['gatewayExecutionId'])) {
         $this->gatewayExecutionId = $vals['gatewayExecutionId'];
@@ -318,6 +326,9 @@ class ProcessModel {
       }
       if (isset($vals['userName'])) {
         $this->userName = $vals['userName'];
+      }
+      if (isset($vals['useUserCRPref'])) {
+        $this->useUserCRPref = $vals['useUserCRPref'];
       }
     }
   }
@@ -371,7 +382,7 @@ class ProcessModel {
           break;
         case 5:
           if ($ftype == TType::LST) {
-            $this->processStatus = array();
+            $this->processStatuses = array();
             $_size0 = 0;
             $_etype3 = 0;
             $xfer += $input->readListBegin($_etype3, $_size0);
@@ -380,7 +391,7 @@ class ProcessModel {
               $elem5 = null;
               $elem5 = new \Airavata\Model\Status\ProcessStatus();
               $xfer += $elem5->read($input);
-              $this->processStatus []= $elem5;
+              $this->processStatuses []= $elem5;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -486,7 +497,7 @@ class ProcessModel {
           break;
         case 15:
           if ($ftype == TType::LST) {
-            $this->processError = array();
+            $this->processErrors = array();
             $_size24 = 0;
             $_etype27 = 0;
             $xfer += $input->readListBegin($_etype27, $_size24);
@@ -495,7 +506,7 @@ class ProcessModel {
               $elem29 = null;
               $elem29 = new \Airavata\Model\Commons\ErrorModel();
               $xfer += $elem29->read($input);
-              $this->processError []= $elem29;
+              $this->processErrors []= $elem29;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -568,6 +579,13 @@ class ProcessModel {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 24:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->useUserCRPref);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -601,15 +619,15 @@ class ProcessModel {
       $xfer += $output->writeI64($this->lastUpdateTime);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->processStatus !== null) {
-      if (!is_array($this->processStatus)) {
+    if ($this->processStatuses !== null) {
+      if (!is_array($this->processStatuses)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('processStatus', TType::LST, 5);
+      $xfer += $output->writeFieldBegin('processStatuses', TType::LST, 5);
       {
-        $output->writeListBegin(TType::STRUCT, count($this->processStatus));
+        $output->writeListBegin(TType::STRUCT, count($this->processStatuses));
         {
-          foreach ($this->processStatus as $iter36)
+          foreach ($this->processStatuses as $iter36)
           {
             $xfer += $iter36->write($output);
           }
@@ -702,15 +720,15 @@ class ProcessModel {
       $xfer += $output->writeString($this->taskDag);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->processError !== null) {
-      if (!is_array($this->processError)) {
+    if ($this->processErrors !== null) {
+      if (!is_array($this->processErrors)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('processError', TType::LST, 15);
+      $xfer += $output->writeFieldBegin('processErrors', TType::LST, 15);
       {
-        $output->writeListBegin(TType::STRUCT, count($this->processError));
+        $output->writeListBegin(TType::STRUCT, count($this->processErrors));
         {
-          foreach ($this->processError as $iter40)
+          foreach ($this->processErrors as $iter40)
           {
             $xfer += $iter40->write($output);
           }
@@ -769,6 +787,11 @@ class ProcessModel {
     if ($this->userName !== null) {
       $xfer += $output->writeFieldBegin('userName', TType::STRING, 23);
       $xfer += $output->writeString($this->userName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->useUserCRPref !== null) {
+      $xfer += $output->writeFieldBegin('useUserCRPref', TType::BOOL, 24);
+      $xfer += $output->writeBool($this->useUserCRPref);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

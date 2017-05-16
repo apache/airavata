@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.registry.core.experiment.catalog.resources;
 
 import org.apache.airavata.model.status.ProcessState;
@@ -57,6 +55,7 @@ public class ProcessResource extends AbstractExpCatResource {
     private String userName;
     private boolean generateCert;
     private String experimentDataDir;
+    private boolean useUserCRPref;
 
     public String getProcessId() {
         return processId;
@@ -192,6 +191,14 @@ public class ProcessResource extends AbstractExpCatResource {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public boolean isUseUserCRPref() {
+        return useUserCRPref;
+    }
+
+    public void setUseUserCRPref(boolean useUserCRPref) {
+        this.useUserCRPref = useUserCRPref;
     }
 
     public ExperimentCatResource create(ResourceType type) throws RegistryException{
@@ -600,6 +607,8 @@ public class ProcessResource extends AbstractExpCatResource {
             process.setGenerateCert(generateCert);
             process.setExperimentDataDir(experimentDataDir);
             process.setUserName(userName);
+            process.setUseUserCRPref(useUserCRPref);
+
             if (existingProcess == null){
                 em.persist(process);
             }else {

@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
-
+ */
 package org.apache.airavata.testsuite.multitenantedairavata;
 
 import org.apache.airavata.api.Airavata;
@@ -47,8 +45,8 @@ public class AiravataClient {
 
     public Airavata.Client getAiravataClient() throws Exception{
         try {
-            String airavataHost = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.THRIFT_SERVER_HOST, PropertyFileType.AIRAVATA_CLIENT);
-            int airavataport = Integer.valueOf(propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.THRIFT_SERVER_PORT, PropertyFileType.AIRAVATA_CLIENT));
+            String airavataHost = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.THRIFT_SERVER_HOST, PropertyFileType.AIRAVATA_SERVER);
+            int airavataport = Integer.valueOf(propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.THRIFT_SERVER_PORT, PropertyFileType.AIRAVATA_SERVER));
             airavataClient = AiravataClientFactory.createAiravataClient(airavataHost, airavataport);
             return airavataClient;
         } catch (AiravataClientException e) {

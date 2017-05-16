@@ -1,0 +1,124 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+- name: register the built distribution tarball
+  find:
+      paths: "{{ airavata_source_dir }}/modules/distribution/target"
+      patterns: "{{ airavata_dist_name }}"
+      file_type: file
+  register: dist_tarball_file
+
+- name: copy new distribution
+  copy: remote_src=True src={{ dist_tarball_file.files.0.path }} dest={{ server_deployment_dir }}
+  register: new_distribution
+  notify: "restart airavata"
+
+- name: register the currently deployed distribution
+  find:
+      paths: "{{ server_deployment_dir }}"
+      patterns: "{{ old_airavata_dist }}"
+      file_type: directory
+  register: old_dist_dir
+
+# TODO Stopping a server, can this be extracted and reused with handler?
+# TODO only stop the server if the server is running
+
+- name: stop the server
+  shell: "{{ old_dist_dir.files.0.path }}/bin/airavata-server-stop.sh"
+  register: stop_airavata
+  when: new_distribution.changed and old_dist_dir.matched == 1
+  ignore_errors: True
+
+- name: force stop the server
+  shell: "{{ old_dist_dir.files.0.path }}/bin/airavata-server-stop.sh -f"
+  when: stop_airavata|failed
+
+- name: register the backup distribution
+  find:
+      paths: "{{ server_deployment_dir }}"
+      patterns: "{{ old_airavata_dist }}bk"
+      file_type: directory
+  register: backup_dist_dir
+
+- name: remove old backup
+  file: path="{{ backup_dist_dir.files.0.path }}" state=absent
+  when: new_distribution.changed and backup_dist_dir.matched == 1
+
+- name: backup current distribution
+  command: mv "{{ old_dist_dir.files.0.path }}" "{{ old_dist_dir.files.0.path }}bk"
+  when: new_distribution.changed and old_dist_dir.matched == 1
+
+- name: remove old distribution
+  file: path={{ old_dist_dir.files.0.path }} state=absent
+  when: new_distribution.changed and old_dist_dir.matched == 1
+
+- name: untar new distribution
+  # unarchive module doesn't like macOS BSD tar
+  command: tar zxf {{ new_distribution.dest }}
+  args:
+    chdir: "{{ server_deployment_dir }}"
+  when: new_distribution.changed
+
+- name: register the new distribution
+  find:
+      paths: "{{ server_deployment_dir }}"
+      patterns: "{{ airavata_dist }}"
+      file_type: directory
+  register: new_dist_dir
+
+# Assume that the deployment directory has the airavata-server.properties file to use
+- name: copy airavata-server.properties
+  copy: remote_src=True src="{{ server_deployment_dir }}/airavata-server.properties" dest={{ new_dist_dir.files.0.path }}/bin/
+  notify: "restart airavata"
+
+# Assume that the mysql jar is in the deployment directory
+- name: register the mysql jar
+  find:
+      paths: "{{ server_deployment_dir }}"
+      patterns: "{{ mysql_connector_jar }}"
+      file_type: file
+      recurse: no
+  register: mysql_jar
+
+- name: copy mysql
+  copy: remote_src=True src="{{ mysql_jar.files.0.path }}" dest={{ new_dist_dir.files.0.path }}/lib/
+  notify: "restart airavata"
+
+# Temporary workaround for log4j jars (https://issues.apache.org/jira/browse/AIRAVATA-2205)
+- name: register the log4j jars
+  find:
+      paths: "{{ server_deployment_dir }}"
+      patterns: "slf4j-log4j12*.jar,log4j*.jar"
+      file_type: file
+      recurse: yes
+  register: log4j_jars
+
+- name: remove log4j jars
+  file: path={{item.path}} state=absent
+  notify: "restart airavata"
+  with_items: "{{ log4j_jars.files }}"
+
+# This handles the case where nothing needed to be updated but the server isn't running so we want to start it
+- name: start server if not running
+  find: paths={{ new_dist_dir.files.0.path }}/bin/ patterns="server_start_*"
+  register: server_start_file
+  changed_when: server_start_file.matched == 0
+  notify: "restart airavata"

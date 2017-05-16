@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,15 +16,14 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.credential.store.store.impl.db;
 
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.KeyStorePasswordCallback;
 import org.apache.airavata.common.utils.SecurityUtil;
 import org.apache.airavata.credential.store.credential.Credential;
+import org.apache.airavata.credential.store.credential.CredentialOwnerType;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 
 import java.io.*;
@@ -86,7 +85,7 @@ public class CredentialsDAO extends ParentDAO {
     public void addCredentials(String gatewayId, Credential credential, Connection connection)
             throws CredentialStoreException {
 
-        String sql = "INSERT INTO CREDENTIALS VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO CREDENTIALS (GATEWAY_ID, TOKEN_ID, CREDENTIAL, PORTAL_USER_ID, TIME_PERSISTED, DESCRIPTION, CREDENTIAL_OWNER_TYPE) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement preparedStatement = null;
 
@@ -105,6 +104,10 @@ public class CredentialsDAO extends ParentDAO {
             Timestamp timestamp = new Timestamp(date.getTime());
 
             preparedStatement.setTimestamp(5, timestamp);
+
+            preparedStatement.setString(6,credential.getDescription());
+
+            preparedStatement.setString(7, credential.getCredentialOwnerType().toString());
 
             preparedStatement.executeUpdate();
 
@@ -161,7 +164,7 @@ public class CredentialsDAO extends ParentDAO {
     public void updateCredentials(String gatewayId, Credential credential, Connection connection)
             throws CredentialStoreException {
 
-        String sql = "UPDATE CREDENTIALS set CREDENTIAL = ?, PORTAL_USER_ID = ?, TIME_PERSISTED = ? where GATEWAY_ID = ? and TOKEN_ID = ?";
+        String sql = "UPDATE CREDENTIALS set CREDENTIAL = ?, PORTAL_USER_ID = ?, TIME_PERSISTED = ?, DESCRIPTION = ?, CREDENTIAL_OWNER_TYPE = ? where GATEWAY_ID = ? and TOKEN_ID = ?";
 
         PreparedStatement preparedStatement = null;
 
@@ -174,8 +177,11 @@ public class CredentialsDAO extends ParentDAO {
             preparedStatement.setString(2, credential.getPortalUserName());
 
             preparedStatement.setTimestamp(3, new Timestamp(new java.util.Date().getTime()));
-            preparedStatement.setString(4, gatewayId);
-            preparedStatement.setString(5, credential.getToken());
+            preparedStatement.setString(4, credential.getDescription());
+            preparedStatement.setString(5, credential.getCredentialOwnerType().toString());
+            preparedStatement.setString(6, gatewayId);
+            preparedStatement.setString(7, credential.getToken());
+
 
             preparedStatement.executeUpdate();
 
@@ -227,6 +233,8 @@ public class CredentialsDAO extends ParentDAO {
 
                 certificateCredential.setPortalUserName(resultSet.getString("PORTAL_USER_ID"));
                 certificateCredential.setCertificateRequestedTime(resultSet.getTimestamp("TIME_PERSISTED"));
+                certificateCredential.setDescription(resultSet.getString("DESCRIPTION"));
+                certificateCredential.setCredentialOwnerType(CredentialOwnerType.valueOf(resultSet.getString("CREDENTIAL_OWNER_TYPE")));
 
                 return certificateCredential;
             }
@@ -311,9 +319,11 @@ public class CredentialsDAO extends ParentDAO {
                 byte[] certificate = blobCredentials.getBytes(1, (int) blobCredentials.length());
 
                 certificateCredential = (Credential) convertByteArrayToObject(certificate);
-
+                certificateCredential.setToken(resultSet.getString("TOKEN_ID"));
                 certificateCredential.setPortalUserName(resultSet.getString("PORTAL_USER_ID"));
                 certificateCredential.setCertificateRequestedTime(resultSet.getTimestamp("TIME_PERSISTED"));
+                certificateCredential.setDescription(resultSet.getString("DESCRIPTION"));
+                certificateCredential.setCredentialOwnerType(CredentialOwnerType.valueOf(resultSet.getString("CREDENTIAL_OWNER_TYPE")));
 
                 credentialList.add(certificateCredential);
             }
@@ -360,9 +370,11 @@ public class CredentialsDAO extends ParentDAO {
                 byte[] certificate = blobCredentials.getBytes(1, (int) blobCredentials.length());
 
                 certificateCredential = (Credential) convertByteArrayToObject(certificate);
-
+                certificateCredential.setToken(resultSet.getString("TOKEN_ID"));
                 certificateCredential.setPortalUserName(resultSet.getString("PORTAL_USER_ID"));
                 certificateCredential.setCertificateRequestedTime(resultSet.getTimestamp("TIME_PERSISTED"));
+                certificateCredential.setDescription(resultSet.getString("DESCRIPTION"));
+                certificateCredential.setCredentialOwnerType(CredentialOwnerType.valueOf(resultSet.getString("CREDENTIAL_OWNER_TYPE")));
 
                 credentialList.add(certificateCredential);
             }

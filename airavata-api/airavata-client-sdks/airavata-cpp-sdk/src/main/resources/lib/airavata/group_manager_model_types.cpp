@@ -46,13 +46,15 @@ const std::map<int, const char*> _ResourceType_VALUES_TO_NAMES(::apache::thrift:
 
 int _kResourcePermissionTypeValues[] = {
   ResourcePermissionType::WRITE,
-  ResourcePermissionType::READ
+  ResourcePermissionType::READ,
+  ResourcePermissionType::OWNER
 };
 const char* _kResourcePermissionTypeNames[] = {
   "WRITE",
-  "READ"
+  "READ",
+  "OWNER"
 };
-const std::map<int, const char*> _ResourcePermissionType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kResourcePermissionTypeValues, _kResourcePermissionTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _ResourcePermissionType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(3, _kResourcePermissionTypeValues, _kResourcePermissionTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 
 GroupModel::~GroupModel() throw() {

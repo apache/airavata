@@ -25,6 +25,7 @@ import org.apache.airavata.model.status.JobState;
 public class JobStatusResult {
     private JobState state;
     private String jobId;
+    private boolean authoritative = true;
 
     public String getJobName() {
         return jobName;
@@ -50,6 +51,14 @@ public class JobStatusResult {
 
     public void setJobId(String jobId) {
         this.jobId = jobId;
+    }
+
+    public boolean isAuthoritative() {
+        return authoritative;
+    }
+
+    public void setAuthoritative(boolean authoritative) {
+        this.authoritative = authoritative;
     }
 }
 

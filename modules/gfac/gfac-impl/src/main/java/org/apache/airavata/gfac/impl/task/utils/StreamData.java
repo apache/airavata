@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
-
+ */
 package org.apache.airavata.gfac.impl.task.utils;
 
 import com.jcraft.jsch.JSchException;
@@ -85,7 +83,7 @@ public class StreamData extends TimerTask  {
             log.error("expId: {}, processId:{}, taskId: {}:- Couldn't stage file {} , Erroneous path specified",
                     taskContext.getExperimentId(), taskContext.getProcessId(), taskContext.getTaskId(),
                     taskContext.getProcessOutput().getName());
-        } catch (IllegalAccessException | InstantiationException | AiravataException | IOException | JSchException | SSHApiException e) {
+        } catch (IllegalAccessException | InstantiationException | AiravataException | IOException | JSchException  e) {
             log.error("expId: {}, processId:{}, taskId: {}:- Couldn't stage file {} , Error occurred while streaming data",
                     taskContext.getExperimentId(), taskContext.getProcessId(), taskContext.getTaskId(),
                     taskContext.getProcessOutput().getName());
@@ -96,7 +94,10 @@ public class StreamData extends TimerTask  {
         }
     }
 
-    public void runOutputStaging() throws URISyntaxException, IllegalAccessException, InstantiationException, CredentialStoreException, AiravataException, IOException, JSchException, SSHApiException {
+    public void runOutputStaging() throws URISyntaxException,
+            IllegalAccessException,
+            InstantiationException,
+            CredentialStoreException, AiravataException, IOException, JSchException {
         try {
 
             AuthenticationInfo authenticationInfo = null;
@@ -117,7 +118,7 @@ public class StreamData extends TimerTask  {
             }
             authenticationInfo = Factory.getStorageSSHKeyAuthentication(taskContext.getParentProcessContext());
 
-            ServerInfo serverInfo = new ServerInfo(userName, hostName, DEFAULT_SSH_PORT);
+            ServerInfo serverInfo = taskContext.getParentProcessContext().getStorageResourceServerInfo();
             Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
             String targetPath = destinationURI.getPath().substring(0, destinationURI.getPath().lastIndexOf('/'));
             SSHUtils.makeDirectory(targetPath, sshSession);
@@ -130,7 +131,7 @@ public class StreamData extends TimerTask  {
         }
     }
 
-    private void localDataCopy(TaskContext taskContext, URI sourceURI, URI destinationURI) throws SSHApiException {
+    private void localDataCopy(TaskContext taskContext, URI sourceURI, URI destinationURI) throws GFacException {
         StringBuilder sb = new StringBuilder("rsync -cr ");
         sb.append(sourceURI.getPath()).append(" ").append(destinationURI.getPath());
         CommandInfo commandInfo = new RawCommandInfo(sb.toString());
@@ -146,13 +147,13 @@ public class StreamData extends TimerTask  {
     }
 
     private void outputDataStaging(TaskContext taskContext, Session sshSession, URI sourceURI, URI destinationURI)
-            throws SSHApiException, AiravataException, IOException, JSchException, GFacException {
+            throws AiravataException, IOException, JSchException, GFacException {
 
         /**
          * scp third party file transfer 'from' comute resource.
          */
         taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(),
-                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.FROM, true);
+                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.TO, true);
         // update output locations
         GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.getPath());
         GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.getPath());

@@ -45,7 +45,9 @@ struct ResourceJobManagerType {
     PBS = 1,
     SLURM = 2,
     LSF = 3,
-    UGE = 4
+    UGE = 4,
+    CLOUD = 5,
+    AIRAVATA_CUSTOM = 6
   };
 };
 
@@ -94,9 +96,11 @@ extern const std::map<int, const char*> _JobSubmissionProtocol_VALUES_TO_NAMES;
 struct MonitorMode {
   enum type {
     POLL_JOB_MANAGER = 0,
-    JOB_EMAIL_NOTIFICATION_MONITOR = 1,
-    XSEDE_AMQP_SUBSCRIBE = 2,
-    FORK = 3
+    CLOUD_JOB_MONITOR = 1,
+    JOB_EMAIL_NOTIFICATION_MONITOR = 2,
+    XSEDE_AMQP_SUBSCRIBE = 3,
+    FORK = 4,
+    LOCAL = 5
   };
 };
 
@@ -222,13 +226,17 @@ inline std::ostream& operator<<(std::ostream& out, const ResourceJobManager& obj
 }
 
 typedef struct _BatchQueue__isset {
-  _BatchQueue__isset() : queueDescription(false), maxRunTime(false), maxNodes(false), maxProcessors(false), maxJobsInQueue(false), maxMemory(false) {}
+  _BatchQueue__isset() : queueDescription(false), maxRunTime(false), maxNodes(false), maxProcessors(false), maxJobsInQueue(false), maxMemory(false), cpuPerNode(false), defaultNodeCount(false), defaultCPUCount(false), isDefaultQueue(false) {}
   bool queueDescription :1;
   bool maxRunTime :1;
   bool maxNodes :1;
   bool maxProcessors :1;
   bool maxJobsInQueue :1;
   bool maxMemory :1;
+  bool cpuPerNode :1;
+  bool defaultNodeCount :1;
+  bool defaultCPUCount :1;
+  bool isDefaultQueue :1;
 } _BatchQueue__isset;
 
 class BatchQueue {
@@ -236,7 +244,7 @@ class BatchQueue {
 
   BatchQueue(const BatchQueue&);
   BatchQueue& operator=(const BatchQueue&);
-  BatchQueue() : queueName(), queueDescription(), maxRunTime(0), maxNodes(0), maxProcessors(0), maxJobsInQueue(0), maxMemory(0) {
+  BatchQueue() : queueName(), queueDescription(), maxRunTime(0), maxNodes(0), maxProcessors(0), maxJobsInQueue(0), maxMemory(0), cpuPerNode(0), defaultNodeCount(0), defaultCPUCount(0), isDefaultQueue(0) {
   }
 
   virtual ~BatchQueue() throw();
@@ -247,6 +255,10 @@ class BatchQueue {
   int32_t maxProcessors;
   int32_t maxJobsInQueue;
   int32_t maxMemory;
+  int32_t cpuPerNode;
+  int32_t defaultNodeCount;
+  int32_t defaultCPUCount;
+  bool isDefaultQueue;
 
   _BatchQueue__isset __isset;
 
@@ -263,6 +275,14 @@ class BatchQueue {
   void __set_maxJobsInQueue(const int32_t val);
 
   void __set_maxMemory(const int32_t val);
+
+  void __set_cpuPerNode(const int32_t val);
+
+  void __set_defaultNodeCount(const int32_t val);
+
+  void __set_defaultCPUCount(const int32_t val);
+
+  void __set_isDefaultQueue(const bool val);
 
   bool operator == (const BatchQueue & rhs) const
   {
@@ -292,6 +312,22 @@ class BatchQueue {
       return false;
     else if (__isset.maxMemory && !(maxMemory == rhs.maxMemory))
       return false;
+    if (__isset.cpuPerNode != rhs.__isset.cpuPerNode)
+      return false;
+    else if (__isset.cpuPerNode && !(cpuPerNode == rhs.cpuPerNode))
+      return false;
+    if (__isset.defaultNodeCount != rhs.__isset.defaultNodeCount)
+      return false;
+    else if (__isset.defaultNodeCount && !(defaultNodeCount == rhs.defaultNodeCount))
+      return false;
+    if (__isset.defaultCPUCount != rhs.__isset.defaultCPUCount)
+      return false;
+    else if (__isset.defaultCPUCount && !(defaultCPUCount == rhs.defaultCPUCount))
+      return false;
+    if (__isset.isDefaultQueue != rhs.__isset.isDefaultQueue)
+      return false;
+    else if (__isset.isDefaultQueue && !(isDefaultQueue == rhs.isDefaultQueue))
+      return false;
     return true;
   }
   bool operator != (const BatchQueue &rhs) const {
@@ -314,10 +350,6 @@ inline std::ostream& operator<<(std::ostream& out, const BatchQueue& obj)
   return out;
 }
 
-typedef struct _LOCALSubmission__isset {
-  _LOCALSubmission__isset() : securityProtocol(false) {}
-  bool securityProtocol :1;
-} _LOCALSubmission__isset;
 
 class LOCALSubmission {
  public:
@@ -332,8 +364,6 @@ class LOCALSubmission {
   ResourceJobManager resourceJobManager;
    ::apache::airavata::model::data::movement::SecurityProtocol::type securityProtocol;
 
-  _LOCALSubmission__isset __isset;
-
   void __set_jobSubmissionInterfaceId(const std::string& val);
 
   void __set_resourceJobManager(const ResourceJobManager& val);
@@ -346,9 +376,7 @@ class LOCALSubmission {
       return false;
     if (!(resourceJobManager == rhs.resourceJobManager))
       return false;
-    if (__isset.securityProtocol != rhs.__isset.securityProtocol)
-      return false;
-    else if (__isset.securityProtocol && !(securityProtocol == rhs.securityProtocol))
+    if (!(securityProtocol == rhs.securityProtocol))
       return false;
     return true;
   }
@@ -683,7 +711,7 @@ inline std::ostream& operator<<(std::ostream& out, const JobSubmissionInterface&
 }
 
 typedef struct _ComputeResourceDescription__isset {
-  _ComputeResourceDescription__isset() : hostAliases(false), ipAddresses(false), resourceDescription(false), enabled(false), batchQueues(false), fileSystems(false), jobSubmissionInterfaces(false), dataMovementInterfaces(false), maxMemoryPerNode(false), gatewayUsageReporting(false), gatewayUsageModuleLoadCommand(false), gatewayUsageExecutable(false) {}
+  _ComputeResourceDescription__isset() : hostAliases(false), ipAddresses(false), resourceDescription(false), enabled(false), batchQueues(false), fileSystems(false), jobSubmissionInterfaces(false), dataMovementInterfaces(false), maxMemoryPerNode(false), gatewayUsageReporting(false), gatewayUsageModuleLoadCommand(false), gatewayUsageExecutable(false), cpusPerNode(false), defaultNodeCount(false), defaultCPUCount(false), defaultWallltime(false) {}
   bool hostAliases :1;
   bool ipAddresses :1;
   bool resourceDescription :1;
@@ -696,6 +724,10 @@ typedef struct _ComputeResourceDescription__isset {
   bool gatewayUsageReporting :1;
   bool gatewayUsageModuleLoadCommand :1;
   bool gatewayUsageExecutable :1;
+  bool cpusPerNode :1;
+  bool defaultNodeCount :1;
+  bool defaultCPUCount :1;
+  bool defaultWallltime :1;
 } _ComputeResourceDescription__isset;
 
 class ComputeResourceDescription {
@@ -703,7 +735,7 @@ class ComputeResourceDescription {
 
   ComputeResourceDescription(const ComputeResourceDescription&);
   ComputeResourceDescription& operator=(const ComputeResourceDescription&);
-  ComputeResourceDescription() : computeResourceId("DO_NOT_SET_AT_CLIENTS"), hostName(), resourceDescription(), enabled(0), maxMemoryPerNode(0), gatewayUsageReporting(0), gatewayUsageModuleLoadCommand(), gatewayUsageExecutable() {
+  ComputeResourceDescription() : computeResourceId("DO_NOT_SET_AT_CLIENTS"), hostName(), resourceDescription(), enabled(0), maxMemoryPerNode(0), gatewayUsageReporting(0), gatewayUsageModuleLoadCommand(), gatewayUsageExecutable(), cpusPerNode(0), defaultNodeCount(0), defaultCPUCount(0), defaultWallltime(0) {
   }
 
   virtual ~ComputeResourceDescription() throw();
@@ -721,6 +753,10 @@ class ComputeResourceDescription {
   bool gatewayUsageReporting;
   std::string gatewayUsageModuleLoadCommand;
   std::string gatewayUsageExecutable;
+  int32_t cpusPerNode;
+  int32_t defaultNodeCount;
+  int32_t defaultCPUCount;
+  int32_t defaultWallltime;
 
   _ComputeResourceDescription__isset __isset;
 
@@ -751,6 +787,14 @@ class ComputeResourceDescription {
   void __set_gatewayUsageModuleLoadCommand(const std::string& val);
 
   void __set_gatewayUsageExecutable(const std::string& val);
+
+  void __set_cpusPerNode(const int32_t val);
+
+  void __set_defaultNodeCount(const int32_t val);
+
+  void __set_defaultCPUCount(const int32_t val);
+
+  void __set_defaultWallltime(const int32_t val);
 
   bool operator == (const ComputeResourceDescription & rhs) const
   {
@@ -805,6 +849,22 @@ class ComputeResourceDescription {
     if (__isset.gatewayUsageExecutable != rhs.__isset.gatewayUsageExecutable)
       return false;
     else if (__isset.gatewayUsageExecutable && !(gatewayUsageExecutable == rhs.gatewayUsageExecutable))
+      return false;
+    if (__isset.cpusPerNode != rhs.__isset.cpusPerNode)
+      return false;
+    else if (__isset.cpusPerNode && !(cpusPerNode == rhs.cpusPerNode))
+      return false;
+    if (__isset.defaultNodeCount != rhs.__isset.defaultNodeCount)
+      return false;
+    else if (__isset.defaultNodeCount && !(defaultNodeCount == rhs.defaultNodeCount))
+      return false;
+    if (__isset.defaultCPUCount != rhs.__isset.defaultCPUCount)
+      return false;
+    else if (__isset.defaultCPUCount && !(defaultCPUCount == rhs.defaultCPUCount))
+      return false;
+    if (__isset.defaultWallltime != rhs.__isset.defaultWallltime)
+      return false;
+    else if (__isset.defaultWallltime && !(defaultWallltime == rhs.defaultWallltime))
       return false;
     return true;
   }

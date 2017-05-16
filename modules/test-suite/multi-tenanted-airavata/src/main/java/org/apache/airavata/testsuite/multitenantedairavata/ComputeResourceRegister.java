@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
-
+ */
 package org.apache.airavata.testsuite.multitenantedairavata;
 
 import org.apache.airavata.api.Airavata;
@@ -27,22 +25,25 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePrefer
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.data.movement.DMType;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.airavata.model.data.movement.SCPDataMovement;
+import org.apache.airavata.model.data.movement.LOCALDataMovement;
 import org.apache.airavata.model.data.movement.SecurityProtocol;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.testsuite.multitenantedairavata.utils.ComputeResourceProperties;
+import org.apache.airavata.testsuite.multitenantedairavata.utils.TestFrameworkConstants;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.airavata.testsuite.multitenantedairavata.utils.TestFrameworkConstants.LocalEchoProperties.*;
+import static org.apache.airavata.testsuite.multitenantedairavata.utils.TestFrameworkConstants.LocalEchoProperties.LocalEchoComputeResource.*;
+
 public class ComputeResourceRegister {
     private Airavata.Client airavata;
-    private List<String> computeResourceIds;
     private Map<String, String> loginNamesWithResourceMap;
     private Map<String, String> loginNamesWithResourceIds;
     private final static Logger logger = LoggerFactory.getLogger(ComputeResourceRegister.class);
@@ -52,7 +53,6 @@ public class ComputeResourceRegister {
     public ComputeResourceRegister(Airavata.Client airavata, TestFrameworkProps props) throws Exception {
         this.airavata = airavata;
         this.properties = props;
-        computeResourceIds = new ArrayList<String>();
         loginNamesWithResourceMap = getLoginNamesMap();
         authzToken = new AuthzToken("emptyToken");
 
@@ -80,61 +80,49 @@ public class ComputeResourceRegister {
         return loginNamesWithResourceIds;
     }
 
-    public void addComputeResources () throws Exception {
-        String stampedeResourceId = null;
-        String trestlesResourceId = null;
-        String bigredResourceId = null;
-        String gordenResourceId = null;
-        String alamoResourceId = null;
+    public ComputeResourceProperties addComputeResources () throws Exception {
+        ComputeResourceProperties computeResourceProperties = null;
         try {
+//            Map<String, String> computeResources = airavata.getAllComputeResourceNames(authzToken);
+//            for(Map.Entry<String, String> computeResource: computeResources.entrySet()){
+//                if(computeResource.getValue().contains("localhost")){
+//                    localResourceId =  computeResource.getKey();
+//                    System.out.println("Existing Local Resource Id " + localResourceId);
+//                    return localResourceId;
+//                }
+//            }
+
             for (String resourceName : loginNamesWithResourceMap.keySet()) {
-                if (resourceName.contains("stampede")) {
-                    // adding stampede
-                    stampedeResourceId = registerComputeHost(resourceName, "TACC Stampede Cluster",
-                            ResourceJobManagerType.SLURM, "push", "/usr/bin", SecurityProtocol.SSH_KEYS, 22, "ibrun");
-                    System.out.println("Stampede Resource Id is " + stampedeResourceId);
-                } else if (resourceName.contains("trestles")) {
-                    //Register Trestles
-                    trestlesResourceId = registerComputeHost("trestles.sdsc.xsede.org", "SDSC Trestles Cluster",
-                            ResourceJobManagerType.PBS, "push", "/opt/torque/bin/", SecurityProtocol.SSH_KEYS, 22, "mpirun -np");
-                    System.out.println("Trestles Resource Id is " + trestlesResourceId);
-                } else if (resourceName.contains("bigred2")) {
-                    //Register BigRedII
-                    bigredResourceId = registerComputeHost("bigred2.uits.iu.edu", "IU BigRed II Cluster",
-                            ResourceJobManagerType.PBS, "push", "/opt/torque/torque-5.0.1/bin/", SecurityProtocol.SSH_KEYS, 22, "aprun -n");
-                    System.out.println("BigredII Resource Id is " + bigredResourceId);
-                } else if (resourceName.contains("gordon")) {
-                    //Register BigRedII
-                    gordenResourceId = registerComputeHost("gordon.sdsc.edu", "SDSC Gorden Cluster",
-                            ResourceJobManagerType.PBS, "push", "/opt/torque/bin/", SecurityProtocol.SSH_KEYS, 22, "mpirun_rsh -hostfile $PBS_NODEFILE -np");
-                    System.out.println("BigredII Resource Id is " + bigredResourceId);
-                } else if (resourceName.contains("alamo")) {
-                    //Register BigRedII
-                    alamoResourceId = registerComputeHost("alamo.uthscsa.edu", "TACC alamo Cluster",
-                            ResourceJobManagerType.PBS, "push", "/usr/bin/", SecurityProtocol.SSH_KEYS, 22, " /usr/bin/mpiexec -np");
-                    System.out.println("BigredII Resource Id is " + bigredResourceId);
+                if (resourceName.contains(RESOURCE_NAME)) {
+                    computeResourceProperties = registerComputeHost(HOST_NAME, HOST_DESC,
+                            ResourceJobManagerType.FORK, null, "", SecurityProtocol.LOCAL, TestFrameworkConstants.LocalEchoProperties.LocalEchoComputeResource.JOB_MANAGER_COMMAND);
+                    System.out.println("Local Resource Id " + computeResourceProperties.getComputeResourceId());
                 }
             }
-            computeResourceIds.add(stampedeResourceId);
-            computeResourceIds.add(trestlesResourceId);
-            computeResourceIds.add(bigredResourceId);
-            computeResourceIds.add(gordenResourceId);
-            computeResourceIds.add(alamoResourceId);
+
         }catch (Exception e) {
             logger.error("Error occured while adding compute resources", e);
             throw new Exception("Error occured while adding compute resources", e);
         }
+        return computeResourceProperties;
+    }
+
+    public ComputeResourceDescription getComputeResource(String computeResourceId) throws Exception {
+        return airavata.getComputeResource(authzToken, computeResourceId);
 
     }
 
-    public String registerComputeHost(String hostName, String hostDesc,
-                                      ResourceJobManagerType resourceJobManagerType,
-                                      String monitoringEndPoint, String jobMangerBinPath,
-                                      SecurityProtocol securityProtocol, int portNumber, String jobManagerCommand) throws TException {
+    public ComputeResourceProperties registerComputeHost(String hostName, String hostDesc,
+                                                         ResourceJobManagerType resourceJobManagerType,
+                                                         String monitoringEndPoint, String jobMangerBinPath,
+                                                         SecurityProtocol securityProtocol, String jobManagerCommand) throws TException {
 
         ComputeResourceDescription computeResourceDescription = createComputeResourceDescription(hostName, hostDesc, null, null);
 
+        ComputeResourceProperties computeResourceProperties = new ComputeResourceProperties();
+
         String computeResourceId = airavata.registerComputeResource(authzToken, computeResourceDescription);
+        computeResourceProperties.setComputeResourceId(computeResourceId);
 
         if (computeResourceId.isEmpty()) throw new AiravataClientException();
 
@@ -146,19 +134,21 @@ public class ComputeResourceRegister {
             resourceJobManager.setJobManagerCommands(jobManagerCommandStringMap);
         }
 
-        SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
-        sshJobSubmission.setResourceJobManager(resourceJobManager);
-        sshJobSubmission.setSecurityProtocol(securityProtocol);
-//        sshJobSubmission.setMonitorMode(MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR);
-        sshJobSubmission.setSshPort(portNumber);
-        airavata.addSSHJobSubmissionDetails(authzToken, computeResourceId, 1, sshJobSubmission);
+        LOCALSubmission localobSubmission = new LOCALSubmission();
+        localobSubmission.setResourceJobManager(resourceJobManager);
+        localobSubmission.setSecurityProtocol(securityProtocol);
 
-        SCPDataMovement scpDataMovement = new SCPDataMovement();
-        scpDataMovement.setSecurityProtocol(securityProtocol);
-        scpDataMovement.setSshPort(portNumber);
-        airavata.addSCPDataMovementDetails(authzToken, computeResourceId, DMType.COMPUTE_RESOURCE, 1, scpDataMovement);
+        String localJobSubmissionId = airavata.addLocalSubmissionDetails(authzToken, computeResourceId, 0, localobSubmission);
+        computeResourceProperties.setJobSubmissionId(localJobSubmissionId);
 
-        return computeResourceId;
+        airavata.addLocalDataMovementDetails(authzToken, computeResourceId, DMType.COMPUTE_RESOURCE, 0, new LOCALDataMovement());
+
+        return computeResourceProperties;
+    }
+
+    public LOCALSubmission getLocalSubmission(String jobSubmissionId) throws Exception {
+        return airavata.getLocalJobSubmission(authzToken, jobSubmissionId);
+
     }
 
     public ComputeResourceDescription createComputeResourceDescription(
@@ -168,6 +158,7 @@ public class ComputeResourceRegister {
         host.setResourceDescription(hostDesc);
         host.setIpAddresses(ipAddresses);
         host.setHostAliases(hostAliases);
+        host.setEnabled(true);
         return host;
     }
 
@@ -182,54 +173,20 @@ public class ComputeResourceRegister {
         return resourceJobManager;
     }
 
-    public void registerGatewayResourceProfile() throws Exception{
+    public void registerGatewayResourceProfile(String computeResourceId) throws Exception{
         try {
-            ComputeResourcePreference stampedeOGCEResourcePreferences = null;
-            ComputeResourcePreference stampedeUS3ResourcePreferences = null;
-            ComputeResourcePreference trestlesOGCEResourcePreferences = null;
-            ComputeResourcePreference trestlesUS3ResourcePreferences = null;
-            ComputeResourcePreference bigRedCgatewayResourcePreferences = null;
-            ComputeResourcePreference gordenUS3ResourcePreference = null;
-            ComputeResourcePreference alamoUS3ResourcePreference = null;
+            ComputeResourcePreference localResourcePreference = null;
 
             loginNamesWithResourceIds = getLoginNamesWithResourceIDs();
-
             List<GatewayResourceProfile> allGatewayComputeResources = airavata.getAllGatewayResourceProfiles(authzToken);
             for (GatewayResourceProfile gatewayResourceProfile : allGatewayComputeResources) {
                 for (String resourceId : loginNamesWithResourceIds.keySet()) {
                     String loginUserName = loginNamesWithResourceIds.get(resourceId);
-                    if (resourceId.contains("stampede") ) {
-                        if (loginUserName.equals("ogce")){
-                            stampedeOGCEResourcePreferences = createComputeResourcePreference(resourceId, "TG-STA110014S", false, null,
-                                    JobSubmissionProtocol.SSH, DataMovementProtocol.SCP, "/scratch/01437/ogce/gta-work-dirs", loginUserName);
-                            airavata.addGatewayComputeResourcePreference(authzToken, gatewayResourceProfile.getGatewayID(), resourceId, stampedeOGCEResourcePreferences);
-                        }else if (loginUserName.equals("us3")){
-                            stampedeUS3ResourcePreferences = createComputeResourcePreference(resourceId, "TG-MCB070039N", false, null,
-                                    JobSubmissionProtocol.SSH, DataMovementProtocol.SCP, "/scratch/01623/us3/jobs/", loginUserName);
-                            airavata.addGatewayComputeResourcePreference(authzToken, gatewayResourceProfile.getGatewayID(), resourceId, stampedeUS3ResourcePreferences);
-                        }
-                    }else if (resourceId.contains("trestles")){
-                        if (loginUserName.equals("ogce")){
-                            trestlesOGCEResourcePreferences = createComputeResourcePreference(resourceId, "sds128", false, null, JobSubmissionProtocol.SSH,
-                                    DataMovementProtocol.SCP, "/oasis/scratch/trestles/ogce/temp_project/gta-work-dirs", loginUserName);
-                            airavata.addGatewayComputeResourcePreference(authzToken, gatewayResourceProfile.getGatewayID(), resourceId, trestlesOGCEResourcePreferences);
-                        }else if (loginUserName.equals("us3")){
-                            trestlesUS3ResourcePreferences = createComputeResourcePreference(resourceId, "uot111", false, null, JobSubmissionProtocol.SSH,
-                                    DataMovementProtocol.SCP, "/oasis/projects/nsf/uot111/us3/airavata-workdirs/", loginUserName);
-                            airavata.addGatewayComputeResourcePreference(authzToken, gatewayResourceProfile.getGatewayID(), resourceId, trestlesUS3ResourcePreferences);
-                        }
-                    }else if (resourceId.contains("bigred2") && loginUserName.equals("cgateway")){
-                        bigRedCgatewayResourcePreferences = createComputeResourcePreference(resourceId, "TG-STA110014S", false, null, null, null,
-                                "/N/dc2/scratch/cgateway/gta-work-dirs", loginUserName);
-                        airavata.addGatewayComputeResourcePreference(authzToken, gatewayResourceProfile.getGatewayID(), resourceId, bigRedCgatewayResourcePreferences);
-                    }else if (resourceId.contains("gordon") && loginUserName.equals("us3")){
-                        gordenUS3ResourcePreference = createComputeResourcePreference(resourceId, "uot111", false, null, JobSubmissionProtocol.SSH,
-                                DataMovementProtocol.SCP, "/home/us3/gordon/work/airavata", loginUserName);
-                        airavata.addGatewayComputeResourcePreference(authzToken, gatewayResourceProfile.getGatewayID(), resourceId, gordenUS3ResourcePreference);
-                    }else if (resourceId.contains("alamo") && loginUserName.equals("us3")){
-                        alamoUS3ResourcePreference = createComputeResourcePreference(resourceId, null, false, "batch", JobSubmissionProtocol.SSH,
-                                DataMovementProtocol.SCP, "/home/us3/work/airavata", loginUserName);
-                        airavata.addGatewayComputeResourcePreference(authzToken, gatewayResourceProfile.getGatewayID(), resourceId, alamoUS3ResourcePreference);
+                    if (resourceId.equals(computeResourceId) && loginUserName.equals(LOGIN_USER)){
+                        localResourcePreference = createComputeResourcePreference(resourceId, ALLOCATION_PROJECT_NUMBER, true, BATCH_QUEUE, JobSubmissionProtocol.LOCAL,
+                                DataMovementProtocol.LOCAL, TestFrameworkConstants.SCRATCH_LOCATION, loginUserName);
+                        airavata.addGatewayComputeResourcePreference(authzToken, gatewayResourceProfile.getGatewayID(), resourceId, localResourcePreference);
+
                     }
                 }
             }
@@ -237,6 +194,10 @@ public class ComputeResourceRegister {
             logger.error("Error occured while updating gateway resource profiles", e);
             throw new Exception("Error occured while updating gateway resource profiles", e);
         }
+    }
+
+    public ComputeResourcePreference getGatewayComputeResourcePreference(String gatewayId, String computeResourceId) throws Exception{
+       return airavata.getGatewayComputeResourcePreference(authzToken, gatewayId, computeResourceId);
     }
 
     public ComputeResourcePreference createComputeResourcePreference(String computeResourceId, String allocationProjectNumber,
@@ -255,13 +216,5 @@ public class ComputeResourceRegister {
         computeResourcePreference.setScratchLocation(scratchLocation);
         computeResourcePreference.setLoginUserName(loginUserName);
         return computeResourcePreference;
-    }
-
-    public List<String> getComputeResourceIds() {
-        return computeResourceIds;
-    }
-
-    public void setComputeResourceIds(List<String> computeResourceIds) {
-        this.computeResourceIds = computeResourceIds;
     }
 }

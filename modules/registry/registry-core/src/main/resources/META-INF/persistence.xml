@@ -38,6 +38,7 @@
         <class>org.apache.airavata.registry.core.app.catalog.model.GridftpDataMovement</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.GridftpEndpoint</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.SshJobSubmission</class>
+        <class>org.apache.airavata.registry.core.app.catalog.model.CloudJobSubmission</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.ApplicationModule</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.ApplicationDeployment</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.ModuleLoadCmd</class>
@@ -50,6 +51,9 @@
         <class>org.apache.airavata.registry.core.app.catalog.model.ApplicationIntOutput</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.GatewayProfile</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.ComputeResourcePreference</class>
+        <class>org.apache.airavata.registry.core.app.catalog.model.UserResourceProfile</class>
+        <class>org.apache.airavata.registry.core.app.catalog.model.UserComputeResourcePreference</class>
+        <class>org.apache.airavata.registry.core.app.catalog.model.UserStoragePreference</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.BatchQueue</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.ComputeResourceFileSystem</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.JobSubmissionInterface</class>
@@ -91,10 +95,12 @@
         <class>org.apache.airavata.registry.core.experiment.catalog.model.Job</class>
         <class>org.apache.airavata.registry.core.experiment.catalog.model.JobStatus</class>
         <class>org.apache.airavata.registry.core.experiment.catalog.model.Notification</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.QueueStatus</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
     <persistence-unit name="replicacatalog_data">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+        <class>org.apache.airavata.registry.core.replica.catalog.model.Configuration</class>
         <class>org.apache.airavata.registry.core.replica.catalog.model.DataProduct</class>
         <class>org.apache.airavata.registry.core.replica.catalog.model.DataReplicaLocation</class>
         <class>org.apache.airavata.registry.core.replica.catalog.model.DataProductMetaData</class>

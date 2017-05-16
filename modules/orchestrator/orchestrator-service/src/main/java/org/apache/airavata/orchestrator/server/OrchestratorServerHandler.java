@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,13 +16,13 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.orchestrator.server;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.logging.MDCConstants;
+import org.apache.airavata.common.logging.MDCUtil;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
@@ -36,10 +36,12 @@ import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescr
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.application.io.DataType;
+import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
 import org.apache.airavata.model.error.LaunchValidationException;
+import org.apache.airavata.model.error.ValidationResults;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.messaging.event.*;
@@ -67,6 +69,7 @@ import org.apache.thrift.TException;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import java.util.*;
 
@@ -91,30 +94,20 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	}
 
 	public OrchestratorServerHandler() throws OrchestratorException{
-		try {
-	        publisher = MessagingFactory.getPublisher(Type.STATUS);
-			List<String> routingKeys = new ArrayList<>();
-			routingKeys.add(ServerSettings.getRabbitmqExperimentLaunchQueueName());
-			experimentSubscriber = MessagingFactory.getSubscriber(new ExperimentHandler(), routingKeys, Type.EXPERIMENT_LAUNCH);
-			setAiravataUserName(ServerSettings.getDefaultUser());
-		} catch (AiravataException e) {
-            log.error(e.getMessage(), e);
-            throw new OrchestratorException("Error while initializing orchestrator service", e);
-		}
 		// orchestrator init
 		try {
 			// first constructing the monitorManager and orchestrator, then fill
 			// the required properties
+			setAiravataUserName(ServerSettings.getDefaultUser());
 			orchestrator = new SimpleOrchestratorImpl();
 			experimentCatalog = RegistryFactory.getDefaultExpCatalog();
 			appCatalog = RegistryFactory.getAppCatalog();
+
+			publisher = MessagingFactory.getPublisher(Type.STATUS);
 			orchestrator.initialize();
 			orchestrator.getOrchestratorContext().setPublisher(this.publisher);
-			List<String> routingKeys = new ArrayList<>();
-//			routingKeys.add("*"); // listen for gateway level messages
-//			routingKeys.add("*.*"); // listen for gateway/experiment level messages
-			routingKeys.add("*.*.*"); // listen for gateway/experiment/process level messages
-			statusSubscribe = MessagingFactory.getSubscriber(new ProcessStatusHandler(),routingKeys, Type.STATUS);
+			statusSubscribe = getStatusSubscriber();
+			experimentSubscriber  = getExperimentSubscriber();
 			startCurator();
 		} catch (OrchestratorException | RegistryException | AppCatalogException | AiravataException e) {
 			log.error(e.getMessage(), e);
@@ -122,7 +115,21 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 		}
 	}
 
-    /**
+	private Subscriber getStatusSubscriber() throws AiravataException {
+		List<String> routingKeys = new ArrayList<>();
+//			routingKeys.add("*"); // listen for gateway level messages
+//			routingKeys.add("*.*"); // listen for gateway/experiment level messages
+		routingKeys.add("*.*.*"); // listen for gateway/experiment/process level messages
+		return MessagingFactory.getSubscriber(new ProcessStatusHandler(),routingKeys, Type.STATUS);
+	}
+
+	private Subscriber getExperimentSubscriber() throws AiravataException {
+		List<String> routingKeys = new ArrayList<>();
+		routingKeys.add(ServerSettings.getRabbitmqExperimentLaunchQueueName());
+		return MessagingFactory.getSubscriber(new ExperimentHandler(), routingKeys, Type.EXPERIMENT_LAUNCH);
+	}
+
+	/**
 	 * * After creating the experiment Data user have the * experimentID as the
 	 * handler to the experiment, during the launchProcess * We just have to
 	 * give the experimentID * * @param experimentID * @return sucess/failure *
@@ -139,7 +146,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentCancelNode);
             experiment = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
             if (experiment == null) {
-                log.error(experimentId, "Error retrieving the Experiment by the given experimentID: {} ", experimentId);
+                log.error("Error retrieving the Experiment by the given experimentID: {} ", experimentId);
                 return false;
             }
 
@@ -225,7 +232,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                 OrchestratorUtils.updageAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
                 log.info("expId: {}, Launched experiment ", experimentId);
-                OrchestratorServerThreadPoolExecutor.getCachedThreadPool().execute(new SingleAppExperimentRunner(experimentId, token, gatewayId));
+                OrchestratorServerThreadPoolExecutor.getCachedThreadPool().execute(MDCUtil.wrapWithMDC(new SingleAppExperimentRunner(experimentId, token, gatewayId)));
             } else if (executionType == ExperimentType.WORKFLOW) {
                 //its a workflow execution experiment
                 log.debug(experimentId, "Launching workflow experiment {}.", experimentId);
@@ -234,6 +241,12 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 log.error(experimentId, "Couldn't identify experiment type, experiment {} is neither single application nor workflow.", experimentId);
                 throw new TException("Experiment '" + experimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getExecutionId());
             }
+		} catch (LaunchValidationException launchValidationException) {
+			ExperimentStatus status = new ExperimentStatus(ExperimentState.FAILED);
+			status.setReason("Validation failed: " + launchValidationException.getErrorMessage());
+			status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+			OrchestratorUtils.updageAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
+			throw new TException("Experiment '" + experimentId + "' launch failed. Experiment failed to validate: " + launchValidationException.getErrorMessage(), launchValidationException);
         } catch (Exception e) {
             throw new TException("Experiment '" + experimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getExecutionId(), e);
         }
@@ -265,14 +278,26 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     @Override
     public boolean validateProcess(String experimentId, List<ProcessModel> processes) throws LaunchValidationException, TException {
         try {
-            ExperimentModel experimentModel = (ExperimentModel)experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
-            for (ProcessModel processModel : processes){
-                boolean state = orchestrator.validateProcess(experimentModel, processModel).isSetValidationState();
-                if (!state){
-                    return false;
-                }
-            }
-            return true;
+			ExperimentModel experimentModel = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+			for (ProcessModel processModel : processes) {
+				boolean state = orchestrator.validateProcess(experimentModel, processModel).isSetValidationState();
+				if (!state) {
+					return false;
+				}
+			}
+			return true;
+		} catch (LaunchValidationException lve) {
+
+			// If a process failed to validate, also add an error message at the experiment level
+			ErrorModel details = new ErrorModel();
+			details.setActualErrorMessage(lve.getErrorMessage());
+			details.setCreationTime(Calendar.getInstance().getTimeInMillis());
+			try {
+				experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_ERROR, details, experimentId);
+			} catch (RegistryException e) {
+			    log.error("Failed to add EXPERIMENT_ERROR regarding LaunchValidationException to experiment " + experimentId, e);
+			}
+			throw lve;
         } catch (OrchestratorException e) {
             log.error(experimentId, "Error while validating process", e);
             throw new TException(e);
@@ -591,7 +616,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 
 		@Override
 		public void onMessage(MessageContext messageContext) {
-
+			MDC.put(MDCConstants.GATEWAY_ID, messageContext.getGatewayId());
 			switch (messageContext.getType()) {
 				case EXPERIMENT:
 					launchExperiment(messageContext);
@@ -604,6 +629,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 					log.error("Orchestrator got un-support message type : " + messageContext.getType());
 					break;
 			}
+			MDC.clear();
 		}
 
 		private void cancelExperiment(MessageContext messageContext) {
@@ -611,6 +637,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 				byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
 				ExperimentSubmitEvent expEvent = new ExperimentSubmitEvent();
 				ThriftUtils.createThriftFromBytes(bytes, expEvent);
+				log.info("Cancelling experiment with experimentId: {} gateway Id: {}", expEvent.getExperimentId(), expEvent.getGatewayId());
 				terminateExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
 			} catch (TException e) {
 				log.error("Experiment cancellation failed due to Thrift conversion error", e);
@@ -622,13 +649,16 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	}
 
 	private void launchExperiment(MessageContext messageContext) {
+		ExperimentSubmitEvent expEvent = new ExperimentSubmitEvent();
 		try {
-            byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
-            ExperimentSubmitEvent expEvent = new ExperimentSubmitEvent();
-            ThriftUtils.createThriftFromBytes(bytes, expEvent);
-            if (messageContext.isRedeliver()) {
+			byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
+			ThriftUtils.createThriftFromBytes(bytes, expEvent);
+			MDC.put(MDCConstants.EXPERIMENT_ID, expEvent.getExperimentId());
+			log.info("Launching experiment with experimentId: {} gateway Id: {}", expEvent.getExperimentId(), expEvent.getGatewayId());
+			if (messageContext.isRedeliver()) {
 				ExperimentModel experimentModel = (ExperimentModel) experimentCatalog.
 						get(ExperimentCatalogModelType.EXPERIMENT, expEvent.getExperimentId());
+				MDC.put(MDCConstants.EXPERIMENT_NAME, experimentModel.getExperimentName());
 				if (experimentModel.getExperimentStatus().get(0).getState() == ExperimentState.CREATED) {
 					launchExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
 				}
@@ -636,11 +666,18 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 launchExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
             }
 		} catch (TException e) {
-            log.error("Experiment launch failed due to Thrift conversion error", e);
+			String logMessage =  expEvent.getExperimentId() != null && expEvent.getGatewayId() != null ?
+					String.format("Experiment launch failed due to Thrift conversion error, experimentId: %s, gatewayId: %s",
+					expEvent.getExperimentId(), expEvent.getGatewayId()): "Experiment launch failed due to Thrift conversion error";
+            log.error(logMessage,  e);
 		} catch (RegistryException e) {
-			log.error("Experiment launch failed due to registry access issue", e);
+			String logMessage =  expEvent.getExperimentId() != null && expEvent.getGatewayId() != null ?
+					String.format("Experiment launch failed due to registry access issue, experimentId: %s, gatewayId: %s",
+					expEvent.getExperimentId(), expEvent.getGatewayId()): "Experiment launch failed due to registry access issue";
+			log.error(logMessage, e);
 		}finally {
 			experimentSubscriber.sendAck(messageContext.getDeliveryTag());
+			MDC.clear();
 		}
 	}
 

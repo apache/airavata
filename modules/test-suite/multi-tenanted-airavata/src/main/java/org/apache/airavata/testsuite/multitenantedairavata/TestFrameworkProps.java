@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
-
+ */
 package org.apache.airavata.testsuite.multitenantedairavata;
 
 import java.util.Map;
@@ -35,7 +33,6 @@ public class TestFrameworkProps {
     private String sshUsername;
     private String tokenFileLoc;
     private String resultFileLoc;
-    private String skippedGateways;
     private boolean injectErrors;
     private Resource[] resources;
     private Application[] applications;
@@ -142,13 +139,6 @@ public class TestFrameworkProps {
         this.resultFileLoc = resultFileLoc;
     }
 
-    public String getSkippedGateways() {
-        return skippedGateways;
-    }
-
-    public void setSkippedGateways(String skippedGateways) {
-        this.skippedGateways = skippedGateways;
-    }
 
     public Resource[] getResources() {
         return resources;

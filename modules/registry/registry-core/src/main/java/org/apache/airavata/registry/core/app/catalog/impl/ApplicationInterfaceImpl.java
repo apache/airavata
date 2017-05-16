@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.registry.core.app.catalog.impl;
 
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
@@ -237,6 +235,8 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                     inputResource.setInputOrder(input.getInputOrder());
                     inputResource.setRequired(input.isIsRequired());
                     inputResource.setRequiredToCMD(input.isRequiredToAddedToCommandLine());
+                    inputResource.setDataStaged(input.isDataStaged());
+                    inputResource.setIsReadOnly(input.isIsReadOnly());
                     inputResource.save();
                 }
             }

@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.registry.core.experiment.catalog.resources;
 
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
@@ -48,6 +46,7 @@ public class ExperimentInputResource extends AbstractExpCatResource {
     private boolean requiredToAddedToCmd;
     private boolean dataStaged = false;
     private String storageResourceId;
+    private boolean isReadOnly;
 
     public String getExperimentId() {
         return experimentId;
@@ -153,6 +152,14 @@ public class ExperimentInputResource extends AbstractExpCatResource {
         this.dataStaged = dataStaged;
     }
 
+    public boolean isReadOnly() {
+        return isReadOnly;
+    }
+
+    public void setIsReadOnly(boolean isReadOnly) {
+        this.isReadOnly = isReadOnly;
+    }
+
     public ExperimentCatResource create(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for process input data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
@@ -216,6 +223,7 @@ public class ExperimentInputResource extends AbstractExpCatResource {
             experimentInput.setRequiredToAddedToCmd(requiredToAddedToCmd);
             experimentInput.setDataStaged(dataStaged);
             experimentInput.setStorageResourceId(storageResourceId);
+            experimentInput.setIsReadOnly(isReadOnly);
             if (existingExpInput == null){
                 em.persist(experimentInput);
             }else {

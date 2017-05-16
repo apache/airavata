@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,8 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.registry.core.experiment.catalog.model;
 
 import org.slf4j.Logger;
@@ -43,6 +42,7 @@ public class ExperimentInput {
     private boolean requiredToAddedToCmd;
     private boolean dataStaged;
     private String storageResourceId;
+    private boolean isReadOnly;
     private Experiment experiment;
 
     @Id
@@ -163,6 +163,15 @@ public class ExperimentInput {
 
     public void setDataStaged(boolean dataStaged) {
         this.dataStaged = dataStaged;
+    }
+
+    @Column(name = "IS_READ_ONLY")
+    public boolean isReadOnly() {
+        return isReadOnly;
+    }
+
+    public void setIsReadOnly(boolean isReadOnly) {
+        this.isReadOnly = isReadOnly;
     }
 
 //    @Override

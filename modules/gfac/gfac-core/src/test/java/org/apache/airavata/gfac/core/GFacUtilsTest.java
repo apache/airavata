@@ -46,4 +46,26 @@ public class GFacUtilsTest {
         String shared = GFacUtils.getQoS(qos, "compute");
         Assert.assertNull(shared);
     }
+
+    @Test
+    public void parserCommandTest() throws Exception {
+        String command = "mkdir -p $scratchLocation/$gatewayId/$gatewayUserName/$applicationName";
+        GroovyMap groovyMap = new GroovyMap();
+        groovyMap.add(Script.SCRATCH_LOCATION, "/my/scratch");
+        groovyMap.add(Script.GATEWAY_ID, "seagrid");
+        groovyMap.add(Script.GATEWAY_USER_NAME, "John");
+        groovyMap.add(Script.APPLICATION_NAME, "gaussian");
+        String value = GFacUtils.parseCommands(command, groovyMap);
+        Assert.assertNotNull(value);
+        Assert.assertEquals("mkdir -p /my/scratch/seagrid/John/gaussian", value);
+    }
+
+    @Test
+    public void parserCommandTestWithEscapeChar() throws Exception {
+        String command = "abq_job=\\${baseinp%.*}";
+        GroovyMap groovyMap = new GroovyMap();
+        String value = GFacUtils.parseCommands(command, groovyMap);
+        Assert.assertNotNull(value);
+        Assert.assertEquals("abq_job=${baseinp%.*}", value);
+    }
 }

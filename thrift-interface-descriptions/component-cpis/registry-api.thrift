@@ -24,6 +24,7 @@
 */
 
 include "../data-models/airavata_data_models.thrift"
+include "../data-models/user-tenant-group-models/user_profile_model.thrift"
 include "../data-models/experiment-catalog-models/status_models.thrift"
 include "../data-models/experiment-catalog-models/job_model.thrift"
 include "../data-models/experiment-catalog-models/experiment_model.thrift"
@@ -35,9 +36,11 @@ include "../data-models/app-catalog-models/application_interface_model.thrift"
 include "../data-models/resource-catalog-models/compute_resource_model.thrift"
 include "../data-models/resource-catalog-models/storage_resource_model.thrift"
 include "../data-models/resource-catalog-models/gateway_resource_profile_model.thrift"
+include "../data-models/resource-catalog-models/user_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/data_movement_models.thrift"
 include "../data-models/workflow-models/workflow_data_model.thrift"
 include "../data-models/replica-catalog-models/replica_catalog_models.thrift"
+include "../airavata-apis/airavata_errors.thrift"
 
 include "registry_api_errors.thrift"
 
@@ -77,7 +80,7 @@ service RegistryService {
        *
        **/
       string addGateway(1: required workspace_model.Gateway gateway)
-             throws (1: registry_api_errors.RegistryServiceException rse)
+             throws (1: registry_api_errors.RegistryServiceException rse, 2: airavata_errors.DuplicateEntryException dee)
 
 
       /**
@@ -209,7 +212,8 @@ service RegistryService {
          **/
         void updateProject (1: required string projectId,
                             2: required workspace_model.Project updatedProject)
-            throws (1: registry_api_errors.RegistryServiceException rse)
+            throws (1: registry_api_errors.RegistryServiceException rse,
+                    2: airavata_errors.ProjectNotFoundException pnfe)
 
          /**
          *
@@ -224,7 +228,8 @@ service RegistryService {
          *
          **/
         workspace_model.Project getProject (1: required string projectId)
-              throws (1: registry_api_errors.RegistryServiceException rse)
+              throws (1: registry_api_errors.RegistryServiceException rse,
+                      2: airavata_errors.ProjectNotFoundException pnfe)
 
          /**
          *
@@ -241,7 +246,8 @@ service RegistryService {
          *
          **/
         bool deleteProject (1: required string projectId)
-                throws (1: registry_api_errors.RegistryServiceException rse)
+                throws (1: registry_api_errors.RegistryServiceException rse,
+                        2: airavata_errors.ProjectNotFoundException pnfe)
 
          /**
          *
@@ -347,10 +353,22 @@ service RegistryService {
              * @param toTime
              *       Ending data time.
              *
+             * @param userName
+             *       Gateway username substring with which to further filter statistics.
+             *
+             * @param applicationName
+             *       Application id substring with which to further filter statistics.
+             *
+             * @param resourceHostName
+             *       Hostname id substring with which to further filter statistics.
+             *
              **/
             experiment_model.ExperimentStatistics getExperimentStatistics(1: required string gatewayId,
                                     2: required i64 fromTime,
-                                    3: required i64 toTime)
+                                    3: required i64 toTime,
+                                    4: string userName,
+                                    5: string applicationName,
+                                    6: string resourceHostName)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 
 
@@ -372,7 +390,8 @@ service RegistryService {
           list<experiment_model.ExperimentModel> getExperimentsInProject(1: required string projectId,
                           2: required i32 limit,
                           3: required i32 offset)
-                  throws (1: registry_api_errors.RegistryServiceException rse)
+                  throws (1: registry_api_errors.RegistryServiceException rse,
+                          2: airavata_errors.ProjectNotFoundException pnfe)
 
            /**
            *
@@ -496,7 +515,8 @@ service RegistryService {
            *
          **/
           experiment_model.ExperimentModel getExperiment(1: required string airavataExperimentId)
-            throws (1: registry_api_errors.RegistryServiceException rse)
+            throws (1: registry_api_errors.RegistryServiceException rse,
+                    2: airavata_errors.ExperimentNotFoundException enf)
 
 
           /**
@@ -537,7 +557,8 @@ service RegistryService {
            *
           */
           experiment_model.ExperimentModel getDetailedExperimentTree(1: required string airavataExperimentId)
-              throws (1: registry_api_errors.RegistryServiceException rse)
+              throws (1: registry_api_errors.RegistryServiceException rse,
+                      2: airavata_errors.ExperimentNotFoundException enf)
 
 
           /**
@@ -582,7 +603,8 @@ service RegistryService {
           */
           void updateExperiment(1: required string airavataExperimentId,
                                 2: required experiment_model.ExperimentModel experiment)
-            throws (1: registry_api_errors.RegistryServiceException rse)
+            throws (1: registry_api_errors.RegistryServiceException rse,
+                    2: airavata_errors.ExperimentNotFoundException enf)
 
           void updateExperimentConfiguration(1: required string airavataExperimentId,
                                              2: required experiment_model.UserConfigurationDataModel userConfiguration)
@@ -609,7 +631,8 @@ service RegistryService {
            *
            **/
             status_models.ExperimentStatus getExperimentStatus(1: required string airavataExperimentId)
-               throws (1: registry_api_errors.RegistryServiceException rse)
+               throws (1: registry_api_errors.RegistryServiceException rse,
+                       2: airavata_errors.ExperimentNotFoundException enf)
 
            /**
            *
@@ -626,7 +649,8 @@ service RegistryService {
            *
            **/
            list<application_io_models.OutputDataObjectType> getExperimentOutputs (1: required string airavataExperimentId)
-               throws (1: registry_api_errors.RegistryServiceException rse)
+               throws (1: registry_api_errors.RegistryServiceException rse,
+                       2: airavata_errors.ExperimentNotFoundException enf)
 
            /**
            *
@@ -643,7 +667,8 @@ service RegistryService {
            *
            **/
             list<application_io_models.OutputDataObjectType> getIntermediateOutputs (1: required string airavataExperimentId)
-                 throws (1: registry_api_errors.RegistryServiceException rse)
+                 throws (1: registry_api_errors.RegistryServiceException rse,
+                         2: airavata_errors.ExperimentNotFoundException enf)
 
            /**
            *
@@ -660,7 +685,8 @@ service RegistryService {
            *
            **/
            map<string, status_models.JobStatus> getJobStatuses(1: required string airavataExperimentId)
-                       throws (1: registry_api_errors.RegistryServiceException rse)
+                       throws (1: registry_api_errors.RegistryServiceException rse,
+                               2: airavata_errors.ExperimentNotFoundException enf)
 
            /**
            *
@@ -677,7 +703,8 @@ service RegistryService {
            *
            **/
            list<job_model.JobModel> getJobDetails(1: required string airavataExperimentId)
-                         throws (1: registry_api_errors.RegistryServiceException rse)
+                         throws (1: registry_api_errors.RegistryServiceException rse,
+                                 2: airavata_errors.ExperimentNotFoundException enf)
 
 
           /*
@@ -2023,6 +2050,342 @@ service RegistryService {
                 *
                */
 
+
+               /*
+               * User Resource Profile
+               *
+               */
+
+               /**
+                * Register a User Resource Profile.
+                *
+                * @param userResourceProfile
+                *    User Resource Profile Object.
+                *    The userId should be obtained from Airavata user profile and passed to register a corresponding
+                *      resource profile.
+                *
+                * @return status
+                *   Returns a success/failure of the update.
+                *
+               */
+               string registerUserResourceProfile(1: required user_resource_profile_model.UserResourceProfile userResourceProfile)
+                     throws (1: registry_api_errors.RegistryServiceException rse)
+
+               /**
+                * Fetch the given User Resource Resource Profile.
+                *
+                * @param userId
+                *   The identifier for the requested User Resource resource.
+                *
+                * @param gatewayID
+                *   The identifier to link gateway for the requested User Resource resource.
+                *
+                * @return userResourceProfile or null if not found
+                *    User Resource Profile Object.
+                *
+               */
+
+               user_resource_profile_model.UserResourceProfile getUserResourceProfile(1: required string userId, 2: required string gatewayID)
+                     throws (1: registry_api_errors.RegistryServiceException rse)
+
+               /**
+                * Update a User Resource Profile.
+                *
+                * @param userId
+                *   The identifier for the requested user resource to be updated.
+                *
+                * @param gatewayID
+                *   The identifier to link gateway for the requested User Resource resource.
+                *
+                * @param userResourceProfile
+                *    User Resource Profile Object.
+                *
+                * @return status
+                *   Returns a success/failure of the update.
+                *
+               */
+
+               bool updateUserResourceProfile(1: required string userId, 2: required string gatewayID,
+                         3: required user_resource_profile_model.UserResourceProfile userResourceProfile)
+                     throws (1: registry_api_errors.RegistryServiceException rse)
+
+               /**
+                * Delete the given User Resource Profile.
+                *
+                * @param userId
+                *   The identifier for the requested user resource to be deleted.
+                *
+                * @param gatewayID
+                *   The identifier to link gateway for the requested User Resource resource.
+                *
+                * @return status
+                *   Returns a success/failure of the deletion.
+                *
+               */
+
+               bool deleteUserResourceProfile(1: required string userId, 2: required string gatewayID)
+                         throws (1: registry_api_errors.RegistryServiceException rse)
+
+               /**
+                * Adds a new User Profile.
+                *
+                * @param userProfile
+                *   The user profile to add.
+                *
+                * @return userId
+                *   Returns the userId of the user profile added.
+                *
+               */
+               string addUser(1: required user_profile_model.UserProfile userProfile)
+                        throws (1: registry_api_errors.RegistryServiceException rse, 2: airavata_errors.DuplicateEntryException dee)
+
+               /**
+                * Add a Compute Resource Preference to a registered user resource profile.
+                *
+                * @param userId
+                *   The identifier for the user resource profile to be added.
+                *
+                * @param gatewayID
+                *   The identifier to link gateway for the requested User Resource resource.
+                *
+                * @param computeResourceId
+                *   Preferences related to a particular compute resource
+                *
+                * @param computeResourcePreference
+                *   The ComputeResourcePreference object to be added to the resource profile.
+                *
+                * @return status
+                *   Returns a success/failure of the addition. If a profile already exists, this operation will fail.
+                *    Instead an update should be used.
+                *
+               */
+               bool addUserComputeResourcePreference(1: required string userId,
+                         2: required string gatewayID,
+                         3: required string computeResourceId,
+                         4: required user_resource_profile_model.UserComputeResourcePreference userComputeResourcePreference)
+                 throws (1: registry_api_errors.RegistryServiceException rse)
+
+               /**
+                * Add a Storage Resource Preference to a registered user profile.
+                *
+                * @param userId
+                *   The identifier of the userId profile to be added.
+                * @param gatewayID
+                *   The identifier to link gateway for the requested User Resource resource.
+                *
+                * @param userStorageResourceId
+                *   Preferences related to a particular compute resource
+                *
+                * @param userStoragePreference
+                *   The ComputeResourcePreference object to be added to the resource profile.
+                *
+                * @return status
+                *   Returns a success/failure of the addition. If a profile already exists, this operation will fail.
+                *    Instead an update should be used.
+                *
+               */
+               bool addUserStoragePreference(1: required string userId,
+                           2: required string gatewayID,
+                           3: required string userStorageResourceId,
+                           4: required user_resource_profile_model.UserStoragePreference userStoragePreference)
+                     throws (1: registry_api_errors.RegistryServiceException rse)
+               /**
+                *
+                * Fetch a Compute Resource Preference of a registered user resource profile.
+                *
+                * @param userId
+                *   The identifier for the user resource profile to be requested
+                *
+                * @param gatewayID
+                *   The identifier to link gateway for the requested User Resource resource.
+                *
+                * @param userComputeResourceId
+                *   Preferences related to a particular compute resource
+                *
+                * @return userComputeResourcePreference
+                *   Returns the ComputeResourcePreference object.
+                *
+               */
+               user_resource_profile_model.UserComputeResourcePreference getUserComputeResourcePreference(1: required string userId,
+                         2: required string gatewayID,
+                         3: required string userComputeResourceId)
+                 throws (1: registry_api_errors.RegistryServiceException rse)
+
+               /**
+                *
+                * Fetch a Storage Resource Preference of a registered user profile.
+                *
+                * @param userId
+                *   The identifier of the user resource profile to request to fetch the particular storage resource preference.
+                *
+                * @param gatewayID
+                *   The identifier to link gateway for the requested User Resource resource.
+                *
+                * @param userStorageResourceId
+                *   Identifier of the Stprage Preference required to be fetched.
+                *
+                * @return UserStoragePreference
+                *   Returns the StoragePreference object.
+                *
+               */
+               user_resource_profile_model.UserStoragePreference getUserStoragePreference(1: required string userId,
+                           2: required string gatewayID,
+                           3: required string userStorageResourceId)
+                     throws (1: registry_api_errors.RegistryServiceException rse)
+
+                            /**
+                              *
+                              * Fetch all User Compute Resource Preferences of a registered user resource profile.
+                              *
+                              * @param userId
+                              *
+                              * @param gatewayID
+                              *   The identifier for the gateway profile to be requested
+                              *
+                              * @return computeResourcePreference
+                              *   Returns the ComputeResourcePreference object.
+                              *
+                             */
+                             list<user_resource_profile_model.UserComputeResourcePreference>
+                                       getAllUserComputeResourcePreferences(1: required string userId,
+                                       2: required string gatewayID)
+                               throws (1: registry_api_errors.RegistryServiceException rse)
+
+                             /**
+                             * Fetch all User Storage Resource Preferences of a registered user resource profile.
+                             *
+                             * @param gatewayID
+                             *   The identifier for the gateway profile to be requested
+                             *
+                             * @return StoragePreference
+                             *   Returns the StoragePreference object.
+                             *
+                            */
+
+                             list<user_resource_profile_model.UserStoragePreference>
+                                         getAllUserStoragePreferences(1: required string userId,
+                                         2: required string gatewayID)
+                                   throws (1: registry_api_errors.RegistryServiceException rse)
+
+
+               /**
+               *
+               * Fetch all user resource Profiles registered
+               *
+               * @return userResourceProfile
+               *   Returns all the UserResourcePrifle list object.
+               *
+               **/
+               list<user_resource_profile_model.UserResourceProfile>
+                           getAllUserResourceProfiles()
+                     throws (1: registry_api_errors.RegistryServiceException rse)
+
+               /**
+                * Update a Compute Resource Preference to a registered user resource profile.
+                *
+                * @param userId
+                *   The identifier for the user resource profile to be updated.
+                *
+                * @param gatewayID
+                *   The identifier to link gateway for the requested User Resource resource.
+                *
+                * @param userComputeResourceId
+                *   Preferences related to a particular compute resource
+                *
+                * @param userComputeResourcePreference
+                *   The ComputeResourcePreference object to be updated to the resource profile.
+                *
+                * @return status
+                *   Returns a success/failure of the updation.
+                *
+               */
+               bool updateUserComputeResourcePreference(1: required string userId,
+                         2: required string gatewayID,
+                         3: required string userComputeResourceId,
+                         4: required user_resource_profile_model.UserComputeResourcePreference userComputeResourcePreference)
+                 throws (1: registry_api_errors.RegistryServiceException rse)
+
+                 /**
+                  * Update a Storage Resource Preference of a registered user profile.
+                  *
+                  * @param userId
+                  *   The identifier of the user resource profile to be updated.
+                  *
+                  * @param gatewayID
+                  *   The identifier to link gateway for the requested User Resource resource.
+                  *
+                  * @param userStorageId
+                  *   The Storage resource identifier of the one that you want to update
+                  *
+                  * @param userStoragePreference
+                  *   The storagePreference object to be updated to the resource profile.
+                  *
+                  * @return status
+                  *   Returns a success/failure of the updation.
+                  *
+                 */
+
+               bool updateUserStoragePreference(1: required string userId,
+                           2: required string gatewayID,
+                           3: required string userStorageId,
+                           4: required user_resource_profile_model.UserStoragePreference userStoragePreference)
+                     throws (1: registry_api_errors.RegistryServiceException rse)
+
+               /**
+                * Delete the Compute Resource Preference of a registered user resource profile.
+                *
+                * @param userId
+                *   The identifier for the user resource profile to be deleted.
+                *
+                * @param gatewayID
+                *   The identifier to link gateway for the requested User Resource resource.
+                *
+                * @param userComputeResourceId
+                *   Preferences related to a particular compute resource
+                *
+                * @return status
+                *   Returns a success/failure of the deletion.
+                *
+               */
+               bool deleteUserComputeResourcePreference(1: required string userId,
+                         2: required string gatewayID,
+                         3: required string userComputeResourceId)
+                 throws (1: registry_api_errors.RegistryServiceException rse)
+
+
+               /**
+                * Delete the Storage Resource Preference of a registered user resource profile.
+                *
+                * @param userId
+                *   The identifier of the user resource profile to be deleted.
+                *
+                * @param gatewayID
+                *   The identifier to link gateway for the requested User Resource resource.
+                *
+                * @param userStorageId
+                *   ID of the storage preference you want to delete.
+                *
+                * @return status
+                *   Returns a success/failure of the deletion.
+                *
+               */
+
+               bool deleteUserStoragePreference(1: required string userId,
+                           2: required string gatewayID,
+                           3: required string userStorageId)
+                     throws (1: registry_api_errors.RegistryServiceException rse)
+
+               /**
+                * Get queue statuses of all compute resources
+               **/
+               list<status_models.QueueStatusModel> getLatestQueueStatuses()
+                     throws (1: registry_api_errors.RegistryServiceException rse)
+
+               void registerQueueStatuses(1: required list<status_models.QueueStatusModel> queueStatuses)
+                                    throws (1: registry_api_errors.RegistryServiceException rse)
+
+
+
                list<string> getAllWorkflows(1: required string gatewayId)
                        throws (1: registry_api_errors.RegistryServiceException rse)
 
@@ -2070,5 +2433,9 @@ service RegistryService {
 
               list<replica_catalog_models.DataProductModel> getChildDataProducts(1: required  string productUri)
                             throws (1: registry_api_errors.RegistryServiceException rse)
+
+              list<replica_catalog_models.DataProductModel> searchDataProductsByName(1: required  string gatewayId,
+               2: required string userId, 3: required string productName, 4: required i32 limit, 5: required i32 offset)
+                                          throws (1: registry_api_errors.RegistryServiceException rse)
 
 }

@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.registry.core.experiment.catalog.impl;
 
 import org.apache.airavata.model.workspace.Notification;
@@ -80,7 +78,7 @@ public class NotificationRegistry {
                 notifications.add(ThriftDataModelConversion.getNotification((NotificationResource) e));
             }
         }
-        Collections.sort(notifications, (o1, o2) -> (int) (o2.getCreationTime() - o1.getCreationTime()));
+        Collections.sort(notifications, (o1, o2) -> (o2.getCreationTime() - o1.getCreationTime()) > 0 ? 1 : -1);
         return notifications;
     }
 

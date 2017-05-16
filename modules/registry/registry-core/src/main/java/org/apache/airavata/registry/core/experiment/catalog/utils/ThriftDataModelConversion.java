@@ -1,3 +1,22 @@
+/**
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 /*
 *
 * Licensed to the Apache Software Foundation (ASF) under one
@@ -185,6 +204,7 @@ public class ThriftDataModelConversion {
                 dataObjectType.setIsRequired(inputResource.getIsRequired());
                 dataObjectType.setRequiredToAddedToCommandLine(inputResource.getRequiredToAddedToCmd());
                 dataObjectType.setDataStaged(inputResource.getDataStaged());
+                dataObjectType.setIsReadOnly(inputResource.isReadOnly());
                 dataObjectType.setStorageResourceId(inputResource.getStorageResourceId());
                 return dataObjectType;
             }else if (object instanceof ProcessInputResource){
@@ -201,6 +221,7 @@ public class ThriftDataModelConversion {
                 dataObjectType.setRequiredToAddedToCommandLine(inputResource.getRequiredToAddedToCmd());
                 dataObjectType.setDataStaged(inputResource.getDataStaged());
                 dataObjectType.setStorageResourceId(inputResource.getStorageResourceId());
+                dataObjectType.setIsReadOnly(inputResource.isReadOnly());
                 return dataObjectType;
             }else {
                 return null;
@@ -359,7 +380,7 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static ProcessModel getProcesModel (ProcessResource processResource) throws RegistryException {
+    public static ProcessModel getProcessModel(ProcessResource processResource) throws RegistryException {
         if (processResource != null){
             ProcessModel processModel = new ProcessModel();
             processModel.setProcessId(processResource.getProcessId());
@@ -374,6 +395,7 @@ public class ThriftDataModelConversion {
             processModel.setComputeResourceId(processResource.getComputeResourceId());
             processModel.setEnableEmailNotification(processResource.getEnableEmailNotification());
             processModel.setExperimentDataDir(processResource.getExperimentDataDir());
+            processModel.setUseUserCRPref(processResource.isUseUserCRPref());
             if (processModel.isEnableEmailNotification()){
                 String notificationEmails = processResource.getEmailAddresses();
                 processModel.setEmailAddresses(getEmailAddresses(notificationEmails.split(",")));
@@ -534,6 +556,7 @@ public class ThriftDataModelConversion {
             data.setGenerateCert(resource.getGenerateCert());
             data.setStorageId(resource.getStorageId());
             data.setExperimentDataDir(resource.getExperimentDataDir());
+            data.setUseUserCRPref(resource.getUseUserCRPref());
 
             ComputationalResourceSchedulingModel resourceSchedulingModel = new ComputationalResourceSchedulingModel();
             resourceSchedulingModel.setResourceHostId(resource.getResourceHostId());

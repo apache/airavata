@@ -68,6 +68,7 @@
 /airavata/createExperiment|
 /airavata/deleteExperiment|
 /airavata/getExperiment|
+/airavata/getExperimentByAdmin|
 /airavata/getDetailedExperimentTree|
 /airavata/updateExperiment|
 /airavata/updateExperimentConfiguration|
@@ -80,6 +81,7 @@
 /airavata/getJobStatuses|
 /airavata/getJobDetails|
 /airavata/cloneExperiment|
+/airavata/cloneExperimentByAdmin|
 /airavata/terminateExperiment|
 /airavata/getApplicationInterface|
 /airavata/getAllApplicationInterfaceNames|
@@ -100,7 +102,14 @@
 /airavata/getDataProduct|
 /airavata/registerReplicaLocation|
 /airavata/getParentDataProduct|
-/airavata/getChildDataProducts).)*$\r?\n?
+/airavata/getChildDataProducts|
+/airavata/addUserProfile|
+/airavata/updateUserProfile|
+/airavata/getUserProfileById|
+/airavata/deleteUserProfile|
+/airavata/getAllUserProfilesInGateway|
+/airavata/getUserProfileByName|
+/airavata/doesUserProfileExist).)*$\r?\n?
 </AttributeValue>
                         <AttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"
                                              Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action"
@@ -172,7 +181,14 @@
 /airavata/getDataProduct|
 /airavata/registerReplicaLocation|
 /airavata/getParentDataProduct|
-/airavata/getChildDataProducts).)*$\r?\n?
+/airavata/getChildDataProducts|
+/airavata/addUserProfile|
+/airavata/updateUserProfile|
+/airavata/getUserProfileById|
+/airavata/deleteUserProfile|
+/airavata/getAllUserProfilesInGateway|
+/airavata/getUserProfileByName|
+/airavata/doesUserProfileExist).)*$\r?\n?
 </AttributeValue>
                         <AttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"
                                              Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action"

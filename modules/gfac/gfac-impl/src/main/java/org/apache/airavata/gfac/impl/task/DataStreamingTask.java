@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
-
+ */
 package org.apache.airavata.gfac.impl.task;
 
 import org.apache.airavata.common.utils.ThriftUtils;
@@ -76,7 +74,8 @@ public class DataStreamingTask implements Task {
                 if (processOutput != null) {
                     if (processOutput.isOutputStreaming()) {
                         // stream output periodically
-                        ComputationalResourceSchedulingModel resourceSchedule = taskContext.getParentProcessContext().getProcessModel().getProcessResourceSchedule();
+                        ComputationalResourceSchedulingModel resourceSchedule = taskContext.getParentProcessContext()
+                                .getProcessModel().getProcessResourceSchedule();
                         int wallTimeLimit = resourceSchedule.getWallTimeLimit();
                         if (wallTimeLimit > 10) {
                             int period = wallTimeLimit / 10;

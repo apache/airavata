@@ -1,19 +1,23 @@
 #! /usr/bin/env bash
-
-# Licensed to the Apache Software Foundation (ASF) under one or more
-# contributor license agreements.  See the NOTICE file distributed with
-# this work for additional information regarding copyright ownership.
-# The ASF licenses this file to You under the Apache License, Version 2.0
-# (the "License"); you may not use this file except in compliance with
-# the License.  You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
 
 # This script will generate/regenerate the thrift stubs for Airavata Components: Credential Store, Orchestrator, GFac.
 
@@ -73,8 +77,8 @@ GFAC_SRC_DIR='../../modules/gfac/gfac-client/src/main/java/'
 REGISTRY_THRIFT_FILE='registry-api.thrift'
 REGISTRY_SRC_DIR='../../modules/registry/registry-server/registry-api-stubs/src/main/java/'
 
-REGISTRY_USER_PROFILE_CPI_THRIFT_FILE='user-profile-crud-cpi.thrift'
-REGISTRY_USER_PROFILE_SRC_DIR='../../modules/user-profile/user-profile-stubs/src/main/java'
+USER_PROFILE_THRIFT_FILE='user-profile-cpi.thrift'
+USER_PROFILE_SRC_DIR='../../modules/user-profile/user-profile-stubs/src/main/java/'
 
 # Initialize the thrift arguments.
 #  Since most of the Airavata API and Data Models have includes, use recursive option by default.
@@ -155,7 +159,7 @@ generate_thrift_stubs() {
     rm -rf ${JAVA_GEN_DIR}
 
     # Using thrify Java generator, generate the java classes based on components CPI.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java ${COMPONENT_THRIFT_FILE} || fail unable to generate java thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:generated_annotations=undated ${COMPONENT_THRIFT_FILE} || fail unable to generate java thrift classes
 
     # Remove generated model classes, airavata api thrift file will generate those.
     echo "Remove generated model classes ${JAVA_GEN_DIR}/org/airavata/apache/model"
@@ -174,12 +178,12 @@ generate_thrift_stubs() {
 for arg in "$@"
 do
     case "$arg" in
-    all)    echo "Generate all (credential store, orchestrator, gfac) Stubs"
+    all)    echo "Generate all (credential store, orchestrator, gfac, user_profile) Stubs"
             generate_thrift_stubs ${CS_THRIFT_FILE} ${CS_SRC_DIR}
             generate_thrift_stubs ${ORCHESTRATOR_THRIFT_FILE} ${ORCHESTRATOR_SRC_DIR}
             generate_thrift_stubs ${GFAC_THRIFT_FILE} ${GFAC_SRC_DIR}
             generate_thrift_stubs ${REGISTRY_THRIFT_FILE} ${REGISTRY_SRC_DIR}
-            generate_thrift_stubs ${REGISTRY_USER_PROFILE_CPI_THRIFT_FILE} ${REGISTRY_USER_PROFILE_SRC_DIR}
+            generate_thrift_stubs ${USER_PROFILE_THRIFT_FILE} ${USER_PROFILE_SRC_DIR}
             ;;
     cs)   echo "Generating Credential Store Stubs"
             generate_thrift_stubs ${CS_THRIFT_FILE} ${CS_SRC_DIR}
@@ -190,11 +194,11 @@ do
     gfac)    echo "Generate GFac Stubs"
             generate_thrift_stubs ${GFAC_THRIFT_FILE} ${GFAC_SRC_DIR}
             ;;
-    uprofcpi)    echo "Generate Registry User Profile CPI"
-                generate_thrift_stubs ${REGISTRY_USER_PROFILE_CPI_THRIFT_FILE} ${REGISTRY_USER_PROFILE_SRC_DIR}
-            ;;
     registry)    echo "Generate Registry Stubs"
             generate_thrift_stubs ${REGISTRY_THRIFT_FILE} ${REGISTRY_SRC_DIR}
+            ;;
+    up)    echo "Generate User profile Stubs"
+            generate_thrift_stubs ${USER_PROFILE_THRIFT_FILE} ${USER_PROFILE_SRC_DIR}
             ;;
     *)      echo "Invalid or unsupported option"
     	    show_usage

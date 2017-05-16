@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.messaging.core;
 
 import com.rabbitmq.client.Channel;
@@ -26,10 +24,8 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Consumer;
 import org.apache.airavata.common.exception.AiravataException;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * This is the basic consumer

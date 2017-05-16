@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,8 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.registry.api.service.util;
 
 import org.slf4j.Logger;
@@ -29,6 +28,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.*;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This class creates the database tables required for airavata with default configuration this
@@ -264,11 +265,9 @@ public class DatabaseCreator {
             if(is == null) {
                 logger.info("Script file not found at " + dbscriptName + ". Uses default database script file");
                 DatabaseType databaseType = DatabaseCreator.getDatabaseType(conn);
-                if(databaseType.equals(DatabaseType.derby)){
-                    is = DatabaseCreator.class.getClassLoader().getResourceAsStream("experiment-derby.sql");
-                }else if(databaseType.equals(DatabaseType.mysql)){
-                    is = DatabaseCreator.class.getClassLoader().getResourceAsStream("experiment-mysql.sql");
-                }
+                is = DatabaseCreator.class.getClassLoader().getResourceAsStream(
+                        getDBScriptFileName(databaseType, dbscriptName)
+                );
             }
             reader = new BufferedReader(new InputStreamReader(is));
             String line;
@@ -350,4 +349,30 @@ public class DatabaseCreator {
         }
         return true;
     }
+
+    /**
+     * Method will accept a filepath containing a database script (eg: /user/database_scripts/expcatalog.sql)
+     *  and return only the filename of the database script (eg: expcatalog.sql).
+     * @param databaseType
+     * @param scriptFilePath
+     * @return
+     */
+    private static String getDBScriptFileName(DatabaseType databaseType, String scriptFilePath) {
+        // pattern: {dir_name}/{scriptfile_name}-{dbtype}.sql".
+        // Eg: database_scripts/expcatalog-derby.sql
+        final String scriptFilePattern = "(\\w*)(-" + databaseType.toString() + ".sql)";
+        final Pattern pattern = Pattern.compile(scriptFilePattern);
+        final Matcher matcher = pattern.matcher(scriptFilePath);
+        String dbScriptFileName = null;
+        // find a match
+        if (matcher.find()) {
+            dbScriptFileName = matcher.group();
+        }
+        return dbScriptFileName;
+    }
+
+//    public static void main(String[] args) throws Exception {
+//        System.out.println(DatabaseCreator.getDBScriptFileName(DatabaseType.derby, "db/db/expcatalog-derby.sql"));
+//        System.out.println(DatabaseCreator.getDBScriptFileName(DatabaseType.mysql, "/expcatalog-mysql.sql"));
+//    }
 }

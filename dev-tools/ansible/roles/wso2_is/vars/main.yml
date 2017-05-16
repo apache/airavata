@@ -1,0 +1,38 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+#Variables associated with this role
+# Oracle Java 8
+java_dir_source: "/usr/local/src"
+
+java_version: 8
+java_version_update: 91
+java_version_build: '14'
+java_version_string: "1.{{ java_version }}.0_{{ java_version_update }}"
+java_home: "/usr/java/jdk1.{{ java_version }}.0_{{ java_version_update }}"
+
+java_rpm_filename: "jdk-{{ java_version }}u{{ java_version_update }}-linux-x64.rpm"
+java_rpm_url: "http://download.oracle.com/otn-pub/java/jdk/{{ java_version }}u{{ java_version_update }}-b{{ java_version_build }}/{{ java_rpm_filename }}"
+
+wso2_is_rul: http://wso2.com/products/identity-server/#download
+wso2_is_dist: wso2is-5.1.0.zip
+wso2_is_dir: wso2is-5.1.0
+...

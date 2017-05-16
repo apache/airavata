@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.registry.core.experiment.catalog.resources;
 
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
@@ -54,6 +52,7 @@ public class UserConfigurationDataResource extends AbstractExpCatResource {
     private String overrideAllocationProjectNumber;
     private String storageId;
     private String experimentDataDir;
+    private boolean useUserCRPref;
 
     public String getExperimentId() {
         return experimentId;
@@ -215,6 +214,14 @@ public class UserConfigurationDataResource extends AbstractExpCatResource {
         this.experimentDataDir = experimentDataDir;
     }
 
+    public boolean getUseUserCRPref() {
+        return useUserCRPref;
+    }
+
+    public void setUseUserCRPref(boolean useUserCRPref) {
+        this.useUserCRPref = useUserCRPref;
+    }
+
     public ExperimentCatResource create(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for process resource scheduling data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
@@ -282,6 +289,7 @@ public class UserConfigurationDataResource extends AbstractExpCatResource {
             userConfigurationData.setTotalPhysicalMemory(totalPhysicalMemory);
             userConfigurationData.setStorageId(storageId);
             userConfigurationData.setExperimentDataDir(experimentDataDir);
+            userConfigurationData.setUseUserCRPref(useUserCRPref);
             if (existingConf == null) {
                 em.persist(userConfigurationData);
             } else {

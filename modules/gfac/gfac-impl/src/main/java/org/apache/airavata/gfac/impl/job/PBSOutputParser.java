@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,14 +16,12 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.gfac.impl.job;
 
-import org.apache.airavata.gfac.core.JobDescriptor;
-import org.apache.airavata.gfac.core.cluster.OutputParser;
+import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.SSHApiException;
-import org.apache.airavata.model.status.JobState;
+import org.apache.airavata.gfac.core.cluster.OutputParser;
 import org.apache.airavata.model.status.JobStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,92 +34,6 @@ import java.util.regex.Pattern;
 
 public class PBSOutputParser implements OutputParser {
     private static final Logger log = LoggerFactory.getLogger(PBSOutputParser.class);
-
-    public void parseSingleJob(JobDescriptor jobDescriptor, String rawOutput) {
-        log.debug(rawOutput);
-        String[] info = rawOutput.split("\n");
-        String[] line;
-        for (int i = 0; i < info.length; i++) {
-            if (info[i].contains("=")) {
-                line = info[i].split("=", 2);
-            } else {
-                line = info[i].split(":", 2);
-            }
-            if (line.length >= 2) {
-                String header = line[0].trim();
-                log.debug("Header = " + header);
-                String value = line[1].trim();
-                log.debug("value = " + value);
-
-                if (header.equals("Variable_List")) {
-                    while (info[i + 1].startsWith("\t")) {
-                        value += info[i + 1];
-                        i++;
-                    }
-                    value = value.replaceAll("\t", "");
-                    jobDescriptor.setVariableList(value);
-                } else if ("Job Id".equals(header)) {
-                    jobDescriptor.setJobID(value);
-                } else if ("Job_Name".equals(header)) {
-                    jobDescriptor.setJobName(value);
-                } else if ("Account_Name".equals(header)) {
-                    jobDescriptor.setAcountString(value);
-                } else if ("job_state".equals(header)) {
-                    jobDescriptor.setStatus(value);
-                } else if ("Job_Owner".equals(header)) {
-                    jobDescriptor.setOwner(value);
-                } else if ("resources_used.cput".equals(header)) {
-                    jobDescriptor.setUsedCPUTime(value);
-                } else if ("resources_used.mem".equals(header)) {
-                    jobDescriptor.setUsedMemory(value);
-                } else if ("resources_used.walltime".equals(header)) {
-                    jobDescriptor.setEllapsedTime(value);
-                } else if ("job_state".equals(header)) {
-                    jobDescriptor.setStatus(value);
-                } else if ("queue".equals(header))
-                    jobDescriptor.setQueueName(value);
-                else if ("ctime".equals(header)) {
-                    jobDescriptor.setCTime(value);
-                } else if ("qtime".equals(header)) {
-                    jobDescriptor.setQTime(value);
-                } else if ("mtime".equals(header)) {
-                    jobDescriptor.setMTime(value);
-                } else if ("start_time".equals(header)) {
-                    jobDescriptor.setSTime(value);
-                } else if ("comp_time".equals(header)) {
-                    jobDescriptor.setCompTime(value);
-                } else if ("exec_host".equals(header)) {
-                    jobDescriptor.setExecuteNode(value);
-                } else if ("Output_Path".equals(header)) {
-                    if (info[i + 1].contains("=") || info[i + 1].contains(":"))
-                        jobDescriptor.setStandardOutFile(value);
-                    else {
-                        jobDescriptor.setStandardOutFile(value + info[i + 1].trim());
-                        i++;
-                    }
-                } else if ("Error_Path".equals(header)) {
-                    if (info[i + 1].contains("=") || info[i + 1].contains(":"))
-                        jobDescriptor.setStandardErrorFile(value);
-                    else {
-                        String st = info[i + 1].trim();
-                        jobDescriptor.setStandardErrorFile(value + st);
-                        i++;
-                    }
-
-                } else if ("submit_args".equals(header)) {
-                    while (i + 1 < info.length) {
-                        if (info[i + 1].startsWith("\t")) {
-                            value += info[i + 1];
-                            i++;
-                        } else
-                            break;
-                    }
-                    value = value.replaceAll("\t", "");
-                    jobDescriptor.setSubmitArgs(value);
-                }
-            }
-        }
-    }
 
     public String parseJobSubmission(String rawOutput) {
         log.debug(rawOutput);
@@ -206,7 +118,7 @@ public class PBSOutputParser implements OutputParser {
     }
 
     @Override
-    public String parseJobId(String jobName, String rawOutput) throws SSHApiException {
+    public String parseJobId(String jobName, String rawOutput) throws GFacException {
         /* output will look like
         Job Id: 2080802.gordon-fe2.local
             Job_Name = A312402627

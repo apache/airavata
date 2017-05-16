@@ -32,8 +32,10 @@ jobSubmitters:
     taskClass: org.apache.airavata.gfac.impl.task.ForkJobSubmissionTask
 
   - submissionProtocol: LOCAL
-    taskClass: org.apache.airavata.gfac.impl.task.DefaultJobSubmissionTask
+    taskClass: org.apache.airavata.gfac.impl.task.LocalJobSubmissionTask
 
+  - submissionProtocol: CLOUD
+    taskClass: org.apache.airavata.gfac.impl.task.AuroraJobSubmissionTask
 
 # Following job subbmitters are not yet implemented.
 
@@ -48,6 +50,8 @@ commonTasks:
 
 fileTransferTasks:
   - transferProtocol: SCP
+    taskClass: org.apache.airavata.gfac.impl.task.SCPDataStageTask
+  - transferProtocol: LOCAL
     taskClass: org.apache.airavata.gfac.impl.task.SCPDataStageTask
 
 # If your client doen't run the same instance where airavata server is running then you need to comment above
@@ -84,6 +88,7 @@ resources:
       - adm@trident.bigred2.uits.iu.edu # Bigred2
       - root <adm@trident.bigred2.uits.iu.edu> # Bigred2
       - root <adm@scyld.localdomain> # alamo
+      - gordon-fe2.local # Gordon
 
   - jobManagerType: SLURM
     commandOutputParser: org.apache.airavata.gfac.impl.job.SlurmOutputParser
@@ -108,3 +113,9 @@ resources:
 
   - jobManagerType: FORK
     commandOutputParser: org.apache.airavata.gfac.impl.job.ForkOutputParser
+
+  - jobManagerType: AIRAVATA_CUSTOM
+    commandOutputParser: org.apache.airavata.gfac.impl.job.AiravataCustomCommandOutputParser
+    emailParser: org.apache.airavata.gfac.monitor.email.parser.AiravataCustomMailParser
+    resourceEmailAddresses:
+      - gw56jobs@scigap.org

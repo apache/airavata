@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,11 +16,10 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
-
+ */
 package org.apache.airavata.testsuite.multitenantedairavata.utils;
 
+import org.apache.airavata.common.utils.ApplicationSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,13 +34,13 @@ public class PropertyReader {
     public PropertyReader() {
         try {
             loadProperties();
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Unable to read properties files", e);
         }
     }
 
     protected void loadProperties() throws IOException {
-        URL airavataURL = PropertyFileType.class.getClassLoader().getResource(TestFrameworkConstants.AIRAVATA_CLIENT_PROPERTIES);
+        URL airavataURL = ApplicationSettings.loadFile(TestFrameworkConstants.AIRAVATA_SERVER_PROPERTIES);
         if (airavataURL != null){
             airavataClientProperties.load(airavataURL.openStream());
         }
@@ -49,7 +48,7 @@ public class PropertyReader {
 
     public String readProperty (String propertyName, PropertyFileType type){
         switch (type){
-            case AIRAVATA_CLIENT:
+            case AIRAVATA_SERVER:
                 return airavataClientProperties.getProperty(propertyName);
         }
         return null;

@@ -1,0 +1,47 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+# Install Orcal Java
+- name: download oracle java 8 rpm
+  get_url: url="{{ java_rpm_url }}" dest="{{ java_dir_source }}" headers='Cookie:oraclelicense=accept-securebackup-cookie'
+  become: yes
+  tags:
+       - always
+
+- name: Install oracle java 8
+  yum: name="{{ java_dir_source }}/{{ java_rpm_filename }}" state=present
+  become: yes
+  tags:
+       - always
+
+- name: set Oracle Java {{ java_version_string }} as default
+  alternatives:
+    name="{{ item.exe }}"
+    link="/usr/bin/{{ item.exe }}"
+    path="{{ item.path }}/{{ item.exe }}"
+  with_items:
+    - { path: "{{ java_home }}/jre/bin", exe: 'java' }
+    - { path: "{{ java_home }}/jre/bin", exe: 'keytool' }
+    - { path: "{{ java_home }}/bin", exe: 'javac' }
+    - { path: "{{ java_home }}/bin", exe: 'javadoc' }
+  become: yes
+  tags:
+       - always

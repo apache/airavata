@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,8 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.registry.core.experiment.catalog;
 
 import org.apache.airavata.registry.core.experiment.catalog.model.*;
@@ -129,7 +128,7 @@ public class ExpCatResourceUtils {
         resource.save();
     }
 
-    public static boolean isUserExist (String username, String gatewayId) throws RegistryException{
+    public static boolean isUserExist (String username, String gatewayId) throws RegistryException {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -141,13 +140,13 @@ public class ExpCatResourceUtils {
             int size = q.getResultList().size();
             em.getTransaction().commit();
             em.close();
-            return size>0;
-        } catch (Exception e){
+            return size > 0;
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
-        }finally {
-            if (em != null && em.isOpen()){
-                if (em.getTransaction().isActive()){
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
                     em.getTransaction().rollback();
                 }
                 em.close();

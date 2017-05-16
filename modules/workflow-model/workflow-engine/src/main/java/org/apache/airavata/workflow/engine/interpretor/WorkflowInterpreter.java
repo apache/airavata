@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.workflow.engine.interpretor;
 
 import com.google.common.eventbus.Subscribe;
@@ -36,7 +34,6 @@ import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ProcessState;
-import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;

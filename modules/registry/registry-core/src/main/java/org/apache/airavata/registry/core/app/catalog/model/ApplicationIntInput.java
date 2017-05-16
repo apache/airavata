@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.registry.core.app.catalog.model;
 
 
@@ -55,6 +53,8 @@ public class ApplicationIntInput implements Serializable {
     private boolean requiredToCMD;
     @Column(name = "DATA_STAGED")
     private boolean dataStaged;
+    @Column(name = "IS_READ_ONLY")
+    private boolean isReadOnly;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "INTERFACE_ID")
@@ -162,5 +162,14 @@ public class ApplicationIntInput implements Serializable {
 
     public void setDataStaged(boolean dataStaged) {
         this.dataStaged = dataStaged;
+    }
+
+
+    public boolean isReadOnly() {
+        return isReadOnly;
+    }
+
+    public void setReadOnly(boolean isReadOnly) {
+        this.isReadOnly = isReadOnly;
     }
 }

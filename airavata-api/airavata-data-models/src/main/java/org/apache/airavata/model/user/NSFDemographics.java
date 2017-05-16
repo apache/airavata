@@ -60,11 +60,12 @@ import org.slf4j.LoggerFactory;
 public class NSFDemographics implements org.apache.thrift.TBase<NSFDemographics, NSFDemographics._Fields>, java.io.Serializable, Cloneable, Comparable<NSFDemographics> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("NSFDemographics");
 
-  private static final org.apache.thrift.protocol.TField GENDER_FIELD_DESC = new org.apache.thrift.protocol.TField("gender", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField US_CITIZENSHIP_FIELD_DESC = new org.apache.thrift.protocol.TField("usCitizenship", org.apache.thrift.protocol.TType.I32, (short)2);
-  private static final org.apache.thrift.protocol.TField ETHNICITIES_FIELD_DESC = new org.apache.thrift.protocol.TField("ethnicities", org.apache.thrift.protocol.TType.LIST, (short)3);
-  private static final org.apache.thrift.protocol.TField RACES_FIELD_DESC = new org.apache.thrift.protocol.TField("races", org.apache.thrift.protocol.TType.LIST, (short)4);
-  private static final org.apache.thrift.protocol.TField DISABILITIES_FIELD_DESC = new org.apache.thrift.protocol.TField("disabilities", org.apache.thrift.protocol.TType.LIST, (short)5);
+  private static final org.apache.thrift.protocol.TField AIRAVATA_INTERNAL_USER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("airavataInternalUserId", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField GENDER_FIELD_DESC = new org.apache.thrift.protocol.TField("gender", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField US_CITIZENSHIP_FIELD_DESC = new org.apache.thrift.protocol.TField("usCitizenship", org.apache.thrift.protocol.TType.I32, (short)3);
+  private static final org.apache.thrift.protocol.TField ETHNICITIES_FIELD_DESC = new org.apache.thrift.protocol.TField("ethnicities", org.apache.thrift.protocol.TType.LIST, (short)4);
+  private static final org.apache.thrift.protocol.TField RACES_FIELD_DESC = new org.apache.thrift.protocol.TField("races", org.apache.thrift.protocol.TType.LIST, (short)5);
+  private static final org.apache.thrift.protocol.TField DISABILITIES_FIELD_DESC = new org.apache.thrift.protocol.TField("disabilities", org.apache.thrift.protocol.TType.LIST, (short)6);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -72,6 +73,7 @@ public class NSFDemographics implements org.apache.thrift.TBase<NSFDemographics,
     schemes.put(TupleScheme.class, new NSFDemographicsTupleSchemeFactory());
   }
 
+  private String airavataInternalUserId; // required
   private String gender; // optional
   private USCitizenship usCitizenship; // optional
   private List<ethnicity> ethnicities; // optional
@@ -80,15 +82,16 @@ public class NSFDemographics implements org.apache.thrift.TBase<NSFDemographics,
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    GENDER((short)1, "gender"),
+    AIRAVATA_INTERNAL_USER_ID((short)1, "airavataInternalUserId"),
+    GENDER((short)2, "gender"),
     /**
      * 
      * @see USCitizenship
      */
-    US_CITIZENSHIP((short)2, "usCitizenship"),
-    ETHNICITIES((short)3, "ethnicities"),
-    RACES((short)4, "races"),
-    DISABILITIES((short)5, "disabilities");
+    US_CITIZENSHIP((short)3, "usCitizenship"),
+    ETHNICITIES((short)4, "ethnicities"),
+    RACES((short)5, "races"),
+    DISABILITIES((short)6, "disabilities");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -103,15 +106,17 @@ public class NSFDemographics implements org.apache.thrift.TBase<NSFDemographics,
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // GENDER
+        case 1: // AIRAVATA_INTERNAL_USER_ID
+          return AIRAVATA_INTERNAL_USER_ID;
+        case 2: // GENDER
           return GENDER;
-        case 2: // US_CITIZENSHIP
+        case 3: // US_CITIZENSHIP
           return US_CITIZENSHIP;
-        case 3: // ETHNICITIES
+        case 4: // ETHNICITIES
           return ETHNICITIES;
-        case 4: // RACES
+        case 5: // RACES
           return RACES;
-        case 5: // DISABILITIES
+        case 6: // DISABILITIES
           return DISABILITIES;
         default:
           return null;
@@ -157,6 +162,8 @@ public class NSFDemographics implements org.apache.thrift.TBase<NSFDemographics,
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.AIRAVATA_INTERNAL_USER_ID, new org.apache.thrift.meta_data.FieldMetaData("airavataInternalUserId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.GENDER, new org.apache.thrift.meta_data.FieldMetaData("gender", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.US_CITIZENSHIP, new org.apache.thrift.meta_data.FieldMetaData("usCitizenship", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -175,12 +182,24 @@ public class NSFDemographics implements org.apache.thrift.TBase<NSFDemographics,
   }
 
   public NSFDemographics() {
+    this.airavataInternalUserId = "DO_NOT_SET_AT_CLIENTS";
+
+  }
+
+  public NSFDemographics(
+    String airavataInternalUserId)
+  {
+    this();
+    this.airavataInternalUserId = airavataInternalUserId;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
   public NSFDemographics(NSFDemographics other) {
+    if (other.isSetAiravataInternalUserId()) {
+      this.airavataInternalUserId = other.airavataInternalUserId;
+    }
     if (other.isSetGender()) {
       this.gender = other.gender;
     }
@@ -216,11 +235,36 @@ public class NSFDemographics implements org.apache.thrift.TBase<NSFDemographics,
 
   @Override
   public void clear() {
+    this.airavataInternalUserId = "DO_NOT_SET_AT_CLIENTS";
+
     this.gender = null;
     this.usCitizenship = null;
     this.ethnicities = null;
     this.races = null;
     this.disabilities = null;
+  }
+
+  public String getAiravataInternalUserId() {
+    return this.airavataInternalUserId;
+  }
+
+  public void setAiravataInternalUserId(String airavataInternalUserId) {
+    this.airavataInternalUserId = airavataInternalUserId;
+  }
+
+  public void unsetAiravataInternalUserId() {
+    this.airavataInternalUserId = null;
+  }
+
+  /** Returns true if field airavataInternalUserId is set (has been assigned a value) and false otherwise */
+  public boolean isSetAiravataInternalUserId() {
+    return this.airavataInternalUserId != null;
+  }
+
+  public void setAiravataInternalUserIdIsSet(boolean value) {
+    if (!value) {
+      this.airavataInternalUserId = null;
+    }
   }
 
   public String getGender() {
@@ -393,6 +437,14 @@ public class NSFDemographics implements org.apache.thrift.TBase<NSFDemographics,
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
+    case AIRAVATA_INTERNAL_USER_ID:
+      if (value == null) {
+        unsetAiravataInternalUserId();
+      } else {
+        setAiravataInternalUserId((String)value);
+      }
+      break;
+
     case GENDER:
       if (value == null) {
         unsetGender();
@@ -438,6 +490,9 @@ public class NSFDemographics implements org.apache.thrift.TBase<NSFDemographics,
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
+    case AIRAVATA_INTERNAL_USER_ID:
+      return getAiravataInternalUserId();
+
     case GENDER:
       return getGender();
 
@@ -464,6 +519,8 @@ public class NSFDemographics implements org.apache.thrift.TBase<NSFDemographics,
     }
 
     switch (field) {
+    case AIRAVATA_INTERNAL_USER_ID:
+      return isSetAiravataInternalUserId();
     case GENDER:
       return isSetGender();
     case US_CITIZENSHIP:
@@ -490,6 +547,15 @@ public class NSFDemographics implements org.apache.thrift.TBase<NSFDemographics,
   public boolean equals(NSFDemographics that) {
     if (that == null)
       return false;
+
+    boolean this_present_airavataInternalUserId = true && this.isSetAiravataInternalUserId();
+    boolean that_present_airavataInternalUserId = true && that.isSetAiravataInternalUserId();
+    if (this_present_airavataInternalUserId || that_present_airavataInternalUserId) {
+      if (!(this_present_airavataInternalUserId && that_present_airavataInternalUserId))
+        return false;
+      if (!this.airavataInternalUserId.equals(that.airavataInternalUserId))
+        return false;
+    }
 
     boolean this_present_gender = true && this.isSetGender();
     boolean that_present_gender = true && that.isSetGender();
@@ -543,6 +609,11 @@ public class NSFDemographics implements org.apache.thrift.TBase<NSFDemographics,
   public int hashCode() {
     List<Object> list = new ArrayList<Object>();
 
+    boolean present_airavataInternalUserId = true && (isSetAiravataInternalUserId());
+    list.add(present_airavataInternalUserId);
+    if (present_airavataInternalUserId)
+      list.add(airavataInternalUserId);
+
     boolean present_gender = true && (isSetGender());
     list.add(present_gender);
     if (present_gender)
@@ -579,6 +650,16 @@ public class NSFDemographics implements org.apache.thrift.TBase<NSFDemographics,
 
     int lastComparison = 0;
 
+    lastComparison = Boolean.valueOf(isSetAiravataInternalUserId()).compareTo(other.isSetAiravataInternalUserId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetAiravataInternalUserId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.airavataInternalUserId, other.airavataInternalUserId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = Boolean.valueOf(isSetGender()).compareTo(other.isSetGender());
     if (lastComparison != 0) {
       return lastComparison;
@@ -649,7 +730,15 @@ public class NSFDemographics implements org.apache.thrift.TBase<NSFDemographics,
     StringBuilder sb = new StringBuilder("NSFDemographics(");
     boolean first = true;
 
+    sb.append("airavataInternalUserId:");
+    if (this.airavataInternalUserId == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.airavataInternalUserId);
+    }
+    first = false;
     if (isSetGender()) {
+      if (!first) sb.append(", ");
       sb.append("gender:");
       if (this.gender == null) {
         sb.append("null");
@@ -704,6 +793,10 @@ public class NSFDemographics implements org.apache.thrift.TBase<NSFDemographics,
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
+    if (!isSetAiravataInternalUserId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'airavataInternalUserId' is unset! Struct:" + toString());
+    }
+
     // check for sub-struct validity
   }
 
@@ -741,7 +834,15 @@ public class NSFDemographics implements org.apache.thrift.TBase<NSFDemographics,
           break;
         }
         switch (schemeField.id) {
-          case 1: // GENDER
+          case 1: // AIRAVATA_INTERNAL_USER_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.airavataInternalUserId = iprot.readString();
+              struct.setAiravataInternalUserIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 2: // GENDER
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.gender = iprot.readString();
               struct.setGenderIsSet(true);
@@ -749,7 +850,7 @@ public class NSFDemographics implements org.apache.thrift.TBase<NSFDemographics,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // US_CITIZENSHIP
+          case 3: // US_CITIZENSHIP
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.usCitizenship = org.apache.airavata.model.user.USCitizenship.findByValue(iprot.readI32());
               struct.setUsCitizenshipIsSet(true);
@@ -757,7 +858,7 @@ public class NSFDemographics implements org.apache.thrift.TBase<NSFDemographics,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // ETHNICITIES
+          case 4: // ETHNICITIES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
@@ -775,7 +876,7 @@ public class NSFDemographics implements org.apache.thrift.TBase<NSFDemographics,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // RACES
+          case 5: // RACES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list3 = iprot.readListBegin();
@@ -793,7 +894,7 @@ public class NSFDemographics implements org.apache.thrift.TBase<NSFDemographics,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // DISABILITIES
+          case 6: // DISABILITIES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list6 = iprot.readListBegin();
@@ -824,6 +925,11 @@ public class NSFDemographics implements org.apache.thrift.TBase<NSFDemographics,
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
+      if (struct.airavataInternalUserId != null) {
+        oprot.writeFieldBegin(AIRAVATA_INTERNAL_USER_ID_FIELD_DESC);
+        oprot.writeString(struct.airavataInternalUserId);
+        oprot.writeFieldEnd();
+      }
       if (struct.gender != null) {
         if (struct.isSetGender()) {
           oprot.writeFieldBegin(GENDER_FIELD_DESC);
@@ -897,6 +1003,7 @@ public class NSFDemographics implements org.apache.thrift.TBase<NSFDemographics,
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, NSFDemographics struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
+      oprot.writeString(struct.airavataInternalUserId);
       BitSet optionals = new BitSet();
       if (struct.isSetGender()) {
         optionals.set(0);
@@ -952,6 +1059,8 @@ public class NSFDemographics implements org.apache.thrift.TBase<NSFDemographics,
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, NSFDemographics struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
+      struct.airavataInternalUserId = iprot.readString();
+      struct.setAiravataInternalUserIdIsSet(true);
       BitSet incoming = iprot.readBitSet(5);
       if (incoming.get(0)) {
         struct.gender = iprot.readString();

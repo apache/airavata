@@ -1,0 +1,178 @@
+<!--
+
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>AMQP Websockets Test</title>
+
+    <style>
+        #content {
+            width: 100%;
+            min-height: 250px;
+        }
+
+        #ws-url-label, #ws-url-input, #ws-connect-button {
+            display: inline;
+            float: left;
+            margin-right: 10px;
+        }
+
+        #logs {
+            background-color: #888888;
+            width: 50%;
+            overflow-y: auto;
+            list-style: none;
+            padding: 3px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+
+        .log {
+            background-color: #cccccc;
+            display: inline-block;
+            min-height: 30px;
+            width: 90%;
+            border: 1px solid #000000;
+            padding: 3px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="content">
+    <div id="ws-url">
+        <label id="ws-url-label" for="ws-url-input">WebSockets URL</label>
+        <input type="text" name="ws-url-input" id="ws-url-input" />
+        <input type="text" name="username" id="username" placeholder="Username" />
+        <input type="password" name="password" id="password" placeholder="Password" />
+        <button id="ws-connect-button" class="open">Connect</button>
+        <button id="ws-send-credentials">Send</button><br />
+        <frame>
+            <form action="http://localhost:8888/auth" method="post">
+                <input type="text" name="username" id="username" placeholder="Username" />
+                <input type="password" name="password" id="password" placeholder="Password" />
+                <input type="hidden" name="redirect" id="redirect" value="file:///Users/jeffkinnison/development/amqp-ws-tunnel/wstest.html" />
+                <input type="submit" value="Auth" />
+            </form>
+        </frame>
+    </div>
+
+    <ul id="logs"><p>Logs</p></ul>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.1.0.min.js"
+        integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
+        crossorigin="anonymous"></script>
+<script type="text/javascript">
+    var ws, open_handler, message_handler, error_handler, close_handler;
+
+    console.log(document.cookie);
+
+    $("#ws-connect-button").on("click", function() {
+        ws = new WebSocket("ws://localhost:8888/experiment/test");
+
+        ws.onopen = function() {
+            var username, password;
+            $("#ws-connect-button").toggleClass("open close").text("Disconnect");
+            $("#ws-url-input").prop("disabled", true);
+            ws.send("hi");
+            // username = $("#username").val();
+            // password = $("#password").val();
+            // ws.send(JSON.stringify({username: username, password: password}));
+        }
+
+        ws.onmessage = function(e) {
+            var msg;
+
+            console.log(e.data);
+
+            //msg = JSON.parse(e.data);
+            // if (msg.hasOwnProperty("logs")) {
+            //     for (log in msg.logs) {
+            //         if (msg.logs.hasOwnProperty(log)) {
+            //             $("#logs").append($('<li class="log">' + log + '</li>'));
+            //         }
+            //     }
+            // }
+        }
+
+        ws.onclose = function(e) {
+            $("#ws-connect-button").toggleClass("open close").text("Connect");
+            $("#ws-url-input").prop("disabled", false);
+        }
+    });
+
+    $("#ws-send-credentials").on("click", function(e) {
+        uname = $("#username").val();
+        pass = $("#password").val();
+        console.log("Sending credentials");
+        //ws.send("moop");
+        //ws.send(JSON.stringify({username: uname, password: pass}));
+        $.ajax({
+            url: "http://localhost:8888/auth",
+            method: "post",
+            data: {username: uname, password: pass},
+            crossDomain: true,
+            success: function(data) {
+                console.log("Success");
+                console.log(document.cookie);
+            },
+            error: function(e) {
+                console.log(e);
+            },
+            complete: function() {
+                $.ajax({
+                    url: "http://localhost:8888/auth",
+                    method: "get",
+                    crossDomain: true,
+                    xhrHeaders: {
+
+                    },
+                    success: function(data) {
+                        console.log(data);
+                    },
+                    error: function(xhr) {
+                        console.log(xhr);
+                    }
+                });
+            }
+        });
+    });
+
+    // $("form").on("submit", function(e) {
+    //     e.preventDefault();
+    // });
+
+</script>
+
+</body>
+
+</html>

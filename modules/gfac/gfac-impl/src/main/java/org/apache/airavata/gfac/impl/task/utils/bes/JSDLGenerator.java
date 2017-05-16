@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,7 +16,6 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
 package org.apache.airavata.gfac.impl.task.utils.bes;
 
@@ -101,8 +100,8 @@ public class JSDLGenerator implements BESConstants {
 	private static void createJobIdentification(JobDefinitionType value, ProcessContext context) {
 
 		if (context != null) {
-			if (context.getComputeResourcePreference() != null && context.getComputeResourcePreference().getAllocationProjectNumber() != null)
-				JSDLUtils.addProjectName(value, context.getComputeResourcePreference().getAllocationProjectNumber());
+			if (context.getAllocationProjectNumber() != null)
+				JSDLUtils.addProjectName(value, context.getAllocationProjectNumber());
 			
 			if (context.getApplicationInterfaceDescription() != null && context.getApplicationInterfaceDescription().getApplicationDescription() != null)
 				JSDLUtils.getOrCreateJobIdentification(value).setDescription(context.getApplicationInterfaceDescription().getApplicationDescription());
@@ -111,5 +110,6 @@ public class JSDLGenerator implements BESConstants {
 				JSDLUtils.getOrCreateJobIdentification(value).setJobName(context.getApplicationInterfaceDescription().getApplicationName());
 		}
 	}
+
 
 }

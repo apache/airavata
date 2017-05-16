@@ -1,0 +1,86 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+- name: install firewalld
+  yum:
+    name: firewalld
+    state: latest
+    update_cache: yes
+  become: yes
+
+- name: start firewalld
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+  become: yes
+
+- name: open ports
+  firewalld:
+    port: "{{ item }}"
+    zone: public
+    permanent: true
+    state: enabled
+    immediate: yes
+  with_items:
+    - "5051/tcp"
+  become: yes
+
+# setup mesos slave
+- name: add mesosphere rpm
+  yum:
+    name: http://repos.mesosphere.com/el/7/noarch/RPMS/mesosphere-el-repo-7-1.noarch.rpm
+    state: present
+  become: yes
+
+- name: install mesos
+  yum:
+    name: mesos
+    state: latest
+  become: yes
+
+# zookeeper will be pulled in and isntall as a depencency automatically
+# - name: disable zookeeper
+#   service:
+#     name: mesosphere-zookeeper
+#     state: stopped
+#     enabled: no
+#   become: yes
+
+- name: set zk file for mesos master and marathon
+  template:
+    src: zk.j2
+    dest: /etc/mesos/zk
+    force: yes
+  become: yes
+
+- name: disable mesos-master
+  service:
+    name: mesos-master
+    state: stopped
+    enabled: no
+  become: yes
+
+- name: restart mesos slave
+  service:
+    name: mesos-slave
+    state: restarted
+  become: yes

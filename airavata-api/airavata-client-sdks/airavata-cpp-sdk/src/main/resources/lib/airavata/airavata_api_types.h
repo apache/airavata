@@ -35,6 +35,7 @@
 #include "airavata_errors_types.h"
 #include "security_model_types.h"
 #include "airavata_data_models_types.h"
+#include "credential_store_data_models_types.h"
 #include "status_models_types.h"
 #include "job_model_types.h"
 #include "experiment_model_types.h"
@@ -46,10 +47,12 @@
 #include "compute_resource_model_types.h"
 #include "storage_resource_model_types.h"
 #include "gateway_resource_profile_model_types.h"
+#include "user_resource_profile_model_types.h"
 #include "data_movement_models_types.h"
 #include "workflow_data_model_types.h"
 #include "replica_catalog_models_types.h"
 #include "group_manager_model_types.h"
+#include "user_profile_model_types.h"
 
 
 namespace apache { namespace airavata { namespace api {

@@ -1,0 +1,111 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+
+user: centos
+group: centos
+user_home: "/home/{{ user }}"
+
+# deployment related variables
+deployment_dir: "{{ user_home }}/deployment"
+airavata_source_dir: "{{ user_home }}/source"
+airavata_repo: "https://git-wip-us.apache.org/repos/asf/airavata.git"
+airavata_dist: "apache-airavata-server-0.17-SNAPSHOT"
+airavata_dist_name: "{{ airavata_dist }}-bin.tar.gz"
+old_airavata_dist: "apache-airavata-server-0.17-SNAPSHOT"
+git_branch: develop
+
+# Database related variables
+db_server: "{{ groups['database'][0] }}"
+db_server_port: "3306"
+db_user: "airavata"
+db_password: "{{ vault_db_password }}"
+app_catalog: "app_catalog"
+exp_catalog: "exp_catalog"
+replica_catalog: "replica_catalog"
+sharing_catalog: "sharing_catalog"
+workflow_catalog: "wf_catalog"
+credential_store: "credential_store"
+
+mysql_connector_jar: "mysql-connector-java-5.1.37-bin.jar"
+
+# Rabbitmq related vareables
+rabbitmq_server: "{{ ansible_fqdn }}"
+rabbitmq_vhost: "develop"
+rabbitmq_user: "airavata"
+rabbitmq_password: "airavata"
+rabbitmq_port: "5672"
+rabbitmq_broker_url: "amqp://{{ rabbitmq_user }}:{{ rabbitmq_password }}@{{ rabbitmq_server}}:{{ rabbitmq_port }}/{{ rabbitmq_vhost }}"
+
+# Zoookeeper related variables
+zookeeper_client_port: 2181
+zookeeper_url: "{{ groups['zookeeper'][0] }}:{{ zookeeper_client_port }}"
+# API Server related variables
+api_server_name: "apiserver-node0"
+api_server_host: "{{ansible_fqdn}}"
+api_server_port: "8930"
+api_secured: "false"
+tls_enable: "false"
+api_server_tls_port: "9930"
+enable_sharing: "true"
+
+# Orchestrator  related variables
+orchestrator_name: "orchestrator-node0"
+orchestrator_host: "{{ansible_fqdn}}"
+orchestrator_port: "8940"
+api_orch_dir: "{{ deployment_dir }}/api-orchestrator"
+api_orch_server_names: "api-orch"
+
+# registry related variables
+registry_name: regserver-node0
+registry_host: "{{ ansible_fqdn }}"
+registry_port: 8970
+#registry_dir: "{{ deployment_dir }}/registry"
+default_gateway: "php_reference_gateway"
+
+# Credential and keystore related variables
+#authorization_server: "https://{{ groups['wso2is'][0]}}:9443/services/"
+authorization_server: "https://idp.scigap.org:9443/services/"
+keystore: "airavata.jks"
+keystore_passwd: "airavata"
+#client_truststore: "client_truststore.jks"
+client_truststore: "airavata.jks"
+client_truststore_passwd: "airavata"
+cred_keystore: "airavata_sym.jks"
+cred_keystore_passwd: "airavata"
+cred_keystore_alias: "airavata"
+cred_store_server_host: "{{ ansible_fqdn }}"
+cred_store_port: "8960"
+keystores_location: "{{ deployment_dir }}/keystores"
+
+# Gfac related variables
+gfac_name: "gfac-node0"
+gfac_host: "{{ ansible_fqdn }}"
+gfac_port: "8950"
+gfac_dir: "{{ deployment_dir }}/gfac-instance"
+
+# Monitoring variables
+monitor_email_address: "test.airavata@gmail.com"
+monitor_email_password: "airavata"
+
+# Sharing Registry related variables
+sharing_registry_host: "{{ ansible_fqdn }}"
+sharing_registry_port: 7878

@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,16 +16,13 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.registry.core.app.catalog.impl;
 
 import org.apache.airavata.model.appcatalog.computeresource.*;
-import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.model.data.movement.DMType;
+import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
-import org.apache.airavata.registry.core.app.catalog.model.ParallelismPrefixCommand;
 import org.apache.airavata.registry.core.app.catalog.resources.*;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogUtils;
@@ -201,10 +198,10 @@ public class ComputeResourceImpl implements ComputeResource {
     }
 
     @Override
-    public String addCloudJobSubmission(CloudJobSubmission sshJobSubmission) throws AppCatalogException {
+    public String addCloudJobSubmission(CloudJobSubmission cloudJobSubmission) throws AppCatalogException {
         try {
-            sshJobSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("Cloud"));
-            CloudSubmissionResource resource = AppCatalogThriftConversion.getCloudJobSubmission(sshJobSubmission);
+            cloudJobSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("Cloud"));
+            CloudSubmissionResource resource = AppCatalogThriftConversion.getCloudJobSubmission(cloudJobSubmission);
             resource.save();
             return resource.getJobSubmissionInterfaceId();
         }catch (Exception e) {
@@ -824,22 +821,26 @@ public class ComputeResourceImpl implements ComputeResource {
 		Map<JobManagerCommand, String> jobManagerCommands = resourceJobManager.getJobManagerCommands();
 		if (jobManagerCommands!=null && jobManagerCommands.size() != 0) {
 			for (JobManagerCommand commandType : jobManagerCommands.keySet()) {
-				JobManagerCommandResource r = new JobManagerCommandResource();
-				r.setCommandType(commandType.toString());
-				r.setCommand(jobManagerCommands.get(commandType));
-				r.setResourceJobManagerId(resource.getResourceJobManagerId());
-				r.save();
+                if(jobManagerCommands.get(commandType) != null && !jobManagerCommands.get(commandType).isEmpty()) {
+                    JobManagerCommandResource r = new JobManagerCommandResource();
+                    r.setCommandType(commandType.toString());
+                    r.setCommand(jobManagerCommands.get(commandType));
+                    r.setResourceJobManagerId(resource.getResourceJobManagerId());
+                    r.save();
+                }
 			}
 		}
 
         Map<ApplicationParallelismType, String> parallelismPrefix = resourceJobManager.getParallelismPrefix();
         if (parallelismPrefix!=null && parallelismPrefix.size() != 0) {
             for (ApplicationParallelismType commandType : parallelismPrefix.keySet()) {
-                ParallelismPrefixCommandResource r = new ParallelismPrefixCommandResource();
-                r.setCommandType(commandType.toString());
-                r.setCommand(parallelismPrefix.get(commandType));
-                r.setResourceJobManagerId(resource.getResourceJobManagerId());
-                r.save();
+                if (parallelismPrefix.get(commandType) != null && !parallelismPrefix.get(commandType).isEmpty()) {
+                    ParallelismPrefixCommandResource r = new ParallelismPrefixCommandResource();
+                    r.setCommandType(commandType.toString());
+                    r.setCommand(parallelismPrefix.get(commandType));
+                    r.setResourceJobManagerId(resource.getResourceJobManagerId());
+                    r.save();
+                }
             }
         }
 		return resource.getResourceJobManagerId();
@@ -864,10 +865,12 @@ public class ComputeResourceImpl implements ComputeResource {
                     }else {
                         existingCommand = new JobManagerCommandResource();
                     }
-                    existingCommand.setCommandType(commandType.toString());
-                    existingCommand.setCommand(jobManagerCommands.get(commandType));
-                    existingCommand.setResourceJobManagerId(resource.getResourceJobManagerId());
-                    existingCommand.save();
+                    if(jobManagerCommands.get(commandType) != null && !jobManagerCommands.get(commandType).isEmpty()) {
+                        existingCommand.setCommandType(commandType.toString());
+                        existingCommand.setCommand(jobManagerCommands.get(commandType));
+                        existingCommand.setResourceJobManagerId(resource.getResourceJobManagerId());
+                        existingCommand.save();
+                    }
                 }
             }
 
@@ -884,10 +887,12 @@ public class ComputeResourceImpl implements ComputeResource {
                     }else {
                         existingCommand = new ParallelismPrefixCommandResource();
                     }
-                    existingCommand.setCommandType(commandType.toString());
-                    existingCommand.setCommand(parallelismPrefix.get(commandType));
-                    existingCommand.setResourceJobManagerId(resource.getResourceJobManagerId());
-                    existingCommand.save();
+                    if (parallelismPrefix.get(commandType) != null && !parallelismPrefix.get(commandType).isEmpty()) {
+                        existingCommand.setCommandType(commandType.toString());
+                        existingCommand.setCommand(parallelismPrefix.get(commandType));
+                        existingCommand.setResourceJobManagerId(resource.getResourceJobManagerId());
+                        existingCommand.save();
+                    }
                 }
             }
         }catch (Exception e){
@@ -927,6 +932,7 @@ public class ComputeResourceImpl implements ComputeResource {
 		LocalSubmissionResource localJobSubmission = AppCatalogThriftConversion.getLocalJobSubmission(localSubmission);
 		localJobSubmission.setResourceJobManagerId(resourceJobManagerId);
 		localJobSubmission.getResourceJobManagerResource().setResourceJobManagerId(resourceJobManagerId);
+        localJobSubmission.setSecurityProtocol(localSubmission.getSecurityProtocol().toString());
     	localJobSubmission.save();
     	return localJobSubmission.getJobSubmissionInterfaceId();
 	}

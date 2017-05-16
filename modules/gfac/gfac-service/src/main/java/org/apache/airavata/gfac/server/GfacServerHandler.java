@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,18 +16,20 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.gfac.server;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.AiravataStartupException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.logging.MDCConstants;
+import org.apache.airavata.common.logging.MDCUtil;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.common.utils.ZkConstants;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
+import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.cpi.GfacService;
@@ -36,10 +38,9 @@ import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.gfac.impl.GFacWorker;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
-import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.Subscriber;
-import org.apache.airavata.messaging.core.Type;
+import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.messaging.event.ProcessIdentifier;
 import org.apache.airavata.model.messaging.event.ProcessStatusChangeEvent;
@@ -48,6 +49,7 @@ import org.apache.airavata.model.messaging.event.TaskSubmitEvent;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.cpi.AppCatalog;
+import org.apache.airavata.registry.cpi.ExpCatChildDataType;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.airavata.registry.cpi.RegistryException;
@@ -60,7 +62,10 @@ import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -152,20 +157,24 @@ public class GfacServerHandler implements GfacService.Iface {
      */
     public boolean submitProcess(String processId, String gatewayId, String tokenId) throws
             TException {
-        requestCount++;
-        log.info("-----------------------------------" + requestCount + "-----------------------------------------");
-        log.info(processId, "GFac Received submit job request for the Process: {} process: {}", processId,
-                processId);
-
+        MDC.put(MDCConstants.PROCESS_ID, processId);
+        MDC.put(MDCConstants.GATEWAY_ID, gatewayId);
+        MDC.put(MDCConstants.TOKEN_ID, tokenId);
         try {
-	        executorService.execute(new GFacWorker(processId, gatewayId, tokenId));
+            executorService.execute(MDCUtil.wrapWithMDC(new GFacWorker(processId, gatewayId, tokenId)));
         } catch (GFacException e) {
             log.error("Failed to submit process", e);
-            return false;
+            throw new TException("Failed to submit process", e);
+        } catch (CredentialStoreException e) {
+            log.error("Failed to submit process due to credential issue, " +
+                    "make sure you are passing a valid credentials");
+            throw new TException("Failed to submit process due to credential issue, " +
+                    "make sure you are passing a valid credential token", e);
         } catch (Exception e) {
-	        log.error("Error creating zookeeper nodes");
+            log.error("Error creating zookeeper nodes", e);
+            throw new TException("Error creating zookeeper nodes", e);
         }
-	    return true;
+        return true;
     }
 
     @Override
@@ -183,28 +192,28 @@ public class GfacServerHandler implements GfacService.Iface {
         }
 
 
-        public void onMessage(MessageContext message) {
-            log.info(" Message Received with message id '" + message.getMessageId()
-		            + "' and with message type '" + message.getType());
-            if (message.getType().equals(MessageType.LAUNCHPROCESS)) {
+        public void onMessage(MessageContext messageContext) {
+            MDC.put(MDCConstants.GATEWAY_ID, messageContext.getGatewayId());
+            log.info(" Message Received with message id {} and with message type: {}" + messageContext.getMessageId(), messageContext.getType());
+            if (messageContext.getType().equals(MessageType.LAUNCHPROCESS)) {
 	            ProcessStatus status = new ProcessStatus();
 	            status.setState(ProcessState.STARTED);
                 try {
                     ProcessSubmitEvent event = new ProcessSubmitEvent();
-                    TBase messageEvent = message.getEvent();
+                    TBase messageEvent = messageContext.getEvent();
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                     ThriftUtils.createThriftFromBytes(bytes, event);
-	                if (message.isRedeliver()) {
+	                if (messageContext.isRedeliver()) {
 		                // check the process is already active in this instance.
 		                if (Factory.getGfacContext().getProcess(event.getProcessId()) != null) {
 			                // update deliver tag
 			                try {
-				                updateDeliveryTag(curatorClient, gfacServerName, event, message );
+				                updateDeliveryTag(curatorClient, gfacServerName, event, messageContext );
 				                return;
 			                } catch (Exception e) {
 				                log.error("Error while updating delivery tag for redelivery message , messageId : " +
-						                message.getMessageId(), e);
-				                processLaunchSubscriber.sendAck(message.getDeliveryTag());
+						                messageContext.getMessageId(), e);
+				                processLaunchSubscriber.sendAck(messageContext.getDeliveryTag());
 			                }
 		                } else {
 			                // read process status from registry
@@ -219,33 +228,41 @@ public class GfacServerHandler implements GfacService.Iface {
 	                Factory.getDefaultExpCatalog().update(ExperimentCatalogModelType.PROCESS_STATUS, status, event
 			                .getProcessId());
 	                publishProcessStatus(event, status);
+                    MDC.put(MDCConstants.EXPERIMENT_ID, event.getExperimentId());
                     try {
-                        createProcessZKNode(curatorClient, gfacServerName, event, message);
+                        createProcessZKNode(curatorClient, gfacServerName, event, messageContext);
                         boolean isCancel = setCancelWatcher(curatorClient, event.getExperimentId(), event.getProcessId());
                         if (isCancel) {
                             if (status.getState() == ProcessState.STARTED) {
                                 status.setState(ProcessState.CANCELLING);
                                 status.setReason("Process Cancel is triggered");
                                 status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                                Factory.getDefaultExpCatalog().update(ExperimentCatalogModelType.PROCESS_STATUS, status, event.getProcessId());
+                                Factory.getDefaultExpCatalog()
+                                        .update(ExperimentCatalogModelType.PROCESS_STATUS, status, event.getProcessId());
                                 publishProcessStatus(event, status);
 
                                 // do cancel operation here
 
                                 status.setState(ProcessState.CANCELED);
                                 status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                                Factory.getDefaultExpCatalog().update(ExperimentCatalogModelType.PROCESS_STATUS, status, event.getProcessId());
+                                Factory.getDefaultExpCatalog()
+                                        .update(ExperimentCatalogModelType.PROCESS_STATUS, status, event.getProcessId());
                                 publishProcessStatus(event, status);
-                                processLaunchSubscriber.sendAck(message.getDeliveryTag());
+                                processLaunchSubscriber.sendAck(messageContext.getDeliveryTag());
                                 return;
                             } else {
                                 setCancelData(event.getExperimentId(),event.getProcessId());
                             }
                         }
-                        submitProcess(event.getProcessId(), event.getGatewayId(), event.getTokenId());
+                        try {
+                            submitProcess(event.getProcessId(), event.getGatewayId(), event.getTokenId());
+                        } catch (TException e) {
+                            submissionErrorHandling(status, event, e);
+                            processLaunchSubscriber.sendAck(messageContext.getDeliveryTag());
+                        }
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
-                        processLaunchSubscriber.sendAck(message.getDeliveryTag());
+                        processLaunchSubscriber.sendAck(messageContext.getDeliveryTag());
                     }
                 } catch (TException e) {
                     log.error(e.getMessage(), e); //nobody is listening so nothing to throw
@@ -253,9 +270,35 @@ public class GfacServerHandler implements GfacService.Iface {
                     log.error("Error while updating experiment status", e);
                 } catch (AiravataException e) {
 	                log.error("Error while publishing process status", e);
+                } finally {
+                    MDC.clear();
                 }
             }
         }
+    }
+
+    private void submissionErrorHandling(ProcessStatus status, ProcessSubmitEvent event, TException e) throws RegistryException, AiravataException {
+        StringWriter errors = new StringWriter();
+        e.printStackTrace(new PrintWriter(errors));
+        ErrorModel errorModel = new ErrorModel();
+        errorModel.setUserFriendlyMessage("Process execution failed");
+        errorModel.setActualErrorMessage(errors.toString());
+        errorModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
+
+        errorModel.setErrorId(AiravataUtils.getId("PROCESS_ERROR"));
+        Factory.getDefaultExpCatalog()
+                .add(ExpCatChildDataType.PROCESS_ERROR, errorModel, event.getProcessId());
+
+        errorModel.setErrorId(AiravataUtils.getId("EXP_ERROR"));
+        Factory.getDefaultExpCatalog()
+                .add(ExpCatChildDataType.EXPERIMENT_ERROR, errorModel, event.getExperimentId());
+
+        status.setState(ProcessState.FAILED);
+        status.setReason("Process execution failed");
+        status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+        Factory.getDefaultExpCatalog()
+                .update(ExperimentCatalogModelType.PROCESS_STATUS, status, event.getProcessId());
+        publishProcessStatus(event, status);
     }
 
     private void setCancelData(String experimentId, String processId) throws Exception {

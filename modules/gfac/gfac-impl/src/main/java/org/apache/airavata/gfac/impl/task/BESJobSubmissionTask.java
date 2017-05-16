@@ -1,3 +1,22 @@
+/**
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 /*
 *
 * Licensed to the Apache Software Foundation (ASF) under one
@@ -31,6 +50,7 @@ import de.fzj.unicore.wsrflite.xmlbeans.WSUtilities;
 import eu.unicore.util.httpclient.DefaultClientConfiguration;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.SSHApiException;
@@ -151,10 +171,9 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             jobDetails.setProcessId(taskContext.getProcessId());
             FactoryClient factory = new FactoryClient(eprt, secProperties);
 
-            log.info(String.format("Activity Submitting to %s ... \n",
-                    factoryUrl));
+            log.info("Activity Submitting to {} ... \n", factoryUrl);
             CreateActivityResponseDocument response = factory.createActivity(cad);
-            log.info(String.format("Activity Submitted to %s \n", factoryUrl));
+            log.info("Activity Submitted to {} ... \n", factoryUrl);
 
             EndpointReferenceType activityEpr = response.getCreateActivityResponse().getActivityIdentifier();
 
@@ -253,9 +272,8 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
         String remoteFilePath = null, fileName = null, localFilePath = null;
         try {
             authenticationInfo = Factory.getStorageSSHKeyAuthentication(pc);
-            ServerInfo serverInfo = new ServerInfo(userName, hostName, DEFAULT_SSH_PORT);
+            ServerInfo serverInfo = pc.getComputeResourceServerInfo();
             Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
-
             for (OutputDataObjectType output : copyOutput) {
                 switch (output.getType()) {
                     case STDERR: case STDOUT: case STRING: case URI:
@@ -274,7 +292,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
                         break;
                 }
             }
-        } catch (IOException | JSchException | AiravataException | SSHApiException | URISyntaxException e) {
+        } catch (IOException | JSchException | SSHApiException | URISyntaxException | CredentialStoreException e) {
             log.error("Error while coping local file " + localFilePath + " to remote " + remoteFilePath, e);
             throw new GFacException("Error while scp output files to remote storage file location", e);
         }
@@ -283,27 +301,20 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
     private void copyInputFilesToLocal(TaskContext taskContext) throws GFacException {
         ProcessContext pc = taskContext.getParentProcessContext();
         StorageResourceDescription storageResource = pc.getStorageResource();
-        StoragePreference storagePreference = pc.getStoragePreference();
 
         if (storageResource != null) {
             hostName = storageResource.getHostName();
         } else {
             throw new GFacException("Storage Resource is null");
         }
-
-        if (storagePreference != null) {
-            userName = storagePreference.getLoginUserName();
-            inputPath = storagePreference.getFileSystemRootLocation();
-            inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
-        } else {
-            throw new GFacException("Storage Preference is null");
-        }
+        inputPath = pc.getStorageFileSystemRootLocation();
+        inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
 
         String remoteFilePath = null, fileName = null, localFilePath = null;
         URI remoteFileURI = null;
         try {
             authenticationInfo = Factory.getStorageSSHKeyAuthentication(pc);
-            ServerInfo serverInfo = new ServerInfo(userName, hostName, DEFAULT_SSH_PORT);
+            ServerInfo serverInfo = pc.getStorageResourceServerInfo();
             Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
 
             List<InputDataObjectType> processInputs = pc.getProcessModel().getProcessInputs();
@@ -318,9 +329,13 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
                     input.setValue("file:/" + localFilePath);
                 }
             }
-        } catch (IOException | JSchException | AiravataException | SSHApiException | URISyntaxException e) {
+        } catch (IOException | JSchException | SSHApiException | URISyntaxException e) {
             log.error("Error while coping remote file " + remoteFilePath + " to local " + localFilePath, e);
             throw new GFacException("Error while scp input files to local file location", e);
+        } catch (CredentialStoreException e) {
+            String msg = "Authentication issue, make sure you are passing valid credential token";
+            log.error(msg, e);
+            throw new GFacException(msg, e);
         }
     }
 

@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.core.gfac.services.impl;
 
 import static org.junit.Assert.assertEquals;
@@ -106,7 +104,7 @@ import static org.junit.Assert.assertTrue;
 //	}
 //
 //	protected GFacConfiguration getGFACConfig() throws Exception{
-//        URL resource = BESProviderTestWithMyProxyAuth.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
+//        URL resource = ApplicationSettings.loadFile(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
 //        System.out.println(resource.getFile());
 //        GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()),null,null);
 //		return gFacConfiguration;

@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.registry.core.app.catalog.model;
 
 import javax.persistence.*;
@@ -58,6 +56,18 @@ public class BatchQueue implements Serializable {
 
     @Column(name = "MAX_MEMORY")
     private int maxMemory;
+
+	@Column(name = "CPU_PER_NODE")
+	private int cpuPerNode;
+
+	@Column(name = "DEFAULT_NODE_COUNT")
+	private int defaultNodeCount;
+
+	@Column(name = "DEFAULT_CPU_COUNT")
+	private int defaultCPUCount;
+
+	@Column(name = "IS_DEFAULT_QUEUE")
+	private boolean isDefaultQueue;
 
     public int getMaxMemory() {
         return maxMemory;
@@ -129,5 +139,37 @@ public class BatchQueue implements Serializable {
 	
 	public void setMaxNodes(int maxNodes) {
 		this.maxNodes=maxNodes;
+	}
+
+	public int getCpuPerNode() {
+		return cpuPerNode;
+	}
+
+	public void setCpuPerNode(int cpuPerNode) {
+		this.cpuPerNode = cpuPerNode;
+	}
+
+	public int getDefaultNodeCount() {
+		return defaultNodeCount;
+	}
+
+	public void setDefaultNodeCount(int defaultNodeCount) {
+		this.defaultNodeCount = defaultNodeCount;
+	}
+
+	public int getDefaultCPUCount() {
+		return defaultCPUCount;
+	}
+
+	public void setDefaultCPUCount(int defaultCPUCount) {
+		this.defaultCPUCount = defaultCPUCount;
+	}
+
+	public boolean isDefaultQueue() {
+		return isDefaultQueue;
+	}
+
+	public void setIsDefaultQueue(boolean isDefaultQueue) {
+		this.isDefaultQueue = isDefaultQueue;
 	}
 }

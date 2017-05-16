@@ -1,4 +1,5 @@
 /**
+ *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,7 +17,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.airavata.registry.core.app.catalog.resources;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -53,6 +53,7 @@ public class ApplicationInputResource extends AppCatAbstractResource {
     private boolean isRequired;
     private boolean requiredToCMD;
     private boolean dataStaged;
+    private boolean isReadOnly;
 
     private AppInterfaceResource appInterfaceResource;
 
@@ -332,6 +333,7 @@ public class ApplicationInputResource extends AppCatAbstractResource {
             applicationInput.setRequiredToCMD(requiredToCMD);
             applicationInput.setRequired(isRequired);
             applicationInput.setDataStaged(dataStaged);
+            applicationInput.setReadOnly(isReadOnly);
             if (existingApplicationInput == null) {
                 em.persist(applicationInput);
             } else {
@@ -495,5 +497,13 @@ public class ApplicationInputResource extends AppCatAbstractResource {
 
     public void setDataStaged(boolean dataStaged) {
         this.dataStaged = dataStaged;
+    }
+
+    public boolean isReadOnly() {
+        return isReadOnly;
+    }
+
+    public void setIsReadOnly(boolean isReadOnly) {
+        this.isReadOnly = isReadOnly;
     }
 }

@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,13 +16,12 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.gfac.impl.job;
 
-import org.apache.airavata.gfac.core.JobDescriptor;
-import org.apache.airavata.gfac.core.cluster.OutputParser;
+import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.SSHApiException;
+import org.apache.airavata.gfac.core.cluster.OutputParser;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
 import org.slf4j.Logger;
@@ -39,16 +38,13 @@ public class LSFOutputParser implements OutputParser {
     private final static Logger logger = LoggerFactory.getLogger(LSFOutputParser.class);
 
     @Override
-    public void parseSingleJob(JobDescriptor jobDescriptor, String rawOutput) throws SSHApiException {
+    public String parseJobSubmission(String rawOutput) throws GFacException {
         logger.debug(rawOutput);
-        //todo we need to implement this but we are not using it airavata runtime
-        // if someone is using the gsissh as a tool this will be useful to get a descriptive information about a single job
-    }
-
-    @Override
-    public String parseJobSubmission(String rawOutput) throws SSHApiException {
-        logger.debug(rawOutput);
-        return rawOutput.substring(rawOutput.indexOf("<")+1,rawOutput.indexOf(">"));
+        if (rawOutput.indexOf("<") >= 0) {
+            return rawOutput.substring(rawOutput.indexOf("<")+1,rawOutput.indexOf(">"));
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -57,7 +53,7 @@ public class LSFOutputParser implements OutputParser {
     }
 
     @Override
-    public JobStatus parseJobStatus(String jobID, String rawOutput) throws SSHApiException {
+    public JobStatus parseJobStatus(String jobID, String rawOutput) throws GFacException {
         boolean jobFount = false;
         logger.debug(rawOutput);
         //todo this is not used anymore
@@ -65,7 +61,7 @@ public class LSFOutputParser implements OutputParser {
     }
 
     @Override
-    public void parseJobStatuses(String userName, Map<String, JobStatus> statusMap, String rawOutput) throws SSHApiException {
+    public void parseJobStatuses(String userName, Map<String, JobStatus> statusMap, String rawOutput) throws GFacException {
         logger.debug(rawOutput);
 
         String[]    info = rawOutput.split("\n");
@@ -101,7 +97,7 @@ public class LSFOutputParser implements OutputParser {
     }
 
     @Override
-    public String parseJobId(String jobName, String rawOutput) throws SSHApiException {
+    public String parseJobId(String jobName, String rawOutput) throws GFacException {
         String regJobId = "jobId";
         Pattern pattern = Pattern.compile("(?=(?<" + regJobId + ">\\d+)\\s+\\w+\\s+" + jobName + ")"); // regex - look ahead and match
         if (rawOutput != null) {
@@ -129,7 +125,7 @@ public class LSFOutputParser implements OutputParser {
         LSFOutputParser lsfOutputParser = new LSFOutputParser();
         try {
             lsfOutputParser.parseJobStatuses("cjh", statusMap, test1);
-        } catch (SSHApiException e) {
+        } catch (GFacException e) {
             logger.error(e.getMessage(), e);
         }
         System.out.println(statusMap.get("2477983,2134490944"));

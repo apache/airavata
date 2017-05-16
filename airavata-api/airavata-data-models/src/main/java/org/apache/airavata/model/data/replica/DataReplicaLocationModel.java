@@ -1349,15 +1349,15 @@ public class DataReplicaLocationModel implements org.apache.thrift.TBase<DataRep
           case 12: // REPLICA_METADATA
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
-                org.apache.thrift.protocol.TMap _map18 = iprot.readMapBegin();
-                struct.replicaMetadata = new HashMap<String,String>(2*_map18.size);
-                String _key19;
-                String _val20;
-                for (int _i21 = 0; _i21 < _map18.size; ++_i21)
+                org.apache.thrift.protocol.TMap _map0 = iprot.readMapBegin();
+                struct.replicaMetadata = new HashMap<String,String>(2*_map0.size);
+                String _key1;
+                String _val2;
+                for (int _i3 = 0; _i3 < _map0.size; ++_i3)
                 {
-                  _key19 = iprot.readString();
-                  _val20 = iprot.readString();
-                  struct.replicaMetadata.put(_key19, _val20);
+                  _key1 = iprot.readString();
+                  _val2 = iprot.readString();
+                  struct.replicaMetadata.put(_key1, _val2);
                 }
                 iprot.readMapEnd();
               }
@@ -1455,10 +1455,10 @@ public class DataReplicaLocationModel implements org.apache.thrift.TBase<DataRep
           oprot.writeFieldBegin(REPLICA_METADATA_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, struct.replicaMetadata.size()));
-            for (Map.Entry<String, String> _iter22 : struct.replicaMetadata.entrySet())
+            for (Map.Entry<String, String> _iter4 : struct.replicaMetadata.entrySet())
             {
-              oprot.writeString(_iter22.getKey());
-              oprot.writeString(_iter22.getValue());
+              oprot.writeString(_iter4.getKey());
+              oprot.writeString(_iter4.getValue());
             }
             oprot.writeMapEnd();
           }
@@ -1556,10 +1556,10 @@ public class DataReplicaLocationModel implements org.apache.thrift.TBase<DataRep
       if (struct.isSetReplicaMetadata()) {
         {
           oprot.writeI32(struct.replicaMetadata.size());
-          for (Map.Entry<String, String> _iter23 : struct.replicaMetadata.entrySet())
+          for (Map.Entry<String, String> _iter5 : struct.replicaMetadata.entrySet())
           {
-            oprot.writeString(_iter23.getKey());
-            oprot.writeString(_iter23.getValue());
+            oprot.writeString(_iter5.getKey());
+            oprot.writeString(_iter5.getValue());
           }
         }
       }
@@ -1615,15 +1615,15 @@ public class DataReplicaLocationModel implements org.apache.thrift.TBase<DataRep
       }
       if (incoming.get(11)) {
         {
-          org.apache.thrift.protocol.TMap _map24 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.replicaMetadata = new HashMap<String,String>(2*_map24.size);
-          String _key25;
-          String _val26;
-          for (int _i27 = 0; _i27 < _map24.size; ++_i27)
+          org.apache.thrift.protocol.TMap _map6 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.replicaMetadata = new HashMap<String,String>(2*_map6.size);
+          String _key7;
+          String _val8;
+          for (int _i9 = 0; _i9 < _map6.size; ++_i9)
           {
-            _key25 = iprot.readString();
-            _val26 = iprot.readString();
-            struct.replicaMetadata.put(_key25, _val26);
+            _key7 = iprot.readString();
+            _val8 = iprot.readString();
+            struct.replicaMetadata.put(_key7, _val8);
           }
         }
         struct.setReplicaMetadataIsSet(true);

@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,13 +16,11 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
-
+ */
 package org.apache.airavata.testsuite.multitenantedairavata.utils;
 
 
 public enum PropertyFileType {
-    AIRAVATA_CLIENT
+    AIRAVATA_SERVER
 //    TEST_FRAMEWORK
 }

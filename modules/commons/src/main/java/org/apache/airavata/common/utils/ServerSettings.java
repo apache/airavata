@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.common.utils;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -27,6 +25,8 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ServerSettings extends ApplicationSettings {
 
@@ -68,13 +68,20 @@ public class ServerSettings extends ApplicationSettings {
     public static final String ZOOKEEPER_SERVER_CONNECTION = "zookeeper.server.connection";
     public static final String ZOOKEEPER_TIMEOUT = "zookeeper.timeout";
 
+    // Aurora Scheduler Constants
+    public static final String AURORA_SCHEDULER_HOSTS = "aurora.scheduler.hosts";
+	public static final String AURORA_EXECUTOR_NAME = "aurora.executor.name";
+	public static final String MESOS_CLUSTER_NAME = "mesos.cluster.name";
+	public static final String AURORA_SCHEDULER_CONNECT_TIMEOUT_MS = "aurora.scheduler.timeoutms";
+	public static final String AURORA_EXECUTOR_CONFIG_TEMPLATE_FILE = "aurora.executor.config.template.filename";
 
     private static final String CREDENTIAL_STORE_DB_URL = "credential.store.jdbc.url";
     private static final String CREDENTIAL_STORE_DB_USER = "credential.store.jdbc.user";
     private static final String CREDENTIAL_STORE_DB_PASSWORD = "credential.store.jdbc.password";
     private static final String CREDENTIAL_STORE_DB_DRIVER = "credential.store.jdbc.driver";
+    private static final java.lang.String SHARING_REGISTRY_PORT = "sharing.registry.server.port";
+    private static final java.lang.String SHARING_REGISTRY_HOST = "sharing.registry.server.host";
 
-    private static String USER_PROFILE_MONGODB_HOST = "userprofile.mongodb.host";
     private static String USER_PROFILE_MONGODB_PORT = "userprofile.mongodb.port";
 
     private static final String REGISTRY_DB_URL = "registry.jdbc.url";
@@ -113,6 +120,31 @@ public class ServerSettings extends ApplicationSettings {
     private static final String EMAIL_BASED_MONITOR_FOLDER_NAME = "email.based.monitor.folder.name";
     private static final String EMAIL_BASED_MONITOR_STORE_PROTOCOL = "email.based.monitor.store.protocol";
     private static final String ENABLE_EMAIL_BASED_MONITORING = "enable.email.based.monitoring";
+
+    private static final String IS_RUNNING_ON_AWS = "isRunningOnAws";
+    private static final String ENABLE_KAFKA_LOGGING = "enable.kafka.logging";
+    private static final String KAFKA_BROKER_LIST = "kafka.broker.list";
+    private static final String KAFKA_TOPIC_PREFIX = "kafka.topic.prefix";
+    private static final String SERVER_ROLES = "server.roles";
+
+    //User Profile onstants
+
+    public static final String USER_PROFILE_SERVER_HOST = "user.profile.server.host";
+    public static final String USER_PROFILE_SERVER_PORT = "user.profile.server.port";
+
+    // Profile Service Constants
+    public static final String PROFILE_SERVICE_SERVER_HOST = "profile.service.server.host";
+    public static final String PROFILE_SERVICE_SERVER_PORT = "profile.service.server.port";
+
+    // Iam Server Constants
+    public static final String IAM_SERVER_URL = "iam.server.url";
+    public static final String NEW_GATEWAY_ADMIN_TEMP_PASSWORD="new.gateway.admin.temp.password";
+
+    /* Caching */
+    private static final String SESSION_CACHE_ACCESS_TIME_OUT = "ssh.session.cache.access.timeout";
+
+    // todo until AIRAVATA-2066 is finished, keep server side list configurations here.
+    private static Map<String, String[]> listConfigurations = new HashMap<>();
 
     private static boolean stopAllThreads = false;
     private static boolean emailBaseNotificationEnable;
@@ -308,6 +340,11 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(Constants.REMOTE_OAUTH_SERVER_URL);
     }
 
+    public static String getRemoteIDPServiceUrl() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.IAM_SERVER_URL);
+    }
+
+
     public static String getAuthorizationPoliyName() throws ApplicationSettingsException {
         return getSetting(Constants.AUTHORIZATION_POLICY_NAME);
     }
@@ -396,19 +433,66 @@ public class ServerSettings extends ApplicationSettings {
         return Integer.valueOf(getSetting(Constants.IN_MEMORY_CACHE_SIZE));
     }
 
-    public static String getUserProfileMongodbHost() throws ApplicationSettingsException{
-        return getSetting(USER_PROFILE_MONGODB_HOST);
-    }
-
-    public static int getUserProfileMongodbPort() throws ApplicationSettingsException{
-        return Integer.parseInt(getSetting(USER_PROFILE_MONGODB_PORT));
-    }
-
     public static String getLocalDataLocation() {
         return System.getProperty("java.io.tmpdir");
     }
 
     public static Boolean isEnableSharing() throws ApplicationSettingsException {
         return Boolean.parseBoolean(getSetting(ENABLE_SHARING));
+    }
+    public static boolean isRunningOnAws() {
+        return Boolean.valueOf(getSetting(IS_RUNNING_ON_AWS, "false"));
+    }
+
+    public static String getKafkaBrokerList() {
+        return getSetting(KAFKA_BROKER_LIST, null);
+    }
+
+    public static String getKafkaTopicPrefix() {
+        return getSetting(KAFKA_TOPIC_PREFIX, "all");
+    }
+
+    public static boolean isEnabledKafkaLogging() {
+        return Boolean.valueOf(getSetting(ENABLE_KAFKA_LOGGING, "false"));
+    }
+
+    public static void setServerRoles(String[] roles) {
+        listConfigurations.put(SERVER_ROLES, roles);
+    }
+
+    public static String[] getServerRoles() {
+        return listConfigurations.get(SERVER_ROLES);
+    }
+    
+    public static String getAuroraSchedulerHosts() throws ApplicationSettingsException {
+    	return getSetting(AURORA_SCHEDULER_HOSTS);
+    }
+    
+    public static String getMesosClusterName() throws ApplicationSettingsException {
+    	return getSetting(MESOS_CLUSTER_NAME);
+    }
+    
+    public static String getAuroraExecutorName() throws ApplicationSettingsException {
+    	return getSetting(AURORA_EXECUTOR_NAME);
+    }
+    
+    public static String getAuroraExecutorConfigTemplateFileName() throws ApplicationSettingsException {
+    	return getSetting(AURORA_EXECUTOR_CONFIG_TEMPLATE_FILE);
+    }
+    
+    public static int getAuroraSchedulerTimeout() throws ApplicationSettingsException {
+    	return Integer.valueOf(getSetting(AURORA_SCHEDULER_CONNECT_TIMEOUT_MS));
+    }
+
+    public static int getSessionCacheAccessTimeout() {
+        return Integer.valueOf(getSetting(SESSION_CACHE_ACCESS_TIME_OUT, "30"));
+    }
+
+    public static String getSharingRegistryPort() {
+        return getSetting(SHARING_REGISTRY_PORT, "7878");
+    }
+
+    public static String getSharingRegistryHost() {
+        return getSetting(SHARING_REGISTRY_HOST, "localhost");
     }
 }

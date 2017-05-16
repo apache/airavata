@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.registry.core.app.catalog.resources;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -48,6 +46,11 @@ public class AppDeploymentResource extends AppCatAbstractResource {
     private String parallelism;
     private String appDes;
     private String gatewayId;
+    private String defaultQueueName;
+    private int defaultNodeCount;
+    private int defaultCPUCount;
+    private int defaultWalltime;
+    private boolean editableByUser;
     private ComputeResourceResource hostResource;
     private AppModuleResource moduleResource;
     private Timestamp createdTime;
@@ -131,6 +134,46 @@ public class AppDeploymentResource extends AppCatAbstractResource {
 
     public void setModuleResource(AppModuleResource moduleResource) {
         this.moduleResource = moduleResource;
+    }
+
+    public String getDefaultQueueName() {
+        return defaultQueueName;
+    }
+
+    public void setDefaultQueueName(String defaultQueueName) {
+        this.defaultQueueName = defaultQueueName;
+    }
+
+    public int getDefaultNodeCount() {
+        return defaultNodeCount;
+    }
+
+    public void setDefaultNodeCount(int defaultNodeCount) {
+        this.defaultNodeCount = defaultNodeCount;
+    }
+
+    public int getDefaultCPUCount() {
+        return defaultCPUCount;
+    }
+
+    public void setDefaultCPUCount(int defaultCPUCount) {
+        this.defaultCPUCount = defaultCPUCount;
+    }
+
+    public boolean isEditableByUser() {
+        return editableByUser;
+    }
+
+    public void setEditableByUser(boolean editableByUser) {
+        this.editableByUser = editableByUser;
+    }
+
+    public int getDefaultWalltime() {
+        return defaultWalltime;
+    }
+
+    public void setDefaultWalltime(int defaultWalltime) {
+        this.defaultWalltime = defaultWalltime;
     }
 
     @Override
@@ -423,6 +466,11 @@ public class AppDeploymentResource extends AppCatAbstractResource {
                 existingDeployment.setExecutablePath(executablePath);
                 existingDeployment.setParallelism(parallelism);
                 existingDeployment.setGatewayId(gatewayId);
+                existingDeployment.setDefaultQueueName(defaultQueueName);
+                existingDeployment.setDefaultCPUCount(defaultCPUCount);
+                existingDeployment.setDefaultNodeCount(defaultNodeCount);
+                existingDeployment.setDefaultWalltime(defaultWalltime);
+                existingDeployment.setEditableByUser(editableByUser);
                 existingDeployment.setUpdateTime(AiravataUtils.getCurrentTimestamp());
                 em.merge(existingDeployment);
             }else {
@@ -436,6 +484,11 @@ public class AppDeploymentResource extends AppCatAbstractResource {
                 deployment.setExecutablePath(executablePath);
                 deployment.setParallelism(parallelism);
                 deployment.setGatewayId(gatewayId);
+                deployment.setDefaultQueueName(defaultQueueName);
+                deployment.setDefaultCPUCount(defaultCPUCount);
+                deployment.setDefaultNodeCount(defaultNodeCount);
+                deployment.setDefaultWalltime(defaultWalltime);
+                deployment.setEditableByUser(editableByUser);
                 deployment.setCreationTime(AiravataUtils.getCurrentTimestamp());
                 em.persist(deployment);
             }

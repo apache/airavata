@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.registry.core.app.catalog.model;
 
 import java.io.Serializable;
@@ -46,6 +44,9 @@ public class LocalSubmission implements Serializable {
 	@Id
 	@Column(name = "JOB_SUBMISSION_INTERFACE_ID")
 	private String jobSubmissionInterfaceId;
+
+	@Column(name = "SECURITY_PROTOCOL")
+	private String securityProtocol;
 
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
@@ -91,5 +92,13 @@ public class LocalSubmission implements Serializable {
 	
 	public void setJobSubmissionInterfaceId(String jobSubmissionInterfaceId) {
 		this.jobSubmissionInterfaceId=jobSubmissionInterfaceId;
+	}
+
+	public String getSecurityProtocol() {
+		return securityProtocol;
+	}
+
+	public void setSecurityProtocol(String securityProtocol) {
+		this.securityProtocol=securityProtocol;
 	}
 }

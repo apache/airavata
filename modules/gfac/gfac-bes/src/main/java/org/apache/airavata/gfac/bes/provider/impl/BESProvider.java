@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,7 +16,6 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
 package org.apache.airavata.gfac.bes.provider.impl;
 
@@ -144,10 +143,9 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
             JobDetails jobDetails = new JobDetails();
             FactoryClient factory = new FactoryClient(eprt, secProperties);
 
-            log.info(String.format("Activity Submitting to %s ... \n",
-                    factoryUrl));
+            log.info("Activity Submitting to {} ... \n", factoryUrl));
             CreateActivityResponseDocument response = factory.createActivity(cad);
-            log.info(String.format("Activity Submitted to %s \n", factoryUrl));
+            log.info("Activity Submitted to {} \n", factoryUrl);
 
             EndpointReferenceType activityEpr = response.getCreateActivityResponse().getActivityIdentifier();
 

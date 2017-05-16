@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,18 +16,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.registry.core.app.catalog.resources;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.registry.core.app.catalog.model.BatchQueue;
@@ -40,6 +30,13 @@ import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class BatchQueueResource extends AppCatAbstractResource {
 	private final static Logger logger = LoggerFactory.getLogger(BatchQueueResource.class);
 	private String computeResourceId;
@@ -51,6 +48,11 @@ public class BatchQueueResource extends AppCatAbstractResource {
 	private int maxProcessors;
 	private int maxNodes;
 	private int maxMemory;
+	private int cpuPerNode;
+	private int defaultNodeCount;
+	private int defaultCPUCount;
+	private boolean isDefaultQueue;
+
 
 	@Override
 	public void remove(Object identifier) throws AppCatalogException {
@@ -270,6 +272,10 @@ public class BatchQueueResource extends AppCatAbstractResource {
 			batchQueue.setMaxProcessors(getMaxProcessors());
 			batchQueue.setMaxNodes(getMaxNodes());
 			batchQueue.setMaxMemory(getMaxMemory());
+			batchQueue.setCpuPerNode(getCpuPerNode());
+			batchQueue.setDefaultCPUCount(getDefaultCPUCount());
+			batchQueue.setDefaultNodeCount(getDefaultNodeCount());
+			batchQueue.setIsDefaultQueue(isDefaultQueue());
 			if (existingBatchQueue == null) {
 				em.persist(batchQueue);
 			} else {
@@ -399,4 +405,36 @@ public class BatchQueueResource extends AppCatAbstractResource {
     public void setMaxMemory(int maxMemory) {
         this.maxMemory = maxMemory;
     }
+
+	public int getCpuPerNode() {
+		return cpuPerNode;
+	}
+
+	public void setCpuPerNode(int cpuPerNode) {
+		this.cpuPerNode = cpuPerNode;
+	}
+
+	public int getDefaultNodeCount() {
+		return defaultNodeCount;
+	}
+
+	public void setDefaultNodeCount(int defaultNodeCount) {
+		this.defaultNodeCount = defaultNodeCount;
+	}
+
+	public int getDefaultCPUCount() {
+		return defaultCPUCount;
+	}
+
+	public void setDefaultCPUCount(int defaultCPUCount) {
+		this.defaultCPUCount = defaultCPUCount;
+	}
+
+	public boolean isDefaultQueue() {
+		return isDefaultQueue;
+	}
+
+	public void setIsDefaultQueue(boolean isDefaultQueue) {
+		this.isDefaultQueue = isDefaultQueue;
+	}
 }

@@ -1,0 +1,79 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+
+################################################################################
+- name: Create registry deployment directory
+  file: path="{{ registry_dir }}" state=directory owner={{ user }} group={{ group }}
+  when: build|success
+
+- name: Check previous deployments
+  stat: path="{{ registry_dir }}/{{ airavata_dist }}" get_md5=no get_checksum=no
+  register: check
+
+- name: stop registry
+  command: ./bin/airavata-server-stop.sh -f
+           chdir="{{ registry_dir }}/{{ airavata_dist }}/"
+           removes="{{ registry_dir }}/{{ airavata_dist }}/bin/server_start_*"
+  when: check.stat.exists == True
+
+- name: Delete previous deployments
+  file: path="{{ registry_dir }}/{{ airavata_dist }}" state=absent
+
+- name: Copy distribution to registry deployment directory
+  unarchive: src="{{ airavata_source_dir }}/modules/distribution/target/{{ airavata_dist_name }}"
+             dest="{{ registry_dir }}/"
+             copy=no
+
+- name: set gfac private ip
+  set_fact:
+    registry_host: "{{ ansible_eth0.ipv4.address }}"
+
+- name: Copy Airavata server properties file
+  template: src=airavata-server.properties.j2
+            dest="{{ registry_dir }}/{{ airavata_dist }}/bin/airavata-server.properties"
+            owner={{ user }}
+            group={{ group }}
+            mode="u=rw,g=r,o=r"
+
+- name: Copy Mysql jar to lib
+  copy: src="{{ mysql_connector_jar }}"
+        dest="{{ registry_dir }}/{{ airavata_dist }}/lib/{{ mysql_connector_jar }}"
+        owner={{ user }}
+        group={{ group }}
+
+
+- name: Open firwall ports
+  firewalld: port="{{ registry_port }}/tcp" zone=public permanent=true state=enabled immediate=yes
+  become_user: root
+
+- name: stop registry
+  command: ./bin/airavata-server-stop.sh -f
+           chdir="{{ registry_dir }}/{{ airavata_dist }}/"
+           removes="{{ registry_dir }}/{{ airavata_dist }}/bin/server_start_*"
+
+- name: start registry
+  command: ./bin/airavata-server-start.sh regserver -d
+           chdir="{{ registry_dir }}/{{ airavata_dist }}/"
+           creates="{{ registry_dir }}/{{ airavata_dist }}/bin/server_start_*"
+
+
+...

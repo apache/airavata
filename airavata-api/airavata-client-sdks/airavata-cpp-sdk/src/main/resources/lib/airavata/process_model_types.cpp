@@ -53,9 +53,9 @@ void ProcessModel::__set_lastUpdateTime(const int64_t val) {
 __isset.lastUpdateTime = true;
 }
 
-void ProcessModel::__set_processStatus(const std::vector< ::apache::airavata::model::status::ProcessStatus> & val) {
-  this->processStatus = val;
-__isset.processStatus = true;
+void ProcessModel::__set_processStatuses(const std::vector< ::apache::airavata::model::status::ProcessStatus> & val) {
+  this->processStatuses = val;
+__isset.processStatuses = true;
 }
 
 void ProcessModel::__set_processDetail(const std::string& val) {
@@ -103,9 +103,9 @@ void ProcessModel::__set_taskDag(const std::string& val) {
 __isset.taskDag = true;
 }
 
-void ProcessModel::__set_processError(const std::vector< ::apache::airavata::model::commons::ErrorModel> & val) {
-  this->processError = val;
-__isset.processError = true;
+void ProcessModel::__set_processErrors(const std::vector< ::apache::airavata::model::commons::ErrorModel> & val) {
+  this->processErrors = val;
+__isset.processErrors = true;
 }
 
 void ProcessModel::__set_gatewayExecutionId(const std::string& val) {
@@ -146,6 +146,11 @@ __isset.experimentDataDir = true;
 void ProcessModel::__set_userName(const std::string& val) {
   this->userName = val;
 __isset.userName = true;
+}
+
+void ProcessModel::__set_useUserCRPref(const bool val) {
+  this->useUserCRPref = val;
+__isset.useUserCRPref = true;
 }
 
 uint32_t ProcessModel::read(::apache::thrift::protocol::TProtocol* iprot) {
@@ -206,19 +211,19 @@ uint32_t ProcessModel::read(::apache::thrift::protocol::TProtocol* iprot) {
       case 5:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
-            this->processStatus.clear();
+            this->processStatuses.clear();
             uint32_t _size0;
             ::apache::thrift::protocol::TType _etype3;
             xfer += iprot->readListBegin(_etype3, _size0);
-            this->processStatus.resize(_size0);
+            this->processStatuses.resize(_size0);
             uint32_t _i4;
             for (_i4 = 0; _i4 < _size0; ++_i4)
             {
-              xfer += this->processStatus[_i4].read(iprot);
+              xfer += this->processStatuses[_i4].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
-          this->__isset.processStatus = true;
+          this->__isset.processStatuses = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -334,19 +339,19 @@ uint32_t ProcessModel::read(::apache::thrift::protocol::TProtocol* iprot) {
       case 15:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
-            this->processError.clear();
+            this->processErrors.clear();
             uint32_t _size20;
             ::apache::thrift::protocol::TType _etype23;
             xfer += iprot->readListBegin(_etype23, _size20);
-            this->processError.resize(_size20);
+            this->processErrors.resize(_size20);
             uint32_t _i24;
             for (_i24 = 0; _i24 < _size20; ++_i24)
             {
-              xfer += this->processError[_i24].read(iprot);
+              xfer += this->processErrors[_i24].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
-          this->__isset.processError = true;
+          this->__isset.processErrors = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -427,6 +432,14 @@ uint32_t ProcessModel::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 24:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->useUserCRPref);
+          this->__isset.useUserCRPref = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -466,12 +479,12 @@ uint32_t ProcessModel::write(::apache::thrift::protocol::TProtocol* oprot) const
     xfer += oprot->writeI64(this->lastUpdateTime);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.processStatus) {
-    xfer += oprot->writeFieldBegin("processStatus", ::apache::thrift::protocol::T_LIST, 5);
+  if (this->__isset.processStatuses) {
+    xfer += oprot->writeFieldBegin("processStatuses", ::apache::thrift::protocol::T_LIST, 5);
     {
-      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->processStatus.size()));
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->processStatuses.size()));
       std::vector< ::apache::airavata::model::status::ProcessStatus> ::const_iterator _iter30;
-      for (_iter30 = this->processStatus.begin(); _iter30 != this->processStatus.end(); ++_iter30)
+      for (_iter30 = this->processStatuses.begin(); _iter30 != this->processStatuses.end(); ++_iter30)
       {
         xfer += (*_iter30).write(oprot);
       }
@@ -548,12 +561,12 @@ uint32_t ProcessModel::write(::apache::thrift::protocol::TProtocol* oprot) const
     xfer += oprot->writeString(this->taskDag);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.processError) {
-    xfer += oprot->writeFieldBegin("processError", ::apache::thrift::protocol::T_LIST, 15);
+  if (this->__isset.processErrors) {
+    xfer += oprot->writeFieldBegin("processErrors", ::apache::thrift::protocol::T_LIST, 15);
     {
-      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->processError.size()));
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->processErrors.size()));
       std::vector< ::apache::airavata::model::commons::ErrorModel> ::const_iterator _iter34;
-      for (_iter34 = this->processError.begin(); _iter34 != this->processError.end(); ++_iter34)
+      for (_iter34 = this->processErrors.begin(); _iter34 != this->processErrors.end(); ++_iter34)
       {
         xfer += (*_iter34).write(oprot);
       }
@@ -609,6 +622,11 @@ uint32_t ProcessModel::write(::apache::thrift::protocol::TProtocol* oprot) const
     xfer += oprot->writeString(this->userName);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.useUserCRPref) {
+    xfer += oprot->writeFieldBegin("useUserCRPref", ::apache::thrift::protocol::T_BOOL, 24);
+    xfer += oprot->writeBool(this->useUserCRPref);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -620,7 +638,7 @@ void swap(ProcessModel &a, ProcessModel &b) {
   swap(a.experimentId, b.experimentId);
   swap(a.creationTime, b.creationTime);
   swap(a.lastUpdateTime, b.lastUpdateTime);
-  swap(a.processStatus, b.processStatus);
+  swap(a.processStatuses, b.processStatuses);
   swap(a.processDetail, b.processDetail);
   swap(a.applicationInterfaceId, b.applicationInterfaceId);
   swap(a.applicationDeploymentId, b.applicationDeploymentId);
@@ -630,7 +648,7 @@ void swap(ProcessModel &a, ProcessModel &b) {
   swap(a.processResourceSchedule, b.processResourceSchedule);
   swap(a.tasks, b.tasks);
   swap(a.taskDag, b.taskDag);
-  swap(a.processError, b.processError);
+  swap(a.processErrors, b.processErrors);
   swap(a.gatewayExecutionId, b.gatewayExecutionId);
   swap(a.enableEmailNotification, b.enableEmailNotification);
   swap(a.emailAddresses, b.emailAddresses);
@@ -639,6 +657,7 @@ void swap(ProcessModel &a, ProcessModel &b) {
   swap(a.generateCert, b.generateCert);
   swap(a.experimentDataDir, b.experimentDataDir);
   swap(a.userName, b.userName);
+  swap(a.useUserCRPref, b.useUserCRPref);
   swap(a.__isset, b.__isset);
 }
 
@@ -647,7 +666,7 @@ ProcessModel::ProcessModel(const ProcessModel& other36) {
   experimentId = other36.experimentId;
   creationTime = other36.creationTime;
   lastUpdateTime = other36.lastUpdateTime;
-  processStatus = other36.processStatus;
+  processStatuses = other36.processStatuses;
   processDetail = other36.processDetail;
   applicationInterfaceId = other36.applicationInterfaceId;
   applicationDeploymentId = other36.applicationDeploymentId;
@@ -657,7 +676,7 @@ ProcessModel::ProcessModel(const ProcessModel& other36) {
   processResourceSchedule = other36.processResourceSchedule;
   tasks = other36.tasks;
   taskDag = other36.taskDag;
-  processError = other36.processError;
+  processErrors = other36.processErrors;
   gatewayExecutionId = other36.gatewayExecutionId;
   enableEmailNotification = other36.enableEmailNotification;
   emailAddresses = other36.emailAddresses;
@@ -666,6 +685,7 @@ ProcessModel::ProcessModel(const ProcessModel& other36) {
   generateCert = other36.generateCert;
   experimentDataDir = other36.experimentDataDir;
   userName = other36.userName;
+  useUserCRPref = other36.useUserCRPref;
   __isset = other36.__isset;
 }
 ProcessModel& ProcessModel::operator=(const ProcessModel& other37) {
@@ -673,7 +693,7 @@ ProcessModel& ProcessModel::operator=(const ProcessModel& other37) {
   experimentId = other37.experimentId;
   creationTime = other37.creationTime;
   lastUpdateTime = other37.lastUpdateTime;
-  processStatus = other37.processStatus;
+  processStatuses = other37.processStatuses;
   processDetail = other37.processDetail;
   applicationInterfaceId = other37.applicationInterfaceId;
   applicationDeploymentId = other37.applicationDeploymentId;
@@ -683,7 +703,7 @@ ProcessModel& ProcessModel::operator=(const ProcessModel& other37) {
   processResourceSchedule = other37.processResourceSchedule;
   tasks = other37.tasks;
   taskDag = other37.taskDag;
-  processError = other37.processError;
+  processErrors = other37.processErrors;
   gatewayExecutionId = other37.gatewayExecutionId;
   enableEmailNotification = other37.enableEmailNotification;
   emailAddresses = other37.emailAddresses;
@@ -692,6 +712,7 @@ ProcessModel& ProcessModel::operator=(const ProcessModel& other37) {
   generateCert = other37.generateCert;
   experimentDataDir = other37.experimentDataDir;
   userName = other37.userName;
+  useUserCRPref = other37.useUserCRPref;
   __isset = other37.__isset;
   return *this;
 }
@@ -702,7 +723,7 @@ void ProcessModel::printTo(std::ostream& out) const {
   out << ", " << "experimentId=" << to_string(experimentId);
   out << ", " << "creationTime="; (__isset.creationTime ? (out << to_string(creationTime)) : (out << "<null>"));
   out << ", " << "lastUpdateTime="; (__isset.lastUpdateTime ? (out << to_string(lastUpdateTime)) : (out << "<null>"));
-  out << ", " << "processStatus="; (__isset.processStatus ? (out << to_string(processStatus)) : (out << "<null>"));
+  out << ", " << "processStatuses="; (__isset.processStatuses ? (out << to_string(processStatuses)) : (out << "<null>"));
   out << ", " << "processDetail="; (__isset.processDetail ? (out << to_string(processDetail)) : (out << "<null>"));
   out << ", " << "applicationInterfaceId="; (__isset.applicationInterfaceId ? (out << to_string(applicationInterfaceId)) : (out << "<null>"));
   out << ", " << "applicationDeploymentId="; (__isset.applicationDeploymentId ? (out << to_string(applicationDeploymentId)) : (out << "<null>"));
@@ -712,7 +733,7 @@ void ProcessModel::printTo(std::ostream& out) const {
   out << ", " << "processResourceSchedule="; (__isset.processResourceSchedule ? (out << to_string(processResourceSchedule)) : (out << "<null>"));
   out << ", " << "tasks="; (__isset.tasks ? (out << to_string(tasks)) : (out << "<null>"));
   out << ", " << "taskDag="; (__isset.taskDag ? (out << to_string(taskDag)) : (out << "<null>"));
-  out << ", " << "processError="; (__isset.processError ? (out << to_string(processError)) : (out << "<null>"));
+  out << ", " << "processErrors="; (__isset.processErrors ? (out << to_string(processErrors)) : (out << "<null>"));
   out << ", " << "gatewayExecutionId="; (__isset.gatewayExecutionId ? (out << to_string(gatewayExecutionId)) : (out << "<null>"));
   out << ", " << "enableEmailNotification="; (__isset.enableEmailNotification ? (out << to_string(enableEmailNotification)) : (out << "<null>"));
   out << ", " << "emailAddresses="; (__isset.emailAddresses ? (out << to_string(emailAddresses)) : (out << "<null>"));
@@ -721,6 +742,7 @@ void ProcessModel::printTo(std::ostream& out) const {
   out << ", " << "generateCert="; (__isset.generateCert ? (out << to_string(generateCert)) : (out << "<null>"));
   out << ", " << "experimentDataDir="; (__isset.experimentDataDir ? (out << to_string(experimentDataDir)) : (out << "<null>"));
   out << ", " << "userName="; (__isset.userName ? (out << to_string(userName)) : (out << "<null>"));
+  out << ", " << "useUserCRPref="; (__isset.useUserCRPref ? (out << to_string(useUserCRPref)) : (out << "<null>"));
   out << ")";
 }
 

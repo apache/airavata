@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,10 +16,10 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
 package org.apache.airavata.gfac.impl.task;
 
+import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.TaskContext;
@@ -50,7 +50,7 @@ public class EnvironmentSetupTask implements Task {
 			RemoteCluster remoteCluster = taskContext.getParentProcessContext().getJobSubmissionRemoteCluster();
 			remoteCluster.makeDirectory(taskContext.getParentProcessContext().getWorkingDir());
 			status.setReason("Successfully created environment");
-		} catch (SSHApiException e) {
+		} catch (GFacException e) {
 			String msg = "Error while environment setup";
 			log.error(msg, e);
 			status.setState(TaskState.FAILED);

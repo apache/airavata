@@ -10,6 +10,7 @@ from thrift.Thrift import TType, TMessageType, TException, TApplicationException
 import apache.airavata.api.error.ttypes
 import apache.airavata.model.security.ttypes
 import apache.airavata.model.ttypes
+import credential_store_data_models.ttypes
 import apache.airavata.model.status.ttypes
 import apache.airavata.model.job.ttypes
 import apache.airavata.model.experiment.ttypes
@@ -21,10 +22,12 @@ import apache.airavata.model.appcatalog.appinterface.ttypes
 import apache.airavata.model.appcatalog.computeresource.ttypes
 import apache.airavata.model.appcatalog.storageresource.ttypes
 import apache.airavata.model.appcatalog.gatewayprofile.ttypes
+import apache.airavata.model.appcatalog.userresourceprofile.ttypes
 import apache.airavata.model.data.movement.ttypes
 import apache.airavata.model.workflow.ttypes
 import apache.airavata.model.data.replica.ttypes
 import apache.airavata.model.group.ttypes
+import apache.airavata.model.user.ttypes
 
 
 from thrift.transport import TTransport

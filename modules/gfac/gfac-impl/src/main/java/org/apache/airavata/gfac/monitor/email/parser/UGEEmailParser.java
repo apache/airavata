@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,8 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.gfac.monitor.email.parser;
 
 import org.apache.airavata.common.exception.AiravataException;
@@ -41,6 +40,7 @@ public class UGEEmailParser implements EmailParser {
     public static final String STARTED = "Started";
     public static final String COMPLETE = "Complete";
     public static final String FAILED = "Failed";
+    public static final String KILLED = "Killed";
     private static final String REGEX_EXIT_STATUS = "Exit Status[ ]*=[ ]*(?<" + EXIT_STATUS + ">[\\d]+)";
     public static final String ABORTED = "Aborted";
 
@@ -49,6 +49,11 @@ public class UGEEmailParser implements EmailParser {
     public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException {
         JobStatusResult jobStatusResult = new JobStatusResult();
 
+        parseContent(message, jobStatusResult);
+        return jobStatusResult;
+    }
+
+    private void parseContent(Message message, JobStatusResult jobStatusResult) throws MessagingException, AiravataException {
         String subject = message.getSubject();
         Pattern pattern = Pattern.compile(REGEX);
         Matcher matcher = pattern.matcher(subject);
@@ -64,7 +69,6 @@ public class UGEEmailParser implements EmailParser {
         } catch (IOException e) {
             throw new AiravataException("[EJM]: Error while reading content of the email message");
         }
-        return jobStatusResult;
     }
 
     private JobState getJobState(String status, String content) {
@@ -82,7 +86,7 @@ public class UGEEmailParser implements EmailParser {
             case FAILED:
                 return JobState.FAILED;
             case ABORTED:
-                return JobState.FAILED;
+                return JobState.CANCELED;
             default:
                 return JobState.UNKNOWN;
 

@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,10 +16,12 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
 package org.apache.airavata.gfac.impl;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.RemovalListener;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
@@ -62,6 +64,7 @@ import org.apache.airavata.gfac.impl.job.UGEJobConfiguration;
 import org.apache.airavata.gfac.impl.task.ArchiveTask;
 import org.apache.airavata.gfac.impl.watcher.CancelRequestWatcherImpl;
 import org.apache.airavata.gfac.impl.watcher.RedeliveryRequestWatcherImpl;
+import org.apache.airavata.gfac.monitor.cloud.AuroraJobMonitor;
 import org.apache.airavata.gfac.monitor.email.EmailBasedMonitor;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.MessagingFactory;
@@ -73,10 +76,7 @@ import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtoco
 import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
-import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
@@ -95,6 +95,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public abstract class Factory {
 
@@ -119,6 +120,7 @@ public abstract class Factory {
 	private static Map<MonitorMode, JobMonitor> jobMonitorServices = new HashMap<>();
 	private static Subscriber processLaunchSubscriber;
 	private static Map<String, Session> sessionMap = new HashMap<>();
+	private static Cache<String,Session> sessionCache;
 
 	public static GFacEngine getGFacEngine() throws GFacException {
 		if (engine == null) {
@@ -129,6 +131,46 @@ public abstract class Factory {
 			}
 		}
 		return engine;
+	}
+
+	public static void loadConfiguration() throws GFacException {
+		GFacYamlConfigruation config = new GFacYamlConfigruation();
+		try {
+			for (JobSubmitterTaskConfig jobSubmitterTaskConfig : config.getJobSbumitters()) {
+				String taskClass = jobSubmitterTaskConfig.getTaskClass();
+				Class<?> aClass = Class.forName(taskClass);
+				Constructor<?> constructor = aClass.getConstructor();
+				JobSubmissionTask task = (JobSubmissionTask) constructor.newInstance();
+				task.init(jobSubmitterTaskConfig.getProperties());
+				jobSubmissionTask.put(jobSubmitterTaskConfig.getSubmissionProtocol(), task);
+			}
+
+			for (DataTransferTaskConfig dataTransferTaskConfig : config.getFileTransferTasks()) {
+				String taskClass = dataTransferTaskConfig.getTaskClass();
+				Class<?> aClass = Class.forName(taskClass);
+				Constructor<?> constructor = aClass.getConstructor();
+				Task task = (Task) constructor.newInstance();
+				task.init(dataTransferTaskConfig.getProperties());
+				dataMovementTask.put(dataTransferTaskConfig.getTransferProtocol(), task);
+			}
+
+			for (ResourceConfig resourceConfig : config.getResourceConfiguration()) {
+				resources.put(resourceConfig.getJobManagerType(), resourceConfig);
+			}
+		} catch (Exception e) {
+			throw new GFacException("Gfac config issue", e);
+		}
+
+		sessionCache = CacheBuilder.newBuilder()
+				.expireAfterAccess(ServerSettings.getSessionCacheAccessTimeout(), TimeUnit.MINUTES)
+				.removalListener((RemovalListener<String, Session>) removalNotification -> {
+					if (removalNotification.getValue().isConnected()) {
+						log.info("Disconnecting ssh session with key: " + removalNotification.getKey());
+						removalNotification.getValue().disconnect();
+					}
+					log.info("Removed ssh session with key: " + removalNotification.getKey());
+				})
+				.build();
 	}
 
 	public static GFacContext getGfacContext() {
@@ -184,6 +226,9 @@ public abstract class Factory {
 	}
 
 	public static JobManagerConfiguration getJobManagerConfiguration(ResourceJobManager resourceJobManager) throws GFacException {
+		if(resourceJobManager == null)
+			return null;
+
 		ResourceConfig resourceConfig = Factory.getResourceConfig(resourceJobManager.getResourceJobManagerType());
 		OutputParser outputParser;
 		try {
@@ -195,33 +240,34 @@ public abstract class Factory {
 					.getResourceJobManagerType().name());
 		}
 
+		String templateFileName = GFacUtils.getTemplateFileName(resourceJobManager.getResourceJobManagerType());
 		switch (resourceJobManager.getResourceJobManagerType()) {
-
 			case PBS:
-				return new PBSJobConfiguration("PBSTemplate.xslt", ".pbs", resourceJobManager.getJobManagerBinPath(),
+				return new PBSJobConfiguration(templateFileName, ".pbs", resourceJobManager.getJobManagerBinPath(),
 						resourceJobManager.getJobManagerCommands(), outputParser);
 			case SLURM:
-				return new SlurmJobConfiguration("SLURMTemplate.xslt", ".slurm", resourceJobManager
+				return new SlurmJobConfiguration(templateFileName, ".slurm", resourceJobManager
 						.getJobManagerBinPath(), resourceJobManager.getJobManagerCommands(), outputParser);
 			case LSF:
-				return new LSFJobConfiguration("LSFTemplate.xslt", ".lsf", resourceJobManager.getJobManagerBinPath(),
+				return new LSFJobConfiguration(templateFileName, ".lsf", resourceJobManager.getJobManagerBinPath(),
 						resourceJobManager.getJobManagerCommands(), outputParser);
 			case UGE:
-				return new UGEJobConfiguration("UGETemplate.xslt", ".pbs", resourceJobManager.getJobManagerBinPath(),
+				return new UGEJobConfiguration(templateFileName, ".pbs", resourceJobManager.getJobManagerBinPath(),
 						resourceJobManager.getJobManagerCommands(), outputParser);
-            case FORK:
-                return new ForkJobConfiguration("ForkTemplate.xslt", ".sh", resourceJobManager.getJobManagerBinPath(),
-                        resourceJobManager.getJobManagerCommands(), outputParser);
+			case FORK:
+				return new ForkJobConfiguration(templateFileName, ".sh", resourceJobManager.getJobManagerBinPath(),
+						resourceJobManager.getJobManagerCommands(), outputParser);
+			// We don't have a job configuration manager for CLOUD type
 			default:
 				return null;
 		}
 
 	}
 
+
 	public static HostScheduler getHostScheduler() {
 		return new DefaultHostScheduler();
 	}
-
 
 	/**
 	 * Factory class manage reomete cluster map, this will solve too many connections/ sessions issues with cluster
@@ -233,34 +279,51 @@ public abstract class Factory {
 	 * @throws AiravataException
 	 */
 	public static RemoteCluster getJobSubmissionRemoteCluster(ProcessContext processContext)
-            throws GFacException, AppCatalogException, AiravataException {
+			throws GFacException, AppCatalogException, AiravataException, CredentialStoreException {
 
         String computeResourceId = processContext.getComputeResourceId();
         JobSubmissionProtocol jobSubmissionProtocol = processContext.getJobSubmissionProtocol();
-        String key = jobSubmissionProtocol.name() + ":" + computeResourceId;
+		String key = new StringBuilder(processContext.getComputeResourceLoginUserName())
+				.append(':')
+				.append(jobSubmissionProtocol.name())
+				.append(':')
+				.append(computeResourceId)
+				.append(':')
+				.append(processContext.getComputeResourceCredentialToken())
+				.toString();
 		RemoteCluster remoteCluster = remoteClusterMap.get(key);
         if (remoteCluster == null) {
             JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
             if (jobSubmissionProtocol == JobSubmissionProtocol.LOCAL ||
                     jobSubmissionProtocol == JobSubmissionProtocol.LOCAL_FORK) {
-                remoteCluster = new LocalRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration, null);
-            } else if (jobSubmissionProtocol == JobSubmissionProtocol.SSH ||
-                    jobSubmissionProtocol == JobSubmissionProtocol.SSH_FORK) {
-                remoteCluster = new HPCRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration,
-                        processContext.getSshKeyAuthentication());
-            }
+				remoteCluster = new LocalRemoteCluster(processContext.getComputeResourceServerInfo(),
+						jobManagerConfiguration,
+						null);
+			} else if (jobSubmissionProtocol == JobSubmissionProtocol.SSH ||
+                    jobSubmissionProtocol == JobSubmissionProtocol.SSH_FORK
+					|| jobSubmissionProtocol == JobSubmissionProtocol.CLOUD) {
+
+				remoteCluster = new HPCRemoteCluster(processContext.getComputeResourceServerInfo(),
+						jobManagerConfiguration,
+						Factory.getComputerResourceSSHKeyAuthentication(processContext));
+			}else {
+				throw new GFacException("No remote cluster implementation map to job submission protocol "
+						+ jobSubmissionProtocol.name());
+			}
             remoteClusterMap.put(key, remoteCluster);
         }else {
             AuthenticationInfo authentication = remoteCluster.getAuthentication();
             if (authentication instanceof SSHKeyAuthentication){
                 SSHKeyAuthentication sshKeyAuthentication = (SSHKeyAuthentication)authentication;
-                if (!sshKeyAuthentication.getUserName().equals(getLoginUserName(processContext))){
-                    JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
+                if (!sshKeyAuthentication.getUserName().equals(processContext.getComputeResourceLoginUserName())){
+                    JobManagerConfiguration jobManagerConfiguration =
+							getJobManagerConfiguration(processContext.getResourceJobManager());
                     if (jobSubmissionProtocol == JobSubmissionProtocol.SSH ||
                             jobSubmissionProtocol == JobSubmissionProtocol.SSH_FORK) {
-                        remoteCluster = new HPCRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration,
-                                processContext.getSshKeyAuthentication());
-                    }
+						remoteCluster = new HPCRemoteCluster(processContext.getComputeResourceServerInfo(),
+								jobManagerConfiguration,
+								Factory.getComputerResourceSSHKeyAuthentication(processContext));
+					}
                 }
 
             }
@@ -269,33 +332,48 @@ public abstract class Factory {
 	}
 
     public static RemoteCluster getDataMovementRemoteCluster(ProcessContext processContext)
-            throws GFacException, AiravataException {
+			throws GFacException, AiravataException, CredentialStoreException {
 
-        String computeResourceId = processContext.getComputeResourceId();
+        String storageResourceId = processContext.getStorageResourceId();
         DataMovementProtocol dataMovementProtocol = processContext.getDataMovementProtocol();
-        String key = dataMovementProtocol.name() + ":" + computeResourceId;
-        RemoteCluster remoteCluster = remoteClusterMap.get(key);
+		String key = new StringBuilder(processContext.getComputeResourceLoginUserName())
+				.append(':')
+				.append(dataMovementProtocol.name())
+				.append(':')
+				.append(storageResourceId)
+				.append(":")
+				.append(processContext.getStorageResourceCredentialToken())
+				.toString();
+		RemoteCluster remoteCluster = remoteClusterMap.get(key);
         if (remoteCluster == null) {
             JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
             if (dataMovementProtocol == DataMovementProtocol.LOCAL) {
-                remoteCluster = new LocalRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration, null);
-            } else if (dataMovementProtocol == DataMovementProtocol.SCP) {
-                remoteCluster = new HPCRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration,
-                        processContext.getSshKeyAuthentication());
-            }
+				remoteCluster = new LocalRemoteCluster(processContext.getStorageResourceServerInfo(),
+						jobManagerConfiguration,
+						null);
+			} else if (dataMovementProtocol == DataMovementProtocol.SCP) {
+				remoteCluster = new HPCRemoteCluster(processContext.getStorageResourceServerInfo(),
+						jobManagerConfiguration,
+						Factory.getStorageSSHKeyAuthentication(processContext));
+			}else {
+				throw new GFacException("No remote cluster implementation map to job data movement protocol "
+						+ dataMovementProtocol.name());
+			}
 
             remoteClusterMap.put(key, remoteCluster);
         }else {
             AuthenticationInfo authentication = remoteCluster.getAuthentication();
             if (authentication instanceof SSHKeyAuthentication){
                 SSHKeyAuthentication sshKeyAuthentication = (SSHKeyAuthentication)authentication;
-                if (!sshKeyAuthentication.getUserName().equals(getLoginUserName(processContext))){
-                    JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
+                if (!sshKeyAuthentication.getUserName().equals(processContext.getStorageResourceLoginUserName())){
+                    JobManagerConfiguration jobManagerConfiguration =
+							getJobManagerConfiguration(processContext.getResourceJobManager());
                     dataMovementProtocol = processContext.getDataMovementProtocol();
                     if (dataMovementProtocol == DataMovementProtocol.SCP) {
-                        remoteCluster = new HPCRemoteCluster(processContext.getServerInfo(), jobManagerConfiguration,
-                                processContext.getSshKeyAuthentication());
-                    }
+						remoteCluster = new HPCRemoteCluster(processContext.getStorageResourceServerInfo(),
+								jobManagerConfiguration,
+								Factory.getStorageSSHKeyAuthentication(processContext));
+					}
                 }
 
             }
@@ -303,67 +381,28 @@ public abstract class Factory {
         return remoteCluster;
     }
 
-	public static SSHKeyAuthentication getComputerResourceSSHKeyAuthentication(ProcessContext pc) throws GFacException {
+	public static SSHKeyAuthentication getComputerResourceSSHKeyAuthentication(ProcessContext pc)
+			throws GFacException, CredentialStoreException {
         try {
-            ComputeResourcePreference computeResourcePreference = pc.getComputeResourcePreference();
-            String loginUserName = getLoginUserName(pc);
-            String credentialStoreToken = computeResourcePreference.getResourceSpecificCredentialStoreToken();
-            if (credentialStoreToken == null || credentialStoreToken.isEmpty()) {
-                credentialStoreToken = pc.getGatewayResourceProfile().getCredentialStoreToken();
-            }
-            return getSshKeyAuthentication(pc.getGatewayId(),loginUserName, credentialStoreToken);
-        } catch (ApplicationSettingsException | IllegalAccessException | InstantiationException | CredentialStoreException e) {
+			return getSshKeyAuthentication(pc.getGatewayId(),
+					pc.getComputeResourceLoginUserName(),
+					pc.getComputeResourceCredentialToken());
+		} catch (ApplicationSettingsException | IllegalAccessException | InstantiationException e) {
             throw new GFacException("Couldn't build ssh authentication object", e);
         }
     }
 
-    public static SSHKeyAuthentication getStorageSSHKeyAuthentication(ProcessContext pc) throws GFacException {
+    public static SSHKeyAuthentication getStorageSSHKeyAuthentication(ProcessContext pc)
+			throws GFacException, CredentialStoreException {
         try {
-            StoragePreference storagePreference = pc.getStoragePreference();
-            String loginUserName = storagePreference.getLoginUserName();
-            String credentialStoreToken = storagePreference.getResourceSpecificCredentialStoreToken();
-            if (credentialStoreToken == null || credentialStoreToken.isEmpty()) {
-                credentialStoreToken = pc.getGatewayResourceProfile().getCredentialStoreToken();
-            }
-            return getSshKeyAuthentication(pc.getGatewayId(), loginUserName, credentialStoreToken);
-        }  catch (ApplicationSettingsException | IllegalAccessException | InstantiationException | CredentialStoreException e) {
+            return getSshKeyAuthentication(pc.getGatewayId(),
+					pc.getStorageResourceLoginUserName(),
+					pc.getStorageResourceCredentialToken());
+        }  catch (ApplicationSettingsException | IllegalAccessException | InstantiationException e) {
             throw new GFacException("Couldn't build ssh authentication object", e);
         }
     }
 
-    public static String  getLoginUserName(ProcessContext processContext) throws GFacException {
-        try {
-            ProcessModel processModel = processContext.getProcessModel();
-            String loginUserName = null;
-            String overrideLoginUserName = processModel.getProcessResourceSchedule().getOverrideLoginUserName();
-            if (overrideLoginUserName != null && !overrideLoginUserName.equals("")) {
-                loginUserName = overrideLoginUserName;
-            } else {
-                loginUserName = processContext.getComputeResourcePreference().getLoginUserName();
-            }
-
-            return loginUserName;
-        }  catch (Exception e) {
-            throw new GFacException("Couldn't fetch loginUserName", e);
-        }
-    }
-
-    public static String  getScratchLocation(ProcessContext processContext) throws GFacException {
-        try {
-            ProcessModel processModel = processContext.getProcessModel();
-            String scratchLocation = null;
-            String overrideScratchLocation = processModel.getProcessResourceSchedule().getOverrideScratchLocation();
-            if (overrideScratchLocation != null && !overrideScratchLocation.equals("")) {
-                scratchLocation = overrideScratchLocation;
-            } else {
-                scratchLocation = processContext.getComputeResourcePreference().getScratchLocation();
-            }
-
-            return scratchLocation;
-        }  catch (Exception e) {
-            throw new GFacException("Couldn't fetch scratchLocation", e);
-        }
-    }
 
     private static SSHKeyAuthentication getSshKeyAuthentication(String gatewayId,
                                                                 String loginUserName,
@@ -391,10 +430,9 @@ public abstract class Factory {
         } else {
             String msg = "Provided credential store token is not valid. Please provide the correct credential store token";
             log.error(msg);
-            throw new GFacException("Invalid credential store token:" + credentialStoreToken);
+            throw new CredentialStoreException("Invalid credential store token:" + credentialStoreToken);
         }
     }
-
 
 	public static JobSubmissionTask getJobSubmissionTask(JobSubmissionProtocol jobSubmissionProtocol) {
 		return jobSubmissionTask.get(jobSubmissionProtocol);
@@ -412,36 +450,7 @@ public abstract class Factory {
 		return resources;
 	}
 
-	public static void loadConfiguration() throws GFacException {
-		GFacYamlConfigruation config = new GFacYamlConfigruation();
-		try {
-			for (JobSubmitterTaskConfig jobSubmitterTaskConfig : config.getJobSbumitters()) {
-				String taskClass = jobSubmitterTaskConfig.getTaskClass();
-				Class<?> aClass = Class.forName(taskClass);
-				Constructor<?> constructor = aClass.getConstructor();
-				JobSubmissionTask task = (JobSubmissionTask) constructor.newInstance();
-				task.init(jobSubmitterTaskConfig.getProperties());
-				jobSubmissionTask.put(jobSubmitterTaskConfig.getSubmissionProtocol(), task);
-			}
-
-			for (DataTransferTaskConfig dataTransferTaskConfig : config.getFileTransferTasks()) {
-				String taskClass = dataTransferTaskConfig.getTaskClass();
-				Class<?> aClass = Class.forName(taskClass);
-				Constructor<?> constructor = aClass.getConstructor();
-				Task task = (Task) constructor.newInstance();
-				task.init(dataTransferTaskConfig.getProperties());
-				dataMovementTask.put(dataTransferTaskConfig.getTransferProtocol(), task);
-			}
-
-			for (ResourceConfig resourceConfig : config.getResourceConfiguration()) {
-				resources.put(resourceConfig.getJobManagerType(), resourceConfig);
-			}
-		} catch (Exception e) {
-			throw new GFacException("Gfac config issue", e);
-		}
-	}
-
-	public static JobMonitor getMonitorService(MonitorMode monitorMode) throws AiravataException {
+	public static JobMonitor getMonitorService(MonitorMode monitorMode) throws AiravataException, GFacException {
 		JobMonitor jobMonitor = jobMonitorServices.get(monitorMode);
 		if (jobMonitor == null) {
 			synchronized (JobMonitor.class) {
@@ -451,8 +460,18 @@ public abstract class Factory {
 						case JOB_EMAIL_NOTIFICATION_MONITOR:
 							EmailBasedMonitor emailBasedMonitor = new EmailBasedMonitor(Factory.getResourceConfig());
 							jobMonitorServices.put(MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR, emailBasedMonitor);
-							jobMonitor = ((JobMonitor) emailBasedMonitor);
+							jobMonitor = emailBasedMonitor;
 							new Thread(emailBasedMonitor).start();
+							break;
+						case CLOUD_JOB_MONITOR:
+							AuroraJobMonitor auroraJobMonitor = AuroraJobMonitor.getInstance();
+							new Thread(auroraJobMonitor).start();
+							jobMonitorServices.put(MonitorMode.CLOUD_JOB_MONITOR, auroraJobMonitor);
+							jobMonitor = auroraJobMonitor;
+							break;
+						default:
+							throw new GFacException("Unsupported monitor mode :" + monitorMode.name());
+
 					}
 				}
 			}
@@ -460,7 +479,7 @@ public abstract class Factory {
 		return jobMonitor;
 	}
 
-	public static JobMonitor getDefaultMonitorService() throws AiravataException {
+	public static JobMonitor getDefaultMonitorService() throws AiravataException, GFacException {
 		return getMonitorService(MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR);
 	}
 
@@ -472,10 +491,21 @@ public abstract class Factory {
 		return new CancelRequestWatcherImpl(experimentId, processId);
 	}
 
-	public static synchronized Session getSSHSession(AuthenticationInfo authenticationInfo, ServerInfo serverInfo) throws AiravataException {
-		SSHKeyAuthentication authentication = null;
-		String key = serverInfo.getUserName() + "_" + serverInfo.getHost() + "_" + serverInfo.getPort();
-		Session session = sessionMap.get(key);
+	public static synchronized Session getSSHSession(AuthenticationInfo authenticationInfo,
+													 ServerInfo serverInfo) throws GFacException {
+		if (authenticationInfo == null
+				|| serverInfo == null) {
+
+			throw new IllegalArgumentException("Can't create ssh session, argument should be valid (not null)");
+		}
+		SSHKeyAuthentication authentication;
+		if (authenticationInfo instanceof SSHKeyAuthentication) {
+			authentication = (SSHKeyAuthentication) authenticationInfo;
+		} else {
+			throw new GFacException("Support ssh key authentication only");
+		}
+		String key = buildKey(serverInfo);
+		Session session = sessionCache.getIfPresent(key);
 		boolean valid = isValidSession(session);
 		// FIXME - move following info logs to debug
 		if (valid) {
@@ -497,11 +527,7 @@ public abstract class Factory {
 				log.info("Initialize a new SSH session for :" + key);
 			}
 			try {
-				if (authenticationInfo instanceof SSHKeyAuthentication) {
-					authentication = (SSHKeyAuthentication) authenticationInfo;
-				} else {
-					throw new AiravataException("Support ssh key authentication only");
-				}
+
 				JSch jSch = new JSch();
 				jSch.addIdentity(UUID.randomUUID().toString(), authentication.getPrivateKey(), authentication.getPublicKey(),
 						authentication.getPassphrase().getBytes());
@@ -514,16 +540,26 @@ public abstract class Factory {
 					session.setConfig("StrictHostKeyChecking", "no");
 				}
 				session.connect(); // 0 connection timeout
-				sessionMap.put(key, session);
+				sessionCache.put(key, session);
 			} catch (JSchException e) {
-				throw new AiravataException("JSch initialization error ", e);
+				throw new GFacException("JSch initialization error ", e);
 			}
 		} else {
 			// FIXME - move following info log to debug
 			log.info("Reuse SSH session for :" + key);
 		}
-		return sessionMap.get(key);
+		return session;
 
+	}
+
+	private static String buildKey(ServerInfo serverInfo) {
+		return serverInfo.getUserName() +
+				"_" +
+				serverInfo.getHost() +
+				"_" +
+				serverInfo.getPort() +
+				"_" +
+				serverInfo.getCredentialToken();
 	}
 
 	public static void disconnectSSHSession(ServerInfo serverInfo) {

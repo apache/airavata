@@ -217,7 +217,7 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     tmpMap.put(_Fields.REPLICA_LOCATIONS, new org.apache.thrift.meta_data.FieldMetaData("replicaLocations", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT            , "DataReplicaLocationModel"))));
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, DataReplicaLocationModel.class))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(DataProductModel.class, metaDataMap);
   }
@@ -261,7 +261,7 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
     if (other.isSetReplicaLocations()) {
       List<DataReplicaLocationModel> __this__replicaLocations = new ArrayList<DataReplicaLocationModel>(other.replicaLocations.size());
       for (DataReplicaLocationModel other_element : other.replicaLocations) {
-        __this__replicaLocations.add(other_element);
+        __this__replicaLocations.add(new DataReplicaLocationModel(other_element));
       }
       this.replicaLocations = __this__replicaLocations;
     }
@@ -1349,15 +1349,15 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
           case 11: // PRODUCT_METADATA
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
-                org.apache.thrift.protocol.TMap _map0 = iprot.readMapBegin();
-                struct.productMetadata = new HashMap<String,String>(2*_map0.size);
-                String _key1;
-                String _val2;
-                for (int _i3 = 0; _i3 < _map0.size; ++_i3)
+                org.apache.thrift.protocol.TMap _map10 = iprot.readMapBegin();
+                struct.productMetadata = new HashMap<String,String>(2*_map10.size);
+                String _key11;
+                String _val12;
+                for (int _i13 = 0; _i13 < _map10.size; ++_i13)
                 {
-                  _key1 = iprot.readString();
-                  _val2 = iprot.readString();
-                  struct.productMetadata.put(_key1, _val2);
+                  _key11 = iprot.readString();
+                  _val12 = iprot.readString();
+                  struct.productMetadata.put(_key11, _val12);
                 }
                 iprot.readMapEnd();
               }
@@ -1369,14 +1369,14 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
           case 12: // REPLICA_LOCATIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list4 = iprot.readListBegin();
-                struct.replicaLocations = new ArrayList<DataReplicaLocationModel>(_list4.size);
-                DataReplicaLocationModel _elem5;
-                for (int _i6 = 0; _i6 < _list4.size; ++_i6)
+                org.apache.thrift.protocol.TList _list14 = iprot.readListBegin();
+                struct.replicaLocations = new ArrayList<DataReplicaLocationModel>(_list14.size);
+                DataReplicaLocationModel _elem15;
+                for (int _i16 = 0; _i16 < _list14.size; ++_i16)
                 {
-                  _elem5 = new DataReplicaLocationModel();
-                  _elem5.read(iprot);
-                  struct.replicaLocations.add(_elem5);
+                  _elem15 = new DataReplicaLocationModel();
+                  _elem15.read(iprot);
+                  struct.replicaLocations.add(_elem15);
                 }
                 iprot.readListEnd();
               }
@@ -1467,10 +1467,10 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
           oprot.writeFieldBegin(PRODUCT_METADATA_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, struct.productMetadata.size()));
-            for (Map.Entry<String, String> _iter7 : struct.productMetadata.entrySet())
+            for (Map.Entry<String, String> _iter17 : struct.productMetadata.entrySet())
             {
-              oprot.writeString(_iter7.getKey());
-              oprot.writeString(_iter7.getValue());
+              oprot.writeString(_iter17.getKey());
+              oprot.writeString(_iter17.getValue());
             }
             oprot.writeMapEnd();
           }
@@ -1482,9 +1482,9 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
           oprot.writeFieldBegin(REPLICA_LOCATIONS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.replicaLocations.size()));
-            for (DataReplicaLocationModel _iter8 : struct.replicaLocations)
+            for (DataReplicaLocationModel _iter18 : struct.replicaLocations)
             {
-              _iter8.write(oprot);
+              _iter18.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1579,19 +1579,19 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
       if (struct.isSetProductMetadata()) {
         {
           oprot.writeI32(struct.productMetadata.size());
-          for (Map.Entry<String, String> _iter9 : struct.productMetadata.entrySet())
+          for (Map.Entry<String, String> _iter19 : struct.productMetadata.entrySet())
           {
-            oprot.writeString(_iter9.getKey());
-            oprot.writeString(_iter9.getValue());
+            oprot.writeString(_iter19.getKey());
+            oprot.writeString(_iter19.getValue());
           }
         }
       }
       if (struct.isSetReplicaLocations()) {
         {
           oprot.writeI32(struct.replicaLocations.size());
-          for (DataReplicaLocationModel _iter10 : struct.replicaLocations)
+          for (DataReplicaLocationModel _iter20 : struct.replicaLocations)
           {
-            _iter10.write(oprot);
+            _iter20.write(oprot);
           }
         }
       }
@@ -1643,29 +1643,29 @@ public class DataProductModel implements org.apache.thrift.TBase<DataProductMode
       }
       if (incoming.get(10)) {
         {
-          org.apache.thrift.protocol.TMap _map11 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.productMetadata = new HashMap<String,String>(2*_map11.size);
-          String _key12;
-          String _val13;
-          for (int _i14 = 0; _i14 < _map11.size; ++_i14)
+          org.apache.thrift.protocol.TMap _map21 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.productMetadata = new HashMap<String,String>(2*_map21.size);
+          String _key22;
+          String _val23;
+          for (int _i24 = 0; _i24 < _map21.size; ++_i24)
           {
-            _key12 = iprot.readString();
-            _val13 = iprot.readString();
-            struct.productMetadata.put(_key12, _val13);
+            _key22 = iprot.readString();
+            _val23 = iprot.readString();
+            struct.productMetadata.put(_key22, _val23);
           }
         }
         struct.setProductMetadataIsSet(true);
       }
       if (incoming.get(11)) {
         {
-          org.apache.thrift.protocol.TList _list15 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.replicaLocations = new ArrayList<DataReplicaLocationModel>(_list15.size);
-          DataReplicaLocationModel _elem16;
-          for (int _i17 = 0; _i17 < _list15.size; ++_i17)
+          org.apache.thrift.protocol.TList _list25 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.replicaLocations = new ArrayList<DataReplicaLocationModel>(_list25.size);
+          DataReplicaLocationModel _elem26;
+          for (int _i27 = 0; _i27 < _list25.size; ++_i27)
           {
-            _elem16 = new DataReplicaLocationModel();
-            _elem16.read(iprot);
-            struct.replicaLocations.add(_elem16);
+            _elem26 = new DataReplicaLocationModel();
+            _elem26.read(iprot);
+            struct.replicaLocations.add(_elem26);
           }
         }
         struct.setReplicaLocationsIsSet(true);

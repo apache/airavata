@@ -56,7 +56,7 @@ class InputDataObjectType;
 class OutputDataObjectType;
 
 typedef struct _InputDataObjectType__isset {
-  _InputDataObjectType__isset() : value(false), type(false), applicationArgument(false), standardInput(false), userFriendlyDescription(false), metaData(false), inputOrder(false), isRequired(false), requiredToAddedToCommandLine(false), dataStaged(false), storageResourceId(false) {}
+  _InputDataObjectType__isset() : value(false), type(false), applicationArgument(false), standardInput(false), userFriendlyDescription(false), metaData(false), inputOrder(false), isRequired(false), requiredToAddedToCommandLine(false), dataStaged(false), storageResourceId(false), isReadOnly(false) {}
   bool value :1;
   bool type :1;
   bool applicationArgument :1;
@@ -68,6 +68,7 @@ typedef struct _InputDataObjectType__isset {
   bool requiredToAddedToCommandLine :1;
   bool dataStaged :1;
   bool storageResourceId :1;
+  bool isReadOnly :1;
 } _InputDataObjectType__isset;
 
 class InputDataObjectType {
@@ -75,7 +76,7 @@ class InputDataObjectType {
 
   InputDataObjectType(const InputDataObjectType&);
   InputDataObjectType& operator=(const InputDataObjectType&);
-  InputDataObjectType() : name(), value(), type((DataType::type)0), applicationArgument(), standardInput(0), userFriendlyDescription(), metaData(), inputOrder(0), isRequired(0), requiredToAddedToCommandLine(0), dataStaged(0), storageResourceId() {
+  InputDataObjectType() : name(), value(), type((DataType::type)0), applicationArgument(), standardInput(0), userFriendlyDescription(), metaData(), inputOrder(0), isRequired(0), requiredToAddedToCommandLine(0), dataStaged(0), storageResourceId(), isReadOnly(0) {
   }
 
   virtual ~InputDataObjectType() throw();
@@ -91,6 +92,7 @@ class InputDataObjectType {
   bool requiredToAddedToCommandLine;
   bool dataStaged;
   std::string storageResourceId;
+  bool isReadOnly;
 
   _InputDataObjectType__isset __isset;
 
@@ -117,6 +119,8 @@ class InputDataObjectType {
   void __set_dataStaged(const bool val);
 
   void __set_storageResourceId(const std::string& val);
+
+  void __set_isReadOnly(const bool val);
 
   bool operator == (const InputDataObjectType & rhs) const
   {
@@ -165,6 +169,10 @@ class InputDataObjectType {
     if (__isset.storageResourceId != rhs.__isset.storageResourceId)
       return false;
     else if (__isset.storageResourceId && !(storageResourceId == rhs.storageResourceId))
+      return false;
+    if (__isset.isReadOnly != rhs.__isset.isReadOnly)
+      return false;
+    else if (__isset.isReadOnly && !(isReadOnly == rhs.isReadOnly))
       return false;
     return true;
   }

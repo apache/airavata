@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,8 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.registry.core.experiment.catalog.model;
 
 import org.slf4j.Logger;
@@ -55,6 +54,7 @@ public class Process {
     private Collection<Task> tasks;
     private String userDn;
     private boolean generateCert;
+    private boolean useUserCRPref;
 
     @Id
     @Column(name = "PROCESS_ID")
@@ -310,5 +310,14 @@ public class Process {
 
     public void setTasks(Collection<Task> taskByProcessId) {
         this.tasks = taskByProcessId;
+    }
+
+    @Column(name = "USE_USER_CR_PREF")
+    public boolean isUseUserCRPref() {
+        return useUserCRPref;
+    }
+
+    public void setUseUserCRPref(boolean useUserCRPref) {
+        this.useUserCRPref = useUserCRPref;
     }
 }

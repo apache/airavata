@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,29 +16,32 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
-
+ */
 package org.apache.airavata.gfac.impl.task;
 
-import org.apache.airavata.gfac.core.GFacConstants;
-import org.apache.airavata.gfac.core.GFacException;
-import org.apache.airavata.gfac.core.GFacUtils;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.gfac.core.*;
+import org.apache.airavata.gfac.core.cluster.JobSubmissionOutput;
+import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.TaskException;
-import org.apache.airavata.gfac.local.utils.InputStreamToFileWriter;
-import org.apache.airavata.gfac.local.utils.InputUtils;
+import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskTypes;
+import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,78 +59,85 @@ public class LocalJobSubmissionTask implements JobSubmissionTask{
 
     @Override
     public TaskStatus execute(TaskContext taskContext) {
-     /*   try {
+        TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
+        try {
             ProcessContext processContext = taskContext.getParentProcessContext();
-            // build command with all inputs
-            List<String> cmdList = buildCommand(processContext);
-            initProcessBuilder(processContext.getApplicationDeploymentDescription(), cmdList);
-
-            // extra environment variables
-            builder.environment().put(GFacConstants.INPUT_DATA_DIR_VAR_NAME, processContext.getInputDir());
-            builder.environment().put(GFacConstants.OUTPUT_DATA_DIR_VAR_NAME, processContext.getOutputDir());
-
-            // set working directory
-            builder.directory(new File(processContext.getWorkingDir()));
-
-            // log info
-            log.info("Command = " + InputUtils.buildCommand(cmdList));
-            log.info("Working dir = " + builder.directory());
             JobModel jobModel = processContext.getJobModel();
-            if (jobModel == null) {
-                jobModel = new JobModel();
-            }
-            String jobId = taskContext.getTaskModel().getTaskId();
+            jobModel.setTaskId(taskContext.getTaskId());
+
+            RemoteCluster remoteCluster = processContext.getJobSubmissionRemoteCluster();
+            GroovyMap groovyMap = GFacUtils.createGroovyMap(processContext,taskContext);
+
+            String jobId = AiravataUtils.getId("JOB_ID_");
+            jobModel.setJobName(groovyMap.get(Script.JOB_NAME).toString());
             jobModel.setJobId(jobId);
-            jobModel.setJobDescription("sample local job");
-            processContext.setJobModel(jobModel);
-            GFacUtils.saveJobStatus(taskContext, jobModel, JobState.SUBMITTED);
-            // running cmd
-            Process process = builder.start();
 
-            Thread standardOutWriter = new InputStreamToFileWriter(process.getInputStream(), processContext.getStdoutLocation());
-            Thread standardErrorWriter = new InputStreamToFileWriter(process.getErrorStream(), processContext.getStderrLocation());
+            ResourceJobManager resourceJobManager = GFacUtils.getResourceJobManager(processContext);
+            JobManagerConfiguration jConfig = null;
 
-            // start output threads
-            standardOutWriter.setDaemon(true);
-            standardErrorWriter.setDaemon(true);
-            standardOutWriter.start();
-            standardErrorWriter.start();
-
-            int returnValue = process.waitFor();
-
-            // make sure other two threads are done
-            standardOutWriter.join();
-            standardErrorWriter.join();
-
-            *//*
-             * check return value. usually not very helpful to draw conclusions based on return values so don't bother.
-             * just provide warning in the log messages
-             *//*
-            if (returnValue != 0) {
-                log.error("Process finished with non zero return value. Process may have failed");
-            } else {
-                log.info("Process finished with return value of zero.");
+            if (resourceJobManager != null) {
+                jConfig = Factory.getJobManagerConfiguration(resourceJobManager);
             }
 
-            StringBuffer buf = new StringBuffer();
-            buf.append("Executed ").append(InputUtils.buildCommand(cmdList))
-                    .append(" on the localHost, working directory = ").append(processContext.getWorkingDir())
-                    .append(" tempDirectory = ").append(processContext.getWorkingDir()).append(" With the status ")
-                    .append(String.valueOf(returnValue));
+            JobStatus jobStatus = new JobStatus();
+            File jobFile = GFacUtils.createJobFile(groovyMap, taskContext, jConfig);
+            if (jobFile != null && jobFile.exists()) {
+                jobModel.setJobDescription(FileUtils.readFileToString(jobFile));
 
-            log.info(buf.toString());
-            GFacUtils.saveJobStatus(taskContext, jobModel, JobState.COMPLETE);
-        } catch (GFacException e) {
-            log.error("Error while submitting local job", e);
-            throw new TaskException("Error while submitting local job", e);
-        } catch (InterruptedException e) {
-            log.error("Error while submitting local job", e);
-            throw new TaskException("Error while submitting local job", e);
-        } catch (IOException e) {
-            log.error("Error while submitting local job", e);
-            throw new TaskException("Error while submitting local job", e);
-        }*/
-	    return new TaskStatus(TaskState.COMPLETED);
+                GFacUtils.saveJobModel(processContext, jobModel);
+
+                JobSubmissionOutput jobSubmissionOutput = remoteCluster.submitBatchJob(jobFile.getPath(),
+                        processContext.getWorkingDir());
+
+                jobStatus.setJobState(JobState.SUBMITTED);
+                jobStatus.setReason("Successfully Submitted to " + taskContext.getParentProcessContext()
+                        .getComputeResourceDescription().getHostName());
+                jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                jobModel.setJobStatuses(Arrays.asList(jobStatus));
+                //log job submit status
+                GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), jobModel);
+
+                //for local, job gets completed synchronously
+                //so changing job status to complete
+
+                jobModel.setExitCode(jobSubmissionOutput.getExitCode());
+                jobModel.setStdErr(jobSubmissionOutput.getStdErr());
+                jobModel.setStdOut(jobSubmissionOutput.getStdOut());
+
+
+                jobModel.setJobId(jobId);
+                jobStatus.setJobState(JobState.COMPLETE);
+                jobStatus.setReason("Successfully Completed " + taskContext.getParentProcessContext()
+                        .getComputeResourceDescription().getHostName());
+                jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                jobModel.setJobStatuses(Arrays.asList(jobStatus));
+                //log job complete status
+                GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), jobModel);
+
+
+                taskStatus = new TaskStatus(TaskState.COMPLETED);
+                taskStatus.setReason("Submitted job to compute resource");
+
+            } else {
+                taskStatus.setState(TaskState.FAILED);
+                if (jobFile == null) {
+                    taskStatus.setReason("JobFile is null");
+                } else {
+                    taskStatus.setReason("Job file doesn't exist");
+                }
+            }
+
+        } catch (GFacException | IOException | AppCatalogException | ApplicationSettingsException e) {
+            String msg = "Error occurred while submitting a local job";
+            log.error(msg, e);
+            taskStatus.setReason(msg);
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setActualErrorMessage(e.getMessage());
+            errorModel.setUserFriendlyMessage(msg);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
+            taskStatus.setState(TaskState.FAILED);
+        }
+        return taskStatus;
     }
 
     @Override

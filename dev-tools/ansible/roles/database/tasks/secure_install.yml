@@ -1,0 +1,43 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+# This is ansible equivalent for mysql_secure_installation
+- name: Sets the root password
+  mysql_user: user=root
+              password="{{ mysql_root_password }}"
+              host=localhost
+              login_user=root
+              # login_password="{{ mysql_root_password }}"
+
+- name: Copy .my.cnf file
+  template: src=my.cnf.j2 dest="{{ user_home }}/.my.cnf"
+  # become: yes
+
+- name: Removes all anonymous user accounts
+  mysql_user: name='' host_all=yes state=absent
+
+- name: Secures the MySQL root user for all hosts
+  mysql_user: user=root password="{{ mysql_root_password }}" host_all=yes
+
+- name: Removes the MySQL test database
+  mysql_db: db=test state=absent
+
+...

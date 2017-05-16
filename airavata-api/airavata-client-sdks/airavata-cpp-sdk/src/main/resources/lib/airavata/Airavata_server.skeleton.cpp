@@ -243,6 +243,12 @@ class AiravataHandler : virtual public AiravataIf {
    *    The User for which the credential should be registered. For community accounts, this user is the name of the
    *    community user name. For computational resources, this user name need not be the same user name on resoruces.
    * 
+   * @param description
+   *    The description field for a credential type, all type of credential can have a description.
+   * 
+   * @param credentialOwnerType
+   *    The type of owner of this credential. Two possible values: GATEWAY (default) and USER
+   * 
    * @return airavataCredStoreToken
    *   An SSH Key pair is generated and stored in the credential store and associated with users or community account
    *   belonging to a Gateway.
@@ -252,8 +258,10 @@ class AiravataHandler : virtual public AiravataIf {
    * @param authzToken
    * @param gatewayId
    * @param userName
+   * @param description
+   * @param credentialOwnerType
    */
-  void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName) {
+  void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const  ::CredentialOwnerType::type credentialOwnerType) {
     // Your implementation goes here
     printf("generateAndRegisterSSHKeys\n");
   }
@@ -332,6 +340,62 @@ class AiravataHandler : virtual public AiravataIf {
   void getAllGatewaySSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getAllGatewaySSHPubKeys\n");
+  }
+
+  /**
+   * 
+   * Get all Credential summaries for the Gateway
+   * 
+   * @param CredStoreToken
+   *    Credential Store Token which you want to find the Public Key for.
+   * 
+   * @param credential_store_data_models.SummaryType
+   *    Summary type : SSH,PASSWD or CERT
+   * 
+   * @param gatewayId
+   *    This is the unique identifier of your gateway where the token and public key was generated from.
+   * 
+   * @return List of Credential Summary Objects
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param type
+   * @param gatewayId
+   */
+  void getAllCredentialSummaryForGateway(std::vector< ::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::SummaryType::type type, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("getAllCredentialSummaryForGateway\n");
+  }
+
+  /**
+   * 
+   * Get all Credential summaries for user in a Gateway
+   * 
+   * @param CredStoreToken
+   *    Credential Store Token which you want to find the Public Key for.
+   * 
+   * @param credential_store_data_models.SummaryType
+   *    Summary type : SSH,PASSWD or CERT
+   * 
+   * @param gatewayId
+   *    This is the unique identifier of your gateway where the token and public key was generated from.
+   * 
+   * @param userId
+   *    This is the unique identifier of user whose public keys are to be fetched.
+   * 
+   * @return CredentialSummary
+   * 
+   * 
+   * 
+   * @param authzToken
+   * @param type
+   * @param gatewayId
+   * @param userId
+   */
+  void getAllCredentialSummaryForUsersInGateway(std::vector< ::CredentialSummary> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::SummaryType::type type, const std::string& gatewayId, const std::string& userId) {
+    // Your implementation goes here
+    printf("getAllCredentialSummaryForUsersInGateway\n");
   }
 
   void getAllGatewayPWDCredentials(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
@@ -567,14 +631,26 @@ class AiravataHandler : virtual public AiravataIf {
    * @param toTime
    *       Ending data time.
    * 
+   * @param userName
+   *       Gateway username substring with which to further filter statistics.
+   * 
+   * @param applicationName
+   *       Application id substring with which to further filter statistics.
+   * 
+   * @param resourceHostName
+   *       Hostname id substring with which to further filter statistics.
+   * 
    * 
    * 
    * @param authzToken
    * @param gatewayId
    * @param fromTime
    * @param toTime
+   * @param userName
+   * @param applicationName
+   * @param resourceHostName
    */
-  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime) {
+  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime, const std::string& userName, const std::string& applicationName, const std::string& resourceHostName) {
     // Your implementation goes here
     printf("getExperimentStatistics\n");
   }
@@ -750,6 +826,51 @@ class AiravataHandler : virtual public AiravataIf {
   void getExperiment( ::apache::airavata::model::experiment::ExperimentModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) {
     // Your implementation goes here
     printf("getExperiment\n");
+  }
+
+  /**
+   *   *
+   *   * Get Experiment by an admin user
+   *   *
+   *   * Used by an admin user to fetch previously created experiment metadata.
+   *   *
+   *   * @param airavataExperimentId
+   *   *    The unique identifier of the requested experiment. This ID is returned during the create experiment step.
+   *   *
+   *   * @return ExperimentModel
+   *   *   This method will return the previously stored experiment metadata.
+   *   *
+   *   * @throws org.apache.airavata.model.error.InvalidRequestException
+   *   *    For any incorrect forming of the request itself.
+   *   *
+   *   * @throws org.apache.airavata.model.error.ExperimentNotFoundException
+   *   *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+   *   *
+   *   * @throws org.apache.airavata.model.error.AiravataClientException
+   *   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   *   *
+   *   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+   *   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
+   *   *         gateway registration steps and retry this request.
+   *   *
+   *   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+   *   *         For now this is a place holder.
+   *   *
+   *   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+   *   *         is implemented, the authorization will be more substantial.
+   *   *
+   *   * @throws org.apache.airavata.model.error.AiravataSystemException
+   *   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+   *   *       rather an Airavata Administrator will be notified to take corrective action.
+   *   *
+   * *
+   * 
+   * @param authzToken
+   * @param airavataExperimentId
+   */
+  void getExperimentByAdmin( ::apache::airavata::model::experiment::ExperimentModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) {
+    // Your implementation goes here
+    printf("getExperimentByAdmin\n");
   }
 
   /**
@@ -1053,6 +1174,9 @@ class AiravataHandler : virtual public AiravataIf {
    *    Once an experiment is cloned, to disambiguate, the users are suggested to provide new metadata. This will again require
    *      the basic experiment metadata like the name and description, intended user, the gateway identifier and if the experiment
    *      should be shared public by default.
+   * @param newExperimentProjectId
+   *    The project in which to create the cloned experiment. This is optional and if null the experiment will be created
+   *      in the same project as the existing experiment.
    * 
    * @return
    *   The server-side generated.airavata.registry.core.experiment.globally unique identifier (Experiment ID) for the newly cloned experiment.
@@ -1084,10 +1208,65 @@ class AiravataHandler : virtual public AiravataIf {
    * @param authzToken
    * @param existingExperimentID
    * @param newExperimentName
+   * @param newExperimentProjectId
    */
-  void cloneExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName) {
+  void cloneExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName, const std::string& newExperimentProjectId) {
     // Your implementation goes here
     printf("cloneExperiment\n");
+  }
+
+  /**
+   * 
+   * Clone an Existing Experiment by an admin user
+   * Existing specified experiment is cloned and a new name is provided. A copy of the experiment configuration is made and is persisted with new metadata.
+   *   The client has to subsequently update this configuration if needed and launch the cloned experiment.
+   * 
+   * @param newExperimentName
+   *    experiment name that should be used in the cloned experiment
+   * 
+   * @param updatedExperiment
+   *    Once an experiment is cloned, to disambiguate, the users are suggested to provide new metadata. This will again require
+   *      the basic experiment metadata like the name and description, intended user, the gateway identifier and if the experiment
+   *      should be shared public by default.
+   * @param newExperimentProjectId
+   *    The project in which to create the cloned experiment. This is optional and if null the experiment will be created
+   *      in the same project as the existing experiment.
+   * 
+   * @return
+   *   The server-side generated.airavata.registry.core.experiment.globally unique identifier (Experiment ID) for the newly cloned experiment.
+   * 
+   * @throws org.apache.airavata.model.error.InvalidRequestException
+   *    For any incorrect forming of the request itself.
+   * 
+   * @throws org.apache.airavata.model.error.ExperimentNotFoundException
+   *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+   * 
+   * @throws org.apache.airavata.model.error.AiravataClientException
+   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   * 
+   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
+   *         gateway registration steps and retry this request.
+   * 
+   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+   *         For now this is a place holder.
+   * 
+   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+   *         is implemented, the authorization will be more substantial.
+   * 
+   * @throws org.apache.airavata.model.error.AiravataSystemException
+   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+   *       rather an Airavata Administrator will be notified to take corrective action.
+   * 
+   * 
+   * @param authzToken
+   * @param existingExperimentID
+   * @param newExperimentName
+   * @param newExperimentProjectId
+   */
+  void cloneExperimentByAdmin(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName, const std::string& newExperimentProjectId) {
+    // Your implementation goes here
+    printf("cloneExperimentByAdmin\n");
   }
 
   /**
@@ -2825,12 +3004,368 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Delete the Storage Resource Preference of a registered gateway profile.
+   * Register User Resource Profile.
+   * 
+   * @param UserResourceProfile
+   *    User Resource Profile Object.
+   *    The userId should be obtained from Airavata user profile data model and passed to register a corresponding
+   *      resource profile.
+   * 
+   * @return status
+   *   Returns a success/failure of the update.
+   * 
+   * 
+   * @param authzToken
+   * @param userResourceProfile
+   */
+  void registerUserResourceProfile(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::userresourceprofile::UserResourceProfile& userResourceProfile) {
+    // Your implementation goes here
+    printf("registerUserResourceProfile\n");
+  }
+
+  /**
+   * Fetch the given User Resource Profile.
+   * 
+   * @param userId
+   *   The identifier for the requested user resource profile.
    * 
    * @param gatewayID
-   *   The identifier of the gateway profile to be deleted.
+   *   The identifier to link a gateway for the requested user resource profile.
    * 
-   * @param storageId
+   * @return UserResourceProfile
+   *    User Resource Profile Object.
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   * @param gatewayID
+   */
+  void getUserResourceProfile( ::apache::airavata::model::appcatalog::userresourceprofile::UserResourceProfile& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID) {
+    // Your implementation goes here
+    printf("getUserResourceProfile\n");
+  }
+
+  /**
+   * Update a User Resource Profile.
+   * 
+   * @param userId
+   *   The identifier for the requested user resource to be updated.
+   * 
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
+   * @param UserResourceProfile
+   *    User Resource Profile Object.
+   * 
+   * @return status
+   *   Returns a success/failure of the update.
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   * @param gatewayID
+   * @param userResourceProfile
+   */
+  bool updateUserResourceProfile(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID, const  ::apache::airavata::model::appcatalog::userresourceprofile::UserResourceProfile& userResourceProfile) {
+    // Your implementation goes here
+    printf("updateUserResourceProfile\n");
+  }
+
+  /**
+   * Delete the given User Resource Profile.
+   * 
+   * @param userId
+   *   The identifier for the requested user resource to be deleted.
+   * 
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
+   * @return status
+   *   Returns a success/failure of the deletion.
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   * @param gatewayID
+   */
+  bool deleteUserResourceProfile(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID) {
+    // Your implementation goes here
+    printf("deleteUserResourceProfile\n");
+  }
+
+  /**
+   * Add a Compute Resource Preference to a registered User profile.
+   * 
+   * @param userId
+   *   The identifier for the User resource profile to be added.
+   * 
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
+   * @param computeResourceId
+   *   Preferences related to a particular compute resource
+   * 
+   * @param computeResourcePreference
+   *   The ComputeResourcePreference object to be added to the resource profile.
+   * 
+   * @return status
+   *   Returns a success/failure of the addition. If a profile already exists, this operation will fail.
+   *    Instead an update should be used.
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   * @param gatewayID
+   * @param userComputeResourceId
+   * @param userComputeResourcePreference
+   */
+  bool addUserComputeResourcePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID, const std::string& userComputeResourceId, const  ::apache::airavata::model::appcatalog::userresourceprofile::UserComputeResourcePreference& userComputeResourcePreference) {
+    // Your implementation goes here
+    printf("addUserComputeResourcePreference\n");
+  }
+
+  /**
+   * Add a Storage Resource Preference to a registered user resource profile.
+   * 
+   * @param userId
+   *   The identifier of the user resource profile to be added.
+   * 
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
+   * @param storageResourceId
+   *   Preferences related to a particular compute resource
+   * 
+   * @param computeResourcePreference
+   *   The ComputeResourcePreference object to be added to the resource profile.
+   * 
+   * @return status
+   *   Returns a success/failure of the addition. If a profile already exists, this operation will fail.
+   *    Instead an update should be used.
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   * @param gatewayID
+   * @param userStorageResourceId
+   * @param userStoragePreference
+   */
+  bool addUserStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID, const std::string& userStorageResourceId, const  ::apache::airavata::model::appcatalog::userresourceprofile::UserStoragePreference& userStoragePreference) {
+    // Your implementation goes here
+    printf("addUserStoragePreference\n");
+  }
+
+  /**
+   * 
+   * Fetch a Compute Resource Preference of a registered user resource profile.
+   * 
+   * @param userId
+   *   The identifier for the user profile to be requested
+   * 
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
+   * @param userComputeResourceId
+   *   Preferences related to a particular compute resource
+   * 
+   * @return computeResourcePreference
+   *   Returns the ComputeResourcePreference object.
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   * @param gatewayID
+   * @param userComputeResourceId
+   */
+  void getUserComputeResourcePreference( ::apache::airavata::model::appcatalog::userresourceprofile::UserComputeResourcePreference& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID, const std::string& userComputeResourceId) {
+    // Your implementation goes here
+    printf("getUserComputeResourcePreference\n");
+  }
+
+  /**
+   * 
+   * Fetch a Storage Resource Preference of a registered user resource profile.
+   * 
+   * @param userId
+   *   The identifier of the user resource profile to request to fetch the particular storage resource preference.
+   * 
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
+   * @param userStorageResourceId
+   *   Identifier of the Stprage Preference required to be fetched.
+   * 
+   * @return UserStoragePreference
+   *   Returns the StoragePreference object.
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   * @param gatewayID
+   * @param userStorageResourceId
+   */
+  void getUserStoragePreference( ::apache::airavata::model::appcatalog::userresourceprofile::UserStoragePreference& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID, const std::string& userStorageResourceId) {
+    // Your implementation goes here
+    printf("getUserStoragePreference\n");
+  }
+
+  /**
+   * 
+   * Fetch all Compute Resource Preferences of a registered gateway profile.
+   * 
+   * @param userId
+   *   The identifier of the user resource profile to request to fetch the particular storage resource preference.
+   * 
+   * @param gatewayID
+   *   The identifier for the gateway profile to be requested
+   * 
+   * @return computeResourcePreference
+   *   Returns the ComputeResourcePreference object.
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   * @param gatewayID
+   */
+  void getAllUserComputeResourcePreferences(std::vector< ::apache::airavata::model::appcatalog::userresourceprofile::UserComputeResourcePreference> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID) {
+    // Your implementation goes here
+    printf("getAllUserComputeResourcePreferences\n");
+  }
+
+  /**
+   * Fetch all User Storage Resource Preferences of a registered user profile.
+   * 
+   * @param userId
+   *   The identifier of the user resource profile to request to fetch the particular storage resource preference.
+   * 
+   * @param gatewayID
+   *   The identifier for the gateway profile to be requested
+   * 
+   * @return StoragePreference
+   *   Returns the StoragePreference object.
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   * @param gatewayID
+   */
+  void getAllUserStoragePreferences(std::vector< ::apache::airavata::model::appcatalog::userresourceprofile::UserStoragePreference> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID) {
+    // Your implementation goes here
+    printf("getAllUserStoragePreferences\n");
+  }
+
+  /**
+   * 
+   * Fetch all user resources Profiles registered
+   * 
+   * @return UserResourceProfile
+   *   Returns all the UserResourcePrifle list object.
+   * 
+   * 
+   * 
+   * @param authzToken
+   */
+  void getAllUserResourceProfiles(std::vector< ::apache::airavata::model::appcatalog::userresourceprofile::UserResourceProfile> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) {
+    // Your implementation goes here
+    printf("getAllUserResourceProfiles\n");
+  }
+
+  /**
+   * Update a Compute Resource Preference to a registered user resource profile.
+   * 
+   * @param userId
+   *   The identifier for the user profile to be updated.
+   * 
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
+   * @param userComputeResourceId
+   *   Preferences related to a particular compute resource
+   * 
+   * @param userComputeResourcePreference
+   *   The ComputeResourcePreference object to be updated to the resource profile.
+   * 
+   * @return status
+   *   Returns a success/failure of the updation.
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   * @param gatewayID
+   * @param userComputeResourceId
+   * @param userComputeResourcePreference
+   */
+  bool updateUserComputeResourcePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID, const std::string& userComputeResourceId, const  ::apache::airavata::model::appcatalog::userresourceprofile::UserComputeResourcePreference& userComputeResourcePreference) {
+    // Your implementation goes here
+    printf("updateUserComputeResourcePreference\n");
+  }
+
+  /**
+   * Update a Storage Resource Preference of a registered user resource profile.
+   * 
+   * @param userId
+   *   The identifier of the user resource profile to be updated.
+   * 
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
+   * @param userStorageId
+   *   The Storage resource identifier of the one that you want to update
+   * 
+   * @param userStoragePreference
+   *   The storagePreference object to be updated to the resource profile.
+   * 
+   * @return status
+   *   Returns a success/failure of the updation.
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   * @param gatewayID
+   * @param userStorageId
+   * @param userStoragePreference
+   */
+  bool updateUserStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID, const std::string& userStorageId, const  ::apache::airavata::model::appcatalog::userresourceprofile::UserStoragePreference& userStoragePreference) {
+    // Your implementation goes here
+    printf("updateUserStoragePreference\n");
+  }
+
+  /**
+   * Delete the Compute Resource Preference of a registered user resource profile.
+   * 
+   * @param userId
+   *   The identifier for the user resource profile to be deleted.
+   * 
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
+   * @param userComputeResourceId
+   *   Preferences related to a particular compute resource
+   * 
+   * @return status
+   *   Returns a success/failure of the deletion.
+   * 
+   * 
+   * @param authzToken
+   * @param userId
+   * @param gatewayID
+   * @param userComputeResourceId
+   */
+  bool deleteUserComputeResourcePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID, const std::string& userComputeResourceId) {
+    // Your implementation goes here
+    printf("deleteUserComputeResourcePreference\n");
+  }
+
+  /**
+   * Delete the Storage Resource Preference of a registered user resource profile.
+   * 
+   * @param userId
+   *   The identifier of the user profile to be deleted.
+   * 
+   * @param gatewayID
+   *   The identifier to link a gateway for the requested user resource profile.
+   * 
+   * @param userStorageId
    *   ID of the storage preference you want to delete.
    * 
    * @return status
@@ -2838,11 +3373,23 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * 
    * @param authzToken
-   * @param gatewayId
+   * @param userId
+   * @param gatewayID
+   * @param userStorageId
    */
+  bool deleteUserStoragePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayID, const std::string& userStorageId) {
+    // Your implementation goes here
+    printf("deleteUserStoragePreference\n");
+  }
+
   void getAllWorkflows(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getAllWorkflows\n");
+  }
+
+  void getLatestQueueStatuses(std::vector< ::apache::airavata::model::status::QueueStatusModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) {
+    // Your implementation goes here
+    printf("getLatestQueueStatuses\n");
   }
 
   /**
@@ -2962,6 +3509,36 @@ class AiravataHandler : virtual public AiravataIf {
   void getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getAllGroupsUserBelongs\n");
+  }
+
+  void addUserProfile(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::user::UserProfile& userProfile) {
+    // Your implementation goes here
+    printf("addUserProfile\n");
+  }
+
+  bool updateUserProfile(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::user::UserProfile& userProfile) {
+    // Your implementation goes here
+    printf("updateUserProfile\n");
+  }
+
+  void getUserProfileById( ::apache::airavata::model::user::UserProfile& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("getUserProfileById\n");
+  }
+
+  bool deleteUserProfile(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId) {
+    // Your implementation goes here
+    printf("deleteUserProfile\n");
+  }
+
+  void getAllUserProfilesInGateway(std::vector< ::apache::airavata::model::user::UserProfile> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int32_t offset, const int32_t limit) {
+    // Your implementation goes here
+    printf("getAllUserProfilesInGateway\n");
+  }
+
+  bool doesUserProfileExist(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("doesUserProfileExist\n");
   }
 
 };

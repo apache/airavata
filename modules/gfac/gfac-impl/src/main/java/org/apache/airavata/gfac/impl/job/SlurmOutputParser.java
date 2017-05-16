@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,13 +16,12 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.gfac.impl.job;
 
-import org.apache.airavata.gfac.core.JobDescriptor;
-import org.apache.airavata.gfac.core.cluster.OutputParser;
+import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.SSHApiException;
+import org.apache.airavata.gfac.core.cluster.OutputParser;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
 import org.slf4j.Logger;
@@ -40,64 +39,6 @@ public class SlurmOutputParser implements OutputParser {
     public static final String STATUS = "status";
 	public static final String JOBID = "jobId";
 
-    public void parseSingleJob(JobDescriptor descriptor, String rawOutput) throws SSHApiException {
-        log.info(rawOutput);
-        String[] info = rawOutput.split("\n");
-        String lastString = info[info.length - 1];
-        if (lastString.contains("JOB ID")) {
-            // because there's no state
-            descriptor.setStatus("U");
-        } else {
-            int column = 0;
-            System.out.println(lastString);
-            for (String each : lastString.split(" ")) {
-                if (each.trim().isEmpty()) {
-                    continue;
-                } else {
-                    switch (column) {
-                        case 0:
-                            descriptor.setJobID(each);
-                            column++;
-                            break;
-                        case 1:
-                            descriptor.setPartition(each);
-                            column++;
-                            break;
-                        case 2:
-                            descriptor.setJobName(each);
-                            column++;
-                            break;
-                        case 3:
-                            descriptor.setUserName(each);
-                            column++;
-                            break;
-                        case 4:
-                            descriptor.setStatus(each);
-                            column++;
-                            break;
-                        case 5:
-                            descriptor.setUsedCPUTime(each);
-                            column++;
-                            break;
-                        case 6:
-                            try {
-                                int nodes = Integer.parseInt(each);
-                                descriptor.setNodes(nodes);
-                            }catch (Exception e){
-                                log.error("Node count read from command output is not an integer !!!");
-                            }
-                            column++;
-                            break;
-                        case 7:
-                            descriptor.setNodeList(each);
-                            column++;
-                            break;
-                    }
-                }
-            }
-        }
-
-    }
 
     /**
      * This can be used to parseSingleJob the outpu of sbatch and extrac the jobID from the content
@@ -105,7 +46,7 @@ public class SlurmOutputParser implements OutputParser {
      * @param rawOutput
      * @return
      */
-    public String parseJobSubmission(String rawOutput) throws SSHApiException {
+    public String parseJobSubmission(String rawOutput) throws GFacException {
 	    log.info(rawOutput);
 	    Pattern pattern = Pattern.compile("Submitted batch job (?<" + JOBID + ">[^\\s]*)");
 	    Matcher matcher = pattern.matcher(rawOutput);
@@ -122,7 +63,7 @@ public class SlurmOutputParser implements OutputParser {
         return matcher.find();
     }
 
-    public JobStatus parseJobStatus(String jobID, String rawOutput) throws SSHApiException {
+    public JobStatus parseJobStatus(String jobID, String rawOutput) throws GFacException {
         log.info(rawOutput);
         Pattern pattern = Pattern.compile(jobID + "(?=\\s+\\S+\\s+\\S+\\s+\\S+\\s+(?<" + STATUS + ">\\w+))");
         Matcher matcher = pattern.matcher(rawOutput);
@@ -132,7 +73,7 @@ public class SlurmOutputParser implements OutputParser {
         return null;
     }
 
-    public void parseJobStatuses(String userName, Map<String, JobStatus> statusMap, String rawOutput) throws SSHApiException {
+    public void parseJobStatuses(String userName, Map<String, JobStatus> statusMap, String rawOutput) throws GFacException {
         log.debug(rawOutput);
         String[] info = rawOutput.split("\n");
         String lastString = info[info.length - 1];
@@ -173,7 +114,7 @@ public class SlurmOutputParser implements OutputParser {
     }
 
     @Override
-    public String parseJobId(String jobName, String rawOutput) throws SSHApiException {
+    public String parseJobId(String jobName, String rawOutput) throws GFacException {
         String regJobId = "jobId";
         if (jobName == null) {
             return null;

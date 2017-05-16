@@ -35,16 +35,20 @@ int _kResourceJobManagerTypeValues[] = {
   ResourceJobManagerType::PBS,
   ResourceJobManagerType::SLURM,
   ResourceJobManagerType::LSF,
-  ResourceJobManagerType::UGE
+  ResourceJobManagerType::UGE,
+  ResourceJobManagerType::CLOUD,
+  ResourceJobManagerType::AIRAVATA_CUSTOM
 };
 const char* _kResourceJobManagerTypeNames[] = {
   "FORK",
   "PBS",
   "SLURM",
   "LSF",
-  "UGE"
+  "UGE",
+  "CLOUD",
+  "AIRAVATA_CUSTOM"
 };
-const std::map<int, const char*> _ResourceJobManagerType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(5, _kResourceJobManagerTypeValues, _kResourceJobManagerTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _ResourceJobManagerType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(7, _kResourceJobManagerTypeValues, _kResourceJobManagerTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kJobManagerCommandValues[] = {
   JobManagerCommand::SUBMISSION,
@@ -104,17 +108,21 @@ const std::map<int, const char*> _JobSubmissionProtocol_VALUES_TO_NAMES(::apache
 
 int _kMonitorModeValues[] = {
   MonitorMode::POLL_JOB_MANAGER,
+  MonitorMode::CLOUD_JOB_MONITOR,
   MonitorMode::JOB_EMAIL_NOTIFICATION_MONITOR,
   MonitorMode::XSEDE_AMQP_SUBSCRIBE,
-  MonitorMode::FORK
+  MonitorMode::FORK,
+  MonitorMode::LOCAL
 };
 const char* _kMonitorModeNames[] = {
   "POLL_JOB_MANAGER",
+  "CLOUD_JOB_MONITOR",
   "JOB_EMAIL_NOTIFICATION_MONITOR",
   "XSEDE_AMQP_SUBSCRIBE",
-  "FORK"
+  "FORK",
+  "LOCAL"
 };
-const std::map<int, const char*> _MonitorMode_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(4, _kMonitorModeValues, _kMonitorModeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _MonitorMode_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(6, _kMonitorModeValues, _kMonitorModeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kDMTypeValues[] = {
   DMType::COMPUTE_RESOURCE,
@@ -431,6 +439,26 @@ void BatchQueue::__set_maxMemory(const int32_t val) {
 __isset.maxMemory = true;
 }
 
+void BatchQueue::__set_cpuPerNode(const int32_t val) {
+  this->cpuPerNode = val;
+__isset.cpuPerNode = true;
+}
+
+void BatchQueue::__set_defaultNodeCount(const int32_t val) {
+  this->defaultNodeCount = val;
+__isset.defaultNodeCount = true;
+}
+
+void BatchQueue::__set_defaultCPUCount(const int32_t val) {
+  this->defaultCPUCount = val;
+__isset.defaultCPUCount = true;
+}
+
+void BatchQueue::__set_isDefaultQueue(const bool val) {
+  this->isDefaultQueue = val;
+__isset.isDefaultQueue = true;
+}
+
 uint32_t BatchQueue::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -509,6 +537,38 @@ uint32_t BatchQueue::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 8:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->cpuPerNode);
+          this->__isset.cpuPerNode = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 9:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->defaultNodeCount);
+          this->__isset.defaultNodeCount = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 10:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->defaultCPUCount);
+          this->__isset.defaultCPUCount = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 11:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->isDefaultQueue);
+          this->__isset.isDefaultQueue = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -562,6 +622,26 @@ uint32_t BatchQueue::write(::apache::thrift::protocol::TProtocol* oprot) const {
     xfer += oprot->writeI32(this->maxMemory);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.cpuPerNode) {
+    xfer += oprot->writeFieldBegin("cpuPerNode", ::apache::thrift::protocol::T_I32, 8);
+    xfer += oprot->writeI32(this->cpuPerNode);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.defaultNodeCount) {
+    xfer += oprot->writeFieldBegin("defaultNodeCount", ::apache::thrift::protocol::T_I32, 9);
+    xfer += oprot->writeI32(this->defaultNodeCount);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.defaultCPUCount) {
+    xfer += oprot->writeFieldBegin("defaultCPUCount", ::apache::thrift::protocol::T_I32, 10);
+    xfer += oprot->writeI32(this->defaultCPUCount);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.isDefaultQueue) {
+    xfer += oprot->writeFieldBegin("isDefaultQueue", ::apache::thrift::protocol::T_BOOL, 11);
+    xfer += oprot->writeBool(this->isDefaultQueue);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -576,6 +656,10 @@ void swap(BatchQueue &a, BatchQueue &b) {
   swap(a.maxProcessors, b.maxProcessors);
   swap(a.maxJobsInQueue, b.maxJobsInQueue);
   swap(a.maxMemory, b.maxMemory);
+  swap(a.cpuPerNode, b.cpuPerNode);
+  swap(a.defaultNodeCount, b.defaultNodeCount);
+  swap(a.defaultCPUCount, b.defaultCPUCount);
+  swap(a.isDefaultQueue, b.isDefaultQueue);
   swap(a.__isset, b.__isset);
 }
 
@@ -587,6 +671,10 @@ BatchQueue::BatchQueue(const BatchQueue& other21) {
   maxProcessors = other21.maxProcessors;
   maxJobsInQueue = other21.maxJobsInQueue;
   maxMemory = other21.maxMemory;
+  cpuPerNode = other21.cpuPerNode;
+  defaultNodeCount = other21.defaultNodeCount;
+  defaultCPUCount = other21.defaultCPUCount;
+  isDefaultQueue = other21.isDefaultQueue;
   __isset = other21.__isset;
 }
 BatchQueue& BatchQueue::operator=(const BatchQueue& other22) {
@@ -597,6 +685,10 @@ BatchQueue& BatchQueue::operator=(const BatchQueue& other22) {
   maxProcessors = other22.maxProcessors;
   maxJobsInQueue = other22.maxJobsInQueue;
   maxMemory = other22.maxMemory;
+  cpuPerNode = other22.cpuPerNode;
+  defaultNodeCount = other22.defaultNodeCount;
+  defaultCPUCount = other22.defaultCPUCount;
+  isDefaultQueue = other22.isDefaultQueue;
   __isset = other22.__isset;
   return *this;
 }
@@ -610,6 +702,10 @@ void BatchQueue::printTo(std::ostream& out) const {
   out << ", " << "maxProcessors="; (__isset.maxProcessors ? (out << to_string(maxProcessors)) : (out << "<null>"));
   out << ", " << "maxJobsInQueue="; (__isset.maxJobsInQueue ? (out << to_string(maxJobsInQueue)) : (out << "<null>"));
   out << ", " << "maxMemory="; (__isset.maxMemory ? (out << to_string(maxMemory)) : (out << "<null>"));
+  out << ", " << "cpuPerNode="; (__isset.cpuPerNode ? (out << to_string(cpuPerNode)) : (out << "<null>"));
+  out << ", " << "defaultNodeCount="; (__isset.defaultNodeCount ? (out << to_string(defaultNodeCount)) : (out << "<null>"));
+  out << ", " << "defaultCPUCount="; (__isset.defaultCPUCount ? (out << to_string(defaultCPUCount)) : (out << "<null>"));
+  out << ", " << "isDefaultQueue="; (__isset.isDefaultQueue ? (out << to_string(isDefaultQueue)) : (out << "<null>"));
   out << ")";
 }
 
@@ -628,7 +724,6 @@ void LOCALSubmission::__set_resourceJobManager(const ResourceJobManager& val) {
 
 void LOCALSubmission::__set_securityProtocol(const  ::apache::airavata::model::data::movement::SecurityProtocol::type val) {
   this->securityProtocol = val;
-__isset.securityProtocol = true;
 }
 
 uint32_t LOCALSubmission::read(::apache::thrift::protocol::TProtocol* iprot) {
@@ -645,6 +740,7 @@ uint32_t LOCALSubmission::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   bool isset_jobSubmissionInterfaceId = false;
   bool isset_resourceJobManager = false;
+  bool isset_securityProtocol = false;
 
   while (true)
   {
@@ -675,7 +771,7 @@ uint32_t LOCALSubmission::read(::apache::thrift::protocol::TProtocol* iprot) {
           int32_t ecast23;
           xfer += iprot->readI32(ecast23);
           this->securityProtocol = ( ::apache::airavata::model::data::movement::SecurityProtocol::type)ecast23;
-          this->__isset.securityProtocol = true;
+          isset_securityProtocol = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -693,6 +789,8 @@ uint32_t LOCALSubmission::read(::apache::thrift::protocol::TProtocol* iprot) {
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_resourceJobManager)
     throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_securityProtocol)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
 
@@ -709,11 +807,10 @@ uint32_t LOCALSubmission::write(::apache::thrift::protocol::TProtocol* oprot) co
   xfer += this->resourceJobManager.write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  if (this->__isset.securityProtocol) {
-    xfer += oprot->writeFieldBegin("securityProtocol", ::apache::thrift::protocol::T_I32, 3);
-    xfer += oprot->writeI32((int32_t)this->securityProtocol);
-    xfer += oprot->writeFieldEnd();
-  }
+  xfer += oprot->writeFieldBegin("securityProtocol", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32((int32_t)this->securityProtocol);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -724,20 +821,17 @@ void swap(LOCALSubmission &a, LOCALSubmission &b) {
   swap(a.jobSubmissionInterfaceId, b.jobSubmissionInterfaceId);
   swap(a.resourceJobManager, b.resourceJobManager);
   swap(a.securityProtocol, b.securityProtocol);
-  swap(a.__isset, b.__isset);
 }
 
 LOCALSubmission::LOCALSubmission(const LOCALSubmission& other24) {
   jobSubmissionInterfaceId = other24.jobSubmissionInterfaceId;
   resourceJobManager = other24.resourceJobManager;
   securityProtocol = other24.securityProtocol;
-  __isset = other24.__isset;
 }
 LOCALSubmission& LOCALSubmission::operator=(const LOCALSubmission& other25) {
   jobSubmissionInterfaceId = other25.jobSubmissionInterfaceId;
   resourceJobManager = other25.resourceJobManager;
   securityProtocol = other25.securityProtocol;
-  __isset = other25.__isset;
   return *this;
 }
 void LOCALSubmission::printTo(std::ostream& out) const {
@@ -745,7 +839,7 @@ void LOCALSubmission::printTo(std::ostream& out) const {
   out << "LOCALSubmission(";
   out << "jobSubmissionInterfaceId=" << to_string(jobSubmissionInterfaceId);
   out << ", " << "resourceJobManager=" << to_string(resourceJobManager);
-  out << ", " << "securityProtocol="; (__isset.securityProtocol ? (out << to_string(securityProtocol)) : (out << "<null>"));
+  out << ", " << "securityProtocol=" << to_string(securityProtocol);
   out << ")";
 }
 
@@ -1698,6 +1792,26 @@ void ComputeResourceDescription::__set_gatewayUsageExecutable(const std::string&
 __isset.gatewayUsageExecutable = true;
 }
 
+void ComputeResourceDescription::__set_cpusPerNode(const int32_t val) {
+  this->cpusPerNode = val;
+__isset.cpusPerNode = true;
+}
+
+void ComputeResourceDescription::__set_defaultNodeCount(const int32_t val) {
+  this->defaultNodeCount = val;
+__isset.defaultNodeCount = true;
+}
+
+void ComputeResourceDescription::__set_defaultCPUCount(const int32_t val) {
+  this->defaultCPUCount = val;
+__isset.defaultCPUCount = true;
+}
+
+void ComputeResourceDescription::__set_defaultWallltime(const int32_t val) {
+  this->defaultWallltime = val;
+__isset.defaultWallltime = true;
+}
+
 uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
@@ -1910,6 +2024,38 @@ uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol*
           xfer += iprot->skip(ftype);
         }
         break;
+      case 15:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->cpusPerNode);
+          this->__isset.cpusPerNode = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 16:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->defaultNodeCount);
+          this->__isset.defaultNodeCount = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 17:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->defaultCPUCount);
+          this->__isset.defaultCPUCount = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 18:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->defaultWallltime);
+          this->__isset.defaultWallltime = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -2048,6 +2194,26 @@ uint32_t ComputeResourceDescription::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeString(this->gatewayUsageExecutable);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.cpusPerNode) {
+    xfer += oprot->writeFieldBegin("cpusPerNode", ::apache::thrift::protocol::T_I32, 15);
+    xfer += oprot->writeI32(this->cpusPerNode);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.defaultNodeCount) {
+    xfer += oprot->writeFieldBegin("defaultNodeCount", ::apache::thrift::protocol::T_I32, 16);
+    xfer += oprot->writeI32(this->defaultNodeCount);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.defaultCPUCount) {
+    xfer += oprot->writeFieldBegin("defaultCPUCount", ::apache::thrift::protocol::T_I32, 17);
+    xfer += oprot->writeI32(this->defaultCPUCount);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.defaultWallltime) {
+    xfer += oprot->writeFieldBegin("defaultWallltime", ::apache::thrift::protocol::T_I32, 18);
+    xfer += oprot->writeI32(this->defaultWallltime);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -2069,6 +2235,10 @@ void swap(ComputeResourceDescription &a, ComputeResourceDescription &b) {
   swap(a.gatewayUsageReporting, b.gatewayUsageReporting);
   swap(a.gatewayUsageModuleLoadCommand, b.gatewayUsageModuleLoadCommand);
   swap(a.gatewayUsageExecutable, b.gatewayUsageExecutable);
+  swap(a.cpusPerNode, b.cpusPerNode);
+  swap(a.defaultNodeCount, b.defaultNodeCount);
+  swap(a.defaultCPUCount, b.defaultCPUCount);
+  swap(a.defaultWallltime, b.defaultWallltime);
   swap(a.__isset, b.__isset);
 }
 
@@ -2087,6 +2257,10 @@ ComputeResourceDescription::ComputeResourceDescription(const ComputeResourceDesc
   gatewayUsageReporting = other94.gatewayUsageReporting;
   gatewayUsageModuleLoadCommand = other94.gatewayUsageModuleLoadCommand;
   gatewayUsageExecutable = other94.gatewayUsageExecutable;
+  cpusPerNode = other94.cpusPerNode;
+  defaultNodeCount = other94.defaultNodeCount;
+  defaultCPUCount = other94.defaultCPUCount;
+  defaultWallltime = other94.defaultWallltime;
   __isset = other94.__isset;
 }
 ComputeResourceDescription& ComputeResourceDescription::operator=(const ComputeResourceDescription& other95) {
@@ -2104,6 +2278,10 @@ ComputeResourceDescription& ComputeResourceDescription::operator=(const ComputeR
   gatewayUsageReporting = other95.gatewayUsageReporting;
   gatewayUsageModuleLoadCommand = other95.gatewayUsageModuleLoadCommand;
   gatewayUsageExecutable = other95.gatewayUsageExecutable;
+  cpusPerNode = other95.cpusPerNode;
+  defaultNodeCount = other95.defaultNodeCount;
+  defaultCPUCount = other95.defaultCPUCount;
+  defaultWallltime = other95.defaultWallltime;
   __isset = other95.__isset;
   return *this;
 }
@@ -2124,6 +2302,10 @@ void ComputeResourceDescription::printTo(std::ostream& out) const {
   out << ", " << "gatewayUsageReporting="; (__isset.gatewayUsageReporting ? (out << to_string(gatewayUsageReporting)) : (out << "<null>"));
   out << ", " << "gatewayUsageModuleLoadCommand="; (__isset.gatewayUsageModuleLoadCommand ? (out << to_string(gatewayUsageModuleLoadCommand)) : (out << "<null>"));
   out << ", " << "gatewayUsageExecutable="; (__isset.gatewayUsageExecutable ? (out << to_string(gatewayUsageExecutable)) : (out << "<null>"));
+  out << ", " << "cpusPerNode="; (__isset.cpusPerNode ? (out << to_string(cpusPerNode)) : (out << "<null>"));
+  out << ", " << "defaultNodeCount="; (__isset.defaultNodeCount ? (out << to_string(defaultNodeCount)) : (out << "<null>"));
+  out << ", " << "defaultCPUCount="; (__isset.defaultCPUCount ? (out << to_string(defaultCPUCount)) : (out << "<null>"));
+  out << ", " << "defaultWallltime="; (__isset.defaultWallltime ? (out << to_string(defaultWallltime)) : (out << "<null>"));
   out << ")";
 }
 

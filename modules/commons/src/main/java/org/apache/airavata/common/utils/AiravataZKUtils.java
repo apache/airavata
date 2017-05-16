@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,8 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.common.utils;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -119,13 +118,14 @@ public class AiravataZKUtils implements Watcher {
     public static void startEmbeddedZK(ServerCnxnFactory cnxnFactory) {
         if (ServerSettings.isEmbeddedZK()) {
             ServerConfig serverConfig = new ServerConfig();
-            URL resource = AiravataZKUtils.class.getClassLoader().getResource("zoo.cfg");
-            if (resource == null) {
-                logger.error("There is no zoo.cfg file in the classpath... Failed to start Zookeeper Server");
-                System.exit(1);
-            }
+            URL resource = ApplicationSettings.loadFile("zoo.cfg");
             try {
+                if (resource == null) {
+                    logger.error("There is no zoo.cfg file in the classpath... Failed to start Zookeeper Server");
+                    System.exit(1);
+                }
                 serverConfig.parse(resource.getPath());
+
             } catch (QuorumPeerConfig.ConfigException e) {
                 logger.error("Error while starting embedded Zookeeper", e);
                 System.exit(2);
@@ -193,7 +193,5 @@ public class AiravataZKUtils implements Watcher {
         } else {
             return bytesToLong(curatorClient.getData().storingStatIn(exists).forPath(cancelDeliveryTagPath));
         }
-
-
     }
 }

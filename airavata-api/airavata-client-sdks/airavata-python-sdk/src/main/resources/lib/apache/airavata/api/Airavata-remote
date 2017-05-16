@@ -38,10 +38,12 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  bool deleteNotification(AuthzToken authzToken, string gatewayId, string notificationId)')
   print('  Notification getNotification(AuthzToken authzToken, string gatewayId, string notificationId)')
   print('   getAllNotifications(AuthzToken authzToken, string gatewayId)')
-  print('  string generateAndRegisterSSHKeys(AuthzToken authzToken, string gatewayId, string userName)')
+  print('  string generateAndRegisterSSHKeys(AuthzToken authzToken, string gatewayId, string userName, string description, CredentialOwnerType credentialOwnerType)')
   print('  string registerPwdCredential(AuthzToken authzToken, string gatewayId, string portalUserName, string loginUserName, string password, string description)')
   print('  string getSSHPubKey(AuthzToken authzToken, string airavataCredStoreToken, string gatewayId)')
   print('   getAllGatewaySSHPubKeys(AuthzToken authzToken, string gatewayId)')
+  print('   getAllCredentialSummaryForGateway(AuthzToken authzToken, SummaryType type, string gatewayId)')
+  print('   getAllCredentialSummaryForUsersInGateway(AuthzToken authzToken, SummaryType type, string gatewayId, string userId)')
   print('   getAllGatewayPWDCredentials(AuthzToken authzToken, string gatewayId)')
   print('  bool deleteSSHPubKey(AuthzToken authzToken, string airavataCredStoreToken, string gatewayId)')
   print('  bool deletePWDCredential(AuthzToken authzToken, string airavataCredStoreToken, string gatewayId)')
@@ -52,12 +54,13 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('   getUserProjects(AuthzToken authzToken, string gatewayId, string userName, i32 limit, i32 offset)')
   print('   searchProjects(AuthzToken authzToken, string gatewayId, string userName,  filters, i32 limit, i32 offset)')
   print('   searchExperiments(AuthzToken authzToken, string gatewayId, string userName,  filters, i32 limit, i32 offset)')
-  print('  ExperimentStatistics getExperimentStatistics(AuthzToken authzToken, string gatewayId, i64 fromTime, i64 toTime)')
+  print('  ExperimentStatistics getExperimentStatistics(AuthzToken authzToken, string gatewayId, i64 fromTime, i64 toTime, string userName, string applicationName, string resourceHostName)')
   print('   getExperimentsInProject(AuthzToken authzToken, string projectId, i32 limit, i32 offset)')
   print('   getUserExperiments(AuthzToken authzToken, string gatewayId, string userName, i32 limit, i32 offset)')
   print('  string createExperiment(AuthzToken authzToken, string gatewayId, ExperimentModel experiment)')
   print('  bool deleteExperiment(AuthzToken authzToken, string experimentId)')
   print('  ExperimentModel getExperiment(AuthzToken authzToken, string airavataExperimentId)')
+  print('  ExperimentModel getExperimentByAdmin(AuthzToken authzToken, string airavataExperimentId)')
   print('  ExperimentModel getDetailedExperimentTree(AuthzToken authzToken, string airavataExperimentId)')
   print('  void updateExperiment(AuthzToken authzToken, string airavataExperimentId, ExperimentModel experiment)')
   print('  void updateExperimentConfiguration(AuthzToken authzToken, string airavataExperimentId, UserConfigurationDataModel userConfiguration)')
@@ -69,7 +72,8 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('   getIntermediateOutputs(AuthzToken authzToken, string airavataExperimentId)')
   print('   getJobStatuses(AuthzToken authzToken, string airavataExperimentId)')
   print('   getJobDetails(AuthzToken authzToken, string airavataExperimentId)')
-  print('  string cloneExperiment(AuthzToken authzToken, string existingExperimentID, string newExperimentName)')
+  print('  string cloneExperiment(AuthzToken authzToken, string existingExperimentID, string newExperimentName, string newExperimentProjectId)')
+  print('  string cloneExperimentByAdmin(AuthzToken authzToken, string existingExperimentID, string newExperimentName, string newExperimentProjectId)')
   print('  void terminateExperiment(AuthzToken authzToken, string airavataExperimentId, string gatewayId)')
   print('  string registerApplicationModule(AuthzToken authzToken, string gatewayId, ApplicationModule applicationModule)')
   print('  ApplicationModule getApplicationModule(AuthzToken authzToken, string appModuleId)')
@@ -153,7 +157,23 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  bool updateGatewayStoragePreference(AuthzToken authzToken, string gatewayID, string storageId, StoragePreference storagePreference)')
   print('  bool deleteGatewayComputeResourcePreference(AuthzToken authzToken, string gatewayID, string computeResourceId)')
   print('  bool deleteGatewayStoragePreference(AuthzToken authzToken, string gatewayID, string storageId)')
+  print('  string registerUserResourceProfile(AuthzToken authzToken, UserResourceProfile userResourceProfile)')
+  print('  UserResourceProfile getUserResourceProfile(AuthzToken authzToken, string userId, string gatewayID)')
+  print('  bool updateUserResourceProfile(AuthzToken authzToken, string userId, string gatewayID, UserResourceProfile userResourceProfile)')
+  print('  bool deleteUserResourceProfile(AuthzToken authzToken, string userId, string gatewayID)')
+  print('  bool addUserComputeResourcePreference(AuthzToken authzToken, string userId, string gatewayID, string userComputeResourceId, UserComputeResourcePreference userComputeResourcePreference)')
+  print('  bool addUserStoragePreference(AuthzToken authzToken, string userId, string gatewayID, string userStorageResourceId, UserStoragePreference userStoragePreference)')
+  print('  UserComputeResourcePreference getUserComputeResourcePreference(AuthzToken authzToken, string userId, string gatewayID, string userComputeResourceId)')
+  print('  UserStoragePreference getUserStoragePreference(AuthzToken authzToken, string userId, string gatewayID, string userStorageResourceId)')
+  print('   getAllUserComputeResourcePreferences(AuthzToken authzToken, string userId, string gatewayID)')
+  print('   getAllUserStoragePreferences(AuthzToken authzToken, string userId, string gatewayID)')
+  print('   getAllUserResourceProfiles(AuthzToken authzToken)')
+  print('  bool updateUserComputeResourcePreference(AuthzToken authzToken, string userId, string gatewayID, string userComputeResourceId, UserComputeResourcePreference userComputeResourcePreference)')
+  print('  bool updateUserStoragePreference(AuthzToken authzToken, string userId, string gatewayID, string userStorageId, UserStoragePreference userStoragePreference)')
+  print('  bool deleteUserComputeResourcePreference(AuthzToken authzToken, string userId, string gatewayID, string userComputeResourceId)')
+  print('  bool deleteUserStoragePreference(AuthzToken authzToken, string userId, string gatewayID, string userStorageId)')
   print('   getAllWorkflows(AuthzToken authzToken, string gatewayId)')
+  print('   getLatestQueueStatuses(AuthzToken authzToken)')
   print('  WorkflowModel getWorkflow(AuthzToken authzToken, string workflowTemplateId)')
   print('  void deleteWorkflow(AuthzToken authzToken, string workflowTemplateId)')
   print('  string registerWorkflow(AuthzToken authzToken, string gatewayId, WorkflowModel workflow)')
@@ -173,6 +193,12 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  bool deleteGroup(AuthzToken authzToken, string groupId, string ownerId, string gatewayId)')
   print('  GroupModel getGroup(AuthzToken authzToken, string groupId)')
   print('   getAllGroupsUserBelongs(AuthzToken authzToken, string userName, string gatewayId)')
+  print('  string addUserProfile(AuthzToken authzToken, UserProfile userProfile)')
+  print('  bool updateUserProfile(AuthzToken authzToken, UserProfile userProfile)')
+  print('  UserProfile getUserProfileById(AuthzToken authzToken, string userId, string gatewayId)')
+  print('  bool deleteUserProfile(AuthzToken authzToken, string userId)')
+  print('   getAllUserProfilesInGateway(AuthzToken authzToken, string gatewayId, i32 offset, i32 limit)')
+  print('  bool doesUserProfileExist(AuthzToken authzToken, string userId, string gatewayId)')
   print('')
   sys.exit(0)
 
@@ -314,10 +340,10 @@ elif cmd == 'getAllNotifications':
   pp.pprint(client.getAllNotifications(eval(args[0]),args[1],))
 
 elif cmd == 'generateAndRegisterSSHKeys':
-  if len(args) != 3:
-    print('generateAndRegisterSSHKeys requires 3 args')
+  if len(args) != 5:
+    print('generateAndRegisterSSHKeys requires 5 args')
     sys.exit(1)
-  pp.pprint(client.generateAndRegisterSSHKeys(eval(args[0]),args[1],args[2],))
+  pp.pprint(client.generateAndRegisterSSHKeys(eval(args[0]),args[1],args[2],args[3],eval(args[4]),))
 
 elif cmd == 'registerPwdCredential':
   if len(args) != 6:
@@ -336,6 +362,18 @@ elif cmd == 'getAllGatewaySSHPubKeys':
     print('getAllGatewaySSHPubKeys requires 2 args')
     sys.exit(1)
   pp.pprint(client.getAllGatewaySSHPubKeys(eval(args[0]),args[1],))
+
+elif cmd == 'getAllCredentialSummaryForGateway':
+  if len(args) != 3:
+    print('getAllCredentialSummaryForGateway requires 3 args')
+    sys.exit(1)
+  pp.pprint(client.getAllCredentialSummaryForGateway(eval(args[0]),eval(args[1]),args[2],))
+
+elif cmd == 'getAllCredentialSummaryForUsersInGateway':
+  if len(args) != 4:
+    print('getAllCredentialSummaryForUsersInGateway requires 4 args')
+    sys.exit(1)
+  pp.pprint(client.getAllCredentialSummaryForUsersInGateway(eval(args[0]),eval(args[1]),args[2],args[3],))
 
 elif cmd == 'getAllGatewayPWDCredentials':
   if len(args) != 2:
@@ -398,10 +436,10 @@ elif cmd == 'searchExperiments':
   pp.pprint(client.searchExperiments(eval(args[0]),args[1],args[2],eval(args[3]),eval(args[4]),eval(args[5]),))
 
 elif cmd == 'getExperimentStatistics':
-  if len(args) != 4:
-    print('getExperimentStatistics requires 4 args')
+  if len(args) != 7:
+    print('getExperimentStatistics requires 7 args')
     sys.exit(1)
-  pp.pprint(client.getExperimentStatistics(eval(args[0]),args[1],eval(args[2]),eval(args[3]),))
+  pp.pprint(client.getExperimentStatistics(eval(args[0]),args[1],eval(args[2]),eval(args[3]),args[4],args[5],args[6],))
 
 elif cmd == 'getExperimentsInProject':
   if len(args) != 4:
@@ -432,6 +470,12 @@ elif cmd == 'getExperiment':
     print('getExperiment requires 2 args')
     sys.exit(1)
   pp.pprint(client.getExperiment(eval(args[0]),args[1],))
+
+elif cmd == 'getExperimentByAdmin':
+  if len(args) != 2:
+    print('getExperimentByAdmin requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.getExperimentByAdmin(eval(args[0]),args[1],))
 
 elif cmd == 'getDetailedExperimentTree':
   if len(args) != 2:
@@ -500,10 +544,16 @@ elif cmd == 'getJobDetails':
   pp.pprint(client.getJobDetails(eval(args[0]),args[1],))
 
 elif cmd == 'cloneExperiment':
-  if len(args) != 3:
-    print('cloneExperiment requires 3 args')
+  if len(args) != 4:
+    print('cloneExperiment requires 4 args')
     sys.exit(1)
-  pp.pprint(client.cloneExperiment(eval(args[0]),args[1],args[2],))
+  pp.pprint(client.cloneExperiment(eval(args[0]),args[1],args[2],args[3],))
+
+elif cmd == 'cloneExperimentByAdmin':
+  if len(args) != 4:
+    print('cloneExperimentByAdmin requires 4 args')
+    sys.exit(1)
+  pp.pprint(client.cloneExperimentByAdmin(eval(args[0]),args[1],args[2],args[3],))
 
 elif cmd == 'terminateExperiment':
   if len(args) != 3:
@@ -1003,11 +1053,107 @@ elif cmd == 'deleteGatewayStoragePreference':
     sys.exit(1)
   pp.pprint(client.deleteGatewayStoragePreference(eval(args[0]),args[1],args[2],))
 
+elif cmd == 'registerUserResourceProfile':
+  if len(args) != 2:
+    print('registerUserResourceProfile requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.registerUserResourceProfile(eval(args[0]),eval(args[1]),))
+
+elif cmd == 'getUserResourceProfile':
+  if len(args) != 3:
+    print('getUserResourceProfile requires 3 args')
+    sys.exit(1)
+  pp.pprint(client.getUserResourceProfile(eval(args[0]),args[1],args[2],))
+
+elif cmd == 'updateUserResourceProfile':
+  if len(args) != 4:
+    print('updateUserResourceProfile requires 4 args')
+    sys.exit(1)
+  pp.pprint(client.updateUserResourceProfile(eval(args[0]),args[1],args[2],eval(args[3]),))
+
+elif cmd == 'deleteUserResourceProfile':
+  if len(args) != 3:
+    print('deleteUserResourceProfile requires 3 args')
+    sys.exit(1)
+  pp.pprint(client.deleteUserResourceProfile(eval(args[0]),args[1],args[2],))
+
+elif cmd == 'addUserComputeResourcePreference':
+  if len(args) != 5:
+    print('addUserComputeResourcePreference requires 5 args')
+    sys.exit(1)
+  pp.pprint(client.addUserComputeResourcePreference(eval(args[0]),args[1],args[2],args[3],eval(args[4]),))
+
+elif cmd == 'addUserStoragePreference':
+  if len(args) != 5:
+    print('addUserStoragePreference requires 5 args')
+    sys.exit(1)
+  pp.pprint(client.addUserStoragePreference(eval(args[0]),args[1],args[2],args[3],eval(args[4]),))
+
+elif cmd == 'getUserComputeResourcePreference':
+  if len(args) != 4:
+    print('getUserComputeResourcePreference requires 4 args')
+    sys.exit(1)
+  pp.pprint(client.getUserComputeResourcePreference(eval(args[0]),args[1],args[2],args[3],))
+
+elif cmd == 'getUserStoragePreference':
+  if len(args) != 4:
+    print('getUserStoragePreference requires 4 args')
+    sys.exit(1)
+  pp.pprint(client.getUserStoragePreference(eval(args[0]),args[1],args[2],args[3],))
+
+elif cmd == 'getAllUserComputeResourcePreferences':
+  if len(args) != 3:
+    print('getAllUserComputeResourcePreferences requires 3 args')
+    sys.exit(1)
+  pp.pprint(client.getAllUserComputeResourcePreferences(eval(args[0]),args[1],args[2],))
+
+elif cmd == 'getAllUserStoragePreferences':
+  if len(args) != 3:
+    print('getAllUserStoragePreferences requires 3 args')
+    sys.exit(1)
+  pp.pprint(client.getAllUserStoragePreferences(eval(args[0]),args[1],args[2],))
+
+elif cmd == 'getAllUserResourceProfiles':
+  if len(args) != 1:
+    print('getAllUserResourceProfiles requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.getAllUserResourceProfiles(eval(args[0]),))
+
+elif cmd == 'updateUserComputeResourcePreference':
+  if len(args) != 5:
+    print('updateUserComputeResourcePreference requires 5 args')
+    sys.exit(1)
+  pp.pprint(client.updateUserComputeResourcePreference(eval(args[0]),args[1],args[2],args[3],eval(args[4]),))
+
+elif cmd == 'updateUserStoragePreference':
+  if len(args) != 5:
+    print('updateUserStoragePreference requires 5 args')
+    sys.exit(1)
+  pp.pprint(client.updateUserStoragePreference(eval(args[0]),args[1],args[2],args[3],eval(args[4]),))
+
+elif cmd == 'deleteUserComputeResourcePreference':
+  if len(args) != 4:
+    print('deleteUserComputeResourcePreference requires 4 args')
+    sys.exit(1)
+  pp.pprint(client.deleteUserComputeResourcePreference(eval(args[0]),args[1],args[2],args[3],))
+
+elif cmd == 'deleteUserStoragePreference':
+  if len(args) != 4:
+    print('deleteUserStoragePreference requires 4 args')
+    sys.exit(1)
+  pp.pprint(client.deleteUserStoragePreference(eval(args[0]),args[1],args[2],args[3],))
+
 elif cmd == 'getAllWorkflows':
   if len(args) != 2:
     print('getAllWorkflows requires 2 args')
     sys.exit(1)
   pp.pprint(client.getAllWorkflows(eval(args[0]),args[1],))
+
+elif cmd == 'getLatestQueueStatuses':
+  if len(args) != 1:
+    print('getLatestQueueStatuses requires 1 args')
+    sys.exit(1)
+  pp.pprint(client.getLatestQueueStatuses(eval(args[0]),))
 
 elif cmd == 'getWorkflow':
   if len(args) != 2:
@@ -1122,6 +1268,42 @@ elif cmd == 'getAllGroupsUserBelongs':
     print('getAllGroupsUserBelongs requires 3 args')
     sys.exit(1)
   pp.pprint(client.getAllGroupsUserBelongs(eval(args[0]),args[1],args[2],))
+
+elif cmd == 'addUserProfile':
+  if len(args) != 2:
+    print('addUserProfile requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.addUserProfile(eval(args[0]),eval(args[1]),))
+
+elif cmd == 'updateUserProfile':
+  if len(args) != 2:
+    print('updateUserProfile requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.updateUserProfile(eval(args[0]),eval(args[1]),))
+
+elif cmd == 'getUserProfileById':
+  if len(args) != 3:
+    print('getUserProfileById requires 3 args')
+    sys.exit(1)
+  pp.pprint(client.getUserProfileById(eval(args[0]),args[1],args[2],))
+
+elif cmd == 'deleteUserProfile':
+  if len(args) != 2:
+    print('deleteUserProfile requires 2 args')
+    sys.exit(1)
+  pp.pprint(client.deleteUserProfile(eval(args[0]),args[1],))
+
+elif cmd == 'getAllUserProfilesInGateway':
+  if len(args) != 4:
+    print('getAllUserProfilesInGateway requires 4 args')
+    sys.exit(1)
+  pp.pprint(client.getAllUserProfilesInGateway(eval(args[0]),args[1],eval(args[2]),eval(args[3]),))
+
+elif cmd == 'doesUserProfileExist':
+  if len(args) != 3:
+    print('doesUserProfileExist requires 3 args')
+    sys.exit(1)
+  pp.pprint(client.doesUserProfileExist(eval(args[0]),args[1],args[2],))
 
 else:
   print('Unrecognized method %s' % cmd)

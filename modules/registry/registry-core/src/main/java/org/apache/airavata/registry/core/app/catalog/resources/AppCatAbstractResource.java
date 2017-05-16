@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.registry.core.app.catalog.resources;
 
 public abstract class AppCatAbstractResource implements AppCatalogResource {
@@ -54,8 +52,11 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
     public static final String APPLICATION_OUTPUT = "ApplicationIntOutput";
     public static final String WORKFLOW_OUTPUT = "WorkflowOutput";
     public static final String GATEWAY_PROFILE = "GatewayProfile";
+    public static final String USER_RESOURCE_PROFILE = "UserResourceProfile";
     public static final String COMPUTE_RESOURCE_PREFERENCE = "ComputeResourcePreference";
+    public static final String USER_COMPUTE_RESOURCE_PREFERENCE = "UserComputeResourcePreference";
     public static final String STORAGE_PREFERENCE = "StoragePreference";
+    public static final String USER_STORAGE_PREFERENCE = "UserStoragePreference";
 	public static final String BATCH_QUEUE = "BatchQueue";
 	public static final String COMPUTE_RESOURCE_FILE_SYSTEM = "ComputeResourceFileSystem";
 	public static final String JOB_SUBMISSION_INTERFACE = "JobSubmissionInterface";
@@ -87,7 +88,7 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
         public static final String CLIENT_KEY = "clientKey";
         public static final String CLIENT_SECRET = "clientSecret";
         public static final String GATEWAY_ID = "gatewayId";
-    }
+}
 
 
     // Host Alias Table
@@ -285,12 +286,27 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
         public static final String GATEWAY_DESC = "gatewayDesc";
     }
 
+    public final class UserResourceProfileConstants {
+        public static final String GATEWAY_ID = "gatewayID";
+        public static final String USER_ID = "userId";
+        public static final String GATEWAY_DESC = "gatewayDesc";
+    }
+
     public final class ComputeResourcePreferenceConstants {
         public static final String GATEWAY_ID = "gatewayId";
         public static final String RESOURCE_ID = "resourceId";
         public static final String OVERRIDE_BY_AIRAVATA = "overrideByAiravata";
         public static final String PREFERED_JOB_SUB_PROTOCOL = "preferedJobSubmissionProtocol";
         public static final String PREFERED_DATA_MOVE_PROTOCOL = "preferedDataMoveProtocol";
+        public static final String PREFERED_BATCH_QUEUE = "batchQueue";
+        public static final String SCRATCH_LOCATION = "scratchLocation";
+        public static final String ALLOCATION_PROJECT_NUMBER = "projectNumber";
+    }
+
+    public final class UserComputeResourcePreferenceConstants {
+        public static final String GATEWAY_ID = "gatewayID";
+        public static final String USER_ID = "userId";
+        public static final String RESOURCE_ID = "resourceId";
         public static final String PREFERED_BATCH_QUEUE = "batchQueue";
         public static final String SCRATCH_LOCATION = "scratchLocation";
         public static final String ALLOCATION_PROJECT_NUMBER = "projectNumber";
@@ -339,6 +355,12 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
 
     public final class StoragePreferenceConstants {
         public static final String GATEWAY_ID = "gatewayId";
+        public static final String STORAGE_ID = "storageResourceId";
+    }
+
+    public final class UserStoragePreferenceConstants {
+        public static final String GATEWAY_ID = "gatewayID";
+        public static final String USER_ID = "userId";
         public static final String STORAGE_ID = "storageResourceId";
     }
 

@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,13 +16,10 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
-
+ */
 package org.apache.airavata.testsuite.multitenantedairavata;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.testsuite.multitenantedairavata.utils.TestFrameworkConstants;
 import org.slf4j.Logger;
@@ -32,12 +29,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
 
 public class FrameworkSetup {
     private static FrameworkSetup instance = new FrameworkSetup();
     private GatewayRegister gatewayRegister;
     private ComputeResourceRegister computeResourceRegister;
+    private StorageResourceRegister storageResourceRegister;
     private ApplicationRegister applicationRegister;
     private Airavata.Client airavata;
     private TestFrameworkProps testFrameworkProps;
@@ -57,6 +54,7 @@ public class FrameworkSetup {
             gatewayRegister = new GatewayRegister(airavata, testFrameworkProps);
             applicationRegister = new ApplicationRegister(airavata, testFrameworkProps);
             computeResourceRegister = new ComputeResourceRegister(airavata, testFrameworkProps);
+            storageResourceRegister = new StorageResourceRegister(airavata, testFrameworkProps);
         } catch (Exception e) {
             logger.error("Error while creating airavata client instance", e);
         }
@@ -73,7 +71,7 @@ public class FrameworkSetup {
         while ((line = reader.readLine()) != null) {
             content += line;
         }
-        System.out.println(content);
+        //System.out.println(content);
         return content;
     }
 
@@ -103,6 +101,10 @@ public class FrameworkSetup {
 
     public ComputeResourceRegister getComputeResourceRegister() {
         return computeResourceRegister;
+    }
+
+    public StorageResourceRegister getStorageResourceRegister() {
+        return storageResourceRegister;
     }
 
     public void setComputeResourceRegister(ComputeResourceRegister computeResourceRegister) {

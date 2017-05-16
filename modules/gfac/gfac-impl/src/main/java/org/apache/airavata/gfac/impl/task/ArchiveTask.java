@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,18 +16,16 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
 package org.apache.airavata.gfac.impl.task;
 
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.GFacException;
-import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.cluster.CommandInfo;
 import org.apache.airavata.gfac.core.cluster.CommandOutput;
@@ -40,7 +38,6 @@ import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.gfac.impl.StandardOutReader;
-import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.status.TaskState;
@@ -96,27 +93,20 @@ public class ArchiveTask implements Task {
 
         try {
             StorageResourceDescription storageResource = taskContext.getParentProcessContext().getStorageResource();
-            StoragePreference storagePreference = taskContext.getParentProcessContext().getStoragePreference();
 
             if (storageResource != null) {
                 hostName = storageResource.getHostName();
             } else {
                 throw new GFacException("Storage Resource is null");
             }
-
-            if (storagePreference != null) {
-                userName = storagePreference.getLoginUserName();
-                inputPath = storagePreference.getFileSystemRootLocation();
-                inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
-            } else {
-                throw new GFacException("Storage Preference is null");
-            }
-
+            userName = processContext.getStorageResourceLoginUserName();
+            inputPath = processContext.getStorageFileSystemRootLocation();
+            inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
 
             authenticationInfo = Factory.getStorageSSHKeyAuthentication(taskContext.getParentProcessContext());
             status = new TaskStatus(TaskState.COMPLETED);
 
-            ServerInfo serverInfo = new ServerInfo(userName, hostName, DEFAULT_SSH_PORT);
+            ServerInfo serverInfo = processContext.getStorageResourceServerInfo();
             Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
             URI sourceURI = new URI(subTaskModel.getSource());
             URI destinationURI = null;
@@ -137,7 +127,11 @@ public class ArchiveTask implements Task {
             // move tar to storage resource
             remoteCluster.execute(commandInfo);
             destinationURI = TaskUtils.getDestinationURI(taskContext, hostName, inputPath, archiveTar);
-            remoteCluster.scpThirdParty(resourceAbsTarFilePath ,destinationURI.getPath() , sshSession, RemoteCluster.DIRECTION.FROM, true);
+            remoteCluster.scpThirdParty(resourceAbsTarFilePath ,
+                    destinationURI.getPath() ,
+                    sshSession,
+                    RemoteCluster.DIRECTION.FROM,
+                    true);
 
             // delete tar in remote computer resource
             commandInfo = new RawCommandInfo("rm " + resourceAbsTarFilePath);
@@ -151,7 +145,17 @@ public class ArchiveTask implements Task {
                     " && tar -xvf " + archiveTar + " -C " + storageArchiveDir + " && rm " + archiveTar +
                     " && chmod 755 -R " + storageArchiveDir + "/*");
             executeCommand(sshSession, commandInfo, new StandardOutReader());
-        } catch (GFacException | AiravataException | URISyntaxException | SSHApiException e) {
+        } catch (CredentialStoreException e) {
+            String msg = "Storage authentication issue, make sure you are passing valid credential token";
+            log.error(msg, e);
+            status.setState(TaskState.FAILED);
+            status.setReason(msg);
+            status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setActualErrorMessage(e.getMessage());
+            errorModel.setUserFriendlyMessage(msg);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
+        } catch ( URISyntaxException | GFacException e) {
             String msg = "Error! Archive task failed";
             log.error(msg, e);
             status.setState(TaskState.FAILED);
@@ -178,7 +182,7 @@ public class ArchiveTask implements Task {
 
 
 
-    private void executeCommand(Session session,CommandInfo commandInfo, CommandOutput commandOutput) throws SSHApiException {
+    private void executeCommand(Session session,CommandInfo commandInfo, CommandOutput commandOutput) throws GFacException {
         String command = commandInfo.getCommand();
         ChannelExec channelExec = null;
         try {
@@ -195,7 +199,7 @@ public class ArchiveTask implements Task {
             channelExec.connect();
             commandOutput.onOutput(channelExec);
         } catch (JSchException e) {
-            throw new SSHApiException("Unable to execute command - ", e);
+            throw new GFacException("Unable to execute command - ", e);
         }finally {
             //Only disconnecting the channel, session can be reused
             if (channelExec != null) {

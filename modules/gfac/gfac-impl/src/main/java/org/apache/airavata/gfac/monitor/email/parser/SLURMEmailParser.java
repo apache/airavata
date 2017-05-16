@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,8 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.gfac.monitor.email.parser;
 
 import org.apache.airavata.common.exception.AiravataException;
@@ -49,17 +48,19 @@ public class SLURMEmailParser implements EmailParser {
     @Override
     public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException{
         JobStatusResult jobStatusResult = new JobStatusResult();
-        String subject = message.getSubject();
+        parseSubject(message.getSubject(), jobStatusResult);
+        return jobStatusResult;
+    }
+
+    private void parseSubject(String subject, JobStatusResult jobStatusResult) throws MessagingException {
         Matcher matcher = pattern.matcher(subject);
         if (matcher.find()) {
             jobStatusResult.setJobId(matcher.group(JOBID));
             jobStatusResult.setJobName(matcher.group(JOBNAME));
             jobStatusResult.setState(getJobState(matcher.group(STATUS), subject));
-            return jobStatusResult;
         } else {
             log.error("[EJM]: No matched found for subject -> " + subject);
         }
-        return jobStatusResult;
     }
 
     private JobState getJobState(String state, String subject) {

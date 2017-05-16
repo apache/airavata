@@ -1,0 +1,14 @@
+<VirtualHost *:80>
+    ServerName {{ vhost_servername }}
+    {% if vhost_serveralias is defined %}
+    ServerAlias {{ vhost_serveralias }}
+    {% endif %}
+
+    DocumentRoot {{ doc_root_dir }}/public
+    <Directory "{{ doc_root_dir }}/public">
+       AllowOverride All
+    </Directory>
+    ErrorLog {{ httpd_log_dir[ansible_os_family] }}/{{ gateway_id }}.error.log
+    CustomLog {{ httpd_log_dir[ansible_os_family] }}/{{ gateway_id }}.requests.log combined
+
+</VirtualHost>

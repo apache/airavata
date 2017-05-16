@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,7 +16,6 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
 package org.apache.airavata.credential.store.server;
 
@@ -27,13 +26,13 @@ import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.cpi.credential_store_cpiConstants;
 import org.apache.airavata.credential.store.credential.CommunityUser;
 import org.apache.airavata.credential.store.credential.Credential;
-import org.apache.airavata.credential.store.datamodel.CertificateCredential;
-import org.apache.airavata.credential.store.datamodel.PasswordCredential;
-import org.apache.airavata.credential.store.datamodel.SSHCredential;
+import org.apache.airavata.credential.store.credential.CredentialOwnerType;
+import org.apache.airavata.model.credential.store.*;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.credential.store.store.impl.CertificateCredentialWriter;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 import org.apache.airavata.credential.store.store.impl.SSHCredentialWriter;
+import org.apache.airavata.credential.store.store.impl.util.CredentialStoreInitUtil;
 import org.apache.airavata.credential.store.util.TokenGenerator;
 import org.apache.airavata.credential.store.util.Utility;
 import org.apache.commons.codec.binary.Base64;
@@ -43,12 +42,11 @@ import org.slf4j.LoggerFactory;
 import sun.security.provider.X509Factory;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.sql.SQLException;
+import java.util.*;
 
 public class CredentialStoreServerHandler implements CredentialStoreService.Iface {
     protected static Logger log = LoggerFactory.getLogger(CredentialStoreServerHandler.class);
@@ -57,13 +55,16 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
     private CertificateCredentialWriter certificateCredentialWriter;
     private CredentialReaderImpl credentialReader;
 
-    public CredentialStoreServerHandler() throws ApplicationSettingsException, IllegalAccessException, ClassNotFoundException, InstantiationException {
+    public CredentialStoreServerHandler() throws ApplicationSettingsException, IllegalAccessException,
+            ClassNotFoundException, InstantiationException, SQLException, IOException {
         String jdbcUrl = ServerSettings.getCredentialStoreDBURL();
         String userName = ServerSettings.getCredentialStoreDBUser();
         String password = ServerSettings.getCredentialStoreDBPassword();
         String driverName = ServerSettings.getCredentialStoreDBDriver();
 
         log.debug("Starting credential store, connecting to database - " + jdbcUrl + " DB user - " + userName + " driver name - " + driverName);
+        CredentialStoreInitUtil.initializeDB();
+
         dbUtil = new DBUtil(jdbcUrl, userName, password, driverName);
         sshCredentialWriter = new SSHCredentialWriter(dbUtil);
         certificateCredentialWriter = new CertificateCredentialWriter(dbUtil);
@@ -88,12 +89,16 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
             if (sshCredential.getPrivateKey() != null) {
                 credential.setPrivateKey(sshCredential.getPrivateKey().getBytes());
             }
+            if(sshCredential.getDescription() != null){
+                credential.setDescription(sshCredential.getDescription());
+            }
             if (sshCredential.getPublicKey() != null) {
                 credential.setPublicKey(sshCredential.getPublicKey().getBytes());
             }
             if (sshCredential.getPublicKey() == null || sshCredential.getPrivateKey() == null) {
                 credential = Utility.generateKeyPair(credential);
             }
+            credential.setCredentialOwnerType(CredentialOwnerType.findByDataModelType(sshCredential.getCredentialOwnerType()));
             sshCredentialWriter.writeCredentials(credential);
             return token;
         } catch (CredentialStoreException e) {
@@ -168,6 +173,8 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
                 sshCredential.setPassphrase(credential1.getPassphrase());
                 sshCredential.setToken(credential1.getToken());
                 sshCredential.setPersistedTime(credential1.getCertificateRequestedTime().getTime());
+                sshCredential.setDescription(credential1.getDescription());
+                sshCredential.setCredentialOwnerType(credential1.getCredentialOwnerType().getDatamodelType());
                 return sshCredential;
             } else {
                 log.info("Could not find SSH credentials for token - " + tokenId + " and "
@@ -181,13 +188,46 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
     }
 
     @Override
+    public CredentialSummary getCredentialSummary(SummaryType type, String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
+        try {
+            if(type.equals(SummaryType.SSH)){
+                Credential credential = credentialReader.getCredential(gatewayId, tokenId);
+                if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) {
+                    org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential credential1 = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
+                    CredentialSummary sshCredentialSummary = new CredentialSummary();
+                    sshCredentialSummary.setType(SummaryType.SSH);
+                    sshCredentialSummary.setUsername(credential1.getPortalUserName());
+                    sshCredentialSummary.setGatewayId(credential1.getGateway());
+                    sshCredentialSummary.setPublicKey(new String(credential1.getPublicKey()));
+                    sshCredentialSummary.setToken(credential1.getToken());
+                    sshCredentialSummary.setPersistedTime(credential1.getCertificateRequestedTime().getTime());
+                    sshCredentialSummary.setDescription(credential1.getDescription());
+                    return sshCredentialSummary;
+                } else {
+                    log.info("Could not find SSH credential for token - " + tokenId + " and "
+                            + "gateway id - " + gatewayId);
+                    return null;
+                }
+            }else{
+                log.info("Summay Type"+ type.toString() + " not supported for - " + tokenId + " and "
+                        + "gateway id - " + gatewayId);
+                return null;
+            }
+        } catch (CredentialStoreException e) {
+            log.error("Error occurred while retrieving SSH credential Summary for token - " +  tokenId + " and gateway id - " + gatewayId, e);
+            throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while retrieving SSH credential Summary for token - " +  tokenId + " and gateway id - " + gatewayId);
+        }
+    }
+
+
+    @Override
     public CertificateCredential getCertificateCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
         try {
             Credential credential = credentialReader.getCredential(gatewayId, tokenId);
             if (credential instanceof org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential) {
                 org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential credential1 = (org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential) credential;
                 CertificateCredential certificateCredential = new CertificateCredential();
-                org.apache.airavata.credential.store.datamodel.CommunityUser communityUser = new org.apache.airavata.credential.store.datamodel.CommunityUser();
+                org.apache.airavata.model.credential.store.CommunityUser communityUser = new org.apache.airavata.model.credential.store.CommunityUser();
                 communityUser.setGatewayName(credential1.getCommunityUser().getGatewayName());
                 communityUser.setUsername(credential1.getCommunityUser().getUserName());
                 communityUser.setUserEmail(credential1.getCommunityUser().getUserEmail());
@@ -250,7 +290,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
                     if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) {
                         org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredential = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
                         String portalUserName = sshCredential.getPortalUserName();
-                        if (portalUserName != null){
+                        if (portalUserName != null && sshCredential.getCredentialOwnerType() == CredentialOwnerType.USER){
                             if (portalUserName.equals(username)) {
                                 byte[] publicKey = sshCredential.getPublicKey();
                                 if (publicKey != null) {
@@ -278,7 +318,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
                     if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) {
                         org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredential = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
                         byte[] publicKey = sshCredential.getPublicKey();
-                        if (publicKey != null) {
+                        if (publicKey != null && sshCredential.getCredentialOwnerType() == CredentialOwnerType.GATEWAY) {
                             sshKeyMap.put(sshCredential.getToken(), new String(publicKey));
                         }
                     }
@@ -291,6 +331,82 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
         return sshKeyMap;
 
     }
+
+    @Override
+    public List<CredentialSummary> getAllCredentialSummaryForGateway(SummaryType type, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
+        if(type.equals(SummaryType.SSH)){
+            Map<String, String> sshKeyMap = new HashMap<>();
+            List<CredentialSummary> summaryList = new ArrayList<>();
+            try {
+                List<Credential> allCredentials = credentialReader.getAllCredentialsPerGateway(gatewayId);
+                if (allCredentials != null && !allCredentials.isEmpty()){
+                    for (Credential credential : allCredentials) {
+                        if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential
+                                && credential.getCredentialOwnerType() == CredentialOwnerType.GATEWAY) {
+                            org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredential = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
+                            CredentialSummary sshCredentialSummary = new CredentialSummary();
+                            sshCredentialSummary.setType(SummaryType.SSH);
+                            sshCredentialSummary.setToken(sshCredential.getToken());
+                            sshCredentialSummary.setUsername(sshCredential.getPortalUserName());
+                            sshCredentialSummary.setGatewayId(sshCredential.getGateway());
+                            sshCredentialSummary.setDescription(sshCredential.getDescription());
+                            sshCredentialSummary.setPublicKey(new String(sshCredential.getPublicKey()));
+                            summaryList.add(sshCredentialSummary);
+                        }
+                    }
+                }
+            } catch (CredentialStoreException e) {
+                log.error("Error occurred while retrieving credential Summary", e);
+                throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while retrieving credential Summary");
+            }
+            return summaryList;
+        }else{
+            log.info("Summay Type"+ type.toString() + " not supported for gateway id - " + gatewayId);
+            return null;
+        }
+    }
+
+    @Override
+    public List<CredentialSummary> getAllCredentialSummaryForUserInGateway(SummaryType type, String gatewayId, String userId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
+        if(type.equals(SummaryType.SSH)){
+            Map<String, String> sshKeyMap = new HashMap<>();
+            List<CredentialSummary> summaryList = new ArrayList<>();
+            try {
+                List<Credential> allCredentials = credentialReader.getAllCredentials();
+                if (allCredentials != null && !allCredentials.isEmpty()){
+                    for (Credential credential : allCredentials) {
+                        if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) {
+                            org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredential = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
+                            String portalUserName = sshCredential.getPortalUserName();
+                            String gateway = sshCredential.getGateway();
+                            if (portalUserName != null && gateway != null){
+                                if (portalUserName.equals(userId) && gateway.equals(gatewayId) && sshCredential.getCredentialOwnerType() == CredentialOwnerType.USER) {
+                                    org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredentialKey = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
+                                    CredentialSummary sshCredentialSummary = new CredentialSummary();
+                                    sshCredentialSummary.setType(SummaryType.SSH);
+                                    sshCredentialSummary.setToken(sshCredentialKey.getToken());
+                                    sshCredentialSummary.setUsername(sshCredentialKey.getPortalUserName());
+                                    sshCredentialSummary.setGatewayId(sshCredentialKey.getGateway());
+                                    sshCredentialSummary.setDescription(sshCredentialKey.getDescription());
+                                    sshCredentialSummary.setPublicKey(new String(sshCredentialKey.getPublicKey()));
+                                    summaryList.add(sshCredentialSummary);
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (CredentialStoreException e) {
+                log.error("Error occurred while retrieving credential Summary", e);
+                throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while retrieving credential Summary");
+            }
+            return summaryList;
+        }else{
+            log.info("Summay Type"+ type.toString() + " not supported for user Id - " + userId + " and "
+                    + "gateway id - " + gatewayId);
+            return null;
+        }
+    }
+
 
     @Override
     public Map<String, String> getAllPWDCredentialsForGateway(String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {

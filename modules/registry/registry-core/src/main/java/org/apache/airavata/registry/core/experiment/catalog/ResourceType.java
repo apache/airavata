@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,8 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.registry.core.experiment.catalog;
 public enum ResourceType {
     GATEWAY,
@@ -43,5 +42,6 @@ public enum ResourceType {
     TASK_ERROR,
     TASK_STATUS,
     JOB,
-    JOB_STATUS
+    JOB_STATUS,
+    QUEUE_STATUS
 }

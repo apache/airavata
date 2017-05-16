@@ -15,4 +15,17 @@ use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
 
 
+final class Constant extends \Thrift\Type\TConstant {
+  static protected $TENANT_PROFILE_CPI_VERSION;
+  static protected $TENANT_PROFILE_CPI_NAME;
+
+  static protected function init_TENANT_PROFILE_CPI_VERSION() {
+    return "0.17";
+  }
+
+  static protected function init_TENANT_PROFILE_CPI_NAME() {
+    return "TenantProfileService";
+  }
+}
+
 

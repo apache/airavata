@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,13 +16,11 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.orchestrator.server;
 
-import java.net.InetSocketAddress;
-
+import org.apache.airavata.cluster.monitoring.ClusterStatusMonitorJobScheduler;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
@@ -32,8 +30,11 @@ import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.InetSocketAddress;
 
 public class OrchestratorServer implements IServer {
 
@@ -44,6 +45,8 @@ public class OrchestratorServer implements IServer {
     private ServerStatus status;
 
 	private TServer server;
+
+	private ClusterStatusMonitorJobScheduler clusterStatusMonitorJobScheduler;
 
 	public OrchestratorServer() {
 		setStatus(ServerStatus.STOPPED);
@@ -95,6 +98,11 @@ public class OrchestratorServer implements IServer {
 		}
     }
 
+	public void startClusterStatusMonitoring() throws SchedulerException, ApplicationSettingsException {
+        clusterStatusMonitorJobScheduler = new ClusterStatusMonitorJobScheduler();
+        clusterStatusMonitorJobScheduler.scheduleClusterStatusMonitoring();
+	}
+
     public static void main(String[] args) {
     	try {
 			new OrchestratorServer().start();
@@ -105,6 +113,12 @@ public class OrchestratorServer implements IServer {
 
 	@Override
 	public void start() throws Exception {
+		if (ServerSettings.enableClusterStatusMonitoring()) {
+			//starting cluster status monitoring
+			startClusterStatusMonitoring();
+		}
+
+
 		setStatus(ServerStatus.STARTING);
 		OrchestratorService.Processor<OrchestratorServerHandler> orchestratorService =
                 new OrchestratorService.Processor<OrchestratorServerHandler>(new OrchestratorServerHandler());

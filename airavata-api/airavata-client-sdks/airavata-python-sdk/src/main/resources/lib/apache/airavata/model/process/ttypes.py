@@ -38,7 +38,7 @@ class ProcessModel:
    - experimentId
    - creationTime
    - lastUpdateTime
-   - processStatus
+   - processStatuses
    - processDetail
    - applicationInterfaceId
    - applicationDeploymentId
@@ -48,7 +48,7 @@ class ProcessModel:
    - processResourceSchedule
    - tasks
    - taskDag
-   - processError
+   - processErrors
    - gatewayExecutionId
    - enableEmailNotification
    - emailAddresses
@@ -57,6 +57,7 @@ class ProcessModel:
    - generateCert
    - experimentDataDir
    - userName
+   - useUserCRPref
   """
 
   thrift_spec = (
@@ -65,7 +66,7 @@ class ProcessModel:
     (2, TType.STRING, 'experimentId', None, None, ), # 2
     (3, TType.I64, 'creationTime', None, None, ), # 3
     (4, TType.I64, 'lastUpdateTime', None, None, ), # 4
-    (5, TType.LIST, 'processStatus', (TType.STRUCT,(apache.airavata.model.status.ttypes.ProcessStatus, apache.airavata.model.status.ttypes.ProcessStatus.thrift_spec)), None, ), # 5
+    (5, TType.LIST, 'processStatuses', (TType.STRUCT,(apache.airavata.model.status.ttypes.ProcessStatus, apache.airavata.model.status.ttypes.ProcessStatus.thrift_spec)), None, ), # 5
     (6, TType.STRING, 'processDetail', None, None, ), # 6
     (7, TType.STRING, 'applicationInterfaceId', None, None, ), # 7
     (8, TType.STRING, 'applicationDeploymentId', None, None, ), # 8
@@ -75,7 +76,7 @@ class ProcessModel:
     (12, TType.STRUCT, 'processResourceSchedule', (apache.airavata.model.scheduling.ttypes.ComputationalResourceSchedulingModel, apache.airavata.model.scheduling.ttypes.ComputationalResourceSchedulingModel.thrift_spec), None, ), # 12
     (13, TType.LIST, 'tasks', (TType.STRUCT,(apache.airavata.model.task.ttypes.TaskModel, apache.airavata.model.task.ttypes.TaskModel.thrift_spec)), None, ), # 13
     (14, TType.STRING, 'taskDag', None, None, ), # 14
-    (15, TType.LIST, 'processError', (TType.STRUCT,(apache.airavata.model.commons.ttypes.ErrorModel, apache.airavata.model.commons.ttypes.ErrorModel.thrift_spec)), None, ), # 15
+    (15, TType.LIST, 'processErrors', (TType.STRUCT,(apache.airavata.model.commons.ttypes.ErrorModel, apache.airavata.model.commons.ttypes.ErrorModel.thrift_spec)), None, ), # 15
     (16, TType.STRING, 'gatewayExecutionId', None, None, ), # 16
     (17, TType.BOOL, 'enableEmailNotification', None, None, ), # 17
     (18, TType.LIST, 'emailAddresses', (TType.STRING,None), None, ), # 18
@@ -84,14 +85,15 @@ class ProcessModel:
     (21, TType.BOOL, 'generateCert', None, False, ), # 21
     (22, TType.STRING, 'experimentDataDir', None, None, ), # 22
     (23, TType.STRING, 'userName', None, None, ), # 23
+    (24, TType.BOOL, 'useUserCRPref', None, None, ), # 24
   )
 
-  def __init__(self, processId=thrift_spec[1][4], experimentId=None, creationTime=None, lastUpdateTime=None, processStatus=None, processDetail=None, applicationInterfaceId=None, applicationDeploymentId=None, computeResourceId=None, processInputs=None, processOutputs=None, processResourceSchedule=None, tasks=None, taskDag=None, processError=None, gatewayExecutionId=None, enableEmailNotification=None, emailAddresses=None, storageResourceId=None, userDn=None, generateCert=thrift_spec[21][4], experimentDataDir=None, userName=None,):
+  def __init__(self, processId=thrift_spec[1][4], experimentId=None, creationTime=None, lastUpdateTime=None, processStatuses=None, processDetail=None, applicationInterfaceId=None, applicationDeploymentId=None, computeResourceId=None, processInputs=None, processOutputs=None, processResourceSchedule=None, tasks=None, taskDag=None, processErrors=None, gatewayExecutionId=None, enableEmailNotification=None, emailAddresses=None, storageResourceId=None, userDn=None, generateCert=thrift_spec[21][4], experimentDataDir=None, userName=None, useUserCRPref=None,):
     self.processId = processId
     self.experimentId = experimentId
     self.creationTime = creationTime
     self.lastUpdateTime = lastUpdateTime
-    self.processStatus = processStatus
+    self.processStatuses = processStatuses
     self.processDetail = processDetail
     self.applicationInterfaceId = applicationInterfaceId
     self.applicationDeploymentId = applicationDeploymentId
@@ -101,7 +103,7 @@ class ProcessModel:
     self.processResourceSchedule = processResourceSchedule
     self.tasks = tasks
     self.taskDag = taskDag
-    self.processError = processError
+    self.processErrors = processErrors
     self.gatewayExecutionId = gatewayExecutionId
     self.enableEmailNotification = enableEmailNotification
     self.emailAddresses = emailAddresses
@@ -110,6 +112,7 @@ class ProcessModel:
     self.generateCert = generateCert
     self.experimentDataDir = experimentDataDir
     self.userName = userName
+    self.useUserCRPref = useUserCRPref
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -142,12 +145,12 @@ class ProcessModel:
           iprot.skip(ftype)
       elif fid == 5:
         if ftype == TType.LIST:
-          self.processStatus = []
+          self.processStatuses = []
           (_etype3, _size0) = iprot.readListBegin()
           for _i4 in xrange(_size0):
             _elem5 = apache.airavata.model.status.ttypes.ProcessStatus()
             _elem5.read(iprot)
-            self.processStatus.append(_elem5)
+            self.processStatuses.append(_elem5)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -217,12 +220,12 @@ class ProcessModel:
           iprot.skip(ftype)
       elif fid == 15:
         if ftype == TType.LIST:
-          self.processError = []
+          self.processErrors = []
           (_etype27, _size24) = iprot.readListBegin()
           for _i28 in xrange(_size24):
             _elem29 = apache.airavata.model.commons.ttypes.ErrorModel()
             _elem29.read(iprot)
-            self.processError.append(_elem29)
+            self.processErrors.append(_elem29)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -271,6 +274,11 @@ class ProcessModel:
           self.userName = iprot.readString()
         else:
           iprot.skip(ftype)
+      elif fid == 24:
+        if ftype == TType.BOOL:
+          self.useUserCRPref = iprot.readBool()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -297,10 +305,10 @@ class ProcessModel:
       oprot.writeFieldBegin('lastUpdateTime', TType.I64, 4)
       oprot.writeI64(self.lastUpdateTime)
       oprot.writeFieldEnd()
-    if self.processStatus is not None:
-      oprot.writeFieldBegin('processStatus', TType.LIST, 5)
-      oprot.writeListBegin(TType.STRUCT, len(self.processStatus))
-      for iter36 in self.processStatus:
+    if self.processStatuses is not None:
+      oprot.writeFieldBegin('processStatuses', TType.LIST, 5)
+      oprot.writeListBegin(TType.STRUCT, len(self.processStatuses))
+      for iter36 in self.processStatuses:
         iter36.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
@@ -349,10 +357,10 @@ class ProcessModel:
       oprot.writeFieldBegin('taskDag', TType.STRING, 14)
       oprot.writeString(self.taskDag)
       oprot.writeFieldEnd()
-    if self.processError is not None:
-      oprot.writeFieldBegin('processError', TType.LIST, 15)
-      oprot.writeListBegin(TType.STRUCT, len(self.processError))
-      for iter40 in self.processError:
+    if self.processErrors is not None:
+      oprot.writeFieldBegin('processErrors', TType.LIST, 15)
+      oprot.writeListBegin(TType.STRUCT, len(self.processErrors))
+      for iter40 in self.processErrors:
         iter40.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
@@ -391,6 +399,10 @@ class ProcessModel:
       oprot.writeFieldBegin('userName', TType.STRING, 23)
       oprot.writeString(self.userName)
       oprot.writeFieldEnd()
+    if self.useUserCRPref is not None:
+      oprot.writeFieldBegin('useUserCRPref', TType.BOOL, 24)
+      oprot.writeBool(self.useUserCRPref)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -408,7 +420,7 @@ class ProcessModel:
     value = (value * 31) ^ hash(self.experimentId)
     value = (value * 31) ^ hash(self.creationTime)
     value = (value * 31) ^ hash(self.lastUpdateTime)
-    value = (value * 31) ^ hash(self.processStatus)
+    value = (value * 31) ^ hash(self.processStatuses)
     value = (value * 31) ^ hash(self.processDetail)
     value = (value * 31) ^ hash(self.applicationInterfaceId)
     value = (value * 31) ^ hash(self.applicationDeploymentId)
@@ -418,7 +430,7 @@ class ProcessModel:
     value = (value * 31) ^ hash(self.processResourceSchedule)
     value = (value * 31) ^ hash(self.tasks)
     value = (value * 31) ^ hash(self.taskDag)
-    value = (value * 31) ^ hash(self.processError)
+    value = (value * 31) ^ hash(self.processErrors)
     value = (value * 31) ^ hash(self.gatewayExecutionId)
     value = (value * 31) ^ hash(self.enableEmailNotification)
     value = (value * 31) ^ hash(self.emailAddresses)
@@ -427,6 +439,7 @@ class ProcessModel:
     value = (value * 31) ^ hash(self.generateCert)
     value = (value * 31) ^ hash(self.experimentDataDir)
     value = (value * 31) ^ hash(self.userName)
+    value = (value * 31) ^ hash(self.useUserCRPref)
     return value
 
   def __repr__(self):

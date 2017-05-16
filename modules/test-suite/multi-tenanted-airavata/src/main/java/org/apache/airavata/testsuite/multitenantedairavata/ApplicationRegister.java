@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
-
+ */
 package org.apache.airavata.testsuite.multitenantedairavata;
 
 import org.apache.airavata.api.Airavata;
@@ -32,8 +30,10 @@ import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.testsuite.multitenantedairavata.utils.ApplicationProperties;
 import org.apache.airavata.testsuite.multitenantedairavata.utils.FrameworkUtils;
 import org.apache.airavata.testsuite.multitenantedairavata.utils.TestFrameworkConstants;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,29 +42,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.airavata.testsuite.multitenantedairavata.utils.TestFrameworkConstants.LocalEchoProperties.LocalApplication.*;
+
 public class ApplicationRegister {
     private Airavata.Client airavata;
-    private List<Gateway> allGateways;
+    private List<Gateway> gateways;
     private Map<String, String> applicationInterfaceListPerGateway;
     private Map<String, String> applicationDeployementListPerGateway;
     private final static Logger logger = LoggerFactory.getLogger(ApplicationRegister.class);
-    private String stampedeResourceId;
-    private String trestlesResourceId;
-    private String br2ResourceId;
-    private String gordenResourceId;
-    private String alamoResourceId;
-    private List<String> gatewaysToAvoid;
+    private String localResourceId;
     private AuthzToken authzToken;
+    private TestFrameworkProps props;
 
 
     public ApplicationRegister(Airavata.Client airavata, TestFrameworkProps props) throws Exception {
         this.airavata = airavata;
         authzToken = new AuthzToken("emptyToken");
-        allGateways = getAllGateways(airavata);
+        gateways = getAllGateways(airavata);
         applicationInterfaceListPerGateway = new HashMap<String, String>();
         applicationDeployementListPerGateway = new HashMap<String, String>();
         FrameworkUtils frameworkUtils = FrameworkUtils.getInstance();
-        gatewaysToAvoid = frameworkUtils.getGatewayListToAvoid(props.getSkippedGateways());
+        this.props = props;
     }
 
     public List<Gateway> getAllGateways(Airavata.Client client) throws Exception{
@@ -76,288 +74,91 @@ public class ApplicationRegister {
         }
     }
 
-    public void addApplications () throws Exception{
+    public ApplicationProperties addApplications () throws Exception{
         Map<String, String> allComputeResourceNames = airavata.getAllComputeResourceNames(authzToken);
         System.out.println("All compute resources :" + allComputeResourceNames.size());
         for (String resourceId : allComputeResourceNames.keySet()){
             String resourceName = allComputeResourceNames.get(resourceId);
-            if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.STAMPEDE_RESOURCE_NAME)){
-                stampedeResourceId = resourceId;
-            }else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.BR2_RESOURCE_NAME)){
-                br2ResourceId = resourceId;
-            }else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.GORDEN_RESOURCE_NAME)){
-                gordenResourceId = resourceId;
-            }else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.ALAMO_RESOURCE_NAME)){
-                alamoResourceId = resourceId;
+            if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.LOCAL_RESOURCE_NAME)){
+                localResourceId = resourceId;
             }
         }
-//        addUltrascanApplication();
-        addAmberApplication();
-        addEchoApplication();
-        addLAMMPSApplication();
+        return addLocalEchoApplication();
     }
 
-    protected void addAmberApplication () throws Exception{
-        for (Gateway gateway : allGateways) {
-                boolean isgatewayValid = true;
-                for (String ovoidGateway : gatewaysToAvoid){
-                    if (gateway.getGatewayId().equals(ovoidGateway)){
-                        isgatewayValid = false;
-                        break;
-                    }
-                }
-                if (isgatewayValid) {
-                    // add amber module
-                    String amberModuleId = airavata.registerApplicationModule(authzToken, gateway.getGatewayId(),
-                            createApplicationModule(TestFrameworkConstants.AppcatalogConstants.AMBER_APP_NAME, "12.0", TestFrameworkConstants.AppcatalogConstants.AMBER_DESCRIPTION));
-                    System.out.println("Amber Module Id " + amberModuleId);
+    private ApplicationProperties addLocalEchoApplication() throws Exception{
+        Gateway testGateway = airavata.getGateway(authzToken, props.getGname());
 
-                    // add amber interface
-                    String amberInterfaceId = registerAmberInterface(gateway, amberModuleId);
-                    applicationInterfaceListPerGateway.put(amberInterfaceId, gateway.getGatewayId());
+        String localEchoModuleId = airavata.registerApplicationModule(authzToken, props.getGname(),
+                createApplicationModule(TestFrameworkConstants.AppcatalogConstants.LOCAL_ECHO_NAME, TestFrameworkConstants.AppcatalogConstants.LOCAL_ECHO_VERSION, TestFrameworkConstants.AppcatalogConstants.LOCAL_ECHO_DESCRIPTION));
+        System.out.println("Echo Module Id " + localEchoModuleId);
 
-                    // add amber deployment
-                    List<CommandObject> moduleLoadCMDs = new ArrayList();
-                    CommandObject cmd  = new CommandObject();
-                    cmd.setCommand("module load amber");
-                    cmd.setCommandOrder(0);
-                    moduleLoadCMDs.add(cmd);
-                    ApplicationDeploymentDescription amberStampedeDeployment = createApplicationDeployment(amberModuleId, stampedeResourceId,
-                            "/opt/apps/intel13/mvapich2_1_9/amber/12.0/bin/sander.MPI -O", ApplicationParallelismType.MPI,
-                            TestFrameworkConstants.AppcatalogConstants.AMBER_DESCRIPTION, moduleLoadCMDs, null, null);
-                    String amberStampedeAppDeployId = airavata.registerApplicationDeployment(authzToken, gateway.getGatewayId(), amberStampedeDeployment);
+        String echoInterfaceId = registerLocalEchoInterface(testGateway, localEchoModuleId);
+        applicationInterfaceListPerGateway.put(echoInterfaceId, testGateway.getGatewayId());
 
-                    String amberTrestlesAppDeployId = airavata.registerApplicationDeployment(authzToken,gateway.getGatewayId(),
-                            createApplicationDeployment(amberModuleId, trestlesResourceId,
-                                    "/opt/amber/bin/sander.MPI -O", ApplicationParallelismType.MPI,
-                                    TestFrameworkConstants.AppcatalogConstants.AMBER_DESCRIPTION, moduleLoadCMDs, null, null));
+        String echoLocalAppDeployId = airavata.registerApplicationDeployment(authzToken, testGateway.getGatewayId(),
+                createApplicationDeployment(localEchoModuleId, localResourceId,
+                        TestFrameworkConstants.LOCAL_ECHO_JOB_FILE_PATH, ApplicationParallelismType.SERIAL,
+                        TestFrameworkConstants.AppcatalogConstants.LOCAL_ECHO_DESCRIPTION, null, null, null));
 
-                    List<CommandObject> amberModuleLoadCMDsBr2 = new ArrayList<>();
-                    cmd  = new CommandObject();
-                    cmd.setCommand("module load amber/gnu/mpi/12");
-                    cmd.setCommandOrder(0);
-                    amberModuleLoadCMDsBr2.add(cmd);
+        applicationDeployementListPerGateway.put(echoLocalAppDeployId, testGateway.getGatewayId());
 
-                    cmd  = new CommandObject();
-                    cmd.setCommand("module swap PrgEnv-cray PrgEnv-gnu");
-                    cmd.setCommandOrder(1);
-                    amberModuleLoadCMDsBr2.add(cmd);
-                    amberModuleLoadCMDsBr2.add(cmd);
+        return new ApplicationProperties(localEchoModuleId, echoInterfaceId, echoLocalAppDeployId);
+    }
 
-                    String amberBr2AppDeployId = airavata.registerApplicationDeployment(authzToken, gateway.getGatewayId(),
-                            createApplicationDeployment(amberModuleId, br2ResourceId,
-                                    "/N/soft/cle4/amber/gnu/mpi/12/amber12/bin/sander.MPI -O", ApplicationParallelismType.MPI,
-                                    TestFrameworkConstants.AppcatalogConstants.AMBER_DESCRIPTION, amberModuleLoadCMDsBr2, null, null));
-
-                    applicationDeployementListPerGateway.put(amberStampedeAppDeployId, gateway.getGatewayId());
-                    applicationDeployementListPerGateway.put(amberTrestlesAppDeployId, gateway.getGatewayId());
-                    applicationDeployementListPerGateway.put(amberBr2AppDeployId, gateway.getGatewayId());
-                }
+    public ApplicationModule getApplicationModule(String applicationModuleId){
+        ApplicationModule applicationModule = null;
+        try {
+            applicationModule = airavata.getApplicationModule(authzToken, applicationModuleId);
+        } catch (TException e) {
+            logger.error("Error fetching application module", e);
         }
-
-
+        return applicationModule;
     }
 
-    protected void addUltrascanApplication () throws Exception{
-        for (Gateway gateway : allGateways) {
-            boolean isgatewayValid = true;
-            for (String ovoidGateway : gatewaysToAvoid){
-                if (gateway.getGatewayId().equals(ovoidGateway)){
-                    isgatewayValid = false;
-                    break;
-                }
-            }
-            if (isgatewayValid) {
-                // add amber module
-                String ultrascanModuleId = airavata.registerApplicationModule(authzToken, gateway.getGatewayId(),
-                        createApplicationModule(TestFrameworkConstants.AppcatalogConstants.ULTRASCAN, "1.0", TestFrameworkConstants.AppcatalogConstants.ULTRASCAN_DESCRIPTION));
-                System.out.println("Ultrascan module Id " + ultrascanModuleId);
-
-                // add amber interface
-                String ultrascanInterfaceId = registerUltrascanInterface(gateway, ultrascanModuleId);
-                applicationInterfaceListPerGateway.put(ultrascanInterfaceId, gateway.getGatewayId());
-
-                // add amber deployment
-                ApplicationDeploymentDescription ultrascanStampedeDeployment = createApplicationDeployment(ultrascanModuleId, stampedeResourceId,
-                        "/home1/01623/us3/bin/us_mpi_analysis", ApplicationParallelismType.MPI,
-                        TestFrameworkConstants.AppcatalogConstants.ULTRASCAN_DESCRIPTION, null, null, null);
-                String ultrascanStampedeAppDeployId = airavata.registerApplicationDeployment(authzToken, gateway.getGatewayId(), ultrascanStampedeDeployment);
-
-                String ultrascanTrestlesAppDeployId = airavata.registerApplicationDeployment(authzToken, gateway.getGatewayId(),
-                        createApplicationDeployment(ultrascanModuleId, trestlesResourceId,
-                                "/home/us3/trestles/bin/us_mpi_analysis", ApplicationParallelismType.MPI,
-                                TestFrameworkConstants.AppcatalogConstants.ULTRASCAN_DESCRIPTION, null, null, null));
-
-                String ultrascanGordenAppDepId = airavata.registerApplicationDeployment(authzToken, gateway.getGatewayId(),
-                        createApplicationDeployment(ultrascanModuleId,gordenResourceId,
-                                "/home/us3/gordon/bin/us_mpi_analysis", ApplicationParallelismType.MPI,
-                                TestFrameworkConstants.AppcatalogConstants.ULTRASCAN_DESCRIPTION, null, null, null));
-
-                List<CommandObject> alamoModules = new ArrayList<>();
-                CommandObject cmd = new CommandObject("module load intel/2015/64");
-                alamoModules.add(cmd);
-                cmd = new CommandObject("module load openmpi/intel/1.8.4");
-                alamoModules.add(cmd);
-                cmd = new CommandObject("module load qt4/4.8.6");
-                alamoModules.add(cmd);
-                cmd = new CommandObject("module load ultrascan3/3.3");
-                alamoModules.add(cmd);
-
-                String ultrascanAlamoAppId = airavata.registerApplicationDeployment(authzToken, gateway.getGatewayId(),
-                        createApplicationDeployment(ultrascanModuleId,alamoResourceId,
-                                "/home/us3/bin/us_mpi_analysis", ApplicationParallelismType.OPENMP,
-                                TestFrameworkConstants.AppcatalogConstants.ULTRASCAN_DESCRIPTION, alamoModules, null, null));
-
-                applicationDeployementListPerGateway.put(ultrascanStampedeAppDeployId, gateway.getGatewayId());
-                applicationDeployementListPerGateway.put(ultrascanTrestlesAppDeployId, gateway.getGatewayId());
-                applicationDeployementListPerGateway.put(ultrascanGordenAppDepId, gateway.getGatewayId());
-                applicationDeployementListPerGateway.put(ultrascanAlamoAppId, gateway.getGatewayId());
-            }
+    public ApplicationInterfaceDescription getApplicationInterfaceDescription(String applicationInterfaceId){
+        ApplicationInterfaceDescription applicationInterfaceDescription = null;
+        try {
+            applicationInterfaceDescription = airavata.getApplicationInterface(authzToken, applicationInterfaceId);
+        } catch (TException e) {
+            logger.error("Error fetching application interface description", e);
         }
+        return applicationInterfaceDescription;
     }
 
-    private String registerUltrascanInterface(Gateway gateway, String ultrascanModuleId) throws org.apache.thrift.TException {
-        List<String> appModules = new ArrayList<String>();
-        appModules.add(ultrascanModuleId);
 
-        InputDataObjectType input1 = createAppInput("input", null,
-                DataType.URI, null, 1, true, true,false, "Input tar file", null);
-
-        InputDataObjectType input2 = createAppInput("mgroupcount", "-mgroupcount=1",
-                DataType.STRING, null, 3, true, true,false, "mgroupcount", null);
-
-        InputDataObjectType input3 = createAppInput("walltime", "-walltime=60",
-                DataType.STRING, null, 2, true, true,false, "walltime", null);
-        List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
-        applicationInputs.add(input1);
-        applicationInputs.add(input2);
-        applicationInputs.add(input3);
-
-        OutputDataObjectType output1 = createAppOutput("ultrascanOutput", "analysis-results.tar", DataType.URI, true, false, null);
-        output1.setLocation("output");
-        OutputDataObjectType output2 = createAppOutput("STDOUT", null, DataType.STDOUT, true, false, null);
-        OutputDataObjectType output3 = createAppOutput("STDERR", null, DataType.STDERR, true, false, null);
-        List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
-        applicationOutputs.add(output1);
-        applicationOutputs.add(output2);
-        applicationOutputs.add(output3);
-
-        String ultrascanAppId = airavata.registerApplicationInterface(authzToken, gateway.getGatewayId(),
-                createApplicationInterfaceDescription(TestFrameworkConstants.AppcatalogConstants.ULTRASCAN, TestFrameworkConstants.AppcatalogConstants.ULTRASCAN_DESCRIPTION,
-                        appModules, applicationInputs, applicationOutputs));
-        System.out.println("Ultrascan Application Interface Id " + ultrascanAppId);
-        return ultrascanAppId;
+    public ApplicationDeploymentDescription getApplicationDeploymentDescription(String applicationDeployId){
+        ApplicationDeploymentDescription applicationDeploymentDescription = null;
+        try {
+            applicationDeploymentDescription = airavata.getApplicationDeployment(authzToken, applicationDeployId);
+        } catch (TException e) {
+            logger.error("Error fetching application deployment description", e);
+        }
+        return applicationDeploymentDescription;
     }
 
-    private String registerAmberInterface(Gateway gateway, String amberModuleId) throws org.apache.thrift.TException {
-        List<String> appModules = new ArrayList<String>();
-        appModules.add(amberModuleId);
-
-        InputDataObjectType input1 = createAppInput("heatRst", null,
-                DataType.URI, "-c", 1, true, true,false, "Heating up the system equilibration stage - 02_Heat.rst", null);
-
-        InputDataObjectType input2 = createAppInput("prodIn", null,
-                DataType.URI, "-i ", 2, true, true, false, "Constant pressure and temperature for production stage - 03_Prod.in", null);
-
-        InputDataObjectType input3 = createAppInput("prmtop", null,
-                DataType.URI, "-p", 3, true, true, false, "Parameter and Topology coordinates - prmtop", null);
-
-        List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
-        applicationInputs.add(input1);
-        applicationInputs.add(input2);
-        applicationInputs.add(input3);
-
-        OutputDataObjectType output1 = createAppOutput("AMBER_Execution_Summary", "03_Prod.info", DataType.URI, true, true, "-inf");
-        OutputDataObjectType output2 = createAppOutput("AMBER_Execution_log", "03_Prod.out", DataType.URI, true, true, "-o");
-        OutputDataObjectType output3 = createAppOutput("AMBER_Trajectory_file", "03_Prod.mdcrd", DataType.URI, true, true, "-x");
-        OutputDataObjectType output4 = createAppOutput("AMBER_Restart_file", "03_Prod.rst", DataType.URI, true, true, " -r");
-        OutputDataObjectType output5 = createAppOutput("STDOUT", null, DataType.STDOUT, true, false, null);
-        OutputDataObjectType output6 = createAppOutput("STDERR", null, DataType.STDERR, true, false, null);
-        List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
-        applicationOutputs.add(output1);
-        applicationOutputs.add(output2);
-        applicationOutputs.add(output3);
-        applicationOutputs.add(output4);
-        applicationOutputs.add(output5);
-        applicationOutputs.add(output6);
-
-        String amberInterfaceId = airavata.registerApplicationInterface(authzToken, gateway.getGatewayId(),
-                createApplicationInterfaceDescription(TestFrameworkConstants.AppcatalogConstants.AMBER_APP_NAME, TestFrameworkConstants.AppcatalogConstants.AMBER_DESCRIPTION,
-                        appModules, applicationInputs, applicationOutputs));
-        System.out.println("Amber Application Interface Id " + amberInterfaceId);
-        return amberInterfaceId;
-    }
-
-    private String registerEchoInterface(Gateway gateway, String moduleId) throws org.apache.thrift.TException {
+    private String registerLocalEchoInterface(Gateway gateway, String moduleId) throws org.apache.thrift.TException {
         List<String> appModules = new ArrayList<String>();
         appModules.add(moduleId);
 
-        InputDataObjectType input1 = createAppInput("input_to_Echo", null,
-                DataType.STRING, null, 1, true, true,false, "Sample input to Echo", null);
+        InputDataObjectType input1 = createAppInput(INPUT_NAME, INPUT_VALUE,
+                DataType.STRING, null, 0, true, true,false, INPUT_DESC, null);
 
-        List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
+        List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>(1);
         applicationInputs.add(input1);
 
-        OutputDataObjectType output1 = createAppOutput("STDOUT", null, DataType.STDOUT, true, false, null);
-        OutputDataObjectType output2 = createAppOutput("STDERR", null, DataType.STDERR, true, false, null);
-        List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
+        OutputDataObjectType output1 = createAppOutput(STDOUT_NAME, STDOUT_VALUE, DataType.URI, true, true, null);
+        OutputDataObjectType output2 = createAppOutput(STDERR_NAME, STDERR_VALUE, DataType.URI, true, true, null);
+
+        List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>(2);
         applicationOutputs.add(output1);
         applicationOutputs.add(output2);
 
-        String echoInterfaceId = airavata.registerApplicationInterface(authzToken, gateway.getGatewayId(),
-                createApplicationInterfaceDescription(TestFrameworkConstants.AppcatalogConstants.ECHO_NAME, TestFrameworkConstants.AppcatalogConstants.ECHO_DESCRIPTION,
+        String localEchoInterfaceId = airavata.registerApplicationInterface(authzToken, gateway.getGatewayId(),
+                createApplicationInterfaceDescription(TestFrameworkConstants.AppcatalogConstants.LOCAL_ECHO_NAME, TestFrameworkConstants.AppcatalogConstants.LOCAL_ECHO_DESCRIPTION,
                         appModules, applicationInputs, applicationOutputs));
-        System.out.println("Echo Application Interface Id " + echoInterfaceId);
-        return echoInterfaceId;
-    }
-
-
-    protected void addEchoApplication() throws Exception{
-        for (Gateway gateway : allGateways){
-            boolean isgatewayValid = true;
-            for (String ovoidGateway : gatewaysToAvoid){
-                if (gateway.getGatewayId().equals(ovoidGateway)){
-                    isgatewayValid = false;
-                    break;
-                }
-            }
-            if (isgatewayValid) {
-                // add echo module
-                String echoModuleId = airavata.registerApplicationModule(authzToken, gateway.getGatewayId(),
-                        createApplicationModule(TestFrameworkConstants.AppcatalogConstants.ECHO_NAME, "1.0", TestFrameworkConstants.AppcatalogConstants.ECHO_DESCRIPTION));
-                System.out.println("Echo Module Id " + echoModuleId);
-
-                // add amber interface
-                String echoInterfaceId = registerEchoInterface(gateway, echoModuleId);
-                applicationInterfaceListPerGateway.put(echoInterfaceId, gateway.getGatewayId());
-
-                // add amber deployment
-                String echoStampedeAppDeployId = airavata.registerApplicationDeployment(authzToken, gateway.getGatewayId(),
-                        createApplicationDeployment(echoModuleId, stampedeResourceId,
-                                "/home1/01437/ogce/production/app_wrappers/echo_wrapper.sh", ApplicationParallelismType.SERIAL,
-                                TestFrameworkConstants.AppcatalogConstants.ECHO_DESCRIPTION, null, null, null));
-
-                String echoTrestlesAppDeployId = airavata.registerApplicationDeployment(authzToken, gateway.getGatewayId(),
-                        createApplicationDeployment(echoModuleId, trestlesResourceId,
-                                "/home/ogce/production/app_wrappers/echo_wrapper.sh", ApplicationParallelismType.SERIAL,
-                                TestFrameworkConstants.AppcatalogConstants.ECHO_DESCRIPTION, null, null, null));
-
-                String echoBr2AppDeployId = airavata.registerApplicationDeployment(authzToken, gateway.getGatewayId(),
-                        createApplicationDeployment(echoModuleId, br2ResourceId,
-                                "/N/u/cgateway/BigRed2/production/app_wrappers/echo_wrapper.sh", ApplicationParallelismType.SERIAL,
-                                TestFrameworkConstants.AppcatalogConstants.ECHO_DESCRIPTION, null, null, null));
-
-                applicationDeployementListPerGateway.put(echoStampedeAppDeployId, gateway.getGatewayId());
-                applicationDeployementListPerGateway.put(echoTrestlesAppDeployId, gateway.getGatewayId());
-                applicationDeployementListPerGateway.put(echoBr2AppDeployId, gateway.getGatewayId());
-            }
-        }
-    }
-
-    protected void addLAMMPSApplication() throws Exception{
-        // add LAMPPS module
-        // add LAMPSS interface
-        // add LAMPSS deployment
+        System.out.println("Echo Local Application Interface Id " + localEchoInterfaceId);
+        return localEchoInterfaceId;
     }
 
 

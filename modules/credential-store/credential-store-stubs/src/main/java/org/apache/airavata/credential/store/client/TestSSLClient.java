@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,7 +16,6 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
 package org.apache.airavata.credential.store.client;
 
@@ -25,9 +24,9 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.datamodel.CertificateCredential;
-import org.apache.airavata.credential.store.datamodel.CommunityUser;
-import org.apache.airavata.credential.store.datamodel.SSHCredential;
+import org.apache.airavata.model.credential.store.CertificateCredential;
+import org.apache.airavata.model.credential.store.CommunityUser;
+import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;

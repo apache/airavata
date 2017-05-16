@@ -1,0 +1,54 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+################################################################################
+# Setup and run Zookeeper
+- name: Download and unarchive zookeeper
+  unarchive: src="{{ zookeeper_url }}"
+      dest="{{ user_home }}"
+      copy=no
+      owner="{{ user }}"
+      group="{{ group }}"
+
+- name: open zookeeper port
+  firewalld: port=2181/tcp zone=public permanent=true state=enabled immediate=yes
+  become: yes
+
+- name: Copy zoo.cfg file
+  template: src=zoo.cfg.j2 dest="{{ zookeeper_dir }}/conf/zoo.cfg" owner="{{ user }}" group="{{ group }}" mode="u=rw,g=r,o=r"
+  notify:
+    - restart zookeeper
+
+- name: Check if systemd exists
+  stat: path=/usr/lib/systemd/system/
+  register: systemd_check
+
+- name: Systemd script.
+  template: src=zookeeper.service.j2 dest=/usr/lib/systemd/system/zookeeper.service
+  when: systemd_check.stat.exists == true
+  notify:
+    - restart zookeeper
+  become: yes
+
+- name: reload systemd daemons
+  command: systemctl daemon-reload
+  become: yes
+...

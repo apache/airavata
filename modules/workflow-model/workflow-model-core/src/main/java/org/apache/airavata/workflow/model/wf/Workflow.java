@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.workflow.model.wf;
 
 import java.awt.image.BufferedImage;
@@ -38,7 +36,6 @@ import javax.xml.namespace.QName;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.workflow.model.exceptions.UtilsException;
 import org.apache.airavata.common.utils.JSONUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.component.Component;

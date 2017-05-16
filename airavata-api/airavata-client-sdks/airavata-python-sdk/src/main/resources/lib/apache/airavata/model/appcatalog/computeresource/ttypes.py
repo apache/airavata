@@ -45,6 +45,8 @@ class ResourceJobManagerType:
   SLURM = 2
   LSF = 3
   UGE = 4
+  CLOUD = 5
+  AIRAVATA_CUSTOM = 6
 
   _VALUES_TO_NAMES = {
     0: "FORK",
@@ -52,6 +54,8 @@ class ResourceJobManagerType:
     2: "SLURM",
     3: "LSF",
     4: "UGE",
+    5: "CLOUD",
+    6: "AIRAVATA_CUSTOM",
   }
 
   _NAMES_TO_VALUES = {
@@ -60,6 +64,8 @@ class ResourceJobManagerType:
     "SLURM": 2,
     "LSF": 3,
     "UGE": 4,
+    "CLOUD": 5,
+    "AIRAVATA_CUSTOM": 6,
   }
 
 class JobManagerCommand:
@@ -210,22 +216,28 @@ class MonitorMode:
 
   """
   POLL_JOB_MANAGER = 0
-  JOB_EMAIL_NOTIFICATION_MONITOR = 1
-  XSEDE_AMQP_SUBSCRIBE = 2
-  FORK = 3
+  CLOUD_JOB_MONITOR = 1
+  JOB_EMAIL_NOTIFICATION_MONITOR = 2
+  XSEDE_AMQP_SUBSCRIBE = 3
+  FORK = 4
+  LOCAL = 5
 
   _VALUES_TO_NAMES = {
     0: "POLL_JOB_MANAGER",
-    1: "JOB_EMAIL_NOTIFICATION_MONITOR",
-    2: "XSEDE_AMQP_SUBSCRIBE",
-    3: "FORK",
+    1: "CLOUD_JOB_MONITOR",
+    2: "JOB_EMAIL_NOTIFICATION_MONITOR",
+    3: "XSEDE_AMQP_SUBSCRIBE",
+    4: "FORK",
+    5: "LOCAL",
   }
 
   _NAMES_TO_VALUES = {
     "POLL_JOB_MANAGER": 0,
-    "JOB_EMAIL_NOTIFICATION_MONITOR": 1,
-    "XSEDE_AMQP_SUBSCRIBE": 2,
-    "FORK": 3,
+    "CLOUD_JOB_MONITOR": 1,
+    "JOB_EMAIL_NOTIFICATION_MONITOR": 2,
+    "XSEDE_AMQP_SUBSCRIBE": 3,
+    "FORK": 4,
+    "LOCAL": 5,
   }
 
 class DMType:
@@ -449,6 +461,10 @@ class BatchQueue:
    - maxProcessors
    - maxJobsInQueue
    - maxMemory
+   - cpuPerNode
+   - defaultNodeCount
+   - defaultCPUCount
+   - isDefaultQueue
   """
 
   thrift_spec = (
@@ -460,9 +476,13 @@ class BatchQueue:
     (5, TType.I32, 'maxProcessors', None, None, ), # 5
     (6, TType.I32, 'maxJobsInQueue', None, None, ), # 6
     (7, TType.I32, 'maxMemory', None, None, ), # 7
+    (8, TType.I32, 'cpuPerNode', None, None, ), # 8
+    (9, TType.I32, 'defaultNodeCount', None, None, ), # 9
+    (10, TType.I32, 'defaultCPUCount', None, None, ), # 10
+    (11, TType.BOOL, 'isDefaultQueue', None, None, ), # 11
   )
 
-  def __init__(self, queueName=None, queueDescription=None, maxRunTime=None, maxNodes=None, maxProcessors=None, maxJobsInQueue=None, maxMemory=None,):
+  def __init__(self, queueName=None, queueDescription=None, maxRunTime=None, maxNodes=None, maxProcessors=None, maxJobsInQueue=None, maxMemory=None, cpuPerNode=None, defaultNodeCount=None, defaultCPUCount=None, isDefaultQueue=None,):
     self.queueName = queueName
     self.queueDescription = queueDescription
     self.maxRunTime = maxRunTime
@@ -470,6 +490,10 @@ class BatchQueue:
     self.maxProcessors = maxProcessors
     self.maxJobsInQueue = maxJobsInQueue
     self.maxMemory = maxMemory
+    self.cpuPerNode = cpuPerNode
+    self.defaultNodeCount = defaultNodeCount
+    self.defaultCPUCount = defaultCPUCount
+    self.isDefaultQueue = isDefaultQueue
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -515,6 +539,26 @@ class BatchQueue:
           self.maxMemory = iprot.readI32()
         else:
           iprot.skip(ftype)
+      elif fid == 8:
+        if ftype == TType.I32:
+          self.cpuPerNode = iprot.readI32()
+        else:
+          iprot.skip(ftype)
+      elif fid == 9:
+        if ftype == TType.I32:
+          self.defaultNodeCount = iprot.readI32()
+        else:
+          iprot.skip(ftype)
+      elif fid == 10:
+        if ftype == TType.I32:
+          self.defaultCPUCount = iprot.readI32()
+        else:
+          iprot.skip(ftype)
+      elif fid == 11:
+        if ftype == TType.BOOL:
+          self.isDefaultQueue = iprot.readBool()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -553,6 +597,22 @@ class BatchQueue:
       oprot.writeFieldBegin('maxMemory', TType.I32, 7)
       oprot.writeI32(self.maxMemory)
       oprot.writeFieldEnd()
+    if self.cpuPerNode is not None:
+      oprot.writeFieldBegin('cpuPerNode', TType.I32, 8)
+      oprot.writeI32(self.cpuPerNode)
+      oprot.writeFieldEnd()
+    if self.defaultNodeCount is not None:
+      oprot.writeFieldBegin('defaultNodeCount', TType.I32, 9)
+      oprot.writeI32(self.defaultNodeCount)
+      oprot.writeFieldEnd()
+    if self.defaultCPUCount is not None:
+      oprot.writeFieldBegin('defaultCPUCount', TType.I32, 10)
+      oprot.writeI32(self.defaultCPUCount)
+      oprot.writeFieldEnd()
+    if self.isDefaultQueue is not None:
+      oprot.writeFieldBegin('isDefaultQueue', TType.BOOL, 11)
+      oprot.writeBool(self.isDefaultQueue)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -571,6 +631,10 @@ class BatchQueue:
     value = (value * 31) ^ hash(self.maxProcessors)
     value = (value * 31) ^ hash(self.maxJobsInQueue)
     value = (value * 31) ^ hash(self.maxMemory)
+    value = (value * 31) ^ hash(self.cpuPerNode)
+    value = (value * 31) ^ hash(self.defaultNodeCount)
+    value = (value * 31) ^ hash(self.defaultCPUCount)
+    value = (value * 31) ^ hash(self.isDefaultQueue)
     return value
 
   def __repr__(self):
@@ -667,6 +731,8 @@ class LOCALSubmission:
       raise TProtocol.TProtocolException(message='Required field jobSubmissionInterfaceId is unset!')
     if self.resourceJobManager is None:
       raise TProtocol.TProtocolException(message='Required field resourceJobManager is unset!')
+    if self.securityProtocol is None:
+      raise TProtocol.TProtocolException(message='Required field securityProtocol is unset!')
     return
 
 
@@ -1365,6 +1431,10 @@ class ComputeResourceDescription:
    - gatewayUsageReporting
    - gatewayUsageModuleLoadCommand
    - gatewayUsageExecutable
+   - cpusPerNode
+   - defaultNodeCount
+   - defaultCPUCount
+   - defaultWallltime
   """
 
   thrift_spec = (
@@ -1383,9 +1453,13 @@ class ComputeResourceDescription:
     (12, TType.BOOL, 'gatewayUsageReporting', None, None, ), # 12
     (13, TType.STRING, 'gatewayUsageModuleLoadCommand', None, None, ), # 13
     (14, TType.STRING, 'gatewayUsageExecutable', None, None, ), # 14
+    (15, TType.I32, 'cpusPerNode', None, None, ), # 15
+    (16, TType.I32, 'defaultNodeCount', None, None, ), # 16
+    (17, TType.I32, 'defaultCPUCount', None, None, ), # 17
+    (18, TType.I32, 'defaultWallltime', None, None, ), # 18
   )
 
-  def __init__(self, computeResourceId=thrift_spec[1][4], hostName=None, hostAliases=None, ipAddresses=None, resourceDescription=None, enabled=None, batchQueues=None, fileSystems=None, jobSubmissionInterfaces=None, dataMovementInterfaces=None, maxMemoryPerNode=None, gatewayUsageReporting=None, gatewayUsageModuleLoadCommand=None, gatewayUsageExecutable=None,):
+  def __init__(self, computeResourceId=thrift_spec[1][4], hostName=None, hostAliases=None, ipAddresses=None, resourceDescription=None, enabled=None, batchQueues=None, fileSystems=None, jobSubmissionInterfaces=None, dataMovementInterfaces=None, maxMemoryPerNode=None, gatewayUsageReporting=None, gatewayUsageModuleLoadCommand=None, gatewayUsageExecutable=None, cpusPerNode=None, defaultNodeCount=None, defaultCPUCount=None, defaultWallltime=None,):
     self.computeResourceId = computeResourceId
     self.hostName = hostName
     self.hostAliases = hostAliases
@@ -1400,6 +1474,10 @@ class ComputeResourceDescription:
     self.gatewayUsageReporting = gatewayUsageReporting
     self.gatewayUsageModuleLoadCommand = gatewayUsageModuleLoadCommand
     self.gatewayUsageExecutable = gatewayUsageExecutable
+    self.cpusPerNode = cpusPerNode
+    self.defaultNodeCount = defaultNodeCount
+    self.defaultCPUCount = defaultCPUCount
+    self.defaultWallltime = defaultWallltime
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -1514,6 +1592,26 @@ class ComputeResourceDescription:
           self.gatewayUsageExecutable = iprot.readString()
         else:
           iprot.skip(ftype)
+      elif fid == 15:
+        if ftype == TType.I32:
+          self.cpusPerNode = iprot.readI32()
+        else:
+          iprot.skip(ftype)
+      elif fid == 16:
+        if ftype == TType.I32:
+          self.defaultNodeCount = iprot.readI32()
+        else:
+          iprot.skip(ftype)
+      elif fid == 17:
+        if ftype == TType.I32:
+          self.defaultCPUCount = iprot.readI32()
+        else:
+          iprot.skip(ftype)
+      elif fid == 18:
+        if ftype == TType.I32:
+          self.defaultWallltime = iprot.readI32()
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -1599,6 +1697,22 @@ class ComputeResourceDescription:
       oprot.writeFieldBegin('gatewayUsageExecutable', TType.STRING, 14)
       oprot.writeString(self.gatewayUsageExecutable)
       oprot.writeFieldEnd()
+    if self.cpusPerNode is not None:
+      oprot.writeFieldBegin('cpusPerNode', TType.I32, 15)
+      oprot.writeI32(self.cpusPerNode)
+      oprot.writeFieldEnd()
+    if self.defaultNodeCount is not None:
+      oprot.writeFieldBegin('defaultNodeCount', TType.I32, 16)
+      oprot.writeI32(self.defaultNodeCount)
+      oprot.writeFieldEnd()
+    if self.defaultCPUCount is not None:
+      oprot.writeFieldBegin('defaultCPUCount', TType.I32, 17)
+      oprot.writeI32(self.defaultCPUCount)
+      oprot.writeFieldEnd()
+    if self.defaultWallltime is not None:
+      oprot.writeFieldBegin('defaultWallltime', TType.I32, 18)
+      oprot.writeI32(self.defaultWallltime)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -1626,6 +1740,10 @@ class ComputeResourceDescription:
     value = (value * 31) ^ hash(self.gatewayUsageReporting)
     value = (value * 31) ^ hash(self.gatewayUsageModuleLoadCommand)
     value = (value * 31) ^ hash(self.gatewayUsageExecutable)
+    value = (value * 31) ^ hash(self.cpusPerNode)
+    value = (value * 31) ^ hash(self.defaultNodeCount)
+    value = (value * 31) ^ hash(self.defaultCPUCount)
+    value = (value * 31) ^ hash(self.defaultWallltime)
     return value
 
   def __repr__(self):

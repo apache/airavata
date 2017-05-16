@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,7 +16,6 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
 package org.apache.airavata.gfac.impl.task;
 
@@ -43,7 +42,8 @@ public class TaskUtils {
         } else {
             filePath = inputPath + taskContext.getParentProcessContext().getProcessId() + File.separator + fileName;
         }
-        return new URI("file", hostName, filePath, null);
+        //FIXME
+        return new URI("file", taskContext.getParentProcessContext().getStorageResourceLoginUserName(), hostName, 22, filePath, null, null);
 
     }
 }
