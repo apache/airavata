@@ -3511,6 +3511,36 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getAllGroupsUserBelongs\n");
   }
 
+  void addUserProfile(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::user::UserProfile& userProfile) {
+    // Your implementation goes here
+    printf("addUserProfile\n");
+  }
+
+  bool updateUserProfile(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::user::UserProfile& userProfile) {
+    // Your implementation goes here
+    printf("updateUserProfile\n");
+  }
+
+  void getUserProfileById( ::apache::airavata::model::user::UserProfile& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("getUserProfileById\n");
+  }
+
+  bool deleteUserProfile(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId) {
+    // Your implementation goes here
+    printf("deleteUserProfile\n");
+  }
+
+  void getAllUserProfilesInGateway(std::vector< ::apache::airavata::model::user::UserProfile> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int32_t offset, const int32_t limit) {
+    // Your implementation goes here
+    printf("getAllUserProfilesInGateway\n");
+  }
+
+  bool doesUserProfileExist(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("doesUserProfileExist\n");
+  }
+
 };
 
 int main(int argc, char **argv) {

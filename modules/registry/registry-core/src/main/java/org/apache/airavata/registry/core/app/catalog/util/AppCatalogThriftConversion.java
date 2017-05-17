@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.registry.core.app.catalog.util;
 
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
@@ -53,6 +51,10 @@ public class AppCatalogThriftConversion {
         resource.setResourceDescription(description.getResourceDescription());
         resource.setResourceId(description.getComputeResourceId());
         resource.setMaxMemoryPerNode(description.getMaxMemoryPerNode());
+        resource.setCpusPerNode(description.getCpusPerNode());
+        resource.setDefaultNodeCount(description.getDefaultNodeCount());
+        resource.setDefaultCPUCount(description.getDefaultCPUCount());
+        resource.setDefaultWalltime(description.getDefaultWallltime());
         resource.setEnabled(description.isEnabled());
         resource.setGatewayUsageReporting(description.isGatewayUsageReporting());
         resource.setGatewayUsageExec(description.getGatewayUsageExecutable());
@@ -75,6 +77,10 @@ public class AppCatalogThriftConversion {
         description.setHostName(resource.getHostName());
         description.setResourceDescription(resource.getResourceDescription());
         description.setMaxMemoryPerNode(resource.getMaxMemoryPerNode());
+        description.setCpusPerNode(resource.getCpusPerNode());
+        description.setDefaultNodeCount(resource.getDefaultNodeCount());
+        description.setDefaultCPUCount(resource.getDefaultCPUCount());
+        description.setDefaultWallltime(resource.getDefaultWalltime());
         description.setEnabled(resource.isEnabled());
         description.setGatewayUsageReporting(resource.isGatewayUsageReporting());
         description.setGatewayUsageExecutable(resource.getGatewayUsageExec());
@@ -726,6 +732,7 @@ public class AppCatalogThriftConversion {
         description.setDefaultQueueName(resource.getDefaultQueueName());
         description.setDefaultCPUCount(resource.getDefaultCPUCount());
         description.setDefaultNodeCount(resource.getDefaultNodeCount());
+        description.setDefaultWalltime(resource.getDefaultWalltime());
         description.setEditableByUser(resource.isEditableByUser());
 
         ModuleLoadCmdResource cmdResource = new ModuleLoadCmdResource();

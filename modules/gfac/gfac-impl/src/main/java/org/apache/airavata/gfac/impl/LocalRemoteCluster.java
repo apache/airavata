@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,18 +16,14 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
 package org.apache.airavata.gfac.impl;
 
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.JobManagerConfiguration;
-import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
-import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
 import org.apache.airavata.gfac.core.cluster.*;
 import org.apache.airavata.model.status.JobStatus;
 import org.slf4j.Logger;
@@ -130,6 +126,21 @@ public class LocalRemoteCluster extends AbstractRemoteCluster {
             throw new GFacException("Failed scp file:" + sourceFile + " to remote file "
                     +destinationFile , e);
         }
+    }
+
+    /**
+     * This method can be used to get the file name of a file giving the extension. It assumes that there will be only
+     * one file with that extension. In case if there are more than one file one random file name from the matching ones
+     * will be returned.
+     *
+     * @param fileExtension
+     * @param parentPath
+     * @param session
+     * @return
+     */
+    @Override
+    public String getFileNameFromExtension(String fileExtension, String parentPath, Session session) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

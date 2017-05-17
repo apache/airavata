@@ -1,19 +1,23 @@
 #! /usr/bin/env bash
-
-# Licensed to the Apache Software Foundation (ASF) under one or more
-# contributor license agreements.  See the NOTICE file distributed with
-# this work for additional information regarding copyright ownership.
-# The ASF licenses this file to You under the Apache License, Version 2.0
-# (the "License"); you may not use this file except in compliance with
-# the License.  You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
 
 # This script will generate/regenerate the thrift code for Airavata Server Skeletons, Client Stubs
 #    and Data Model java beans in java, C++, PHP and Python.
@@ -69,6 +73,7 @@ DATAMODEL_THRIFT_FILE='data-models/airavata_data_models.thrift'
 APP_CATALOG_THRIFT_FILE='data-models/app-catalog-models/app_catalog_models.thrift'
 RESOURCE_CATALOG_THRIFT_FILE='data-models/resource-catalog-models/resource_catalog_models.thrift'
 WORKFLOW_THRIFT_FILE='data-models/workflow-models/workflow_data_model.thrift'
+PROFILE_SERVICE_THRIFT_FILE='service-cpis/profile-service/profile-service-cpi.thrift'
 
 DATAMODEL_SRC_DIR='../airavata-api/airavata-data-models/src/main/java'
 JAVA_API_SDK_DIR='../airavata-api/airavata-api-stubs/src/main/java'
@@ -159,13 +164,13 @@ generate_java_stubs() {
     # Generate the Airavata Data Model using thrift Java Beans generator. This will take generate the classes in bean style
     #   with members being private and setters returning voids.
     #   The airavata_data_models.thrift includes rest of data models.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans ${DATAMODEL_THRIFT_FILE} || fail unable to generate java bean thrift classes on base data model
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans,generated_annotations=undated ${DATAMODEL_THRIFT_FILE} || fail unable to generate java bean thrift classes on base data model
 
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans ${APP_CATALOG_THRIFT_FILE} || fail unable to generate java bean thrift classes on app catalog data models
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans,generated_annotations=undated ${APP_CATALOG_THRIFT_FILE} || fail unable to generate java bean thrift classes on app catalog data models
 
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans ${RESOURCE_CATALOG_THRIFT_FILE} || fail unable to generate java bean thrift classes on app catalog data models
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans,generated_annotations=undated ${RESOURCE_CATALOG_THRIFT_FILE} || fail unable to generate java bean thrift classes on app catalog data models
 
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans ${WORKFLOW_THRIFT_FILE} || fail unable to generate java bean thrift classes on app workflow data models
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans,generated_annotations=undated ${WORKFLOW_THRIFT_FILE} || fail unable to generate java bean thrift classes on app workflow data models
 
     # For the generated java beans add the ASF V2 License header
     add_license_header $JAVA_BEAN_GEN_DIR
@@ -186,7 +191,7 @@ generate_java_stubs() {
 
     # Using thrift Java generator, generate the java classes based on Airavata API. This
     #   The airavata_api.thrift includes rest of data models.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java ${AIRAVATA_API_THRIFT_FILE} || fail unable to generate java thrift classes on AiravataAPI
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:generated_annotations=undated ${AIRAVATA_API_THRIFT_FILE} || fail unable to generate java thrift classes on AiravataAPI
 
     # For the generated java classes add the ASF V2 License header
     add_license_header $JAVA_GEN_DIR
@@ -216,6 +221,7 @@ generate_php_stubs() {
     $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${APP_CATALOG_THRIFT_FILE}  || fail unable to generate PHP thrift classes
     $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${RESOURCE_CATALOG_THRIFT_FILE}   || fail unable to generate PHP thrift classes
     $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${AIRAVATA_API_THRIFT_FILE} || fail unable to generate PHP thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${PROFILE_SERVICE_THRIFT_FILE} || fail unable to generate PHP thrift classes
 
     # For the generated java classes add the ASF V2 License header
     ## TODO Write PHP license parser

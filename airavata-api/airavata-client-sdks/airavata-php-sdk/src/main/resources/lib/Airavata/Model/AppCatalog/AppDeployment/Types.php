@@ -506,6 +506,10 @@ class ApplicationDeploymentDescription {
    */
   public $defaultCPUCount = null;
   /**
+   * @var int
+   */
+  public $defaultWalltime = null;
+  /**
    * @var bool
    */
   public $editableByUser = null;
@@ -604,6 +608,10 @@ class ApplicationDeploymentDescription {
           'type' => TType::I32,
           ),
         16 => array(
+          'var' => 'defaultWalltime',
+          'type' => TType::I32,
+          ),
+        17 => array(
           'var' => 'editableByUser',
           'type' => TType::BOOL,
           ),
@@ -654,6 +662,9 @@ class ApplicationDeploymentDescription {
       }
       if (isset($vals['defaultCPUCount'])) {
         $this->defaultCPUCount = $vals['defaultCPUCount'];
+      }
+      if (isset($vals['defaultWalltime'])) {
+        $this->defaultWalltime = $vals['defaultWalltime'];
       }
       if (isset($vals['editableByUser'])) {
         $this->editableByUser = $vals['editableByUser'];
@@ -852,6 +863,13 @@ class ApplicationDeploymentDescription {
           }
           break;
         case 16:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->defaultWalltime);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 17:
           if ($ftype == TType::BOOL) {
             $xfer += $input->readBool($this->editableByUser);
           } else {
@@ -1018,8 +1036,13 @@ class ApplicationDeploymentDescription {
       $xfer += $output->writeI32($this->defaultCPUCount);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->defaultWalltime !== null) {
+      $xfer += $output->writeFieldBegin('defaultWalltime', TType::I32, 16);
+      $xfer += $output->writeI32($this->defaultWalltime);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->editableByUser !== null) {
-      $xfer += $output->writeFieldBegin('editableByUser', TType::BOOL, 16);
+      $xfer += $output->writeFieldBegin('editableByUser', TType::BOOL, 17);
       $xfer += $output->writeBool($this->editableByUser);
       $xfer += $output->writeFieldEnd();
     }

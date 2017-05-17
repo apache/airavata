@@ -94,18 +94,24 @@ resources:
       - SDSC Admin <slurm@comet-fe4.sdsc.edu> # comet new
       - Slurm <slurm@psc.edu> # bridges 
       - Slurm Daemon <slurm@odin.oscer.ou.edu> # OU Schooner
+      - slurm@lnet28.stampede.tacc.utexas.edu # stampede2
+      - Slurm service account <slurm@chpc.utah.edu> # Utah Ember
 
   - jobManagerType: UGE
     commandOutputParser: org.apache.airavata.gfac.impl.job.UGEOutputParser
     emailParser: org.apache.airavata.gfac.monitor.email.parser.UGEEmailParser
     resourceEmailAddresses:
       - ls4.tacc.utexas.edu # contain Lonestar
+      - root <root@local> # USD HPC Cluster
+      - root <littledog@siu.edu> # SIU Little Dog
+
 
   - jobManagerType: LSF
     commandOutputParser: org.apache.airavata.gfac.impl.job.LSFOutputParser
     emailParser: org.apache.airavata.gfac.monitor.email.parser.LSFEmailParser
     resourceEmailAddresses:
       - iu.xsede.edu # test resource mail address
+      - tcs.tulsahpc.org #Tandy
 
   - jobManagerType: FORK
     commandOutputParser: org.apache.airavata.gfac.impl.job.ForkOutputParser

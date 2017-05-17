@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.registry.core.app.catalog.model;
 
 
@@ -35,6 +33,7 @@ public class UserComputeResourcePreference {
     @Id
     @Column(name = "RESOURCE_ID")
     private String resourceId;
+    @Id
     @Column(name = "GATEWAY_ID")
     private String gatewayID;
     @Column(name = "PREFERED_BATCH_QUEUE")
@@ -63,7 +62,10 @@ public class UserComputeResourcePreference {
 
 
     @ManyToOne(cascade= CascadeType.MERGE)
-    @JoinColumn(name = "USER_ID")
+    @JoinColumns({
+        @JoinColumn(name = "USER_ID"),
+        @JoinColumn(name = "GATEWAY_ID")
+    })
     private UserResourceProfile userResouceProfile;
 
     /*User Id should be linked to user profile table once it is finalized and created*/

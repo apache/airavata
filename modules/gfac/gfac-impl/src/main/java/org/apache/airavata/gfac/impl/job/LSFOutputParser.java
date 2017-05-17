@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,8 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.gfac.impl.job;
 
 import org.apache.airavata.gfac.core.GFacException;
@@ -41,7 +40,11 @@ public class LSFOutputParser implements OutputParser {
     @Override
     public String parseJobSubmission(String rawOutput) throws GFacException {
         logger.debug(rawOutput);
-        return rawOutput.substring(rawOutput.indexOf("<")+1,rawOutput.indexOf(">"));
+        if (rawOutput.indexOf("<") >= 0) {
+            return rawOutput.substring(rawOutput.indexOf("<")+1,rawOutput.indexOf(">"));
+        } else {
+            return null;
+        }
     }
 
     @Override

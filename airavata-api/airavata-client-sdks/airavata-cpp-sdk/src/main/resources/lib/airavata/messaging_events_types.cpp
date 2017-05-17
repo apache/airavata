@@ -52,7 +52,8 @@ int _kMessageTypeValues[] = {
   MessageType::JOB,
   MessageType::LAUNCHPROCESS,
   MessageType::TERMINATEPROCESS,
-  MessageType::PROCESSOUTPUT
+  MessageType::PROCESSOUTPUT,
+  MessageType::DB_EVENT
 };
 const char* _kMessageTypeNames[] = {
   "EXPERIMENT",
@@ -62,9 +63,10 @@ const char* _kMessageTypeNames[] = {
   "JOB",
   "LAUNCHPROCESS",
   "TERMINATEPROCESS",
-  "PROCESSOUTPUT"
+  "PROCESSOUTPUT",
+  "DB_EVENT"
 };
-const std::map<int, const char*> _MessageType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(8, _kMessageTypeValues, _kMessageTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _MessageType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(9, _kMessageTypeValues, _kMessageTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 
 ExperimentStatusChangeEvent::~ExperimentStatusChangeEvent() throw() {

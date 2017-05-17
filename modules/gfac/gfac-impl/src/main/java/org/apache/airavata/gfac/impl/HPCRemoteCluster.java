@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,8 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.gfac.impl;
 
 import com.jcraft.jsch.ChannelExec;
@@ -188,6 +187,33 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
         } catch (IOException | JSchException e) {
 			throw new GFacException("Failed scp file:" + sourceFile + " to remote file "
 					+destinationFile , e);
+		}
+	}
+
+	/**
+	 * This method can be used to get the file name of a file giving the extension. It assumes that there will be only
+	 * one file with that extension. In case if there are more than one file one random file name from the matching ones
+	 * will be returned.
+	 *
+	 * @param fileExtension
+	 * @param parentPath
+	 * @param session
+	 * @return
+	 */
+	@Override
+	public String getFileNameFromExtension(String fileExtension, String parentPath, Session session) throws GFacException {
+		try {
+			List<String> fileNames = SSHUtils.listDirectory(parentPath, session);
+			for(String fileName : fileNames){
+				if(fileName.endsWith(fileExtension)){
+					return fileName;
+				}
+			}
+			log.warn("No matching file found for extension: " + fileExtension + " in the " + parentPath + " directory");
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new GFacException("Failed to list directory " + parentPath);
 		}
 	}
 

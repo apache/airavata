@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,7 +16,6 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
 package org.apache.airavata.server;
 
@@ -64,6 +63,7 @@ public class ServerMain {
 	private static final String GFAC_SERVER = "gfac";
 	private static final String ORCHESTRATOR = "orchestrator";
 	private static final String USER_PROFILE = "user_profile";
+	private static final String PROFILE_SERVICE = "profile_service";
 
     private static ServerCnxnFactory cnxnFactory;
 //	private static boolean shutdownHookCalledBefore=false;
@@ -119,7 +119,7 @@ public class ServerMain {
 			serverList.add(API_SERVER);
 			serverList.add(ORCHESTRATOR);
 			serverList.add(GFAC_SERVER);
-			// serverList.add(USER_PROFILE); // Commenting temporarily since there is no current usage
+			serverList.add(PROFILE_SERVICE);
 		} else if (serverList.indexOf(API_ORCH) > -1) {
 			serverList.clear();
             serverList.add(REGISTRY_SERVER);  // registry server should start before everything
@@ -127,6 +127,7 @@ public class ServerMain {
 			serverList.add(SHARING_SERVER);
 			serverList.add(API_SERVER);
 			serverList.add(ORCHESTRATOR);
+			serverList.add(PROFILE_SERVICE);
 		} else if (serverList.indexOf(EXECUTION) > -1) {
 			serverList.clear();
 			serverList.add(GFAC_SERVER);

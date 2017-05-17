@@ -1,3 +1,23 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
 ---
 
 ################################################################################
@@ -26,7 +46,7 @@
 
 - name: set gfac private ip
   set_fact:
-    gfac_host: "{{ ansible_eth0.ipv4.address }}"
+    gfac_host: "{{ ansible_default_ipv4.address }}"
 
 - name: Copy Airavata server properties file
   template: src=airavata-server.properties.j2
@@ -41,6 +61,16 @@
             owner={{ user }}
             group={{ group }}
             mode="u=rw,g=r,o=r"
+
+- name: Copy logback configuration file
+  template: src=logback.xml.j2
+            dest="{{ gfac_dir }}/{{ airavata_dist }}/bin/logback.xml"
+            owner={{ user }}
+            group={{ group }}
+            mode="u=rw,g=r,o=r"
+
+- name: create logs directory
+  file: path="{{ gfac_log_dir }}" state=directory owner={{ user }} group={{ group }}
 
 - name: Copy Mysql jar to lib
   copy: src="{{ mysql_connector_jar }}"
@@ -59,7 +89,7 @@
            removes="{{ gfac_dir }}/{{ airavata_dist }}/bin/server_start_*"
 
 - name: start gfac
-  command: ./bin/airavata-server-start.sh gfac -d
+  command: ./bin/airavata-server-start.sh gfac -d -log "{{ gfac_log_dir }}/output.log"
            chdir="{{ gfac_dir }}/{{ airavata_dist }}/"
            creates="{{ gfac_dir }}/{{ airavata_dist }}/bin/server_start_*"
 

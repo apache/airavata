@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,8 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.sharing.registry;
 
 import org.apache.airavata.sharing.registry.models.*;
@@ -72,6 +71,7 @@ public class SharingRegistryServiceTest {
         domain.setDescription("test domain description");
 
         String domainId = sharingServiceClient.createDomain(domain);
+        Assert.assertTrue(sharingServiceClient.isDomainExists(domainId));
 
         User user1 = new User();
         //required
@@ -91,6 +91,7 @@ public class SharingRegistryServiceTest {
         //user1.setIcon(icon1);
 
         sharingServiceClient.createUser(user1);
+        Assert.assertTrue(sharingServiceClient.isUserExists(domainId, "test-user-1"));
 
         User user2 = new User();
         //required
@@ -145,6 +146,10 @@ public class SharingRegistryServiceTest {
         userGroup1.setGroupType(GroupType.USER_LEVEL_GROUP);
 
         sharingServiceClient.createGroup(userGroup1);
+        userGroup1.setDescription("updated description");
+        sharingServiceClient.updateGroup(userGroup1);
+        Assert.assertTrue(sharingServiceClient.getGroup(domainId, userGroup1.groupId).description.equals("updated description"));
+        Assert.assertTrue(sharingServiceClient.isGroupExists(domainId, "test-group-1"));
 
         UserGroup userGroup2 = new UserGroup();
         //required
@@ -176,6 +181,7 @@ public class SharingRegistryServiceTest {
         //optional
         permissionType1.setDescription("READ description");
         sharingServiceClient.createPermissionType(permissionType1);
+        Assert.assertTrue(sharingServiceClient.isPermissionExists(domainId, "READ"));
 
         PermissionType permissionType2 = new PermissionType();
         permissionType2.setPermissionTypeId("WRITE");
@@ -201,6 +207,7 @@ public class SharingRegistryServiceTest {
         //optional
         entityType1.setDescription("PROJECT entity type description");
         sharingServiceClient.createEntityType(entityType1);
+        Assert.assertTrue(sharingServiceClient.isEntityTypeExists(domainId, "PROJECT"));
 
         EntityType entityType2 = new EntityType();
         entityType2.setEntityTypeId("EXPERIMENT");
@@ -236,6 +243,7 @@ public class SharingRegistryServiceTest {
         //optional - If not set this will be default to current system time
         entity1.setOriginalEntityCreationTime(System.currentTimeMillis());
         sharingServiceClient.createEntity(entity1);
+        Assert.assertTrue(sharingServiceClient.isEntityExists(domainId, "test-project-1"));
 
         Entity entity2 = new Entity();
         entity2.setEntityId("test-experiment-1");
@@ -272,7 +280,22 @@ public class SharingRegistryServiceTest {
         entity4.setFullText("test input file 1 for experiment 2");
         sharingServiceClient.createEntity(entity4);
 
+        Assert.assertTrue(sharingServiceClient.getEntity(domainId, "test-project-1").getSharedCount() == 0);
         sharingServiceClient.shareEntityWithUsers(domainId, "test-project-1", Arrays.asList("test-user-2"), "WRITE", true);
+        Assert.assertTrue(sharingServiceClient.getEntity(domainId, "test-project-1").getSharedCount() == 1);
+        ArrayList<SearchCriteria> filters = new ArrayList<>();
+        SearchCriteria searchCriteria = new SearchCriteria();
+        searchCriteria.setSearchField(EntitySearchField.SHARED_COUNT);
+        searchCriteria.setValue("1");
+        searchCriteria.setSearchCondition(SearchCondition.GTE);
+        filters.add(searchCriteria);
+        Assert.assertTrue(sharingServiceClient.searchEntities(domainId, "test-user-2", filters, 0, -1).size() == 1);
+
+
+        sharingServiceClient.revokeEntitySharingFromUsers(domainId, "test-project-1", Arrays.asList("test-user-2"), "WRITE");
+        Assert.assertTrue(sharingServiceClient.getEntity(domainId, "test-project-1").getSharedCount() == 0);
+        sharingServiceClient.shareEntityWithUsers(domainId, "test-project-1", Arrays.asList("test-user-2"), "WRITE", true);
+
         sharingServiceClient.shareEntityWithGroups(domainId, "test-experiment-2", Arrays.asList("test-group-2"), "READ", true);
         sharingServiceClient.shareEntityWithGroups(domainId, "test-experiment-2", Arrays.asList("test-group-2"), "CLONE", false);
 
@@ -300,8 +323,8 @@ public class SharingRegistryServiceTest {
         //false
         Assert.assertFalse((sharingServiceClient.userHasAccess(domainId, "test-user-3", "test-file-1", "CLONE")));
 
-        ArrayList<SearchCriteria> filters = new ArrayList<>();
-        SearchCriteria searchCriteria = new SearchCriteria();
+        filters = new ArrayList<>();
+        searchCriteria = new SearchCriteria();
         searchCriteria.setSearchCondition(SearchCondition.FULL_TEXT);
         searchCriteria.setValue("experiment");
         searchCriteria.setSearchField(EntitySearchField.FULL_TEXT);

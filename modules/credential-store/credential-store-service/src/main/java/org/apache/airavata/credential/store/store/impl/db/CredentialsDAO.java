@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.credential.store.store.impl.db;
 
 import org.apache.airavata.common.utils.DBUtil;
@@ -87,7 +85,7 @@ public class CredentialsDAO extends ParentDAO {
     public void addCredentials(String gatewayId, Credential credential, Connection connection)
             throws CredentialStoreException {
 
-        String sql = "INSERT INTO CREDENTIALS VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO CREDENTIALS (GATEWAY_ID, TOKEN_ID, CREDENTIAL, PORTAL_USER_ID, TIME_PERSISTED, DESCRIPTION, CREDENTIAL_OWNER_TYPE) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement preparedStatement = null;
 

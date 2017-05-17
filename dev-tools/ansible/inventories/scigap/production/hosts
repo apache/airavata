@@ -1,0 +1,20 @@
+---
+# inventory file : scigap production deployment
+
+[zookeeper]
+gf5.ucs.indiana.edu
+
+[rabbitmq]
+gf5.ucs.indiana.edu
+
+[database]
+gf3.ucs.indiana.edu
+
+[api-orch]
+gf5.ucs.indiana.edu
+
+[gfac]
+gf6.ucs.indiana.edu
+
+[pga]
+gf4.ucs.indiana.edu

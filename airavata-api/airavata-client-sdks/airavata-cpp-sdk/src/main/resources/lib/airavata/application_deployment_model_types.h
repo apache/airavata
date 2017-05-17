@@ -224,7 +224,7 @@ inline std::ostream& operator<<(std::ostream& out, const ApplicationModule& obj)
 }
 
 typedef struct _ApplicationDeploymentDescription__isset {
-  _ApplicationDeploymentDescription__isset() : appDeploymentDescription(false), moduleLoadCmds(false), libPrependPaths(false), libAppendPaths(false), setEnvironment(false), preJobCommands(false), postJobCommands(false), defaultQueueName(false), defaultNodeCount(false), defaultCPUCount(false), editableByUser(false) {}
+  _ApplicationDeploymentDescription__isset() : appDeploymentDescription(false), moduleLoadCmds(false), libPrependPaths(false), libAppendPaths(false), setEnvironment(false), preJobCommands(false), postJobCommands(false), defaultQueueName(false), defaultNodeCount(false), defaultCPUCount(false), defaultWalltime(false), editableByUser(false) {}
   bool appDeploymentDescription :1;
   bool moduleLoadCmds :1;
   bool libPrependPaths :1;
@@ -235,6 +235,7 @@ typedef struct _ApplicationDeploymentDescription__isset {
   bool defaultQueueName :1;
   bool defaultNodeCount :1;
   bool defaultCPUCount :1;
+  bool defaultWalltime :1;
   bool editableByUser :1;
 } _ApplicationDeploymentDescription__isset;
 
@@ -243,7 +244,7 @@ class ApplicationDeploymentDescription {
 
   ApplicationDeploymentDescription(const ApplicationDeploymentDescription&);
   ApplicationDeploymentDescription& operator=(const ApplicationDeploymentDescription&);
-  ApplicationDeploymentDescription() : appDeploymentId("DO_NOT_SET_AT_CLIENTS"), appModuleId(), computeHostId(), executablePath(), parallelism(( ::apache::airavata::model::appcatalog::parallelism::ApplicationParallelismType::type)0), appDeploymentDescription(), defaultQueueName(), defaultNodeCount(0), defaultCPUCount(0), editableByUser(0) {
+  ApplicationDeploymentDescription() : appDeploymentId("DO_NOT_SET_AT_CLIENTS"), appModuleId(), computeHostId(), executablePath(), parallelism(( ::apache::airavata::model::appcatalog::parallelism::ApplicationParallelismType::type)0), appDeploymentDescription(), defaultQueueName(), defaultNodeCount(0), defaultCPUCount(0), defaultWalltime(0), editableByUser(0) {
     parallelism = ( ::apache::airavata::model::appcatalog::parallelism::ApplicationParallelismType::type)0;
 
   }
@@ -264,6 +265,7 @@ class ApplicationDeploymentDescription {
   std::string defaultQueueName;
   int32_t defaultNodeCount;
   int32_t defaultCPUCount;
+  int32_t defaultWalltime;
   bool editableByUser;
 
   _ApplicationDeploymentDescription__isset __isset;
@@ -297,6 +299,8 @@ class ApplicationDeploymentDescription {
   void __set_defaultNodeCount(const int32_t val);
 
   void __set_defaultCPUCount(const int32_t val);
+
+  void __set_defaultWalltime(const int32_t val);
 
   void __set_editableByUser(const bool val);
 
@@ -351,6 +355,10 @@ class ApplicationDeploymentDescription {
     if (__isset.defaultCPUCount != rhs.__isset.defaultCPUCount)
       return false;
     else if (__isset.defaultCPUCount && !(defaultCPUCount == rhs.defaultCPUCount))
+      return false;
+    if (__isset.defaultWalltime != rhs.__isset.defaultWalltime)
+      return false;
+    else if (__isset.defaultWalltime && !(defaultWalltime == rhs.defaultWalltime))
       return false;
     if (__isset.editableByUser != rhs.__isset.editableByUser)
       return false;

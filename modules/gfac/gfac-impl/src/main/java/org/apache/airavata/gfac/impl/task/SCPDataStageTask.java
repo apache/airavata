@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,7 +16,6 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
 package org.apache.airavata.gfac.impl.task;
 
@@ -134,6 +133,11 @@ public class SCPDataStageTask implements Task {
             URI sourceURI = new URI(subTaskModel.getSource());
             String fileName = sourceURI.getPath().substring(sourceURI.getPath().lastIndexOf(File.separator) + 1,
                     sourceURI.getPath().length());
+
+            authenticationInfo = Factory.getComputerResourceSSHKeyAuthentication(processContext);
+            ServerInfo serverInfo = processContext.getComputeResourceServerInfo();
+            Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
+
             URI destinationURI = null;
             if (subTaskModel.getDestination().startsWith("dummy")) {
                 destinationURI = TaskUtils.getDestinationURI(taskContext, hostName, inputPath, fileName);
@@ -150,13 +154,27 @@ public class SCPDataStageTask implements Task {
                 return status;
             }
 
-            authenticationInfo = Factory.getStorageSSHKeyAuthentication(processContext);
             status = new TaskStatus(TaskState.COMPLETED);
 
-            ServerInfo serverInfo = processContext.getComputeResourceServerInfo();
-            Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
+            //Wildcard for file name. Has to find the correct name.
+            if(fileName.startsWith("*.")){
+                String destParentPath = (new File(destinationURI.getPath())).getParentFile().getPath();
+                String sourceParentPath = (new File(sourceURI.getPath())).getParentFile().getPath();
+                String temp = taskContext.getParentProcessContext().getDataMovementRemoteCluster()
+                        .getFileNameFromExtension(fileName.substring(2), sourceParentPath, sshSession);
+                if(temp != null && temp != ""){
+                    fileName = temp;
+                }
+                if(destParentPath.endsWith(File.separator)){
+                    destinationURI = new URI(destParentPath + fileName);
+                }else{
+                    destinationURI = new URI(destParentPath + File.separator + fileName);
+                }
+
+            }
+
             if (processState == ProcessState.INPUT_DATA_STAGING) {
-                inputDataStaging(taskContext, sshSession, sourceURI, destinationURI);
+                    inputDataStaging(taskContext, sshSession, sourceURI, destinationURI);
                 status.setReason("Successfully staged input data");
             } else if (processState == ProcessState.OUTPUT_DATA_STAGING) {
                 makeDir(taskContext, destinationURI);

@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -35,34 +33,34 @@ import java.util.List;
 
 public class MigrationManager {
 
-    private ArrayList<ISLoginCredentialsDAO> adminCredentials = new ArrayList<ISLoginCredentialsDAO>();
+    private ArrayList<Wso2ISLoginCredentialsDAO> adminCredentials = new ArrayList<Wso2ISLoginCredentialsDAO>();
 
     /*Add the credentials for all the tenants from which the profile should be migrated to Airavata DB*/
 
     public void setISLoginCredentials(){
-        adminCredentials.add(new ISLoginCredentialsDAO("prod.seagrid","UserName","Password"));
+        adminCredentials.add(new Wso2ISLoginCredentialsDAO("prod.seagrid","username","password"));
         // new credential records here...
     }
 
     /* Method used to fetch all the user profiles from the registered tenants */
 
-    public List<UserProfileDAO> getUserProfilesFromIS(){
+    public List<UserProfileDAO> getUserProfilesFromWso2IS(){
         ArrayList<UserProfileDAO> userProfileList = new ArrayList<UserProfileDAO>();
-        for(ISLoginCredentialsDAO creds:adminCredentials){
-            RemoteUserStoreManagerServiceStub isClient = IdentityServerClient.getAdminServiceClient(creds.getLoginUserName(),creds.getLoginPassword(),"RemoteUserStoreManagerService");
+        for(Wso2ISLoginCredentialsDAO creds:adminCredentials){
+            RemoteUserStoreManagerServiceStub isClient = Wso2IdentityServerClient.getAdminServiceClient(creds.getLoginUserName(),creds.getLoginPassword(),"RemoteUserStoreManagerService");
             String[] userList;
             System.out.println("Fetching User Profiles for " + creds.getGateway() + " tenant ...");
             try {
                 userList = isClient.getUserList("http://wso2.org/claims/givenname", "*", "default");
                 System.out.println("FirstName\tLastName\tEmail\t\t\tuserName\tCountry\tOrganization\tphone");
                 String[] claims = {"http://wso2.org/claims/givenname",
-                                    "http://wso2.org/claims/lastname",
-                                    "http://wso2.org/claims/emailaddress",
-                                    "http://wso2.org/claims/country",
-                                    "http://wso2.org/claims/organization",
-                                    "http://wso2.org/claims/mobile",
-                                    "http://wso2.org/claims/telephone",
-                                    "http://wso2.org/claims/streetaddress"};
+                        "http://wso2.org/claims/lastname",
+                        "http://wso2.org/claims/emailaddress",
+                        "http://wso2.org/claims/country",
+                        "http://wso2.org/claims/organization",
+                        "http://wso2.org/claims/mobile",
+                        "http://wso2.org/claims/telephone",
+                        "http://wso2.org/claims/streetaddress"};
                 for (String user : userList) {
                     UserProfileDAO userProfile = new UserProfileDAO();
                     ClaimValue[] retrievedClaimValues = isClient.getUserClaimValuesForClaims(user, claims, null);
@@ -108,11 +106,12 @@ public class MigrationManager {
     private boolean migrateUserProfilesToAiravata(List<UserProfileDAO> ISProfileList) throws TException, ApplicationSettingsException {
         System.out.println("Initiating migration to Airavata internal DB ...");
         UserProfileAiravataThriftClient objFactory = new UserProfileAiravataThriftClient();
-        UserProfileService.Client client = objFactory.getRegistryServiceClient();
+        UserProfileService.Client client = objFactory.getUserProfileServiceClient();
         UserProfile airavataUserProfile = new UserProfile();
         // Here are the data associations...
         for(UserProfileDAO ISProfile : ISProfileList){
-            airavataUserProfile.setUserName(ISProfile.getFirstName()+" "+ISProfile.getLastName());
+            airavataUserProfile.setFirstName(ISProfile.getFirstName());
+            airavataUserProfile.setLastName(ISProfile.getLastName());
             airavataUserProfile.setUserId(ISProfile.getUserName());
             airavataUserProfile.setGatewayId(ISProfile.getGatewayID());
             List<String> emails = new ArrayList<String>();
@@ -126,12 +125,21 @@ public class MigrationManager {
         return false;
     }
 
+    private void migrateUserProfilesToKeycloak(List<UserProfileDAO> Wso2ISProfileList){
+        KeycloakIdentityServerClient client = new KeycloakIdentityServerClient("https://iam.scigap.org/auth",
+                "master",
+                "SuperRealmUsername",
+                "MasterRealmPassword");
+        client.migrateUserStore(Wso2ISProfileList,"keycloakTargetRealm","tempPassword");
+    }
+
     public static void main(String[] args) {
         MigrationManager migrationManager = new MigrationManager();
         migrationManager.setISLoginCredentials();
-        List<UserProfileDAO> userProfileList = migrationManager.getUserProfilesFromIS();
+        List<UserProfileDAO> userProfileList = migrationManager.getUserProfilesFromWso2IS();
         try {
             migrationManager.migrateUserProfilesToAiravata(userProfileList);
+            migrationManager.migrateUserProfilesToKeycloak(userProfileList);
         } catch (TException e) {
             e.printStackTrace();
         } catch (ApplicationSettingsException e) {

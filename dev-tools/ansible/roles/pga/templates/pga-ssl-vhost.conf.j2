@@ -1,0 +1,29 @@
+<VirtualHost *:80>
+    ServerName {{ vhost_servername }}
+    {% if vhost_serveralias is defined %}
+    ServerAlias {{ vhost_serveralias }}
+    {% endif %}
+
+    ## Redirect all http traffic to https
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+</VirtualHost>
+
+<VirtualHost *:443>
+    ServerName {{ vhost_servername }}
+    {% if vhost_serveralias is defined %}
+    ServerAlias {{ vhost_serveralias }}
+    {% endif %}
+
+    DocumentRoot {{ doc_root_dir }}/public
+    <Directory "{{ doc_root_dir }}/public">
+       AllowOverride All
+    </Directory>
+    ErrorLog {{ httpd_log_dir[ansible_os_family] }}/{{ gateway_id }}.error.log
+    CustomLog {{ httpd_log_dir[ansible_os_family] }}/{{ gateway_id }}.requests.log combined
+    SSLEngine on
+    SSLCertificateFile {{ ssl_certificate_file }}
+    SSLCertificateChainFile {{ ssl_certificate_chain_file }}
+    SSLCertificateKeyFile {{ ssl_certificate_key_file }}
+</VirtualHost>

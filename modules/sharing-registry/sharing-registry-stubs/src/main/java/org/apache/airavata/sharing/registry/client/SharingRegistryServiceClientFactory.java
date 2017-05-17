@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,8 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.sharing.registry.client;
 
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
@@ -38,6 +37,7 @@ public class SharingRegistryServiceClientFactory {
             TBinaryProtocol protocol = new TBinaryProtocol(e);
             return new SharingRegistryService.Client(protocol);
         } catch (TTransportException var4) {
+            logger.error("failed to create sharing registry client", var4);
             throw new SharingRegistryException();
         }
     }

@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,8 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.replica.catalog;
 
 import org.apache.airavata.replica.catalog.util.Initialize;
@@ -82,6 +81,8 @@ public class ReplicaCatalogTest {
             String productUri = replicacatalog.registerDataProduct(dataProductModel);
             org.junit.Assert.assertNotNull(productUri);
             dataProductModel = replicacatalog.getDataProduct(productUri);
+            Assert.assertTrue(replicacatalog.searchDataProductsByName(dataProductModel.getGatewayId(), dataProductModel.getOwnerName(),
+                    dataProductModel.getProductName().substring(1, 5), -1, 0).size() == 1);
             Assert.assertNotNull(dataProductModel);
             boolean result = replicacatalog.removeDataProduct(productUri);
             Assert.assertTrue(result);

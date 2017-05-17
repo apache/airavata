@@ -1,4 +1,5 @@
 /**
+ *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,7 +17,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.airavata.registry.cpi;
 
 
@@ -51,4 +51,7 @@ public interface ReplicaCatalog {
     DataProductModel getParentDataProduct(String productUri) throws ReplicaCatalogException;
 
     List<DataProductModel> getChildDataProducts(String productUri) throws ReplicaCatalogException;
+
+    List<DataProductModel> searchDataProductsByName(String gatewayId, String userId, String productName,
+                                                    int limit, int offset) throws ReplicaCatalogException;
 }

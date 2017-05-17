@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,21 +16,20 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.api.server.handler;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavata_apiConstants;
-import org.apache.airavata.api.server.security.interceptor.SecurityCheck;
 import org.apache.airavata.api.server.util.ThriftClientPool;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
+import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
@@ -70,11 +69,18 @@ import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.QueueStatusModel;
+import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
+import org.apache.airavata.service.profile.user.cpi.UserProfileService;
+import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
+import org.apache.airavata.service.security.interceptor.SecurityCheck;
+import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.commons.pool.impl.GenericObjectPool;
@@ -82,6 +88,7 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 public class AiravataServerHandler implements Airavata.Iface {
@@ -130,7 +137,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     private void initSharingRegistry() throws ApplicationSettingsException, TException {
         SharingRegistryService.Client client = sharingClientPool.getResource();
         try {
-            if (client.getDomain(ServerSettings.getDefaultUserGateway()) == null) {
+            if (!client.isDomainExists(ServerSettings.getDefaultUserGateway())) {
                 Domain domain = new Domain();
                 domain.setDomainId(ServerSettings.getDefaultUserGateway());
                 domain.setName(ServerSettings.getDefaultUserGateway());
@@ -4657,22 +4664,29 @@ public class AiravataServerHandler implements Airavata.Iface {
         RegistryService.Client regClient = registryClientPool.getResource();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
-            List<String> accessibleUsers = new ArrayList<>();
-            if(permissionType.equals(ResourcePermissionType.WRITE))
+            HashSet<String> accessibleUsers = new HashSet<>();
+            if (permissionType.equals(ResourcePermissionType.WRITE)) {
                 sharingClient.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
-                                + ":WRITE").stream().forEach(u->accessibleUsers.add(u.userId));
-            else if(permissionType.equals(ResourcePermissionType.READ))
+                                + ":WRITE").stream().forEach(u -> accessibleUsers.add(u.userId));
                 sharingClient.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
-                                + ":READ").stream().forEach(u->accessibleUsers.add(u.userId));
-            else if(permissionType.equals(ResourcePermissionType.OWNER))
+                                + ":OWNER").stream().forEach(u -> accessibleUsers.add(u.userId));
+            } else if (permissionType.equals(ResourcePermissionType.READ)) {
                 sharingClient.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
-                                + ":OWNER").stream().forEach(u->accessibleUsers.add(u.userId));
+                                + ":READ").stream().forEach(u -> accessibleUsers.add(u.userId));
+                sharingClient.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                        resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
+                                + ":OWNER").stream().forEach(u -> accessibleUsers.add(u.userId));
+            } else if (permissionType.equals(ResourcePermissionType.OWNER)) {
+                sharingClient.getListOfSharedUsers(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                        resourceId, authzToken.getClaimsMap().get(Constants.GATEWAY_ID)
+                                + ":OWNER").stream().forEach(u -> accessibleUsers.add(u.userId));
+            }
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
-            return accessibleUsers;
+            return new ArrayList<>(accessibleUsers);
         } catch (Exception e) {
             String msg = "Error in getting all accessible users for resource. Resource ID : " + resourceId + " Resource Type : " + resourceType.toString() ;
             logger.error(msg, e);
@@ -4758,6 +4772,119 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    @Override
+    @SecurityCheck
+    public String addUserProfile(AuthzToken authzToken, UserProfile userProfile)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+
+        // check that username and gatewayId match authzToken
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+        if( !userProfile.getUserId().equals(userId) || !userProfile.getGatewayId().equals(gatewayId) ){
+            throw new AuthorizationException("User isn't authorized to add user profile for this user and/or gateway");
+        }
+        try {
+            return getUserProfileServiceClient().addUserProfile(authzToken, userProfile);
+        } catch (Exception e) {
+            String msg = "Error adding user profile";
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    public boolean updateUserProfile(AuthzToken authzToken, UserProfile userProfile)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+
+        // check that username and gatewayId match authzToken
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+        if( !userProfile.getUserId().equals(userId) || !userProfile.getGatewayId().equals(gatewayId) ){
+            throw new AuthorizationException("User isn't authorized to update user profile for this user and/or gateway");
+        }
+        try {
+            return getUserProfileServiceClient().updateUserProfile(authzToken, userProfile);
+        } catch (Exception e) {
+            String msg = "Error updating user profile";
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    public UserProfile getUserProfileById(AuthzToken authzToken, String userId, String gatewayId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+
+        try {
+            return getUserProfileServiceClient().getUserProfileById(authzToken, userId, gatewayId);
+        } catch (Exception e) {
+            String msg = MessageFormat.format("Error getting user profile for [{0}] in [{1}]", userId, gatewayId);
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    // FIXME: deleting user profile should require the gatewayId as well!
+    public boolean deleteUserProfile(AuthzToken authzToken, String userId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+
+        // check that userId match authzToken
+        if( !authzToken.getClaimsMap().get(Constants.USER_NAME).equals(userId) ){
+            throw new AuthorizationException("User isn't authorized to delete user profile for this user");
+        }
+        try {
+            return getUserProfileServiceClient().deleteUserProfile(authzToken, userId, null);
+        } catch (Exception e) {
+            String msg = "Error deleting user profile";
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    public List<UserProfile> getAllUserProfilesInGateway(AuthzToken authzToken, String gatewayId, int offset, int limit)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+
+        try {
+            return getUserProfileServiceClient().getAllUserProfilesInGateway(authzToken, gatewayId, offset, limit);
+        } catch (Exception e) {
+            String msg = MessageFormat.format("Error getting all user profiles for [{0}] with offset={1} and limit={2}", gatewayId, offset, limit);
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    public boolean doesUserProfileExist(AuthzToken authzToken, String userName, String gatewayId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+
+        try {
+            return getUserProfileServiceClient().doesUserExist(authzToken, userName, gatewayId);
+        } catch (Exception e) {
+            String msg = MessageFormat.format("Error checking if user profile exists for [{0}] in [{1}]", userName, gatewayId);
+            logger.error(msg, e);
+            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
     private void submitExperiment(String gatewayId,String experimentId) throws AiravataException {
         ExperimentSubmitEvent event = new ExperimentSubmitEvent(experimentId, gatewayId);
         MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, "LAUNCH.EXP-" + UUID.randomUUID().toString(), gatewayId);
@@ -4770,5 +4897,45 @@ public class AiravataServerHandler implements Airavata.Iface {
         MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT_CANCEL, "CANCEL.EXP-" + UUID.randomUUID().toString(), gatewayId);
         messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
         experimentPublisher.publish(messageContext);
+    }
+
+    private CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
+        final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
+        final String serverHost = ServerSettings.getCredentialStoreServerHost();
+        try {
+            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
+        } catch (CredentialStoreException e) {
+            throw new TException("Unable to create credential store client...", e);
+        }
+    }
+
+    private RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
+        final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
+        final String serverHost = ServerSettings.getRegistryServerHost();
+        try {
+            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
+        } catch (RegistryServiceException e) {
+            throw new TException("Unable to create registry client...", e);
+        }
+    }
+
+    private SharingRegistryService.Client getSharingRegistryServiceClient() throws TException, ApplicationSettingsException {
+        final int serverPort = Integer.parseInt(ServerSettings.getSharingRegistryPort());
+        final String serverHost = ServerSettings.getSharingRegistryHost();
+        try {
+            return SharingRegistryServiceClientFactory.createSharingRegistryClient(serverHost, serverPort);
+        } catch (SharingRegistryException e) {
+            throw new TException("Unable to create sharing registry client...", e);
+        }
+    }
+
+    private UserProfileService.Client getUserProfileServiceClient() throws TException, ApplicationSettingsException {
+        final int serverPort = Integer.parseInt(ServerSettings.getProfileServiceServerPort());
+        final String serverHost = ServerSettings.getProfileServiceServerHost();
+        try {
+            return ProfileServiceClientFactory.createUserProfileServiceClient(serverHost, serverPort);
+        } catch (UserProfileServiceException e) {
+            throw new TException("Unable to create user profile service client...", e);
+        }
     }
 }

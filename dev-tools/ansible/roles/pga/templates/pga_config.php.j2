@@ -11,17 +11,25 @@ return array(
         /**
          * Admin Role Name
          */
-        'admin-role-name' => 'admin',
+        'admin-role-name' => '{{ admin_role_name }}',
 
         /**
          * Read only Admin Role Name
          */
-        'read-only-admin-role-name' => 'admin-read-only',
+        'read-only-admin-role-name' => '{{ admin_readonly_role_name }}',
 
         /**
          * Gateway user role
          */
-        'user-role-name' => 'gateway-user',
+        'user-role-name' => '{{ user_role_name }}',
+
+        /**
+         * Initial user role. This is the initial user role assigned to a new
+         * user. Set this to one of the three roles above to automatically
+         * grant new users that role, or set to some other role ('user-pending')
+         * to require admin approval before users have access.
+         */
+        'initial-role-name' => '{{ initial_role_name }}',
 
         /**
          * Tenant Domain
@@ -51,32 +59,32 @@ return array(
         /**
          * OAuth Grant Type (password or authorization_code)
          */
-        'oauth-grant-type' => 'password',
+        'oauth-grant-type' => '{{ oauth_grant_type }}',
 
         /**
-         * Identity server domain
+         * OAuth call back url (only if the grant type is authorization_code)
          */
-        'server' => 'idp.scigap.org',
+        'oauth-callback-url' => 'http://localhost/callback-url',
+
+        /**
+         * For OIDC servers that support the discovery protocol.
+         */
+        'openid-connect-discovery-url' => '{{ oidc_discovery_url }}',
 
         /**
          * Identity server url
          */
-        'service-url' => 'https://idp.scigap.org:9443/',
+        'service-url' => '{{ oauth_service_url }}',
 
         /**
          * Enable HTTPS server verification
          */
-        'verify-peer' => true,
+        'verify-peer' => {{ auth_verify_peer }},
 
         /**
          * Path to the server certificate file
          */
-        'cafile-path' => app_path() . '/resources/security/idp_scigap_org.pem',
-
-        /**
-         * Allow self signed server certificates
-         */
-        'allow-self-signed-cert' => false
+        'cafile-path' => app_path() . '/resources/security/incommon_rsa_server_ca.pem',
     ],
 
 
@@ -161,7 +169,7 @@ return array(
          /**
           * Data Sharing enabled
           */
-          'data-sharing-enabled' => true
+          'data-sharing-enabled' => {{ data_sharing_enabled }}
     ],
 
     /**
@@ -178,18 +186,18 @@ return array(
         /**
          * Set the name of theme in use here
          */
-        'theme' => 'base',
+        'theme' => '{{ portal_theme }}',
 
         /**
          * Portal title
          */
-        'portal-title' => 'Airavata PHP Gateway',
+        'portal-title' => '{{ portal_title }}',
 
         /**
          * Email address of the portal admin. Portal admin well get email notifications for events
          * such as new user creation
          */
-        'admin-emails' => [{{ admin_emails }}],
+        'admin-emails' => {{ admin_emails }},
 
         /**
          * Email account that the portal should login to send emails

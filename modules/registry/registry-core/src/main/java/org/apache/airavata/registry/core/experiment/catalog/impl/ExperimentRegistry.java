@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.registry.core.experiment.catalog.impl;
 
 import org.apache.airavata.common.utils.AiravataUtils;
@@ -630,10 +628,14 @@ public class ExperimentRegistry {
             if (experimentOutputs != null && !experimentOutputs.isEmpty()) {
                 updateExpOutputs(experimentOutputs, expId);
             }
-            ExperimentStatus experimentStatus = experiment.getExperimentStatus().get(0);
-            if (experimentStatus != null) {
-                updateExperimentStatus(experimentStatus, expId);
+
+            List<ExperimentStatus> experimentStatuses = experiment.getExperimentStatus();
+            if (experimentStatuses != null && experimentStatuses.size() > 0) {
+                if (experimentStatuses.get(0) != null) {
+                    updateExperimentStatus(experimentStatuses.get(0), expId);
+                }
             }
+
             List<ErrorModel> errors = experiment.getErrors();
             if (errors != null && !errors.isEmpty()) {
                 for (ErrorModel errror : errors) {

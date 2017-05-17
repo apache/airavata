@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.registry.cpi;
 
 /**
@@ -28,10 +26,16 @@ package org.apache.airavata.registry.cpi;
 public class CompositeIdentifier {
     private Object topLevelIdentifier;
     private Object secondLevelIdentifier;
+    private Object thirdLevelIdentifier;
 
     public CompositeIdentifier(Object topLevelIdentifier, Object secondLevelIdentifier) {
         this.topLevelIdentifier = topLevelIdentifier;
         this.secondLevelIdentifier = secondLevelIdentifier;
+    }
+
+    public CompositeIdentifier(Object topLevelIdentifier, Object secondLevelIdentifier, Object thirdLevelIdentifier) {
+        this(topLevelIdentifier, secondLevelIdentifier);
+        this.thirdLevelIdentifier = thirdLevelIdentifier;
     }
 
     public Object getTopLevelIdentifier() {
@@ -42,9 +46,13 @@ public class CompositeIdentifier {
         return secondLevelIdentifier;
     }
 
+    public Object getThirdLevelIdentifier() { return thirdLevelIdentifier; }
+
     @Override
     public String toString() {
-        if (topLevelIdentifier instanceof String && secondLevelIdentifier instanceof String) {
+        if (thirdLevelIdentifier != null && thirdLevelIdentifier instanceof String && topLevelIdentifier instanceof String && secondLevelIdentifier instanceof String) {
+            return topLevelIdentifier + "," + secondLevelIdentifier + "," + thirdLevelIdentifier;
+        } else if (topLevelIdentifier instanceof String && secondLevelIdentifier instanceof String) {
             return topLevelIdentifier + "," + secondLevelIdentifier;
         }else if (topLevelIdentifier instanceof String ) {
             return topLevelIdentifier.toString();

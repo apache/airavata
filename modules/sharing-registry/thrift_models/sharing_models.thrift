@@ -154,6 +154,7 @@ struct EntityType {
 * <li>OWNER_ID : Owner of the entity</li>
 * <li>CREATED_TIME : Created time of the entity</li>
 * <li>UPDATED_TIME : Updated time of the entity</li>
+* <li>SHARED_COUNT : Number of directly shared users and groups</li>
 **/
 enum EntitySearchField {
     NAME,
@@ -164,7 +165,8 @@ enum EntitySearchField {
     PERMISSION_TYPE_ID,
     CREATED_TIME,
     UPDATED_TIME,
-    ENTITY_TYPE_ID
+    ENTITY_TYPE_ID,
+    SHARED_COUNT
 }
 
 /**
@@ -172,8 +174,8 @@ enum EntitySearchField {
 * <li>EQUAL : Simply matches for equality. Applicable for name, and parent entity id</li>
 * <li>LIKE : Check for the condition %$FIELD% condition. Applicable for name, and description</li>
 * <li>FULL_TEXT : Does a full text search. Only applicable for the FULL_TEXT field.</li>
-* <li>GTE : Greater than or equal. Only applicable for created time and updated time.</li>
-* <li>LTE : Less than or equal. Only applicable for created time and updated time.</li>
+* <li>GTE : Greater than or equal. Only applicable for created time, updated time and shared count.</li>
+* <li>LTE : Less than or equal. Only applicable for created time, updated time and shared count.</li>
 **/
 enum SearchCondition {
     EQUAL,
@@ -222,9 +224,10 @@ struct Entity {
     7: optional string description,
     8: optional binary binaryData,
     9: optional string fullText,
-    10: optional i64 originalEntityCreationTime,
-    11: optional i64 createdTime,
-    12: optional i64 updatedTime
+    10: optional i64 sharedCount = 0,
+    11: optional i64 originalEntityCreationTime,
+    12: optional i64 createdTime,
+    13: optional i64 updatedTime
 }
 
 /**

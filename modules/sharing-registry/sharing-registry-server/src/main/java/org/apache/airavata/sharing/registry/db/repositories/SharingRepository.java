@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,8 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.sharing.registry.db.repositories;
 
 import org.apache.airavata.sharing.registry.db.entities.SharingEntity;
@@ -79,5 +78,16 @@ public class SharingRepository extends AbstractRepository<Sharing, SharingEntity
         query += "p." + DBConstants.SharingTable.GROUP_ID + " IN(" + groupIdString + ") ";
         query += " ORDER BY p.createdTime DESC";
         return select(query, 0, -1).size() > 0;
+    }
+
+    public int getSharedCount(String domainId, String entityId) throws SharingRegistryException {
+        String query = "SELECT p from " + SharingEntity.class.getSimpleName() + " as p";
+        query += " WHERE ";
+        query += "p." + DBConstants.SharingTable.DOMAIN_ID + " = '" + domainId + "' AND ";
+        query += "p." + DBConstants.SharingTable.ENTITY_ID + " = '" + entityId + "' AND ";
+        String permissionTypeIdString = (new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId);
+        query += "p." + DBConstants.SharingTable.PERMISSION_TYPE_ID + " <> '" + permissionTypeIdString + "' AND ";
+        query += "p." + DBConstants.SharingTable.SHARING_TYPE + " <> '" + SharingType.INDIRECT_CASCADING + "'";
+        return select(query, 0, -1).size();
     }
 }

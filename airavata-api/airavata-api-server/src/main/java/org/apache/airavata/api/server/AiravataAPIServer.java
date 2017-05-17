@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,25 +16,23 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.api.server;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.server.handler.AiravataServerHandler;
-import org.apache.airavata.api.server.security.AiravataSecurityManager;
-import org.apache.airavata.api.server.security.SecurityManagerFactory;
-import org.apache.airavata.api.server.security.interceptor.SecurityModule;
-import org.apache.airavata.api.server.util.*;
+import org.apache.airavata.api.server.util.Constants;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.security.AiravataSecurityException;
+import org.apache.airavata.service.security.AiravataSecurityManager;
+import org.apache.airavata.service.security.SecurityManagerFactory;
+import org.apache.airavata.service.security.interceptor.SecurityModule;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TSSLTransportFactory;

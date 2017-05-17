@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,8 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.sharing.registry.db.entities;
 
 import org.slf4j.Logger;
@@ -41,6 +40,7 @@ public class EntityEntity {
     private ByteBuffer binaryData;
     private String fullText;
     private Long originalEntityCreationTime;
+    private Long sharedCount;
     private Long createdTime;
     private Long updatedTime;
 
@@ -142,6 +142,16 @@ public class EntityEntity {
 
     public void setOriginalEntityCreationTime(Long originalEntityCreationTime) {
         this.originalEntityCreationTime = originalEntityCreationTime;
+    }
+
+    @Basic
+    @Column(name = "SHARED_COUNT")
+    public Long getSharedCount() {
+        return sharedCount;
+    }
+
+    public void setSharedCount(Long sharedCount) {
+        this.sharedCount = sharedCount;
     }
 
     @Basic

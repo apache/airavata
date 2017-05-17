@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.registry.core.app.catalog.resources;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -185,6 +183,7 @@ public class UserComputeHostPreferenceResource extends AppCatAbstractResource {
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(USER_COMPUTE_RESOURCE_PREFERENCE);
             generator.setParameter(UserComputeResourcePreferenceConstants.RESOURCE_ID, ids.getTopLevelIdentifier().toString());
             generator.setParameter(UserComputeResourcePreferenceConstants.USER_ID, ids.getSecondLevelIdentifier().toString());
+            generator.setParameter(UserComputeResourcePreferenceConstants.GATEWAY_ID, ids.getThirdLevelIdentifier().toString());
 
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
@@ -225,6 +224,7 @@ public class UserComputeHostPreferenceResource extends AppCatAbstractResource {
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(USER_COMPUTE_RESOURCE_PREFERENCE);
             generator.setParameter(UserComputeResourcePreferenceConstants.RESOURCE_ID, ids.getTopLevelIdentifier().toString());
             generator.setParameter(UserComputeResourcePreferenceConstants.USER_ID, ids.getSecondLevelIdentifier().toString());
+            generator.setParameter(UserComputeResourcePreferenceConstants.GATEWAY_ID, ids.getThirdLevelIdentifier().toString());
             Query q = generator.selectQuery(em);
             UserComputeResourcePreference preference = (UserComputeResourcePreference) q.getSingleResult();
             UserComputeHostPreferenceResource preferenceResource =
@@ -351,7 +351,7 @@ public class UserComputeHostPreferenceResource extends AppCatAbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            UserComputeResourcePreference existingPreference = em.find(UserComputeResourcePreference.class, new UserComputeResourcePreferencePK(userId, resourceId));
+            UserComputeResourcePreference existingPreference = em.find(UserComputeResourcePreference.class, new UserComputeResourcePreferencePK(userId, gatewayID, resourceId));
             if (em.isOpen()) {
                 if (em.getTransaction().isActive()){
                     em.getTransaction().rollback();
@@ -429,9 +429,11 @@ public class UserComputeHostPreferenceResource extends AppCatAbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
+            String resourceId = ids.getTopLevelIdentifier().toString();
+            String userId = ids.getSecondLevelIdentifier().toString();
+            String gatewayId = ids.getThirdLevelIdentifier().toString();
             UserComputeResourcePreference existingPreference = em.find(UserComputeResourcePreference.class,
-                    new UserComputeResourcePreferencePK(ids.getTopLevelIdentifier().toString(),
-                            ids.getSecondLevelIdentifier().toString()));
+                    new UserComputeResourcePreferencePK(userId, gatewayId, resourceId));
             if (em.isOpen()) {
                 if (em.getTransaction().isActive()){
                     em.getTransaction().rollback();

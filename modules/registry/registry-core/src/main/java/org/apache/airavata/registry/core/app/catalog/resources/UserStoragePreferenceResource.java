@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.registry.core.app.catalog.resources;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -124,6 +122,7 @@ public class UserStoragePreferenceResource extends AppCatAbstractResource {
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(USER_STORAGE_PREFERENCE);
             generator.setParameter(UserStoragePreferenceConstants.STORAGE_ID, ids.getTopLevelIdentifier().toString());
             generator.setParameter(UserStoragePreferenceConstants.USER_ID, ids.getSecondLevelIdentifier().toString());
+            generator.setParameter(UserStoragePreferenceConstants.GATEWAY_ID, ids.getThirdLevelIdentifier().toString());
 
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
@@ -162,8 +161,9 @@ public class UserStoragePreferenceResource extends AppCatAbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(USER_STORAGE_PREFERENCE);
-            generator.setParameter(UserStoragePreferenceConstants.USER_ID, ids.getTopLevelIdentifier().toString());
-            generator.setParameter(UserStoragePreferenceConstants.STORAGE_ID, ids.getSecondLevelIdentifier().toString());
+            generator.setParameter(UserStoragePreferenceConstants.STORAGE_ID, ids.getTopLevelIdentifier().toString());
+            generator.setParameter(UserStoragePreferenceConstants.USER_ID, ids.getSecondLevelIdentifier().toString());
+            generator.setParameter(UserStoragePreferenceConstants.GATEWAY_ID, ids.getThirdLevelIdentifier().toString());
             Query q = generator.selectQuery(em);
             UserStoragePreference preference = (UserStoragePreference) q.getSingleResult();
             UserStoragePreferenceResource preferenceResource =
@@ -290,7 +290,7 @@ public class UserStoragePreferenceResource extends AppCatAbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            UserStoragePreference existingPreference = em.find(UserStoragePreference.class, new UserStoragePreferencePK(userId, storageResourceId));
+            UserStoragePreference existingPreference = em.find(UserStoragePreference.class, new UserStoragePreferencePK(userId, gatewayID, storageResourceId));
             if (em.isOpen()) {
                 if (em.getTransaction().isActive()){
                     em.getTransaction().rollback();
@@ -354,9 +354,11 @@ public class UserStoragePreferenceResource extends AppCatAbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
+            String storageResourceId = ids.getTopLevelIdentifier().toString();
+            String userId = ids.getSecondLevelIdentifier().toString();
+            String gatewayID = ids.getThirdLevelIdentifier().toString();
             UserStoragePreference existingPreference = em.find(UserStoragePreference.class,
-                    new UserStoragePreferencePK(ids.getTopLevelIdentifier().toString(),
-                            ids.getSecondLevelIdentifier().toString()));
+                    new UserStoragePreferencePK(userId, gatewayID, storageResourceId));
             if (em.isOpen()) {
                 if (em.getTransaction().isActive()){
                     em.getTransaction().rollback();

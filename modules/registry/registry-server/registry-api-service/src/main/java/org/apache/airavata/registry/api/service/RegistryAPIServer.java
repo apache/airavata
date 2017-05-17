@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,14 +16,15 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.registry.api.service;
 
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.service.handler.RegistryServerHandler;
+import org.apache.airavata.registry.api.service.messaging.RegistryServiceDBEventMessagingFactory;
 import org.apache.airavata.registry.api.service.util.*;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
@@ -52,12 +53,19 @@ public class RegistryAPIServer implements IServer {
     public void StartRegistryServer(RegistryService.Processor<RegistryServerHandler> orchestratorServerHandlerProcessor)
             throws Exception {
         // creating experiment catalog db
+        logger.info("Initializing ExperimentCatalog DB");
         ExperimentCatalogInitUtil.initializeDB();
+
         // creating app catalog db
+        logger.info("Initializing AppCatalog DB");
         AppCatalogInitUtil.initializeDB();
+
         // creating workflow catalog db
+        logger.info("Initializing WorkflowCatalog DB");
         WorkflowCatalogInitUtil.initializeDB();
+
         // creating replica catalog db
+        logger.info("Initializing ReplicaCatalog DB");
         ReplicaCatalogInitUtil.initializeDB();
 
         final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.REGISTRY_SERVER_PORT, "8960"));
@@ -71,6 +79,7 @@ public class RegistryAPIServer implements IServer {
                 serverTransport = new TServerSocket(inetSocketAddress);
             }
 
+            // thrift server start
             TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
             options.minWorkerThreads = Integer.parseInt(ServerSettings.getSetting(Constants.REGISTRY_SERVER_MIN_THREADS, "30"));
             server = new TThreadPoolServer(options.processor(orchestratorServerHandlerProcessor));
@@ -93,6 +102,12 @@ public class RegistryAPIServer implements IServer {
                     if (server.isServing()){
                         setStatus(ServerStatus.STARTED);
                         logger.info("Started Registry Server on Port " + serverPort + " ...");
+
+                        // start db event handlers
+                        if (!startDatabaseEventHandlers()) {
+                            logger.error("Stopping Registry Server as DB event handlers failed to start!");
+                            server.stop();
+                        }
                     }
                 }
             }.start();
@@ -101,6 +116,21 @@ public class RegistryAPIServer implements IServer {
             setStatus(ServerStatus.FAILED);
             logger.error("Failed to start Registry server on port " + serverPort + " ...");
         }
+    }
+
+    private boolean startDatabaseEventHandlers() {
+        try {
+            // db-event handlers
+            logger.info("Registring registry service with publishers for db-events.");
+            RegistryServiceDBEventMessagingFactory.registerRegistryServiceWithPublishers(Constants.DB_EVENT_SUBSCRIBERS);
+
+            logger.info("Starting registry service db-event-handler subscriber.");
+            RegistryServiceDBEventMessagingFactory.getDBEventSubscriber();
+        } catch (Exception ex) {
+            logger.error("Failed to start database event handlers, reason: " + ex.getMessage(), ex);
+            return false;
+        }
+        return true;
     }
 
     public static void main(String[] args) {

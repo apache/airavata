@@ -1,0 +1,8 @@
+[dev-keycloak]
+149.165.172.79 ansible_user=centos
+
+[dev-haproxy]
+149.165.171.165 ansible_user=centos
+
+[prod-keycloak]
+ prod.IP.address.here ansible_user=iam
