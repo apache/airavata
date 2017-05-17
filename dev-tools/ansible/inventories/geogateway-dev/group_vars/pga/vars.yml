@@ -1,0 +1,53 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+pga_repo: "https://github.com/apache/airavata-php-gateway.git"
+git_branch: "develop"
+user: "pga"
+group: "pga"
+pga_user: "pga"
+pga_group: "pga"
+doc_root_dir: "/var/www/html/geogateway-dev"
+user_data_dir: "/var/www/user_data"
+
+#vhost_servername: "gw137.iu.xsede.org"
+
+## WSO2 IS related variables
+tenant_domain: "airavata.geog"
+admin_username: "adminuser"
+admin_password: "{{ vault_admin_password }}"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+## Airavata Client related variables
+airavata_server: "tls://gw56.iu.xsede.org"
+airavata_port: "9930"
+gateway_id: "GeoGateway"
+# relative to document root dir
+experiment_data_dir: "{{ user_data_dir }}"
+gateway_data_store_resource_id: "149.165.156.79_80025f37-19e4-496e-962e-d6fa75a5f63c"
+
+## Portal related variables
+super_admin_portal: "false"
+admin_emails: "['sgg@iu.edu']"
+portal_email_username: "pga.airavata@gmail.com"
+portal_email_password: "{{ vault_portal_email_password }}"
+...

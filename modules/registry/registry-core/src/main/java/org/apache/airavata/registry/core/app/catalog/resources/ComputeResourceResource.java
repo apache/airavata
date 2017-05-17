@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.registry.core.app.catalog.resources;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -45,6 +43,10 @@ public class ComputeResourceResource extends AppCatAbstractResource {
     private Timestamp createdTime;
     private Timestamp updatedTime;
     private int maxMemoryPerNode;
+    private int cpusPerNode;
+    private int defaultNodeCount;
+    private int defaultCPUCount;
+    private int defaultWalltime;
     private boolean enabled;
     private boolean gatewayUsageReporting;
     private String gatewayUsageModLoadCMD;
@@ -81,7 +83,39 @@ public class ComputeResourceResource extends AppCatAbstractResource {
         this.enabled = enabled;
     }
 
-    @Override
+	public int getCpusPerNode() {
+		return cpusPerNode;
+	}
+
+	public void setCpusPerNode(int cpusPerNode) {
+		this.cpusPerNode = cpusPerNode;
+	}
+
+	public int getDefaultNodeCount() {
+		return defaultNodeCount;
+	}
+
+	public void setDefaultNodeCount(int defaultNodeCount) {
+		this.defaultNodeCount = defaultNodeCount;
+	}
+
+	public int getDefaultCPUCount() {
+		return defaultCPUCount;
+	}
+
+	public void setDefaultCPUCount(int defaultCPUCount) {
+		this.defaultCPUCount = defaultCPUCount;
+	}
+
+	public int getDefaultWalltime() {
+		return defaultWalltime;
+	}
+
+	public void setDefaultWalltime(int defaultWalltime) {
+		this.defaultWalltime = defaultWalltime;
+	}
+
+	@Override
 	public void remove(Object identifier) throws AppCatalogException {
 		EntityManager em = null;
 		try {
@@ -341,6 +375,10 @@ public class ComputeResourceResource extends AppCatAbstractResource {
 			computeResource.setHostName(getHostName());
             computeResource.setEnabled(isEnabled());
             computeResource.setMaxMemoryPerNode(getMaxMemoryPerNode());
+            computeResource.setCpusPerNode(cpusPerNode);
+            computeResource.setDefaultNodeCount(defaultNodeCount);
+            computeResource.setDefaultCPUCount(defaultCPUCount);
+            computeResource.setDefaultWalltime(defaultWalltime);
             computeResource.setGatewayUsageReporting(gatewayUsageReporting);
             computeResource.setGatewayUsageModLoadCMD(gatewayUsageModLoadCMD);
             computeResource.setGatewayUsageExec(gatewayUsageExec);

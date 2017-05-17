@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.registry.core.app.catalog.impl;
 
 import org.apache.airavata.common.utils.AiravataUtils;
@@ -205,7 +203,7 @@ public class UsrResourceProfileImpl implements UsrResourceProfile {
     public boolean removeUserComputeResourcePreferenceFromGateway(String userId, String gatewayId, String preferenceId) throws AppCatalogException {
         try {
             UserComputeHostPreferenceResource resource = new UserComputeHostPreferenceResource();
-            CompositeIdentifier ids = new CompositeIdentifier(preferenceId, userId);
+            CompositeIdentifier ids = new CompositeIdentifier(preferenceId, userId, gatewayId);
             resource.remove(ids);
             return true;
         }catch (Exception e) {
@@ -218,7 +216,7 @@ public class UsrResourceProfileImpl implements UsrResourceProfile {
     public boolean removeUserDataStoragePreferenceFromGateway(String userId, String gatewayId, String preferenceId) throws AppCatalogException {
         try {
             UserStoragePreferenceResource resource = new UserStoragePreferenceResource();
-            CompositeIdentifier ids = new CompositeIdentifier(preferenceId,userId);
+            CompositeIdentifier ids = new CompositeIdentifier(preferenceId,userId, gatewayId);
             resource.remove(ids);
             return true;
         }catch (Exception e) {

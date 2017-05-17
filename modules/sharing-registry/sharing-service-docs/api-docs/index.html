@@ -1,3 +1,24 @@
+<!--
+
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
 <html><head>
 <link href="style.css" rel="stylesheet" type="text/css"/>
 <title>All Thrift declarations</title></head><body>
@@ -36,6 +57,12 @@
 <li><a href="sharing_cpi.html#Fn_SharingRegistryService_getPermissionTypes">getPermissionTypes</a></li>
 <li><a href="sharing_cpi.html#Fn_SharingRegistryService_getUser">getUser</a></li>
 <li><a href="sharing_cpi.html#Fn_SharingRegistryService_getUsers">getUsers</a></li>
+<li><a href="sharing_cpi.html#Fn_SharingRegistryService_isDomainExists">isDomainExists</a></li>
+<li><a href="sharing_cpi.html#Fn_SharingRegistryService_isEntityExists">isEntityExists</a></li>
+<li><a href="sharing_cpi.html#Fn_SharingRegistryService_isEntityTypeExists">isEntityTypeExists</a></li>
+<li><a href="sharing_cpi.html#Fn_SharingRegistryService_isGroupExists">isGroupExists</a></li>
+<li><a href="sharing_cpi.html#Fn_SharingRegistryService_isPermissionExists">isPermissionExists</a></li>
+<li><a href="sharing_cpi.html#Fn_SharingRegistryService_isUserExists">isUserExists</a></li>
 <li><a href="sharing_cpi.html#Fn_SharingRegistryService_removeChildGroupFromParentGroup">removeChildGroupFromParentGroup</a></li>
 <li><a href="sharing_cpi.html#Fn_SharingRegistryService_removeUsersFromGroup">removeUsersFromGroup</a></li>
 <li><a href="sharing_cpi.html#Fn_SharingRegistryService_revokeEntitySharingFromGroups">revokeEntitySharingFromGroups</a></li>
@@ -75,5 +102,124 @@
 </td>
 <td><code><a href="sharing_models.html#Const_DO_NOT_SET_AT_CLIENTS_ID">DO_NOT_SET_AT_CLIENTS_ID</a></code><br/>
 </code></td>
+</tr><tr>
+<td>airavata_errors</td><td></td>
+<td><a href="airavata_errors.html#Struct_AiravataClientException">AiravataClientException</a><br/>
+<a href="airavata_errors.html#Enum_AiravataErrorType">AiravataErrorType</a><br/>
+<a href="airavata_errors.html#Struct_AiravataSystemException">AiravataSystemException</a><br/>
+<a href="airavata_errors.html#Struct_AuthenticationException">AuthenticationException</a><br/>
+<a href="airavata_errors.html#Struct_AuthorizationException">AuthorizationException</a><br/>
+<a href="airavata_errors.html#Struct_DuplicateEntryException">DuplicateEntryException</a><br/>
+<a href="airavata_errors.html#Struct_ExperimentNotFoundException">ExperimentNotFoundException</a><br/>
+<a href="airavata_errors.html#Struct_InvalidRequestException">InvalidRequestException</a><br/>
+<a href="airavata_errors.html#Struct_LaunchValidationException">LaunchValidationException</a><br/>
+<a href="airavata_errors.html#Struct_ProjectNotFoundException">ProjectNotFoundException</a><br/>
+<a href="airavata_errors.html#Struct_TimedOutException">TimedOutException</a><br/>
+<a href="airavata_errors.html#Struct_ValidationResults">ValidationResults</a><br/>
+<a href="airavata_errors.html#Struct_ValidatorResult">ValidatorResult</a><br/>
+</td>
+<td></code></td>
+</tr><tr>
+<td>experiment_model</td><td></td>
+<td><a href="experiment_model.html#Struct_ExperimentModel">ExperimentModel</a><br/>
+<a href="experiment_model.html#Enum_ExperimentSearchFields">ExperimentSearchFields</a><br/>
+<a href="experiment_model.html#Struct_ExperimentStatistics">ExperimentStatistics</a><br/>
+<a href="experiment_model.html#Struct_ExperimentSummaryModel">ExperimentSummaryModel</a><br/>
+<a href="experiment_model.html#Enum_ExperimentType">ExperimentType</a><br/>
+<a href="experiment_model.html#Enum_ProjectSearchFields">ProjectSearchFields</a><br/>
+<a href="experiment_model.html#Struct_UserConfigurationDataModel">UserConfigurationDataModel</a><br/>
+</td>
+<td></code></td>
+</tr><tr>
+<td>airavata_commons</td><td></td>
+<td><a href="airavata_commons.html#Struct_ErrorModel">ErrorModel</a><br/>
+<a href="airavata_commons.html#Struct_ValidationResults">ValidationResults</a><br/>
+<a href="airavata_commons.html#Struct_ValidatorResult">ValidatorResult</a><br/>
+</td>
+<td><code><a href="airavata_commons.html#Const_DEFAULT_ID">DEFAULT_ID</a></code><br/>
+</code></td>
+</tr><tr>
+<td>application_io_models</td><td></td>
+<td><a href="application_io_models.html#Enum_DataType">DataType</a><br/>
+<a href="application_io_models.html#Struct_InputDataObjectType">InputDataObjectType</a><br/>
+<a href="application_io_models.html#Struct_OutputDataObjectType">OutputDataObjectType</a><br/>
+</td>
+<td></code></td>
+</tr><tr>
+<td>compute_resource_model</td><td></td>
+<td><a href="compute_resource_model.html#Struct_BatchQueue">BatchQueue</a><br/>
+<a href="compute_resource_model.html#Struct_CloudJobSubmission">CloudJobSubmission</a><br/>
+<a href="compute_resource_model.html#Struct_ComputeResourceDescription">ComputeResourceDescription</a><br/>
+<a href="compute_resource_model.html#Enum_DMType">DMType</a><br/>
+<a href="compute_resource_model.html#Enum_FileSystems">FileSystems</a><br/>
+<a href="compute_resource_model.html#Struct_GlobusJobSubmission">GlobusJobSubmission</a><br/>
+<a href="compute_resource_model.html#Enum_JobManagerCommand">JobManagerCommand</a><br/>
+<a href="compute_resource_model.html#Struct_JobSubmissionInterface">JobSubmissionInterface</a><br/>
+<a href="compute_resource_model.html#Enum_JobSubmissionProtocol">JobSubmissionProtocol</a><br/>
+<a href="compute_resource_model.html#Struct_LOCALSubmission">LOCALSubmission</a><br/>
+<a href="compute_resource_model.html#Enum_MonitorMode">MonitorMode</a><br/>
+<a href="compute_resource_model.html#Enum_ProviderName">ProviderName</a><br/>
+<a href="compute_resource_model.html#Struct_ResourceJobManager">ResourceJobManager</a><br/>
+<a href="compute_resource_model.html#Enum_ResourceJobManagerType">ResourceJobManagerType</a><br/>
+<a href="compute_resource_model.html#Struct_SSHJobSubmission">SSHJobSubmission</a><br/>
+<a href="compute_resource_model.html#Struct_UnicoreJobSubmission">UnicoreJobSubmission</a><br/>
+</td>
+<td></code></td>
+</tr><tr>
+<td>parallelism_model</td><td></td>
+<td><a href="parallelism_model.html#Enum_ApplicationParallelismType">ApplicationParallelismType</a><br/>
+</td>
+<td></code></td>
+</tr><tr>
+<td>data_movement_models</td><td></td>
+<td><a href="data_movement_models.html#Enum_DMType">DMType</a><br/>
+<a href="data_movement_models.html#Struct_DataMovementInterface">DataMovementInterface</a><br/>
+<a href="data_movement_models.html#Enum_DataMovementProtocol">DataMovementProtocol</a><br/>
+<a href="data_movement_models.html#Struct_GridFTPDataMovement">GridFTPDataMovement</a><br/>
+<a href="data_movement_models.html#Struct_LOCALDataMovement">LOCALDataMovement</a><br/>
+<a href="data_movement_models.html#Struct_SCPDataMovement">SCPDataMovement</a><br/>
+<a href="data_movement_models.html#Enum_SecurityProtocol">SecurityProtocol</a><br/>
+<a href="data_movement_models.html#Struct_UnicoreDataMovement">UnicoreDataMovement</a><br/>
+</td>
+<td></code></td>
+</tr><tr>
+<td>scheduling_model</td><td></td>
+<td><a href="scheduling_model.html#Struct_ComputationalResourceSchedulingModel">ComputationalResourceSchedulingModel</a><br/>
+</td>
+<td></code></td>
+</tr><tr>
+<td>status_models</td><td></td>
+<td><a href="status_models.html#Enum_ExperimentState">ExperimentState</a><br/>
+<a href="status_models.html#Struct_ExperimentStatus">ExperimentStatus</a><br/>
+<a href="status_models.html#Enum_JobState">JobState</a><br/>
+<a href="status_models.html#Struct_JobStatus">JobStatus</a><br/>
+<a href="status_models.html#Enum_ProcessState">ProcessState</a><br/>
+<a href="status_models.html#Struct_ProcessStatus">ProcessStatus</a><br/>
+<a href="status_models.html#Struct_QueueStatusModel">QueueStatusModel</a><br/>
+<a href="status_models.html#Enum_TaskState">TaskState</a><br/>
+<a href="status_models.html#Struct_TaskStatus">TaskStatus</a><br/>
+</td>
+<td></code></td>
+</tr><tr>
+<td>process_model</td><td></td>
+<td><a href="process_model.html#Struct_ProcessModel">ProcessModel</a><br/>
+</td>
+<td></code></td>
+</tr><tr>
+<td>task_model</td><td></td>
+<td><a href="task_model.html#Enum_DataStageType">DataStageType</a><br/>
+<a href="task_model.html#Struct_DataStagingTaskModel">DataStagingTaskModel</a><br/>
+<a href="task_model.html#Struct_EnvironmentSetupTaskModel">EnvironmentSetupTaskModel</a><br/>
+<a href="task_model.html#Struct_JobSubmissionTaskModel">JobSubmissionTaskModel</a><br/>
+<a href="task_model.html#Struct_MonitorTaskModel">MonitorTaskModel</a><br/>
+<a href="task_model.html#Struct_TaskModel">TaskModel</a><br/>
+<a href="task_model.html#Enum_TaskTypes">TaskTypes</a><br/>
+</td>
+<td></code></td>
+</tr><tr>
+<td>job_model</td><td></td>
+<td><a href="job_model.html#Struct_JobModel">JobModel</a><br/>
+</td>
+<td></code></td>
 </tr></table>
 </div></body></html>

@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,8 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.sharing.registry.db.repositories;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -121,6 +120,12 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
                 }else{
                     query += "E.UPDATED_TIME <= " + Integer.parseInt(searchCriteria.getValue().trim()) + " AND ";
                 }
+            } else if (searchCriteria.getSearchField().equals(EntitySearchField.SHARED_COUNT)) {
+                if (searchCriteria.getSearchCondition().equals(SearchCondition.GTE)) {
+                    query += "E.SHARED_COUNT >= " + Integer.parseInt(searchCriteria.getValue().trim()) + " AND ";
+                } else {
+                    query += "E.SHARED_COUNT <= " + Integer.parseInt(searchCriteria.getValue().trim()) + " AND ";
+                }
             }
         }
 
@@ -145,9 +150,10 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
             entity.setDescription((String)(rs[6]));
             entity.setBinaryData((byte[]) (rs[7]));
             entity.setFullText((String) (rs[8]));
-            entity.setOriginalEntityCreationTime((long)(rs[9]));
-            entity.setCreatedTime((long)(rs[10]));
-            entity.setUpdatedTime((long)(rs[11]));
+            entity.setSharedCount((long) rs[9]);
+            entity.setOriginalEntityCreationTime((long) (rs[10]));
+            entity.setCreatedTime((long) (rs[11]));
+            entity.setUpdatedTime((long) (rs[12]));
 
             //Removing duplicates. Another option is to change the query to remove duplicates.
             if (!keys.containsKey(entity + domainId + "," + entity.entityId)) {

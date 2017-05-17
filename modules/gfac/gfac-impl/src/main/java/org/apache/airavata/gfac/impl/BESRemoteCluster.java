@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,18 +16,17 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
-
+ */
 package org.apache.airavata.gfac.impl;
 
 import com.jcraft.jsch.Session;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.JobManagerConfiguration;
-import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
-import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
-import org.apache.airavata.gfac.core.cluster.*;
+import org.apache.airavata.gfac.core.cluster.AbstractRemoteCluster;
+import org.apache.airavata.gfac.core.cluster.CommandInfo;
+import org.apache.airavata.gfac.core.cluster.JobSubmissionOutput;
+import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.model.status.JobStatus;
 
 import java.util.List;
@@ -56,6 +55,21 @@ public class BESRemoteCluster extends AbstractRemoteCluster{
     @Override
     public void scpThirdParty(String sourceFile, String destinationFile, Session session, DIRECTION inOrOut, boolean ignoreEmptyFile) throws GFacException {
 
+    }
+
+    /**
+     * This method can be used to get the file name of a file giving the extension. It assumes that there will be only
+     * one file with that extension. In case if there are more than one file one random file name from the matching ones
+     * will be returned.
+     *
+     * @param fileExtension
+     * @param parentPath
+     * @param session
+     * @return
+     */
+    @Override
+    public String getFileNameFromExtension(String fileExtension, String parentPath, Session session) {
+        return null;
     }
 
     @Override

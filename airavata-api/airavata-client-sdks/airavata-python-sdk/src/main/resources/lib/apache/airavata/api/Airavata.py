@@ -3456,6 +3456,58 @@ class Iface:
     """
     pass
 
+  def addUserProfile(self, authzToken, userProfile):
+    """
+    Parameters:
+     - authzToken
+     - userProfile
+    """
+    pass
+
+  def updateUserProfile(self, authzToken, userProfile):
+    """
+    Parameters:
+     - authzToken
+     - userProfile
+    """
+    pass
+
+  def getUserProfileById(self, authzToken, userId, gatewayId):
+    """
+    Parameters:
+     - authzToken
+     - userId
+     - gatewayId
+    """
+    pass
+
+  def deleteUserProfile(self, authzToken, userId):
+    """
+    Parameters:
+     - authzToken
+     - userId
+    """
+    pass
+
+  def getAllUserProfilesInGateway(self, authzToken, gatewayId, offset, limit):
+    """
+    Parameters:
+     - authzToken
+     - gatewayId
+     - offset
+     - limit
+    """
+    pass
+
+  def doesUserProfileExist(self, authzToken, userId, gatewayId):
+    """
+    Parameters:
+     - authzToken
+     - userId
+     - gatewayId
+    """
+    pass
+
 
 class Client(Iface):
   def __init__(self, iprot, oprot=None):
@@ -12612,6 +12664,260 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllGroupsUserBelongs failed: unknown result")
 
+  def addUserProfile(self, authzToken, userProfile):
+    """
+    Parameters:
+     - authzToken
+     - userProfile
+    """
+    self.send_addUserProfile(authzToken, userProfile)
+    return self.recv_addUserProfile()
+
+  def send_addUserProfile(self, authzToken, userProfile):
+    self._oprot.writeMessageBegin('addUserProfile', TMessageType.CALL, self._seqid)
+    args = addUserProfile_args()
+    args.authzToken = authzToken
+    args.userProfile = userProfile
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_addUserProfile(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = addUserProfile_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "addUserProfile failed: unknown result")
+
+  def updateUserProfile(self, authzToken, userProfile):
+    """
+    Parameters:
+     - authzToken
+     - userProfile
+    """
+    self.send_updateUserProfile(authzToken, userProfile)
+    return self.recv_updateUserProfile()
+
+  def send_updateUserProfile(self, authzToken, userProfile):
+    self._oprot.writeMessageBegin('updateUserProfile', TMessageType.CALL, self._seqid)
+    args = updateUserProfile_args()
+    args.authzToken = authzToken
+    args.userProfile = userProfile
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_updateUserProfile(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = updateUserProfile_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "updateUserProfile failed: unknown result")
+
+  def getUserProfileById(self, authzToken, userId, gatewayId):
+    """
+    Parameters:
+     - authzToken
+     - userId
+     - gatewayId
+    """
+    self.send_getUserProfileById(authzToken, userId, gatewayId)
+    return self.recv_getUserProfileById()
+
+  def send_getUserProfileById(self, authzToken, userId, gatewayId):
+    self._oprot.writeMessageBegin('getUserProfileById', TMessageType.CALL, self._seqid)
+    args = getUserProfileById_args()
+    args.authzToken = authzToken
+    args.userId = userId
+    args.gatewayId = gatewayId
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_getUserProfileById(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = getUserProfileById_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getUserProfileById failed: unknown result")
+
+  def deleteUserProfile(self, authzToken, userId):
+    """
+    Parameters:
+     - authzToken
+     - userId
+    """
+    self.send_deleteUserProfile(authzToken, userId)
+    return self.recv_deleteUserProfile()
+
+  def send_deleteUserProfile(self, authzToken, userId):
+    self._oprot.writeMessageBegin('deleteUserProfile', TMessageType.CALL, self._seqid)
+    args = deleteUserProfile_args()
+    args.authzToken = authzToken
+    args.userId = userId
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_deleteUserProfile(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = deleteUserProfile_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "deleteUserProfile failed: unknown result")
+
+  def getAllUserProfilesInGateway(self, authzToken, gatewayId, offset, limit):
+    """
+    Parameters:
+     - authzToken
+     - gatewayId
+     - offset
+     - limit
+    """
+    self.send_getAllUserProfilesInGateway(authzToken, gatewayId, offset, limit)
+    return self.recv_getAllUserProfilesInGateway()
+
+  def send_getAllUserProfilesInGateway(self, authzToken, gatewayId, offset, limit):
+    self._oprot.writeMessageBegin('getAllUserProfilesInGateway', TMessageType.CALL, self._seqid)
+    args = getAllUserProfilesInGateway_args()
+    args.authzToken = authzToken
+    args.gatewayId = gatewayId
+    args.offset = offset
+    args.limit = limit
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_getAllUserProfilesInGateway(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = getAllUserProfilesInGateway_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllUserProfilesInGateway failed: unknown result")
+
+  def doesUserProfileExist(self, authzToken, userId, gatewayId):
+    """
+    Parameters:
+     - authzToken
+     - userId
+     - gatewayId
+    """
+    self.send_doesUserProfileExist(authzToken, userId, gatewayId)
+    return self.recv_doesUserProfileExist()
+
+  def send_doesUserProfileExist(self, authzToken, userId, gatewayId):
+    self._oprot.writeMessageBegin('doesUserProfileExist', TMessageType.CALL, self._seqid)
+    args = doesUserProfileExist_args()
+    args.authzToken = authzToken
+    args.userId = userId
+    args.gatewayId = gatewayId
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_doesUserProfileExist(self):
+    iprot = self._iprot
+    (fname, mtype, rseqid) = iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(iprot)
+      iprot.readMessageEnd()
+      raise x
+    result = doesUserProfileExist_result()
+    result.read(iprot)
+    iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    if result.ae is not None:
+      raise result.ae
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "doesUserProfileExist failed: unknown result")
+
 
 class Processor(Iface, TProcessor):
   def __init__(self, handler):
@@ -12786,6 +13092,12 @@ class Processor(Iface, TProcessor):
     self._processMap["deleteGroup"] = Processor.process_deleteGroup
     self._processMap["getGroup"] = Processor.process_getGroup
     self._processMap["getAllGroupsUserBelongs"] = Processor.process_getAllGroupsUserBelongs
+    self._processMap["addUserProfile"] = Processor.process_addUserProfile
+    self._processMap["updateUserProfile"] = Processor.process_updateUserProfile
+    self._processMap["getUserProfileById"] = Processor.process_getUserProfileById
+    self._processMap["deleteUserProfile"] = Processor.process_deleteUserProfile
+    self._processMap["getAllUserProfilesInGateway"] = Processor.process_getAllUserProfilesInGateway
+    self._processMap["doesUserProfileExist"] = Processor.process_doesUserProfileExist
 
   def process(self, iprot, oprot):
     (name, type, seqid) = iprot.readMessageBegin()
@@ -18052,6 +18364,192 @@ class Processor(Iface, TProcessor):
       logging.exception(ex)
       result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
     oprot.writeMessageBegin("getAllGroupsUserBelongs", msg_type, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_addUserProfile(self, seqid, iprot, oprot):
+    args = addUserProfile_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = addUserProfile_result()
+    try:
+      result.success = self._handler.addUserProfile(args.authzToken, args.userProfile)
+      msg_type = TMessageType.REPLY
+    except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+      raise
+    except apache.airavata.api.error.ttypes.InvalidRequestException as ire:
+      msg_type = TMessageType.REPLY
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException as ace:
+      msg_type = TMessageType.REPLY
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException as ase:
+      msg_type = TMessageType.REPLY
+      result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException as ae:
+      msg_type = TMessageType.REPLY
+      result.ae = ae
+    except Exception as ex:
+      msg_type = TMessageType.EXCEPTION
+      logging.exception(ex)
+      result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+    oprot.writeMessageBegin("addUserProfile", msg_type, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_updateUserProfile(self, seqid, iprot, oprot):
+    args = updateUserProfile_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = updateUserProfile_result()
+    try:
+      result.success = self._handler.updateUserProfile(args.authzToken, args.userProfile)
+      msg_type = TMessageType.REPLY
+    except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+      raise
+    except apache.airavata.api.error.ttypes.InvalidRequestException as ire:
+      msg_type = TMessageType.REPLY
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException as ace:
+      msg_type = TMessageType.REPLY
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException as ase:
+      msg_type = TMessageType.REPLY
+      result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException as ae:
+      msg_type = TMessageType.REPLY
+      result.ae = ae
+    except Exception as ex:
+      msg_type = TMessageType.EXCEPTION
+      logging.exception(ex)
+      result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+    oprot.writeMessageBegin("updateUserProfile", msg_type, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_getUserProfileById(self, seqid, iprot, oprot):
+    args = getUserProfileById_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = getUserProfileById_result()
+    try:
+      result.success = self._handler.getUserProfileById(args.authzToken, args.userId, args.gatewayId)
+      msg_type = TMessageType.REPLY
+    except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+      raise
+    except apache.airavata.api.error.ttypes.InvalidRequestException as ire:
+      msg_type = TMessageType.REPLY
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException as ace:
+      msg_type = TMessageType.REPLY
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException as ase:
+      msg_type = TMessageType.REPLY
+      result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException as ae:
+      msg_type = TMessageType.REPLY
+      result.ae = ae
+    except Exception as ex:
+      msg_type = TMessageType.EXCEPTION
+      logging.exception(ex)
+      result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+    oprot.writeMessageBegin("getUserProfileById", msg_type, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_deleteUserProfile(self, seqid, iprot, oprot):
+    args = deleteUserProfile_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = deleteUserProfile_result()
+    try:
+      result.success = self._handler.deleteUserProfile(args.authzToken, args.userId)
+      msg_type = TMessageType.REPLY
+    except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+      raise
+    except apache.airavata.api.error.ttypes.InvalidRequestException as ire:
+      msg_type = TMessageType.REPLY
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException as ace:
+      msg_type = TMessageType.REPLY
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException as ase:
+      msg_type = TMessageType.REPLY
+      result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException as ae:
+      msg_type = TMessageType.REPLY
+      result.ae = ae
+    except Exception as ex:
+      msg_type = TMessageType.EXCEPTION
+      logging.exception(ex)
+      result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+    oprot.writeMessageBegin("deleteUserProfile", msg_type, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_getAllUserProfilesInGateway(self, seqid, iprot, oprot):
+    args = getAllUserProfilesInGateway_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = getAllUserProfilesInGateway_result()
+    try:
+      result.success = self._handler.getAllUserProfilesInGateway(args.authzToken, args.gatewayId, args.offset, args.limit)
+      msg_type = TMessageType.REPLY
+    except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+      raise
+    except apache.airavata.api.error.ttypes.InvalidRequestException as ire:
+      msg_type = TMessageType.REPLY
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException as ace:
+      msg_type = TMessageType.REPLY
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException as ase:
+      msg_type = TMessageType.REPLY
+      result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException as ae:
+      msg_type = TMessageType.REPLY
+      result.ae = ae
+    except Exception as ex:
+      msg_type = TMessageType.EXCEPTION
+      logging.exception(ex)
+      result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+    oprot.writeMessageBegin("getAllUserProfilesInGateway", msg_type, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_doesUserProfileExist(self, seqid, iprot, oprot):
+    args = doesUserProfileExist_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = doesUserProfileExist_result()
+    try:
+      result.success = self._handler.doesUserProfileExist(args.authzToken, args.userId, args.gatewayId)
+      msg_type = TMessageType.REPLY
+    except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
+      raise
+    except apache.airavata.api.error.ttypes.InvalidRequestException as ire:
+      msg_type = TMessageType.REPLY
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException as ace:
+      msg_type = TMessageType.REPLY
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException as ase:
+      msg_type = TMessageType.REPLY
+      result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException as ae:
+      msg_type = TMessageType.REPLY
+      result.ae = ae
+    except Exception as ex:
+      msg_type = TMessageType.EXCEPTION
+      logging.exception(ex)
+      result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
+    oprot.writeMessageBegin("doesUserProfileExist", msg_type, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -54842,6 +55340,1296 @@ class getAllGroupsUserBelongs_result:
       for iter326 in self.success:
         iter326.write(oprot)
       oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class addUserProfile_args:
+  """
+  Attributes:
+   - authzToken
+   - userProfile
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'userProfile', (apache.airavata.model.user.ttypes.UserProfile, apache.airavata.model.user.ttypes.UserProfile.thrift_spec), None, ), # 2
+  )
+
+  def __init__(self, authzToken=None, userProfile=None,):
+    self.authzToken = authzToken
+    self.userProfile = userProfile
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.userProfile = apache.airavata.model.user.ttypes.UserProfile()
+          self.userProfile.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('addUserProfile_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    if self.userProfile is not None:
+      oprot.writeFieldBegin('userProfile', TType.STRUCT, 2)
+      self.userProfile.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.userProfile is None:
+      raise TProtocol.TProtocolException(message='Required field userProfile is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.userProfile)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class addUserProfile_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    (0, TType.STRING, 'success', None, None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.STRING:
+          self.success = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('addUserProfile_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class updateUserProfile_args:
+  """
+  Attributes:
+   - authzToken
+   - userProfile
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'userProfile', (apache.airavata.model.user.ttypes.UserProfile, apache.airavata.model.user.ttypes.UserProfile.thrift_spec), None, ), # 2
+  )
+
+  def __init__(self, authzToken=None, userProfile=None,):
+    self.authzToken = authzToken
+    self.userProfile = userProfile
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.userProfile = apache.airavata.model.user.ttypes.UserProfile()
+          self.userProfile.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('updateUserProfile_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    if self.userProfile is not None:
+      oprot.writeFieldBegin('userProfile', TType.STRUCT, 2)
+      self.userProfile.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.userProfile is None:
+      raise TProtocol.TProtocolException(message='Required field userProfile is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.userProfile)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class updateUserProfile_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    (0, TType.BOOL, 'success', None, None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.BOOL:
+          self.success = iprot.readBool()
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('updateUserProfile_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.BOOL, 0)
+      oprot.writeBool(self.success)
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getUserProfileById_args:
+  """
+  Attributes:
+   - authzToken
+   - userId
+   - gatewayId
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'userId', None, None, ), # 2
+    (3, TType.STRING, 'gatewayId', None, None, ), # 3
+  )
+
+  def __init__(self, authzToken=None, userId=None, gatewayId=None,):
+    self.authzToken = authzToken
+    self.userId = userId
+    self.gatewayId = gatewayId
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.userId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.gatewayId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getUserProfileById_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    if self.userId is not None:
+      oprot.writeFieldBegin('userId', TType.STRING, 2)
+      oprot.writeString(self.userId)
+      oprot.writeFieldEnd()
+    if self.gatewayId is not None:
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 3)
+      oprot.writeString(self.gatewayId)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.userId is None:
+      raise TProtocol.TProtocolException(message='Required field userId is unset!')
+    if self.gatewayId is None:
+      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.userId)
+    value = (value * 31) ^ hash(self.gatewayId)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getUserProfileById_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    (0, TType.STRUCT, 'success', (apache.airavata.model.user.ttypes.UserProfile, apache.airavata.model.user.ttypes.UserProfile.thrift_spec), None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.STRUCT:
+          self.success = apache.airavata.model.user.ttypes.UserProfile()
+          self.success.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getUserProfileById_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRUCT, 0)
+      self.success.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class deleteUserProfile_args:
+  """
+  Attributes:
+   - authzToken
+   - userId
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'userId', None, None, ), # 2
+  )
+
+  def __init__(self, authzToken=None, userId=None,):
+    self.authzToken = authzToken
+    self.userId = userId
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.userId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('deleteUserProfile_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    if self.userId is not None:
+      oprot.writeFieldBegin('userId', TType.STRING, 2)
+      oprot.writeString(self.userId)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.userId is None:
+      raise TProtocol.TProtocolException(message='Required field userId is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.userId)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class deleteUserProfile_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    (0, TType.BOOL, 'success', None, None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.BOOL:
+          self.success = iprot.readBool()
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('deleteUserProfile_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.BOOL, 0)
+      oprot.writeBool(self.success)
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getAllUserProfilesInGateway_args:
+  """
+  Attributes:
+   - authzToken
+   - gatewayId
+   - offset
+   - limit
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'gatewayId', None, None, ), # 2
+    (3, TType.I32, 'offset', None, None, ), # 3
+    (4, TType.I32, 'limit', None, None, ), # 4
+  )
+
+  def __init__(self, authzToken=None, gatewayId=None, offset=None, limit=None,):
+    self.authzToken = authzToken
+    self.gatewayId = gatewayId
+    self.offset = offset
+    self.limit = limit
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.gatewayId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I32:
+          self.offset = iprot.readI32()
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.I32:
+          self.limit = iprot.readI32()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getAllUserProfilesInGateway_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    if self.gatewayId is not None:
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
+      oprot.writeString(self.gatewayId)
+      oprot.writeFieldEnd()
+    if self.offset is not None:
+      oprot.writeFieldBegin('offset', TType.I32, 3)
+      oprot.writeI32(self.offset)
+      oprot.writeFieldEnd()
+    if self.limit is not None:
+      oprot.writeFieldBegin('limit', TType.I32, 4)
+      oprot.writeI32(self.limit)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.gatewayId is None:
+      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
+    if self.offset is None:
+      raise TProtocol.TProtocolException(message='Required field offset is unset!')
+    if self.limit is None:
+      raise TProtocol.TProtocolException(message='Required field limit is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.gatewayId)
+    value = (value * 31) ^ hash(self.offset)
+    value = (value * 31) ^ hash(self.limit)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getAllUserProfilesInGateway_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.user.ttypes.UserProfile, apache.airavata.model.user.ttypes.UserProfile.thrift_spec)), None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.LIST:
+          self.success = []
+          (_etype330, _size327) = iprot.readListBegin()
+          for _i331 in xrange(_size327):
+            _elem332 = apache.airavata.model.user.ttypes.UserProfile()
+            _elem332.read(iprot)
+            self.success.append(_elem332)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getAllUserProfilesInGateway_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.LIST, 0)
+      oprot.writeListBegin(TType.STRUCT, len(self.success))
+      for iter333 in self.success:
+        iter333.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.success)
+    value = (value * 31) ^ hash(self.ire)
+    value = (value * 31) ^ hash(self.ace)
+    value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class doesUserProfileExist_args:
+  """
+  Attributes:
+   - authzToken
+   - userId
+   - gatewayId
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'userId', None, None, ), # 2
+    (3, TType.STRING, 'gatewayId', None, None, ), # 3
+  )
+
+  def __init__(self, authzToken=None, userId=None, gatewayId=None,):
+    self.authzToken = authzToken
+    self.userId = userId
+    self.gatewayId = gatewayId
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.userId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.gatewayId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('doesUserProfileExist_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
+    if self.userId is not None:
+      oprot.writeFieldBegin('userId', TType.STRING, 2)
+      oprot.writeString(self.userId)
+      oprot.writeFieldEnd()
+    if self.gatewayId is not None:
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 3)
+      oprot.writeString(self.gatewayId)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
+    if self.userId is None:
+      raise TProtocol.TProtocolException(message='Required field userId is unset!')
+    if self.gatewayId is None:
+      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.authzToken)
+    value = (value * 31) ^ hash(self.userId)
+    value = (value * 31) ^ hash(self.gatewayId)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class doesUserProfileExist_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+   - ae
+  """
+
+  thrift_spec = (
+    (0, TType.BOOL, 'success', None, None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.BOOL:
+          self.success = iprot.readBool()
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('doesUserProfileExist_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.BOOL, 0)
+      oprot.writeBool(self.success)
       oprot.writeFieldEnd()
     if self.ire is not None:
       oprot.writeFieldBegin('ire', TType.STRUCT, 1)

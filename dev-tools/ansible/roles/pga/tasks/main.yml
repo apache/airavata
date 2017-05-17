@@ -1,112 +1,155 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
 ---
 - name: Create root directory
-  file: path="{{ doc_root_dir }}" state=directory
+  file: path="{{ doc_root_dir }}" state=directory owner="{{user}}" group="{{group}}"
   become: yes
 
-- name: Install pre-requireties
-  yum: name="{{ item }}" state=latest update_cache=yes
-  with_items:
-    - git
-    - httpd
-    - php
-    - php-soap
-    - libselinux-python
-    - php-pdo
-  become: yes
-
-# - name: Allow selinux outbound connection from web server
-  # command: setsebool -P httpd_can_network_connect 1
-
-- name: install composer
-  shell: curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-  args:
-    creates: /usr/local/bin/composer
-  become: yes
-
-- name: install epel release
-  yum: name=epel-release state=present
-  become: yes
-
-# depend on epel release
-- name: install mcrypt
-  yum: name=php-mcrypt state=latest update_cache=yes
-  become: yes
-
-# - name: Check previous deployments
-#   stat: path="{{ doc_root_dir }}" get_md5=no get_checksum=no
-#   register: check
-
-- name: delete previous deployments
-  file: path="{{ doc_root_dir }}" state=absent
-
+- include: install_deps_{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml
 
 - name: Git clone php gateway
-  git: repo=https://github.com/apache/airavata-php-gateway.git
-       dest="{{ doc_root_dir }}" version="{{ git_branch }}"
+  git:
+   repo: "{{ pga_repo }}"
+   dest: "{{ doc_root_dir }}"
+   version: "{{ git_branch }}"
+   update: yes
+   force: yes
+  become: yes
+  become_user: "{{user}}"
+
+- name: Create experiment data dir {{ experiment_data_dir }}
+  file: path="{{ experiment_data_dir }}" state=directory owner="{{user}}" group="{{group}}" mode=0777 recurse=yes follow=yes
   become: yes
 
-- name: Create user data dir {{ user_data_dir }}
-  file: path="{{ user_data_dir }}" state=directory owner="{{user}}" group="{{group}}" mode=0777 recurse=yes
+# SELinux configuration
+- name: set selinux to enforcing
+  selinux: state=enforcing policy=targeted
   become: yes
+  when: ansible_os_family == "RedHat"
 
-  #Make sure selinux is dissabled in remote machine
-- name: Disable selinux
-  selinux: state=disabled
+- name: set selinux context to allow read on public directory
+  sefcontext:
+    target: "{{ doc_root_dir }}/public(/.*)?"
+    setype: httpd_sys_content_t
+    state: present
   become: yes
-  register: selinux_disable
+  notify:
+    - restart httpd
+  when: ansible_os_family == "RedHat"
 
-# need to restart after disable selinux
-- name: restart machine
-  shell: sleep 2 && shutdown -r now "Ansible updates triggered"
-  async: 1
-  poll: 0
+- name: set selinux context to allow read/write on storage directory
+  sefcontext:
+    target: "{{ doc_root_dir }}/app/storage(/.*)?"
+    setype: httpd_sys_rw_content_t
+    state: present
   become: yes
-  ignore_errors: true
-  when: (selinux_disable|success) and (selinux_disable.changed == true)
-  register: restart
+  notify:
+    - restart httpd
+  when: ansible_os_family == "RedHat"
 
-- name: waiting for server to come back
-  local_action: wait_for host={{ inventory_hostname }} state=started delay=30 timeout=60
-  when: (restart|success) and (restart.changed == true)
+- name: set selinux context to allow read/write on the user data directory
+  sefcontext:
+    # For SELinux file contexts, the real path without symbolic links must be used
+    target: "{{ real_user_data_dir }}(/.*)?"
+    setype: httpd_sys_rw_content_t
+    state: present
+  become: yes
+  notify:
+    - restart httpd
+  when: ansible_os_family == "RedHat"
 
+- name: allow httpd to connect out to the network
+  seboolean:
+    name: httpd_can_network_connect
+    state: yes
+    persistent: yes
+  become: yes
+  notify:
+    - restart httpd
+  when: ansible_os_family == "RedHat"
 
 - name: Run composer update
   composer: command=update working_dir="{{ doc_root_dir }}"
   become: yes
+  become_user: "{{user}}"
 
 # step 6: Change pga configurations
 - name: Copy pga config file
-  template: src=pga_config.php.j2 dest="{{ doc_root_dir }}/app/config/pga_config.php"
+  template: src=pga_config.php.j2 dest="{{ doc_root_dir }}/app/config/pga_config.php" owner="{{user}}" group="{{group}}"
   become: yes
 
-# give write permission to storage directory
+- name: Checkout the portal theme (if a custom theme is defined)
+  git:
+   repo: "{{ portal_theme_repo }}"
+   dest: "{{ doc_root_dir }}/public/themes/{{ portal_theme }}"
+   version: "master"
+   update: yes
+  when: portal_theme != "base" and portal_theme_repo != ""
+  become: yes
+  become_user: "{{user}}"
+
 - name: give read permissions to doc root
-  file: path="{{ doc_root_dir }}" state=directory mode=0755 recurse=yes
+  file: path="{{ doc_root_dir }}" state=directory mode=a+rX owner="{{user}}" group="{{group}}" recurse=yes
   become: yes
 
 - name: give write permissions to storage dir
   file: path="{{ doc_root_dir }}/app/storage" state=directory mode=0777 owner="{{user}}" group="{{group}}" recurse=yes
   become: yes
 
-- name: Eanble https and http service on public zone
+# For SELinux, need to apply file contexts, but I'm not sure why since the contexts were created before the files/directories
+- name: run restorecon on those directories
+  command: restorecon -R {{ doc_root_dir }} {{ user_data_dir }}
+  become: yes
+  when: ansible_os_family == "RedHat"
+
+- name: Enable https and http service on public zone
   firewalld: service="{{ item }}" permanent=true state=enabled zone=public immediate=True
   with_items:
     - http
     - https
   become: yes
 
-# - name: Edit file
-#   lineinfile: dest="{{ httpd_conf_file }}" regexp="#\n\s*AllowOverride None" line="#\nAllowOverride All"
-#   notify:
-#     - restart httpd
-#   become: yes
+- name: copy virtual host config file
+  template: src={{ pga_vhost_template }} dest={{ httpd_confd_file_location[ansible_os_family] }} backup=yes
+  become: yes
+  notify:
+    - restart httpd
+  when: not vhost_ssl
 
-- name: copy httpd.conf file
-  template: src=httpd.conf.j2 dest="{{ httpd_conf_file_location }}/httpd.conf"
+- name: copy SSL enabled virtual host config file
+  template: src={{ pga_ssl_vhost_template }} dest={{ httpd_confd_file_location[ansible_os_family] }} backup=yes
+  become: yes
+  notify:
+    - restart httpd
+  when: vhost_ssl
+
+- name: copy default virtual host file
+  copy: src=default.conf dest={{ default_conf_file_location[ansible_os_family] }} backup=yes
   become: yes
   notify:
     - restart httpd
 
-- name: start httpd service
-  service: name=httpd state=started
+- name: copy pga user's SSH key for the gateway data store
+  authorized_key:
+    user: "{{user}}"
+    key: "{{ gateway_data_store_ssh_public_key }}"
   become: yes
+  when: gateway_data_store_ssh_public_key != ""

@@ -1,0 +1,81 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+
+- name: Install prerequisites
+  apt: name="{{ item }}" state=latest update_cache=yes
+  with_items:
+    - git
+    - apache2
+    - libapache2-mod-php
+    - python-selinux
+    - python-apt
+    - unzip
+    - openssl
+    - curl
+    - php
+    - php-curl
+    - php-soap
+    - php-mysql
+    - php-mcrypt
+    - python-software-properties
+  become: yes
+
+- name: get python2-firewalld module...
+  unarchive:
+    src: https://github.com/hryamzik/python-firewalld/files/182007/python-firewalld_0.1-0.deb.zip
+    dest: /tmp/
+    remote_src: true
+
+- name: install python-firewalld
+  apt: 
+   deb: /tmp/python-firewalld_0.1-0.deb
+#https://github.com/hryamzik/python-firewalld/files/182007/python-firewalld_0.1-0.deb.zip
+
+- name: install composer
+  shell: curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+  args:
+    creates: /usr/local/bin/composer
+  become: yes
+
+# this just creates symlinks in /etc/php5/{apache2,cli}/conf.d/20-mcryp.ini to /etc/php5/modules-avail/mcrypt.ini
+- name: enable mcrypt
+  command: phpenmod mcrypt
+  become: yes
+
+- name: enable apache rewrite
+  command: a2enmod rewrite
+  become: yes
+
+- name: create apache2 logdir
+  file:
+    path: /etc/apache2/logs
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0775
+   
+- name: set DocumentRoot in default site-enabled
+  lineinfile: 
+    dest: /etc/apache2/sites-enabled/000-default.conf
+    line: '	DocumentRoot "/var/www/html/php-gateway/public"'
+    regexp: '^\s+DocumentRoot'
+    state: present

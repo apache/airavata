@@ -1,0 +1,64 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+
+# NOTE Ultrascan is pointed to gw153
+airavata_server: "gw153.iu.xsede.org"
+airavata_port: "8930"
+
+pga_repo: "https://github.com/apache/airavata-php-gateway.git"
+git_branch: "master"
+user: "pga"
+group: "pga"
+doc_root_dir: "/var/www/portals/{{ gateway_id }}"
+vhost_servername: "ultrascan.scigap.org"
+vhost_ssl: True
+# TODO: have Ansible manage these files as well
+ssl_certificate_file: "/etc/pki/tls/certs/ultrascan_scigap_org_cert.cer"
+ssl_certificate_chain_file: "/etc/pki/tls/certs/ultrascan_scigap_org_interm.cer"
+ssl_certificate_key_file: "/etc/pki/tls/private/ultrascan.scigap.key"
+
+## WSO2 IS related variables
+tenant_domain: "prod.ultrascan"
+admin_username: "uslimsadmin"
+admin_password: "{{ vault_admin_password }}"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+user_role_name: "airavata-user"
+
+gateway_id: "Ultrascan_Production"
+# relative to document root dir
+experiment_data_dir: "{{ user_data_dir }}/ultrascan"
+gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
+# Not using gateway storage right now
+#gateway_data_store_ssh_public_key: ""
+
+data_sharing_enabled: "false"
+
+## Portal related variables
+super_admin_portal: "true"
+admin_emails: "['eroma.abeysinghe@gmail.com','sgg@iu.edu']"
+portal_email_username: "pga.airavata@gmail.com"
+portal_email_password: "{{ vault_portal_email_password }}"
+portal_theme: "base"
+portal_title: "Ultrascan SciGaP Dashboard"
+...

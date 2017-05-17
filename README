@@ -121,9 +121,6 @@ Server Distributions
 
 Client Distributions
 --------------------
-* Airavata XBaya
-  The Airavata XBaya distribution is a client GUI application with features to register applications as web services, construct workflows,
-  execute and monitor workflows and browse the generated results from the airavata registry.
 
 * Airavata Client
   The Airavata Client distribution is a set of libraries and configurations files that allow a 3rd party application to programatically 

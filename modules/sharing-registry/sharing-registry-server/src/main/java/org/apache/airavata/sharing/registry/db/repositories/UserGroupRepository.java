@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,8 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.sharing.registry.db.repositories;
 
 import org.apache.airavata.sharing.registry.db.entities.SharingEntity;
@@ -51,5 +50,19 @@ public class UserGroupRepository extends AbstractRepository<UserGroup, UserGroup
         query += "g." + DBConstants.UserGroupTable.GROUP_CARDINALITY + " = '" + GroupCardinality.MULTI_USER.toString() + "'";
         query += " ORDER BY s.createdTime DESC";
         return select(query, 0, -1);
+    }
+
+
+    //checks whether is shared with any user or group with any permission
+    public boolean isShared(String domainId, String entityId) throws SharingRegistryException {
+        String query = "SELECT DISTINCT g from " + UserGroupEntity.class.getSimpleName() + " g, " + SharingEntity.class.getSimpleName() + " s";
+        query += " WHERE ";
+        query += "g." + DBConstants.UserGroupTable.GROUP_ID + " = s." + DBConstants.SharingTable.GROUP_ID + " AND ";
+        query += "g." + DBConstants.UserGroupTable.DOMAIN_ID + " = s." + DBConstants.SharingTable.DOMAIN_ID + " AND ";
+        query += "g." + DBConstants.UserGroupTable.DOMAIN_ID + " = '" + domainId + "' AND ";
+        query += "s." + DBConstants.SharingTable.ENTITY_ID + " = '" + entityId + "' AND ";
+        query += "s." + DBConstants.SharingTable.PERMISSION_TYPE_ID + " <> '" + (new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId) + "'";
+        query += " ORDER BY s.createdTime DESC";
+        return select(query, 0, -1).size() != 0;
     }
 }

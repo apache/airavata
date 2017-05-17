@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.registry.core.app.catalog.model;
 
 import javax.persistence.*;
@@ -49,6 +47,8 @@ public class ApplicationDeployment implements Serializable {
     private int defaultNodeCount;
     @Column(name = "DEFAULT_CPU_COUNT")
     private int defaultCPUCount;
+    @Column(name = "DEFAULT_WALLTIME")
+    private int defaultWalltime;
     @Column(name = "EDITABLE_BY_USER")
     private boolean editableByUser;
 
@@ -176,6 +176,14 @@ public class ApplicationDeployment implements Serializable {
 
     public void setDefaultCPUCount(int defaultCPUCount) {
         this.defaultCPUCount = defaultCPUCount;
+    }
+
+    public int getDefaultWalltime() {
+        return defaultWalltime;
+    }
+
+    public void setDefaultWalltime(int defaultWalltime) {
+        this.defaultWalltime = defaultWalltime;
     }
 
     public boolean isEditableByUser() {

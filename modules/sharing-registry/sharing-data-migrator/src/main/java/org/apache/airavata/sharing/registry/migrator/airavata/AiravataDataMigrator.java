@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,8 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.sharing.registry.migrator.airavata;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -37,7 +36,7 @@ public class AiravataDataMigrator {
     public static void main(String[] args) throws SQLException, ClassNotFoundException, TException, ApplicationSettingsException {
         Connection expCatConnection = ConnectionFactory.getInstance().getExpCatConnection();
 
-        SharingRegistryServerHandler govRegistryServerHandler = new SharingRegistryServerHandler();
+        SharingRegistryServerHandler sharingRegistryServerHandler = new SharingRegistryServerHandler();
 
         String query = "SELECT * FROM GATEWAY";
         Statement statement = expCatConnection.createStatement();
@@ -47,10 +46,12 @@ public class AiravataDataMigrator {
             try{
                 //Creating domain entries
                 Domain domain = new Domain();
+                domain.setDomainId(rs.getString("GATEWAY_ID"));
                 domain.setName(rs.getString("GATEWAY_ID"));
                 domain.setDescription("Domain entry for " + domain.name);
 
-                govRegistryServerHandler.createDomain(domain);
+                if (!sharingRegistryServerHandler.isDomainExists(domain.domainId))
+                    sharingRegistryServerHandler.createDomain(domain);
 
                 //Creating Entity Types for each domain
                 EntityType entityType = new EntityType();
@@ -58,21 +59,24 @@ public class AiravataDataMigrator {
                 entityType.setDomainId(domain.domainId);
                 entityType.setName("PROJECT");
                 entityType.setDescription("Project entity type");
-                govRegistryServerHandler.createEntityType(entityType);
+                if (!sharingRegistryServerHandler.isEntityTypeExists(entityType.domainId, entityType.entityTypeId))
+                    sharingRegistryServerHandler.createEntityType(entityType);
 
                 entityType = new EntityType();
                 entityType.setEntityTypeId(domain.domainId+":EXPERIMENT");
                 entityType.setDomainId(domain.domainId);
                 entityType.setName("EXPERIMENT");
                 entityType.setDescription("Experiment entity type");
-                govRegistryServerHandler.createEntityType(entityType);
+                if (!sharingRegistryServerHandler.isEntityTypeExists(entityType.domainId, entityType.entityTypeId))
+                    sharingRegistryServerHandler.createEntityType(entityType);
 
                 entityType = new EntityType();
                 entityType.setEntityTypeId(domain.domainId+":FILE");
                 entityType.setDomainId(domain.domainId);
                 entityType.setName("FILE");
                 entityType.setDescription("File entity type");
-                govRegistryServerHandler.createEntityType(entityType);
+                if (!sharingRegistryServerHandler.isEntityTypeExists(entityType.domainId, entityType.entityTypeId))
+                    sharingRegistryServerHandler.createEntityType(entityType);
 
                 //Creating Permission Types for each domain
                 PermissionType permissionType = new PermissionType();
@@ -80,14 +84,16 @@ public class AiravataDataMigrator {
                 permissionType.setDomainId(domain.domainId);
                 permissionType.setName("READ");
                 permissionType.setDescription("Read permission type");
-                govRegistryServerHandler.createPermissionType(permissionType);
+                if (!sharingRegistryServerHandler.isPermissionExists(permissionType.domainId, permissionType.permissionTypeId))
+                    sharingRegistryServerHandler.createPermissionType(permissionType);
 
                 permissionType = new PermissionType();
                 permissionType.setPermissionTypeId(domain.domainId+":WRITE");
                 permissionType.setDomainId(domain.domainId);
                 permissionType.setName("WRITE");
                 permissionType.setDescription("Write permission type");
-                govRegistryServerHandler.createPermissionType(permissionType);
+                if (!sharingRegistryServerHandler.isPermissionExists(permissionType.domainId, permissionType.permissionTypeId))
+                    sharingRegistryServerHandler.createPermissionType(permissionType);
             }catch (Exception ex){
                 ex.printStackTrace();
             }
@@ -104,7 +110,8 @@ public class AiravataDataMigrator {
                 user.setDomainId(rs.getString("GATEWAY_ID"));
                 user.setUserName(rs.getString("USER_NAME"));
 
-                govRegistryServerHandler.createUser(user);
+                if (!sharingRegistryServerHandler.isUserExists(user.domainId, user.userId))
+                    sharingRegistryServerHandler.createUser(user);
             }catch (Exception ex){
                 ex.printStackTrace();
             }
@@ -131,7 +138,8 @@ public class AiravataDataMigrator {
                 Map<String, String> metadata = new HashMap<>();
                 metadata.put("CREATION_TIME", rs.getDate("CREATION_TIME").toString());
 
-                govRegistryServerHandler.createEntity(entity);
+                if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
+                    sharingRegistryServerHandler.createEntity(entity);
             }catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -166,7 +174,8 @@ public class AiravataDataMigrator {
                 metadata.put("GATEWAY_INSTANCE_ID", rs.getString("GATEWAY_INSTANCE_ID"));
                 metadata.put("ARCHIVE", rs.getString("ARCHIVE"));
 
-                govRegistryServerHandler.createEntity(entity);
+                if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
+                    sharingRegistryServerHandler.createEntity(entity);
             }catch (Exception ex){
                 ex.printStackTrace();
             }

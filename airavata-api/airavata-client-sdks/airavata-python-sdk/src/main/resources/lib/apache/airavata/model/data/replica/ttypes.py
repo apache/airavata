@@ -65,233 +65,6 @@ class DataProductType:
   }
 
 
-class DataProductModel:
-  """
-  Attributes:
-   - productUri
-   - gatewayId
-   - parentProductUri
-   - productName
-   - productDescription
-   - ownerName
-   - dataProductType
-   - productSize
-   - creationTime
-   - lastModifiedTime
-   - productMetadata
-   - replicaLocations
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'productUri', None, None, ), # 1
-    (2, TType.STRING, 'gatewayId', None, None, ), # 2
-    (3, TType.STRING, 'parentProductUri', None, None, ), # 3
-    (4, TType.STRING, 'productName', None, None, ), # 4
-    (5, TType.STRING, 'productDescription', None, None, ), # 5
-    (6, TType.STRING, 'ownerName', None, None, ), # 6
-    (7, TType.I32, 'dataProductType', None, None, ), # 7
-    (8, TType.I32, 'productSize', None, None, ), # 8
-    (9, TType.I64, 'creationTime', None, None, ), # 9
-    (10, TType.I64, 'lastModifiedTime', None, None, ), # 10
-    (11, TType.MAP, 'productMetadata', (TType.STRING,None,TType.STRING,None), None, ), # 11
-    (12, TType.LIST, 'replicaLocations', (TType.STRUCT,(DataReplicaLocationModel, DataReplicaLocationModel.thrift_spec)), None, ), # 12
-  )
-
-  def __init__(self, productUri=None, gatewayId=None, parentProductUri=None, productName=None, productDescription=None, ownerName=None, dataProductType=None, productSize=None, creationTime=None, lastModifiedTime=None, productMetadata=None, replicaLocations=None,):
-    self.productUri = productUri
-    self.gatewayId = gatewayId
-    self.parentProductUri = parentProductUri
-    self.productName = productName
-    self.productDescription = productDescription
-    self.ownerName = ownerName
-    self.dataProductType = dataProductType
-    self.productSize = productSize
-    self.creationTime = creationTime
-    self.lastModifiedTime = lastModifiedTime
-    self.productMetadata = productMetadata
-    self.replicaLocations = replicaLocations
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.productUri = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.gatewayId = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRING:
-          self.parentProductUri = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 4:
-        if ftype == TType.STRING:
-          self.productName = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 5:
-        if ftype == TType.STRING:
-          self.productDescription = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 6:
-        if ftype == TType.STRING:
-          self.ownerName = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 7:
-        if ftype == TType.I32:
-          self.dataProductType = iprot.readI32()
-        else:
-          iprot.skip(ftype)
-      elif fid == 8:
-        if ftype == TType.I32:
-          self.productSize = iprot.readI32()
-        else:
-          iprot.skip(ftype)
-      elif fid == 9:
-        if ftype == TType.I64:
-          self.creationTime = iprot.readI64()
-        else:
-          iprot.skip(ftype)
-      elif fid == 10:
-        if ftype == TType.I64:
-          self.lastModifiedTime = iprot.readI64()
-        else:
-          iprot.skip(ftype)
-      elif fid == 11:
-        if ftype == TType.MAP:
-          self.productMetadata = {}
-          (_ktype1, _vtype2, _size0 ) = iprot.readMapBegin()
-          for _i4 in xrange(_size0):
-            _key5 = iprot.readString()
-            _val6 = iprot.readString()
-            self.productMetadata[_key5] = _val6
-          iprot.readMapEnd()
-        else:
-          iprot.skip(ftype)
-      elif fid == 12:
-        if ftype == TType.LIST:
-          self.replicaLocations = []
-          (_etype10, _size7) = iprot.readListBegin()
-          for _i11 in xrange(_size7):
-            _elem12 = DataReplicaLocationModel()
-            _elem12.read(iprot)
-            self.replicaLocations.append(_elem12)
-          iprot.readListEnd()
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('DataProductModel')
-    if self.productUri is not None:
-      oprot.writeFieldBegin('productUri', TType.STRING, 1)
-      oprot.writeString(self.productUri)
-      oprot.writeFieldEnd()
-    if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
-      oprot.writeString(self.gatewayId)
-      oprot.writeFieldEnd()
-    if self.parentProductUri is not None:
-      oprot.writeFieldBegin('parentProductUri', TType.STRING, 3)
-      oprot.writeString(self.parentProductUri)
-      oprot.writeFieldEnd()
-    if self.productName is not None:
-      oprot.writeFieldBegin('productName', TType.STRING, 4)
-      oprot.writeString(self.productName)
-      oprot.writeFieldEnd()
-    if self.productDescription is not None:
-      oprot.writeFieldBegin('productDescription', TType.STRING, 5)
-      oprot.writeString(self.productDescription)
-      oprot.writeFieldEnd()
-    if self.ownerName is not None:
-      oprot.writeFieldBegin('ownerName', TType.STRING, 6)
-      oprot.writeString(self.ownerName)
-      oprot.writeFieldEnd()
-    if self.dataProductType is not None:
-      oprot.writeFieldBegin('dataProductType', TType.I32, 7)
-      oprot.writeI32(self.dataProductType)
-      oprot.writeFieldEnd()
-    if self.productSize is not None:
-      oprot.writeFieldBegin('productSize', TType.I32, 8)
-      oprot.writeI32(self.productSize)
-      oprot.writeFieldEnd()
-    if self.creationTime is not None:
-      oprot.writeFieldBegin('creationTime', TType.I64, 9)
-      oprot.writeI64(self.creationTime)
-      oprot.writeFieldEnd()
-    if self.lastModifiedTime is not None:
-      oprot.writeFieldBegin('lastModifiedTime', TType.I64, 10)
-      oprot.writeI64(self.lastModifiedTime)
-      oprot.writeFieldEnd()
-    if self.productMetadata is not None:
-      oprot.writeFieldBegin('productMetadata', TType.MAP, 11)
-      oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.productMetadata))
-      for kiter13,viter14 in self.productMetadata.items():
-        oprot.writeString(kiter13)
-        oprot.writeString(viter14)
-      oprot.writeMapEnd()
-      oprot.writeFieldEnd()
-    if self.replicaLocations is not None:
-      oprot.writeFieldBegin('replicaLocations', TType.LIST, 12)
-      oprot.writeListBegin(TType.STRUCT, len(self.replicaLocations))
-      for iter15 in self.replicaLocations:
-        iter15.write(oprot)
-      oprot.writeListEnd()
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.productUri)
-    value = (value * 31) ^ hash(self.gatewayId)
-    value = (value * 31) ^ hash(self.parentProductUri)
-    value = (value * 31) ^ hash(self.productName)
-    value = (value * 31) ^ hash(self.productDescription)
-    value = (value * 31) ^ hash(self.ownerName)
-    value = (value * 31) ^ hash(self.dataProductType)
-    value = (value * 31) ^ hash(self.productSize)
-    value = (value * 31) ^ hash(self.creationTime)
-    value = (value * 31) ^ hash(self.lastModifiedTime)
-    value = (value * 31) ^ hash(self.productMetadata)
-    value = (value * 31) ^ hash(self.replicaLocations)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
 class DataReplicaLocationModel:
   """
   Attributes:
@@ -406,11 +179,11 @@ class DataReplicaLocationModel:
       elif fid == 12:
         if ftype == TType.MAP:
           self.replicaMetadata = {}
-          (_ktype17, _vtype18, _size16 ) = iprot.readMapBegin()
-          for _i20 in xrange(_size16):
-            _key21 = iprot.readString()
-            _val22 = iprot.readString()
-            self.replicaMetadata[_key21] = _val22
+          (_ktype1, _vtype2, _size0 ) = iprot.readMapBegin()
+          for _i4 in xrange(_size0):
+            _key5 = iprot.readString()
+            _val6 = iprot.readString()
+            self.replicaMetadata[_key5] = _val6
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -471,9 +244,9 @@ class DataReplicaLocationModel:
     if self.replicaMetadata is not None:
       oprot.writeFieldBegin('replicaMetadata', TType.MAP, 12)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.replicaMetadata))
-      for kiter23,viter24 in self.replicaMetadata.items():
-        oprot.writeString(kiter23)
-        oprot.writeString(viter24)
+      for kiter7,viter8 in self.replicaMetadata.items():
+        oprot.writeString(kiter7)
+        oprot.writeString(viter8)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -497,6 +270,233 @@ class DataReplicaLocationModel:
     value = (value * 31) ^ hash(self.storageResourceId)
     value = (value * 31) ^ hash(self.filePath)
     value = (value * 31) ^ hash(self.replicaMetadata)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class DataProductModel:
+  """
+  Attributes:
+   - productUri
+   - gatewayId
+   - parentProductUri
+   - productName
+   - productDescription
+   - ownerName
+   - dataProductType
+   - productSize
+   - creationTime
+   - lastModifiedTime
+   - productMetadata
+   - replicaLocations
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'productUri', None, None, ), # 1
+    (2, TType.STRING, 'gatewayId', None, None, ), # 2
+    (3, TType.STRING, 'parentProductUri', None, None, ), # 3
+    (4, TType.STRING, 'productName', None, None, ), # 4
+    (5, TType.STRING, 'productDescription', None, None, ), # 5
+    (6, TType.STRING, 'ownerName', None, None, ), # 6
+    (7, TType.I32, 'dataProductType', None, None, ), # 7
+    (8, TType.I32, 'productSize', None, None, ), # 8
+    (9, TType.I64, 'creationTime', None, None, ), # 9
+    (10, TType.I64, 'lastModifiedTime', None, None, ), # 10
+    (11, TType.MAP, 'productMetadata', (TType.STRING,None,TType.STRING,None), None, ), # 11
+    (12, TType.LIST, 'replicaLocations', (TType.STRUCT,(DataReplicaLocationModel, DataReplicaLocationModel.thrift_spec)), None, ), # 12
+  )
+
+  def __init__(self, productUri=None, gatewayId=None, parentProductUri=None, productName=None, productDescription=None, ownerName=None, dataProductType=None, productSize=None, creationTime=None, lastModifiedTime=None, productMetadata=None, replicaLocations=None,):
+    self.productUri = productUri
+    self.gatewayId = gatewayId
+    self.parentProductUri = parentProductUri
+    self.productName = productName
+    self.productDescription = productDescription
+    self.ownerName = ownerName
+    self.dataProductType = dataProductType
+    self.productSize = productSize
+    self.creationTime = creationTime
+    self.lastModifiedTime = lastModifiedTime
+    self.productMetadata = productMetadata
+    self.replicaLocations = replicaLocations
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.productUri = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.gatewayId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.parentProductUri = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRING:
+          self.productName = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.STRING:
+          self.productDescription = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 6:
+        if ftype == TType.STRING:
+          self.ownerName = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 7:
+        if ftype == TType.I32:
+          self.dataProductType = iprot.readI32()
+        else:
+          iprot.skip(ftype)
+      elif fid == 8:
+        if ftype == TType.I32:
+          self.productSize = iprot.readI32()
+        else:
+          iprot.skip(ftype)
+      elif fid == 9:
+        if ftype == TType.I64:
+          self.creationTime = iprot.readI64()
+        else:
+          iprot.skip(ftype)
+      elif fid == 10:
+        if ftype == TType.I64:
+          self.lastModifiedTime = iprot.readI64()
+        else:
+          iprot.skip(ftype)
+      elif fid == 11:
+        if ftype == TType.MAP:
+          self.productMetadata = {}
+          (_ktype10, _vtype11, _size9 ) = iprot.readMapBegin()
+          for _i13 in xrange(_size9):
+            _key14 = iprot.readString()
+            _val15 = iprot.readString()
+            self.productMetadata[_key14] = _val15
+          iprot.readMapEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 12:
+        if ftype == TType.LIST:
+          self.replicaLocations = []
+          (_etype19, _size16) = iprot.readListBegin()
+          for _i20 in xrange(_size16):
+            _elem21 = DataReplicaLocationModel()
+            _elem21.read(iprot)
+            self.replicaLocations.append(_elem21)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('DataProductModel')
+    if self.productUri is not None:
+      oprot.writeFieldBegin('productUri', TType.STRING, 1)
+      oprot.writeString(self.productUri)
+      oprot.writeFieldEnd()
+    if self.gatewayId is not None:
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
+      oprot.writeString(self.gatewayId)
+      oprot.writeFieldEnd()
+    if self.parentProductUri is not None:
+      oprot.writeFieldBegin('parentProductUri', TType.STRING, 3)
+      oprot.writeString(self.parentProductUri)
+      oprot.writeFieldEnd()
+    if self.productName is not None:
+      oprot.writeFieldBegin('productName', TType.STRING, 4)
+      oprot.writeString(self.productName)
+      oprot.writeFieldEnd()
+    if self.productDescription is not None:
+      oprot.writeFieldBegin('productDescription', TType.STRING, 5)
+      oprot.writeString(self.productDescription)
+      oprot.writeFieldEnd()
+    if self.ownerName is not None:
+      oprot.writeFieldBegin('ownerName', TType.STRING, 6)
+      oprot.writeString(self.ownerName)
+      oprot.writeFieldEnd()
+    if self.dataProductType is not None:
+      oprot.writeFieldBegin('dataProductType', TType.I32, 7)
+      oprot.writeI32(self.dataProductType)
+      oprot.writeFieldEnd()
+    if self.productSize is not None:
+      oprot.writeFieldBegin('productSize', TType.I32, 8)
+      oprot.writeI32(self.productSize)
+      oprot.writeFieldEnd()
+    if self.creationTime is not None:
+      oprot.writeFieldBegin('creationTime', TType.I64, 9)
+      oprot.writeI64(self.creationTime)
+      oprot.writeFieldEnd()
+    if self.lastModifiedTime is not None:
+      oprot.writeFieldBegin('lastModifiedTime', TType.I64, 10)
+      oprot.writeI64(self.lastModifiedTime)
+      oprot.writeFieldEnd()
+    if self.productMetadata is not None:
+      oprot.writeFieldBegin('productMetadata', TType.MAP, 11)
+      oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.productMetadata))
+      for kiter22,viter23 in self.productMetadata.items():
+        oprot.writeString(kiter22)
+        oprot.writeString(viter23)
+      oprot.writeMapEnd()
+      oprot.writeFieldEnd()
+    if self.replicaLocations is not None:
+      oprot.writeFieldBegin('replicaLocations', TType.LIST, 12)
+      oprot.writeListBegin(TType.STRUCT, len(self.replicaLocations))
+      for iter24 in self.replicaLocations:
+        iter24.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.productUri)
+    value = (value * 31) ^ hash(self.gatewayId)
+    value = (value * 31) ^ hash(self.parentProductUri)
+    value = (value * 31) ^ hash(self.productName)
+    value = (value * 31) ^ hash(self.productDescription)
+    value = (value * 31) ^ hash(self.ownerName)
+    value = (value * 31) ^ hash(self.dataProductType)
+    value = (value * 31) ^ hash(self.productSize)
+    value = (value * 31) ^ hash(self.creationTime)
+    value = (value * 31) ^ hash(self.lastModifiedTime)
+    value = (value * 31) ^ hash(self.productMetadata)
+    value = (value * 31) ^ hash(self.replicaLocations)
     return value
 
   def __repr__(self):

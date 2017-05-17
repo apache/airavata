@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.common.utils;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -78,7 +76,6 @@ public class ServerSettings extends ApplicationSettings {
     private static final java.lang.String SHARING_REGISTRY_PORT = "sharing.registry.server.port";
     private static final java.lang.String SHARING_REGISTRY_HOST = "sharing.registry.server.host";
 
-    private static String USER_PROFILE_MONGODB_HOST = "userprofile.mongodb.host";
     private static String USER_PROFILE_MONGODB_PORT = "userprofile.mongodb.port";
 
     private static final String REGISTRY_DB_URL = "registry.jdbc.url";
@@ -128,6 +125,14 @@ public class ServerSettings extends ApplicationSettings {
 
     public static final String USER_PROFILE_SERVER_HOST = "user.profile.server.host";
     public static final String USER_PROFILE_SERVER_PORT = "user.profile.server.port";
+
+    // Profile Service Constants
+    public static final String PROFILE_SERVICE_SERVER_HOST = "profile.service.server.host";
+    public static final String PROFILE_SERVICE_SERVER_PORT = "profile.service.server.port";
+
+    // Iam Server Constants
+    public static final String IAM_SERVER_URL = "iam.server.url";
+    public static final String NEW_GATEWAY_ADMIN_TEMP_PASSWORD="new.gateway.admin.temp.password";
 
     /* Caching */
     private static final String SESSION_CACHE_ACCESS_TIME_OUT = "ssh.session.cache.access.timeout";
@@ -329,6 +334,11 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(Constants.REMOTE_OAUTH_SERVER_URL);
     }
 
+    public static String getRemoteIDPServiceUrl() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.IAM_SERVER_URL);
+    }
+
+
     public static String getAuthorizationPoliyName() throws ApplicationSettingsException {
         return getSetting(Constants.AUTHORIZATION_POLICY_NAME);
     }
@@ -415,14 +425,6 @@ public class ServerSettings extends ApplicationSettings {
 
     public static int getCacheSize() throws ApplicationSettingsException {
         return Integer.valueOf(getSetting(Constants.IN_MEMORY_CACHE_SIZE));
-    }
-
-    public static String getUserProfileMongodbHost() throws ApplicationSettingsException{
-        return getSetting(USER_PROFILE_MONGODB_HOST);
-    }
-
-    public static int getUserProfileMongodbPort() throws ApplicationSettingsException{
-        return Integer.parseInt(getSetting(USER_PROFILE_MONGODB_PORT));
     }
 
     public static String getLocalDataLocation() {

@@ -96,7 +96,8 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
   private static final org.apache.thrift.protocol.TField DEFAULT_QUEUE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultQueueName", org.apache.thrift.protocol.TType.STRING, (short)13);
   private static final org.apache.thrift.protocol.TField DEFAULT_NODE_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultNodeCount", org.apache.thrift.protocol.TType.I32, (short)14);
   private static final org.apache.thrift.protocol.TField DEFAULT_CPUCOUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultCPUCount", org.apache.thrift.protocol.TType.I32, (short)15);
-  private static final org.apache.thrift.protocol.TField EDITABLE_BY_USER_FIELD_DESC = new org.apache.thrift.protocol.TField("editableByUser", org.apache.thrift.protocol.TType.BOOL, (short)16);
+  private static final org.apache.thrift.protocol.TField DEFAULT_WALLTIME_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultWalltime", org.apache.thrift.protocol.TType.I32, (short)16);
+  private static final org.apache.thrift.protocol.TField EDITABLE_BY_USER_FIELD_DESC = new org.apache.thrift.protocol.TField("editableByUser", org.apache.thrift.protocol.TType.BOOL, (short)17);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -119,6 +120,7 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
   private String defaultQueueName; // optional
   private int defaultNodeCount; // optional
   private int defaultCPUCount; // optional
+  private int defaultWalltime; // optional
   private boolean editableByUser; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -142,7 +144,8 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
     DEFAULT_QUEUE_NAME((short)13, "defaultQueueName"),
     DEFAULT_NODE_COUNT((short)14, "defaultNodeCount"),
     DEFAULT_CPUCOUNT((short)15, "defaultCPUCount"),
-    EDITABLE_BY_USER((short)16, "editableByUser");
+    DEFAULT_WALLTIME((short)16, "defaultWalltime"),
+    EDITABLE_BY_USER((short)17, "editableByUser");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -187,7 +190,9 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
           return DEFAULT_NODE_COUNT;
         case 15: // DEFAULT_CPUCOUNT
           return DEFAULT_CPUCOUNT;
-        case 16: // EDITABLE_BY_USER
+        case 16: // DEFAULT_WALLTIME
+          return DEFAULT_WALLTIME;
+        case 17: // EDITABLE_BY_USER
           return EDITABLE_BY_USER;
         default:
           return null;
@@ -231,9 +236,10 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
   // isset id assignments
   private static final int __DEFAULTNODECOUNT_ISSET_ID = 0;
   private static final int __DEFAULTCPUCOUNT_ISSET_ID = 1;
-  private static final int __EDITABLEBYUSER_ISSET_ID = 2;
+  private static final int __DEFAULTWALLTIME_ISSET_ID = 2;
+  private static final int __EDITABLEBYUSER_ISSET_ID = 3;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.APP_DEPLOYMENT_DESCRIPTION,_Fields.MODULE_LOAD_CMDS,_Fields.LIB_PREPEND_PATHS,_Fields.LIB_APPEND_PATHS,_Fields.SET_ENVIRONMENT,_Fields.PRE_JOB_COMMANDS,_Fields.POST_JOB_COMMANDS,_Fields.DEFAULT_QUEUE_NAME,_Fields.DEFAULT_NODE_COUNT,_Fields.DEFAULT_CPUCOUNT,_Fields.EDITABLE_BY_USER};
+  private static final _Fields optionals[] = {_Fields.APP_DEPLOYMENT_DESCRIPTION,_Fields.MODULE_LOAD_CMDS,_Fields.LIB_PREPEND_PATHS,_Fields.LIB_APPEND_PATHS,_Fields.SET_ENVIRONMENT,_Fields.PRE_JOB_COMMANDS,_Fields.POST_JOB_COMMANDS,_Fields.DEFAULT_QUEUE_NAME,_Fields.DEFAULT_NODE_COUNT,_Fields.DEFAULT_CPUCOUNT,_Fields.DEFAULT_WALLTIME,_Fields.EDITABLE_BY_USER};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -272,6 +278,8 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
     tmpMap.put(_Fields.DEFAULT_NODE_COUNT, new org.apache.thrift.meta_data.FieldMetaData("defaultNodeCount", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.DEFAULT_CPUCOUNT, new org.apache.thrift.meta_data.FieldMetaData("defaultCPUCount", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.DEFAULT_WALLTIME, new org.apache.thrift.meta_data.FieldMetaData("defaultWalltime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.EDITABLE_BY_USER, new org.apache.thrift.meta_data.FieldMetaData("editableByUser", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
@@ -371,6 +379,7 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
     }
     this.defaultNodeCount = other.defaultNodeCount;
     this.defaultCPUCount = other.defaultCPUCount;
+    this.defaultWalltime = other.defaultWalltime;
     this.editableByUser = other.editableByUser;
   }
 
@@ -399,6 +408,8 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
     this.defaultNodeCount = 0;
     setDefaultCPUCountIsSet(false);
     this.defaultCPUCount = 0;
+    setDefaultWalltimeIsSet(false);
+    this.defaultWalltime = 0;
     setEditableByUserIsSet(false);
     this.editableByUser = false;
   }
@@ -844,6 +855,28 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __DEFAULTCPUCOUNT_ISSET_ID, value);
   }
 
+  public int getDefaultWalltime() {
+    return this.defaultWalltime;
+  }
+
+  public void setDefaultWalltime(int defaultWalltime) {
+    this.defaultWalltime = defaultWalltime;
+    setDefaultWalltimeIsSet(true);
+  }
+
+  public void unsetDefaultWalltime() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __DEFAULTWALLTIME_ISSET_ID);
+  }
+
+  /** Returns true if field defaultWalltime is set (has been assigned a value) and false otherwise */
+  public boolean isSetDefaultWalltime() {
+    return EncodingUtils.testBit(__isset_bitfield, __DEFAULTWALLTIME_ISSET_ID);
+  }
+
+  public void setDefaultWalltimeIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __DEFAULTWALLTIME_ISSET_ID, value);
+  }
+
   public boolean isEditableByUser() {
     return this.editableByUser;
   }
@@ -988,6 +1021,14 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
       }
       break;
 
+    case DEFAULT_WALLTIME:
+      if (value == null) {
+        unsetDefaultWalltime();
+      } else {
+        setDefaultWalltime((Integer)value);
+      }
+      break;
+
     case EDITABLE_BY_USER:
       if (value == null) {
         unsetEditableByUser();
@@ -1046,6 +1087,9 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
     case DEFAULT_CPUCOUNT:
       return getDefaultCPUCount();
 
+    case DEFAULT_WALLTIME:
+      return getDefaultWalltime();
+
     case EDITABLE_BY_USER:
       return isEditableByUser();
 
@@ -1090,6 +1134,8 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
       return isSetDefaultNodeCount();
     case DEFAULT_CPUCOUNT:
       return isSetDefaultCPUCount();
+    case DEFAULT_WALLTIME:
+      return isSetDefaultWalltime();
     case EDITABLE_BY_USER:
       return isSetEditableByUser();
     }
@@ -1244,6 +1290,15 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
         return false;
     }
 
+    boolean this_present_defaultWalltime = true && this.isSetDefaultWalltime();
+    boolean that_present_defaultWalltime = true && that.isSetDefaultWalltime();
+    if (this_present_defaultWalltime || that_present_defaultWalltime) {
+      if (!(this_present_defaultWalltime && that_present_defaultWalltime))
+        return false;
+      if (this.defaultWalltime != that.defaultWalltime)
+        return false;
+    }
+
     boolean this_present_editableByUser = true && this.isSetEditableByUser();
     boolean that_present_editableByUser = true && that.isSetEditableByUser();
     if (this_present_editableByUser || that_present_editableByUser) {
@@ -1334,6 +1389,11 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
     list.add(present_defaultCPUCount);
     if (present_defaultCPUCount)
       list.add(defaultCPUCount);
+
+    boolean present_defaultWalltime = true && (isSetDefaultWalltime());
+    list.add(present_defaultWalltime);
+    if (present_defaultWalltime)
+      list.add(defaultWalltime);
 
     boolean present_editableByUser = true && (isSetEditableByUser());
     list.add(present_editableByUser);
@@ -1501,6 +1561,16 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetDefaultWalltime()).compareTo(other.isSetDefaultWalltime());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDefaultWalltime()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.defaultWalltime, other.defaultWalltime);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = Boolean.valueOf(isSetEditableByUser()).compareTo(other.isSetEditableByUser());
     if (lastComparison != 0) {
       return lastComparison;
@@ -1660,6 +1730,12 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
       if (!first) sb.append(", ");
       sb.append("defaultCPUCount:");
       sb.append(this.defaultCPUCount);
+      first = false;
+    }
+    if (isSetDefaultWalltime()) {
+      if (!first) sb.append(", ");
+      sb.append("defaultWalltime:");
+      sb.append(this.defaultWalltime);
       first = false;
     }
     if (isSetEditableByUser()) {
@@ -1919,7 +1995,15 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 16: // EDITABLE_BY_USER
+          case 16: // DEFAULT_WALLTIME
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.defaultWalltime = iprot.readI32();
+              struct.setDefaultWalltimeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 17: // EDITABLE_BY_USER
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.editableByUser = iprot.readBool();
               struct.setEditableByUserIsSet(true);
@@ -2073,6 +2157,11 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
         oprot.writeI32(struct.defaultCPUCount);
         oprot.writeFieldEnd();
       }
+      if (struct.isSetDefaultWalltime()) {
+        oprot.writeFieldBegin(DEFAULT_WALLTIME_FIELD_DESC);
+        oprot.writeI32(struct.defaultWalltime);
+        oprot.writeFieldEnd();
+      }
       if (struct.isSetEditableByUser()) {
         oprot.writeFieldBegin(EDITABLE_BY_USER_FIELD_DESC);
         oprot.writeBool(struct.editableByUser);
@@ -2131,10 +2220,13 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
       if (struct.isSetDefaultCPUCount()) {
         optionals.set(9);
       }
-      if (struct.isSetEditableByUser()) {
+      if (struct.isSetDefaultWalltime()) {
         optionals.set(10);
       }
-      oprot.writeBitSet(optionals, 11);
+      if (struct.isSetEditableByUser()) {
+        optionals.set(11);
+      }
+      oprot.writeBitSet(optionals, 12);
       if (struct.isSetAppDeploymentDescription()) {
         oprot.writeString(struct.appDeploymentDescription);
       }
@@ -2201,6 +2293,9 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
       if (struct.isSetDefaultCPUCount()) {
         oprot.writeI32(struct.defaultCPUCount);
       }
+      if (struct.isSetDefaultWalltime()) {
+        oprot.writeI32(struct.defaultWalltime);
+      }
       if (struct.isSetEditableByUser()) {
         oprot.writeBool(struct.editableByUser);
       }
@@ -2219,7 +2314,7 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
       struct.setExecutablePathIsSet(true);
       struct.parallelism = org.apache.airavata.model.parallelism.ApplicationParallelismType.findByValue(iprot.readI32());
       struct.setParallelismIsSet(true);
-      BitSet incoming = iprot.readBitSet(11);
+      BitSet incoming = iprot.readBitSet(12);
       if (incoming.get(0)) {
         struct.appDeploymentDescription = iprot.readString();
         struct.setAppDeploymentDescriptionIsSet(true);
@@ -2321,6 +2416,10 @@ public class ApplicationDeploymentDescription implements org.apache.thrift.TBase
         struct.setDefaultCPUCountIsSet(true);
       }
       if (incoming.get(10)) {
+        struct.defaultWalltime = iprot.readI32();
+        struct.setDefaultWalltimeIsSet(true);
+      }
+      if (incoming.get(11)) {
         struct.editableByUser = iprot.readBool();
         struct.setEditableByUserIsSet(true);
       }

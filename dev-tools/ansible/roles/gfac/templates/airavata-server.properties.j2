@@ -50,6 +50,13 @@ default.registry.user=admin
 default.registry.password=admin
 default.registry.password.hash.method=SHA
 default.registry.gateway={{ default_gateway }}
+super.tenant.gatewayId={{ default_gateway }}
+
+# Properties for cluster status monitoring
+# cluster status monitoring job repeat time in seconds
+cluster.status.monitoring.enable=false
+cluster.status.monitoring.repeat.time=18000
+
 
 ###########################################################################
 #  Application Catalog DB Configuration
@@ -189,7 +196,7 @@ job.notification.flags=abe
 ###########################################################################
 # Credential Store module Configuration
 ###########################################################################
-credential.store.keystore.url={{ keystores_location }}/{{ cred_keystore }}
+credential.store.keystore.url={{ keystores_location }}/{{ cred_keystore_src_path | basename }}
 credential.store.keystore.alias={{ cred_keystore_alias }}
 credential.store.keystore.password={{ cred_keystore_passwd }}
 credential.store.jdbc.url=jdbc:mysql://{{ db_server }}:3306/{{ credential_store }}
@@ -273,22 +280,18 @@ zookeeper.timeout=30000
 ## API Security Configuration
 ########################################################################
 api.secured={{ api_secured }}
-security.manager.class=org.apache.airavata.api.server.security.DefaultAiravataSecurityManager
+security.manager.class=org.apache.airavata.api.server.security.KeyCloakSecurityManager
 ### TLS related configuration ####
 TLS.enabled={{ tls_enable }}
 TLS.api.server.port={{ api_server_tls_port }}
 TLS.client.timeout=10000
 #### keystore configuration ####
-keystore.path={{ keystores_location }}/{{ keystore }}
+keystore.path={{ keystores_location }}/{{ keystore_src_path | basename }}
 keystore.password={{ keystore_passwd }}
 #### trust store configuration ####
-trust.store={{ keystores_location }}/{{ client_truststore }}
+trust.store={{ keystores_location }}/{{ client_truststore_src_path | basename }}
 trust.store.password=airavata
-#### remote authorization server url ####
-remote.oauth.authorization.server=https://idp.scigap.org:9443/services/
-#### xacml based authorization policy ####
-authorization.policy=airavata-default-xacml-policy
 #### authorization cache related configuration ####
 authz.cache.enabled=true
-authz.cache.manager.class=org.apache.airavata.api.server.security.authzcache.DefaultAuthzCacheManager
+authz.cache.manager.class=org.apache.airavata.service.security.authzcache.DefaultAuthzCacheManager
 in.memory.cache.size=1000

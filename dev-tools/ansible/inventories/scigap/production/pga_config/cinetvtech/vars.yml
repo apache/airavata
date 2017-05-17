@@ -1,0 +1,55 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+pga_repo: "https://github.com/apache/airavata-php-gateway.git"
+git_branch: "master"
+user: "pga"
+group: "pga"
+doc_root_dir: "/var/www/portals/cinet-virginiatech"
+vhost_servername: "cinet.scigap.org"
+vhost_ssl: True
+# TODO: have Ansible manage these files as well
+ssl_certificate_file: "/etc/letsencrypt/live/cinet.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/cinet.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/cinet.scigap.org/privkey.pem"
+
+## WSO2 IS related variables
+tenant_domain: "airavata.cinet"
+admin_username: "adminuser"
+admin_password: "{{ vault_admin_password }}"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+
+gateway_id: "cinetvtech"
+# relative to document root dir
+experiment_data_dir: "{{ user_data_dir }}/cinet-virginiatech"
+gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCpt0ai3Z7TGUNFM8heCPsQAZJkSik+PCa3QD5ej+sApXfiZZoFdjLswXAFcRbsD4RyCMnKFQ4st9e6+1LT8nHG3dd5uHjtBI2FFBaDg5JrIAuQj40nkdCII12gbXLu4uKCjKJ3NThn/AFQjpw0TvzFLusDd7/Xb+xBpMdobHHqngDqG8Y8fA1pbHtB5BgcAuWp3TZ/s1PL5cEhS0yZ8cVBTnSYK87o6hh0Pn4tlyU29lyLRPz43aHvjkKBN0VNwJlyOtCgr+Gj4TzlRvHXgLTn7yg1w7L6/V5LFpH2cealS92qfoBJpQ9IBAi5hX4yokEopCBsXyx78+n5E2hW05xR"
+
+## Portal related variables
+super_admin_portal: "false"
+admin_emails: "['sgg@iu.edu','esaliya@gmail.com']"
+portal_email_username: "pga.airavata@gmail.com"
+portal_email_password: "{{ vault_portal_email_password }}"
+portal_theme: "base"
+#portal_theme_repo: ""
+portal_title: "Virginia Tech Cinet Gateway"
+...

@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,8 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
 package org.apache.airavata.sharing.registry.db.utils;
 
 import org.slf4j.Logger;
@@ -91,6 +90,7 @@ public class DBConstants {
         public static final String UPDATED_TIME = "updatedTime";
         public static final String DOMAIN_ID = "domainId";
         public static final String ORIGINAL_ENTITY_CREATION_TIME = "originalEntityCreationTime";
+        public static final String SHARED = "shared";
     }
 
     public static class SharingTable {

@@ -1,19 +1,23 @@
 #! /usr/bin/env bash
-
-# Licensed to the Apache Software Foundation (ASF) under one or more
-# contributor license agreements.  See the NOTICE file distributed with
-# this work for additional information regarding copyright ownership.
-# The ASF licenses this file to You under the Apache License, Version 2.0
-# (the "License"); you may not use this file except in compliance with
-# the License.  You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
 
 # This script will generate/regenerate the thrift stubs for Airavata Components: Credential Store, Orchestrator, GFac.
 
@@ -155,7 +159,7 @@ generate_thrift_stubs() {
     rm -rf ${JAVA_GEN_DIR}
 
     # Using thrify Java generator, generate the java classes based on components CPI.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java ${COMPONENT_THRIFT_FILE} || fail unable to generate java thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:generated_annotations=undated ${COMPONENT_THRIFT_FILE} || fail unable to generate java thrift classes
 
     # Remove generated model classes, airavata api thrift file will generate those.
     echo "Remove generated model classes ${JAVA_GEN_DIR}/org/airavata/apache/model"

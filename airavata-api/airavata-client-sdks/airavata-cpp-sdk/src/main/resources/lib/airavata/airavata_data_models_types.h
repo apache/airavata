@@ -37,6 +37,7 @@
 #include "airavata_errors_types.h"
 #include "messaging_events_types.h"
 #include "security_model_types.h"
+#include "db_event_model_types.h"
 #include "experiment_model_types.h"
 #include "job_model_types.h"
 #include "task_model_types.h"
@@ -47,6 +48,7 @@
 #include "replica_catalog_models_types.h"
 #include "user_profile_model_types.h"
 #include "group_manager_model_types.h"
+#include "tenant_profile_model_types.h"
 #include "credential_store_data_models_types.h"
 
 

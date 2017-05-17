@@ -65,145 +65,9 @@ struct DataProductType {
 
 extern const std::map<int, const char*> _DataProductType_VALUES_TO_NAMES;
 
-class DataProductModel;
-
 class DataReplicaLocationModel;
 
-typedef struct _DataProductModel__isset {
-  _DataProductModel__isset() : productUri(false), gatewayId(false), parentProductUri(false), productName(false), productDescription(false), ownerName(false), dataProductType(false), productSize(false), creationTime(false), lastModifiedTime(false), productMetadata(false), replicaLocations(false) {}
-  bool productUri :1;
-  bool gatewayId :1;
-  bool parentProductUri :1;
-  bool productName :1;
-  bool productDescription :1;
-  bool ownerName :1;
-  bool dataProductType :1;
-  bool productSize :1;
-  bool creationTime :1;
-  bool lastModifiedTime :1;
-  bool productMetadata :1;
-  bool replicaLocations :1;
-} _DataProductModel__isset;
-
-class DataProductModel {
- public:
-
-  DataProductModel(const DataProductModel&);
-  DataProductModel& operator=(const DataProductModel&);
-  DataProductModel() : productUri(), gatewayId(), parentProductUri(), productName(), productDescription(), ownerName(), dataProductType((DataProductType::type)0), productSize(0), creationTime(0), lastModifiedTime(0) {
-  }
-
-  virtual ~DataProductModel() throw();
-  std::string productUri;
-  std::string gatewayId;
-  std::string parentProductUri;
-  std::string productName;
-  std::string productDescription;
-  std::string ownerName;
-  DataProductType::type dataProductType;
-  int32_t productSize;
-  int64_t creationTime;
-  int64_t lastModifiedTime;
-  std::map<std::string, std::string>  productMetadata;
-  std::vector<DataReplicaLocationModel>  replicaLocations;
-
-  _DataProductModel__isset __isset;
-
-  void __set_productUri(const std::string& val);
-
-  void __set_gatewayId(const std::string& val);
-
-  void __set_parentProductUri(const std::string& val);
-
-  void __set_productName(const std::string& val);
-
-  void __set_productDescription(const std::string& val);
-
-  void __set_ownerName(const std::string& val);
-
-  void __set_dataProductType(const DataProductType::type val);
-
-  void __set_productSize(const int32_t val);
-
-  void __set_creationTime(const int64_t val);
-
-  void __set_lastModifiedTime(const int64_t val);
-
-  void __set_productMetadata(const std::map<std::string, std::string> & val);
-
-  void __set_replicaLocations(const std::vector<DataReplicaLocationModel> & val);
-
-  bool operator == (const DataProductModel & rhs) const
-  {
-    if (__isset.productUri != rhs.__isset.productUri)
-      return false;
-    else if (__isset.productUri && !(productUri == rhs.productUri))
-      return false;
-    if (__isset.gatewayId != rhs.__isset.gatewayId)
-      return false;
-    else if (__isset.gatewayId && !(gatewayId == rhs.gatewayId))
-      return false;
-    if (__isset.parentProductUri != rhs.__isset.parentProductUri)
-      return false;
-    else if (__isset.parentProductUri && !(parentProductUri == rhs.parentProductUri))
-      return false;
-    if (__isset.productName != rhs.__isset.productName)
-      return false;
-    else if (__isset.productName && !(productName == rhs.productName))
-      return false;
-    if (__isset.productDescription != rhs.__isset.productDescription)
-      return false;
-    else if (__isset.productDescription && !(productDescription == rhs.productDescription))
-      return false;
-    if (__isset.ownerName != rhs.__isset.ownerName)
-      return false;
-    else if (__isset.ownerName && !(ownerName == rhs.ownerName))
-      return false;
-    if (__isset.dataProductType != rhs.__isset.dataProductType)
-      return false;
-    else if (__isset.dataProductType && !(dataProductType == rhs.dataProductType))
-      return false;
-    if (__isset.productSize != rhs.__isset.productSize)
-      return false;
-    else if (__isset.productSize && !(productSize == rhs.productSize))
-      return false;
-    if (__isset.creationTime != rhs.__isset.creationTime)
-      return false;
-    else if (__isset.creationTime && !(creationTime == rhs.creationTime))
-      return false;
-    if (__isset.lastModifiedTime != rhs.__isset.lastModifiedTime)
-      return false;
-    else if (__isset.lastModifiedTime && !(lastModifiedTime == rhs.lastModifiedTime))
-      return false;
-    if (__isset.productMetadata != rhs.__isset.productMetadata)
-      return false;
-    else if (__isset.productMetadata && !(productMetadata == rhs.productMetadata))
-      return false;
-    if (__isset.replicaLocations != rhs.__isset.replicaLocations)
-      return false;
-    else if (__isset.replicaLocations && !(replicaLocations == rhs.replicaLocations))
-      return false;
-    return true;
-  }
-  bool operator != (const DataProductModel &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const DataProductModel & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  virtual void printTo(std::ostream& out) const;
-};
-
-void swap(DataProductModel &a, DataProductModel &b);
-
-inline std::ostream& operator<<(std::ostream& out, const DataProductModel& obj)
-{
-  obj.printTo(out);
-  return out;
-}
+class DataProductModel;
 
 typedef struct _DataReplicaLocationModel__isset {
   _DataReplicaLocationModel__isset() : replicaId(false), productUri(false), replicaName(false), replicaDescription(false), creationTime(false), lastModifiedTime(false), validUntilTime(false), replicaLocationCategory(false), replicaPersistentType(false), storageResourceId(false), filePath(false), replicaMetadata(false) {}
@@ -336,6 +200,142 @@ class DataReplicaLocationModel {
 void swap(DataReplicaLocationModel &a, DataReplicaLocationModel &b);
 
 inline std::ostream& operator<<(std::ostream& out, const DataReplicaLocationModel& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
+typedef struct _DataProductModel__isset {
+  _DataProductModel__isset() : productUri(false), gatewayId(false), parentProductUri(false), productName(false), productDescription(false), ownerName(false), dataProductType(false), productSize(false), creationTime(false), lastModifiedTime(false), productMetadata(false), replicaLocations(false) {}
+  bool productUri :1;
+  bool gatewayId :1;
+  bool parentProductUri :1;
+  bool productName :1;
+  bool productDescription :1;
+  bool ownerName :1;
+  bool dataProductType :1;
+  bool productSize :1;
+  bool creationTime :1;
+  bool lastModifiedTime :1;
+  bool productMetadata :1;
+  bool replicaLocations :1;
+} _DataProductModel__isset;
+
+class DataProductModel {
+ public:
+
+  DataProductModel(const DataProductModel&);
+  DataProductModel& operator=(const DataProductModel&);
+  DataProductModel() : productUri(), gatewayId(), parentProductUri(), productName(), productDescription(), ownerName(), dataProductType((DataProductType::type)0), productSize(0), creationTime(0), lastModifiedTime(0) {
+  }
+
+  virtual ~DataProductModel() throw();
+  std::string productUri;
+  std::string gatewayId;
+  std::string parentProductUri;
+  std::string productName;
+  std::string productDescription;
+  std::string ownerName;
+  DataProductType::type dataProductType;
+  int32_t productSize;
+  int64_t creationTime;
+  int64_t lastModifiedTime;
+  std::map<std::string, std::string>  productMetadata;
+  std::vector<DataReplicaLocationModel>  replicaLocations;
+
+  _DataProductModel__isset __isset;
+
+  void __set_productUri(const std::string& val);
+
+  void __set_gatewayId(const std::string& val);
+
+  void __set_parentProductUri(const std::string& val);
+
+  void __set_productName(const std::string& val);
+
+  void __set_productDescription(const std::string& val);
+
+  void __set_ownerName(const std::string& val);
+
+  void __set_dataProductType(const DataProductType::type val);
+
+  void __set_productSize(const int32_t val);
+
+  void __set_creationTime(const int64_t val);
+
+  void __set_lastModifiedTime(const int64_t val);
+
+  void __set_productMetadata(const std::map<std::string, std::string> & val);
+
+  void __set_replicaLocations(const std::vector<DataReplicaLocationModel> & val);
+
+  bool operator == (const DataProductModel & rhs) const
+  {
+    if (__isset.productUri != rhs.__isset.productUri)
+      return false;
+    else if (__isset.productUri && !(productUri == rhs.productUri))
+      return false;
+    if (__isset.gatewayId != rhs.__isset.gatewayId)
+      return false;
+    else if (__isset.gatewayId && !(gatewayId == rhs.gatewayId))
+      return false;
+    if (__isset.parentProductUri != rhs.__isset.parentProductUri)
+      return false;
+    else if (__isset.parentProductUri && !(parentProductUri == rhs.parentProductUri))
+      return false;
+    if (__isset.productName != rhs.__isset.productName)
+      return false;
+    else if (__isset.productName && !(productName == rhs.productName))
+      return false;
+    if (__isset.productDescription != rhs.__isset.productDescription)
+      return false;
+    else if (__isset.productDescription && !(productDescription == rhs.productDescription))
+      return false;
+    if (__isset.ownerName != rhs.__isset.ownerName)
+      return false;
+    else if (__isset.ownerName && !(ownerName == rhs.ownerName))
+      return false;
+    if (__isset.dataProductType != rhs.__isset.dataProductType)
+      return false;
+    else if (__isset.dataProductType && !(dataProductType == rhs.dataProductType))
+      return false;
+    if (__isset.productSize != rhs.__isset.productSize)
+      return false;
+    else if (__isset.productSize && !(productSize == rhs.productSize))
+      return false;
+    if (__isset.creationTime != rhs.__isset.creationTime)
+      return false;
+    else if (__isset.creationTime && !(creationTime == rhs.creationTime))
+      return false;
+    if (__isset.lastModifiedTime != rhs.__isset.lastModifiedTime)
+      return false;
+    else if (__isset.lastModifiedTime && !(lastModifiedTime == rhs.lastModifiedTime))
+      return false;
+    if (__isset.productMetadata != rhs.__isset.productMetadata)
+      return false;
+    else if (__isset.productMetadata && !(productMetadata == rhs.productMetadata))
+      return false;
+    if (__isset.replicaLocations != rhs.__isset.replicaLocations)
+      return false;
+    else if (__isset.replicaLocations && !(replicaLocations == rhs.replicaLocations))
+      return false;
+    return true;
+  }
+  bool operator != (const DataProductModel &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const DataProductModel & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(DataProductModel &a, DataProductModel &b);
+
+inline std::ostream& operator<<(std::ostream& out, const DataProductModel& obj)
 {
   obj.printTo(out);
   return out;

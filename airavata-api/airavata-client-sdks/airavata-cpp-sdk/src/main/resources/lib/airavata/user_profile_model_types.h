@@ -118,10 +118,11 @@ class NSFDemographics {
 
   NSFDemographics(const NSFDemographics&);
   NSFDemographics& operator=(const NSFDemographics&);
-  NSFDemographics() : gender(), usCitizenship((USCitizenship::type)0) {
+  NSFDemographics() : airavataInternalUserId("DO_NOT_SET_AT_CLIENTS"), gender(), usCitizenship((USCitizenship::type)0) {
   }
 
   virtual ~NSFDemographics() throw();
+  std::string airavataInternalUserId;
   std::string gender;
   USCitizenship::type usCitizenship;
   std::vector<ethnicity::type>  ethnicities;
@@ -129,6 +130,8 @@ class NSFDemographics {
   std::vector<disability::type>  disabilities;
 
   _NSFDemographics__isset __isset;
+
+  void __set_airavataInternalUserId(const std::string& val);
 
   void __set_gender(const std::string& val);
 
@@ -142,6 +145,8 @@ class NSFDemographics {
 
   bool operator == (const NSFDemographics & rhs) const
   {
+    if (!(airavataInternalUserId == rhs.airavataInternalUserId))
+      return false;
     if (__isset.gender != rhs.__isset.gender)
       return false;
     else if (__isset.gender && !(gender == rhs.gender))
@@ -185,8 +190,10 @@ inline std::ostream& operator<<(std::ostream& out, const NSFDemographics& obj)
 }
 
 typedef struct _UserProfile__isset {
-  _UserProfile__isset() : userName(false), orcidId(false), phones(false), country(false), nationality(false), homeOrganization(false), orginationAffiliation(false), comments(false), labeledURI(false), gpgKey(false), timeZone(false), nsfDemographics(false) {}
-  bool userName :1;
+  _UserProfile__isset() : middleName(false), namePrefix(false), nameSuffix(false), orcidId(false), phones(false), country(false), nationality(false), homeOrganization(false), orginationAffiliation(false), comments(false), labeledURI(false), gpgKey(false), timeZone(false), nsfDemographics(false) {}
+  bool middleName :1;
+  bool namePrefix :1;
+  bool nameSuffix :1;
   bool orcidId :1;
   bool phones :1;
   bool country :1;
@@ -205,7 +212,7 @@ class UserProfile {
 
   UserProfile(const UserProfile&);
   UserProfile& operator=(const UserProfile&);
-  UserProfile() : userModelVersion("1.0"), airavataInternalUserId("DO_NOT_SET_AT_CLIENTS"), userId(), gatewayId(), userName(), orcidId(), country(), homeOrganization(), orginationAffiliation(), creationTime(), lastAccessTime(), validUntil(), State((Status::type)0), comments(), gpgKey(), timeZone() {
+  UserProfile() : userModelVersion("1.0"), airavataInternalUserId("DO_NOT_SET_AT_CLIENTS"), userId(), gatewayId(), firstName(), lastName(), middleName(), namePrefix(), nameSuffix(), orcidId(), country(), homeOrganization(), orginationAffiliation(), creationTime(0), lastAccessTime(0), validUntil(0), State((Status::type)0), comments(), gpgKey(), timeZone() {
   }
 
   virtual ~UserProfile() throw();
@@ -214,16 +221,20 @@ class UserProfile {
   std::string userId;
   std::string gatewayId;
   std::vector<std::string>  emails;
-  std::string userName;
+  std::string firstName;
+  std::string lastName;
+  std::string middleName;
+  std::string namePrefix;
+  std::string nameSuffix;
   std::string orcidId;
   std::vector<std::string>  phones;
   std::string country;
   std::vector<std::string>  nationality;
   std::string homeOrganization;
   std::string orginationAffiliation;
-  std::string creationTime;
-  std::string lastAccessTime;
-  std::string validUntil;
+  int64_t creationTime;
+  int64_t lastAccessTime;
+  int64_t validUntil;
   Status::type State;
   std::string comments;
   std::vector<std::string>  labeledURI;
@@ -243,7 +254,15 @@ class UserProfile {
 
   void __set_emails(const std::vector<std::string> & val);
 
-  void __set_userName(const std::string& val);
+  void __set_firstName(const std::string& val);
+
+  void __set_lastName(const std::string& val);
+
+  void __set_middleName(const std::string& val);
+
+  void __set_namePrefix(const std::string& val);
+
+  void __set_nameSuffix(const std::string& val);
 
   void __set_orcidId(const std::string& val);
 
@@ -257,11 +276,11 @@ class UserProfile {
 
   void __set_orginationAffiliation(const std::string& val);
 
-  void __set_creationTime(const std::string& val);
+  void __set_creationTime(const int64_t val);
 
-  void __set_lastAccessTime(const std::string& val);
+  void __set_lastAccessTime(const int64_t val);
 
-  void __set_validUntil(const std::string& val);
+  void __set_validUntil(const int64_t val);
 
   void __set_State(const Status::type val);
 
@@ -287,9 +306,21 @@ class UserProfile {
       return false;
     if (!(emails == rhs.emails))
       return false;
-    if (__isset.userName != rhs.__isset.userName)
+    if (!(firstName == rhs.firstName))
       return false;
-    else if (__isset.userName && !(userName == rhs.userName))
+    if (!(lastName == rhs.lastName))
+      return false;
+    if (__isset.middleName != rhs.__isset.middleName)
+      return false;
+    else if (__isset.middleName && !(middleName == rhs.middleName))
+      return false;
+    if (__isset.namePrefix != rhs.__isset.namePrefix)
+      return false;
+    else if (__isset.namePrefix && !(namePrefix == rhs.namePrefix))
+      return false;
+    if (__isset.nameSuffix != rhs.__isset.nameSuffix)
+      return false;
+    else if (__isset.nameSuffix && !(nameSuffix == rhs.nameSuffix))
       return false;
     if (__isset.orcidId != rhs.__isset.orcidId)
       return false;

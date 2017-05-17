@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,9 +16,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
-
 package org.apache.airavata.common.utils;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -413,12 +411,32 @@ public class ApplicationSettings {
         return getSetting("cluster.status.monitoring.repeat.time");
     }
 
+    public static Boolean enableClusterStatusMonitoring() throws ApplicationSettingsException {
+        return getSetting("cluster.status.monitoring.enable").equalsIgnoreCase("true");
+    }
+
     public static String getUserProfileServerHost() throws ApplicationSettingsException {
         return getSetting(ServerSettings.USER_PROFILE_SERVER_HOST);
     }
 
     public static String getUserProfileServerPort() throws ApplicationSettingsException {
         return getSetting(ServerSettings.USER_PROFILE_SERVER_PORT);
+    }
+
+    public static String getProfileServiceServerHost() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.PROFILE_SERVICE_SERVER_HOST);
+    }
+
+    public static String getProfileServiceServerPort() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.PROFILE_SERVICE_SERVER_PORT);
+    }
+
+    public static String getIamServerUrl() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.IAM_SERVER_URL);
+    }
+
+    public static String getGatewayAdminTempPwd() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.NEW_GATEWAY_ADMIN_TEMP_PASSWORD);
     }
 
     /**
