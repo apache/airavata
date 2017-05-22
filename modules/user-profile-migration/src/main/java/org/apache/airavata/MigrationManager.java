@@ -20,8 +20,9 @@
 package org.apache.airavata;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.userprofile.cpi.UserProfileService;
+import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.thrift.TException;
 import org.wso2.carbon.um.ws.api.stub.ClaimValue;
 import org.wso2.carbon.um.ws.api.stub.RemoteUserStoreManagerServiceStub;
@@ -34,7 +35,7 @@ import java.util.List;
 public class MigrationManager {
 
     private ArrayList<Wso2ISLoginCredentialsDAO> adminCredentials = new ArrayList<Wso2ISLoginCredentialsDAO>();
-
+    private static AuthzToken authzToken = new AuthzToken("empy_token");
     /*Add the credentials for all the tenants from which the profile should be migrated to Airavata DB*/
 
     public void setISLoginCredentials(){
@@ -120,7 +121,8 @@ public class MigrationManager {
             airavataUserProfile.setHomeOrganization(ISProfile.getOrganization());
             airavataUserProfile.setPhones(ISProfile.getPhones());
             airavataUserProfile.setCountry(ISProfile.getCountry());
-            client.addUserProfile(airavataUserProfile);
+            //TODO: fix authtzToken, for now we are using empty token
+            client.addUserProfile(authzToken, airavataUserProfile);
         }
         return false;
     }
