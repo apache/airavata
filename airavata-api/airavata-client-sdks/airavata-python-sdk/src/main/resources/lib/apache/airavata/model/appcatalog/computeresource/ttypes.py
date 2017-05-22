@@ -464,6 +464,8 @@ class BatchQueue:
    - cpuPerNode
    - defaultNodeCount
    - defaultCPUCount
+   - defaultWalltime
+   - queueSpecificMacros
    - isDefaultQueue
   """
 
@@ -479,10 +481,12 @@ class BatchQueue:
     (8, TType.I32, 'cpuPerNode', None, None, ), # 8
     (9, TType.I32, 'defaultNodeCount', None, None, ), # 9
     (10, TType.I32, 'defaultCPUCount', None, None, ), # 10
-    (11, TType.BOOL, 'isDefaultQueue', None, None, ), # 11
+    (11, TType.I32, 'defaultWalltime', None, None, ), # 11
+    (12, TType.STRING, 'queueSpecificMacros', None, None, ), # 12
+    (13, TType.BOOL, 'isDefaultQueue', None, None, ), # 13
   )
 
-  def __init__(self, queueName=None, queueDescription=None, maxRunTime=None, maxNodes=None, maxProcessors=None, maxJobsInQueue=None, maxMemory=None, cpuPerNode=None, defaultNodeCount=None, defaultCPUCount=None, isDefaultQueue=None,):
+  def __init__(self, queueName=None, queueDescription=None, maxRunTime=None, maxNodes=None, maxProcessors=None, maxJobsInQueue=None, maxMemory=None, cpuPerNode=None, defaultNodeCount=None, defaultCPUCount=None, defaultWalltime=None, queueSpecificMacros=None, isDefaultQueue=None,):
     self.queueName = queueName
     self.queueDescription = queueDescription
     self.maxRunTime = maxRunTime
@@ -493,6 +497,8 @@ class BatchQueue:
     self.cpuPerNode = cpuPerNode
     self.defaultNodeCount = defaultNodeCount
     self.defaultCPUCount = defaultCPUCount
+    self.defaultWalltime = defaultWalltime
+    self.queueSpecificMacros = queueSpecificMacros
     self.isDefaultQueue = isDefaultQueue
 
   def read(self, iprot):
@@ -555,6 +561,16 @@ class BatchQueue:
         else:
           iprot.skip(ftype)
       elif fid == 11:
+        if ftype == TType.I32:
+          self.defaultWalltime = iprot.readI32()
+        else:
+          iprot.skip(ftype)
+      elif fid == 12:
+        if ftype == TType.STRING:
+          self.queueSpecificMacros = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 13:
         if ftype == TType.BOOL:
           self.isDefaultQueue = iprot.readBool()
         else:
@@ -609,8 +625,16 @@ class BatchQueue:
       oprot.writeFieldBegin('defaultCPUCount', TType.I32, 10)
       oprot.writeI32(self.defaultCPUCount)
       oprot.writeFieldEnd()
+    if self.defaultWalltime is not None:
+      oprot.writeFieldBegin('defaultWalltime', TType.I32, 11)
+      oprot.writeI32(self.defaultWalltime)
+      oprot.writeFieldEnd()
+    if self.queueSpecificMacros is not None:
+      oprot.writeFieldBegin('queueSpecificMacros', TType.STRING, 12)
+      oprot.writeString(self.queueSpecificMacros)
+      oprot.writeFieldEnd()
     if self.isDefaultQueue is not None:
-      oprot.writeFieldBegin('isDefaultQueue', TType.BOOL, 11)
+      oprot.writeFieldBegin('isDefaultQueue', TType.BOOL, 13)
       oprot.writeBool(self.isDefaultQueue)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -634,6 +658,8 @@ class BatchQueue:
     value = (value * 31) ^ hash(self.cpuPerNode)
     value = (value * 31) ^ hash(self.defaultNodeCount)
     value = (value * 31) ^ hash(self.defaultCPUCount)
+    value = (value * 31) ^ hash(self.defaultWalltime)
+    value = (value * 31) ^ hash(self.queueSpecificMacros)
     value = (value * 31) ^ hash(self.isDefaultQueue)
     return value
 
@@ -1434,7 +1460,7 @@ class ComputeResourceDescription:
    - cpusPerNode
    - defaultNodeCount
    - defaultCPUCount
-   - defaultWallltime
+   - defaultWalltime
   """
 
   thrift_spec = (
@@ -1456,10 +1482,10 @@ class ComputeResourceDescription:
     (15, TType.I32, 'cpusPerNode', None, None, ), # 15
     (16, TType.I32, 'defaultNodeCount', None, None, ), # 16
     (17, TType.I32, 'defaultCPUCount', None, None, ), # 17
-    (18, TType.I32, 'defaultWallltime', None, None, ), # 18
+    (18, TType.I32, 'defaultWalltime', None, None, ), # 18
   )
 
-  def __init__(self, computeResourceId=thrift_spec[1][4], hostName=None, hostAliases=None, ipAddresses=None, resourceDescription=None, enabled=None, batchQueues=None, fileSystems=None, jobSubmissionInterfaces=None, dataMovementInterfaces=None, maxMemoryPerNode=None, gatewayUsageReporting=None, gatewayUsageModuleLoadCommand=None, gatewayUsageExecutable=None, cpusPerNode=None, defaultNodeCount=None, defaultCPUCount=None, defaultWallltime=None,):
+  def __init__(self, computeResourceId=thrift_spec[1][4], hostName=None, hostAliases=None, ipAddresses=None, resourceDescription=None, enabled=None, batchQueues=None, fileSystems=None, jobSubmissionInterfaces=None, dataMovementInterfaces=None, maxMemoryPerNode=None, gatewayUsageReporting=None, gatewayUsageModuleLoadCommand=None, gatewayUsageExecutable=None, cpusPerNode=None, defaultNodeCount=None, defaultCPUCount=None, defaultWalltime=None,):
     self.computeResourceId = computeResourceId
     self.hostName = hostName
     self.hostAliases = hostAliases
@@ -1477,7 +1503,7 @@ class ComputeResourceDescription:
     self.cpusPerNode = cpusPerNode
     self.defaultNodeCount = defaultNodeCount
     self.defaultCPUCount = defaultCPUCount
-    self.defaultWallltime = defaultWallltime
+    self.defaultWalltime = defaultWalltime
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -1609,7 +1635,7 @@ class ComputeResourceDescription:
           iprot.skip(ftype)
       elif fid == 18:
         if ftype == TType.I32:
-          self.defaultWallltime = iprot.readI32()
+          self.defaultWalltime = iprot.readI32()
         else:
           iprot.skip(ftype)
       else:
@@ -1709,9 +1735,9 @@ class ComputeResourceDescription:
       oprot.writeFieldBegin('defaultCPUCount', TType.I32, 17)
       oprot.writeI32(self.defaultCPUCount)
       oprot.writeFieldEnd()
-    if self.defaultWallltime is not None:
-      oprot.writeFieldBegin('defaultWallltime', TType.I32, 18)
-      oprot.writeI32(self.defaultWallltime)
+    if self.defaultWalltime is not None:
+      oprot.writeFieldBegin('defaultWalltime', TType.I32, 18)
+      oprot.writeI32(self.defaultWalltime)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -1743,7 +1769,7 @@ class ComputeResourceDescription:
     value = (value * 31) ^ hash(self.cpusPerNode)
     value = (value * 31) ^ hash(self.defaultNodeCount)
     value = (value * 31) ^ hash(self.defaultCPUCount)
-    value = (value * 31) ^ hash(self.defaultWallltime)
+    value = (value * 31) ^ hash(self.defaultWalltime)
     return value
 
   def __repr__(self):

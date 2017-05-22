@@ -160,7 +160,9 @@ struct BatchQueue {
     8: optional i32 cpuPerNode,
     9: optional i32 defaultNodeCount,
     10: optional i32 defaultCPUCount,
-    11: optional bool isDefaultQueue
+    11: optional i32 defaultWalltime,
+    12: optional string queueSpecificMacros,
+    13: optional bool isDefaultQueue
 }
 
 
@@ -361,5 +363,5 @@ struct ComputeResourceDescription {
     15: optional i32 cpusPerNode,
     16: optional i32 defaultNodeCount,
     17: optional i32 defaultCPUCount,
-    18: optional i32 defaultWallltime,
+    18: optional i32 defaultWalltime,
 }

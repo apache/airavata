@@ -66,6 +66,12 @@ public class BatchQueue implements Serializable {
 	@Column(name = "DEFAULT_CPU_COUNT")
 	private int defaultCPUCount;
 
+	@Column(name = "DEFAULT_WALLTIME")
+	private int defaultWalltime;
+
+	@Column(name = "QUEUE_SPECIFIC_MACROS")
+	private String queueSpecificMacros;
+
 	@Column(name = "IS_DEFAULT_QUEUE")
 	private boolean isDefaultQueue;
 
@@ -165,11 +171,27 @@ public class BatchQueue implements Serializable {
 		this.defaultCPUCount = defaultCPUCount;
 	}
 
-	public boolean isDefaultQueue() {
+	public boolean getIsDefaultQueue() {
 		return isDefaultQueue;
 	}
 
 	public void setIsDefaultQueue(boolean isDefaultQueue) {
 		this.isDefaultQueue = isDefaultQueue;
+	}
+
+	public int getDefaultWalltime() {
+		return defaultWalltime;
+	}
+
+	public void setDefaultWalltime(int defaultWalltime) {
+		this.defaultWalltime = defaultWalltime;
+	}
+
+	public String getQueueSpecificMacros() {
+		return queueSpecificMacros;
+	}
+
+	public void setQueueSpecificMacros(String queueSpecificMacros) {
+		this.queueSpecificMacros = queueSpecificMacros;
 	}
 }
