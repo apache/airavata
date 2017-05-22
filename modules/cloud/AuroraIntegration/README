@@ -1,0 +1,45 @@
+Requirements:
+1: Apache Aurora
+2: Apache Mesos
+
+Installation:
+Please follow the link to set up Apache Aurora and Apache Mesos
+1) http://mesos.apache.org/gettingstarted/ OR https://open.mesosphere.com/getting-started/install/
+2) http://aurora.apache.org/documentation/latest/operations/installation/
+
+Usage:
+
+Options:
+-o = create/kill
+-n = name of the job
+-r = amount of RAM
+-c = CPU count
+-d = disk space
+-i = executable/image
+
+Examples:
+
+To create and launch: AuroraAdminDriver -o create -r 1024 -n batik -c 2.0 -d 1000 -i gouravr/dacapo:tag9
+Sample Output: 
+	Job create succeeded: job url=http://127.0.1.1:8081/scheduler/benchmarks/devel/batik
+
+To kill: AuroraAdminDriver -o kill -n batik
+Sample Output: 
+	Successfully killed instances [0]
+	Job killall succeeded
+
+To update: AuroraAdminDriver -o update -n batik
+
+To retrieve update information: AuroraAdminDriver -o update-info -n batik
+
+To pause an update: AuroraAdminDriver -o update-pause -n batik
+
+To list the update progress: AuroraAdminDriver -o update-list -n batik
+
+To abort an update: AuroraAdminDriver -o update-abort -n batik
+
+To resume an update: AuroraAdminDriver -o update-resume -n batik
+
+To restart a job: AuroraAdminDriver -o restart -n batik
+
+To execute a command inside a running job: AuroraAdminDriver -o command -n batik -cmd some-command (eg: ls)
