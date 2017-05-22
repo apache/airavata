@@ -454,6 +454,16 @@ void BatchQueue::__set_defaultCPUCount(const int32_t val) {
 __isset.defaultCPUCount = true;
 }
 
+void BatchQueue::__set_defaultWalltime(const int32_t val) {
+  this->defaultWalltime = val;
+__isset.defaultWalltime = true;
+}
+
+void BatchQueue::__set_queueSpecificMacros(const std::string& val) {
+  this->queueSpecificMacros = val;
+__isset.queueSpecificMacros = true;
+}
+
 void BatchQueue::__set_isDefaultQueue(const bool val) {
   this->isDefaultQueue = val;
 __isset.isDefaultQueue = true;
@@ -562,6 +572,22 @@ uint32_t BatchQueue::read(::apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 11:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->defaultWalltime);
+          this->__isset.defaultWalltime = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 12:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->queueSpecificMacros);
+          this->__isset.queueSpecificMacros = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 13:
         if (ftype == ::apache::thrift::protocol::T_BOOL) {
           xfer += iprot->readBool(this->isDefaultQueue);
           this->__isset.isDefaultQueue = true;
@@ -637,8 +663,18 @@ uint32_t BatchQueue::write(::apache::thrift::protocol::TProtocol* oprot) const {
     xfer += oprot->writeI32(this->defaultCPUCount);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.defaultWalltime) {
+    xfer += oprot->writeFieldBegin("defaultWalltime", ::apache::thrift::protocol::T_I32, 11);
+    xfer += oprot->writeI32(this->defaultWalltime);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.queueSpecificMacros) {
+    xfer += oprot->writeFieldBegin("queueSpecificMacros", ::apache::thrift::protocol::T_STRING, 12);
+    xfer += oprot->writeString(this->queueSpecificMacros);
+    xfer += oprot->writeFieldEnd();
+  }
   if (this->__isset.isDefaultQueue) {
-    xfer += oprot->writeFieldBegin("isDefaultQueue", ::apache::thrift::protocol::T_BOOL, 11);
+    xfer += oprot->writeFieldBegin("isDefaultQueue", ::apache::thrift::protocol::T_BOOL, 13);
     xfer += oprot->writeBool(this->isDefaultQueue);
     xfer += oprot->writeFieldEnd();
   }
@@ -659,6 +695,8 @@ void swap(BatchQueue &a, BatchQueue &b) {
   swap(a.cpuPerNode, b.cpuPerNode);
   swap(a.defaultNodeCount, b.defaultNodeCount);
   swap(a.defaultCPUCount, b.defaultCPUCount);
+  swap(a.defaultWalltime, b.defaultWalltime);
+  swap(a.queueSpecificMacros, b.queueSpecificMacros);
   swap(a.isDefaultQueue, b.isDefaultQueue);
   swap(a.__isset, b.__isset);
 }
@@ -674,6 +712,8 @@ BatchQueue::BatchQueue(const BatchQueue& other21) {
   cpuPerNode = other21.cpuPerNode;
   defaultNodeCount = other21.defaultNodeCount;
   defaultCPUCount = other21.defaultCPUCount;
+  defaultWalltime = other21.defaultWalltime;
+  queueSpecificMacros = other21.queueSpecificMacros;
   isDefaultQueue = other21.isDefaultQueue;
   __isset = other21.__isset;
 }
@@ -688,6 +728,8 @@ BatchQueue& BatchQueue::operator=(const BatchQueue& other22) {
   cpuPerNode = other22.cpuPerNode;
   defaultNodeCount = other22.defaultNodeCount;
   defaultCPUCount = other22.defaultCPUCount;
+  defaultWalltime = other22.defaultWalltime;
+  queueSpecificMacros = other22.queueSpecificMacros;
   isDefaultQueue = other22.isDefaultQueue;
   __isset = other22.__isset;
   return *this;
@@ -705,6 +747,8 @@ void BatchQueue::printTo(std::ostream& out) const {
   out << ", " << "cpuPerNode="; (__isset.cpuPerNode ? (out << to_string(cpuPerNode)) : (out << "<null>"));
   out << ", " << "defaultNodeCount="; (__isset.defaultNodeCount ? (out << to_string(defaultNodeCount)) : (out << "<null>"));
   out << ", " << "defaultCPUCount="; (__isset.defaultCPUCount ? (out << to_string(defaultCPUCount)) : (out << "<null>"));
+  out << ", " << "defaultWalltime="; (__isset.defaultWalltime ? (out << to_string(defaultWalltime)) : (out << "<null>"));
+  out << ", " << "queueSpecificMacros="; (__isset.queueSpecificMacros ? (out << to_string(queueSpecificMacros)) : (out << "<null>"));
   out << ", " << "isDefaultQueue="; (__isset.isDefaultQueue ? (out << to_string(isDefaultQueue)) : (out << "<null>"));
   out << ")";
 }
@@ -1807,9 +1851,9 @@ void ComputeResourceDescription::__set_defaultCPUCount(const int32_t val) {
 __isset.defaultCPUCount = true;
 }
 
-void ComputeResourceDescription::__set_defaultWallltime(const int32_t val) {
-  this->defaultWallltime = val;
-__isset.defaultWallltime = true;
+void ComputeResourceDescription::__set_defaultWalltime(const int32_t val) {
+  this->defaultWalltime = val;
+__isset.defaultWalltime = true;
 }
 
 uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol* iprot) {
@@ -2050,8 +2094,8 @@ uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol*
         break;
       case 18:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->defaultWallltime);
-          this->__isset.defaultWallltime = true;
+          xfer += iprot->readI32(this->defaultWalltime);
+          this->__isset.defaultWalltime = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -2209,9 +2253,9 @@ uint32_t ComputeResourceDescription::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeI32(this->defaultCPUCount);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.defaultWallltime) {
-    xfer += oprot->writeFieldBegin("defaultWallltime", ::apache::thrift::protocol::T_I32, 18);
-    xfer += oprot->writeI32(this->defaultWallltime);
+  if (this->__isset.defaultWalltime) {
+    xfer += oprot->writeFieldBegin("defaultWalltime", ::apache::thrift::protocol::T_I32, 18);
+    xfer += oprot->writeI32(this->defaultWalltime);
     xfer += oprot->writeFieldEnd();
   }
   xfer += oprot->writeFieldStop();
@@ -2238,7 +2282,7 @@ void swap(ComputeResourceDescription &a, ComputeResourceDescription &b) {
   swap(a.cpusPerNode, b.cpusPerNode);
   swap(a.defaultNodeCount, b.defaultNodeCount);
   swap(a.defaultCPUCount, b.defaultCPUCount);
-  swap(a.defaultWallltime, b.defaultWallltime);
+  swap(a.defaultWalltime, b.defaultWalltime);
   swap(a.__isset, b.__isset);
 }
 
@@ -2260,7 +2304,7 @@ ComputeResourceDescription::ComputeResourceDescription(const ComputeResourceDesc
   cpusPerNode = other94.cpusPerNode;
   defaultNodeCount = other94.defaultNodeCount;
   defaultCPUCount = other94.defaultCPUCount;
-  defaultWallltime = other94.defaultWallltime;
+  defaultWalltime = other94.defaultWalltime;
   __isset = other94.__isset;
 }
 ComputeResourceDescription& ComputeResourceDescription::operator=(const ComputeResourceDescription& other95) {
@@ -2281,7 +2325,7 @@ ComputeResourceDescription& ComputeResourceDescription::operator=(const ComputeR
   cpusPerNode = other95.cpusPerNode;
   defaultNodeCount = other95.defaultNodeCount;
   defaultCPUCount = other95.defaultCPUCount;
-  defaultWallltime = other95.defaultWallltime;
+  defaultWalltime = other95.defaultWalltime;
   __isset = other95.__isset;
   return *this;
 }
@@ -2305,7 +2349,7 @@ void ComputeResourceDescription::printTo(std::ostream& out) const {
   out << ", " << "cpusPerNode="; (__isset.cpusPerNode ? (out << to_string(cpusPerNode)) : (out << "<null>"));
   out << ", " << "defaultNodeCount="; (__isset.defaultNodeCount ? (out << to_string(defaultNodeCount)) : (out << "<null>"));
   out << ", " << "defaultCPUCount="; (__isset.defaultCPUCount ? (out << to_string(defaultCPUCount)) : (out << "<null>"));
-  out << ", " << "defaultWallltime="; (__isset.defaultWallltime ? (out << to_string(defaultWallltime)) : (out << "<null>"));
+  out << ", " << "defaultWalltime="; (__isset.defaultWalltime ? (out << to_string(defaultWalltime)) : (out << "<null>"));
   out << ")";
 }
 

@@ -226,7 +226,7 @@ inline std::ostream& operator<<(std::ostream& out, const ResourceJobManager& obj
 }
 
 typedef struct _BatchQueue__isset {
-  _BatchQueue__isset() : queueDescription(false), maxRunTime(false), maxNodes(false), maxProcessors(false), maxJobsInQueue(false), maxMemory(false), cpuPerNode(false), defaultNodeCount(false), defaultCPUCount(false), isDefaultQueue(false) {}
+  _BatchQueue__isset() : queueDescription(false), maxRunTime(false), maxNodes(false), maxProcessors(false), maxJobsInQueue(false), maxMemory(false), cpuPerNode(false), defaultNodeCount(false), defaultCPUCount(false), defaultWalltime(false), queueSpecificMacros(false), isDefaultQueue(false) {}
   bool queueDescription :1;
   bool maxRunTime :1;
   bool maxNodes :1;
@@ -236,6 +236,8 @@ typedef struct _BatchQueue__isset {
   bool cpuPerNode :1;
   bool defaultNodeCount :1;
   bool defaultCPUCount :1;
+  bool defaultWalltime :1;
+  bool queueSpecificMacros :1;
   bool isDefaultQueue :1;
 } _BatchQueue__isset;
 
@@ -244,7 +246,7 @@ class BatchQueue {
 
   BatchQueue(const BatchQueue&);
   BatchQueue& operator=(const BatchQueue&);
-  BatchQueue() : queueName(), queueDescription(), maxRunTime(0), maxNodes(0), maxProcessors(0), maxJobsInQueue(0), maxMemory(0), cpuPerNode(0), defaultNodeCount(0), defaultCPUCount(0), isDefaultQueue(0) {
+  BatchQueue() : queueName(), queueDescription(), maxRunTime(0), maxNodes(0), maxProcessors(0), maxJobsInQueue(0), maxMemory(0), cpuPerNode(0), defaultNodeCount(0), defaultCPUCount(0), defaultWalltime(0), queueSpecificMacros(), isDefaultQueue(0) {
   }
 
   virtual ~BatchQueue() throw();
@@ -258,6 +260,8 @@ class BatchQueue {
   int32_t cpuPerNode;
   int32_t defaultNodeCount;
   int32_t defaultCPUCount;
+  int32_t defaultWalltime;
+  std::string queueSpecificMacros;
   bool isDefaultQueue;
 
   _BatchQueue__isset __isset;
@@ -281,6 +285,10 @@ class BatchQueue {
   void __set_defaultNodeCount(const int32_t val);
 
   void __set_defaultCPUCount(const int32_t val);
+
+  void __set_defaultWalltime(const int32_t val);
+
+  void __set_queueSpecificMacros(const std::string& val);
 
   void __set_isDefaultQueue(const bool val);
 
@@ -323,6 +331,14 @@ class BatchQueue {
     if (__isset.defaultCPUCount != rhs.__isset.defaultCPUCount)
       return false;
     else if (__isset.defaultCPUCount && !(defaultCPUCount == rhs.defaultCPUCount))
+      return false;
+    if (__isset.defaultWalltime != rhs.__isset.defaultWalltime)
+      return false;
+    else if (__isset.defaultWalltime && !(defaultWalltime == rhs.defaultWalltime))
+      return false;
+    if (__isset.queueSpecificMacros != rhs.__isset.queueSpecificMacros)
+      return false;
+    else if (__isset.queueSpecificMacros && !(queueSpecificMacros == rhs.queueSpecificMacros))
       return false;
     if (__isset.isDefaultQueue != rhs.__isset.isDefaultQueue)
       return false;
@@ -711,7 +727,7 @@ inline std::ostream& operator<<(std::ostream& out, const JobSubmissionInterface&
 }
 
 typedef struct _ComputeResourceDescription__isset {
-  _ComputeResourceDescription__isset() : hostAliases(false), ipAddresses(false), resourceDescription(false), enabled(false), batchQueues(false), fileSystems(false), jobSubmissionInterfaces(false), dataMovementInterfaces(false), maxMemoryPerNode(false), gatewayUsageReporting(false), gatewayUsageModuleLoadCommand(false), gatewayUsageExecutable(false), cpusPerNode(false), defaultNodeCount(false), defaultCPUCount(false), defaultWallltime(false) {}
+  _ComputeResourceDescription__isset() : hostAliases(false), ipAddresses(false), resourceDescription(false), enabled(false), batchQueues(false), fileSystems(false), jobSubmissionInterfaces(false), dataMovementInterfaces(false), maxMemoryPerNode(false), gatewayUsageReporting(false), gatewayUsageModuleLoadCommand(false), gatewayUsageExecutable(false), cpusPerNode(false), defaultNodeCount(false), defaultCPUCount(false), defaultWalltime(false) {}
   bool hostAliases :1;
   bool ipAddresses :1;
   bool resourceDescription :1;
@@ -727,7 +743,7 @@ typedef struct _ComputeResourceDescription__isset {
   bool cpusPerNode :1;
   bool defaultNodeCount :1;
   bool defaultCPUCount :1;
-  bool defaultWallltime :1;
+  bool defaultWalltime :1;
 } _ComputeResourceDescription__isset;
 
 class ComputeResourceDescription {
@@ -735,7 +751,7 @@ class ComputeResourceDescription {
 
   ComputeResourceDescription(const ComputeResourceDescription&);
   ComputeResourceDescription& operator=(const ComputeResourceDescription&);
-  ComputeResourceDescription() : computeResourceId("DO_NOT_SET_AT_CLIENTS"), hostName(), resourceDescription(), enabled(0), maxMemoryPerNode(0), gatewayUsageReporting(0), gatewayUsageModuleLoadCommand(), gatewayUsageExecutable(), cpusPerNode(0), defaultNodeCount(0), defaultCPUCount(0), defaultWallltime(0) {
+  ComputeResourceDescription() : computeResourceId("DO_NOT_SET_AT_CLIENTS"), hostName(), resourceDescription(), enabled(0), maxMemoryPerNode(0), gatewayUsageReporting(0), gatewayUsageModuleLoadCommand(), gatewayUsageExecutable(), cpusPerNode(0), defaultNodeCount(0), defaultCPUCount(0), defaultWalltime(0) {
   }
 
   virtual ~ComputeResourceDescription() throw();
@@ -756,7 +772,7 @@ class ComputeResourceDescription {
   int32_t cpusPerNode;
   int32_t defaultNodeCount;
   int32_t defaultCPUCount;
-  int32_t defaultWallltime;
+  int32_t defaultWalltime;
 
   _ComputeResourceDescription__isset __isset;
 
@@ -794,7 +810,7 @@ class ComputeResourceDescription {
 
   void __set_defaultCPUCount(const int32_t val);
 
-  void __set_defaultWallltime(const int32_t val);
+  void __set_defaultWalltime(const int32_t val);
 
   bool operator == (const ComputeResourceDescription & rhs) const
   {
@@ -862,9 +878,9 @@ class ComputeResourceDescription {
       return false;
     else if (__isset.defaultCPUCount && !(defaultCPUCount == rhs.defaultCPUCount))
       return false;
-    if (__isset.defaultWallltime != rhs.__isset.defaultWallltime)
+    if (__isset.defaultWalltime != rhs.__isset.defaultWalltime)
       return false;
-    else if (__isset.defaultWallltime && !(defaultWallltime == rhs.defaultWallltime))
+    else if (__isset.defaultWalltime && !(defaultWalltime == rhs.defaultWalltime))
       return false;
     return true;
   }

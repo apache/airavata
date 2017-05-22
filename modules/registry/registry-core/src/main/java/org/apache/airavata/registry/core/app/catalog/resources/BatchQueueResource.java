@@ -51,6 +51,8 @@ public class BatchQueueResource extends AppCatAbstractResource {
 	private int cpuPerNode;
 	private int defaultNodeCount;
 	private int defaultCPUCount;
+	private int defaultWalltime;
+	private String queueSpecificMacros;
 	private boolean isDefaultQueue;
 
 
@@ -275,6 +277,8 @@ public class BatchQueueResource extends AppCatAbstractResource {
 			batchQueue.setCpuPerNode(getCpuPerNode());
 			batchQueue.setDefaultCPUCount(getDefaultCPUCount());
 			batchQueue.setDefaultNodeCount(getDefaultNodeCount());
+			batchQueue.setDefaultWalltime(getDefaultWalltime());
+			batchQueue.setQueueSpecificMacros(getQueueSpecificMacros());
 			batchQueue.setIsDefaultQueue(isDefaultQueue());
 			if (existingBatchQueue == null) {
 				em.persist(batchQueue);
@@ -436,5 +440,21 @@ public class BatchQueueResource extends AppCatAbstractResource {
 
 	public void setIsDefaultQueue(boolean isDefaultQueue) {
 		this.isDefaultQueue = isDefaultQueue;
+	}
+
+	public int getDefaultWalltime() {
+		return defaultWalltime;
+	}
+
+	public void setDefaultWalltime(int defaultWalltime) {
+		this.defaultWalltime = defaultWalltime;
+	}
+
+	public String getQueueSpecificMacros() {
+		return queueSpecificMacros;
+	}
+
+	public void setQueueSpecificMacros(String queueSpecificMacros) {
+		this.queueSpecificMacros = queueSpecificMacros;
 	}
 }
