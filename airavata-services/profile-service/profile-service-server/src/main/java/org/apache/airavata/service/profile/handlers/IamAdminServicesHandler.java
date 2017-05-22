@@ -21,15 +21,17 @@
 
 package org.apache.airavata.service.profile.handlers;
 
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.security.util.TrustStoreManager;
 import org.apache.airavata.service.profile.iam.admin.services.core.impl.TenantManagementKeycloakImpl;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
-import org.apache.airavata.service.profile.iam.admin.services.cpi.iam_admin_services_cpiConstants;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
+import org.apache.airavata.service.profile.iam.admin.services.cpi.iam_admin_services_cpiConstants;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -41,6 +43,17 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     private final static Logger logger = LoggerFactory.getLogger(IamAdminServicesHandler.class);
 
+    public IamAdminServicesHandler() {
+
+        try {
+            //initialize SSL context with the trust store that contains the CA cert signing the Keycloak server cert
+            TrustStoreManager trustStoreManager = new TrustStoreManager();
+            trustStoreManager.initializeTrustStoreManager(ServerSettings.getTrustStorePath(),
+                    ServerSettings.getTrustStorePassword());
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
 
     @Override
     public String getAPIVersion(AuthzToken authzToken) throws IamAdminServicesException, AuthorizationException {
