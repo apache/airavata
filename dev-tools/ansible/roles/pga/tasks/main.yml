@@ -147,6 +147,14 @@
   notify:
     - restart httpd
 
+- name: copy modified ssl.conf file
+  copy: src=ssl.conf dest={{ ssl_conf_file_location[ansible_os_family] }} backup=yes
+  become: yes
+  notify:
+    - restart httpd
+  # TODO: make the same fix (disabling SSLv3) on Debian systems too
+  when: ansible_os_family == "RedHat"
+
 - name: copy pga user's SSH key for the gateway data store
   authorized_key:
     user: "{{user}}"

@@ -25,6 +25,8 @@
     ErrorLog {{ httpd_log_dir[ansible_os_family] }}/{{ gateway_id }}.error.log
     CustomLog {{ httpd_log_dir[ansible_os_family] }}/{{ gateway_id }}.requests.log combined
     SSLEngine on
+    # Disable SSLv3 which is vulnerable to the POODLE attack
+    SSLProtocol All -SSLv2 -SSLv3
     SSLCertificateFile {{ ssl_certificate_file }}
     SSLCertificateChainFile {{ ssl_certificate_chain_file }}
     SSLCertificateKeyFile {{ ssl_certificate_key_file }}
