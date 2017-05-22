@@ -165,11 +165,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>user-profile-stubs</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
             <artifactId>profile-service-stubs</artifactId>
             <version>${project.version}</version>
         </dependency>
