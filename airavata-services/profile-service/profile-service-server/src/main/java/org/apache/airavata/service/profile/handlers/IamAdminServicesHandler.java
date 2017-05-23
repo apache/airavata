@@ -37,23 +37,16 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.List;
 
 public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     private final static Logger logger = LoggerFactory.getLogger(IamAdminServicesHandler.class);
 
-    public IamAdminServicesHandler() {
-
-        try {
-            //initialize SSL context with the trust store that contains the CA cert signing the Keycloak server cert
-            TrustStoreManager trustStoreManager = new TrustStoreManager();
-            trustStoreManager.initializeTrustStoreManager(ServerSettings.getTrustStorePath(),
-                    ServerSettings.getTrustStorePassword());
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-    }
 
     @Override
     public String getAPIVersion(AuthzToken authzToken) throws IamAdminServicesException, AuthorizationException {
