@@ -60,6 +60,19 @@ public class GroupMembershipRepository extends AbstractRepository<GroupMembershi
         return groups;
     }
 
+    //TODO Replace with prepared statements
+    public List<UserGroup> getAllMemberGroupsForUser(String domainId, String userId) throws SharingRegistryException {
+        String queryString = "SELECT DISTINCT G FROM " + UserGroupEntity.class.getSimpleName() + " G, " + GroupMembershipEntity.class.getSimpleName()
+                + " GM WHERE GM." + DBConstants.GroupMembershipTable.PARENT_ID + " = G." + DBConstants.UserGroupTable.GROUP_ID + " AND " +
+                "GM." + DBConstants.GroupMembershipTable.DOMAIN_ID + " = G." + DBConstants.UserGroupTable.DOMAIN_ID + " AND " +
+                "GM." + DBConstants.GroupMembershipTable.DOMAIN_ID+"='"+domainId + "' AND "+
+                "GM." + DBConstants.GroupMembershipTable.CHILD_ID+"='"+userId + "' AND GM." + DBConstants.GroupMembershipTable.CHILD_TYPE
+                + "='" + GroupChildType.USER.toString() + "'";
+        UserGroupRepository userGroupRepository = new UserGroupRepository();
+        List<UserGroup> groups = userGroupRepository.select(queryString, 0, -1);
+        return groups;
+    }
+
     public List<GroupMembership> getAllParentMembershipsForChild(String domainId, String childId) throws SharingRegistryException {
         List<GroupMembership> finalParentGroups = new ArrayList<>();
         Map<String, String> filters = new HashMap<>();

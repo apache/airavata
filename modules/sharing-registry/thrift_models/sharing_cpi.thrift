@@ -21,14 +21,13 @@
 namespace java org.apache.airavata.sharing.registry.service.cpi
 
 include "./sharing_models.thrift"
-include "../../../thrift-interface-descriptions/airavata-apis/airavata_errors.thrift"
 
 service SharingRegistryService {
 
     /**
       <p>API method to create a new domain</p>
     */
-    string createDomain(1: required sharing_models.Domain domain) throws (1: sharing_models.SharingRegistryException sre, 2: airavata_errors.DuplicateEntryException dee)
+    string createDomain(1: required sharing_models.Domain domain) throws (1: sharing_models.SharingRegistryException sre, 2: sharing_models.DuplicateEntryException dee)
     /**
      <p>API method to update a domain</p>
     */
@@ -53,7 +52,7 @@ service SharingRegistryService {
     /**
      <p>API method to register a user in the system</p>
     */
-    string createUser(1: required sharing_models.User user) throws (1: sharing_models.SharingRegistryException sre, 2: airavata_errors.DuplicateEntryException dee)
+    string createUser(1: required sharing_models.User user) throws (1: sharing_models.SharingRegistryException sre, 2: sharing_models.DuplicateEntryException dee)
     /**
      <p>API method to update existing user</p>
     */
@@ -128,10 +127,12 @@ service SharingRegistryService {
     */
     bool removeChildGroupFromParentGroup(1: required string domainId, 2: required string childId, 3: required string groupId) throws (1: sharing_models.SharingRegistryException sre);
 
+    list<sharing_models.UserGroup> getAllMemberGroupsForUser(1: required string domainId, 2: required string userId) throws (1: sharing_models.SharingRegistryException sre);
+
     /**
      <p>API method to create a new entity type</p>
     */
-    string createEntityType(1: required sharing_models.EntityType entityType) throws (1: sharing_models.SharingRegistryException sre, 2: airavata_errors.DuplicateEntryException dee)
+    string createEntityType(1: required sharing_models.EntityType entityType) throws (1: sharing_models.SharingRegistryException sre, 2: sharing_models.DuplicateEntryException dee)
     /**
      <p>API method to update entity type</p>
     */
@@ -190,7 +191,7 @@ service SharingRegistryService {
     /**
      <p>API method to create permission type</p>
     */
-    string createPermissionType(1: required sharing_models.PermissionType permissionType) throws (1: sharing_models.SharingRegistryException sre, 2: airavata_errors.DuplicateEntryException dee)
+    string createPermissionType(1: required sharing_models.PermissionType permissionType) throws (1: sharing_models.SharingRegistryException sre, 2: sharing_models.DuplicateEntryException dee)
     /**
      <p>API method to update permission type</p>
     */

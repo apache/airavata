@@ -20,7 +20,6 @@
 package org.apache.airavata.sharing.registry.server;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.model.error.DuplicateEntryException;
 import org.apache.airavata.sharing.registry.db.entities.*;
 import org.apache.airavata.sharing.registry.db.repositories.*;
 import org.apache.airavata.sharing.registry.db.utils.DBConstants;
@@ -460,6 +459,17 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             groupMembershipPK.setDomainId(domainId);
             (new GroupMembershipRepository()).delete(groupMembershipPK);
             return true;
+        }catch (SharingRegistryException ex) {
+            logger.error(ex.getMessage(), ex);
+            throw ex;
+        }
+    }
+
+    @Override
+    public List<UserGroup> getAllMemberGroupsForUser(String domainId, String userId) throws SharingRegistryException, TException {
+        try{
+            GroupMembershipRepository groupMembershipRepository = new GroupMembershipRepository();
+            return groupMembershipRepository.getAllMemberGroupsForUser(domainId, userId);
         }catch (SharingRegistryException ex) {
             logger.error(ex.getMessage(), ex);
             throw ex;

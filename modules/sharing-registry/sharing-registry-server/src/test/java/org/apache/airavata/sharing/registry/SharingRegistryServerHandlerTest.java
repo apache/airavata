@@ -111,6 +111,7 @@ public class SharingRegistryServerHandlerTest {
         userGroup1.setUpdatedTime(System.currentTimeMillis());
 
         Assert.assertNotNull(sharingRegistryServerHandler.createGroup(userGroup1));
+        Assert.assertTrue(sharingRegistryServerHandler.getAllMemberGroupsForUser(domainId, userId1).size() == 1);
 
         UserGroup userGroup2 = new UserGroup();
         String groupName2 = "test-group-2." + System.currentTimeMillis();
@@ -128,7 +129,10 @@ public class SharingRegistryServerHandlerTest {
         Assert.assertNotNull(sharingRegistryServerHandler.createGroup(userGroup2));
 
         sharingRegistryServerHandler.addUsersToGroup(domainId, Arrays.asList(userId1), groupId1);
+
         sharingRegistryServerHandler.addUsersToGroup(domainId, Arrays.asList(userId2, userId3), groupId2);
+        Assert.assertTrue(sharingRegistryServerHandler.getAllMemberGroupsForUser(domainId, userId3).size() == 1);
+
         sharingRegistryServerHandler.addChildGroupsToParentGroup(domainId, Arrays.asList(groupId2), groupId1);
 
         Assert.assertTrue(sharingRegistryServerHandler.getGroupMembersOfTypeGroup(domainId, groupId1, 0, 10).size() == 1);
