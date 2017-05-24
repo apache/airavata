@@ -335,6 +335,10 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                 credential.setValue(newPassword);
                 credential.setTemporary(false);
                 retrievedUser.resetPassword(credential);
+                // Remove the UPDATE_PASSWORD required action
+                UserRepresentation userRepresentation = retrievedUser.toRepresentation();
+                userRepresentation.getRequiredActions().remove("UPDATE_PASSWORD");
+                retrievedUser.update(userRepresentation);
                 return true;
             }else{
                 logger.error("requested User not found");
