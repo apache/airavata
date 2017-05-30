@@ -60,8 +60,8 @@ public class ServerSettings extends ApplicationSettings {
 
     //User Profile onstants
 
-    public static final String USER_PROFILE_SERVER_HOST = "user.profile.server.host";
-    public static final String USER_PROFILE_SERVER_PORT = "user.profile.server.port";
+//    public static final String USER_PROFILE_SERVER_HOST = "user.profile.server.host";
+//    public static final String USER_PROFILE_SERVER_PORT = "user.profile.server.port";
 
     // Zookeeper + curator constants
     public static final String EMBEDDED_ZK = "embedded.zk";
