@@ -7,9 +7,7 @@ import org.apache.airavata.registry.core.repositories.workspacecatalog.UserProfi
 import org.apache.airavata.userprofile.crude.cpi.UserProfileCrudeService;
 import org.apache.thrift.TException;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Airavata on 11/11/2016.
@@ -69,13 +67,13 @@ public class UserProfileHandler implements UserProfileCrudeService.Iface {
 
     public UserProfile getUserProfileByName(String userName, String gatewayId) throws RegistryServiceException, TException {
 
-        UserProfile userProfile = userProfileRepository.getUserProfileByNameAndGateWay(userName, gatewayId);
+        UserProfile userProfile = userProfileRepository.getUserProfileByIdAndGateWay(userName, gatewayId);
         return userProfile;
     }
 
     public boolean doesUserExist(String userName, String gatewayId) throws RegistryServiceException, TException {
 
-        UserProfile userProfile = userProfileRepository.getUserProfileByNameAndGateWay(userName, gatewayId);
+        UserProfile userProfile = userProfileRepository.getUserProfileByIdAndGateWay(userName, gatewayId);
 
         if (null != userProfile)
             return true;
