@@ -54,7 +54,7 @@ public class AppCatalogThriftConversion {
         resource.setCpusPerNode(description.getCpusPerNode());
         resource.setDefaultNodeCount(description.getDefaultNodeCount());
         resource.setDefaultCPUCount(description.getDefaultCPUCount());
-        resource.setDefaultWalltime(description.getDefaultWallltime());
+        resource.setDefaultWalltime(description.getDefaultWalltime());
         resource.setEnabled(description.isEnabled());
         resource.setGatewayUsageReporting(description.isGatewayUsageReporting());
         resource.setGatewayUsageExec(description.getGatewayUsageExecutable());
@@ -80,7 +80,7 @@ public class AppCatalogThriftConversion {
         description.setCpusPerNode(resource.getCpusPerNode());
         description.setDefaultNodeCount(resource.getDefaultNodeCount());
         description.setDefaultCPUCount(resource.getDefaultCPUCount());
-        description.setDefaultWallltime(resource.getDefaultWalltime());
+        description.setDefaultWalltime(resource.getDefaultWalltime());
         description.setEnabled(resource.isEnabled());
         description.setGatewayUsageReporting(resource.isGatewayUsageReporting());
         description.setGatewayUsageExecutable(resource.getGatewayUsageExec());
@@ -265,6 +265,8 @@ public class AppCatalogThriftConversion {
         batchQueue.setCpuPerNode(resource.getCpuPerNode());
         batchQueue.setDefaultNodeCount(resource.getDefaultNodeCount());
         batchQueue.setDefaultCPUCount(resource.getDefaultCPUCount());
+        batchQueue.setDefaultWalltime(resource.getDefaultWalltime());
+        batchQueue.setQueueSpecificMacros(resource.getQueueSpecificMacros());
         batchQueue.setIsDefaultQueue(resource.isDefaultQueue());
         return batchQueue;
     }
@@ -281,6 +283,8 @@ public class AppCatalogThriftConversion {
         batchQueue.setCpuPerNode(resource.getCpuPerNode());
         batchQueue.setDefaultCPUCount(resource.getDefaultCPUCount());
         batchQueue.setDefaultNodeCount(resource.getDefaultNodeCount());
+        batchQueue.setDefaultWalltime(resource.getDefaultWalltime());
+        batchQueue.setQueueSpecificMacros(resource.getQueueSpecificMacros());
         batchQueue.setIsDefaultQueue(resource.isIsDefaultQueue());
         return batchQueue;
     }

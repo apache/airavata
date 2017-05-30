@@ -527,7 +527,9 @@ public class AppCatalogJPAUtils {
             batchQueueResource.setCpuPerNode(o.getCpuPerNode());
             batchQueueResource.setDefaultNodeCount(o.getDefaultNodeCount());
             batchQueueResource.setDefaultCPUCount(o.getDefaultCPUCount());
-            batchQueueResource.setIsDefaultQueue(o.isDefaultQueue());
+            batchQueueResource.setDefaultWalltime(o.getDefaultWalltime());
+            batchQueueResource.setQueueSpecificMacros(o.getQueueSpecificMacros());
+            batchQueueResource.setIsDefaultQueue(o.getIsDefaultQueue());
         }
         return batchQueueResource;
     }

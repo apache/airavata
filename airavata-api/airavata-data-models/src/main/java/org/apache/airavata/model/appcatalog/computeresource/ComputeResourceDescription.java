@@ -101,7 +101,7 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
   private static final org.apache.thrift.protocol.TField CPUS_PER_NODE_FIELD_DESC = new org.apache.thrift.protocol.TField("cpusPerNode", org.apache.thrift.protocol.TType.I32, (short)15);
   private static final org.apache.thrift.protocol.TField DEFAULT_NODE_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultNodeCount", org.apache.thrift.protocol.TType.I32, (short)16);
   private static final org.apache.thrift.protocol.TField DEFAULT_CPUCOUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultCPUCount", org.apache.thrift.protocol.TType.I32, (short)17);
-  private static final org.apache.thrift.protocol.TField DEFAULT_WALLLTIME_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultWallltime", org.apache.thrift.protocol.TType.I32, (short)18);
+  private static final org.apache.thrift.protocol.TField DEFAULT_WALLTIME_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultWalltime", org.apache.thrift.protocol.TType.I32, (short)18);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -126,7 +126,7 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
   private int cpusPerNode; // optional
   private int defaultNodeCount; // optional
   private int defaultCPUCount; // optional
-  private int defaultWallltime; // optional
+  private int defaultWalltime; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -147,7 +147,7 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
     CPUS_PER_NODE((short)15, "cpusPerNode"),
     DEFAULT_NODE_COUNT((short)16, "defaultNodeCount"),
     DEFAULT_CPUCOUNT((short)17, "defaultCPUCount"),
-    DEFAULT_WALLLTIME((short)18, "defaultWallltime");
+    DEFAULT_WALLTIME((short)18, "defaultWalltime");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -196,8 +196,8 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
           return DEFAULT_NODE_COUNT;
         case 17: // DEFAULT_CPUCOUNT
           return DEFAULT_CPUCOUNT;
-        case 18: // DEFAULT_WALLLTIME
-          return DEFAULT_WALLLTIME;
+        case 18: // DEFAULT_WALLTIME
+          return DEFAULT_WALLTIME;
         default:
           return null;
       }
@@ -244,9 +244,9 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
   private static final int __CPUSPERNODE_ISSET_ID = 3;
   private static final int __DEFAULTNODECOUNT_ISSET_ID = 4;
   private static final int __DEFAULTCPUCOUNT_ISSET_ID = 5;
-  private static final int __DEFAULTWALLLTIME_ISSET_ID = 6;
+  private static final int __DEFAULTWALLTIME_ISSET_ID = 6;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.HOST_ALIASES,_Fields.IP_ADDRESSES,_Fields.RESOURCE_DESCRIPTION,_Fields.ENABLED,_Fields.BATCH_QUEUES,_Fields.FILE_SYSTEMS,_Fields.JOB_SUBMISSION_INTERFACES,_Fields.DATA_MOVEMENT_INTERFACES,_Fields.MAX_MEMORY_PER_NODE,_Fields.GATEWAY_USAGE_REPORTING,_Fields.GATEWAY_USAGE_MODULE_LOAD_COMMAND,_Fields.GATEWAY_USAGE_EXECUTABLE,_Fields.CPUS_PER_NODE,_Fields.DEFAULT_NODE_COUNT,_Fields.DEFAULT_CPUCOUNT,_Fields.DEFAULT_WALLLTIME};
+  private static final _Fields optionals[] = {_Fields.HOST_ALIASES,_Fields.IP_ADDRESSES,_Fields.RESOURCE_DESCRIPTION,_Fields.ENABLED,_Fields.BATCH_QUEUES,_Fields.FILE_SYSTEMS,_Fields.JOB_SUBMISSION_INTERFACES,_Fields.DATA_MOVEMENT_INTERFACES,_Fields.MAX_MEMORY_PER_NODE,_Fields.GATEWAY_USAGE_REPORTING,_Fields.GATEWAY_USAGE_MODULE_LOAD_COMMAND,_Fields.GATEWAY_USAGE_EXECUTABLE,_Fields.CPUS_PER_NODE,_Fields.DEFAULT_NODE_COUNT,_Fields.DEFAULT_CPUCOUNT,_Fields.DEFAULT_WALLTIME};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -291,7 +291,7 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.DEFAULT_CPUCOUNT, new org.apache.thrift.meta_data.FieldMetaData("defaultCPUCount", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-    tmpMap.put(_Fields.DEFAULT_WALLLTIME, new org.apache.thrift.meta_data.FieldMetaData("defaultWallltime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.DEFAULT_WALLTIME, new org.apache.thrift.meta_data.FieldMetaData("defaultWalltime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ComputeResourceDescription.class, metaDataMap);
@@ -381,7 +381,7 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
     this.cpusPerNode = other.cpusPerNode;
     this.defaultNodeCount = other.defaultNodeCount;
     this.defaultCPUCount = other.defaultCPUCount;
-    this.defaultWallltime = other.defaultWallltime;
+    this.defaultWalltime = other.defaultWalltime;
   }
 
   public ComputeResourceDescription deepCopy() {
@@ -414,8 +414,8 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
     this.defaultNodeCount = 0;
     setDefaultCPUCountIsSet(false);
     this.defaultCPUCount = 0;
-    setDefaultWallltimeIsSet(false);
-    this.defaultWallltime = 0;
+    setDefaultWalltimeIsSet(false);
+    this.defaultWalltime = 0;
   }
 
   public String getComputeResourceId() {
@@ -889,26 +889,26 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __DEFAULTCPUCOUNT_ISSET_ID, value);
   }
 
-  public int getDefaultWallltime() {
-    return this.defaultWallltime;
+  public int getDefaultWalltime() {
+    return this.defaultWalltime;
   }
 
-  public void setDefaultWallltime(int defaultWallltime) {
-    this.defaultWallltime = defaultWallltime;
-    setDefaultWallltimeIsSet(true);
+  public void setDefaultWalltime(int defaultWalltime) {
+    this.defaultWalltime = defaultWalltime;
+    setDefaultWalltimeIsSet(true);
   }
 
-  public void unsetDefaultWallltime() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __DEFAULTWALLLTIME_ISSET_ID);
+  public void unsetDefaultWalltime() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __DEFAULTWALLTIME_ISSET_ID);
   }
 
-  /** Returns true if field defaultWallltime is set (has been assigned a value) and false otherwise */
-  public boolean isSetDefaultWallltime() {
-    return EncodingUtils.testBit(__isset_bitfield, __DEFAULTWALLLTIME_ISSET_ID);
+  /** Returns true if field defaultWalltime is set (has been assigned a value) and false otherwise */
+  public boolean isSetDefaultWalltime() {
+    return EncodingUtils.testBit(__isset_bitfield, __DEFAULTWALLTIME_ISSET_ID);
   }
 
-  public void setDefaultWallltimeIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __DEFAULTWALLLTIME_ISSET_ID, value);
+  public void setDefaultWalltimeIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __DEFAULTWALLTIME_ISSET_ID, value);
   }
 
   public void setFieldValue(_Fields field, Object value) {
@@ -1049,11 +1049,11 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       }
       break;
 
-    case DEFAULT_WALLLTIME:
+    case DEFAULT_WALLTIME:
       if (value == null) {
-        unsetDefaultWallltime();
+        unsetDefaultWalltime();
       } else {
-        setDefaultWallltime((Integer)value);
+        setDefaultWalltime((Integer)value);
       }
       break;
 
@@ -1113,8 +1113,8 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
     case DEFAULT_CPUCOUNT:
       return getDefaultCPUCount();
 
-    case DEFAULT_WALLLTIME:
-      return getDefaultWallltime();
+    case DEFAULT_WALLTIME:
+      return getDefaultWalltime();
 
     }
     throw new IllegalStateException();
@@ -1161,8 +1161,8 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       return isSetDefaultNodeCount();
     case DEFAULT_CPUCOUNT:
       return isSetDefaultCPUCount();
-    case DEFAULT_WALLLTIME:
-      return isSetDefaultWallltime();
+    case DEFAULT_WALLTIME:
+      return isSetDefaultWalltime();
     }
     throw new IllegalStateException();
   }
@@ -1333,12 +1333,12 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
         return false;
     }
 
-    boolean this_present_defaultWallltime = true && this.isSetDefaultWallltime();
-    boolean that_present_defaultWallltime = true && that.isSetDefaultWallltime();
-    if (this_present_defaultWallltime || that_present_defaultWallltime) {
-      if (!(this_present_defaultWallltime && that_present_defaultWallltime))
+    boolean this_present_defaultWalltime = true && this.isSetDefaultWalltime();
+    boolean that_present_defaultWalltime = true && that.isSetDefaultWalltime();
+    if (this_present_defaultWalltime || that_present_defaultWalltime) {
+      if (!(this_present_defaultWalltime && that_present_defaultWalltime))
         return false;
-      if (this.defaultWallltime != that.defaultWallltime)
+      if (this.defaultWalltime != that.defaultWalltime)
         return false;
     }
 
@@ -1434,10 +1434,10 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
     if (present_defaultCPUCount)
       list.add(defaultCPUCount);
 
-    boolean present_defaultWallltime = true && (isSetDefaultWallltime());
-    list.add(present_defaultWallltime);
-    if (present_defaultWallltime)
-      list.add(defaultWallltime);
+    boolean present_defaultWalltime = true && (isSetDefaultWalltime());
+    list.add(present_defaultWalltime);
+    if (present_defaultWalltime)
+      list.add(defaultWalltime);
 
     return list.hashCode();
   }
@@ -1620,12 +1620,12 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetDefaultWallltime()).compareTo(other.isSetDefaultWallltime());
+    lastComparison = Boolean.valueOf(isSetDefaultWalltime()).compareTo(other.isSetDefaultWalltime());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetDefaultWallltime()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.defaultWallltime, other.defaultWallltime);
+    if (isSetDefaultWalltime()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.defaultWalltime, other.defaultWalltime);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1791,10 +1791,10 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       sb.append(this.defaultCPUCount);
       first = false;
     }
-    if (isSetDefaultWallltime()) {
+    if (isSetDefaultWalltime()) {
       if (!first) sb.append(", ");
-      sb.append("defaultWallltime:");
-      sb.append(this.defaultWallltime);
+      sb.append("defaultWalltime:");
+      sb.append(this.defaultWalltime);
       first = false;
     }
     sb.append(")");
@@ -2051,10 +2051,10 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 18: // DEFAULT_WALLLTIME
+          case 18: // DEFAULT_WALLTIME
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.defaultWallltime = iprot.readI32();
-              struct.setDefaultWallltimeIsSet(true);
+              struct.defaultWalltime = iprot.readI32();
+              struct.setDefaultWalltimeIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -2218,9 +2218,9 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
         oprot.writeI32(struct.defaultCPUCount);
         oprot.writeFieldEnd();
       }
-      if (struct.isSetDefaultWallltime()) {
-        oprot.writeFieldBegin(DEFAULT_WALLLTIME_FIELD_DESC);
-        oprot.writeI32(struct.defaultWallltime);
+      if (struct.isSetDefaultWalltime()) {
+        oprot.writeFieldBegin(DEFAULT_WALLTIME_FIELD_DESC);
+        oprot.writeI32(struct.defaultWalltime);
         oprot.writeFieldEnd();
       }
       oprot.writeFieldStop();
@@ -2288,7 +2288,7 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       if (struct.isSetDefaultCPUCount()) {
         optionals.set(14);
       }
-      if (struct.isSetDefaultWallltime()) {
+      if (struct.isSetDefaultWalltime()) {
         optionals.set(15);
       }
       oprot.writeBitSet(optionals, 16);
@@ -2374,8 +2374,8 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
       if (struct.isSetDefaultCPUCount()) {
         oprot.writeI32(struct.defaultCPUCount);
       }
-      if (struct.isSetDefaultWallltime()) {
-        oprot.writeI32(struct.defaultWallltime);
+      if (struct.isSetDefaultWalltime()) {
+        oprot.writeI32(struct.defaultWalltime);
       }
     }
 
@@ -2507,8 +2507,8 @@ public class ComputeResourceDescription implements org.apache.thrift.TBase<Compu
         struct.setDefaultCPUCountIsSet(true);
       }
       if (incoming.get(15)) {
-        struct.defaultWallltime = iprot.readI32();
-        struct.setDefaultWallltimeIsSet(true);
+        struct.defaultWalltime = iprot.readI32();
+        struct.setDefaultWalltimeIsSet(true);
       }
     }
   }

@@ -21,13 +21,10 @@ package org.apache.airavata;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.userprofile.cpi.UserProfileService;
-import org.apache.airavata.userprofile.cpi.exception.UserProfileServiceException;
-import org.apache.airavata.userprofile.cpi.client.UserProfileServiceClientFactory;
+import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
+import org.apache.airavata.service.profile.user.cpi.UserProfileService;
+import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
 import org.apache.thrift.TException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class UserProfileAiravataThriftClient {
 
@@ -36,7 +33,7 @@ public class UserProfileAiravataThriftClient {
         final int serverPort = Integer.parseInt(ServerSettings.getUserProfileServerPort());
         final String serverHost = ServerSettings.getUserProfileServerHost();
         try {
-            return UserProfileServiceClientFactory.createUserProfileServiceClient(serverHost, serverPort);
+            return ProfileServiceClientFactory.createUserProfileServiceClient(serverHost, serverPort);
         } catch (UserProfileServiceException e) {
             throw new TException("Unable to create registry client...", e);
         }

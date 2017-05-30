@@ -28,12 +28,19 @@ import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.service.profile.iam.admin.services.core.interfaces.TenantManagementInterface;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import javax.ws.rs.core.Response;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,23 +49,57 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
 
     private final static Logger logger = LoggerFactory.getLogger(TenantManagementKeycloakImpl.class);
 
+    // TODO: close Keycloak client once done with it?
     private static Keycloak getClient(String adminUrl, String realm, PasswordCredential AdminPasswordCreds) {
 
-        return Keycloak.getInstance(
-                adminUrl,
-                realm, // the realm to log in to
-                AdminPasswordCreds.getLoginUserName(), AdminPasswordCreds.getPassword(),  // the user
-                "admin-cli"); // admin-cli is the client ID used for keycloak admin operations.
+        ResteasyClient resteasyClient = new ResteasyClientBuilder()
+                .connectionPoolSize(10)
+                .trustStore(loadKeyStore())
+                .build();
+        return KeycloakBuilder.builder()
+                .serverUrl(adminUrl)
+                .realm(realm)
+                .username(AdminPasswordCreds.getLoginUserName())
+                .password(AdminPasswordCreds.getPassword())
+                .clientId("admin-cli")
+                .resteasyClient(resteasyClient)
+                .build();
     }
 
     private static Keycloak getClient(String adminUrl, String realm, String authToken) {
 
-        return Keycloak.getInstance(
-                adminUrl,
-                realm, // the realm to log in to
-                "admin-cli",
-                authToken // the realm admin's auth token
-            );
+        ResteasyClient resteasyClient = new ResteasyClientBuilder()
+                    .connectionPoolSize(10)
+                    .trustStore(loadKeyStore())
+                    .build();
+        return KeycloakBuilder.builder()
+                .serverUrl(adminUrl)
+                .realm(realm)
+                .authorization(authToken)
+                .clientId("admin-cli")
+                .resteasyClient(resteasyClient)
+                .build();
+    }
+
+    private static KeyStore loadKeyStore() {
+
+        FileInputStream fis = null;
+        try {
+            fis = new java.io.FileInputStream(ServerSettings.getTrustStorePath());
+            KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+            ks.load(fis, ServerSettings.getTrustStorePassword().toCharArray());
+            return ks;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load trust store KeyStore instance", e);
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    logger.error("Failed to close trust store FileInputStream", e);
+                }
+            }
+        }
     }
 
     @Override
@@ -294,6 +335,10 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                 credential.setValue(newPassword);
                 credential.setTemporary(false);
                 retrievedUser.resetPassword(credential);
+                // Remove the UPDATE_PASSWORD required action
+                UserRepresentation userRepresentation = retrievedUser.toRepresentation();
+                userRepresentation.getRequiredActions().remove("UPDATE_PASSWORD");
+                retrievedUser.update(userRepresentation);
                 return true;
             }else{
                 logger.error("requested User not found");
