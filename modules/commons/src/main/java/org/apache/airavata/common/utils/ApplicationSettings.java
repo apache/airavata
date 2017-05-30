@@ -423,13 +423,13 @@ public class ApplicationSettings {
         return getSetting("cluster.status.monitoring.enable").equalsIgnoreCase("true");
     }
 
-    public static String getUserProfileServerHost() throws ApplicationSettingsException {
-        return getSetting(ServerSettings.USER_PROFILE_SERVER_HOST);
-    }
-
-    public static String getUserProfileServerPort() throws ApplicationSettingsException {
-        return getSetting(ServerSettings.USER_PROFILE_SERVER_PORT);
-    }
+//    public static String getUserProfileServerHost() throws ApplicationSettingsException {
+//        return getSetting(ServerSettings.USER_PROFILE_SERVER_HOST);
+//    }
+//
+//    public static String getUserProfileServerPort() throws ApplicationSettingsException {
+//        return getSetting(ServerSettings.USER_PROFILE_SERVER_PORT);
+//    }
 
     public static String getProfileServiceServerHost() throws ApplicationSettingsException {
         return getSetting(ServerSettings.PROFILE_SERVICE_SERVER_HOST);
