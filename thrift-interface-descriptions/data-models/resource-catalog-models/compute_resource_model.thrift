@@ -53,6 +53,7 @@ enum ResourceJobManagerType {
     SLURM,
     LSF,
     UGE,
+    SIU_UGE,
     CLOUD,
     AIRAVATA_CUSTOM
 }

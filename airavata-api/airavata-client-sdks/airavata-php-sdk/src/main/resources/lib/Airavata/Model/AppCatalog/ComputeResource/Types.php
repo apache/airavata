@@ -42,16 +42,18 @@ final class ResourceJobManagerType {
   const SLURM = 2;
   const LSF = 3;
   const UGE = 4;
-  const CLOUD = 5;
-  const AIRAVATA_CUSTOM = 6;
+  const SIU_UGE = 5;
+  const CLOUD = 6;
+  const AIRAVATA_CUSTOM = 7;
   static public $__names = array(
     0 => 'FORK',
     1 => 'PBS',
     2 => 'SLURM',
     3 => 'LSF',
     4 => 'UGE',
-    5 => 'CLOUD',
-    6 => 'AIRAVATA_CUSTOM',
+    5 => 'SIU_UGE',
+    6 => 'CLOUD',
+    7 => 'AIRAVATA_CUSTOM',
   );
 }
 
