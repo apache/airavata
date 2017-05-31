@@ -27,7 +27,13 @@ import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.wso2.carbon.um.ws.api.stub.RemoteUserStoreManagerServiceStub;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.File;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 
 /*
  *
@@ -68,11 +74,11 @@ public class Wso2IdentityServerClient {
          * because the private key and certificate file are not committed to GitHub,
          * which are needed to run the client */
 
-        String trustStore = System.getProperty("user.dir") + File.separator +
-                "modules" + File.separator + "user-profile-migration" + File.separator +
-                "src" + File.separator + "main" + File.separator +
-                "resources" + File.separator + "wso2carbon.jks";
-        System.out.println("file path : " + trustStore);
+//        String trustStore = System.getProperty("user.dir") + File.separator +
+//                "modules" + File.separator + "user-profile-migration" + File.separator +
+//                "src" + File.separator + "main" + File.separator +
+//                "resources" + File.separator + "wso2carbon.jks";
+//        System.out.println("file path : " + trustStore);
 
         /**
          * Call to https://localhost:9443/services/   uses HTTPS protocol.
@@ -81,10 +87,28 @@ public class Wso2IdentityServerClient {
          * Following code sets what trust-store to look for and its JKs password.
          */
 
-        System.setProperty("javax.net.ssl.trustStore",  trustStore );
+//        System.setProperty("javax.net.ssl.trustStore",  trustStore );
 
-        System.setProperty("javax.net.ssl.trustStorePassword", "wso2carbon");
+//        System.setProperty("javax.net.ssl.trustStorePassword", "wso2carbon");
 
+        // idp.scigap.org:9443 certificate has expired, so the following disables checking the certificate
+        TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {return null;}
+                    public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType){}
+                    public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType){}
+                }
+        };
+
+        try {
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            SSLContext.setDefault(sc);
+        } catch (KeyManagementException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
         /**
          * Axis2 configuration context
          */
