@@ -46,9 +46,8 @@ struct ResourceJobManagerType {
     SLURM = 2,
     LSF = 3,
     UGE = 4,
-    LD_SIU = 5,
-    CLOUD = 6,
-    AIRAVATA_CUSTOM = 7
+    CLOUD = 5,
+    AIRAVATA_CUSTOM = 6
   };
 };
 

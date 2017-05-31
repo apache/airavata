@@ -45,9 +45,8 @@ class ResourceJobManagerType:
   SLURM = 2
   LSF = 3
   UGE = 4
-  LD_SIU = 5
-  CLOUD = 6
-  AIRAVATA_CUSTOM = 7
+  CLOUD = 5
+  AIRAVATA_CUSTOM = 6
 
   _VALUES_TO_NAMES = {
     0: "FORK",
@@ -55,9 +54,8 @@ class ResourceJobManagerType:
     2: "SLURM",
     3: "LSF",
     4: "UGE",
-    5: "LD_SIU",
-    6: "CLOUD",
-    7: "AIRAVATA_CUSTOM",
+    5: "CLOUD",
+    6: "AIRAVATA_CUSTOM",
   }
 
   _NAMES_TO_VALUES = {
@@ -66,9 +64,8 @@ class ResourceJobManagerType:
     "SLURM": 2,
     "LSF": 3,
     "UGE": 4,
-    "LD_SIU": 5,
-    "CLOUD": 6,
-    "AIRAVATA_CUSTOM": 7,
+    "CLOUD": 5,
+    "AIRAVATA_CUSTOM": 6,
   }
 
 class JobManagerCommand:
