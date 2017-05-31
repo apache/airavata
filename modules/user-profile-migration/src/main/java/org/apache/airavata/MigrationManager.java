@@ -36,6 +36,8 @@ public class MigrationManager {
 
     private ArrayList<Wso2ISLoginCredentialsDAO> adminCredentials = new ArrayList<Wso2ISLoginCredentialsDAO>();
     private static AuthzToken authzToken = new AuthzToken("empy_token");
+    private String profileServiceServerHost = "localhost";
+    private int profileServiceServerPort = 8962;
     /*Add the credentials for all the tenants from which the profile should be migrated to Airavata DB*/
 
     public void setISLoginCredentials(){
@@ -107,7 +109,7 @@ public class MigrationManager {
     private boolean migrateUserProfilesToAiravata(List<UserProfileDAO> ISProfileList) throws TException, ApplicationSettingsException {
         System.out.println("Initiating migration to Airavata internal DB ...");
         UserProfileAiravataThriftClient objFactory = new UserProfileAiravataThriftClient();
-        UserProfileService.Client client = objFactory.getUserProfileServiceClient();
+        UserProfileService.Client client = objFactory.getUserProfileServiceClient(profileServiceServerHost, profileServiceServerPort);
         UserProfile airavataUserProfile = new UserProfile();
         // Here are the data associations...
         for(UserProfileDAO ISProfile : ISProfileList){
