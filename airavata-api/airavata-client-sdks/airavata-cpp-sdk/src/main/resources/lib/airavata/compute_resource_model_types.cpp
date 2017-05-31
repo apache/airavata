@@ -36,7 +36,7 @@ int _kResourceJobManagerTypeValues[] = {
   ResourceJobManagerType::SLURM,
   ResourceJobManagerType::LSF,
   ResourceJobManagerType::UGE,
-  ResourceJobManagerType::SIU_UGE,
+  ResourceJobManagerType::LD_SIU,
   ResourceJobManagerType::CLOUD,
   ResourceJobManagerType::AIRAVATA_CUSTOM
 };
@@ -46,7 +46,7 @@ const char* _kResourceJobManagerTypeNames[] = {
   "SLURM",
   "LSF",
   "UGE",
-  "SIU_UGE",
+  "LD_SIU",
   "CLOUD",
   "AIRAVATA_CUSTOM"
 };

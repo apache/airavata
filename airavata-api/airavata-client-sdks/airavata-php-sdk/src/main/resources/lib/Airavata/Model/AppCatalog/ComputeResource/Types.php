@@ -42,7 +42,7 @@ final class ResourceJobManagerType {
   const SLURM = 2;
   const LSF = 3;
   const UGE = 4;
-  const SIU_UGE = 5;
+  const LD_SIU = 5;
   const CLOUD = 6;
   const AIRAVATA_CUSTOM = 7;
   static public $__names = array(
@@ -51,7 +51,7 @@ final class ResourceJobManagerType {
     2 => 'SLURM',
     3 => 'LSF',
     4 => 'UGE',
-    5 => 'SIU_UGE',
+    5 => 'LD_SIU',
     6 => 'CLOUD',
     7 => 'AIRAVATA_CUSTOM',
   );
