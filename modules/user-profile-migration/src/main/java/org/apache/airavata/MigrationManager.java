@@ -21,6 +21,7 @@ package org.apache.airavata;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.model.user.Status;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.thrift.TException;
@@ -29,8 +30,8 @@ import org.wso2.carbon.um.ws.api.stub.RemoteUserStoreManagerServiceStub;
 import org.wso2.carbon.um.ws.api.stub.RemoteUserStoreManagerServiceUserStoreExceptionException;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class MigrationManager {
 
@@ -38,10 +39,21 @@ public class MigrationManager {
     private static AuthzToken authzToken = new AuthzToken("empy_token");
     private String profileServiceServerHost = "localhost";
     private int profileServiceServerPort = 8962;
+    private Map<String,String> roleConversionMap = createDefaultRoleConversionMap();
+
+    private Map<String,String> createDefaultRoleConversionMap() {
+        Map<String,String> roleConversionMap = new HashMap<>();
+        roleConversionMap.put("admin", "admin");
+        roleConversionMap.put("admin-read-only", "admin-read-only");
+        roleConversionMap.put("gateway-user", "gateway-user");
+        roleConversionMap.put("user-pending", "user-pending");
+        roleConversionMap.put("gateway-provider", "gateway-provider");
+        return roleConversionMap;
+    }
     /*Add the credentials for all the tenants from which the profile should be migrated to Airavata DB*/
 
     public void setISLoginCredentials(){
-        adminCredentials.add(new Wso2ISLoginCredentialsDAO("prod.seagrid","username","password"));
+        adminCredentials.add(new Wso2ISLoginCredentialsDAO("gateway-id","username","password"));
         // new credential records here...
     }
 
@@ -55,7 +67,7 @@ public class MigrationManager {
             System.out.println("Fetching User Profiles for " + creds.getGateway() + " tenant ...");
             try {
                 userList = isClient.getUserList("http://wso2.org/claims/givenname", "*", "default");
-                System.out.println("FirstName\tLastName\tEmail\t\t\tuserName\tCountry\tOrganization\tphone");
+                System.out.println("FirstName\tLastName\tEmail\t\t\tuserName\tCountry\tOrganization\tphone\tRoles");
                 String[] claims = {"http://wso2.org/claims/givenname",
                         "http://wso2.org/claims/lastname",
                         "http://wso2.org/claims/emailaddress",
@@ -63,7 +75,8 @@ public class MigrationManager {
                         "http://wso2.org/claims/organization",
                         "http://wso2.org/claims/mobile",
                         "http://wso2.org/claims/telephone",
-                        "http://wso2.org/claims/streetaddress"};
+                        "http://wso2.org/claims/streetaddress",
+                        "http://wso2.org/claims/role"};
                 for (String user : userList) {
                     UserProfileDAO userProfile = new UserProfileDAO();
                     ClaimValue[] retrievedClaimValues = isClient.getUserClaimValuesForClaims(user, claims, null);
@@ -83,12 +96,14 @@ public class MigrationManager {
                             phones.add(claim.getValue());
                         } else if(claim.getClaimURI().equals(claims[7])){
                             userProfile.setAddress(claim.getValue());
+                        } else if(claim.getClaimURI().equals(claims[8])){
+                            userProfile.setRoles(convertCommaSeparatedRolesToList(claim.getValue()));
                         }
                     }
                     userProfile.setUserName(user);
                     userProfile.setGatewayID(creds.getGateway());
                     userProfile.setPhones(phones);
-                    System.out.println(userProfile.getFirstName()+"\t"+userProfile.getLastName()+"\t"+userProfile.getUserName()+"\t"+userProfile.getEmail()+"\t"+userProfile.getCountry()+"\t"+userProfile.getOrganization() + userProfile.getAddress());
+                    System.out.println(userProfile.getFirstName()+"\t"+userProfile.getLastName()+"\t"+userProfile.getUserName()+"\t"+userProfile.getEmail()+"\t"+userProfile.getCountry()+"\t"+userProfile.getOrganization() + "\t" + userProfile.getAddress() + "\t" + userProfile.getRoles());
                     userProfileList.add(userProfile);
                 }
             } catch (RemoteException e) {
@@ -105,6 +120,14 @@ public class MigrationManager {
         return userProfileList;
     }
 
+    private List<String> convertCommaSeparatedRolesToList(String roles) {
+
+        return Arrays.stream(roles.split(","))
+                .filter(s -> !"Internal/everyone".equals(s))
+                .filter(s -> !"Internal/identity".equals(s))
+                .collect(Collectors.toList());
+    }
+
     /* Method used to migrate User profiles to Airavata DB by making a call to User profile thrift Service */
     private boolean migrateUserProfilesToAiravata(List<UserProfileDAO> ISProfileList) throws TException, ApplicationSettingsException {
         System.out.println("Initiating migration to Airavata internal DB ...");
@@ -113,6 +136,7 @@ public class MigrationManager {
         UserProfile airavataUserProfile = new UserProfile();
         // Here are the data associations...
         for(UserProfileDAO ISProfile : ISProfileList){
+            airavataUserProfile.setAiravataInternalUserId(ISProfile.getUserName() + "@" + ISProfile.getGatewayID());
             airavataUserProfile.setFirstName(ISProfile.getFirstName());
             airavataUserProfile.setLastName(ISProfile.getLastName());
             airavataUserProfile.setUserId(ISProfile.getUserName());
@@ -123,6 +147,10 @@ public class MigrationManager {
             airavataUserProfile.setHomeOrganization(ISProfile.getOrganization());
             airavataUserProfile.setPhones(ISProfile.getPhones());
             airavataUserProfile.setCountry(ISProfile.getCountry());
+            airavataUserProfile.setCreationTime(new Date().getTime());
+            airavataUserProfile.setLastAccessTime(new Date().getTime());
+            airavataUserProfile.setValidUntil(-1);
+            airavataUserProfile.setState(Status.ACTIVE);
             //TODO: fix authtzToken, for now we are using empty token
             client.addUserProfile(authzToken, airavataUserProfile);
         }
@@ -133,8 +161,10 @@ public class MigrationManager {
         KeycloakIdentityServerClient client = new KeycloakIdentityServerClient("https://iam.scigap.org/auth",
                 "master",
                 "SuperRealmUsername",
-                "MasterRealmPassword");
-        client.migrateUserStore(Wso2ISProfileList,"keycloakTargetRealm","tempPassword");
+                "MasterRealmPassword",
+                "trustStorePath",
+                "trustStorePassword");
+        client.migrateUserStore(Wso2ISProfileList,"keycloakTargetRealm","tempPassword", roleConversionMap);
     }
 
     public static void main(String[] args) {

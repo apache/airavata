@@ -32,6 +32,7 @@ public class UserProfileDAO {
     private List<String> Phones;
     private String gatewayID;
     private String address;
+    private List<String> roles;
 
     public String getAddress() {
         return address;
@@ -114,5 +115,13 @@ public class UserProfileDAO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
     }
 }
