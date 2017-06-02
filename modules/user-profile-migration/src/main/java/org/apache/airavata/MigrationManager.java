@@ -29,6 +29,8 @@ import org.wso2.carbon.um.ws.api.stub.ClaimValue;
 import org.wso2.carbon.um.ws.api.stub.RemoteUserStoreManagerServiceStub;
 import org.wso2.carbon.um.ws.api.stub.RemoteUserStoreManagerServiceUserStoreExceptionException;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,10 +38,39 @@ import java.util.stream.Collectors;
 public class MigrationManager {
 
     private ArrayList<Wso2ISLoginCredentialsDAO> adminCredentials = new ArrayList<Wso2ISLoginCredentialsDAO>();
-    private static AuthzToken authzToken = new AuthzToken("empy_token");
+    private static AuthzToken authzToken = new AuthzToken("empty_token");
+
+    // Default values
     private String profileServiceServerHost = "localhost";
     private int profileServiceServerPort = 8962;
     private Map<String,String> roleConversionMap = createDefaultRoleConversionMap();
+    private String gatewayId = "gateway-id";
+    private String wso2ISAdminUsername = "username";
+    private String wso2ISAdminPassword = "password";
+    private String keycloakServiceURL = "https://iam.scigap.org/auth";
+    private String keycloakRealmId = "keycloak-realm";
+    private String keycloakAdminUsername = "username";
+    private String keycloakAdminPassword = "password";
+    private String keycloakTrustStorePath = "../../modules/configuration/server/src/main/resources/client_truststore.jks";
+    private String keycloakTrustStorePassword = "password";
+    private String keycloakTemporaryUserPassword = "tempPassword";
+
+    // Names of properties in user-profile-migration.properties.template
+    private final static String GATEWAY_ID = "gateway-id";
+    private final static String WSO2IS_ADMIN_USERNAME = "wso2is.admin.username";
+    private final static String WSO2IS_ADMIN_PASSWORD = "wso2is.admin.password";
+    // TODO: add role name conversions
+    private final static String WSO2IS_GATEWAY_ADMIN_ROLENAME = "";
+    private final static String PROFILE_SERVICE_HOST = "profile.service.host";
+    private final static String PROFILE_SERVICE_PORT = "profile.service.port";
+    private final static String KEYCLOAK_ADMIN_USERNAME = "keycloak.admin.username";
+    private final static String KEYCLOAK_ADMIN_PASSWORD = "keycloak.admin.password";
+    private final static String KEYCLOAK_REALM_ID = "keycloak.realm-id";
+    private final static String KEYCLOAK_SERVICE_URL = "keycloak.service-url";
+    private final static String KEYCLOAK_TRUSTSTORE_PATH = "keycloak.truststore.path";
+    private final static String KEYCLOAK_TRUSTSTORE_PASSWORD = "keycloak.truststore.password";
+    private final static String KEYCLOAK_USER_TEMP_PASSWORD = "keycloak.user.temp.password";
+
 
     private Map<String,String> createDefaultRoleConversionMap() {
         Map<String,String> roleConversionMap = new HashMap<>();
@@ -53,7 +84,7 @@ public class MigrationManager {
     /*Add the credentials for all the tenants from which the profile should be migrated to Airavata DB*/
 
     public void setISLoginCredentials(){
-        adminCredentials.add(new Wso2ISLoginCredentialsDAO("gateway-id","username","password"));
+        adminCredentials.add(new Wso2ISLoginCredentialsDAO(this.gatewayId, this.wso2ISAdminUsername, this.wso2ISAdminPassword));
         // new credential records here...
     }
 
@@ -158,17 +189,43 @@ public class MigrationManager {
     }
 
     private void migrateUserProfilesToKeycloak(List<UserProfileDAO> Wso2ISProfileList){
-        KeycloakIdentityServerClient client = new KeycloakIdentityServerClient("https://iam.scigap.org/auth",
-                "master",
-                "SuperRealmUsername",
-                "MasterRealmPassword",
-                "trustStorePath",
-                "trustStorePassword");
-        client.migrateUserStore(Wso2ISProfileList,"keycloakTargetRealm","tempPassword", roleConversionMap);
+        KeycloakIdentityServerClient client = new KeycloakIdentityServerClient(this.keycloakServiceURL,
+                this.keycloakRealmId,
+                this.keycloakAdminUsername,
+                this.keycloakAdminPassword,
+                this.keycloakTrustStorePath,
+                this.keycloakTrustStorePassword);
+        client.migrateUserStore(Wso2ISProfileList, this.keycloakRealmId, this.keycloakTemporaryUserPassword, this.roleConversionMap);
+    }
+
+    private void loadConfigFile(String filename) {
+        Properties properties = new Properties();
+        try {
+            properties.load(new FileInputStream(filename));
+            this.gatewayId = properties.getProperty(GATEWAY_ID, this.gatewayId);
+            this.wso2ISAdminUsername = properties.getProperty(WSO2IS_ADMIN_USERNAME, this.wso2ISAdminUsername);
+            this.wso2ISAdminPassword = properties.getProperty(WSO2IS_ADMIN_PASSWORD, this.wso2ISAdminPassword);
+            this.profileServiceServerHost = properties.getProperty(PROFILE_SERVICE_HOST, this.profileServiceServerHost);
+            this.profileServiceServerPort = Integer.valueOf(properties.getProperty(PROFILE_SERVICE_PORT, Integer.toString(this.profileServiceServerPort)));
+            this.keycloakServiceURL = properties.getProperty(KEYCLOAK_SERVICE_URL, this.keycloakServiceURL);
+            this.keycloakRealmId = properties.getProperty(KEYCLOAK_REALM_ID, this.keycloakRealmId);
+            this.keycloakAdminUsername = properties.getProperty(KEYCLOAK_ADMIN_USERNAME, this.keycloakAdminUsername);
+            this.keycloakAdminPassword = properties.getProperty(KEYCLOAK_ADMIN_PASSWORD, this.keycloakAdminPassword);
+            this.keycloakTrustStorePath = properties.getProperty(KEYCLOAK_TRUSTSTORE_PATH, this.keycloakTrustStorePath);
+            this.keycloakTrustStorePassword = properties.getProperty(KEYCLOAK_TRUSTSTORE_PASSWORD, this.keycloakTrustStorePassword);
+            this.keycloakTemporaryUserPassword = properties.getProperty(KEYCLOAK_USER_TEMP_PASSWORD, this.keycloakTemporaryUserPassword);
+            // TODO: get custom IS role names
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void main(String[] args) {
         MigrationManager migrationManager = new MigrationManager();
+        if (args.length > 0) {
+            String configFilename = args[0];
+            migrationManager.loadConfigFile(configFilename);
+        }
         migrationManager.setISLoginCredentials();
         List<UserProfileDAO> userProfileList = migrationManager.getUserProfilesFromWso2IS();
         try {

@@ -1,0 +1,19 @@
+# Common settings
+gateway-id = gateway-id
+
+# WSO2 Identity Server settings
+wso2is.admin.username = username
+wso2is.admin.password = password
+
+# Profile Service settings
+profile.service.host = localhost
+profile.service.port = 8962
+
+# Keycloak settings
+keycloak.admin.username = username
+keycloak.admin.password = password
+keycloak.realm-id = keycloak-realm
+keycloak.service-url = https://iam.scigap.org/auth
+keycloak.truststore.path = ../../modules/configuration/server/src/main/resources/client_truststore.jks
+keycloak.truststore.password = password
+keycloak.user.temp.password = tempPassword
