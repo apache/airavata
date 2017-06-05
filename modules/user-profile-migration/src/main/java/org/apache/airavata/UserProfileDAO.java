@@ -33,6 +33,7 @@ public class UserProfileDAO {
     private String gatewayID;
     private String address;
     private List<String> roles;
+    private boolean accountLocked;
 
     public String getAddress() {
         return address;
@@ -123,5 +124,13 @@ public class UserProfileDAO {
 
     public void setRoles(List<String> roles) {
         this.roles = roles;
+    }
+
+    public boolean isAccountLocked() {
+        return accountLocked;
+    }
+
+    public void setAccountLocked(boolean accountLocked) {
+        this.accountLocked = accountLocked;
     }
 }

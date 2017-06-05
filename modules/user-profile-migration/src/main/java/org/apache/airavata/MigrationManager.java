@@ -110,7 +110,8 @@ public class MigrationManager {
                         "http://wso2.org/claims/mobile",
                         "http://wso2.org/claims/telephone",
                         "http://wso2.org/claims/streetaddress",
-                        "http://wso2.org/claims/role"};
+                        "http://wso2.org/claims/role",
+                        "http://wso2.org/claims/identity/accountLocked"};
                 for (String user : userList) {
                     UserProfileDAO userProfile = new UserProfileDAO();
                     ClaimValue[] retrievedClaimValues = isClient.getUserClaimValuesForClaims(user, claims, null);
@@ -132,13 +133,19 @@ public class MigrationManager {
                             userProfile.setAddress(claim.getValue());
                         } else if(claim.getClaimURI().equals(claims[8])){
                             userProfile.setRoles(convertCommaSeparatedRolesToList(claim.getValue()));
+                        } else if(claim.getClaimURI().equals(claims[9])){
+                            userProfile.setAccountLocked(claim.getValue().equals("true"));
                         }
                     }
                     userProfile.setUserName(user);
                     userProfile.setGatewayID(creds.getGateway());
                     userProfile.setPhones(phones);
-                    System.out.println(userProfile.getFirstName()+"\t"+userProfile.getLastName()+"\t"+userProfile.getUserName()+"\t"+userProfile.getEmail()+"\t"+userProfile.getCountry()+"\t"+userProfile.getOrganization() + "\t" + userProfile.getAddress() + "\t" + userProfile.getRoles());
-                    userProfileList.add(userProfile);
+                    if (!userProfile.isAccountLocked()) {
+                        System.out.println(userProfile.getFirstName() + "\t" + userProfile.getLastName() + "\t" + userProfile.getUserName() + "\t" + userProfile.getEmail() + "\t" + userProfile.getCountry() + "\t" + userProfile.getOrganization() + "\t" + userProfile.getAddress() + "\t" + userProfile.getRoles());
+                        userProfileList.add(userProfile);
+                    } else {
+                        System.out.println("Skipping locked account for user " + user + "!");
+                    }
                 }
             } catch (RemoteException e) {
                 System.out.println(e.getMessage());

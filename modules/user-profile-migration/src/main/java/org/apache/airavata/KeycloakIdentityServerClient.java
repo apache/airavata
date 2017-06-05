@@ -101,6 +101,7 @@ public class KeycloakIdentityServerClient {
             user.setFirstName(userProfile.getFirstName());
             user.setLastName(userProfile.getLastName());
             user.setEmail(userProfile.getEmail());
+            user.setEmailVerified(true);
             user.setEnabled(true);
             List<String> requiredActionList = new ArrayList<>();
             requiredActionList.add("UPDATE_PASSWORD");
