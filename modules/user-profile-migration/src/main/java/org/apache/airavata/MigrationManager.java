@@ -59,8 +59,11 @@ public class MigrationManager {
     private final static String GATEWAY_ID = "gateway-id";
     private final static String WSO2IS_ADMIN_USERNAME = "wso2is.admin.username";
     private final static String WSO2IS_ADMIN_PASSWORD = "wso2is.admin.password";
-    // TODO: add role name conversions
-    private final static String WSO2IS_GATEWAY_ADMIN_ROLENAME = "";
+    private final static String WSO2IS_ADMIN_ROLENAME = "wso2is.admin.rolename";
+    private final static String WSO2IS_ADMIN_READ_ONLY_ROLENAME = "wso2is.admin-read-only.rolename";
+    private final static String WSO2IS_GATEWAY_USER_ROLENAME = "wso2is.gateway-user.rolename";
+    private final static String WSO2IS_USER_PENDING_ROLENAME = "wso2is.user-pending.rolename";
+    private final static String WSO2IS_GATEWAY_PROVIDER_ROLENAME = "wso2is.gateway-provider.rolename";
     private final static String PROFILE_SERVICE_HOST = "profile.service.host";
     private final static String PROFILE_SERVICE_PORT = "profile.service.port";
     private final static String KEYCLOAK_ADMIN_USERNAME = "keycloak.admin.username";
@@ -202,6 +205,7 @@ public class MigrationManager {
         Properties properties = new Properties();
         try {
             properties.load(new FileInputStream(filename));
+            // Load values from properties if they exist, otherwise will just use default values
             this.gatewayId = properties.getProperty(GATEWAY_ID, this.gatewayId);
             this.wso2ISAdminUsername = properties.getProperty(WSO2IS_ADMIN_USERNAME, this.wso2ISAdminUsername);
             this.wso2ISAdminPassword = properties.getProperty(WSO2IS_ADMIN_PASSWORD, this.wso2ISAdminPassword);
@@ -214,7 +218,12 @@ public class MigrationManager {
             this.keycloakTrustStorePath = properties.getProperty(KEYCLOAK_TRUSTSTORE_PATH, this.keycloakTrustStorePath);
             this.keycloakTrustStorePassword = properties.getProperty(KEYCLOAK_TRUSTSTORE_PASSWORD, this.keycloakTrustStorePassword);
             this.keycloakTemporaryUserPassword = properties.getProperty(KEYCLOAK_USER_TEMP_PASSWORD, this.keycloakTemporaryUserPassword);
-            // TODO: get custom IS role names
+            // Custom role names
+            this.roleConversionMap.put(properties.getProperty(WSO2IS_ADMIN_ROLENAME, "admin"), "admin");
+            this.roleConversionMap.put(properties.getProperty(WSO2IS_ADMIN_READ_ONLY_ROLENAME, "admin-read-only"), "admin-read-only");
+            this.roleConversionMap.put(properties.getProperty(WSO2IS_GATEWAY_USER_ROLENAME, "gateway-user"), "gateway-user");
+            this.roleConversionMap.put(properties.getProperty(WSO2IS_USER_PENDING_ROLENAME, "user-pending"), "user-pending");
+            this.roleConversionMap.put(properties.getProperty(WSO2IS_GATEWAY_PROVIDER_ROLENAME, "gateway-provider"), "gateway-provider");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
