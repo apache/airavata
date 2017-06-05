@@ -4,6 +4,11 @@ gateway-id = gateway-id
 # WSO2 Identity Server settings
 wso2is.admin.username = username
 wso2is.admin.password = password
+wso2is.admin.rolename = admin
+wso2is.admin-read-only.rolename = admin-read-only
+wso2is.gateway-user.rolename = gateway-user
+wso2is.user-pending.rolename = user-pending
+wso2is.gateway-provider.rolename = gateway-provider
 
 # Profile Service settings
 profile.service.host = localhost
