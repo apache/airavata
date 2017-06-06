@@ -200,7 +200,6 @@ public class MigrationManager {
 
     private void migrateUserProfilesToKeycloak(List<UserProfileDAO> Wso2ISProfileList){
         KeycloakIdentityServerClient client = new KeycloakIdentityServerClient(this.keycloakServiceURL,
-                this.keycloakRealmId,
                 this.keycloakAdminUsername,
                 this.keycloakAdminPassword,
                 this.keycloakTrustStorePath,
