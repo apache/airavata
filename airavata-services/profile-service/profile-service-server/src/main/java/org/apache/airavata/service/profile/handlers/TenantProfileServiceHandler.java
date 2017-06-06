@@ -72,7 +72,9 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     @SecurityCheck
     public String addGateway(AuthzToken authzToken, Gateway gateway) throws TenantProfileServiceException, AuthorizationException, TException {
         try {
-            gateway = tenantProfileRepository.create(gateway);
+            if (!checkDuplicate(gateway)) {
+                gateway = tenantProfileRepository.create(gateway);
+            }
             if (gateway != null) {
                 logger.info("Added Airavata Gateway with Id: " + gateway.getGatewayId());
                 // replicate tenant at end-places only if status is APPROVED
@@ -146,8 +148,8 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
                 // delete tenant at end-places
                 ProfileServiceUtils.getDbEventPublisher().publish(
                         ProfileServiceUtils.getDBEventMessageContext(EntityType.TENANT, CrudType.DELETE,
-                                // pass along gateway datamodel, with correct gatewayId;
-                                // approvalstatus is not used for delete, hence set dummy value
+                                 // pass along gateway datamodel, with correct gatewayId;
+                                 // approvalstatus is not used for delete, hence set dummy value
                                 new Gateway(
                                         gatewayId,
                                         GatewayApprovalStatus.DEACTIVATED
@@ -183,11 +185,24 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     public boolean isGatewayExist(AuthzToken authzToken, String gatewayId) throws TenantProfileServiceException, AuthorizationException, TException {
         try {
             Gateway gateway = tenantProfileRepository.getGateway(gatewayId);
-            return gateway != null;
+            boolean checkStatus = gateway.getGatewayApprovalStatus().equals(GatewayApprovalStatus.APPROVED);
+            return (gateway != null && checkStatus);
         } catch (Exception ex) {
             logger.error("Error checking if gateway-profile exists, reason: " + ex.getMessage(), ex);
             TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Error checking if gateway-profile exists, reason: " + ex.getMessage());
+            throw exception;
+        }
+    }
+
+    private boolean checkDuplicate(Gateway gateway) throws TenantProfileServiceException {
+        try {
+            Gateway duplicateGateway = tenantProfileRepository.getGateway(gateway.getGatewayId());
+            return ((duplicateGateway.getGatewayId() == gateway.getGatewayId()) && (duplicateGateway.getGatewayName() == gateway.getGatewayName()) && (duplicateGateway.getGatewayURL() == gateway.getGatewayURL()) && (duplicateGateway.getGatewayApprovalStatus().equals(GatewayApprovalStatus.APPROVED)));
+        } catch (Exception ex) {
+            logger.error("Error checking if duplicate gateway-profile exists, reason: " + ex.getMessage(), ex);
+            TenantProfileServiceException exception = new TenantProfileServiceException();
+            exception.setMessage("Error checking if duplicate gateway-profiles exists, reason: " + ex.getMessage());
             throw exception;
         }
     }
