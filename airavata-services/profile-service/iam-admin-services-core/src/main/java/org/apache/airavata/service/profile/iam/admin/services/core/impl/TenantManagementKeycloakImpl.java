@@ -113,6 +113,9 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             newRealmDetails.setId(gatewayDetails.getGatewayId());
             newRealmDetails.setDisplayName(gatewayDetails.getGatewayName());
             newRealmDetails.setRealm(gatewayDetails.getGatewayId());
+            // Following two settings allow duplicate email addresses
+            newRealmDetails.setLoginWithEmailAllowed(false);
+            newRealmDetails.setDuplicateEmailsAllowed(true);
             RealmRepresentation realmWithRoles = TenantManagementKeycloakImpl.createDefaultRoles(newRealmDetails);
             client.realms().create(realmWithRoles);
             return gatewayDetails;
@@ -237,7 +240,6 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                 ex.setMessage("Gateway Url field in GatewayProfile cannot be empty, Relam Client creation failed");
                 throw ex;
             }
-            redirectUris.add("http://accord.scigap.org/callback-url");
             pgaClient.setRedirectUris(redirectUris);
             pgaClient.setPublicClient(false);
             Response httpResponse = client.realms().realm(gatewayDetails.getGatewayId()).clients().create(pgaClient);
