@@ -21,7 +21,6 @@ package org.apache.airavata;
  *
  */
 
-import org.apache.airavata.common.utils.ServerSettings;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.admin.client.Keycloak;
@@ -31,7 +30,6 @@ import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 
-import javax.management.relation.Role;
 import javax.ws.rs.core.Response;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -45,11 +43,11 @@ public class KeycloakIdentityServerClient {
 
     private Keycloak client;
 
-    public KeycloakIdentityServerClient(String adminUrl, String realm, String adminUserName, String adminUserPassword, String trustStorePath, String trustStorePassword) {
+    public KeycloakIdentityServerClient(String adminUrl, String adminUserName, String adminUserPassword, String trustStorePath, String trustStorePassword) {
         KeyStore trustKeyStore = loadKeyStore(trustStorePath, trustStorePassword);
         this.client = getClient(
                 adminUrl,
-                realm, // the realm to log in to
+                "master", // the realm to log in to
                 adminUserName, adminUserPassword,  // the user
                 "admin-cli", // admin-cli is the client ID used for keycloak admin operations.
                 trustKeyStore);
@@ -91,7 +89,7 @@ public class KeycloakIdentityServerClient {
         }
     }
 
-    boolean migrateUserStore(List<UserProfileDAO> userProfiles, String targetRealm, String tempPassword, Map<String,String> roleConversionMap){
+    void migrateUserStore(List<UserProfileDAO> userProfiles, String targetRealm, String tempPassword, Map<String,String> roleConversionMap){
 
         Map<String, RoleRepresentation> allRealmRoles = getRealmRoleNameMap(targetRealm);
 
@@ -132,9 +130,15 @@ public class KeycloakIdentityServerClient {
                 credential.setTemporary(true);
                 retirievedUser.resetPassword(credential);
                 System.out.println("User profile for user " + userProfile.getUserName() + " successfully migrated");
-            }else{ return false; }
+            } else {
+                String response = httpResponse.readEntity(String.class);
+                System.err.println("Failed to add user [" + userProfile.getUserName() + "] to Keycloak");
+                System.err.println("Response: " + response);
+            }
+            if (httpResponse != null) {
+                httpResponse.close();
+            }
         }
-        return true;
     }
 
     private Map<String,RoleRepresentation> getRealmRoleNameMap(String targetRealm) {
