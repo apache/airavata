@@ -25,11 +25,13 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.UUID;
 
 @Entity
 @Table(name = "GATEWAY")
 public class GatewayEntity {
     private final static Logger logger = LoggerFactory.getLogger(GatewayEntity.class);
+    private String airavataInternalGatewayId;
     private String gatewayId;
     private String gatewayName;
     private String domain;
@@ -50,7 +52,21 @@ public class GatewayEntity {
     private long requestCreationTime;
     private String requesterUsername;
 
+    // set random value for internalGatewayId
+    public GatewayEntity() {
+        this.airavataInternalGatewayId = UUID.randomUUID().toString();
+    }
+
     @Id
+    @Column(name = "AIRAVATA_INTERNAL_GATEWAY_ID")
+    public String getAiravataInternalGatewayId() {
+        return airavataInternalGatewayId;
+    }
+
+    public void setAiravataInternalGatewayId(String airavataInternalGatewayId) {
+        this.airavataInternalGatewayId = airavataInternalGatewayId;
+    }
+
     @Column(name = "GATEWAY_ID")
     public String getGatewayId() {
         return gatewayId;
