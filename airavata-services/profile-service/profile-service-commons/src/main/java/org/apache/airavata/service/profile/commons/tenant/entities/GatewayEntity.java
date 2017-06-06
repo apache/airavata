@@ -244,9 +244,25 @@ public class GatewayEntity {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof GatewayEntity)) {
+            return false;
+        }
+        GatewayEntity gwy = (GatewayEntity) obj;
+        return getAiravataInternalGatewayId().equals(gwy.getAiravataInternalGatewayId());
+    }
+
+    @Override
     public String toString() {
         return "GatewayEntity{" +
-                "gatewayId='" + gatewayId + '\'' +
+                "airavataInternalGatewayId='" + airavataInternalGatewayId + '\'' +
+                ", gatewayId='" + gatewayId + '\'' +
                 ", gatewayName='" + gatewayName + '\'' +
                 ", domain='" + domain + '\'' +
                 ", emailAddress='" + emailAddress + '\'' +
