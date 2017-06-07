@@ -38,15 +38,9 @@ then
 	exit 0
 fi
 
-# Generation of thrift files will require installing Apache Thrift. Please add thrift to your path.
-#  Verify is thrift is installed, is in the path is at a specified version.
-
 REQUIRED_THRIFT_VERSION='0.9.3'
-if hash thrift &> /dev/null; then
-  THRIFT_EXEC=$(which thrift)
-else
-  THRIFT_EXEC=/usr/local/bin/thrift
-fi
+THRIFT_DOCKER_IMAGE='thrift'
+THRIFT_EXEC="docker run --rm -v $PWD/..:/data $THRIFT_DOCKER_IMAGE:$REQUIRED_THRIFT_VERSION thrift"
 
 VERSION=$($THRIFT_EXEC -version 2>/dev/null | grep -F "${REQUIRED_THRIFT_VERSION}" |  wc -l)
 if [ "$VERSION" -ne 1 ] ; then
@@ -58,13 +52,13 @@ fi
 # Global Constants used across the script
 BASE_TARGET_DIR='target'
 
-PROFILE_SERVICE_THRIFT_FILE='profile-service/profile-service-cpi.thrift'
+PROFILE_SERVICE_THRIFT_FILE='/data/service-cpis/profile-service/profile-service-cpi.thrift'
 PROFILE_SERVICE_SRC_DIR='../../airavata-services/profile-service/profile-service-stubs/src/main/java'
 
 # Initialize the thrift arguments.
 #  Since most of the Airavata API and Data Models have includes, use recursive option by default.
 #  Generate all the files in target directory
-THRIFT_ARGS="-r -o ${BASE_TARGET_DIR}"
+THRIFT_ARGS="-r -o /data/service-cpis/${BASE_TARGET_DIR}"
 # Ensure the required target directories exists, if not create.
 mkdir -p ${BASE_TARGET_DIR}
 
