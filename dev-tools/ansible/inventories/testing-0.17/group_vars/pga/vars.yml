@@ -29,13 +29,13 @@ vhost_servername: "{{ groups['pga'][0] }}"
 vhost_ssl: False
 
 ## Keycloak related variables
-tenant_domain: "prod.seagrid"
-admin_username: "prod.seagrid.admin"
+tenant_domain: "seagrid"
+admin_username: "admin"
 admin_password: "{{ vault_admin_password }}"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
 oauth_grant_type: "password"
-oidc_discovery_url: "https://iam.scigap.org/auth/realms/prod.seagrid/.well-known/openid-configuration"
+oidc_discovery_url: "https://iam.scigap.org/auth/realms/seagrid/.well-known/openid-configuration"
 
 ## Airavata Client related variables
 #airavata_server: "tls://gw77.iu.xsede.org"
