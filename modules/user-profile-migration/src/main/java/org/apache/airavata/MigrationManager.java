@@ -58,7 +58,6 @@ public class MigrationManager {
     private int airavataServiceServerPort = 8930;
     private Map<String,String> roleConversionMap = createDefaultRoleConversionMap();
     private String gatewayId = "gateway-id";
-    private String gatewayURL = "http://localhost";
     private String wso2ISAdminUsername = "username";
     private String wso2ISAdminPassword = "password";
     private String keycloakServiceURL = "https://iam.scigap.org/auth";
@@ -67,10 +66,20 @@ public class MigrationManager {
     private String keycloakTrustStorePath = "../../modules/configuration/server/src/main/resources/client_truststore.jks";
     private String keycloakTrustStorePassword = "password";
     private String keycloakTemporaryUserPassword = "tempPassword";
+    // For some gateways in the legacy gateways table, the following information is missing and needs to be provided
+    private String gatewayURL = "http://localhost";
+    private String gatewayAdminUsername = "admin";
+    private String gatewayAdminFirstName = "Admin";
+    private String gatewayAdminLastName = "User";
+    private String gatewayAdminEmailAddress = "sgg@iu.edu";
 
     // Names of properties in user-profile-migration.properties.template
     private final static String GATEWAY_ID = "gateway-id";
     private final static String GATEWAY_URL = "gateway.url";
+    private final static String GATEWAY_ADMIN_USERNAME = "gateway.admin.username";
+    private final static String GATEWAY_ADMIN_FIRST_NAME = "gateway.admin.first.name";
+    private final static String GATEWAY_ADMIN_LAST_NAME = "gateway.admin.last.name";
+    private final static String GATEWAY_ADMIN_EMAIL_ADDRESS = "gateway.admin.email.address";
     private final static String WSO2IS_ADMIN_USERNAME = "wso2is.admin.username";
     private final static String WSO2IS_ADMIN_PASSWORD = "wso2is.admin.password";
     private final static String WSO2IS_ADMIN_ROLENAME = "wso2is.admin.rolename";
@@ -233,6 +242,19 @@ public class MigrationManager {
         if (gateway.getGatewayURL() == null) {
             gateway.setGatewayURL(this.gatewayURL);
         }
+        // Following are also required by IAM Admin Services in order to create an admin user for the realm
+        if (gateway.getIdentityServerUserName() == null) {
+            gateway.setIdentityServerUserName(this.gatewayAdminUsername);
+        }
+        if (gateway.getGatewayAdminFirstName() == null) {
+            gateway.setGatewayAdminFirstName(this.gatewayAdminFirstName);
+        }
+        if (gateway.getGatewayAdminLastName() == null) {
+            gateway.setGatewayAdminLastName(this.gatewayAdminLastName);
+        }
+        if (gateway.getGatewayAdminEmail() == null) {
+            gateway.setGatewayAdminEmail(this.gatewayAdminEmailAddress);
+        }
 
         // Add Keycloak Tenant for Gateway
         System.out.println("Creating Keycloak Tenant for gateway ...");
@@ -288,6 +310,10 @@ public class MigrationManager {
             // Load values from properties if they exist, otherwise will just use default values
             this.gatewayId = properties.getProperty(GATEWAY_ID, this.gatewayId);
             this.gatewayURL = properties.getProperty(GATEWAY_URL, this.gatewayURL);
+            this.gatewayAdminUsername = properties.getProperty(GATEWAY_ADMIN_USERNAME, this.gatewayAdminUsername);
+            this.gatewayAdminFirstName = properties.getProperty(GATEWAY_ADMIN_FIRST_NAME, this.gatewayAdminFirstName);
+            this.gatewayAdminLastName = properties.getProperty(GATEWAY_ADMIN_LAST_NAME, this.gatewayAdminLastName);
+            this.gatewayAdminEmailAddress = properties.getProperty(GATEWAY_ADMIN_EMAIL_ADDRESS, this.gatewayAdminEmailAddress);
             this.wso2ISAdminUsername = properties.getProperty(WSO2IS_ADMIN_USERNAME, this.wso2ISAdminUsername);
             this.wso2ISAdminPassword = properties.getProperty(WSO2IS_ADMIN_PASSWORD, this.wso2ISAdminPassword);
             this.airavataServiceServerHost = properties.getProperty(AIRAVATA_SERVICE_HOST, this.airavataServiceServerHost);

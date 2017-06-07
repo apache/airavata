@@ -2,6 +2,10 @@
 # NOTE: the gateway-id will also be used for the realm id in Keycloak
 gateway-id = gateway-id
 gateway.url = http://localhost
+gateway.admin.username = admin
+gateway.admin.first.name = Admin
+gateway.admin.last.name = User
+gateway.admin.email.address = sgg@iu.edu
 
 # WSO2 Identity Server settings
 wso2is.admin.username = username
