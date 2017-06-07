@@ -150,6 +150,10 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         pendingUserRole.setName("user-pending");
         pendingUserRole.setDescription("role for newly registered PGA users");
         defaultRoles.add(pendingUserRole);
+        RoleRepresentation gatewayProviderRole = new RoleRepresentation();
+        gatewayProviderRole.setName("gateway-provider");
+        gatewayProviderRole.setDescription("role for gateway providers in the super-admin PGA");
+        defaultRoles.add(gatewayProviderRole);
         RolesRepresentation rolesRepresentation = new RolesRepresentation();
         rolesRepresentation.setRealm(defaultRoles);
         realmDetails.setRoles(rolesRepresentation);
@@ -237,7 +241,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             } else {
                 logger.error("Request for Realm Client Creation failed, callback URL not present");
                 IamAdminServicesException ex = new IamAdminServicesException();
-                ex.setMessage("Gateway Url field in GatewayProfile cannot be empty, Relam Client creation failed");
+                ex.setMessage("Gateway Url field in GatewayProfile cannot be empty, Realm Client creation failed");
                 throw ex;
             }
             pgaClient.setRedirectUris(redirectUris);
