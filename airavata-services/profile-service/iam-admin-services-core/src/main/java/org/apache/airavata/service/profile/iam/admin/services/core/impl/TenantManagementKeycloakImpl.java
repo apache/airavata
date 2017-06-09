@@ -32,6 +32,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.admin.client.resource.RoleResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.*;
 import org.slf4j.Logger;
@@ -170,7 +171,6 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             user.setLastName(gatewayDetails.getGatewayAdminLastName());
             user.setEmail(gatewayDetails.getGatewayAdminEmail());
             user.setEnabled(true);
-            user.setRealmRoles(Arrays.asList("admin"));
             List<String> requiredActionList = new ArrayList<>();
             requiredActionList.add("UPDATE_PASSWORD");
             user.setRequiredActions(requiredActionList);
@@ -183,6 +183,11 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                         user.getEmail(),
                         0, 1);
                 UserResource retrievedUser = client.realm(gatewayDetails.getGatewayId()).users().get(retrieveCreatedUserList.get(0).getId());
+
+                // Add user to the "admin" role
+                RoleResource adminRoleResource = client.realm(gatewayDetails.getGatewayId()).roles().get("admin");
+                retrievedUser.roles().realmLevel().add(Arrays.asList(adminRoleResource.toRepresentation()));
+
                 CredentialRepresentation credential = new CredentialRepresentation();
                 credential.setType(CredentialRepresentation.PASSWORD);
                 credential.setValue(ServerSettings.getGatewayAdminTempPwd());
