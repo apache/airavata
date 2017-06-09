@@ -21,6 +21,7 @@
 package org.apache.airavata.service.profile.tenant.core.repositories;
 
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.service.profile.commons.repositories.AbstractRepository;
 import org.apache.airavata.service.profile.commons.tenant.entities.GatewayEntity;
 import org.apache.airavata.service.profile.commons.utils.QueryConstants;
@@ -48,6 +49,7 @@ public class TenantProfileRepository extends AbstractRepository<Gateway, Gateway
         try {
             Map<String, Object> queryParam = new HashMap<String, Object>();
             queryParam.put(Gateway._Fields.GATEWAY_ID.getFieldName(), gatewayId);
+            queryParam.put(Gateway._Fields.GATEWAY_APPROVAL_STATUS.getFieldName(), GatewayApprovalStatus.APPROVED.name());
             List<Gateway> gatewayList = select(QueryConstants.FIND_GATEWAY_BY_ID, 1, 0, queryParam);
             if (!gatewayList.isEmpty()) {
                 gateway = gatewayList.get(0);
@@ -69,9 +71,11 @@ public class TenantProfileRepository extends AbstractRepository<Gateway, Gateway
         }
     }
 
-    public List<Gateway> getAllGatewaysForUser () throws Exception {
+    public List<Gateway> getAllGatewaysForUser (String requesterUsername) throws Exception {
         try {
-            List<Gateway> gatewayList = select(QueryConstants.GET_USER_GATEWAYS);
+            Map<String, Object> queryParam = new HashMap<String, Object>();
+            queryParam.put(Gateway._Fields.REQUESTER_USERNAME.getFieldName(), requesterUsername);
+            List<Gateway> gatewayList = select(QueryConstants.GET_USER_GATEWAYS, 1, 0, queryParam);
             return gatewayList;
         } catch (Exception e){
             logger.error("Error while getting the user's gateways, reason: ", e);

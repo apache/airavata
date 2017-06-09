@@ -200,7 +200,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     @SecurityCheck
     public List<Gateway> getAllGatewaysForUser(AuthzToken authzToken, String requesterUsername) throws TenantProfileServiceException, AuthorizationException, TException {
         try {
-            return tenantProfileRepository.getAllGatewaysForUser();
+            return tenantProfileRepository.getAllGatewaysForUser(requesterUsername);
         } catch (Exception ex) {
             logger.error("Error getting user's gateway-profiles, reason: " + ex.getMessage(), ex);
             TenantProfileServiceException exception = new TenantProfileServiceException();

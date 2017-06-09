@@ -23,5 +23,5 @@ public class QueryConstants {
     public static final String GET_ALL_GATEWAYS = "SELECT g FROM GatewayEntity g";
 
     public static final String GET_USER_GATEWAYS = "SELECT g from GatewayEntity g" +
-            "where g.requesterUsername LIKE :" +Gateway._Fields.REQUESTER_USERNAME.getFieldName() + "";
+            "where g.requesterUsername LIKE :" + Gateway._Fields.REQUESTER_USERNAME.getFieldName() + "";
 }
