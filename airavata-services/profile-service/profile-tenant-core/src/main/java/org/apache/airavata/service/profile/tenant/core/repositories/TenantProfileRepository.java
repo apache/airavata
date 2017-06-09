@@ -68,4 +68,14 @@ public class TenantProfileRepository extends AbstractRepository<Gateway, Gateway
             throw e;
         }
     }
+
+    public List<Gateway> getAllGatewaysForUser () throws Exception {
+        try {
+            List<Gateway> gatewayList = select(QueryConstants.GET_USER_GATEWAYS);
+            return gatewayList;
+        } catch (Exception e){
+            logger.error("Error while getting the user's gateways, reason: ", e);
+            throw e;
+        }
+    }
 }

@@ -55,7 +55,8 @@ service TenantProfileService {
                                              2: airavata_errors.AuthorizationException ae)
 
     bool deleteGateway (1: required security_model.AuthzToken authzToken,
-                        2: required string gatewayId)
+                        2: required string airavataInternalGatewayId,
+                        3: required string gatewayId)
                      throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tpe,
                              2: airavata_errors.AuthorizationException ae)
 
@@ -67,4 +68,9 @@ service TenantProfileService {
                          2: required string gatewayId)
                       throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tpe,
                               2: airavata_errors.AuthorizationException ae)
+
+    list<workspace_model.Gateway> getAllGatewaysForUser (1: required security_model.AuthzToken authzToken,
+                                                         2: required string requesterUsername)
+                                               throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tpe,
+                                                       2: airavata_errors.AuthorizationException ae)
 }
