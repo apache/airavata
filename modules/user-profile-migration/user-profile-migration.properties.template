@@ -25,6 +25,7 @@ profile.service.host = localhost
 profile.service.port = 8962
 
 # Keycloak settings
+# username and password for master realm admin user
 keycloak.admin.username = username
 keycloak.admin.password = password
 keycloak.service-url = https://iam.scigap.org/auth
