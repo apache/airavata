@@ -38,10 +38,10 @@ public class JPAUtils {
         EntityManager entityManager;
 
         if (factory == null) {
-            //FIXME: add validation query in connectionProperties after db is initialized during server startup
             String connectionProperties = "DriverClassName=" + Utils.getJDBCDriver() + "," + "Url=" +
                     Utils.getJDBCURL() + "?autoReconnect=true," +
-                    "Username=" + Utils.getJDBCUser() + "," + "Password=" + Utils.getJDBCPassword();
+                    "Username=" + Utils.getJDBCUser() + "," + "Password=" + Utils.getJDBCPassword() + "," +
+                    "validationQuery=select 1";
             logger.info(connectionProperties);
             Map<String, String> properties = new HashMap<String, String>();
             properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");
