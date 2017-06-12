@@ -86,11 +86,6 @@
     - restart httpd
   when: ansible_os_family == "RedHat"
 
-- name: Run composer update
-  composer: command=update working_dir="{{ doc_root_dir }}"
-  become: yes
-  become_user: "{{user}}"
-
 # step 6: Change pga configurations
 - name: Copy pga config file
   template: src=pga_config.php.j2 dest="{{ doc_root_dir }}/app/config/pga_config.php" owner="{{user}}" group="{{group}}"
@@ -113,6 +108,11 @@
 - name: give write permissions to storage dir
   file: path="{{ doc_root_dir }}/app/storage" state=directory mode=0777 owner="{{user}}" group="{{group}}" recurse=yes
   become: yes
+
+- name: Run composer update
+  composer: command=update working_dir="{{ doc_root_dir }}"
+  become: yes
+  become_user: "{{user}}"
 
 # For SELinux, need to apply file contexts, but I'm not sure why since the contexts were created before the files/directories
 - name: run restorecon on those directories
