@@ -3465,44 +3465,6 @@ bool createGroup(1: required security_model.AuthzToken authzToken, 2: required g
                                                       2: airavata_errors.AiravataClientException ace,
                                                       3: airavata_errors.AiravataSystemException ase,
                                                       4: airavata_errors.AuthorizationException ae)
-    /*
-     * User Profile Service methods
-     */
-    string addUserProfile (1: required security_model.AuthzToken authzToken, 2: required user_profile_model.UserProfile userProfile)
-                throws (1: airavata_errors.InvalidRequestException ire,
-                        2: airavata_errors.AiravataClientException ace,
-                        3: airavata_errors.AiravataSystemException ase,
-                        4: airavata_errors.AuthorizationException ae)
-
-    bool updateUserProfile (1: required security_model.AuthzToken authzToken, 2: required user_profile_model.UserProfile userProfile)
-                throws (1: airavata_errors.InvalidRequestException ire,
-                        2: airavata_errors.AiravataClientException ace,
-                        3: airavata_errors.AiravataSystemException ase,
-                        4: airavata_errors.AuthorizationException ae)
-
-    user_profile_model.UserProfile getUserProfileById(1: required security_model.AuthzToken authzToken, 2: required string userId, 3: required string gatewayId)
-                throws (1: airavata_errors.InvalidRequestException ire,
-                        2: airavata_errors.AiravataClientException ace,
-                        3: airavata_errors.AiravataSystemException ase,
-                        4: airavata_errors.AuthorizationException ae)
-
-    bool deleteUserProfile(1: required security_model.AuthzToken authzToken, 2: required string userId)
-                throws (1: airavata_errors.InvalidRequestException ire,
-                        2: airavata_errors.AiravataClientException ace,
-                        3: airavata_errors.AiravataSystemException ase,
-                        4: airavata_errors.AuthorizationException ae)
-
-    list<user_profile_model.UserProfile> getAllUserProfilesInGateway (1: required security_model.AuthzToken authzToken, 2: required string gatewayId, 3: required i32 offset, 4: required i32 limit)
-                throws (1: airavata_errors.InvalidRequestException ire,
-                        2: airavata_errors.AiravataClientException ace,
-                        3: airavata_errors.AiravataSystemException ase,
-                        4: airavata_errors.AuthorizationException ae)
-
-    bool doesUserProfileExist(1: required security_model.AuthzToken authzToken, 2: required string userId, 3: required string gatewayId)
-                throws (1: airavata_errors.InvalidRequestException ire,
-                        2: airavata_errors.AiravataClientException ace,
-                        3: airavata_errors.AiravataSystemException ase,
-                        4: airavata_errors.AuthorizationException ae)
  //
  //End of API
  }

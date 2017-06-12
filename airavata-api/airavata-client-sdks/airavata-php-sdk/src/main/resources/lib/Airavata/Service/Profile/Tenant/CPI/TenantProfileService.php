@@ -50,12 +50,13 @@ interface TenantProfileServiceIf {
   public function getGateway(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId);
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
+   * @param string $airavataInternalGatewayId
    * @param string $gatewayId
    * @return bool
    * @throws \Airavata\Service\Profile\Tenant\CPI\Error\TenantProfileServiceException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function deleteGateway(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId);
+  public function deleteGateway(\Airavata\Model\Security\AuthzToken $authzToken, $airavataInternalGatewayId, $gatewayId);
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @return \Airavata\Model\Workspace\Gateway[]
@@ -71,6 +72,14 @@ interface TenantProfileServiceIf {
    * @throws \Airavata\API\Error\AuthorizationException
    */
   public function isGatewayExist(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId);
+  /**
+   * @param \Airavata\Model\Security\AuthzToken $authzToken
+   * @param string $requesterUsername
+   * @return \Airavata\Model\Workspace\Gateway[]
+   * @throws \Airavata\Service\Profile\Tenant\CPI\Error\TenantProfileServiceException
+   * @throws \Airavata\API\Error\AuthorizationException
+   */
+  public function getAllGatewaysForUser(\Airavata\Model\Security\AuthzToken $authzToken, $requesterUsername);
 }
 
 class TenantProfileServiceClient implements \Airavata\Service\Profile\Tenant\CPI\TenantProfileServiceIf {
@@ -315,16 +324,17 @@ class TenantProfileServiceClient implements \Airavata\Service\Profile\Tenant\CPI
     throw new \Exception("getGateway failed: unknown result");
   }
 
-  public function deleteGateway(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId)
+  public function deleteGateway(\Airavata\Model\Security\AuthzToken $authzToken, $airavataInternalGatewayId, $gatewayId)
   {
-    $this->send_deleteGateway($authzToken, $gatewayId);
+    $this->send_deleteGateway($authzToken, $airavataInternalGatewayId, $gatewayId);
     return $this->recv_deleteGateway();
   }
 
-  public function send_deleteGateway(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId)
+  public function send_deleteGateway(\Airavata\Model\Security\AuthzToken $authzToken, $airavataInternalGatewayId, $gatewayId)
   {
     $args = new \Airavata\Service\Profile\Tenant\CPI\TenantProfileService_deleteGateway_args();
     $args->authzToken = $authzToken;
+    $args->airavataInternalGatewayId = $airavataInternalGatewayId;
     $args->gatewayId = $gatewayId;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
@@ -486,6 +496,64 @@ class TenantProfileServiceClient implements \Airavata\Service\Profile\Tenant\CPI
       throw $result->ae;
     }
     throw new \Exception("isGatewayExist failed: unknown result");
+  }
+
+  public function getAllGatewaysForUser(\Airavata\Model\Security\AuthzToken $authzToken, $requesterUsername)
+  {
+    $this->send_getAllGatewaysForUser($authzToken, $requesterUsername);
+    return $this->recv_getAllGatewaysForUser();
+  }
+
+  public function send_getAllGatewaysForUser(\Airavata\Model\Security\AuthzToken $authzToken, $requesterUsername)
+  {
+    $args = new \Airavata\Service\Profile\Tenant\CPI\TenantProfileService_getAllGatewaysForUser_args();
+    $args->authzToken = $authzToken;
+    $args->requesterUsername = $requesterUsername;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'getAllGatewaysForUser', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('getAllGatewaysForUser', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_getAllGatewaysForUser()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\Service\Profile\Tenant\CPI\TenantProfileService_getAllGatewaysForUser_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\Service\Profile\Tenant\CPI\TenantProfileService_getAllGatewaysForUser_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->tpe !== null) {
+      throw $result->tpe;
+    }
+    if ($result->ae !== null) {
+      throw $result->ae;
+    }
+    throw new \Exception("getAllGatewaysForUser failed: unknown result");
   }
 
 }
@@ -1406,6 +1474,10 @@ class TenantProfileService_deleteGateway_args {
   /**
    * @var string
    */
+  public $airavataInternalGatewayId = null;
+  /**
+   * @var string
+   */
   public $gatewayId = null;
 
   public function __construct($vals=null) {
@@ -1417,6 +1489,10 @@ class TenantProfileService_deleteGateway_args {
           'class' => '\Airavata\Model\Security\AuthzToken',
           ),
         2 => array(
+          'var' => 'airavataInternalGatewayId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
           'var' => 'gatewayId',
           'type' => TType::STRING,
           ),
@@ -1425,6 +1501,9 @@ class TenantProfileService_deleteGateway_args {
     if (is_array($vals)) {
       if (isset($vals['authzToken'])) {
         $this->authzToken = $vals['authzToken'];
+      }
+      if (isset($vals['airavataInternalGatewayId'])) {
+        $this->airavataInternalGatewayId = $vals['airavataInternalGatewayId'];
       }
       if (isset($vals['gatewayId'])) {
         $this->gatewayId = $vals['gatewayId'];
@@ -1461,6 +1540,13 @@ class TenantProfileService_deleteGateway_args {
           break;
         case 2:
           if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->airavataInternalGatewayId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->gatewayId);
           } else {
             $xfer += $input->skip($ftype);
@@ -1487,8 +1573,13 @@ class TenantProfileService_deleteGateway_args {
       $xfer += $this->authzToken->write($output);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->airavataInternalGatewayId !== null) {
+      $xfer += $output->writeFieldBegin('airavataInternalGatewayId', TType::STRING, 2);
+      $xfer += $output->writeString($this->airavataInternalGatewayId);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->gatewayId !== null) {
-      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 2);
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 3);
       $xfer += $output->writeString($this->gatewayId);
       $xfer += $output->writeFieldEnd();
     }
@@ -2066,6 +2157,262 @@ class TenantProfileService_isGatewayExist_result {
     if ($this->success !== null) {
       $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
       $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->tpe !== null) {
+      $xfer += $output->writeFieldBegin('tpe', TType::STRUCT, 1);
+      $xfer += $this->tpe->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ae !== null) {
+      $xfer += $output->writeFieldBegin('ae', TType::STRUCT, 2);
+      $xfer += $this->ae->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class TenantProfileService_getAllGatewaysForUser_args {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\Security\AuthzToken
+   */
+  public $authzToken = null;
+  /**
+   * @var string
+   */
+  public $requesterUsername = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'authzToken',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Security\AuthzToken',
+          ),
+        2 => array(
+          'var' => 'requesterUsername',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['authzToken'])) {
+        $this->authzToken = $vals['authzToken'];
+      }
+      if (isset($vals['requesterUsername'])) {
+        $this->requesterUsername = $vals['requesterUsername'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'TenantProfileService_getAllGatewaysForUser_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->authzToken = new \Airavata\Model\Security\AuthzToken();
+            $xfer += $this->authzToken->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->requesterUsername);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('TenantProfileService_getAllGatewaysForUser_args');
+    if ($this->authzToken !== null) {
+      if (!is_object($this->authzToken)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('authzToken', TType::STRUCT, 1);
+      $xfer += $this->authzToken->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->requesterUsername !== null) {
+      $xfer += $output->writeFieldBegin('requesterUsername', TType::STRING, 2);
+      $xfer += $output->writeString($this->requesterUsername);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class TenantProfileService_getAllGatewaysForUser_result {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\Workspace\Gateway[]
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\Service\Profile\Tenant\CPI\Error\TenantProfileServiceException
+   */
+  public $tpe = null;
+  /**
+   * @var \Airavata\API\Error\AuthorizationException
+   */
+  public $ae = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\Workspace\Gateway',
+            ),
+          ),
+        1 => array(
+          'var' => 'tpe',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Service\Profile\Tenant\CPI\Error\TenantProfileServiceException',
+          ),
+        2 => array(
+          'var' => 'ae',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AuthorizationException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['tpe'])) {
+        $this->tpe = $vals['tpe'];
+      }
+      if (isset($vals['ae'])) {
+        $this->ae = $vals['ae'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'TenantProfileService_getAllGatewaysForUser_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::LST) {
+            $this->success = array();
+            $_size7 = 0;
+            $_etype10 = 0;
+            $xfer += $input->readListBegin($_etype10, $_size7);
+            for ($_i11 = 0; $_i11 < $_size7; ++$_i11)
+            {
+              $elem12 = null;
+              $elem12 = new \Airavata\Model\Workspace\Gateway();
+              $xfer += $elem12->read($input);
+              $this->success []= $elem12;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->tpe = new \Airavata\Service\Profile\Tenant\CPI\Error\TenantProfileServiceException();
+            $xfer += $this->tpe->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ae = new \Airavata\API\Error\AuthorizationException();
+            $xfer += $this->ae->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('TenantProfileService_getAllGatewaysForUser_result');
+    if ($this->success !== null) {
+      if (!is_array($this->success)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('success', TType::LST, 0);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->success));
+        {
+          foreach ($this->success as $iter13)
+          {
+            $xfer += $iter13->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
       $xfer += $output->writeFieldEnd();
     }
     if ($this->tpe !== null) {

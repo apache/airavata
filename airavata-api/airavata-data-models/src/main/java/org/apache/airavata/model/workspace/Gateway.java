@@ -82,37 +82,33 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     schemes.put(TupleScheme.class, new GatewayTupleSchemeFactory());
   }
 
-  public String airavataInternalGatewayId; // optional
-  public String gatewayId; // required
-  /**
-   *
-   * @see GatewayApprovalStatus
-   */
-  public GatewayApprovalStatus gatewayApprovalStatus; // required
-  public String gatewayName; // optional
-  public String domain; // optional
-  public String emailAddress; // optional
-  public String gatewayAcronym; // optional
-  public String gatewayURL; // optional
-  public String gatewayPublicAbstract; // optional
-  public String reviewProposalDescription; // optional
-  public String gatewayAdminFirstName; // optional
-  public String gatewayAdminLastName; // optional
-  public String gatewayAdminEmail; // optional
-  public String identityServerUserName; // optional
-  public String identityServerPasswordToken; // optional
-  public String declinedReason; // optional
-  public String oauthClientId; // optional
-  public String oauthClientSecret; // optional
-  public long requestCreationTime; // optional
-  public String requesterUsername; // optional
+  private String airavataInternalGatewayId; // optional
+  private String gatewayId; // required
+  private GatewayApprovalStatus gatewayApprovalStatus; // required
+  private String gatewayName; // optional
+  private String domain; // optional
+  private String emailAddress; // optional
+  private String gatewayAcronym; // optional
+  private String gatewayURL; // optional
+  private String gatewayPublicAbstract; // optional
+  private String reviewProposalDescription; // optional
+  private String gatewayAdminFirstName; // optional
+  private String gatewayAdminLastName; // optional
+  private String gatewayAdminEmail; // optional
+  private String identityServerUserName; // optional
+  private String identityServerPasswordToken; // optional
+  private String declinedReason; // optional
+  private String oauthClientId; // optional
+  private String oauthClientSecret; // optional
+  private long requestCreationTime; // optional
+  private String requesterUsername; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     AIRAVATA_INTERNAL_GATEWAY_ID((short)1, "airavataInternalGatewayId"),
     GATEWAY_ID((short)2, "gatewayId"),
     /**
-     *
+     * 
      * @see GatewayApprovalStatus
      */
     GATEWAY_APPROVAL_STATUS((short)3, "gatewayApprovalStatus"),
@@ -233,46 +229,46 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.AIRAVATA_INTERNAL_GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("airavataInternalGatewayId", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED,
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.GATEWAY_APPROVAL_STATUS, new org.apache.thrift.meta_data.FieldMetaData("gatewayApprovalStatus", org.apache.thrift.TFieldRequirementType.REQUIRED,
-            new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, GatewayApprovalStatus.class)));
-    tmpMap.put(_Fields.GATEWAY_NAME, new org.apache.thrift.meta_data.FieldMetaData("gatewayName", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.DOMAIN, new org.apache.thrift.meta_data.FieldMetaData("domain", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.EMAIL_ADDRESS, new org.apache.thrift.meta_data.FieldMetaData("emailAddress", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.GATEWAY_ACRONYM, new org.apache.thrift.meta_data.FieldMetaData("gatewayAcronym", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.GATEWAY_URL, new org.apache.thrift.meta_data.FieldMetaData("gatewayURL", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.GATEWAY_PUBLIC_ABSTRACT, new org.apache.thrift.meta_data.FieldMetaData("gatewayPublicAbstract", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.REVIEW_PROPOSAL_DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("reviewProposalDescription", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.GATEWAY_ADMIN_FIRST_NAME, new org.apache.thrift.meta_data.FieldMetaData("gatewayAdminFirstName", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.GATEWAY_ADMIN_LAST_NAME, new org.apache.thrift.meta_data.FieldMetaData("gatewayAdminLastName", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.GATEWAY_ADMIN_EMAIL, new org.apache.thrift.meta_data.FieldMetaData("gatewayAdminEmail", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.IDENTITY_SERVER_USER_NAME, new org.apache.thrift.meta_data.FieldMetaData("identityServerUserName", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.IDENTITY_SERVER_PASSWORD_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("identityServerPasswordToken", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.DECLINED_REASON, new org.apache.thrift.meta_data.FieldMetaData("declinedReason", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.OAUTH_CLIENT_ID, new org.apache.thrift.meta_data.FieldMetaData("oauthClientId", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.OAUTH_CLIENT_SECRET, new org.apache.thrift.meta_data.FieldMetaData("oauthClientSecret", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.REQUEST_CREATION_TIME, new org.apache.thrift.meta_data.FieldMetaData("requestCreationTime", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
-    tmpMap.put(_Fields.REQUESTER_USERNAME, new org.apache.thrift.meta_data.FieldMetaData("requesterUsername", org.apache.thrift.TFieldRequirementType.OPTIONAL,
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.AIRAVATA_INTERNAL_GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("airavataInternalGatewayId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.GATEWAY_APPROVAL_STATUS, new org.apache.thrift.meta_data.FieldMetaData("gatewayApprovalStatus", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, GatewayApprovalStatus.class)));
+    tmpMap.put(_Fields.GATEWAY_NAME, new org.apache.thrift.meta_data.FieldMetaData("gatewayName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.DOMAIN, new org.apache.thrift.meta_data.FieldMetaData("domain", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.EMAIL_ADDRESS, new org.apache.thrift.meta_data.FieldMetaData("emailAddress", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.GATEWAY_ACRONYM, new org.apache.thrift.meta_data.FieldMetaData("gatewayAcronym", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.GATEWAY_URL, new org.apache.thrift.meta_data.FieldMetaData("gatewayURL", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.GATEWAY_PUBLIC_ABSTRACT, new org.apache.thrift.meta_data.FieldMetaData("gatewayPublicAbstract", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.REVIEW_PROPOSAL_DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("reviewProposalDescription", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.GATEWAY_ADMIN_FIRST_NAME, new org.apache.thrift.meta_data.FieldMetaData("gatewayAdminFirstName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.GATEWAY_ADMIN_LAST_NAME, new org.apache.thrift.meta_data.FieldMetaData("gatewayAdminLastName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.GATEWAY_ADMIN_EMAIL, new org.apache.thrift.meta_data.FieldMetaData("gatewayAdminEmail", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.IDENTITY_SERVER_USER_NAME, new org.apache.thrift.meta_data.FieldMetaData("identityServerUserName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.IDENTITY_SERVER_PASSWORD_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("identityServerPasswordToken", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.DECLINED_REASON, new org.apache.thrift.meta_data.FieldMetaData("declinedReason", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.OAUTH_CLIENT_ID, new org.apache.thrift.meta_data.FieldMetaData("oauthClientId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.OAUTH_CLIENT_SECRET, new org.apache.thrift.meta_data.FieldMetaData("oauthClientSecret", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.REQUEST_CREATION_TIME, new org.apache.thrift.meta_data.FieldMetaData("requestCreationTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
+    tmpMap.put(_Fields.REQUESTER_USERNAME, new org.apache.thrift.meta_data.FieldMetaData("requesterUsername", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Gateway.class, metaDataMap);
   }
@@ -281,8 +277,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
   }
 
   public Gateway(
-          String gatewayId,
-          GatewayApprovalStatus gatewayApprovalStatus)
+    String gatewayId,
+    GatewayApprovalStatus gatewayApprovalStatus)
   {
     this();
     this.gatewayId = gatewayId;
@@ -387,9 +383,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     return this.airavataInternalGatewayId;
   }
 
-  public Gateway setAiravataInternalGatewayId(String airavataInternalGatewayId) {
+  public void setAiravataInternalGatewayId(String airavataInternalGatewayId) {
     this.airavataInternalGatewayId = airavataInternalGatewayId;
-    return this;
   }
 
   public void unsetAiravataInternalGatewayId() {
@@ -411,9 +406,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     return this.gatewayId;
   }
 
-  public Gateway setGatewayId(String gatewayId) {
+  public void setGatewayId(String gatewayId) {
     this.gatewayId = gatewayId;
-    return this;
   }
 
   public void unsetGatewayId() {
@@ -432,7 +426,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
   }
 
   /**
-   *
+   * 
    * @see GatewayApprovalStatus
    */
   public GatewayApprovalStatus getGatewayApprovalStatus() {
@@ -440,12 +434,11 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
   }
 
   /**
-   *
+   * 
    * @see GatewayApprovalStatus
    */
-  public Gateway setGatewayApprovalStatus(GatewayApprovalStatus gatewayApprovalStatus) {
+  public void setGatewayApprovalStatus(GatewayApprovalStatus gatewayApprovalStatus) {
     this.gatewayApprovalStatus = gatewayApprovalStatus;
-    return this;
   }
 
   public void unsetGatewayApprovalStatus() {
@@ -467,9 +460,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     return this.gatewayName;
   }
 
-  public Gateway setGatewayName(String gatewayName) {
+  public void setGatewayName(String gatewayName) {
     this.gatewayName = gatewayName;
-    return this;
   }
 
   public void unsetGatewayName() {
@@ -491,9 +483,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     return this.domain;
   }
 
-  public Gateway setDomain(String domain) {
+  public void setDomain(String domain) {
     this.domain = domain;
-    return this;
   }
 
   public void unsetDomain() {
@@ -515,9 +506,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     return this.emailAddress;
   }
 
-  public Gateway setEmailAddress(String emailAddress) {
+  public void setEmailAddress(String emailAddress) {
     this.emailAddress = emailAddress;
-    return this;
   }
 
   public void unsetEmailAddress() {
@@ -539,9 +529,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     return this.gatewayAcronym;
   }
 
-  public Gateway setGatewayAcronym(String gatewayAcronym) {
+  public void setGatewayAcronym(String gatewayAcronym) {
     this.gatewayAcronym = gatewayAcronym;
-    return this;
   }
 
   public void unsetGatewayAcronym() {
@@ -563,9 +552,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     return this.gatewayURL;
   }
 
-  public Gateway setGatewayURL(String gatewayURL) {
+  public void setGatewayURL(String gatewayURL) {
     this.gatewayURL = gatewayURL;
-    return this;
   }
 
   public void unsetGatewayURL() {
@@ -587,9 +575,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     return this.gatewayPublicAbstract;
   }
 
-  public Gateway setGatewayPublicAbstract(String gatewayPublicAbstract) {
+  public void setGatewayPublicAbstract(String gatewayPublicAbstract) {
     this.gatewayPublicAbstract = gatewayPublicAbstract;
-    return this;
   }
 
   public void unsetGatewayPublicAbstract() {
@@ -611,9 +598,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     return this.reviewProposalDescription;
   }
 
-  public Gateway setReviewProposalDescription(String reviewProposalDescription) {
+  public void setReviewProposalDescription(String reviewProposalDescription) {
     this.reviewProposalDescription = reviewProposalDescription;
-    return this;
   }
 
   public void unsetReviewProposalDescription() {
@@ -635,9 +621,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     return this.gatewayAdminFirstName;
   }
 
-  public Gateway setGatewayAdminFirstName(String gatewayAdminFirstName) {
+  public void setGatewayAdminFirstName(String gatewayAdminFirstName) {
     this.gatewayAdminFirstName = gatewayAdminFirstName;
-    return this;
   }
 
   public void unsetGatewayAdminFirstName() {
@@ -659,9 +644,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     return this.gatewayAdminLastName;
   }
 
-  public Gateway setGatewayAdminLastName(String gatewayAdminLastName) {
+  public void setGatewayAdminLastName(String gatewayAdminLastName) {
     this.gatewayAdminLastName = gatewayAdminLastName;
-    return this;
   }
 
   public void unsetGatewayAdminLastName() {
@@ -683,9 +667,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     return this.gatewayAdminEmail;
   }
 
-  public Gateway setGatewayAdminEmail(String gatewayAdminEmail) {
+  public void setGatewayAdminEmail(String gatewayAdminEmail) {
     this.gatewayAdminEmail = gatewayAdminEmail;
-    return this;
   }
 
   public void unsetGatewayAdminEmail() {
@@ -707,9 +690,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     return this.identityServerUserName;
   }
 
-  public Gateway setIdentityServerUserName(String identityServerUserName) {
+  public void setIdentityServerUserName(String identityServerUserName) {
     this.identityServerUserName = identityServerUserName;
-    return this;
   }
 
   public void unsetIdentityServerUserName() {
@@ -731,9 +713,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     return this.identityServerPasswordToken;
   }
 
-  public Gateway setIdentityServerPasswordToken(String identityServerPasswordToken) {
+  public void setIdentityServerPasswordToken(String identityServerPasswordToken) {
     this.identityServerPasswordToken = identityServerPasswordToken;
-    return this;
   }
 
   public void unsetIdentityServerPasswordToken() {
@@ -755,9 +736,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     return this.declinedReason;
   }
 
-  public Gateway setDeclinedReason(String declinedReason) {
+  public void setDeclinedReason(String declinedReason) {
     this.declinedReason = declinedReason;
-    return this;
   }
 
   public void unsetDeclinedReason() {
@@ -779,9 +759,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     return this.oauthClientId;
   }
 
-  public Gateway setOauthClientId(String oauthClientId) {
+  public void setOauthClientId(String oauthClientId) {
     this.oauthClientId = oauthClientId;
-    return this;
   }
 
   public void unsetOauthClientId() {
@@ -803,9 +782,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     return this.oauthClientSecret;
   }
 
-  public Gateway setOauthClientSecret(String oauthClientSecret) {
+  public void setOauthClientSecret(String oauthClientSecret) {
     this.oauthClientSecret = oauthClientSecret;
-    return this;
   }
 
   public void unsetOauthClientSecret() {
@@ -827,10 +805,9 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     return this.requestCreationTime;
   }
 
-  public Gateway setRequestCreationTime(long requestCreationTime) {
+  public void setRequestCreationTime(long requestCreationTime) {
     this.requestCreationTime = requestCreationTime;
     setRequestCreationTimeIsSet(true);
-    return this;
   }
 
   public void unsetRequestCreationTime() {
@@ -850,9 +827,8 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     return this.requesterUsername;
   }
 
-  public Gateway setRequesterUsername(String requesterUsername) {
+  public void setRequesterUsername(String requesterUsername) {
     this.requesterUsername = requesterUsername;
-    return this;
   }
 
   public void unsetRequesterUsername() {
@@ -872,230 +848,230 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-      case AIRAVATA_INTERNAL_GATEWAY_ID:
-        if (value == null) {
-          unsetAiravataInternalGatewayId();
-        } else {
-          setAiravataInternalGatewayId((String)value);
-        }
-        break;
+    case AIRAVATA_INTERNAL_GATEWAY_ID:
+      if (value == null) {
+        unsetAiravataInternalGatewayId();
+      } else {
+        setAiravataInternalGatewayId((String)value);
+      }
+      break;
 
-      case GATEWAY_ID:
-        if (value == null) {
-          unsetGatewayId();
-        } else {
-          setGatewayId((String)value);
-        }
-        break;
+    case GATEWAY_ID:
+      if (value == null) {
+        unsetGatewayId();
+      } else {
+        setGatewayId((String)value);
+      }
+      break;
 
-      case GATEWAY_APPROVAL_STATUS:
-        if (value == null) {
-          unsetGatewayApprovalStatus();
-        } else {
-          setGatewayApprovalStatus((GatewayApprovalStatus)value);
-        }
-        break;
+    case GATEWAY_APPROVAL_STATUS:
+      if (value == null) {
+        unsetGatewayApprovalStatus();
+      } else {
+        setGatewayApprovalStatus((GatewayApprovalStatus)value);
+      }
+      break;
 
-      case GATEWAY_NAME:
-        if (value == null) {
-          unsetGatewayName();
-        } else {
-          setGatewayName((String)value);
-        }
-        break;
+    case GATEWAY_NAME:
+      if (value == null) {
+        unsetGatewayName();
+      } else {
+        setGatewayName((String)value);
+      }
+      break;
 
-      case DOMAIN:
-        if (value == null) {
-          unsetDomain();
-        } else {
-          setDomain((String)value);
-        }
-        break;
+    case DOMAIN:
+      if (value == null) {
+        unsetDomain();
+      } else {
+        setDomain((String)value);
+      }
+      break;
 
-      case EMAIL_ADDRESS:
-        if (value == null) {
-          unsetEmailAddress();
-        } else {
-          setEmailAddress((String)value);
-        }
-        break;
+    case EMAIL_ADDRESS:
+      if (value == null) {
+        unsetEmailAddress();
+      } else {
+        setEmailAddress((String)value);
+      }
+      break;
 
-      case GATEWAY_ACRONYM:
-        if (value == null) {
-          unsetGatewayAcronym();
-        } else {
-          setGatewayAcronym((String)value);
-        }
-        break;
+    case GATEWAY_ACRONYM:
+      if (value == null) {
+        unsetGatewayAcronym();
+      } else {
+        setGatewayAcronym((String)value);
+      }
+      break;
 
-      case GATEWAY_URL:
-        if (value == null) {
-          unsetGatewayURL();
-        } else {
-          setGatewayURL((String)value);
-        }
-        break;
+    case GATEWAY_URL:
+      if (value == null) {
+        unsetGatewayURL();
+      } else {
+        setGatewayURL((String)value);
+      }
+      break;
 
-      case GATEWAY_PUBLIC_ABSTRACT:
-        if (value == null) {
-          unsetGatewayPublicAbstract();
-        } else {
-          setGatewayPublicAbstract((String)value);
-        }
-        break;
+    case GATEWAY_PUBLIC_ABSTRACT:
+      if (value == null) {
+        unsetGatewayPublicAbstract();
+      } else {
+        setGatewayPublicAbstract((String)value);
+      }
+      break;
 
-      case REVIEW_PROPOSAL_DESCRIPTION:
-        if (value == null) {
-          unsetReviewProposalDescription();
-        } else {
-          setReviewProposalDescription((String)value);
-        }
-        break;
+    case REVIEW_PROPOSAL_DESCRIPTION:
+      if (value == null) {
+        unsetReviewProposalDescription();
+      } else {
+        setReviewProposalDescription((String)value);
+      }
+      break;
 
-      case GATEWAY_ADMIN_FIRST_NAME:
-        if (value == null) {
-          unsetGatewayAdminFirstName();
-        } else {
-          setGatewayAdminFirstName((String)value);
-        }
-        break;
+    case GATEWAY_ADMIN_FIRST_NAME:
+      if (value == null) {
+        unsetGatewayAdminFirstName();
+      } else {
+        setGatewayAdminFirstName((String)value);
+      }
+      break;
 
-      case GATEWAY_ADMIN_LAST_NAME:
-        if (value == null) {
-          unsetGatewayAdminLastName();
-        } else {
-          setGatewayAdminLastName((String)value);
-        }
-        break;
+    case GATEWAY_ADMIN_LAST_NAME:
+      if (value == null) {
+        unsetGatewayAdminLastName();
+      } else {
+        setGatewayAdminLastName((String)value);
+      }
+      break;
 
-      case GATEWAY_ADMIN_EMAIL:
-        if (value == null) {
-          unsetGatewayAdminEmail();
-        } else {
-          setGatewayAdminEmail((String)value);
-        }
-        break;
+    case GATEWAY_ADMIN_EMAIL:
+      if (value == null) {
+        unsetGatewayAdminEmail();
+      } else {
+        setGatewayAdminEmail((String)value);
+      }
+      break;
 
-      case IDENTITY_SERVER_USER_NAME:
-        if (value == null) {
-          unsetIdentityServerUserName();
-        } else {
-          setIdentityServerUserName((String)value);
-        }
-        break;
+    case IDENTITY_SERVER_USER_NAME:
+      if (value == null) {
+        unsetIdentityServerUserName();
+      } else {
+        setIdentityServerUserName((String)value);
+      }
+      break;
 
-      case IDENTITY_SERVER_PASSWORD_TOKEN:
-        if (value == null) {
-          unsetIdentityServerPasswordToken();
-        } else {
-          setIdentityServerPasswordToken((String)value);
-        }
-        break;
+    case IDENTITY_SERVER_PASSWORD_TOKEN:
+      if (value == null) {
+        unsetIdentityServerPasswordToken();
+      } else {
+        setIdentityServerPasswordToken((String)value);
+      }
+      break;
 
-      case DECLINED_REASON:
-        if (value == null) {
-          unsetDeclinedReason();
-        } else {
-          setDeclinedReason((String)value);
-        }
-        break;
+    case DECLINED_REASON:
+      if (value == null) {
+        unsetDeclinedReason();
+      } else {
+        setDeclinedReason((String)value);
+      }
+      break;
 
-      case OAUTH_CLIENT_ID:
-        if (value == null) {
-          unsetOauthClientId();
-        } else {
-          setOauthClientId((String)value);
-        }
-        break;
+    case OAUTH_CLIENT_ID:
+      if (value == null) {
+        unsetOauthClientId();
+      } else {
+        setOauthClientId((String)value);
+      }
+      break;
 
-      case OAUTH_CLIENT_SECRET:
-        if (value == null) {
-          unsetOauthClientSecret();
-        } else {
-          setOauthClientSecret((String)value);
-        }
-        break;
+    case OAUTH_CLIENT_SECRET:
+      if (value == null) {
+        unsetOauthClientSecret();
+      } else {
+        setOauthClientSecret((String)value);
+      }
+      break;
 
-      case REQUEST_CREATION_TIME:
-        if (value == null) {
-          unsetRequestCreationTime();
-        } else {
-          setRequestCreationTime((Long)value);
-        }
-        break;
+    case REQUEST_CREATION_TIME:
+      if (value == null) {
+        unsetRequestCreationTime();
+      } else {
+        setRequestCreationTime((Long)value);
+      }
+      break;
 
-      case REQUESTER_USERNAME:
-        if (value == null) {
-          unsetRequesterUsername();
-        } else {
-          setRequesterUsername((String)value);
-        }
-        break;
+    case REQUESTER_USERNAME:
+      if (value == null) {
+        unsetRequesterUsername();
+      } else {
+        setRequesterUsername((String)value);
+      }
+      break;
 
     }
   }
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-      case AIRAVATA_INTERNAL_GATEWAY_ID:
-        return getAiravataInternalGatewayId();
+    case AIRAVATA_INTERNAL_GATEWAY_ID:
+      return getAiravataInternalGatewayId();
 
-      case GATEWAY_ID:
-        return getGatewayId();
+    case GATEWAY_ID:
+      return getGatewayId();
 
-      case GATEWAY_APPROVAL_STATUS:
-        return getGatewayApprovalStatus();
+    case GATEWAY_APPROVAL_STATUS:
+      return getGatewayApprovalStatus();
 
-      case GATEWAY_NAME:
-        return getGatewayName();
+    case GATEWAY_NAME:
+      return getGatewayName();
 
-      case DOMAIN:
-        return getDomain();
+    case DOMAIN:
+      return getDomain();
 
-      case EMAIL_ADDRESS:
-        return getEmailAddress();
+    case EMAIL_ADDRESS:
+      return getEmailAddress();
 
-      case GATEWAY_ACRONYM:
-        return getGatewayAcronym();
+    case GATEWAY_ACRONYM:
+      return getGatewayAcronym();
 
-      case GATEWAY_URL:
-        return getGatewayURL();
+    case GATEWAY_URL:
+      return getGatewayURL();
 
-      case GATEWAY_PUBLIC_ABSTRACT:
-        return getGatewayPublicAbstract();
+    case GATEWAY_PUBLIC_ABSTRACT:
+      return getGatewayPublicAbstract();
 
-      case REVIEW_PROPOSAL_DESCRIPTION:
-        return getReviewProposalDescription();
+    case REVIEW_PROPOSAL_DESCRIPTION:
+      return getReviewProposalDescription();
 
-      case GATEWAY_ADMIN_FIRST_NAME:
-        return getGatewayAdminFirstName();
+    case GATEWAY_ADMIN_FIRST_NAME:
+      return getGatewayAdminFirstName();
 
-      case GATEWAY_ADMIN_LAST_NAME:
-        return getGatewayAdminLastName();
+    case GATEWAY_ADMIN_LAST_NAME:
+      return getGatewayAdminLastName();
 
-      case GATEWAY_ADMIN_EMAIL:
-        return getGatewayAdminEmail();
+    case GATEWAY_ADMIN_EMAIL:
+      return getGatewayAdminEmail();
 
-      case IDENTITY_SERVER_USER_NAME:
-        return getIdentityServerUserName();
+    case IDENTITY_SERVER_USER_NAME:
+      return getIdentityServerUserName();
 
-      case IDENTITY_SERVER_PASSWORD_TOKEN:
-        return getIdentityServerPasswordToken();
+    case IDENTITY_SERVER_PASSWORD_TOKEN:
+      return getIdentityServerPasswordToken();
 
-      case DECLINED_REASON:
-        return getDeclinedReason();
+    case DECLINED_REASON:
+      return getDeclinedReason();
 
-      case OAUTH_CLIENT_ID:
-        return getOauthClientId();
+    case OAUTH_CLIENT_ID:
+      return getOauthClientId();
 
-      case OAUTH_CLIENT_SECRET:
-        return getOauthClientSecret();
+    case OAUTH_CLIENT_SECRET:
+      return getOauthClientSecret();
 
-      case REQUEST_CREATION_TIME:
-        return getRequestCreationTime();
+    case REQUEST_CREATION_TIME:
+      return getRequestCreationTime();
 
-      case REQUESTER_USERNAME:
-        return getRequesterUsername();
+    case REQUESTER_USERNAME:
+      return getRequesterUsername();
 
     }
     throw new IllegalStateException();
@@ -1108,46 +1084,46 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
     }
 
     switch (field) {
-      case AIRAVATA_INTERNAL_GATEWAY_ID:
-        return isSetAiravataInternalGatewayId();
-      case GATEWAY_ID:
-        return isSetGatewayId();
-      case GATEWAY_APPROVAL_STATUS:
-        return isSetGatewayApprovalStatus();
-      case GATEWAY_NAME:
-        return isSetGatewayName();
-      case DOMAIN:
-        return isSetDomain();
-      case EMAIL_ADDRESS:
-        return isSetEmailAddress();
-      case GATEWAY_ACRONYM:
-        return isSetGatewayAcronym();
-      case GATEWAY_URL:
-        return isSetGatewayURL();
-      case GATEWAY_PUBLIC_ABSTRACT:
-        return isSetGatewayPublicAbstract();
-      case REVIEW_PROPOSAL_DESCRIPTION:
-        return isSetReviewProposalDescription();
-      case GATEWAY_ADMIN_FIRST_NAME:
-        return isSetGatewayAdminFirstName();
-      case GATEWAY_ADMIN_LAST_NAME:
-        return isSetGatewayAdminLastName();
-      case GATEWAY_ADMIN_EMAIL:
-        return isSetGatewayAdminEmail();
-      case IDENTITY_SERVER_USER_NAME:
-        return isSetIdentityServerUserName();
-      case IDENTITY_SERVER_PASSWORD_TOKEN:
-        return isSetIdentityServerPasswordToken();
-      case DECLINED_REASON:
-        return isSetDeclinedReason();
-      case OAUTH_CLIENT_ID:
-        return isSetOauthClientId();
-      case OAUTH_CLIENT_SECRET:
-        return isSetOauthClientSecret();
-      case REQUEST_CREATION_TIME:
-        return isSetRequestCreationTime();
-      case REQUESTER_USERNAME:
-        return isSetRequesterUsername();
+    case AIRAVATA_INTERNAL_GATEWAY_ID:
+      return isSetAiravataInternalGatewayId();
+    case GATEWAY_ID:
+      return isSetGatewayId();
+    case GATEWAY_APPROVAL_STATUS:
+      return isSetGatewayApprovalStatus();
+    case GATEWAY_NAME:
+      return isSetGatewayName();
+    case DOMAIN:
+      return isSetDomain();
+    case EMAIL_ADDRESS:
+      return isSetEmailAddress();
+    case GATEWAY_ACRONYM:
+      return isSetGatewayAcronym();
+    case GATEWAY_URL:
+      return isSetGatewayURL();
+    case GATEWAY_PUBLIC_ABSTRACT:
+      return isSetGatewayPublicAbstract();
+    case REVIEW_PROPOSAL_DESCRIPTION:
+      return isSetReviewProposalDescription();
+    case GATEWAY_ADMIN_FIRST_NAME:
+      return isSetGatewayAdminFirstName();
+    case GATEWAY_ADMIN_LAST_NAME:
+      return isSetGatewayAdminLastName();
+    case GATEWAY_ADMIN_EMAIL:
+      return isSetGatewayAdminEmail();
+    case IDENTITY_SERVER_USER_NAME:
+      return isSetIdentityServerUserName();
+    case IDENTITY_SERVER_PASSWORD_TOKEN:
+      return isSetIdentityServerPasswordToken();
+    case DECLINED_REASON:
+      return isSetDeclinedReason();
+    case OAUTH_CLIENT_ID:
+      return isSetOauthClientId();
+    case OAUTH_CLIENT_SECRET:
+      return isSetOauthClientSecret();
+    case REQUEST_CREATION_TIME:
+      return isSetRequestCreationTime();
+    case REQUESTER_USERNAME:
+      return isSetRequesterUsername();
     }
     throw new IllegalStateException();
   }
@@ -1880,12 +1856,14 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (gatewayId == null) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' was not present! Struct: " + toString());
+    if (!isSetGatewayId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' is unset! Struct:" + toString());
     }
-    if (gatewayApprovalStatus == null) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayApprovalStatus' was not present! Struct: " + toString());
+
+    if (!isSetGatewayApprovalStatus()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayApprovalStatus' is unset! Struct:" + toString());
     }
+
     // check for sub-struct validity
   }
 
@@ -1921,7 +1899,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
       while (true)
       {
         schemeField = iprot.readFieldBegin();
-        if (schemeField.type == org.apache.thrift.protocol.TType.STOP) {
+        if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
           break;
         }
         switch (schemeField.id) {
@@ -1929,7 +1907,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.airavataInternalGatewayId = iprot.readString();
               struct.setAiravataInternalGatewayIdIsSet(true);
-            } else {
+            } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
@@ -1937,7 +1915,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.gatewayId = iprot.readString();
               struct.setGatewayIdIsSet(true);
-            } else {
+            } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
@@ -1945,7 +1923,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.gatewayApprovalStatus = org.apache.airavata.model.workspace.GatewayApprovalStatus.findByValue(iprot.readI32());
               struct.setGatewayApprovalStatusIsSet(true);
-            } else {
+            } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
@@ -1953,7 +1931,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.gatewayName = iprot.readString();
               struct.setGatewayNameIsSet(true);
-            } else {
+            } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
@@ -1961,7 +1939,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.domain = iprot.readString();
               struct.setDomainIsSet(true);
-            } else {
+            } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
@@ -1969,7 +1947,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.emailAddress = iprot.readString();
               struct.setEmailAddressIsSet(true);
-            } else {
+            } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
@@ -1977,7 +1955,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.gatewayAcronym = iprot.readString();
               struct.setGatewayAcronymIsSet(true);
-            } else {
+            } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
@@ -1985,7 +1963,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.gatewayURL = iprot.readString();
               struct.setGatewayURLIsSet(true);
-            } else {
+            } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
@@ -1993,7 +1971,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.gatewayPublicAbstract = iprot.readString();
               struct.setGatewayPublicAbstractIsSet(true);
-            } else {
+            } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
@@ -2001,7 +1979,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.reviewProposalDescription = iprot.readString();
               struct.setReviewProposalDescriptionIsSet(true);
-            } else {
+            } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
@@ -2009,7 +1987,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.gatewayAdminFirstName = iprot.readString();
               struct.setGatewayAdminFirstNameIsSet(true);
-            } else {
+            } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
@@ -2017,7 +1995,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.gatewayAdminLastName = iprot.readString();
               struct.setGatewayAdminLastNameIsSet(true);
-            } else {
+            } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
@@ -2025,7 +2003,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.gatewayAdminEmail = iprot.readString();
               struct.setGatewayAdminEmailIsSet(true);
-            } else {
+            } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
@@ -2033,7 +2011,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.identityServerUserName = iprot.readString();
               struct.setIdentityServerUserNameIsSet(true);
-            } else {
+            } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
@@ -2041,7 +2019,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.identityServerPasswordToken = iprot.readString();
               struct.setIdentityServerPasswordTokenIsSet(true);
-            } else {
+            } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
@@ -2049,7 +2027,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.declinedReason = iprot.readString();
               struct.setDeclinedReasonIsSet(true);
-            } else {
+            } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
@@ -2057,7 +2035,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.oauthClientId = iprot.readString();
               struct.setOauthClientIdIsSet(true);
-            } else {
+            } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
@@ -2065,7 +2043,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.oauthClientSecret = iprot.readString();
               struct.setOauthClientSecretIsSet(true);
-            } else {
+            } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
@@ -2073,7 +2051,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.requestCreationTime = iprot.readI64();
               struct.setRequestCreationTimeIsSet(true);
-            } else {
+            } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
@@ -2081,7 +2059,7 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.requesterUsername = iprot.readString();
               struct.setRequesterUsernameIsSet(true);
-            } else {
+            } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
@@ -2091,8 +2069,6 @@ public class Gateway implements org.apache.thrift.TBase<Gateway, Gateway._Fields
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
-
-      // check for required fields of primitive type, which can't be checked in the validate method
       struct.validate();
     }
 
