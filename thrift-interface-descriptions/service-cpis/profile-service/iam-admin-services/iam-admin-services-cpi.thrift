@@ -78,4 +78,8 @@ service IamAdminServices {
                                 throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
                                                             2: airavata_errors.AuthorizationException ae)
 
+    void updateUserProfile(1: required security_model.AuthzToken authzToken,
+                           2: required user_profile_model.UserProfile userDetails)
+        throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
+                2: airavata_errors.AuthorizationException ae)
 }
