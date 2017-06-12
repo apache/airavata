@@ -146,10 +146,10 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
         try {
             String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
             String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            if (gatewayId.equals(userDetails.getGatewayId())) {
+            if (!gatewayId.equals(userDetails.getGatewayId())) {
                 throw new IamAdminServicesException("gatewayId in user profile doesn't match authorization token!");
             }
-            if (username.equals(userDetails.getUserId())) {
+            if (!username.equals(userDetails.getUserId())) {
                 throw new IamAdminServicesException("userId in user profile doesn't match authorization token!");
             }
             GatewayResourceProfile gwrp = getRegistryServiceClient().getGatewayResourceProfile(gatewayId);
