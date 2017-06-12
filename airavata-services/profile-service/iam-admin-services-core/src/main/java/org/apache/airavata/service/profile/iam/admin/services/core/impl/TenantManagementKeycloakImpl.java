@@ -405,4 +405,43 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             throw exception;
         }
     }
+
+    @Override
+    public void updateUserProfile(PasswordCredential realmAdminCreds, String gatewayId, String username, UserProfile userDetails) throws IamAdminServicesException {
+
+        Keycloak client = null;
+        try{
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), gatewayId, realmAdminCreds);
+            List<UserRepresentation> retrieveUserList = client.realm(gatewayId).users().search(username,
+                    null,
+                    null,
+                    null,
+                    0, 1);
+            if(!retrieveUserList.isEmpty())
+            {
+                UserRepresentation userRepresentation = retrieveUserList.get(0);
+                userRepresentation.setFirstName(userDetails.getFirstName());
+                userRepresentation.setLastName(userDetails.getLastName());
+                userRepresentation.setEmail(userDetails.getEmails().get(0));
+                UserResource userResource = client.realm(gatewayId).users().get(userRepresentation.getId());
+                userResource.update(userRepresentation);
+            }else{
+                throw new IamAdminServicesException("User [" + username + "] wasn't found in Keycloak!");
+            }
+        } catch (ApplicationSettingsException ex) {
+            logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
+            IamAdminServicesException exception = new IamAdminServicesException();
+            exception.setMessage("Error getting values from property file, reason " + ex.getMessage());
+            throw exception;
+        } catch (Exception ex){
+            logger.error("Error updating user profile in keycloak server, reason: " + ex.getMessage(), ex);
+            IamAdminServicesException exception = new IamAdminServicesException();
+            exception.setMessage("Error updating user profile in keycloak server, reason: " + ex.getMessage());
+            throw exception;
+        } finally {
+            if (client != null) {
+                client.close();
+            }
+        }
+    }
 }

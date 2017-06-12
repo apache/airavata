@@ -98,4 +98,12 @@ public interface TenantManagementInterface {
      */
     List<UserProfile> findUser(PasswordCredential realmAdminCreds, String gatewayID, String email, String userName) throws IamAdminServicesException;
 
+    /**
+     * Update the user's profile in the Identity Server
+     * @param realmAdminCreds
+     * @param gatewayId
+     * @param username
+     * @param userDetails
+     */
+    void updateUserProfile(PasswordCredential realmAdminCreds, String gatewayId, String username, UserProfile userDetails) throws IamAdminServicesException;
 }
