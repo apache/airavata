@@ -19,10 +19,21 @@
  */
 package org.apache.airavata;
 
+import org.apache.airavata.api.Airavata;
+import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.model.credential.store.PasswordCredential;
+import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.Status;
 import org.apache.airavata.model.user.UserProfile;
+import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.model.workspace.GatewayApprovalStatus;
+import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
+import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
+import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
+import org.apache.airavata.service.profile.tenant.cpi.TenantProfileService;
+import org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.thrift.TException;
 import org.wso2.carbon.um.ws.api.stub.ClaimValue;
@@ -43,20 +54,32 @@ public class MigrationManager {
     // Default values
     private String profileServiceServerHost = "localhost";
     private int profileServiceServerPort = 8962;
+    private String airavataServiceServerHost = "localhost";
+    private int airavataServiceServerPort = 8930;
     private Map<String,String> roleConversionMap = createDefaultRoleConversionMap();
     private String gatewayId = "gateway-id";
     private String wso2ISAdminUsername = "username";
     private String wso2ISAdminPassword = "password";
     private String keycloakServiceURL = "https://iam.scigap.org/auth";
-    private String keycloakRealmId = "keycloak-realm";
     private String keycloakAdminUsername = "username";
     private String keycloakAdminPassword = "password";
     private String keycloakTrustStorePath = "../../modules/configuration/server/src/main/resources/client_truststore.jks";
     private String keycloakTrustStorePassword = "password";
     private String keycloakTemporaryUserPassword = "tempPassword";
+    // For some gateways in the legacy gateways table, the following information is missing and needs to be provided
+    private String gatewayURL = "http://localhost";
+    private String gatewayAdminUsername = "admin";
+    private String gatewayAdminFirstName = "Admin";
+    private String gatewayAdminLastName = "User";
+    private String gatewayAdminEmailAddress = "sgg@iu.edu";
 
     // Names of properties in user-profile-migration.properties.template
     private final static String GATEWAY_ID = "gateway-id";
+    private final static String GATEWAY_URL = "gateway.url";
+    private final static String GATEWAY_ADMIN_USERNAME = "gateway.admin.username";
+    private final static String GATEWAY_ADMIN_FIRST_NAME = "gateway.admin.first.name";
+    private final static String GATEWAY_ADMIN_LAST_NAME = "gateway.admin.last.name";
+    private final static String GATEWAY_ADMIN_EMAIL_ADDRESS = "gateway.admin.email.address";
     private final static String WSO2IS_ADMIN_USERNAME = "wso2is.admin.username";
     private final static String WSO2IS_ADMIN_PASSWORD = "wso2is.admin.password";
     private final static String WSO2IS_ADMIN_ROLENAME = "wso2is.admin.rolename";
@@ -64,11 +87,12 @@ public class MigrationManager {
     private final static String WSO2IS_GATEWAY_USER_ROLENAME = "wso2is.gateway-user.rolename";
     private final static String WSO2IS_USER_PENDING_ROLENAME = "wso2is.user-pending.rolename";
     private final static String WSO2IS_GATEWAY_PROVIDER_ROLENAME = "wso2is.gateway-provider.rolename";
+    private final static String AIRAVATA_SERVICE_HOST = "airavata.service.host";
+    private final static String AIRAVATA_SERVICE_PORT = "airavata.service.port";
     private final static String PROFILE_SERVICE_HOST = "profile.service.host";
     private final static String PROFILE_SERVICE_PORT = "profile.service.port";
     private final static String KEYCLOAK_ADMIN_USERNAME = "keycloak.admin.username";
     private final static String KEYCLOAK_ADMIN_PASSWORD = "keycloak.admin.password";
-    private final static String KEYCLOAK_REALM_ID = "keycloak.realm-id";
     private final static String KEYCLOAK_SERVICE_URL = "keycloak.service-url";
     private final static String KEYCLOAK_TRUSTSTORE_PATH = "keycloak.truststore.path";
     private final static String KEYCLOAK_TRUSTSTORE_PASSWORD = "keycloak.truststore.password";
@@ -169,11 +193,83 @@ public class MigrationManager {
                 .collect(Collectors.toList());
     }
 
+    private TenantProfileService.Client getTenantProfileServiceClient() throws TenantProfileServiceException {
+
+        return ProfileServiceClientFactory.createTenantProfileServiceClient(profileServiceServerHost, profileServiceServerPort);
+    }
+
+    private Airavata.Client getAiravataClient() throws AiravataClientException {
+        return AiravataClientFactory.createAiravataClient(airavataServiceServerHost, airavataServiceServerPort);
+    }
+
+    private IamAdminServices.Client getIamAdminServicesClient() throws IamAdminServicesException {
+        return ProfileServiceClientFactory.createIamAdminServiceClient(profileServiceServerHost, profileServiceServerPort);
+    }
+
+    private PasswordCredential getPasswordCredential() {
+        PasswordCredential passwordCredential = new PasswordCredential();
+        passwordCredential.setGatewayId("dummy");
+        passwordCredential.setPortalUserName("dummy");
+        passwordCredential.setLoginUserName(keycloakAdminUsername);
+        passwordCredential.setPassword(keycloakAdminPassword);
+        return passwordCredential;
+    }
+
+    private boolean migrateGatewayProfileToAiravata() throws TException {
+
+        TenantProfileService.Client tenantProfileServiceClient = getTenantProfileServiceClient();
+        Airavata.Client airavataClient = getAiravataClient();
+        IamAdminServices.Client iamAdminServicesClient = getIamAdminServicesClient();
+
+        // Get Gateway from Airavata API
+        Gateway gateway = airavataClient.getGateway(authzToken, gatewayId);
+
+        if (!GatewayApprovalStatus.APPROVED.equals(gateway.getGatewayApprovalStatus())) {
+            throw new RuntimeException("Gateway " + gatewayId + " is not APPROVED! Status is " + gateway.getGatewayApprovalStatus());
+        }
+        // Add Gateway through TenantProfileService
+        if (!tenantProfileServiceClient.isGatewayExist(authzToken, gatewayId)) {
+
+            System.out.println("Gateway [" + gatewayId + "] doesn't exist, adding in Profile Service...");
+            tenantProfileServiceClient.addGateway(authzToken, gateway);
+        } else {
+
+            System.out.println("Gateway [" + gatewayId + "] already exists in Profile Service");
+            gateway = tenantProfileServiceClient.getGateway(authzToken, gatewayId);
+        }
+
+        // Gateway URL is required by IAM Admin Services
+        if (gateway.getGatewayURL() == null) {
+            gateway.setGatewayURL(this.gatewayURL);
+        }
+        // Following are also required by IAM Admin Services in order to create an admin user for the realm
+        if (gateway.getIdentityServerUserName() == null) {
+            gateway.setIdentityServerUserName(this.gatewayAdminUsername);
+        }
+        if (gateway.getGatewayAdminFirstName() == null) {
+            gateway.setGatewayAdminFirstName(this.gatewayAdminFirstName);
+        }
+        if (gateway.getGatewayAdminLastName() == null) {
+            gateway.setGatewayAdminLastName(this.gatewayAdminLastName);
+        }
+        if (gateway.getGatewayAdminEmail() == null) {
+            gateway.setGatewayAdminEmail(this.gatewayAdminEmailAddress);
+        }
+
+        // Add Keycloak Tenant for Gateway
+        System.out.println("Creating Keycloak Tenant for gateway ...");
+        Gateway gatewayWithIdAndSecret = iamAdminServicesClient.setUpGateway(authzToken, gateway, getPasswordCredential());
+
+        // Update Gateway profile with the client id and secret
+        System.out.println("Updating gateway with OAuth client id and secret ...");
+        tenantProfileServiceClient.updateGateway(authzToken, gatewayWithIdAndSecret);
+        return true;
+    }
+
     /* Method used to migrate User profiles to Airavata DB by making a call to User profile thrift Service */
     private boolean migrateUserProfilesToAiravata(List<UserProfileDAO> ISProfileList) throws TException, ApplicationSettingsException {
         System.out.println("Initiating migration to Airavata internal DB ...");
-        UserProfileAiravataThriftClient objFactory = new UserProfileAiravataThriftClient();
-        UserProfileService.Client client = objFactory.getUserProfileServiceClient(profileServiceServerHost, profileServiceServerPort);
+        UserProfileService.Client client = ProfileServiceClientFactory.createUserProfileServiceClient(profileServiceServerHost, profileServiceServerPort);
         UserProfile airavataUserProfile = new UserProfile();
         // Here are the data associations...
         for(UserProfileDAO ISProfile : ISProfileList){
@@ -204,7 +300,7 @@ public class MigrationManager {
                 this.keycloakAdminPassword,
                 this.keycloakTrustStorePath,
                 this.keycloakTrustStorePassword);
-        client.migrateUserStore(Wso2ISProfileList, this.keycloakRealmId, this.keycloakTemporaryUserPassword, this.roleConversionMap);
+        client.migrateUserStore(Wso2ISProfileList, this.gatewayId, this.keycloakTemporaryUserPassword, this.roleConversionMap);
     }
 
     private void loadConfigFile(String filename) {
@@ -213,12 +309,18 @@ public class MigrationManager {
             properties.load(new FileInputStream(filename));
             // Load values from properties if they exist, otherwise will just use default values
             this.gatewayId = properties.getProperty(GATEWAY_ID, this.gatewayId);
+            this.gatewayURL = properties.getProperty(GATEWAY_URL, this.gatewayURL);
+            this.gatewayAdminUsername = properties.getProperty(GATEWAY_ADMIN_USERNAME, this.gatewayAdminUsername);
+            this.gatewayAdminFirstName = properties.getProperty(GATEWAY_ADMIN_FIRST_NAME, this.gatewayAdminFirstName);
+            this.gatewayAdminLastName = properties.getProperty(GATEWAY_ADMIN_LAST_NAME, this.gatewayAdminLastName);
+            this.gatewayAdminEmailAddress = properties.getProperty(GATEWAY_ADMIN_EMAIL_ADDRESS, this.gatewayAdminEmailAddress);
             this.wso2ISAdminUsername = properties.getProperty(WSO2IS_ADMIN_USERNAME, this.wso2ISAdminUsername);
             this.wso2ISAdminPassword = properties.getProperty(WSO2IS_ADMIN_PASSWORD, this.wso2ISAdminPassword);
+            this.airavataServiceServerHost = properties.getProperty(AIRAVATA_SERVICE_HOST, this.airavataServiceServerHost);
+            this.airavataServiceServerPort = Integer.valueOf(properties.getProperty(AIRAVATA_SERVICE_PORT, Integer.toString(this.airavataServiceServerPort)));
             this.profileServiceServerHost = properties.getProperty(PROFILE_SERVICE_HOST, this.profileServiceServerHost);
             this.profileServiceServerPort = Integer.valueOf(properties.getProperty(PROFILE_SERVICE_PORT, Integer.toString(this.profileServiceServerPort)));
             this.keycloakServiceURL = properties.getProperty(KEYCLOAK_SERVICE_URL, this.keycloakServiceURL);
-            this.keycloakRealmId = properties.getProperty(KEYCLOAK_REALM_ID, this.keycloakRealmId);
             this.keycloakAdminUsername = properties.getProperty(KEYCLOAK_ADMIN_USERNAME, this.keycloakAdminUsername);
             this.keycloakAdminPassword = properties.getProperty(KEYCLOAK_ADMIN_PASSWORD, this.keycloakAdminPassword);
             this.keycloakTrustStorePath = properties.getProperty(KEYCLOAK_TRUSTSTORE_PATH, this.keycloakTrustStorePath);
@@ -244,12 +346,11 @@ public class MigrationManager {
         migrationManager.setISLoginCredentials();
         List<UserProfileDAO> userProfileList = migrationManager.getUserProfilesFromWso2IS();
         try {
+            migrationManager.migrateGatewayProfileToAiravata();
             migrationManager.migrateUserProfilesToAiravata(userProfileList);
             migrationManager.migrateUserProfilesToKeycloak(userProfileList);
-        } catch (TException e) {
-            e.printStackTrace();
-        } catch (ApplicationSettingsException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }
