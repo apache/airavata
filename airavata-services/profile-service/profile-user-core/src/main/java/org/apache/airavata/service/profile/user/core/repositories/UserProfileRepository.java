@@ -71,6 +71,20 @@ public class UserProfileRepository extends AbstractRepository<UserProfile, UserP
         return  resultList;
     }
 
+    @Override
+    public UserProfile create(UserProfile userProfile) {
+        throw new UnsupportedOperationException("Please use createUserProfile instead");
+    }
+
+    @Override
+    public UserProfile update(UserProfile userProfile) {
+        throw new UnsupportedOperationException("Please use updateUserProfile instead");
+    }
+
+    public UserProfile createUserProfile(UserProfile userProfile, Runnable postUpdateAction) {
+        return updateUserProfile(userProfile, postUpdateAction);
+    }
+
     public UserProfile updateUserProfile(UserProfile userProfile, Runnable postUpdateAction) {
 
         Mapper mapper = ObjectMapperSingleton.getInstance();
