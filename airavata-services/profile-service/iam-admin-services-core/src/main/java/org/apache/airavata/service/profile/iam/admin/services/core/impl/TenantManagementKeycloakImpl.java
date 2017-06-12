@@ -32,6 +32,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.admin.client.resource.RoleResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.*;
 import org.slf4j.Logger;
@@ -150,6 +151,10 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         pendingUserRole.setName("user-pending");
         pendingUserRole.setDescription("role for newly registered PGA users");
         defaultRoles.add(pendingUserRole);
+        RoleRepresentation gatewayProviderRole = new RoleRepresentation();
+        gatewayProviderRole.setName("gateway-provider");
+        gatewayProviderRole.setDescription("role for gateway providers in the super-admin PGA");
+        defaultRoles.add(gatewayProviderRole);
         RolesRepresentation rolesRepresentation = new RolesRepresentation();
         rolesRepresentation.setRealm(defaultRoles);
         realmDetails.setRoles(rolesRepresentation);
@@ -178,6 +183,11 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                         user.getEmail(),
                         0, 1);
                 UserResource retrievedUser = client.realm(gatewayDetails.getGatewayId()).users().get(retrieveCreatedUserList.get(0).getId());
+
+                // Add user to the "admin" role
+                RoleResource adminRoleResource = client.realm(gatewayDetails.getGatewayId()).roles().get("admin");
+                retrievedUser.roles().realmLevel().add(Arrays.asList(adminRoleResource.toRepresentation()));
+
                 CredentialRepresentation credential = new CredentialRepresentation();
                 credential.setType(CredentialRepresentation.PASSWORD);
                 credential.setValue(ServerSettings.getGatewayAdminTempPwd());
@@ -237,7 +247,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             } else {
                 logger.error("Request for Realm Client Creation failed, callback URL not present");
                 IamAdminServicesException ex = new IamAdminServicesException();
-                ex.setMessage("Gateway Url field in GatewayProfile cannot be empty, Relam Client creation failed");
+                ex.setMessage("Gateway Url field in GatewayProfile cannot be empty, Realm Client creation failed");
                 throw ex;
             }
             pgaClient.setRedirectUris(redirectUris);
@@ -393,6 +403,45 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             IamAdminServicesException exception = new IamAdminServicesException();
             exception.setMessage("Error finding user in keycloak server, reason: " + ex.getMessage());
             throw exception;
+        }
+    }
+
+    @Override
+    public void updateUserProfile(PasswordCredential realmAdminCreds, String gatewayId, String username, UserProfile userDetails) throws IamAdminServicesException {
+
+        Keycloak client = null;
+        try{
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), gatewayId, realmAdminCreds);
+            List<UserRepresentation> retrieveUserList = client.realm(gatewayId).users().search(username,
+                    null,
+                    null,
+                    null,
+                    0, 1);
+            if(!retrieveUserList.isEmpty())
+            {
+                UserRepresentation userRepresentation = retrieveUserList.get(0);
+                userRepresentation.setFirstName(userDetails.getFirstName());
+                userRepresentation.setLastName(userDetails.getLastName());
+                userRepresentation.setEmail(userDetails.getEmails().get(0));
+                UserResource userResource = client.realm(gatewayId).users().get(userRepresentation.getId());
+                userResource.update(userRepresentation);
+            }else{
+                throw new IamAdminServicesException("User [" + username + "] wasn't found in Keycloak!");
+            }
+        } catch (ApplicationSettingsException ex) {
+            logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
+            IamAdminServicesException exception = new IamAdminServicesException();
+            exception.setMessage("Error getting values from property file, reason " + ex.getMessage());
+            throw exception;
+        } catch (Exception ex){
+            logger.error("Error updating user profile in keycloak server, reason: " + ex.getMessage(), ex);
+            IamAdminServicesException exception = new IamAdminServicesException();
+            exception.setMessage("Error updating user profile in keycloak server, reason: " + ex.getMessage());
+            throw exception;
+        } finally {
+            if (client != null) {
+                client.close();
+            }
         }
     }
 }

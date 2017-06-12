@@ -18,12 +18,13 @@
 # This script will generate/regenerate the thrift stubs for Airavata Services: Profile Service.
 
 show_usage() {
-	echo -e "Usage: $0 [Component to generate stubs]"
+	echo -e "Usage: $0 [--native-thrift] [Component to generate stubs]"
 	echo ""
 	echo "options:"
 	echo -e "\tps Generate/Update Profile Service Stubs"
 	echo -e "\tall Generate/Update all stubs (Profile Service)."
 	echo -e "\t-h[elp] Print the usage options of this script"
+	echo -e "\t--native-thrift Use natively installed thrift instead of Docker image"
 }
 
 if [ $# -lt 1 ]
@@ -38,35 +39,43 @@ then
 	exit 0
 fi
 
-# Generation of thrift files will require installing Apache Thrift. Please add thrift to your path.
-#  Verify is thrift is installed, is in the path is at a specified version.
-
 REQUIRED_THRIFT_VERSION='0.9.3'
-if hash thrift &> /dev/null; then
-  THRIFT_EXEC=$(which thrift)
-else
-  THRIFT_EXEC=/usr/local/bin/thrift
-fi
+THRIFT_DOCKER_IMAGE='thrift'
+THRIFT_NATIVE="false"
 
-VERSION=$($THRIFT_EXEC -version 2>/dev/null | grep -F "${REQUIRED_THRIFT_VERSION}" |  wc -l)
-if [ "$VERSION" -ne 1 ] ; then
-    echo -e "ERROR:\t Apache Thrift version ${REQUIRED_THRIFT_VERSION} is required."
-    echo -e "It is either not installed or is not in the path"
-    exit 1
-fi
+setup() {
+    if [[ $THRIFT_NATIVE == "true" ]]; then
+        if hash thrift &> /dev/null; then
+          THRIFT_EXEC=$(which thrift)
+        else
+          THRIFT_EXEC=/usr/local/bin/thrift
+        fi
+        BASEDIR=""
+    else
+        THRIFT_EXEC="docker run --rm -v $PWD/..:/data $THRIFT_DOCKER_IMAGE:$REQUIRED_THRIFT_VERSION thrift"
+        BASEDIR="/data/service-cpis/"
+    fi
 
-# Global Constants used across the script
-BASE_TARGET_DIR='target'
+    VERSION=$($THRIFT_EXEC -version 2>/dev/null | grep -F "${REQUIRED_THRIFT_VERSION}" |  wc -l)
+    if [ "$VERSION" -ne 1 ] ; then
+        echo -e "ERROR:\t Apache Thrift version ${REQUIRED_THRIFT_VERSION} is required."
+        echo -e "It is either not installed or is not in the path"
+        exit 1
+    fi
 
-PROFILE_SERVICE_THRIFT_FILE='profile-service/profile-service-cpi.thrift'
-PROFILE_SERVICE_SRC_DIR='../../airavata-services/profile-service/profile-service-stubs/src/main/java'
+    # Global Constants used across the script
+    BASE_TARGET_DIR='target'
 
-# Initialize the thrift arguments.
-#  Since most of the Airavata API and Data Models have includes, use recursive option by default.
-#  Generate all the files in target directory
-THRIFT_ARGS="-r -o ${BASE_TARGET_DIR}"
-# Ensure the required target directories exists, if not create.
-mkdir -p ${BASE_TARGET_DIR}
+    PROFILE_SERVICE_THRIFT_FILE="${BASEDIR}profile-service/profile-service-cpi.thrift"
+    PROFILE_SERVICE_SRC_DIR='../../airavata-services/profile-service/profile-service-stubs/src/main/java'
+
+    # Initialize the thrift arguments.
+    #  Since most of the Airavata API and Data Models have includes, use recursive option by default.
+    #  Generate all the files in target directory
+    THRIFT_ARGS="-r -o ${BASEDIR}${BASE_TARGET_DIR}"
+    # Ensure the required target directories exists, if not create.
+    mkdir -p ${BASE_TARGET_DIR}
+}
 
 # The Funcation fail prints error messages on failure and quits the script.
 fail() {
@@ -160,10 +169,15 @@ for arg in "$@"
 do
     case "$arg" in
     all)    echo "Generate all (profile service) Stubs"
+            setup
             generate_thrift_stubs ${PROFILE_SERVICE_THRIFT_FILE} ${PROFILE_SERVICE_SRC_DIR}
             ;;
     ps)   echo "Generating Profile Service Stubs"
+            setup
             generate_thrift_stubs ${PROFILE_SERVICE_THRIFT_FILE} ${PROFILE_SERVICE_SRC_DIR}
+            ;;
+    --native-thrift)
+            THRIFT_NATIVE="true"
             ;;
     *)      echo "Invalid or unsupported option"
     	    show_usage
