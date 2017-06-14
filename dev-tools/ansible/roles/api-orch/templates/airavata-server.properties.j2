@@ -316,11 +316,11 @@ enable.kafka.logging=false
 profile.service.server.host={{ profile_service_host }}
 profile.service.server.port={{ profile_service_port }}
 profile_service=org.apache.airavata.service.profile.server.ProfileServiceServer
-# mysql properties
-profile.service.jdbc.url=jdbc:mysql://{{ db_server }}:3306/{{ profile_service }}
+# MariaDB properties
+profile.service.jdbc.url=jdbc:mariadb://{{ db_server }}:3306/{{ profile_service }}
 profile.service.jdbc.user={{ db_user }}
 profile.service.jdbc.password={{ db_password }}
-profile.service.jdbc.driver=com.mysql.jdbc.Driver
+profile.service.jdbc.driver=org.mariadb.jdbc.Driver
 profile.service.validationQuery=SELECT 1
 
 ###########################################################################
