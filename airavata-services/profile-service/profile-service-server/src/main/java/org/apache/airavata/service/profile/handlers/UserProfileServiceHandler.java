@@ -59,6 +59,9 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
     @SecurityCheck
     public String addUserProfile(AuthzToken authzToken, UserProfile userProfile) throws UserProfileServiceException, AuthorizationException, TException {
         try{
+            // Lowercase user id and internal id
+            userProfile.setUserId(userProfile.getUserId().toLowerCase());
+            userProfile.setAiravataInternalUserId(userProfile.getUserId() + "@" + userProfile.getGatewayId());
             userProfile = userProfileRepository.updateUserProfile(userProfile, getIAMUserProfileUpdater(authzToken, userProfile));
             if (null != userProfile) {
                 logger.info("Added UserProfile with userId: " + userProfile.getUserId());
