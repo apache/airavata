@@ -124,6 +124,12 @@
     - "{{ groups['gfac'] }}"
     - "localhost"
 
+- name: give access to {{ keycloak_db_username }} from remote
+  mysql_user: name="{{ keycloak_db_username }}" password="{{ keycloak_db_password }}" host="{{ item }}"
+  with_items:
+    - "{{ groups['keycloak'] }}"
+  when: "'keycloak' in groups"
+
 - name: create new user {{ db_user }} with all privilege
   mysql_user: name="{{ db_user }}"
               password="{{ db_password }}"

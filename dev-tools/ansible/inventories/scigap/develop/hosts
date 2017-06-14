@@ -1,0 +1,23 @@
+---
+# inventory file : scigap production deployment
+
+[zookeeper]
+149.165.156.195
+
+[rabbitmq]
+149.165.156.195
+
+[database]
+149.165.156.27
+
+[api-orch]
+149.165.156.195
+
+[gfac]
+149.165.157.37
+
+[pga]
+149.165.156.46
+
+[keycloak]
+149.165.156.151

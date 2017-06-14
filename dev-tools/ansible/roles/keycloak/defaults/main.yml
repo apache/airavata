@@ -9,4 +9,12 @@ mysql_db_connector_download_url: "https://dev.mysql.com/get/Downloads/Connector-
 keycloak_master_account_username: "username"
 keycloak_master_account_password: "password"
 keycloak_server_port: "443"
+
+keycloak_db_host: "localhost"
+keycloak_db_port: "3306"
+keycloak_db_schema_name: "keycloak"
+keycloak_db_url: "jdbc:mysql://{{keycloak_db_host}}:{{keycloak_db_port}}/{{keycloak_db_schema_name}}"
+keycloak_db_username: "username"
+keycloak_db_password: "password"
+keycloak_db_pool_size: "20"
 ...

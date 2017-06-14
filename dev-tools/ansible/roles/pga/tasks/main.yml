@@ -35,6 +35,15 @@
   become: yes
   become_user: "{{user}}"
 
+- name: Create user data dir {{ real_user_data_dir }}
+  file: path="{{ real_user_data_dir }}" state=directory owner="{{user}}" group="{{group}}" mode=0777
+  become: yes
+
+- name: Symlink user data dir {{ user_data_dir }} to {{ real_user_data_dir }}
+  file: src="{{ real_user_data_dir }}" dest="{{ user_data_dir }}" state=link owner="{{user}}" group="{{group}}"
+  become: yes
+  when: user_data_dir != real_user_data_dir
+
 - name: Create experiment data dir {{ experiment_data_dir }}
   file: path="{{ experiment_data_dir }}" state=directory owner="{{user}}" group="{{group}}" mode=0777 recurse=yes follow=yes
   become: yes
