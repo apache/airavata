@@ -76,11 +76,11 @@
 - name: create logs directory
   file: path="{{ api_orch_log_dir }}" state=directory owner={{ user }} group={{ group }}
 
-- name: Copy Mysql jar to lib
-  copy: src={{ mysql_connector_jar }}
-        dest="{{ api_orch_dir }}/{{ airavata_dist }}/lib/{{ mysql_connector_jar }}"
-        owner={{ user }}
-        group={{ group }}
+- name: Copy MariaDB connector jar to lib
+  get_url: url="{{ mariadb_connector_jar_url }}"
+          dest="{{ api_orch_dir }}/{{ airavata_dist }}/lib/"
+          owner={{ user }}
+          group={{ group }}
 
 - name: Open firwall ports
   firewalld: port={{ item }} zone=public permanent=true state=enabled immediate=yes
