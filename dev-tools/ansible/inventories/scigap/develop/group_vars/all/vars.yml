@@ -124,12 +124,14 @@ sharing_registry_host: "{{ groups['api-orch'][0] }}"
 sharing_registry_port: 7878
 
 # Profile Service related variables
-profile_service_host: "{{ ansible_fqdn }}"
+profile_service_host: "{{ groups['api-orch'][0] }}"
 profile_service_port: 8962
 
 # Keycloak
-keycloak_ssl_keystore_file_name: "{{ inventory_dir }}/files/keycloak.jks"
+keycloak_ssl_keystore_file: "{{ inventory_dir }}/files/keycloak.jks"
 keycloak_ssl_keystore_password: "{{ vault_keycloak_ssl_keystore_password }}"
 keycloak_db_host: "{{ groups['database'][0] }}"
 keycloak_db_username: "keycloak"
 keycloak_db_password: "{{ vault_keycloak_db_password }}"
+keycloak_master_account_username: "admin"
+keycloak_master_account_password: "{{ vault_keycloak_master_account_password }}"
