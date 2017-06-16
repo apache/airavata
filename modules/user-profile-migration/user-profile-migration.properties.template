@@ -19,6 +19,7 @@ wso2is.gateway-provider.rolename = gateway-provider
 # Airavata Service settings
 airavata.service.host = localhost
 airavata.service.port = 8930
+airavata.service.secure = false
 
 # Profile Service settings
 profile.service.host = localhost
