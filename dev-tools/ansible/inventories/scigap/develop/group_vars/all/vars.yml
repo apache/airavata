@@ -118,6 +118,7 @@ real_user_data_dir: "/data/gateway-user-data"
 airavata_server: "tls://{{ groups['api-orch'][0] }}"
 airavata_port: "9930"
 auth_verify_peer: "true"
+oauth_service_url: "{{ iam_server_url }}"
 
 # Sharing Registry related variables
 sharing_registry_host: "{{ groups['api-orch'][0] }}"
