@@ -301,8 +301,6 @@ trust.store.password=airavata
 authz.cache.enabled=true
 authz.cache.manager.class=org.apache.airavata.service.security.authzcache.DefaultAuthzCacheManager
 in.memory.cache.size=1000
-#### remote idp service url for KeyCloak based setup####
-remote.idp.service.url={{ remote_idp_service_url }}
 
 # Kafka Logging related configuration
 isRunningOnAws=false
@@ -326,5 +324,5 @@ profile.service.validationQuery=SELECT 1
 ###########################################################################
 # Iam Admin services Configuration
 ###########################################################################
-iam.server.url=https://iam.scigap.org/auth
+iam.server.url={{ iam_server_url }}
 new.gateway.admin.temp.password=Password@123
