@@ -141,6 +141,28 @@ public class KeycloakIdentityServerClient {
         }
     }
 
+    public void setUserPassword(String realmId, String username, String newPassword) {
+        List<UserRepresentation> retrieveUserList = client.realm(realmId).users().search(username,
+                null,
+                null,
+                null,
+                0, 1);
+        if (!retrieveUserList.isEmpty()) {
+            UserResource retrievedUser = client.realm(realmId).users().get(retrieveUserList.get(0).getId());
+            CredentialRepresentation credential = new CredentialRepresentation();
+            credential.setType(CredentialRepresentation.PASSWORD);
+            credential.setValue(newPassword);
+            credential.setTemporary(false);
+            retrievedUser.resetPassword(credential);
+            // Remove the UPDATE_PASSWORD required action
+            UserRepresentation userRepresentation = retrievedUser.toRepresentation();
+            userRepresentation.getRequiredActions().remove("UPDATE_PASSWORD");
+            retrievedUser.update(userRepresentation);
+        } else {
+            throw new RuntimeException("Requested user not found");
+        }
+    }
+
     private Map<String,RoleRepresentation> getRealmRoleNameMap(String targetRealm) {
         return this.client.realm(targetRealm).roles().list()
                 .stream()

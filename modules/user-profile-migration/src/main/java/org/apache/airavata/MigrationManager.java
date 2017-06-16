@@ -23,6 +23,9 @@ import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
+import org.apache.airavata.credential.store.cpi.CredentialStoreService;
+import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.security.AuthzToken;
@@ -164,7 +167,8 @@ public class MigrationManager {
                             userProfile.setAccountLocked(claim.getValue().equals("true"));
                         }
                     }
-                    userProfile.setUserName(user);
+                    // Lowercase all usernames as required by Keycloak and User Profile service
+                    userProfile.setUserName(user.toLowerCase());
                     userProfile.setGatewayID(creds.getGateway());
                     userProfile.setPhones(phones);
                     if (!userProfile.isAccountLocked()) {
@@ -271,6 +275,18 @@ public class MigrationManager {
         // Update Gateway profile with the client id and secret
         System.out.println("Updating gateway with OAuth client id and secret ...");
         tenantProfileServiceClient.updateGateway(authzToken, gatewayWithIdAndSecret);
+
+        KeycloakIdentityServerClient keycloakIdentityServerClient = getKeycloakIdentityServerClient();
+        // Set the admin user's password to the same as it was for wso2IS
+        keycloakIdentityServerClient.setUserPassword(gatewayId, this.gatewayAdminUsername, this.wso2ISAdminPassword);
+
+        // Create password credential for admin username and password
+        String passwordToken = airavataClient.registerPwdCredential(authzToken, gatewayId, this.gatewayAdminUsername, this.gatewayAdminUsername, this.wso2ISAdminPassword, "Keycloak admin password for realm " + gatewayId);
+
+        // Update gateway resource profile with tenant id (gatewayId) and admin user password token
+        GatewayResourceProfile gatewayResourceProfile = airavataClient.getGatewayResourceProfile(authzToken, gatewayId);
+        gatewayResourceProfile.setIdentityServerTenant(gatewayId);
+        gatewayResourceProfile.setIdentityServerPwdCredToken(passwordToken);
         return true;
     }
 
@@ -308,12 +324,16 @@ public class MigrationManager {
     }
 
     private void migrateUserProfilesToKeycloak(List<UserProfileDAO> Wso2ISProfileList){
-        KeycloakIdentityServerClient client = new KeycloakIdentityServerClient(this.keycloakServiceURL,
-                this.keycloakAdminUsername,
-                this.keycloakAdminPassword,
-                this.keycloakTrustStorePath,
-                this.keycloakTrustStorePassword);
+        KeycloakIdentityServerClient client = getKeycloakIdentityServerClient();
         client.migrateUserStore(Wso2ISProfileList, this.gatewayId, this.keycloakTemporaryUserPassword, this.roleConversionMap);
+    }
+
+    private KeycloakIdentityServerClient getKeycloakIdentityServerClient() {
+        return new KeycloakIdentityServerClient(this.keycloakServiceURL,
+                    this.keycloakAdminUsername,
+                    this.keycloakAdminPassword,
+                    this.keycloakTrustStorePath,
+                    this.keycloakTrustStorePassword);
     }
 
     private void loadConfigFile(String filename) {
@@ -361,8 +381,10 @@ public class MigrationManager {
         List<UserProfileDAO> userProfileList = migrationManager.getUserProfilesFromWso2IS();
         try {
             migrationManager.migrateGatewayProfileToAiravata();
-            migrationManager.migrateUserProfilesToAiravata(userProfileList);
+            // Must migrate profiles to Keycloak first because Profile Service will attempt to keep user profiles
+            // in since with Keycloak user profiles
             migrationManager.migrateUserProfilesToKeycloak(userProfileList);
+            migrationManager.migrateUserProfilesToAiravata(userProfileList);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
