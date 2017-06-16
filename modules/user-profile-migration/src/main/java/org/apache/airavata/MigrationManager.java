@@ -56,6 +56,7 @@ public class MigrationManager {
     private int profileServiceServerPort = 8962;
     private String airavataServiceServerHost = "localhost";
     private int airavataServiceServerPort = 8930;
+    private boolean airavataServiceSecure = false;
     private Map<String,String> roleConversionMap = createDefaultRoleConversionMap();
     private String gatewayId = "gateway-id";
     private String wso2ISAdminUsername = "username";
@@ -89,6 +90,7 @@ public class MigrationManager {
     private final static String WSO2IS_GATEWAY_PROVIDER_ROLENAME = "wso2is.gateway-provider.rolename";
     private final static String AIRAVATA_SERVICE_HOST = "airavata.service.host";
     private final static String AIRAVATA_SERVICE_PORT = "airavata.service.port";
+    private final static String AIRAVATA_SERVICE_SECURE = "airavata.service.secure";
     private final static String PROFILE_SERVICE_HOST = "profile.service.host";
     private final static String PROFILE_SERVICE_PORT = "profile.service.port";
     private final static String KEYCLOAK_ADMIN_USERNAME = "keycloak.admin.username";
@@ -202,6 +204,10 @@ public class MigrationManager {
         return AiravataClientFactory.createAiravataClient(airavataServiceServerHost, airavataServiceServerPort);
     }
 
+    private Airavata.Client getAiravataSecureClient() throws AiravataClientException {
+        return AiravataClientFactory.createAiravataSecureClient(airavataServiceServerHost, airavataServiceServerPort, keycloakTrustStorePath, keycloakTrustStorePassword, 10000);
+    }
+
     private IamAdminServices.Client getIamAdminServicesClient() throws IamAdminServicesException {
         return ProfileServiceClientFactory.createIamAdminServiceClient(profileServiceServerHost, profileServiceServerPort);
     }
@@ -218,7 +224,7 @@ public class MigrationManager {
     private boolean migrateGatewayProfileToAiravata() throws TException {
 
         TenantProfileService.Client tenantProfileServiceClient = getTenantProfileServiceClient();
-        Airavata.Client airavataClient = getAiravataClient();
+        Airavata.Client airavataClient = airavataServiceSecure ? getAiravataSecureClient() : getAiravataClient();
         IamAdminServices.Client iamAdminServicesClient = getIamAdminServicesClient();
 
         // Get Gateway from Airavata API
@@ -318,6 +324,7 @@ public class MigrationManager {
             this.wso2ISAdminPassword = properties.getProperty(WSO2IS_ADMIN_PASSWORD, this.wso2ISAdminPassword);
             this.airavataServiceServerHost = properties.getProperty(AIRAVATA_SERVICE_HOST, this.airavataServiceServerHost);
             this.airavataServiceServerPort = Integer.valueOf(properties.getProperty(AIRAVATA_SERVICE_PORT, Integer.toString(this.airavataServiceServerPort)));
+            this.airavataServiceSecure = Boolean.valueOf(properties.getProperty(AIRAVATA_SERVICE_SECURE, "false"));
             this.profileServiceServerHost = properties.getProperty(PROFILE_SERVICE_HOST, this.profileServiceServerHost);
             this.profileServiceServerPort = Integer.valueOf(properties.getProperty(PROFILE_SERVICE_PORT, Integer.toString(this.profileServiceServerPort)));
             this.keycloakServiceURL = properties.getProperty(KEYCLOAK_SERVICE_URL, this.keycloakServiceURL);
