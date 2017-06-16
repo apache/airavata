@@ -22,6 +22,7 @@ package org.apache.airavata;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.security.AuthzToken;
@@ -295,7 +296,12 @@ public class MigrationManager {
             airavataUserProfile.setLastAccessTime(new Date().getTime());
             airavataUserProfile.setValidUntil(-1);
             airavataUserProfile.setState(Status.ACTIVE);
-            //TODO: fix authtzToken, for now we are using empty token
+            //TODO: fix authtzToken, for now we are using empty token, but need to properly populate claims map
+            AuthzToken authzToken = new AuthzToken("dummy_token");
+            Map<String,String> claimsMap = new HashMap<>();
+            claimsMap.put(Constants.USER_NAME, ISProfile.getUserName());
+            claimsMap.put(Constants.GATEWAY_ID, ISProfile.getGatewayID());
+            authzToken.setClaimsMap(claimsMap);
             client.addUserProfile(authzToken, airavataUserProfile);
         }
         return false;
