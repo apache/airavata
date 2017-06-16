@@ -40,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by goshenoy on 3/6/17.
@@ -72,6 +73,8 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     @SecurityCheck
     public String addGateway(AuthzToken authzToken, Gateway gateway) throws TenantProfileServiceException, AuthorizationException, TException {
         try {
+            // Assign UUID to gateway
+            gateway.setAiravataInternalGatewayId(UUID.randomUUID().toString());
             if (!checkDuplicateGateway(gateway)) {
                 gateway = tenantProfileRepository.create(gateway);
                 if (gateway != null) {
@@ -84,8 +87,8 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
                                 DBEventManagerConstants.getRoutingKey(DBEventService.DB_EVENT.toString())
                         );
                     }
-                    // return gatewayId
-                    return gateway.getGatewayId();
+                    // return internal id
+                    return gateway.getAiravataInternalGatewayId();
                 } else {
                     throw new Exception("Gateway object is null.");
                 }

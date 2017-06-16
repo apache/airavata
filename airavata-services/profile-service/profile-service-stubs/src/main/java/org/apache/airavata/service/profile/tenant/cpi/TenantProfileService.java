@@ -57,6 +57,12 @@ public class TenantProfileService {
 
     public String getAPIVersion(org.apache.airavata.model.security.AuthzToken authzToken) throws org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
+    /**
+     * Return the airavataInternalGatewayId assigned to given gateway.
+     * 
+     * @param authzToken
+     * @param gateway
+     */
     public String addGateway(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.workspace.Gateway gateway) throws org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
     public boolean updateGateway(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.workspace.Gateway updatedGateway) throws org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;

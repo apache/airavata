@@ -237,7 +237,8 @@ public class MigrationManager {
         if (!tenantProfileServiceClient.isGatewayExist(authzToken, gatewayId)) {
 
             System.out.println("Gateway [" + gatewayId + "] doesn't exist, adding in Profile Service...");
-            tenantProfileServiceClient.addGateway(authzToken, gateway);
+            String airavataInternalGatewayId = tenantProfileServiceClient.addGateway(authzToken, gateway);
+            gateway.setAiravataInternalGatewayId(airavataInternalGatewayId);
         } else {
 
             System.out.println("Gateway [" + gatewayId + "] already exists in Profile Service");

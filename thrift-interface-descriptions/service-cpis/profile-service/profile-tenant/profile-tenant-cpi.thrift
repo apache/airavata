@@ -40,6 +40,9 @@ service TenantProfileService {
                        throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tpe,
                                2: airavata_errors.AuthorizationException ae)
 
+    /**
+     * Return the airavataInternalGatewayId assigned to given gateway.
+     */
     string addGateway (1: required security_model.AuthzToken authzToken,
                        2: required workspace_model.Gateway gateway)
                     throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tpe,
