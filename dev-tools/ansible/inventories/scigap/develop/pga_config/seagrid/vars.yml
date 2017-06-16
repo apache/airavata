@@ -23,13 +23,13 @@ pga_repo: "https://github.com/apache/airavata-php-gateway.git"
 git_branch: "develop"
 user: "pga"
 group: "pga"
-doc_root_dir: "/var/www/portals/{{ gateway_id }}"
+doc_root_dir: "/var/www/portals/dev-seagrid"
 vhost_servername: "dev.seagrid.org"
 vhost_ssl: True
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/pki/tls/certs/seagrid_org_cert.cer"
-ssl_certificate_chain_file: "/etc/pki/tls/certs/seagrid_org_interm.cer"
-ssl_certificate_key_file: "/etc/pki/tls/private/portal.seagrid.key"
+ssl_certificate_file: "/etc/pki/tls/certs/dev_seagrid_org_cert.cer"
+ssl_certificate_chain_file: "/etc/pki/tls/certs/dev_seagrid_org_interm.cer"
+ssl_certificate_key_file: "/etc/pki/tls/private/dev-seagrid.key"
 
 ## Keycloak related variables
 tenant_domain: "seagrid"
@@ -37,16 +37,19 @@ admin_username: "admin"
 admin_password: "{{ vault_admin_password }}"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
+oauth_grant_type: "password"
+oidc_discovery_url: "https://iamdev.scigap.org/auth/realms/seagrid/.well-known/openid-configuration"
 
 gateway_id: "seagrid"
 # relative to document root dir
-experiment_data_dir: "{{ user_data_dir }}/seagrid"
+experiment_data_dir: "{{ user_data_dir }}/dev-seagrid"
+# TODO: Fix the data store resource id
 gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
-gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCApfdud3cJ7rx44M41gEKVgRfefk/Vd/7dIp9Xr9juX4jqmGuLoZR+hk287Hmbps6hZv23Av97XkCLldH0pueDekthcBDo4cRiQMDBp9NLz/9muqYVBl985psEbazYygagy/q/3ebi4CVEYVd4cHBee1V3GYyuJS2RklF0s/Otyf8x8auJSMniHGbTbVqtFlEOYuPdXlRBfH37k55N7+2iXKsIVvgn1MDweHEbQWJMx2LDCkLfJitreTiwcuST55w6N/n8WYZM2t+ie3BJEr6tcGAVIuyxj7CbMYMziM/hM5J+oQGPY/IBtiNZoxiZ0DeAC9SiEvE9fbTEW2iRWnQL"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDWgLve4J9WCohF/4UnbBZsh/nRkP1aM9FmA1FjKwK2gQAnKwhU+NrbsjW38h2Hi+8s9N2oZ9cCJHrvDi2U0cMxz4exIUBcVoRhw37ThlREHADeKR1FbKw0QLhTyfJb0K+1/8GWRluiFx0vHPptJe0KTqu+RJY0NSe+d/BEuGyCZ1hR+SKNuTgcb05Ia6opbSN5D68N9biseEux60d69ARQxLw+VN3Kr/UaBNpGIAfKLlLSUQlTyPA6G6UKCcJZv+/ye10oa0SK0qtrxMpL+4VJcVx+d56U7CUFWKEgPAaQrX1qdGUNDA7HKmD+EBtzw6DJqNJ0Cue/XuPe/RT62tpf"
 
 ## Portal related variables
 super_admin_portal: "false"
-admin_emails: "['pamidigs@iu.edu', 'sgg@iu.edu']"
+admin_emails: "['sgg@iu.edu','pamidigs@iu.edu', 'eroma.abeysinghe@gmail.com']"
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
 portal_theme: "seagrid"
