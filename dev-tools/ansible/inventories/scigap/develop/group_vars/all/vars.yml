@@ -117,6 +117,7 @@ real_user_data_dir: "/data/gateway-user-data"
 ## Airavata Client related variables
 airavata_server: "tls://{{ groups['api-orch'][0] }}"
 airavata_port: "9930"
+airavata_profile_service_server: "{{ groups['api-orch'][0] }}"
 auth_verify_peer: "true"
 oauth_service_url: "{{ iam_server_url }}"
 
