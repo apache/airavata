@@ -25,6 +25,8 @@ interface TenantProfileServiceIf {
    */
   public function getAPIVersion(\Airavata\Model\Security\AuthzToken $authzToken);
   /**
+   * Return the airavataInternalGatewayId assigned to given gateway.
+   * 
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param \Airavata\Model\Workspace\Gateway $gateway
    * @return string

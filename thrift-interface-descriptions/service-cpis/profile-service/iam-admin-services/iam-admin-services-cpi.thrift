@@ -79,4 +79,16 @@ service IamAdminServices {
                            2: required user_profile_model.UserProfile userDetails)
         throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
                 2: airavata_errors.AuthorizationException ae)
+
+    bool addRoleToUser(1: required security_model.AuthzToken authzToken,
+                        2: required string username,
+                        3: required string roleName)
+        throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
+                2: airavata_errors.AuthorizationException ae)
+
+    bool removeRoleFromUser(1: required security_model.AuthzToken authzToken,
+                        2: required string username,
+                        3: required string roleName)
+        throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
+                2: airavata_errors.AuthorizationException ae)
 }
