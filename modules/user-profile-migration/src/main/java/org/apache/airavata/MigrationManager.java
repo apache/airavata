@@ -270,7 +270,7 @@ public class MigrationManager {
 
         // Add Keycloak Tenant for Gateway
         System.out.println("Creating Keycloak Tenant for gateway ...");
-        Gateway gatewayWithIdAndSecret = iamAdminServicesClient.setUpGateway(authzToken, gateway, getPasswordCredential());
+        Gateway gatewayWithIdAndSecret = iamAdminServicesClient.setUpGateway(authzToken, gateway);
 
         // Update Gateway profile with the client id and secret
         System.out.println("Updating gateway with OAuth client id and secret ...");
