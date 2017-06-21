@@ -111,4 +111,28 @@ public interface TenantManagementInterface {
      * @param userDetails
      */
     void updateUserProfile(PasswordCredential realmAdminCreds, String tenantId, String username, UserProfile userDetails) throws IamAdminServicesException;
+
+    /**
+     * Add the given role to the user.
+     *
+     * @param realmAdminCreds
+     * @param tenantId
+     * @param username
+     * @param roleName
+     * @return
+     * @throws IamAdminServicesException
+     */
+    boolean addRoleToUser(PasswordCredential realmAdminCreds, String tenantId, String username, String roleName) throws IamAdminServicesException;
+
+    /**
+     * Remove the given role from the user.
+     *
+     * @param realmAdminCreds
+     * @param tenantId
+     * @param username
+     * @param roleName
+     * @return
+     * @throws IamAdminServicesException
+     */
+    boolean removeRoleFromUser(PasswordCredential realmAdminCreds, String tenantId, String username, String roleName) throws IamAdminServicesException;
 }

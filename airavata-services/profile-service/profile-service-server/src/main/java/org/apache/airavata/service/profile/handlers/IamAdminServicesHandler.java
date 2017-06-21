@@ -173,6 +173,34 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
         }
     }
 
+    @Override
+    public boolean addRoleToUser(AuthzToken authzToken, String username, String roleName) throws IamAdminServicesException, AuthorizationException, TException {
+        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        try{
+            PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
+            return keycloakclient.addRoleToUser(isRealmAdminCredentials, gatewayId, username, roleName);
+        } catch (TException|ApplicationSettingsException ex){
+            String msg = "Error while adding role to user, reason: " + ex.getMessage();
+            logger.error(msg, ex);
+            throw new IamAdminServicesException(msg);
+        }
+    }
+
+    @Override
+    public boolean removeRoleFromUser(AuthzToken authzToken, String username, String roleName) throws IamAdminServicesException, AuthorizationException, TException {
+        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        try{
+            PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
+            return keycloakclient.removeRoleFromUser(isRealmAdminCredentials, gatewayId, username, roleName);
+        } catch (TException|ApplicationSettingsException ex){
+            String msg = "Error while removing role from user, reason: " + ex.getMessage();
+            logger.error(msg, ex);
+            throw new IamAdminServicesException(msg);
+        }
+    }
+
     private PasswordCredential getSuperAdminPasswordCredential() {
         PasswordCredential isSuperAdminCredentials = new PasswordCredential();
         try {

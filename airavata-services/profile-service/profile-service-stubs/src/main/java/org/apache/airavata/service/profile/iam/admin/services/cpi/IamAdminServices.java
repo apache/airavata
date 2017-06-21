@@ -69,6 +69,10 @@ public class IamAdminServices {
 
     public void updateUserProfile(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails) throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
+    public boolean addRoleToUser(org.apache.airavata.model.security.AuthzToken authzToken, String username, String roleName) throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
+
+    public boolean removeRoleFromUser(org.apache.airavata.model.security.AuthzToken authzToken, String username, String roleName) throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
+
   }
 
   public interface AsyncIface {
@@ -86,6 +90,10 @@ public class IamAdminServices {
     public void findUsers(org.apache.airavata.model.security.AuthzToken authzToken, String email, String userId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void updateUserProfile(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.user.UserProfile userDetails, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void addRoleToUser(org.apache.airavata.model.security.AuthzToken authzToken, String username, String roleName, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void removeRoleFromUser(org.apache.airavata.model.security.AuthzToken authzToken, String username, String roleName, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -319,6 +327,68 @@ public class IamAdminServices {
         throw result.ae;
       }
       return;
+    }
+
+    public boolean addRoleToUser(org.apache.airavata.model.security.AuthzToken authzToken, String username, String roleName) throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
+    {
+      send_addRoleToUser(authzToken, username, roleName);
+      return recv_addRoleToUser();
+    }
+
+    public void send_addRoleToUser(org.apache.airavata.model.security.AuthzToken authzToken, String username, String roleName) throws org.apache.thrift.TException
+    {
+      addRoleToUser_args args = new addRoleToUser_args();
+      args.setAuthzToken(authzToken);
+      args.setUsername(username);
+      args.setRoleName(roleName);
+      sendBase("addRoleToUser", args);
+    }
+
+    public boolean recv_addRoleToUser() throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
+    {
+      addRoleToUser_result result = new addRoleToUser_result();
+      receiveBase(result, "addRoleToUser");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.Idse != null) {
+        throw result.Idse;
+      }
+      if (result.ae != null) {
+        throw result.ae;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "addRoleToUser failed: unknown result");
+    }
+
+    public boolean removeRoleFromUser(org.apache.airavata.model.security.AuthzToken authzToken, String username, String roleName) throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
+    {
+      send_removeRoleFromUser(authzToken, username, roleName);
+      return recv_removeRoleFromUser();
+    }
+
+    public void send_removeRoleFromUser(org.apache.airavata.model.security.AuthzToken authzToken, String username, String roleName) throws org.apache.thrift.TException
+    {
+      removeRoleFromUser_args args = new removeRoleFromUser_args();
+      args.setAuthzToken(authzToken);
+      args.setUsername(username);
+      args.setRoleName(roleName);
+      sendBase("removeRoleFromUser", args);
+    }
+
+    public boolean recv_removeRoleFromUser() throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
+    {
+      removeRoleFromUser_result result = new removeRoleFromUser_result();
+      receiveBase(result, "removeRoleFromUser");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.Idse != null) {
+        throw result.Idse;
+      }
+      if (result.ae != null) {
+        throw result.ae;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "removeRoleFromUser failed: unknown result");
     }
 
   }
@@ -599,6 +669,82 @@ public class IamAdminServices {
       }
     }
 
+    public void addRoleToUser(org.apache.airavata.model.security.AuthzToken authzToken, String username, String roleName, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      addRoleToUser_call method_call = new addRoleToUser_call(authzToken, username, roleName, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class addRoleToUser_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private org.apache.airavata.model.security.AuthzToken authzToken;
+      private String username;
+      private String roleName;
+      public addRoleToUser_call(org.apache.airavata.model.security.AuthzToken authzToken, String username, String roleName, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.authzToken = authzToken;
+        this.username = username;
+        this.roleName = roleName;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("addRoleToUser", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        addRoleToUser_args args = new addRoleToUser_args();
+        args.setAuthzToken(authzToken);
+        args.setUsername(username);
+        args.setRoleName(roleName);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public boolean getResult() throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_addRoleToUser();
+      }
+    }
+
+    public void removeRoleFromUser(org.apache.airavata.model.security.AuthzToken authzToken, String username, String roleName, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      removeRoleFromUser_call method_call = new removeRoleFromUser_call(authzToken, username, roleName, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class removeRoleFromUser_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private org.apache.airavata.model.security.AuthzToken authzToken;
+      private String username;
+      private String roleName;
+      public removeRoleFromUser_call(org.apache.airavata.model.security.AuthzToken authzToken, String username, String roleName, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.authzToken = authzToken;
+        this.username = username;
+        this.roleName = roleName;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("removeRoleFromUser", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        removeRoleFromUser_args args = new removeRoleFromUser_args();
+        args.setAuthzToken(authzToken);
+        args.setUsername(username);
+        args.setRoleName(roleName);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public boolean getResult() throws org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_removeRoleFromUser();
+      }
+    }
+
   }
 
   public static class Processor<I extends Iface> extends org.apache.thrift.TBaseProcessor<I> implements org.apache.thrift.TProcessor {
@@ -619,6 +765,8 @@ public class IamAdminServices {
       processMap.put("resetUserPassword", new resetUserPassword());
       processMap.put("findUsers", new findUsers());
       processMap.put("updateUserProfile", new updateUserProfile());
+      processMap.put("addRoleToUser", new addRoleToUser());
+      processMap.put("removeRoleFromUser", new removeRoleFromUser());
       return processMap;
     }
 
@@ -807,6 +955,60 @@ public class IamAdminServices {
       }
     }
 
+    public static class addRoleToUser<I extends Iface> extends org.apache.thrift.ProcessFunction<I, addRoleToUser_args> {
+      public addRoleToUser() {
+        super("addRoleToUser");
+      }
+
+      public addRoleToUser_args getEmptyArgsInstance() {
+        return new addRoleToUser_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public addRoleToUser_result getResult(I iface, addRoleToUser_args args) throws org.apache.thrift.TException {
+        addRoleToUser_result result = new addRoleToUser_result();
+        try {
+          result.success = iface.addRoleToUser(args.authzToken, args.username, args.roleName);
+          result.setSuccessIsSet(true);
+        } catch (org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException Idse) {
+          result.Idse = Idse;
+        } catch (org.apache.airavata.model.error.AuthorizationException ae) {
+          result.ae = ae;
+        }
+        return result;
+      }
+    }
+
+    public static class removeRoleFromUser<I extends Iface> extends org.apache.thrift.ProcessFunction<I, removeRoleFromUser_args> {
+      public removeRoleFromUser() {
+        super("removeRoleFromUser");
+      }
+
+      public removeRoleFromUser_args getEmptyArgsInstance() {
+        return new removeRoleFromUser_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public removeRoleFromUser_result getResult(I iface, removeRoleFromUser_args args) throws org.apache.thrift.TException {
+        removeRoleFromUser_result result = new removeRoleFromUser_result();
+        try {
+          result.success = iface.removeRoleFromUser(args.authzToken, args.username, args.roleName);
+          result.setSuccessIsSet(true);
+        } catch (org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException Idse) {
+          result.Idse = Idse;
+        } catch (org.apache.airavata.model.error.AuthorizationException ae) {
+          result.ae = ae;
+        }
+        return result;
+      }
+    }
+
   }
 
   public static class AsyncProcessor<I extends AsyncIface> extends org.apache.thrift.TBaseAsyncProcessor<I> {
@@ -827,6 +1029,8 @@ public class IamAdminServices {
       processMap.put("resetUserPassword", new resetUserPassword());
       processMap.put("findUsers", new findUsers());
       processMap.put("updateUserProfile", new updateUserProfile());
+      processMap.put("addRoleToUser", new addRoleToUser());
+      processMap.put("removeRoleFromUser", new removeRoleFromUser());
       return processMap;
     }
 
@@ -1263,6 +1467,132 @@ public class IamAdminServices {
 
       public void start(I iface, updateUserProfile_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
         iface.updateUserProfile(args.authzToken, args.userDetails,resultHandler);
+      }
+    }
+
+    public static class addRoleToUser<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, addRoleToUser_args, Boolean> {
+      public addRoleToUser() {
+        super("addRoleToUser");
+      }
+
+      public addRoleToUser_args getEmptyArgsInstance() {
+        return new addRoleToUser_args();
+      }
+
+      public AsyncMethodCallback<Boolean> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<Boolean>() { 
+          public void onComplete(Boolean o) {
+            addRoleToUser_result result = new addRoleToUser_result();
+            result.success = o;
+            result.setSuccessIsSet(true);
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            addRoleToUser_result result = new addRoleToUser_result();
+            if (e instanceof org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException) {
+                        result.Idse = (org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException) e;
+                        result.setIdseIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AuthorizationException) {
+                        result.ae = (org.apache.airavata.model.error.AuthorizationException) e;
+                        result.setAeIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, addRoleToUser_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
+        iface.addRoleToUser(args.authzToken, args.username, args.roleName,resultHandler);
+      }
+    }
+
+    public static class removeRoleFromUser<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, removeRoleFromUser_args, Boolean> {
+      public removeRoleFromUser() {
+        super("removeRoleFromUser");
+      }
+
+      public removeRoleFromUser_args getEmptyArgsInstance() {
+        return new removeRoleFromUser_args();
+      }
+
+      public AsyncMethodCallback<Boolean> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<Boolean>() { 
+          public void onComplete(Boolean o) {
+            removeRoleFromUser_result result = new removeRoleFromUser_result();
+            result.success = o;
+            result.setSuccessIsSet(true);
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            removeRoleFromUser_result result = new removeRoleFromUser_result();
+            if (e instanceof org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException) {
+                        result.Idse = (org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException) e;
+                        result.setIdseIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AuthorizationException) {
+                        result.ae = (org.apache.airavata.model.error.AuthorizationException) e;
+                        result.setAeIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, removeRoleFromUser_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
+        iface.removeRoleFromUser(args.authzToken, args.username, args.roleName,resultHandler);
       }
     }
 
@@ -8973,6 +9303,2278 @@ public class IamAdminServices {
           struct.setIdseIsSet(true);
         }
         if (incoming.get(1)) {
+          struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+          struct.ae.read(iprot);
+          struct.setAeIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class addRoleToUser_args implements org.apache.thrift.TBase<addRoleToUser_args, addRoleToUser_args._Fields>, java.io.Serializable, Cloneable, Comparable<addRoleToUser_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("addRoleToUser_args");
+
+    private static final org.apache.thrift.protocol.TField AUTHZ_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("authzToken", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField USERNAME_FIELD_DESC = new org.apache.thrift.protocol.TField("username", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField ROLE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("roleName", org.apache.thrift.protocol.TType.STRING, (short)3);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new addRoleToUser_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new addRoleToUser_argsTupleSchemeFactory());
+    }
+
+    public org.apache.airavata.model.security.AuthzToken authzToken; // required
+    public String username; // required
+    public String roleName; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      AUTHZ_TOKEN((short)1, "authzToken"),
+      USERNAME((short)2, "username"),
+      ROLE_NAME((short)3, "roleName");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // AUTHZ_TOKEN
+            return AUTHZ_TOKEN;
+          case 2: // USERNAME
+            return USERNAME;
+          case 3: // ROLE_NAME
+            return ROLE_NAME;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.AUTHZ_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("authzToken", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.security.AuthzToken.class)));
+      tmpMap.put(_Fields.USERNAME, new org.apache.thrift.meta_data.FieldMetaData("username", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.ROLE_NAME, new org.apache.thrift.meta_data.FieldMetaData("roleName", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(addRoleToUser_args.class, metaDataMap);
+    }
+
+    public addRoleToUser_args() {
+    }
+
+    public addRoleToUser_args(
+      org.apache.airavata.model.security.AuthzToken authzToken,
+      String username,
+      String roleName)
+    {
+      this();
+      this.authzToken = authzToken;
+      this.username = username;
+      this.roleName = roleName;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public addRoleToUser_args(addRoleToUser_args other) {
+      if (other.isSetAuthzToken()) {
+        this.authzToken = new org.apache.airavata.model.security.AuthzToken(other.authzToken);
+      }
+      if (other.isSetUsername()) {
+        this.username = other.username;
+      }
+      if (other.isSetRoleName()) {
+        this.roleName = other.roleName;
+      }
+    }
+
+    public addRoleToUser_args deepCopy() {
+      return new addRoleToUser_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.authzToken = null;
+      this.username = null;
+      this.roleName = null;
+    }
+
+    public org.apache.airavata.model.security.AuthzToken getAuthzToken() {
+      return this.authzToken;
+    }
+
+    public addRoleToUser_args setAuthzToken(org.apache.airavata.model.security.AuthzToken authzToken) {
+      this.authzToken = authzToken;
+      return this;
+    }
+
+    public void unsetAuthzToken() {
+      this.authzToken = null;
+    }
+
+    /** Returns true if field authzToken is set (has been assigned a value) and false otherwise */
+    public boolean isSetAuthzToken() {
+      return this.authzToken != null;
+    }
+
+    public void setAuthzTokenIsSet(boolean value) {
+      if (!value) {
+        this.authzToken = null;
+      }
+    }
+
+    public String getUsername() {
+      return this.username;
+    }
+
+    public addRoleToUser_args setUsername(String username) {
+      this.username = username;
+      return this;
+    }
+
+    public void unsetUsername() {
+      this.username = null;
+    }
+
+    /** Returns true if field username is set (has been assigned a value) and false otherwise */
+    public boolean isSetUsername() {
+      return this.username != null;
+    }
+
+    public void setUsernameIsSet(boolean value) {
+      if (!value) {
+        this.username = null;
+      }
+    }
+
+    public String getRoleName() {
+      return this.roleName;
+    }
+
+    public addRoleToUser_args setRoleName(String roleName) {
+      this.roleName = roleName;
+      return this;
+    }
+
+    public void unsetRoleName() {
+      this.roleName = null;
+    }
+
+    /** Returns true if field roleName is set (has been assigned a value) and false otherwise */
+    public boolean isSetRoleName() {
+      return this.roleName != null;
+    }
+
+    public void setRoleNameIsSet(boolean value) {
+      if (!value) {
+        this.roleName = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case AUTHZ_TOKEN:
+        if (value == null) {
+          unsetAuthzToken();
+        } else {
+          setAuthzToken((org.apache.airavata.model.security.AuthzToken)value);
+        }
+        break;
+
+      case USERNAME:
+        if (value == null) {
+          unsetUsername();
+        } else {
+          setUsername((String)value);
+        }
+        break;
+
+      case ROLE_NAME:
+        if (value == null) {
+          unsetRoleName();
+        } else {
+          setRoleName((String)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case AUTHZ_TOKEN:
+        return getAuthzToken();
+
+      case USERNAME:
+        return getUsername();
+
+      case ROLE_NAME:
+        return getRoleName();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case AUTHZ_TOKEN:
+        return isSetAuthzToken();
+      case USERNAME:
+        return isSetUsername();
+      case ROLE_NAME:
+        return isSetRoleName();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof addRoleToUser_args)
+        return this.equals((addRoleToUser_args)that);
+      return false;
+    }
+
+    public boolean equals(addRoleToUser_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_authzToken = true && this.isSetAuthzToken();
+      boolean that_present_authzToken = true && that.isSetAuthzToken();
+      if (this_present_authzToken || that_present_authzToken) {
+        if (!(this_present_authzToken && that_present_authzToken))
+          return false;
+        if (!this.authzToken.equals(that.authzToken))
+          return false;
+      }
+
+      boolean this_present_username = true && this.isSetUsername();
+      boolean that_present_username = true && that.isSetUsername();
+      if (this_present_username || that_present_username) {
+        if (!(this_present_username && that_present_username))
+          return false;
+        if (!this.username.equals(that.username))
+          return false;
+      }
+
+      boolean this_present_roleName = true && this.isSetRoleName();
+      boolean that_present_roleName = true && that.isSetRoleName();
+      if (this_present_roleName || that_present_roleName) {
+        if (!(this_present_roleName && that_present_roleName))
+          return false;
+        if (!this.roleName.equals(that.roleName))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      List<Object> list = new ArrayList<Object>();
+
+      boolean present_authzToken = true && (isSetAuthzToken());
+      list.add(present_authzToken);
+      if (present_authzToken)
+        list.add(authzToken);
+
+      boolean present_username = true && (isSetUsername());
+      list.add(present_username);
+      if (present_username)
+        list.add(username);
+
+      boolean present_roleName = true && (isSetRoleName());
+      list.add(present_roleName);
+      if (present_roleName)
+        list.add(roleName);
+
+      return list.hashCode();
+    }
+
+    @Override
+    public int compareTo(addRoleToUser_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetAuthzToken()).compareTo(other.isSetAuthzToken());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAuthzToken()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authzToken, other.authzToken);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetUsername()).compareTo(other.isSetUsername());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetUsername()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.username, other.username);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetRoleName()).compareTo(other.isSetRoleName());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetRoleName()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.roleName, other.roleName);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("addRoleToUser_args(");
+      boolean first = true;
+
+      sb.append("authzToken:");
+      if (this.authzToken == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.authzToken);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("username:");
+      if (this.username == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.username);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("roleName:");
+      if (this.roleName == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.roleName);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      if (authzToken == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'authzToken' was not present! Struct: " + toString());
+      }
+      if (username == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'username' was not present! Struct: " + toString());
+      }
+      if (roleName == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'roleName' was not present! Struct: " + toString());
+      }
+      // check for sub-struct validity
+      if (authzToken != null) {
+        authzToken.validate();
+      }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class addRoleToUser_argsStandardSchemeFactory implements SchemeFactory {
+      public addRoleToUser_argsStandardScheme getScheme() {
+        return new addRoleToUser_argsStandardScheme();
+      }
+    }
+
+    private static class addRoleToUser_argsStandardScheme extends StandardScheme<addRoleToUser_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, addRoleToUser_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // AUTHZ_TOKEN
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+                struct.authzToken.read(iprot);
+                struct.setAuthzTokenIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // USERNAME
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.username = iprot.readString();
+                struct.setUsernameIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // ROLE_NAME
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.roleName = iprot.readString();
+                struct.setRoleNameIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, addRoleToUser_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.authzToken != null) {
+          oprot.writeFieldBegin(AUTHZ_TOKEN_FIELD_DESC);
+          struct.authzToken.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.username != null) {
+          oprot.writeFieldBegin(USERNAME_FIELD_DESC);
+          oprot.writeString(struct.username);
+          oprot.writeFieldEnd();
+        }
+        if (struct.roleName != null) {
+          oprot.writeFieldBegin(ROLE_NAME_FIELD_DESC);
+          oprot.writeString(struct.roleName);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class addRoleToUser_argsTupleSchemeFactory implements SchemeFactory {
+      public addRoleToUser_argsTupleScheme getScheme() {
+        return new addRoleToUser_argsTupleScheme();
+      }
+    }
+
+    private static class addRoleToUser_argsTupleScheme extends TupleScheme<addRoleToUser_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, addRoleToUser_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        struct.authzToken.write(oprot);
+        oprot.writeString(struct.username);
+        oprot.writeString(struct.roleName);
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, addRoleToUser_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+        struct.authzToken.read(iprot);
+        struct.setAuthzTokenIsSet(true);
+        struct.username = iprot.readString();
+        struct.setUsernameIsSet(true);
+        struct.roleName = iprot.readString();
+        struct.setRoleNameIsSet(true);
+      }
+    }
+
+  }
+
+  public static class addRoleToUser_result implements org.apache.thrift.TBase<addRoleToUser_result, addRoleToUser_result._Fields>, java.io.Serializable, Cloneable, Comparable<addRoleToUser_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("addRoleToUser_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)0);
+    private static final org.apache.thrift.protocol.TField IDSE_FIELD_DESC = new org.apache.thrift.protocol.TField("Idse", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField AE_FIELD_DESC = new org.apache.thrift.protocol.TField("ae", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new addRoleToUser_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new addRoleToUser_resultTupleSchemeFactory());
+    }
+
+    public boolean success; // required
+    public org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException Idse; // required
+    public org.apache.airavata.model.error.AuthorizationException ae; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      IDSE((short)1, "Idse"),
+      AE((short)2, "ae");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // IDSE
+            return IDSE;
+          case 2: // AE
+            return AE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    private static final int __SUCCESS_ISSET_ID = 0;
+    private byte __isset_bitfield = 0;
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+      tmpMap.put(_Fields.IDSE, new org.apache.thrift.meta_data.FieldMetaData("Idse", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.AE, new org.apache.thrift.meta_data.FieldMetaData("ae", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(addRoleToUser_result.class, metaDataMap);
+    }
+
+    public addRoleToUser_result() {
+    }
+
+    public addRoleToUser_result(
+      boolean success,
+      org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException Idse,
+      org.apache.airavata.model.error.AuthorizationException ae)
+    {
+      this();
+      this.success = success;
+      setSuccessIsSet(true);
+      this.Idse = Idse;
+      this.ae = ae;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public addRoleToUser_result(addRoleToUser_result other) {
+      __isset_bitfield = other.__isset_bitfield;
+      this.success = other.success;
+      if (other.isSetIdse()) {
+        this.Idse = new org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException(other.Idse);
+      }
+      if (other.isSetAe()) {
+        this.ae = new org.apache.airavata.model.error.AuthorizationException(other.ae);
+      }
+    }
+
+    public addRoleToUser_result deepCopy() {
+      return new addRoleToUser_result(this);
+    }
+
+    @Override
+    public void clear() {
+      setSuccessIsSet(false);
+      this.success = false;
+      this.Idse = null;
+      this.ae = null;
+    }
+
+    public boolean isSuccess() {
+      return this.success;
+    }
+
+    public addRoleToUser_result setSuccess(boolean success) {
+      this.success = success;
+      setSuccessIsSet(true);
+      return this;
+    }
+
+    public void unsetSuccess() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return EncodingUtils.testBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SUCCESS_ISSET_ID, value);
+    }
+
+    public org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException getIdse() {
+      return this.Idse;
+    }
+
+    public addRoleToUser_result setIdse(org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException Idse) {
+      this.Idse = Idse;
+      return this;
+    }
+
+    public void unsetIdse() {
+      this.Idse = null;
+    }
+
+    /** Returns true if field Idse is set (has been assigned a value) and false otherwise */
+    public boolean isSetIdse() {
+      return this.Idse != null;
+    }
+
+    public void setIdseIsSet(boolean value) {
+      if (!value) {
+        this.Idse = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AuthorizationException getAe() {
+      return this.ae;
+    }
+
+    public addRoleToUser_result setAe(org.apache.airavata.model.error.AuthorizationException ae) {
+      this.ae = ae;
+      return this;
+    }
+
+    public void unsetAe() {
+      this.ae = null;
+    }
+
+    /** Returns true if field ae is set (has been assigned a value) and false otherwise */
+    public boolean isSetAe() {
+      return this.ae != null;
+    }
+
+    public void setAeIsSet(boolean value) {
+      if (!value) {
+        this.ae = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((Boolean)value);
+        }
+        break;
+
+      case IDSE:
+        if (value == null) {
+          unsetIdse();
+        } else {
+          setIdse((org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException)value);
+        }
+        break;
+
+      case AE:
+        if (value == null) {
+          unsetAe();
+        } else {
+          setAe((org.apache.airavata.model.error.AuthorizationException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return isSuccess();
+
+      case IDSE:
+        return getIdse();
+
+      case AE:
+        return getAe();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case IDSE:
+        return isSetIdse();
+      case AE:
+        return isSetAe();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof addRoleToUser_result)
+        return this.equals((addRoleToUser_result)that);
+      return false;
+    }
+
+    public boolean equals(addRoleToUser_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true;
+      boolean that_present_success = true;
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (this.success != that.success)
+          return false;
+      }
+
+      boolean this_present_Idse = true && this.isSetIdse();
+      boolean that_present_Idse = true && that.isSetIdse();
+      if (this_present_Idse || that_present_Idse) {
+        if (!(this_present_Idse && that_present_Idse))
+          return false;
+        if (!this.Idse.equals(that.Idse))
+          return false;
+      }
+
+      boolean this_present_ae = true && this.isSetAe();
+      boolean that_present_ae = true && that.isSetAe();
+      if (this_present_ae || that_present_ae) {
+        if (!(this_present_ae && that_present_ae))
+          return false;
+        if (!this.ae.equals(that.ae))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      List<Object> list = new ArrayList<Object>();
+
+      boolean present_success = true;
+      list.add(present_success);
+      if (present_success)
+        list.add(success);
+
+      boolean present_Idse = true && (isSetIdse());
+      list.add(present_Idse);
+      if (present_Idse)
+        list.add(Idse);
+
+      boolean present_ae = true && (isSetAe());
+      list.add(present_ae);
+      if (present_ae)
+        list.add(ae);
+
+      return list.hashCode();
+    }
+
+    @Override
+    public int compareTo(addRoleToUser_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetIdse()).compareTo(other.isSetIdse());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetIdse()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.Idse, other.Idse);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAe()).compareTo(other.isSetAe());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAe()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ae, other.ae);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("addRoleToUser_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      sb.append(this.success);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("Idse:");
+      if (this.Idse == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.Idse);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ae:");
+      if (this.ae == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ae);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bitfield = 0;
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class addRoleToUser_resultStandardSchemeFactory implements SchemeFactory {
+      public addRoleToUser_resultStandardScheme getScheme() {
+        return new addRoleToUser_resultStandardScheme();
+      }
+    }
+
+    private static class addRoleToUser_resultStandardScheme extends StandardScheme<addRoleToUser_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, addRoleToUser_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+                struct.success = iprot.readBool();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // IDSE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.Idse = new org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException();
+                struct.Idse.read(iprot);
+                struct.setIdseIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // AE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+                struct.ae.read(iprot);
+                struct.setAeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, addRoleToUser_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.isSetSuccess()) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeBool(struct.success);
+          oprot.writeFieldEnd();
+        }
+        if (struct.Idse != null) {
+          oprot.writeFieldBegin(IDSE_FIELD_DESC);
+          struct.Idse.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ae != null) {
+          oprot.writeFieldBegin(AE_FIELD_DESC);
+          struct.ae.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class addRoleToUser_resultTupleSchemeFactory implements SchemeFactory {
+      public addRoleToUser_resultTupleScheme getScheme() {
+        return new addRoleToUser_resultTupleScheme();
+      }
+    }
+
+    private static class addRoleToUser_resultTupleScheme extends TupleScheme<addRoleToUser_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, addRoleToUser_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetIdse()) {
+          optionals.set(1);
+        }
+        if (struct.isSetAe()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetSuccess()) {
+          oprot.writeBool(struct.success);
+        }
+        if (struct.isSetIdse()) {
+          struct.Idse.write(oprot);
+        }
+        if (struct.isSetAe()) {
+          struct.ae.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, addRoleToUser_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(3);
+        if (incoming.get(0)) {
+          struct.success = iprot.readBool();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.Idse = new org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException();
+          struct.Idse.read(iprot);
+          struct.setIdseIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+          struct.ae.read(iprot);
+          struct.setAeIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class removeRoleFromUser_args implements org.apache.thrift.TBase<removeRoleFromUser_args, removeRoleFromUser_args._Fields>, java.io.Serializable, Cloneable, Comparable<removeRoleFromUser_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("removeRoleFromUser_args");
+
+    private static final org.apache.thrift.protocol.TField AUTHZ_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("authzToken", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField USERNAME_FIELD_DESC = new org.apache.thrift.protocol.TField("username", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField ROLE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("roleName", org.apache.thrift.protocol.TType.STRING, (short)3);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new removeRoleFromUser_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new removeRoleFromUser_argsTupleSchemeFactory());
+    }
+
+    public org.apache.airavata.model.security.AuthzToken authzToken; // required
+    public String username; // required
+    public String roleName; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      AUTHZ_TOKEN((short)1, "authzToken"),
+      USERNAME((short)2, "username"),
+      ROLE_NAME((short)3, "roleName");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // AUTHZ_TOKEN
+            return AUTHZ_TOKEN;
+          case 2: // USERNAME
+            return USERNAME;
+          case 3: // ROLE_NAME
+            return ROLE_NAME;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.AUTHZ_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("authzToken", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.security.AuthzToken.class)));
+      tmpMap.put(_Fields.USERNAME, new org.apache.thrift.meta_data.FieldMetaData("username", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.ROLE_NAME, new org.apache.thrift.meta_data.FieldMetaData("roleName", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(removeRoleFromUser_args.class, metaDataMap);
+    }
+
+    public removeRoleFromUser_args() {
+    }
+
+    public removeRoleFromUser_args(
+      org.apache.airavata.model.security.AuthzToken authzToken,
+      String username,
+      String roleName)
+    {
+      this();
+      this.authzToken = authzToken;
+      this.username = username;
+      this.roleName = roleName;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public removeRoleFromUser_args(removeRoleFromUser_args other) {
+      if (other.isSetAuthzToken()) {
+        this.authzToken = new org.apache.airavata.model.security.AuthzToken(other.authzToken);
+      }
+      if (other.isSetUsername()) {
+        this.username = other.username;
+      }
+      if (other.isSetRoleName()) {
+        this.roleName = other.roleName;
+      }
+    }
+
+    public removeRoleFromUser_args deepCopy() {
+      return new removeRoleFromUser_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.authzToken = null;
+      this.username = null;
+      this.roleName = null;
+    }
+
+    public org.apache.airavata.model.security.AuthzToken getAuthzToken() {
+      return this.authzToken;
+    }
+
+    public removeRoleFromUser_args setAuthzToken(org.apache.airavata.model.security.AuthzToken authzToken) {
+      this.authzToken = authzToken;
+      return this;
+    }
+
+    public void unsetAuthzToken() {
+      this.authzToken = null;
+    }
+
+    /** Returns true if field authzToken is set (has been assigned a value) and false otherwise */
+    public boolean isSetAuthzToken() {
+      return this.authzToken != null;
+    }
+
+    public void setAuthzTokenIsSet(boolean value) {
+      if (!value) {
+        this.authzToken = null;
+      }
+    }
+
+    public String getUsername() {
+      return this.username;
+    }
+
+    public removeRoleFromUser_args setUsername(String username) {
+      this.username = username;
+      return this;
+    }
+
+    public void unsetUsername() {
+      this.username = null;
+    }
+
+    /** Returns true if field username is set (has been assigned a value) and false otherwise */
+    public boolean isSetUsername() {
+      return this.username != null;
+    }
+
+    public void setUsernameIsSet(boolean value) {
+      if (!value) {
+        this.username = null;
+      }
+    }
+
+    public String getRoleName() {
+      return this.roleName;
+    }
+
+    public removeRoleFromUser_args setRoleName(String roleName) {
+      this.roleName = roleName;
+      return this;
+    }
+
+    public void unsetRoleName() {
+      this.roleName = null;
+    }
+
+    /** Returns true if field roleName is set (has been assigned a value) and false otherwise */
+    public boolean isSetRoleName() {
+      return this.roleName != null;
+    }
+
+    public void setRoleNameIsSet(boolean value) {
+      if (!value) {
+        this.roleName = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case AUTHZ_TOKEN:
+        if (value == null) {
+          unsetAuthzToken();
+        } else {
+          setAuthzToken((org.apache.airavata.model.security.AuthzToken)value);
+        }
+        break;
+
+      case USERNAME:
+        if (value == null) {
+          unsetUsername();
+        } else {
+          setUsername((String)value);
+        }
+        break;
+
+      case ROLE_NAME:
+        if (value == null) {
+          unsetRoleName();
+        } else {
+          setRoleName((String)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case AUTHZ_TOKEN:
+        return getAuthzToken();
+
+      case USERNAME:
+        return getUsername();
+
+      case ROLE_NAME:
+        return getRoleName();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case AUTHZ_TOKEN:
+        return isSetAuthzToken();
+      case USERNAME:
+        return isSetUsername();
+      case ROLE_NAME:
+        return isSetRoleName();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof removeRoleFromUser_args)
+        return this.equals((removeRoleFromUser_args)that);
+      return false;
+    }
+
+    public boolean equals(removeRoleFromUser_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_authzToken = true && this.isSetAuthzToken();
+      boolean that_present_authzToken = true && that.isSetAuthzToken();
+      if (this_present_authzToken || that_present_authzToken) {
+        if (!(this_present_authzToken && that_present_authzToken))
+          return false;
+        if (!this.authzToken.equals(that.authzToken))
+          return false;
+      }
+
+      boolean this_present_username = true && this.isSetUsername();
+      boolean that_present_username = true && that.isSetUsername();
+      if (this_present_username || that_present_username) {
+        if (!(this_present_username && that_present_username))
+          return false;
+        if (!this.username.equals(that.username))
+          return false;
+      }
+
+      boolean this_present_roleName = true && this.isSetRoleName();
+      boolean that_present_roleName = true && that.isSetRoleName();
+      if (this_present_roleName || that_present_roleName) {
+        if (!(this_present_roleName && that_present_roleName))
+          return false;
+        if (!this.roleName.equals(that.roleName))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      List<Object> list = new ArrayList<Object>();
+
+      boolean present_authzToken = true && (isSetAuthzToken());
+      list.add(present_authzToken);
+      if (present_authzToken)
+        list.add(authzToken);
+
+      boolean present_username = true && (isSetUsername());
+      list.add(present_username);
+      if (present_username)
+        list.add(username);
+
+      boolean present_roleName = true && (isSetRoleName());
+      list.add(present_roleName);
+      if (present_roleName)
+        list.add(roleName);
+
+      return list.hashCode();
+    }
+
+    @Override
+    public int compareTo(removeRoleFromUser_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetAuthzToken()).compareTo(other.isSetAuthzToken());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAuthzToken()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authzToken, other.authzToken);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetUsername()).compareTo(other.isSetUsername());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetUsername()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.username, other.username);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetRoleName()).compareTo(other.isSetRoleName());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetRoleName()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.roleName, other.roleName);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("removeRoleFromUser_args(");
+      boolean first = true;
+
+      sb.append("authzToken:");
+      if (this.authzToken == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.authzToken);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("username:");
+      if (this.username == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.username);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("roleName:");
+      if (this.roleName == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.roleName);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      if (authzToken == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'authzToken' was not present! Struct: " + toString());
+      }
+      if (username == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'username' was not present! Struct: " + toString());
+      }
+      if (roleName == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'roleName' was not present! Struct: " + toString());
+      }
+      // check for sub-struct validity
+      if (authzToken != null) {
+        authzToken.validate();
+      }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class removeRoleFromUser_argsStandardSchemeFactory implements SchemeFactory {
+      public removeRoleFromUser_argsStandardScheme getScheme() {
+        return new removeRoleFromUser_argsStandardScheme();
+      }
+    }
+
+    private static class removeRoleFromUser_argsStandardScheme extends StandardScheme<removeRoleFromUser_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, removeRoleFromUser_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // AUTHZ_TOKEN
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+                struct.authzToken.read(iprot);
+                struct.setAuthzTokenIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // USERNAME
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.username = iprot.readString();
+                struct.setUsernameIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // ROLE_NAME
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.roleName = iprot.readString();
+                struct.setRoleNameIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, removeRoleFromUser_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.authzToken != null) {
+          oprot.writeFieldBegin(AUTHZ_TOKEN_FIELD_DESC);
+          struct.authzToken.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.username != null) {
+          oprot.writeFieldBegin(USERNAME_FIELD_DESC);
+          oprot.writeString(struct.username);
+          oprot.writeFieldEnd();
+        }
+        if (struct.roleName != null) {
+          oprot.writeFieldBegin(ROLE_NAME_FIELD_DESC);
+          oprot.writeString(struct.roleName);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class removeRoleFromUser_argsTupleSchemeFactory implements SchemeFactory {
+      public removeRoleFromUser_argsTupleScheme getScheme() {
+        return new removeRoleFromUser_argsTupleScheme();
+      }
+    }
+
+    private static class removeRoleFromUser_argsTupleScheme extends TupleScheme<removeRoleFromUser_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, removeRoleFromUser_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        struct.authzToken.write(oprot);
+        oprot.writeString(struct.username);
+        oprot.writeString(struct.roleName);
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, removeRoleFromUser_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+        struct.authzToken.read(iprot);
+        struct.setAuthzTokenIsSet(true);
+        struct.username = iprot.readString();
+        struct.setUsernameIsSet(true);
+        struct.roleName = iprot.readString();
+        struct.setRoleNameIsSet(true);
+      }
+    }
+
+  }
+
+  public static class removeRoleFromUser_result implements org.apache.thrift.TBase<removeRoleFromUser_result, removeRoleFromUser_result._Fields>, java.io.Serializable, Cloneable, Comparable<removeRoleFromUser_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("removeRoleFromUser_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)0);
+    private static final org.apache.thrift.protocol.TField IDSE_FIELD_DESC = new org.apache.thrift.protocol.TField("Idse", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField AE_FIELD_DESC = new org.apache.thrift.protocol.TField("ae", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new removeRoleFromUser_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new removeRoleFromUser_resultTupleSchemeFactory());
+    }
+
+    public boolean success; // required
+    public org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException Idse; // required
+    public org.apache.airavata.model.error.AuthorizationException ae; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      IDSE((short)1, "Idse"),
+      AE((short)2, "ae");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // IDSE
+            return IDSE;
+          case 2: // AE
+            return AE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    private static final int __SUCCESS_ISSET_ID = 0;
+    private byte __isset_bitfield = 0;
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+      tmpMap.put(_Fields.IDSE, new org.apache.thrift.meta_data.FieldMetaData("Idse", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.AE, new org.apache.thrift.meta_data.FieldMetaData("ae", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(removeRoleFromUser_result.class, metaDataMap);
+    }
+
+    public removeRoleFromUser_result() {
+    }
+
+    public removeRoleFromUser_result(
+      boolean success,
+      org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException Idse,
+      org.apache.airavata.model.error.AuthorizationException ae)
+    {
+      this();
+      this.success = success;
+      setSuccessIsSet(true);
+      this.Idse = Idse;
+      this.ae = ae;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public removeRoleFromUser_result(removeRoleFromUser_result other) {
+      __isset_bitfield = other.__isset_bitfield;
+      this.success = other.success;
+      if (other.isSetIdse()) {
+        this.Idse = new org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException(other.Idse);
+      }
+      if (other.isSetAe()) {
+        this.ae = new org.apache.airavata.model.error.AuthorizationException(other.ae);
+      }
+    }
+
+    public removeRoleFromUser_result deepCopy() {
+      return new removeRoleFromUser_result(this);
+    }
+
+    @Override
+    public void clear() {
+      setSuccessIsSet(false);
+      this.success = false;
+      this.Idse = null;
+      this.ae = null;
+    }
+
+    public boolean isSuccess() {
+      return this.success;
+    }
+
+    public removeRoleFromUser_result setSuccess(boolean success) {
+      this.success = success;
+      setSuccessIsSet(true);
+      return this;
+    }
+
+    public void unsetSuccess() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return EncodingUtils.testBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SUCCESS_ISSET_ID, value);
+    }
+
+    public org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException getIdse() {
+      return this.Idse;
+    }
+
+    public removeRoleFromUser_result setIdse(org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException Idse) {
+      this.Idse = Idse;
+      return this;
+    }
+
+    public void unsetIdse() {
+      this.Idse = null;
+    }
+
+    /** Returns true if field Idse is set (has been assigned a value) and false otherwise */
+    public boolean isSetIdse() {
+      return this.Idse != null;
+    }
+
+    public void setIdseIsSet(boolean value) {
+      if (!value) {
+        this.Idse = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AuthorizationException getAe() {
+      return this.ae;
+    }
+
+    public removeRoleFromUser_result setAe(org.apache.airavata.model.error.AuthorizationException ae) {
+      this.ae = ae;
+      return this;
+    }
+
+    public void unsetAe() {
+      this.ae = null;
+    }
+
+    /** Returns true if field ae is set (has been assigned a value) and false otherwise */
+    public boolean isSetAe() {
+      return this.ae != null;
+    }
+
+    public void setAeIsSet(boolean value) {
+      if (!value) {
+        this.ae = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((Boolean)value);
+        }
+        break;
+
+      case IDSE:
+        if (value == null) {
+          unsetIdse();
+        } else {
+          setIdse((org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException)value);
+        }
+        break;
+
+      case AE:
+        if (value == null) {
+          unsetAe();
+        } else {
+          setAe((org.apache.airavata.model.error.AuthorizationException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return isSuccess();
+
+      case IDSE:
+        return getIdse();
+
+      case AE:
+        return getAe();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case IDSE:
+        return isSetIdse();
+      case AE:
+        return isSetAe();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof removeRoleFromUser_result)
+        return this.equals((removeRoleFromUser_result)that);
+      return false;
+    }
+
+    public boolean equals(removeRoleFromUser_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true;
+      boolean that_present_success = true;
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (this.success != that.success)
+          return false;
+      }
+
+      boolean this_present_Idse = true && this.isSetIdse();
+      boolean that_present_Idse = true && that.isSetIdse();
+      if (this_present_Idse || that_present_Idse) {
+        if (!(this_present_Idse && that_present_Idse))
+          return false;
+        if (!this.Idse.equals(that.Idse))
+          return false;
+      }
+
+      boolean this_present_ae = true && this.isSetAe();
+      boolean that_present_ae = true && that.isSetAe();
+      if (this_present_ae || that_present_ae) {
+        if (!(this_present_ae && that_present_ae))
+          return false;
+        if (!this.ae.equals(that.ae))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      List<Object> list = new ArrayList<Object>();
+
+      boolean present_success = true;
+      list.add(present_success);
+      if (present_success)
+        list.add(success);
+
+      boolean present_Idse = true && (isSetIdse());
+      list.add(present_Idse);
+      if (present_Idse)
+        list.add(Idse);
+
+      boolean present_ae = true && (isSetAe());
+      list.add(present_ae);
+      if (present_ae)
+        list.add(ae);
+
+      return list.hashCode();
+    }
+
+    @Override
+    public int compareTo(removeRoleFromUser_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetIdse()).compareTo(other.isSetIdse());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetIdse()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.Idse, other.Idse);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAe()).compareTo(other.isSetAe());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAe()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ae, other.ae);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("removeRoleFromUser_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      sb.append(this.success);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("Idse:");
+      if (this.Idse == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.Idse);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ae:");
+      if (this.ae == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ae);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bitfield = 0;
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class removeRoleFromUser_resultStandardSchemeFactory implements SchemeFactory {
+      public removeRoleFromUser_resultStandardScheme getScheme() {
+        return new removeRoleFromUser_resultStandardScheme();
+      }
+    }
+
+    private static class removeRoleFromUser_resultStandardScheme extends StandardScheme<removeRoleFromUser_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, removeRoleFromUser_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+                struct.success = iprot.readBool();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // IDSE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.Idse = new org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException();
+                struct.Idse.read(iprot);
+                struct.setIdseIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // AE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+                struct.ae.read(iprot);
+                struct.setAeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, removeRoleFromUser_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.isSetSuccess()) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeBool(struct.success);
+          oprot.writeFieldEnd();
+        }
+        if (struct.Idse != null) {
+          oprot.writeFieldBegin(IDSE_FIELD_DESC);
+          struct.Idse.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ae != null) {
+          oprot.writeFieldBegin(AE_FIELD_DESC);
+          struct.ae.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class removeRoleFromUser_resultTupleSchemeFactory implements SchemeFactory {
+      public removeRoleFromUser_resultTupleScheme getScheme() {
+        return new removeRoleFromUser_resultTupleScheme();
+      }
+    }
+
+    private static class removeRoleFromUser_resultTupleScheme extends TupleScheme<removeRoleFromUser_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, removeRoleFromUser_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetIdse()) {
+          optionals.set(1);
+        }
+        if (struct.isSetAe()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetSuccess()) {
+          oprot.writeBool(struct.success);
+        }
+        if (struct.isSetIdse()) {
+          struct.Idse.write(oprot);
+        }
+        if (struct.isSetAe()) {
+          struct.ae.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, removeRoleFromUser_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(3);
+        if (incoming.get(0)) {
+          struct.success = iprot.readBool();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.Idse = new org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException();
+          struct.Idse.read(iprot);
+          struct.setIdseIsSet(true);
+        }
+        if (incoming.get(2)) {
           struct.ae = new org.apache.airavata.model.error.AuthorizationException();
           struct.ae.read(iprot);
           struct.setAeIsSet(true);
