@@ -65,8 +65,8 @@ public class SetupNewGateway {
 
          TenantManagementKeycloakImpl client = new TenantManagementKeycloakImpl();
          try {
-             client.createUser(tenantAdminCreds,user,"test@123");
-             client.enableUserAccount(tenantAdminCreds,user);
+             client.createUser(tenantAdminCreds, user.getGatewayId(), user.getUserId(), user.getEmails().get(0), user.getFirstName(), user.getLastName(),"test@123");
+             client.enableUserAccount(tenantAdminCreds, user.getGatewayId(), user.getUserId());
          } catch (IamAdminServicesException e) {
              e.printStackTrace();
          }
