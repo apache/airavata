@@ -273,12 +273,16 @@ public class SCPDataStageTask implements Task {
         /**
          * scp third party file transfer 'from' comute resource.
          */
-        taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(),
-                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.TO, true);
-        // update output locations
-        GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.toString());
-        GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.toString());
-
+        //Wildcard file path has not been resolved and cannot be handled. Hence ignoring
+        if(!destinationURI.toString().contains("*")){
+            taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(),
+                    destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.TO, true);
+            // update output locations
+            GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.toString());
+            GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.toString());
+        }else{
+            log.warn("Destination file path contains unresolved wildcards. Path: " + destinationURI.toString());
+        }
     }
 
     private void makeDir(TaskContext taskContext, URI pathURI) throws GFacException {
