@@ -67,6 +67,9 @@ return array(
                 {% if "oauth_authorize_url_extra_params" in auth_option %}
                 'oauth-authorize-url-extra-params' => '{{ auth_option["oauth_authorize_url_extra_params"] }}',
                 {% endif %}
+                {% if "logo" in auth_option %}
+                'logo' => '{{ auth_option["logo"] }}',
+                {% endif %}
             ],
             {% endfor %}
         ],
