@@ -39,7 +39,8 @@ oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
 oauth_grant_type: "password"
 oidc_discovery_url: "https://iamdev.scigap.org/auth/realms/scigap/.well-known/openid-configuration"
-user_role_name: "airavata-user"
+oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
+initial_role_name: "gateway-provider"
 
 gateway_id: "scigap"
 # relative to document root dir

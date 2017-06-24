@@ -37,8 +37,15 @@ admin_username: "admin"
 admin_password: "{{ vault_admin_password }}"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
-oauth_grant_type: "password"
 oidc_discovery_url: "https://iamdev.scigap.org/auth/realms/seagrid/.well-known/openid-configuration"
+
+auth_options:
+  - name: "SEAGrid"
+    oauth_grant_type: "password"
+  - name: "CILogon"
+    oauth_grant_type: "authorization_code"
+    oauth_authorize_url_extra_params: "kc_idp_hint=oidc"
+oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 
 gateway_id: "seagrid"
 # relative to document root dir
