@@ -538,8 +538,14 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
 
             List<UserProfile> usersWithRole = new ArrayList<>();
             for (UserRepresentation user: allUsers) {
-                if (user.getRealmRoles().contains(roleName)) {
-                    usersWithRole.add(convertUserRepresentationToUserProfile(user, tenantId));
+                UserResource userResource = client.realm(tenantId).users().get(user.getId());
+
+                List<RoleRepresentation> roleRepresentations = userResource.roles().realmLevel().listAll();
+                for (RoleRepresentation roleRepresentation : roleRepresentations){
+                    if (roleRepresentation.getName().equals(roleName)) {
+                        usersWithRole.add(convertUserRepresentationToUserProfile(user, tenantId));
+                        break;
+                    }
                 }
             }
             return usersWithRole;

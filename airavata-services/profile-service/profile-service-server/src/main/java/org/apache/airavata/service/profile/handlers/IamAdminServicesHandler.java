@@ -213,8 +213,8 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
         try {
             PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
             return keycloakclient.getUsersWithRole(isRealmAdminCredentials, gatewayId, roleName);
-        } catch (TException | ApplicationSettingsException ex) {
-            String msg = "Error while retrieving users from Identity Server, reason: " + ex.getMessage();
+        } catch (Exception ex) {
+            String msg = "Error while retrieving users with role, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);
         }
