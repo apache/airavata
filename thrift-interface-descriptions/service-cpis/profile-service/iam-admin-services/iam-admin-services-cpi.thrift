@@ -91,4 +91,9 @@ service IamAdminServices {
                         3: required string roleName)
         throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
                 2: airavata_errors.AuthorizationException ae)
+
+    list<user_profile_model.UserProfile> getUsersWithRole(1: required security_model.AuthzToken authzToken,
+                                2: required string roleName)
+                                throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
+                                                            2: airavata_errors.AuthorizationException ae)
 }

@@ -69,14 +69,14 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     public Gateway setUpGateway(AuthzToken authzToken, Gateway gateway) throws IamAdminServicesException, AuthorizationException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         PasswordCredential isSuperAdminCredentials = getSuperAdminPasswordCredential();
-        try{
-            keycloakclient.addTenant(isSuperAdminCredentials,gateway);
-            if(!keycloakclient.createTenantAdminAccount(isSuperAdminCredentials,gateway)){
+        try {
+            keycloakclient.addTenant(isSuperAdminCredentials, gateway);
+            if (!keycloakclient.createTenantAdminAccount(isSuperAdminCredentials, gateway)) {
                 logger.error("Admin account creation failed !!, please refer error logs for reason");
             }
-            Gateway gatewayWithIdAndSecret = keycloakclient.configureClient(isSuperAdminCredentials,gateway);
+            Gateway gatewayWithIdAndSecret = keycloakclient.configureClient(isSuperAdminCredentials, gateway);
             return gatewayWithIdAndSecret;
-        } catch (IamAdminServicesException ex){
+        } catch (IamAdminServicesException ex) {
             logger.error("Gateway Setup Failed, reason: " + ex.getMessage(), ex);
             throw ex;
         }
@@ -88,13 +88,13 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     public boolean registerUser(AuthzToken authzToken, String username, String emailAddress, String firstName, String lastName, String newPassword) throws IamAdminServicesException, AuthorizationException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        try{
+        try {
             PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
-            if(keycloakclient.createUser(isRealmAdminCredentials, gatewayId, username, emailAddress, firstName, lastName, newPassword))
+            if (keycloakclient.createUser(isRealmAdminCredentials, gatewayId, username, emailAddress, firstName, lastName, newPassword))
                 return true;
             else
                 return false;
-        } catch (TException|ApplicationSettingsException ex){
+        } catch (TException | ApplicationSettingsException ex) {
             String msg = "Error while registering user into Identity Server, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);
@@ -106,13 +106,13 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     public boolean enableUser(AuthzToken authzToken, String username) throws IamAdminServicesException, AuthorizationException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        try{
+        try {
             PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
-            if(keycloakclient.enableUserAccount(isRealmAdminCredentials, gatewayId, username))
+            if (keycloakclient.enableUserAccount(isRealmAdminCredentials, gatewayId, username))
                 return true;
             else
                 return false;
-        } catch (TException|ApplicationSettingsException ex){
+        } catch (TException | ApplicationSettingsException ex) {
             String msg = "Error while enabling user account, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);
@@ -124,13 +124,13 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     public boolean resetUserPassword(AuthzToken authzToken, String username, String newPassword) throws IamAdminServicesException, AuthorizationException, TException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        try{
+        try {
             PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
-            if(keycloakclient.resetUserPassword(isRealmAdminCredentials, gatewayId, username, newPassword))
+            if (keycloakclient.resetUserPassword(isRealmAdminCredentials, gatewayId, username, newPassword))
                 return true;
             else
                 return false;
-        } catch (TException|ApplicationSettingsException ex){
+        } catch (TException | ApplicationSettingsException ex) {
             String msg = "Error while resetting user password in Identity Server, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);
@@ -142,10 +142,10 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     public List<UserProfile> findUsers(AuthzToken authzToken, String email, String userId) throws IamAdminServicesException, AuthorizationException, TException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        try{
+        try {
             PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
             return keycloakclient.findUser(isRealmAdminCredentials, gatewayId, email, userId);
-        } catch (TException|ApplicationSettingsException ex){
+        } catch (TException | ApplicationSettingsException ex) {
             String msg = "Error while retrieving users from Identity Server, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);
@@ -153,6 +153,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     }
 
     @Override
+    @SecurityCheck
     public void updateUserProfile(AuthzToken authzToken, UserProfile userDetails) throws IamAdminServicesException, AuthorizationException, TException {
 
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
@@ -174,13 +175,14 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     }
 
     @Override
+    @SecurityCheck
     public boolean addRoleToUser(AuthzToken authzToken, String username, String roleName) throws IamAdminServicesException, AuthorizationException, TException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        try{
+        try {
             PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
             return keycloakclient.addRoleToUser(isRealmAdminCredentials, gatewayId, username, roleName);
-        } catch (TException|ApplicationSettingsException ex){
+        } catch (TException | ApplicationSettingsException ex) {
             String msg = "Error while adding role to user, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);
@@ -188,14 +190,31 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     }
 
     @Override
+    @SecurityCheck
     public boolean removeRoleFromUser(AuthzToken authzToken, String username, String roleName) throws IamAdminServicesException, AuthorizationException, TException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        try{
+        try {
             PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
             return keycloakclient.removeRoleFromUser(isRealmAdminCredentials, gatewayId, username, roleName);
-        } catch (TException|ApplicationSettingsException ex){
+        } catch (TException | ApplicationSettingsException ex) {
             String msg = "Error while removing role from user, reason: " + ex.getMessage();
+            logger.error(msg, ex);
+            throw new IamAdminServicesException(msg);
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    public List<UserProfile> getUsersWithRole(AuthzToken authzToken, String roleName) throws IamAdminServicesException, AuthorizationException, TException {
+
+        TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        try {
+            PasswordCredential isRealmAdminCredentials = getTenantAdminPasswordCredential(gatewayId);
+            return keycloakclient.getUsersWithRole(isRealmAdminCredentials, gatewayId, roleName);
+        } catch (TException | ApplicationSettingsException ex) {
+            String msg = "Error while retrieving users from Identity Server, reason: " + ex.getMessage();
             logger.error(msg, ex);
             throw new IamAdminServicesException(msg);
         }

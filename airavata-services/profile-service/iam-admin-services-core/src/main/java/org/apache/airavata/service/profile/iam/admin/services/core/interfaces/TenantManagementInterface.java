@@ -135,4 +135,15 @@ public interface TenantManagementInterface {
      * @throws IamAdminServicesException
      */
     boolean removeRoleFromUser(PasswordCredential realmAdminCreds, String tenantId, String username, String roleName) throws IamAdminServicesException;
+
+    /**
+     * Get all users having the given role.
+     *
+     * @param realmAdminCreds
+     * @param tenantId
+     * @param roleName
+     * @return
+     * @throws IamAdminServicesException
+     */
+    List<UserProfile> getUsersWithRole(PasswordCredential realmAdminCreds, String tenantId, String roleName) throws IamAdminServicesException;
 }
