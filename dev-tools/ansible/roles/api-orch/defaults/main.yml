@@ -20,3 +20,4 @@
 
 api_orch_server_names: "api-orch"
 api_orch_log_dir: "../logs"
+mariadb_connector_jar_url: "https://downloads.mariadb.com/Connectors/java/connector-java-2.0.2/mariadb-java-client-2.0.2.jar"
