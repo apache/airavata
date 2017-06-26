@@ -24,6 +24,7 @@ package org.apache.airavata.service.profile.iam.admin.services.core.impl;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.credential.store.PasswordCredential;
+import org.apache.airavata.model.user.Status;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.service.profile.iam.admin.services.core.interfaces.TenantManagementInterface;
@@ -521,5 +522,55 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                 client.close();
             }
         }
+    }
+
+    @Override
+    public List<UserProfile> getUsersWithRole(PasswordCredential realmAdminCreds, String tenantId, String roleName) throws IamAdminServicesException {
+        Keycloak client = null;
+        try{
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, realmAdminCreds);
+            // FIXME: this only gets the first 1000 users to search through for the given role
+            List<UserRepresentation> allUsers = client.realm(tenantId).users().search(null,
+                    null,
+                    null,
+                    null,
+                    0, 1000);
+
+            List<UserProfile> usersWithRole = new ArrayList<>();
+            for (UserRepresentation user: allUsers) {
+                if (user.getRealmRoles().contains(roleName)) {
+                    usersWithRole.add(convertUserRepresentationToUserProfile(user, tenantId));
+                }
+            }
+            return usersWithRole;
+        } catch (ApplicationSettingsException ex) {
+            logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
+            IamAdminServicesException exception = new IamAdminServicesException();
+            exception.setMessage("Error getting values from property file, reason " + ex.getMessage());
+            throw exception;
+        } finally {
+            if (client != null) {
+                client.close();
+            }
+        }
+    }
+
+    private UserProfile convertUserRepresentationToUserProfile(UserRepresentation userRepresentation, String tenantId) {
+
+        UserProfile profile = new UserProfile();
+        profile.setAiravataInternalUserId(userRepresentation.getUsername() + "@" + tenantId);
+        profile.setGatewayId(tenantId);
+        profile.setUserId(userRepresentation.getUsername());
+        profile.setFirstName(userRepresentation.getFirstName());
+        profile.setLastName(userRepresentation.getLastName());
+        profile.setEmails(Arrays.asList(new String[]{userRepresentation.getEmail()}));
+
+        // Just default these. UserProfile isn't a great data model for this data since it isn't actually the Airavata UserProfile
+        profile.setLastAccessTime(0);
+        profile.setCreationTime(0);
+        profile.setValidUntil(0);
+        profile.setState(Status.ACTIVE);
+
+        return profile;
     }
 }
