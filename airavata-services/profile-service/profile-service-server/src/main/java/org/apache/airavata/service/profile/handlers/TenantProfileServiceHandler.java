@@ -214,10 +214,8 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
 
     private boolean checkDuplicateGateway(Gateway gateway) throws TenantProfileServiceException {
         try {
-            Gateway duplicateGateway = tenantProfileRepository.getGateway(gateway.getGatewayId());
-            return duplicateGateway != null && ((duplicateGateway.getGatewayId().equals(gateway.getGatewayId()))
-                    || (duplicateGateway.getGatewayName().equals(gateway.getGatewayName()))
-                    || (duplicateGateway.getGatewayURL().equals(gateway.getGatewayURL())));
+            Gateway duplicateGateway = tenantProfileRepository.getDuplicateGateway(gateway.getGatewayId(), gateway.getGatewayName(), gateway.getGatewayURL());
+            return duplicateGateway != null;
         } catch (Exception ex) {
             logger.error("Error checking if duplicate gateway-profile exists, reason: " + ex.getMessage(), ex);
             TenantProfileServiceException exception = new TenantProfileServiceException();
