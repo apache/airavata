@@ -67,7 +67,8 @@ enum GatewayApprovalStatus {
     DEACTIVATED,
     CANCELLED,
     DENIED,
-    CREATED
+    CREATED,
+    DEPLOYED
 }
 
 struct Gateway {

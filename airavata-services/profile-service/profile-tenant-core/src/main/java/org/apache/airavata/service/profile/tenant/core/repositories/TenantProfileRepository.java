@@ -28,6 +28,7 @@ import org.apache.airavata.service.profile.commons.utils.QueryConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,6 @@ public class TenantProfileRepository extends AbstractRepository<Gateway, Gateway
         try {
             Map<String, Object> queryParam = new HashMap<String, Object>();
             queryParam.put(Gateway._Fields.GATEWAY_ID.getFieldName(), gatewayId);
-            queryParam.put(Gateway._Fields.GATEWAY_APPROVAL_STATUS.getFieldName(), GatewayApprovalStatus.APPROVED.name());
             List<Gateway> gatewayList = select(QueryConstants.FIND_GATEWAY_BY_ID, 1, 0, queryParam);
             if (!gatewayList.isEmpty()) {
                 gateway = gatewayList.get(0);
@@ -80,5 +80,26 @@ public class TenantProfileRepository extends AbstractRepository<Gateway, Gateway
             logger.error("Error while getting the user's gateways, reason: ", e);
             throw e;
         }
+    }
+
+    public Gateway getDuplicateGateway(String gatewayId, String gatewayName, String gatewayURL) throws Exception {
+
+        Gateway gateway = null;
+        try {
+            Map<String, Object> queryParams = new HashMap<String, Object>();
+            queryParams.put(Gateway._Fields.GATEWAY_ID.getFieldName(), gatewayId);
+            queryParams.put(Gateway._Fields.GATEWAY_NAME.getFieldName(), gatewayName);
+            queryParams.put(Gateway._Fields.GATEWAY_URL.getFieldName(), gatewayURL);
+            // Only considered APPROVED or CREATED or DEPLOYED gateways when looking for duplicates
+            queryParams.put(Gateway._Fields.GATEWAY_APPROVAL_STATUS.getFieldName(), Arrays.asList(GatewayApprovalStatus.APPROVED.name(), GatewayApprovalStatus.CREATED.name(), GatewayApprovalStatus.DEPLOYED.name()));
+            List<Gateway> gatewayList = select(QueryConstants.FIND_DUPLICATE_GATEWAY, 1, 0, queryParams);
+            if (!gatewayList.isEmpty()) {
+                gateway = gatewayList.get(0);
+            }
+        } catch (Exception ex) {
+            logger.error("Error while searching for duplicate gateway, reason: " + ex.getMessage(), ex);
+            throw ex;
+        }
+        return gateway;
     }
 }
