@@ -47,6 +47,7 @@ replica_catalog: "replica_catalog"
 sharing_catalog: "sharing_catalog"
 workflow_catalog: "workflow_catalog"
 credential_store: "credential_store"
+profile_service: "profile_service"
 
 mysql_connector_jar: "mysql-connector-java-5.1.37-bin.jar"
 
@@ -70,6 +71,9 @@ api_secured: "false"
 tls_enable: "true"
 api_server_tls_port: "9930"
 enable_sharing: "true"
+iam_server_url: "https://iam.scigap.org/auth"
+iam_server_super_admin_username: "AiravataAdmin"
+iam_server_super_admin_password: "{{ vault_iam_server_super_admin_password }}"
 
 # Orchestrator  related variables
 orchestrator_name: "orchestrator-node0"
@@ -86,8 +90,6 @@ registry_port: 8970
 default_gateway: "default"
 
 # Credential and keystore related variables
-#authorization_server: "https://{{ groups['wso2is'][0]}}:9443/services/"
-authorization_server: "https://idp.scigap.org:9443/services/"
 keystore_src_path: "{{inventory_dir}}/files/airavata.jks"
 keystore_passwd: "{{ vault_keystore_passwd }}"
 client_truststore_src_path: "{{inventory_dir}}/files/client_truststore.jks"
@@ -118,9 +120,23 @@ real_user_data_dir: "/data/gateway-user-data"
 #airavata_server: "tls://gw77.iu.xsede.org"
 airavata_server: "tls://{{ groups['api-orch'][0] }}"
 airavata_port: "9930"
-# FIXME: temporarily turn off SSL verification for WSO2 IS
-auth_verify_peer: "false"
+airavata_profile_service_server: "{{ groups['api-orch'][0] }}"
+auth_verify_peer: "true"
+oauth_service_url: "{{ iam_server_url }}"
 
 # Sharing Registry related variables
 sharing_registry_host: "{{ groups['api-orch'][0] }}"
 sharing_registry_port: 7878
+
+# Profile Service related variables
+profile_service_host: "{{ groups['api-orch'][0] }}"
+profile_service_port: 8962
+
+# Keycloak
+keycloak_ssl_keystore_file: "{{ inventory_dir }}/files/keycloak.jks"
+keycloak_ssl_keystore_password: "{{ vault_keycloak_ssl_keystore_password }}"
+keycloak_db_host: "localhost"
+keycloak_db_username: "keycloak"
+keycloak_db_password: "{{ vault_keycloak_db_password }}"
+keycloak_master_account_username: "AiravataAdmin"
+keycloak_master_account_password: "{{ vault_keycloak_master_account_password }}"

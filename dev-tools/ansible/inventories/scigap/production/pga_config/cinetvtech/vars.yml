@@ -31,12 +31,18 @@ ssl_certificate_file: "/etc/letsencrypt/live/cinet.scigap.org/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/cinet.scigap.org/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/cinet.scigap.org/privkey.pem"
 
-## WSO2 IS related variables
-tenant_domain: "airavata.cinet"
+## Keycloak related variables
+tenant_domain: "{{ gateway_id }}"
 admin_username: "adminuser"
 admin_password: "{{ vault_admin_password }}"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
+oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
+
+auth_options:
+  - name: "Virginia Tech Cinet Gateway"
+    oauth_grant_type: "password"
+oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 
 gateway_id: "cinetvtech"
 # relative to document root dir
