@@ -287,6 +287,7 @@ public class MigrationManager {
         GatewayResourceProfile gatewayResourceProfile = airavataClient.getGatewayResourceProfile(authzToken, gatewayId);
         gatewayResourceProfile.setIdentityServerTenant(gatewayId);
         gatewayResourceProfile.setIdentityServerPwdCredToken(passwordToken);
+        airavataClient.updateGatewayResourceProfile(authzToken, gatewayId, gatewayResourceProfile);
         return true;
     }
 
