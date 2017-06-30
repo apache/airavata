@@ -71,7 +71,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
-import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -967,11 +966,6 @@ public class GFacUtils {
 
                         ReplicaCatalog replicaCatalog = RegistryFactory.getReplicaCatalog();
                         String productUri = replicaCatalog.registerDataProduct(dataProductModel);
-
-                        if(expOutput.getName().contains("*")){
-                            String actualFileName = Paths.get(outputVal).getFileName().toString();
-                            expOutput.setName(actualFileName);
-                        }
                         expOutput.setValue(productUri);
                     }
                 }

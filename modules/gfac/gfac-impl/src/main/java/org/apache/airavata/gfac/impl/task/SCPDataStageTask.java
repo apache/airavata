@@ -40,11 +40,16 @@ import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescr
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
+import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.model.task.TaskTypes;
+import org.apache.airavata.registry.cpi.ExperimentCatalog;
+import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -163,6 +168,15 @@ public class SCPDataStageTask implements Task {
                 String sourceParentPath = (new File(sourceURI.getPath())).getParentFile().getPath();
                 List<String> fileNames = taskContext.getParentProcessContext().getDataMovementRemoteCluster()
                         .getFileNameFromExtension(fileName, sourceParentPath, sshSession);
+
+                ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+
+                String experimentId = processContext.getExperimentId();
+                ExperimentModel experiment = (ExperimentModel)experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+
+                String processId = processContext.getProcessId();
+                ProcessModel processModel = processContext.getProcessModel();
+
                 for(int i=0; i<fileNames.size(); i++){
                     String temp = fileNames.get(i);
                     if(temp != null && temp != ""){
@@ -176,6 +190,16 @@ public class SCPDataStageTask implements Task {
 
                     //Wildcard support is only enabled for output data staging
                     if (processState == ProcessState.OUTPUT_DATA_STAGING) {
+                        OutputDataObjectType outputDataObjectType = new OutputDataObjectType();
+                        outputDataObjectType.setName(fileName);
+                        experiment.addToExperimentOutputs(outputDataObjectType);
+                        processModel.addToProcessOutputs(outputDataObjectType);
+
+                        experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT, experiment, experimentId);
+                        experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processId);
+
+                        taskContext.setProcessOutput(outputDataObjectType);
+
                         makeDir(taskContext, destinationURI);
                         // TODO - save updated subtask model with new destination
                         outputDataStaging(taskContext, sshSession, sourceURI, destinationURI);
@@ -254,7 +278,7 @@ public class SCPDataStageTask implements Task {
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
-        } catch (GFacException e) {
+        } catch (RegistryException | GFacException e) {
             String msg = "Data staging failed";
             log.error(msg, e);
             status.setState(TaskState.FAILED);
