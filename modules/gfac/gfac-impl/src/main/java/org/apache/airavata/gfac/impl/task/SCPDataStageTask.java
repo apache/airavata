@@ -55,6 +55,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -157,30 +158,45 @@ public class SCPDataStageTask implements Task {
             status = new TaskStatus(TaskState.COMPLETED);
 
             //Wildcard for file name. Has to find the correct name.
-            if(fileName.startsWith("*.")){
+            if(fileName.contains("*")){
                 String destParentPath = (new File(destinationURI.getPath())).getParentFile().getPath();
                 String sourceParentPath = (new File(sourceURI.getPath())).getParentFile().getPath();
-                String temp = taskContext.getParentProcessContext().getDataMovementRemoteCluster()
-                        .getFileNameFromExtension(fileName.substring(2), sourceParentPath, sshSession);
-                if(temp != null && temp != ""){
-                    fileName = temp;
+                List<String> fileNames = taskContext.getParentProcessContext().getDataMovementRemoteCluster()
+                        .getFileNameFromExtension(fileName, sourceParentPath, sshSession);
+                for(int i=0; i<fileNames.size(); i++){
+                    String temp = fileNames.get(i);
+                    if(temp != null && temp != ""){
+                        fileName = temp;
+                    }
+                    if(destParentPath.endsWith(File.separator)){
+                        destinationURI = new URI(destParentPath + fileName);
+                    }else{
+                        destinationURI = new URI(destParentPath + File.separator + fileName);
+                    }
+
+                    //Wildcard support is only enabled for output data staging
+                    if (processState == ProcessState.OUTPUT_DATA_STAGING) {
+                        makeDir(taskContext, destinationURI);
+                        // TODO - save updated subtask model with new destination
+                        outputDataStaging(taskContext, sshSession, sourceURI, destinationURI);
+                        status.setReason("Successfully staged output data");
+                    }
                 }
-                if(destParentPath.endsWith(File.separator)){
-                    destinationURI = new URI(destParentPath + fileName);
+                if (processState == ProcessState.OUTPUT_DATA_STAGING) {
+                    status.setReason("Successfully staged output data");
                 }else{
-                    destinationURI = new URI(destParentPath + File.separator + fileName);
+                    status.setReason("Wildcard support is only enabled for output data staging");
                 }
-
-            }
-
-            if (processState == ProcessState.INPUT_DATA_STAGING) {
+            }else {
+                if (processState == ProcessState.INPUT_DATA_STAGING) {
                     inputDataStaging(taskContext, sshSession, sourceURI, destinationURI);
-                status.setReason("Successfully staged input data");
-            } else if (processState == ProcessState.OUTPUT_DATA_STAGING) {
-                makeDir(taskContext, destinationURI);
-                // TODO - save updated subtask model with new destination
-                outputDataStaging(taskContext, sshSession, sourceURI, destinationURI);
-                status.setReason("Successfully staged output data");
+                    status.setReason("Successfully staged input data");
+                } else if (processState == ProcessState.OUTPUT_DATA_STAGING) {
+                    makeDir(taskContext, destinationURI);
+                    // TODO - save updated subtask model with new destination
+                    outputDataStaging(taskContext, sshSession, sourceURI, destinationURI);
+                    status.setReason("Successfully staged output data");
+                }
             }
         } catch (TException e) {
             String msg = "Couldn't create subTask model thrift model";

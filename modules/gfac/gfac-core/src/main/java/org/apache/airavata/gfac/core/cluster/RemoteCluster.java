@@ -86,7 +86,7 @@ public interface RemoteCluster { // FIXME: replace SSHApiException with suitable
 	 * @param session
 	 * @return
 	 */
-	public String getFileNameFromExtension(String fileExtension, String parentPath, Session session) throws GFacException;
+	public List<String> getFileNameFromExtension(String fileExtension, String parentPath, Session session) throws GFacException;
 
 	/**
 	 * This will create directories in computing resources
