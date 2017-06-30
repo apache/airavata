@@ -69,7 +69,9 @@ public class AppCatalogJPAUtils {
             factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
         }
         // clear cache at entitymangerfactory level
-        factory.getCache().evictAll();
+        if (factory.getCache() != null) {
+            factory.getCache().evictAll();
+        }
         appCatEntityManager = factory.createEntityManager();
         return appCatEntityManager;
     }
