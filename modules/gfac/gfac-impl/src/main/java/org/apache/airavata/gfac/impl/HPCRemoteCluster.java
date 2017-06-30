@@ -207,11 +207,20 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 			List<String> fileNames = SSHUtils.listDirectory(parentPath, session);
 			List<String> matchingNames = new ArrayList<>();
 			for(String fileName : fileNames){
-				if(fileName.matches(fileRegex)){
-					log.info("File name matched for " + fileRegex + " : " + fileName);
+				String tempFileName = fileName;
+				String[] splits = fileRegex.split("\\*");
+				boolean matching = true;
+				for(String split : splits){
+					if(!tempFileName.contains(split)){
+						matching = false;
+						break;
+					}else{
+						int idx = tempFileName.indexOf(split);
+						tempFileName = tempFileName.substring(idx + split.length());
+					}
+				}
+				if(matching){
 					matchingNames.add(fileName);
-				}else{
-					log.info("File name not matched for " + fileRegex + " : " + fileName);
 				}
 			}
 			log.warn("No matching file found for extension: " + fileRegex + " in the " + parentPath + " directory");
