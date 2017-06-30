@@ -22,6 +22,10 @@ package org.apache.airavata;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
+import org.apache.airavata.credential.store.cpi.CredentialStoreService;
+import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.security.AuthzToken;
@@ -56,6 +60,7 @@ public class MigrationManager {
     private int profileServiceServerPort = 8962;
     private String airavataServiceServerHost = "localhost";
     private int airavataServiceServerPort = 8930;
+    private boolean airavataServiceSecure = false;
     private Map<String,String> roleConversionMap = createDefaultRoleConversionMap();
     private String gatewayId = "gateway-id";
     private String wso2ISAdminUsername = "username";
@@ -89,6 +94,7 @@ public class MigrationManager {
     private final static String WSO2IS_GATEWAY_PROVIDER_ROLENAME = "wso2is.gateway-provider.rolename";
     private final static String AIRAVATA_SERVICE_HOST = "airavata.service.host";
     private final static String AIRAVATA_SERVICE_PORT = "airavata.service.port";
+    private final static String AIRAVATA_SERVICE_SECURE = "airavata.service.secure";
     private final static String PROFILE_SERVICE_HOST = "profile.service.host";
     private final static String PROFILE_SERVICE_PORT = "profile.service.port";
     private final static String KEYCLOAK_ADMIN_USERNAME = "keycloak.admin.username";
@@ -161,7 +167,8 @@ public class MigrationManager {
                             userProfile.setAccountLocked(claim.getValue().equals("true"));
                         }
                     }
-                    userProfile.setUserName(user);
+                    // Lowercase all usernames as required by Keycloak and User Profile service
+                    userProfile.setUserName(user.toLowerCase());
                     userProfile.setGatewayID(creds.getGateway());
                     userProfile.setPhones(phones);
                     if (!userProfile.isAccountLocked()) {
@@ -202,6 +209,10 @@ public class MigrationManager {
         return AiravataClientFactory.createAiravataClient(airavataServiceServerHost, airavataServiceServerPort);
     }
 
+    private Airavata.Client getAiravataSecureClient() throws AiravataClientException {
+        return AiravataClientFactory.createAiravataSecureClient(airavataServiceServerHost, airavataServiceServerPort, keycloakTrustStorePath, keycloakTrustStorePassword, 10000);
+    }
+
     private IamAdminServices.Client getIamAdminServicesClient() throws IamAdminServicesException {
         return ProfileServiceClientFactory.createIamAdminServiceClient(profileServiceServerHost, profileServiceServerPort);
     }
@@ -218,7 +229,7 @@ public class MigrationManager {
     private boolean migrateGatewayProfileToAiravata() throws TException {
 
         TenantProfileService.Client tenantProfileServiceClient = getTenantProfileServiceClient();
-        Airavata.Client airavataClient = getAiravataClient();
+        Airavata.Client airavataClient = airavataServiceSecure ? getAiravataSecureClient() : getAiravataClient();
         IamAdminServices.Client iamAdminServicesClient = getIamAdminServicesClient();
 
         // Get Gateway from Airavata API
@@ -231,7 +242,8 @@ public class MigrationManager {
         if (!tenantProfileServiceClient.isGatewayExist(authzToken, gatewayId)) {
 
             System.out.println("Gateway [" + gatewayId + "] doesn't exist, adding in Profile Service...");
-            tenantProfileServiceClient.addGateway(authzToken, gateway);
+            String airavataInternalGatewayId = tenantProfileServiceClient.addGateway(authzToken, gateway);
+            gateway.setAiravataInternalGatewayId(airavataInternalGatewayId);
         } else {
 
             System.out.println("Gateway [" + gatewayId + "] already exists in Profile Service");
@@ -258,11 +270,24 @@ public class MigrationManager {
 
         // Add Keycloak Tenant for Gateway
         System.out.println("Creating Keycloak Tenant for gateway ...");
-        Gateway gatewayWithIdAndSecret = iamAdminServicesClient.setUpGateway(authzToken, gateway, getPasswordCredential());
+        Gateway gatewayWithIdAndSecret = iamAdminServicesClient.setUpGateway(authzToken, gateway);
 
         // Update Gateway profile with the client id and secret
         System.out.println("Updating gateway with OAuth client id and secret ...");
         tenantProfileServiceClient.updateGateway(authzToken, gatewayWithIdAndSecret);
+
+        KeycloakIdentityServerClient keycloakIdentityServerClient = getKeycloakIdentityServerClient();
+        // Set the admin user's password to the same as it was for wso2IS
+        keycloakIdentityServerClient.setUserPassword(gatewayId, this.gatewayAdminUsername, this.wso2ISAdminPassword);
+
+        // Create password credential for admin username and password
+        String passwordToken = airavataClient.registerPwdCredential(authzToken, gatewayId, this.gatewayAdminUsername, this.gatewayAdminUsername, this.wso2ISAdminPassword, "Keycloak admin password for realm " + gatewayId);
+
+        // Update gateway resource profile with tenant id (gatewayId) and admin user password token
+        GatewayResourceProfile gatewayResourceProfile = airavataClient.getGatewayResourceProfile(authzToken, gatewayId);
+        gatewayResourceProfile.setIdentityServerTenant(gatewayId);
+        gatewayResourceProfile.setIdentityServerPwdCredToken(passwordToken);
+        airavataClient.updateGatewayResourceProfile(authzToken, gatewayId, gatewayResourceProfile);
         return true;
     }
 
@@ -288,19 +313,28 @@ public class MigrationManager {
             airavataUserProfile.setLastAccessTime(new Date().getTime());
             airavataUserProfile.setValidUntil(-1);
             airavataUserProfile.setState(Status.ACTIVE);
-            //TODO: fix authtzToken, for now we are using empty token
+            //TODO: fix authtzToken, for now we are using empty token, but need to properly populate claims map
+            AuthzToken authzToken = new AuthzToken("dummy_token");
+            Map<String,String> claimsMap = new HashMap<>();
+            claimsMap.put(Constants.USER_NAME, ISProfile.getUserName());
+            claimsMap.put(Constants.GATEWAY_ID, ISProfile.getGatewayID());
+            authzToken.setClaimsMap(claimsMap);
             client.addUserProfile(authzToken, airavataUserProfile);
         }
         return false;
     }
 
     private void migrateUserProfilesToKeycloak(List<UserProfileDAO> Wso2ISProfileList){
-        KeycloakIdentityServerClient client = new KeycloakIdentityServerClient(this.keycloakServiceURL,
-                this.keycloakAdminUsername,
-                this.keycloakAdminPassword,
-                this.keycloakTrustStorePath,
-                this.keycloakTrustStorePassword);
+        KeycloakIdentityServerClient client = getKeycloakIdentityServerClient();
         client.migrateUserStore(Wso2ISProfileList, this.gatewayId, this.keycloakTemporaryUserPassword, this.roleConversionMap);
+    }
+
+    private KeycloakIdentityServerClient getKeycloakIdentityServerClient() {
+        return new KeycloakIdentityServerClient(this.keycloakServiceURL,
+                    this.keycloakAdminUsername,
+                    this.keycloakAdminPassword,
+                    this.keycloakTrustStorePath,
+                    this.keycloakTrustStorePassword);
     }
 
     private void loadConfigFile(String filename) {
@@ -318,6 +352,7 @@ public class MigrationManager {
             this.wso2ISAdminPassword = properties.getProperty(WSO2IS_ADMIN_PASSWORD, this.wso2ISAdminPassword);
             this.airavataServiceServerHost = properties.getProperty(AIRAVATA_SERVICE_HOST, this.airavataServiceServerHost);
             this.airavataServiceServerPort = Integer.valueOf(properties.getProperty(AIRAVATA_SERVICE_PORT, Integer.toString(this.airavataServiceServerPort)));
+            this.airavataServiceSecure = Boolean.valueOf(properties.getProperty(AIRAVATA_SERVICE_SECURE, "false"));
             this.profileServiceServerHost = properties.getProperty(PROFILE_SERVICE_HOST, this.profileServiceServerHost);
             this.profileServiceServerPort = Integer.valueOf(properties.getProperty(PROFILE_SERVICE_PORT, Integer.toString(this.profileServiceServerPort)));
             this.keycloakServiceURL = properties.getProperty(KEYCLOAK_SERVICE_URL, this.keycloakServiceURL);
@@ -347,8 +382,10 @@ public class MigrationManager {
         List<UserProfileDAO> userProfileList = migrationManager.getUserProfilesFromWso2IS();
         try {
             migrationManager.migrateGatewayProfileToAiravata();
-            migrationManager.migrateUserProfilesToAiravata(userProfileList);
+            // Must migrate profiles to Keycloak first because Profile Service will attempt to keep user profiles
+            // in since with Keycloak user profiles
             migrationManager.migrateUserProfilesToKeycloak(userProfileList);
+            migrationManager.migrateUserProfilesToAiravata(userProfileList);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

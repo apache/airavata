@@ -17,11 +17,17 @@ public class QueryConstants {
             "where u.gatewayId LIKE :" + UserProfile._Fields.GATEWAY_ID.getFieldName() + "";
 
     public static final String FIND_GATEWAY_BY_ID = "SELECT g FROM GatewayEntity g " +
-            "where g.gatewayId LIKE :" + Gateway._Fields.GATEWAY_ID.getFieldName() +
-            "AND g.gatewayApprovalStatus LIKE :" + Gateway._Fields.GATEWAY_APPROVAL_STATUS.getFieldName();
+            "where g.gatewayId LIKE :" + Gateway._Fields.GATEWAY_ID.getFieldName();
+
+    public static final String FIND_DUPLICATE_GATEWAY = "SELECT g FROM GatewayEntity g " +
+            "where g.gatewayApprovalStatus IN :" + Gateway._Fields.GATEWAY_APPROVAL_STATUS.getFieldName() + " " +
+            "and (g.gatewayId LIKE :" + Gateway._Fields.GATEWAY_ID.getFieldName() + " " +
+            "     or g.gatewayName LIKE :" + Gateway._Fields.GATEWAY_NAME.getFieldName() + " " +
+            "     or g.gatewayUrl LIKE :" + Gateway._Fields.GATEWAY_URL.getFieldName() + " " +
+            "    )";
 
     public static final String GET_ALL_GATEWAYS = "SELECT g FROM GatewayEntity g";
 
-    public static final String GET_USER_GATEWAYS = "SELECT g from GatewayEntity g" +
+    public static final String GET_USER_GATEWAYS = "SELECT g from GatewayEntity g " +
             "where g.requesterUsername LIKE :" + Gateway._Fields.REQUESTER_USERNAME.getFieldName() + "";
 }
