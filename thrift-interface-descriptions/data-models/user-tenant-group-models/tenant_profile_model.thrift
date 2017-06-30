@@ -32,7 +32,8 @@ enum TenantApprovalStatus {
     DEACTIVATED,
     CANCELLED,
     DENIED,
-    CREATED
+    CREATED,
+    DEPLOYED
 }
 
 struct Tenant {

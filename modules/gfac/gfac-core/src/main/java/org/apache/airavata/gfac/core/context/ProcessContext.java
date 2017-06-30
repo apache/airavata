@@ -27,10 +27,7 @@ import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
@@ -51,11 +48,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ProcessContext {
 
@@ -108,6 +101,7 @@ public class ProcessContext {
 	private SSHKeyAuthentication sshKeyAuthentication;
 	private boolean recoveryWithCancel = false;
 	private String usageReportingGatewayId;
+	private List<String> queueSpecificMacros;
 
 	/**
 	 * Note: process context property use lazy loading approach. In runtime you will see some properties as null
@@ -696,7 +690,19 @@ public class ProcessContext {
 		}
 	}
 
-	public static class ProcessContextBuilder{
+    public List<String> getQueueSpecificMacros() {
+		String queueName = getProcessCRSchedule().getQueueName();
+		Optional<BatchQueue> queue = getComputeResourceDescription().getBatchQueues().stream()
+				.filter(x->x.getQueueName().equals(queueName)).findFirst();
+		if(queue.isPresent()){
+			if(queue.get().getQueueSpecificMacros() != null && !queue.get().getQueueSpecificMacros().equals("")){
+				return Arrays.asList(queue.get().getQueueSpecificMacros().split(","));
+			}
+		}
+        return null;
+    }
+
+    public static class ProcessContextBuilder{
 		private final String processId;
 		private final String gatewayId;
 		private final String tokenId;

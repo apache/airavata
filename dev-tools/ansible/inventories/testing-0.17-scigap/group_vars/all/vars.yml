@@ -66,7 +66,7 @@ api_secured: "false"
 tls_enable: "false"
 api_server_tls_port: "9930"
 enable_sharing: "true"
-remote_idp_service_url: "https://iam.scigap.org/auth"
+iam_server_url: "https://iam.scigap.org/auth"
 
 # Orchestrator  related variables
 orchestrator_name: "orchestrator-node0"

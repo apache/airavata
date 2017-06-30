@@ -1,0 +1,11 @@
+-- experiment catalog
+--- disable foreign key checks
+SET FOREIGN_KEY_CHECKS=0;
+update GATEWAY set REQUESTER_USERNAME = lower(REQUESTER_USERNAME);
+update USERS set AIRAVATA_INTERNAL_USER_ID = lower(AIRAVATA_INTERNAL_USER_ID), USER_NAME = lower(USER_NAME);
+update GATEWAY_WORKER set USER_NAME = lower(USER_NAME);
+update PROJECT set USER_NAME = lower(USER_NAME);
+update PROJECT_USER set USER_NAME = lower(USER_NAME);
+update EXPERIMENT set USER_NAME = lower(USER_NAME);
+update PROCESS set USERNAME = lower(USERNAME);
+SET FOREIGN_KEY_CHECKS=1;

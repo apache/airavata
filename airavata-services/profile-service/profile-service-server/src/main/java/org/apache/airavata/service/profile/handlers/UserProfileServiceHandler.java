@@ -59,7 +59,10 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
     @SecurityCheck
     public String addUserProfile(AuthzToken authzToken, UserProfile userProfile) throws UserProfileServiceException, AuthorizationException, TException {
         try{
-            userProfile = userProfileRepository.create(userProfile);
+            // Lowercase user id and internal id
+            userProfile.setUserId(userProfile.getUserId().toLowerCase());
+            userProfile.setAiravataInternalUserId(userProfile.getUserId() + "@" + userProfile.getGatewayId());
+            userProfile = userProfileRepository.updateUserProfile(userProfile, getIAMUserProfileUpdater(authzToken, userProfile));
             if (null != userProfile) {
                 logger.info("Added UserProfile with userId: " + userProfile.getUserId());
                 // replicate userProfile at end-places
@@ -87,14 +90,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
             // After updating the user profile in the database but before committing the transaction, the
             // following will update the user profile in the IAM service also. If the update in the IAM service
             // fails then the transaction will be rolled back.
-            IamAdminServices.Client iamAdminServicesClient = getIamAdminServicesClient();
-            Runnable iamUserProfileUpdater = () -> {
-                try {
-                    iamAdminServicesClient.updateUserProfile(authzToken, userProfile);
-                } catch (TException e) {
-                    throw new RuntimeException("Failed to update user profile in IAM service", e);
-                }
-            };
+            Runnable iamUserProfileUpdater = getIAMUserProfileUpdater(authzToken, userProfile);
             if(userProfileRepository.updateUserProfile(userProfile, iamUserProfileUpdater) != null) {
                 logger.info("Updated UserProfile with userId: " + userProfile.getUserId());
                 // replicate userProfile at end-places
@@ -111,6 +107,17 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
             exception.setMessage("Error while Updating user profile. More info : " + e.getMessage());
             throw exception;
         }
+    }
+
+    private Runnable getIAMUserProfileUpdater(AuthzToken authzToken, UserProfile userProfile) throws UserProfileServiceException {
+        IamAdminServices.Client iamAdminServicesClient = getIamAdminServicesClient();
+        return () -> {
+            try {
+                iamAdminServicesClient.updateUserProfile(authzToken, userProfile);
+            } catch (TException e) {
+                throw new RuntimeException("Failed to update user profile in IAM service", e);
+            }
+        };
     }
 
     @Override
