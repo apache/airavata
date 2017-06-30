@@ -96,7 +96,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                 "/airavata/getAvailableAppInterfaceComputeResources|/airavata/getComputeResource|/airavata/getAllComputeResourceNames|" +
                 "/airavata/getWorkflow|/airavata/getWorkflowTemplateId|/airavata/isWorkflowExistWithName|/airavata/registerDataProduct|" +
                 "/airavata/getDataProduct|/airavata/registerReplicaLocation|/airavata/getParentDataProduct|/airavata/getChildDataProducts|" +
-                "/airavata/getAllAccessibleUsers");
+                "/airavata/getAllAccessibleUsers|/airavata/getAllApplicationDeployments");
 
         initializeSecurityInfra();
     }
