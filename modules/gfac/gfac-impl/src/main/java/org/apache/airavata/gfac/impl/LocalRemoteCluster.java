@@ -139,7 +139,7 @@ public class LocalRemoteCluster extends AbstractRemoteCluster {
      * @return
      */
     @Override
-    public String getFileNameFromExtension(String fileExtension, String parentPath, Session session) {
+    public List<String> getFileNameFromExtension(String fileExtension, String parentPath, Session session) {
         throw new UnsupportedOperationException();
     }
 

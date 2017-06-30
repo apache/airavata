@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -201,16 +202,17 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	 * @return
 	 */
 	@Override
-	public String getFileNameFromExtension(String fileExtension, String parentPath, Session session) throws GFacException {
+	public List<String> getFileNameFromExtension(String fileExtension, String parentPath, Session session) throws GFacException {
 		try {
 			List<String> fileNames = SSHUtils.listDirectory(parentPath, session);
+			List<String> matchingNames = new ArrayList<>();
 			for(String fileName : fileNames){
-				if(fileName.endsWith(fileExtension)){
-					return fileName;
+				if(fileName.matches(fileExtension)){
+					matchingNames.add(fileName);
 				}
 			}
 			log.warn("No matching file found for extension: " + fileExtension + " in the " + parentPath + " directory");
-			return null;
+			return matchingNames;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new GFacException("Failed to list directory " + parentPath);
