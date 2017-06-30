@@ -196,22 +196,25 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	 * one file with that extension. In case if there are more than one file one random file name from the matching ones
 	 * will be returned.
 	 *
-	 * @param fileExtension
+	 * @param fileRegex
 	 * @param parentPath
 	 * @param session
 	 * @return
 	 */
 	@Override
-	public List<String> getFileNameFromExtension(String fileExtension, String parentPath, Session session) throws GFacException {
+	public List<String> getFileNameFromExtension(String fileRegex, String parentPath, Session session) throws GFacException {
 		try {
 			List<String> fileNames = SSHUtils.listDirectory(parentPath, session);
 			List<String> matchingNames = new ArrayList<>();
 			for(String fileName : fileNames){
-				if(fileName.matches(fileExtension)){
+				if(fileName.matches(fileRegex)){
+					log.info("File name matched for " + fileRegex + " : " + fileName);
 					matchingNames.add(fileName);
+				}else{
+					log.info("File name not matched for " + fileRegex + " : " + fileName);
 				}
 			}
-			log.warn("No matching file found for extension: " + fileExtension + " in the " + parentPath + " directory");
+			log.warn("No matching file found for extension: " + fileRegex + " in the " + parentPath + " directory");
 			return matchingNames;
 		} catch (Exception e) {
 			e.printStackTrace();
