@@ -237,11 +237,15 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             pgaClient.setDefaultRoles(defaultRoles);
             List<String> redirectUris = new ArrayList<>();
             if(gatewayDetails.getGatewayURL()!=null){
-                if(gatewayDetails.getGatewayURL().endsWith("/")){
-                    redirectUris.add(gatewayDetails.getGatewayURL() + "callback-url");
-                } else {
-                    redirectUris.add(gatewayDetails.getGatewayURL() + "/callback-url");
+                String gatewayURL = gatewayDetails.getGatewayURL();
+                // Remove trailing slash from gatewayURL
+                if(gatewayURL.endsWith("/")) {
+                    gatewayURL = gatewayURL.substring(0, gatewayURL.length() - 1);
                 }
+                // Add redirect URL after login
+                redirectUris.add(gatewayURL + "/callback-url");
+                // Add redirect URL after logout
+                redirectUris.add(gatewayURL);
             } else {
                 logger.error("Request for Realm Client Creation failed, callback URL not present");
                 IamAdminServicesException ex = new IamAdminServicesException();
