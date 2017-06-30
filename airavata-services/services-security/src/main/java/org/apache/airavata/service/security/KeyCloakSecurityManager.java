@@ -62,6 +62,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
             "|/airavata/getAllUserComputeResourcePreferences|/airavata/getAllUserStoragePreferences" +
             "|/airavata/updateUserComputeResourcePreference|/airavata/updateUserStoragePreference" +
             "|/airavata/deleteUserComputeResourcePreference|/airavata/deleteUserStoragePreference";
+    private final static String SHARING_RESOURCE_METHODS = "/airavata/shareResourceWithUsers|/airavata/revokeSharingOfResourceFromUsers|/airavata/getAllAccessibleUsers";
 
     public KeyCloakSecurityManager() throws AiravataSecurityException {
         rolePermissionConfig.put("admin", "/airavata/.*");
@@ -90,7 +91,8 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                 "|/airavata/isWorkflowExistWithName|/airavata/registerDataProduct|/airavata/getDataProduct|/airavata/registerReplicaLocation" +
                 "|/airavata/getParentDataProduct|/airavata/getChildDataProducts|/airavata/getAllAccessibleUsers" +
                 "|/airavata/getExperimentByAdmin|/airavata/cloneExperimentByAdmin" +
-                "|" + USER_RESOURCE_PROFILE_USER_METHODS + "|/airavata/getAllUserResourceProfiles");
+                "|" + USER_RESOURCE_PROFILE_USER_METHODS + "|/airavata/getAllUserResourceProfiles" +
+                "|" + SHARING_RESOURCE_METHODS);
         rolePermissionConfig.put("gateway-user", "/airavata/getAPIVersion|/airavata/getNotification|/airavata/getAllNotifications|" +
                 "/airavata/createProject|/airavata/updateProject|/airavata/getProject|/airavata/deleteProject|/airavata/getUserProjects|" +
                 "/airavata/searchProjectsByProjectName|/airavata/searchProjectsByProjectDesc|/airavata/searchExperimentsByName|" +
@@ -105,7 +107,8 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                 "/airavata/getAvailableAppInterfaceComputeResources|/airavata/getComputeResource|/airavata/getAllComputeResourceNames|" +
                 "/airavata/getWorkflow|/airavata/getWorkflowTemplateId|/airavata/isWorkflowExistWithName|/airavata/registerDataProduct|" +
                 "/airavata/getDataProduct|/airavata/registerReplicaLocation|/airavata/getParentDataProduct|/airavata/getChildDataProducts|" +
-                "/airavata/getAllAccessibleUsers|/airavata/getAllApplicationDeployments|" + USER_RESOURCE_PROFILE_USER_METHODS);
+                "/airavata/getAllAccessibleUsers|/airavata/getAllApplicationDeployments|" + USER_RESOURCE_PROFILE_USER_METHODS + "|" +
+                SHARING_RESOURCE_METHODS);
 
         initializeSecurityInfra();
     }
