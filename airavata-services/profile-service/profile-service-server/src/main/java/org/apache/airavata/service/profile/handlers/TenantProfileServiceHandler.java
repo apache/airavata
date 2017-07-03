@@ -129,11 +129,11 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
 
     @Override
     @SecurityCheck
-    public Gateway getGateway(AuthzToken authzToken, String gatewayId) throws TenantProfileServiceException, AuthorizationException, TException {
+    public Gateway getGateway(AuthzToken authzToken, String airavataInternalGatewayId) throws TenantProfileServiceException, AuthorizationException, TException {
         try {
-            Gateway gateway = tenantProfileRepository.getGateway(gatewayId);
+            Gateway gateway = tenantProfileRepository.getGateway(airavataInternalGatewayId);
             if (gateway == null) {
-                throw new Exception("Could not find Gateway with ID: " + gatewayId);
+                throw new Exception("Could not find Gateway with internal ID: " + airavataInternalGatewayId);
             }
             return gateway;
         } catch (Exception ex) {

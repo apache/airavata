@@ -25,6 +25,7 @@ final class TenantApprovalStatus {
   const CANCELLED = 4;
   const DENIED = 5;
   const CREATED = 6;
+  const DEPLOYED = 7;
   static public $__names = array(
     0 => 'REQUESTED',
     1 => 'APPROVED',
@@ -33,6 +34,7 @@ final class TenantApprovalStatus {
     4 => 'CANCELLED',
     5 => 'DENIED',
     6 => 'CREATED',
+    7 => 'DEPLOYED',
   );
 }
 
