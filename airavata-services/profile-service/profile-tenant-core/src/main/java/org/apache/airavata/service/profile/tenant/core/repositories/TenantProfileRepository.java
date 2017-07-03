@@ -74,7 +74,7 @@ public class TenantProfileRepository extends AbstractRepository<Gateway, Gateway
         try {
             Map<String, Object> queryParam = new HashMap<String, Object>();
             queryParam.put(Gateway._Fields.REQUESTER_USERNAME.getFieldName(), requesterUsername);
-            List<Gateway> gatewayList = select(QueryConstants.GET_USER_GATEWAYS, 1, 0, queryParam);
+            List<Gateway> gatewayList = select(QueryConstants.GET_USER_GATEWAYS, queryParam);
             return gatewayList;
         } catch (Exception e){
             logger.error("Error while getting the user's gateways, reason: ", e);
