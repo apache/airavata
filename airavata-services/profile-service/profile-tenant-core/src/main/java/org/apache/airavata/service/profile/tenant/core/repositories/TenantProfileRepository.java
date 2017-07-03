@@ -44,12 +44,12 @@ public class TenantProfileRepository extends AbstractRepository<Gateway, Gateway
         super(thriftGenericClass, dbEntityGenericClass);
     }
 
-    public Gateway getGateway (String gatewayId) throws Exception {
+    public Gateway getGateway (String airavataInternalGatewayId) throws Exception {
         Gateway gateway = null;
         try {
             Map<String, Object> queryParam = new HashMap<String, Object>();
-            queryParam.put(Gateway._Fields.GATEWAY_ID.getFieldName(), gatewayId);
-            List<Gateway> gatewayList = select(QueryConstants.FIND_GATEWAY_BY_ID, 1, 0, queryParam);
+            queryParam.put(Gateway._Fields.AIRAVATA_INTERNAL_GATEWAY_ID.getFieldName(), airavataInternalGatewayId);
+            List<Gateway> gatewayList = select(QueryConstants.FIND_GATEWAY_BY_INTERNAL_ID, 1, 0, queryParam);
             if (!gatewayList.isEmpty()) {
                 gateway = gatewayList.get(0);
             }
