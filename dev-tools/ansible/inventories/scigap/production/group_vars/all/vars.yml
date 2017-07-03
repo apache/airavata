@@ -33,7 +33,7 @@ airavata_repo: "https://git-wip-us.apache.org/repos/asf/airavata.git"
 airavata_dist: "apache-airavata-server-0.17-SNAPSHOT"
 airavata_dist_name: "{{ airavata_dist }}-bin.tar.gz"
 old_airavata_dist: "apache-airavata-server-0.17-SNAPSHOT"
-git_branch: master
+git_branch: develop
 
 # Database related variables
 db_server: "{{ groups['database'][0] }}"
