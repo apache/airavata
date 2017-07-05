@@ -201,6 +201,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	 * @param session
 	 * @return
 	 */
+	//FIXME Find a better way to find wildcard file names
 	@Override
 	public List<String> getFileNameFromExtension(String fileRegex, String parentPath, Session session) throws GFacException {
 		try {
@@ -208,6 +209,8 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 			List<String> matchingNames = new ArrayList<>();
 			for(String fileName : fileNames){
 				String tempFileName = fileName;
+
+				//FIXME Find better way to match wildcard file names
 				String[] splits = fileRegex.split("\\*");
 				boolean matching = true;
 				for(String split : splits){
