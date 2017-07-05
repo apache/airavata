@@ -47,6 +47,7 @@ import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.model.task.TaskTypes;
+import org.apache.airavata.registry.cpi.ExpCatChildDataType;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.airavata.registry.cpi.RegistryException;
@@ -177,6 +178,8 @@ public class SCPDataStageTask implements Task {
                 String processId = processContext.getProcessId();
                 ProcessModel processModel = processContext.getProcessModel();
 
+                OutputDataObjectType processOutput = taskContext.getProcessOutput();
+
                 for(int i=0; i<fileNames.size(); i++){
                     String temp = fileNames.get(i);
                     if(temp != null && temp != ""){
@@ -190,15 +193,12 @@ public class SCPDataStageTask implements Task {
 
                     //Wildcard support is only enabled for output data staging
                     if (processState == ProcessState.OUTPUT_DATA_STAGING) {
-                        OutputDataObjectType outputDataObjectType = new OutputDataObjectType();
-                        outputDataObjectType.setName(fileName);
-                        experiment.addToExperimentOutputs(outputDataObjectType);
-                        processModel.addToProcessOutputs(outputDataObjectType);
+                        processOutput.setName(fileName);
 
-                        experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT, experiment, experimentId);
-                        experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processId);
+                        experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_OUTPUT, Arrays.asList(processOutput), experimentId);
+                        experimentCatalog.add(ExpCatChildDataType.PROCESS_OUTPUT, Arrays.asList(processOutput), processId);
 
-                        taskContext.setProcessOutput(outputDataObjectType);
+                        taskContext.setProcessOutput(processOutput);
 
                         makeDir(taskContext, destinationURI);
                         // TODO - save updated subtask model with new destination
