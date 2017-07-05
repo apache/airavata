@@ -92,7 +92,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                 "|/airavata/getParentDataProduct|/airavata/getChildDataProducts|/airavata/getAllAccessibleUsers" +
                 "|/airavata/getExperimentByAdmin|/airavata/cloneExperimentByAdmin" +
                 "|" + USER_RESOURCE_PROFILE_USER_METHODS + "|/airavata/getAllUserResourceProfiles" +
-                "|" + SHARING_RESOURCE_METHODS);
+                "|" + SHARING_RESOURCE_METHODS + "|/airavata/getGateway");
         rolePermissionConfig.put("gateway-user", "/airavata/getAPIVersion|/airavata/getNotification|/airavata/getAllNotifications|" +
                 "/airavata/createProject|/airavata/updateProject|/airavata/getProject|/airavata/deleteProject|/airavata/getUserProjects|" +
                 "/airavata/searchProjectsByProjectName|/airavata/searchProjectsByProjectDesc|/airavata/searchExperimentsByName|" +
