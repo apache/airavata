@@ -97,8 +97,9 @@ public class LocalRemoteCluster extends AbstractRemoteCluster {
 
     @Override
     public void scpThirdParty(String sourceFile,
+                              Session srcSession,
                               String destinationFile,
-                              Session session,
+                              Session destSession,
                               DIRECTION inOrOut,
                               boolean ignoreEmptyFile) throws GFacException {
         int retryCount= 0;
@@ -108,9 +109,9 @@ public class LocalRemoteCluster extends AbstractRemoteCluster {
                 log.info("Transferring from:" + sourceFile + " To: " + destinationFile);
                 try {
                     if (inOrOut == DIRECTION.TO) {
-                        SSHUtils.scpThirdParty(sourceFile, session, destinationFile, session, ignoreEmptyFile);
+                        SSHUtils.scpThirdParty(sourceFile, srcSession, destinationFile, destSession, ignoreEmptyFile);
                     } else {
-                        SSHUtils.scpThirdParty(sourceFile, session, destinationFile, session, ignoreEmptyFile);
+                        SSHUtils.scpThirdParty(sourceFile, srcSession, destinationFile, destSession, ignoreEmptyFile);
                     }
                     break; // exit while loop
                 } catch (JSchException e) {
