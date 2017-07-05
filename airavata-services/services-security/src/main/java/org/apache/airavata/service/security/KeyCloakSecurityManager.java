@@ -61,7 +61,8 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
             "|/airavata/addUserStoragePreference|/airavata/getUserComputeResourcePreference|/airavata/getUserStoragePreference" +
             "|/airavata/getAllUserComputeResourcePreferences|/airavata/getAllUserStoragePreferences" +
             "|/airavata/updateUserComputeResourcePreference|/airavata/updateUserStoragePreference" +
-            "|/airavata/deleteUserComputeResourcePreference|/airavata/deleteUserStoragePreference";
+            "|/airavata/deleteUserComputeResourcePreference|/airavata/deleteUserStoragePreference" +
+            "|/airavata/generateAndRegisterSSHKeys";
     private final static String SHARING_RESOURCE_METHODS = "/airavata/shareResourceWithUsers|/airavata/revokeSharingOfResourceFromUsers|/airavata/getAllAccessibleUsers";
 
     public KeyCloakSecurityManager() throws AiravataSecurityException {
