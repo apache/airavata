@@ -44,12 +44,12 @@ interface TenantProfileServiceIf {
   public function updateGateway(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\Workspace\Gateway $updatedGateway);
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
-   * @param string $gatewayId
+   * @param string $airavataInternalGatewayId
    * @return \Airavata\Model\Workspace\Gateway
    * @throws \Airavata\Service\Profile\Tenant\CPI\Error\TenantProfileServiceException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function getGateway(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId);
+  public function getGateway(\Airavata\Model\Security\AuthzToken $authzToken, $airavataInternalGatewayId);
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $airavataInternalGatewayId
@@ -268,17 +268,17 @@ class TenantProfileServiceClient implements \Airavata\Service\Profile\Tenant\CPI
     throw new \Exception("updateGateway failed: unknown result");
   }
 
-  public function getGateway(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId)
+  public function getGateway(\Airavata\Model\Security\AuthzToken $authzToken, $airavataInternalGatewayId)
   {
-    $this->send_getGateway($authzToken, $gatewayId);
+    $this->send_getGateway($authzToken, $airavataInternalGatewayId);
     return $this->recv_getGateway();
   }
 
-  public function send_getGateway(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId)
+  public function send_getGateway(\Airavata\Model\Security\AuthzToken $authzToken, $airavataInternalGatewayId)
   {
     $args = new \Airavata\Service\Profile\Tenant\CPI\TenantProfileService_getGateway_args();
     $args->authzToken = $authzToken;
-    $args->gatewayId = $gatewayId;
+    $args->airavataInternalGatewayId = $airavataInternalGatewayId;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -1243,7 +1243,7 @@ class TenantProfileService_getGateway_args {
   /**
    * @var string
    */
-  public $gatewayId = null;
+  public $airavataInternalGatewayId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -1254,7 +1254,7 @@ class TenantProfileService_getGateway_args {
           'class' => '\Airavata\Model\Security\AuthzToken',
           ),
         2 => array(
-          'var' => 'gatewayId',
+          'var' => 'airavataInternalGatewayId',
           'type' => TType::STRING,
           ),
         );
@@ -1263,8 +1263,8 @@ class TenantProfileService_getGateway_args {
       if (isset($vals['authzToken'])) {
         $this->authzToken = $vals['authzToken'];
       }
-      if (isset($vals['gatewayId'])) {
-        $this->gatewayId = $vals['gatewayId'];
+      if (isset($vals['airavataInternalGatewayId'])) {
+        $this->airavataInternalGatewayId = $vals['airavataInternalGatewayId'];
       }
     }
   }
@@ -1298,7 +1298,7 @@ class TenantProfileService_getGateway_args {
           break;
         case 2:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->gatewayId);
+            $xfer += $input->readString($this->airavataInternalGatewayId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -1324,9 +1324,9 @@ class TenantProfileService_getGateway_args {
       $xfer += $this->authzToken->write($output);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->gatewayId !== null) {
-      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 2);
-      $xfer += $output->writeString($this->gatewayId);
+    if ($this->airavataInternalGatewayId !== null) {
+      $xfer += $output->writeFieldBegin('airavataInternalGatewayId', TType::STRING, 2);
+      $xfer += $output->writeString($this->airavataInternalGatewayId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
