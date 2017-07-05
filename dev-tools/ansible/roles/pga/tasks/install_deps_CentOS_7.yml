@@ -29,6 +29,7 @@
     - php
     - php-soap
     - libselinux-python
+    - policycoreutils-python
     - php-pdo
   become: yes
 #"
