@@ -30,7 +30,6 @@ import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.cluster.CommandInfo;
 import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
-import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.Task;
@@ -40,8 +39,6 @@ import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescr
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
-import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
@@ -49,7 +46,6 @@ import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.registry.cpi.ExpCatChildDataType;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
-import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -141,9 +137,10 @@ public class SCPDataStageTask implements Task {
             String fileName = sourceURI.getPath().substring(sourceURI.getPath().lastIndexOf(File.separator) + 1,
                     sourceURI.getPath().length());
 
-            authenticationInfo = Factory.getComputerResourceSSHKeyAuthentication(processContext);
-            ServerInfo serverInfo = processContext.getComputeResourceServerInfo();
-            Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
+            Session remoteSession = Factory.getSSHSession(Factory.getComputerResourceSSHKeyAuthentication(processContext),
+                    processContext.getComputeResourceServerInfo());
+            Session storageSession = Factory.getSSHSession(Factory.getStorageSSHKeyAuthentication(processContext),
+                    processContext.getStorageResourceServerInfo());
 
             URI destinationURI = null;
             if (subTaskModel.getDestination().startsWith("dummy")) {
@@ -168,15 +165,13 @@ public class SCPDataStageTask implements Task {
                 String destParentPath = (new File(destinationURI.getPath())).getParentFile().getPath();
                 String sourceParentPath = (new File(sourceURI.getPath())).getParentFile().getPath();
                 List<String> fileNames = taskContext.getParentProcessContext().getDataMovementRemoteCluster()
-                        .getFileNameFromExtension(fileName, sourceParentPath, sshSession);
+                        .getFileNameFromExtension(fileName, sourceParentPath, remoteSession);
 
                 ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
 
                 String experimentId = processContext.getExperimentId();
-                ExperimentModel experiment = (ExperimentModel)experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
 
                 String processId = processContext.getProcessId();
-                ProcessModel processModel = processContext.getProcessModel();
 
                 OutputDataObjectType processOutput = taskContext.getProcessOutput();
 
@@ -202,7 +197,7 @@ public class SCPDataStageTask implements Task {
 
                         makeDir(taskContext, destinationURI);
                         // TODO - save updated subtask model with new destination
-                        outputDataStaging(taskContext, sshSession, sourceURI, destinationURI);
+                        outputDataStaging(taskContext, remoteSession, sourceURI, storageSession, destinationURI);
                         status.setReason("Successfully staged output data");
                     }
                 }
@@ -213,12 +208,12 @@ public class SCPDataStageTask implements Task {
                 }
             }else {
                 if (processState == ProcessState.INPUT_DATA_STAGING) {
-                    inputDataStaging(taskContext, sshSession, sourceURI, destinationURI);
+                    inputDataStaging(taskContext, storageSession, sourceURI, remoteSession, destinationURI);
                     status.setReason("Successfully staged input data");
                 } else if (processState == ProcessState.OUTPUT_DATA_STAGING) {
                     makeDir(taskContext, destinationURI);
                     // TODO - save updated subtask model with new destination
-                    outputDataStaging(taskContext, sshSession, sourceURI, destinationURI);
+                    outputDataStaging(taskContext, remoteSession, sourceURI, storageSession, destinationURI);
                     status.setReason("Successfully staged output data");
                 }
             }
@@ -298,16 +293,16 @@ public class SCPDataStageTask implements Task {
         taskContext.getParentProcessContext().getDataMovementRemoteCluster().execute(commandInfo);
     }
 
-    private void inputDataStaging(TaskContext taskContext, Session sshSession, URI sourceURI, URI
+    private void inputDataStaging(TaskContext taskContext, Session srcSession, URI sourceURI,  Session destSession, URI
             destinationURI) throws GFacException, IOException, JSchException {
         /**
          * scp third party file transfer 'to' compute resource.
          */
-        taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(),
-                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.FROM, false);
+        taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(), srcSession,
+                destinationURI.getPath(), destSession, RemoteCluster.DIRECTION.FROM, false);
     }
 
-    private void outputDataStaging(TaskContext taskContext, Session sshSession, URI sourceURI, URI destinationURI)
+    private void outputDataStaging(TaskContext taskContext, Session srcSession, URI sourceURI,  Session destSession, URI destinationURI)
             throws AiravataException, IOException, JSchException, GFacException {
 
         /**
@@ -315,8 +310,8 @@ public class SCPDataStageTask implements Task {
          */
         //Wildcard file path has not been resolved and cannot be handled. Hence ignoring
         if(!destinationURI.toString().contains("*")){
-            taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(),
-                    destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.TO, true);
+            taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(), srcSession,
+                    destinationURI.getPath(), destSession, RemoteCluster.DIRECTION.TO, true);
             // update output locations
             GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.toString());
             GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.toString());

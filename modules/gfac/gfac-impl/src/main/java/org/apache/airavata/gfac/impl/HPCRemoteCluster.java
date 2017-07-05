@@ -160,8 +160,9 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 
 	@Override
 	public void scpThirdParty(String sourceFile,
+							  Session srcSession,
 							  String destinationFile,
-							  Session clientSession,
+							  Session destSession,
 							  DIRECTION direction,
 							  boolean ignoreEmptyFile) throws GFacException {
 		int retryCount= 0;
@@ -170,11 +171,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 				retryCount++;
 				log.info("Transferring from:" + sourceFile + " To: " + destinationFile);
 				try {
-					if (direction == DIRECTION.FROM) {
-                        SSHUtils.scpThirdParty(sourceFile, getSession(), destinationFile, clientSession, ignoreEmptyFile);
-                    } else {
-                        SSHUtils.scpThirdParty(sourceFile, clientSession, destinationFile, getSession(), ignoreEmptyFile);
-                    }
+					SSHUtils.scpThirdParty(sourceFile, srcSession, destinationFile, destSession, ignoreEmptyFile);
 					break; // exit while loop
 				} catch (JSchException e) {
 					if (retryCount == MAX_RETRY_COUNT) {
