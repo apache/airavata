@@ -53,7 +53,8 @@ public class BESRemoteCluster extends AbstractRemoteCluster{
     }
 
     @Override
-    public void scpThirdParty(String sourceFile, String destinationFile, Session session, DIRECTION inOrOut, boolean ignoreEmptyFile) throws GFacException {
+    public void scpThirdParty(String sourceFile, Session srcSession, String destSession,
+                              Session session, DIRECTION inOrOut, boolean ignoreEmptyFile) throws GFacException {
 
     }
 
@@ -68,7 +69,7 @@ public class BESRemoteCluster extends AbstractRemoteCluster{
      * @return
      */
     @Override
-    public String getFileNameFromExtension(String fileExtension, String parentPath, Session session) {
+    public List<String> getFileNameFromExtension(String fileExtension, String parentPath, Session session) {
         return null;
     }
 

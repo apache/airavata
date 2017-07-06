@@ -163,6 +163,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             user.setFirstName(gatewayDetails.getGatewayAdminFirstName());
             user.setLastName(gatewayDetails.getGatewayAdminLastName());
             user.setEmail(gatewayDetails.getGatewayAdminEmail());
+            user.setEmailVerified(true);
             user.setEnabled(true);
             List<String> requiredActionList = new ArrayList<>();
             requiredActionList.add("UPDATE_PASSWORD");

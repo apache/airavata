@@ -25,12 +25,9 @@ import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
-import org.apache.airavata.gfac.core.SSHApiException;
-import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.cluster.CommandInfo;
 import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
-import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.gfac.impl.SSHUtils;
@@ -100,7 +97,6 @@ public class StreamData extends TimerTask  {
             CredentialStoreException, AiravataException, IOException, JSchException {
         try {
 
-            AuthenticationInfo authenticationInfo = null;
             URI sourceURI = new URI(subTaskModel.getSource());
             String fileName = sourceURI.getPath().substring(sourceURI.getPath().lastIndexOf(File.separator) + 1,
                     sourceURI.getPath().length());
@@ -116,13 +112,15 @@ public class StreamData extends TimerTask  {
                     && sourceURI.getUserInfo().equalsIgnoreCase(destinationURI.getUserInfo())) {
                 localDataCopy(taskContext, sourceURI, destinationURI);
             }
-            authenticationInfo = Factory.getStorageSSHKeyAuthentication(taskContext.getParentProcessContext());
 
-            ServerInfo serverInfo = taskContext.getParentProcessContext().getStorageResourceServerInfo();
-            Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
+            Session srcSession = Factory.getSSHSession(Factory.getComputerResourceSSHKeyAuthentication(taskContext.getParentProcessContext()),
+                    taskContext.getParentProcessContext().getComputeResourceServerInfo());
+            Session destSession = Factory.getSSHSession(Factory.getStorageSSHKeyAuthentication(taskContext.getParentProcessContext()),
+                    taskContext.getParentProcessContext().getStorageResourceServerInfo());
             String targetPath = destinationURI.getPath().substring(0, destinationURI.getPath().lastIndexOf('/'));
-            SSHUtils.makeDirectory(targetPath, sshSession);
-            outputDataStaging(taskContext, sshSession, sourceURI, destinationURI);
+
+            SSHUtils.makeDirectory(targetPath, destSession);
+            outputDataStaging(taskContext, srcSession, sourceURI, destSession, destinationURI);
         } catch (GFacException e) {
             log.error("expId: {}, processId:{}, taskId: {}:- Couldn't stage file {} , Error while output staging",
                     taskContext.getExperimentId(), taskContext.getProcessId(), taskContext.getTaskId(),
@@ -146,14 +144,14 @@ public class StreamData extends TimerTask  {
 
     }
 
-    private void outputDataStaging(TaskContext taskContext, Session sshSession, URI sourceURI, URI destinationURI)
+    private void outputDataStaging(TaskContext taskContext, Session srcSession, URI sourceURI, Session destSession, URI destinationURI)
             throws AiravataException, IOException, JSchException, GFacException {
 
         /**
          * scp third party file transfer 'from' comute resource.
          */
-        taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(),
-                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.TO, true);
+        taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(), srcSession,
+                destinationURI.getPath(), destSession, RemoteCluster.DIRECTION.TO, true);
         // update output locations
         GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.getPath());
         GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.getPath());

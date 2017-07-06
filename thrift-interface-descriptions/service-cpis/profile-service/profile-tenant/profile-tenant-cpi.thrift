@@ -54,7 +54,7 @@ service TenantProfileService {
                              2: airavata_errors.AuthorizationException ae)
 
     workspace_model.Gateway getGateway (1: required security_model.AuthzToken authzToken,
-                                        2: required string gatewayId)
+                                        2: required string airavataInternalGatewayId)
                                      throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tpe,
                                              2: airavata_errors.AuthorizationException ae)
 
