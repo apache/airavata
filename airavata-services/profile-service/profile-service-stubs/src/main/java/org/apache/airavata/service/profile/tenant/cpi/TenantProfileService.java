@@ -67,7 +67,7 @@ public class TenantProfileService {
 
     public boolean updateGateway(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.workspace.Gateway updatedGateway) throws org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
-    public org.apache.airavata.model.workspace.Gateway getGateway(org.apache.airavata.model.security.AuthzToken authzToken, String gatewayId) throws org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
+    public org.apache.airavata.model.workspace.Gateway getGateway(org.apache.airavata.model.security.AuthzToken authzToken, String airavataInternalGatewayId) throws org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
     public boolean deleteGateway(org.apache.airavata.model.security.AuthzToken authzToken, String airavataInternalGatewayId, String gatewayId) throws org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
@@ -87,7 +87,7 @@ public class TenantProfileService {
 
     public void updateGateway(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.airavata.model.workspace.Gateway updatedGateway, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void getGateway(org.apache.airavata.model.security.AuthzToken authzToken, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void getGateway(org.apache.airavata.model.security.AuthzToken authzToken, String airavataInternalGatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void deleteGateway(org.apache.airavata.model.security.AuthzToken authzToken, String airavataInternalGatewayId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -208,17 +208,17 @@ public class TenantProfileService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "updateGateway failed: unknown result");
     }
 
-    public org.apache.airavata.model.workspace.Gateway getGateway(org.apache.airavata.model.security.AuthzToken authzToken, String gatewayId) throws org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
+    public org.apache.airavata.model.workspace.Gateway getGateway(org.apache.airavata.model.security.AuthzToken authzToken, String airavataInternalGatewayId) throws org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
-      send_getGateway(authzToken, gatewayId);
+      send_getGateway(authzToken, airavataInternalGatewayId);
       return recv_getGateway();
     }
 
-    public void send_getGateway(org.apache.airavata.model.security.AuthzToken authzToken, String gatewayId) throws org.apache.thrift.TException
+    public void send_getGateway(org.apache.airavata.model.security.AuthzToken authzToken, String airavataInternalGatewayId) throws org.apache.thrift.TException
     {
       getGateway_args args = new getGateway_args();
       args.setAuthzToken(authzToken);
-      args.setGatewayId(gatewayId);
+      args.setAiravataInternalGatewayId(airavataInternalGatewayId);
       sendBase("getGateway", args);
     }
 
@@ -478,27 +478,27 @@ public class TenantProfileService {
       }
     }
 
-    public void getGateway(org.apache.airavata.model.security.AuthzToken authzToken, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void getGateway(org.apache.airavata.model.security.AuthzToken authzToken, String airavataInternalGatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      getGateway_call method_call = new getGateway_call(authzToken, gatewayId, resultHandler, this, ___protocolFactory, ___transport);
+      getGateway_call method_call = new getGateway_call(authzToken, airavataInternalGatewayId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class getGateway_call extends org.apache.thrift.async.TAsyncMethodCall {
       private org.apache.airavata.model.security.AuthzToken authzToken;
-      private String gatewayId;
-      public getGateway_call(org.apache.airavata.model.security.AuthzToken authzToken, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private String airavataInternalGatewayId;
+      public getGateway_call(org.apache.airavata.model.security.AuthzToken authzToken, String airavataInternalGatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.authzToken = authzToken;
-        this.gatewayId = gatewayId;
+        this.airavataInternalGatewayId = airavataInternalGatewayId;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getGateway", org.apache.thrift.protocol.TMessageType.CALL, 0));
         getGateway_args args = new getGateway_args();
         args.setAuthzToken(authzToken);
-        args.setGatewayId(gatewayId);
+        args.setAiravataInternalGatewayId(airavataInternalGatewayId);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -772,7 +772,7 @@ public class TenantProfileService {
       public getGateway_result getResult(I iface, getGateway_args args) throws org.apache.thrift.TException {
         getGateway_result result = new getGateway_result();
         try {
-          result.success = iface.getGateway(args.authzToken, args.gatewayId);
+          result.success = iface.getGateway(args.authzToken, args.airavataInternalGatewayId);
         } catch (org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException tpe) {
           result.tpe = tpe;
         } catch (org.apache.airavata.model.error.AuthorizationException ae) {
@@ -1157,7 +1157,7 @@ public class TenantProfileService {
       }
 
       public void start(I iface, getGateway_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.workspace.Gateway> resultHandler) throws TException {
-        iface.getGateway(args.authzToken, args.gatewayId,resultHandler);
+        iface.getGateway(args.authzToken, args.airavataInternalGatewayId,resultHandler);
       }
     }
 
@@ -4431,7 +4431,7 @@ public class TenantProfileService {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getGateway_args");
 
     private static final org.apache.thrift.protocol.TField AUTHZ_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("authzToken", org.apache.thrift.protocol.TType.STRUCT, (short)1);
-    private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField AIRAVATA_INTERNAL_GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("airavataInternalGatewayId", org.apache.thrift.protocol.TType.STRING, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -4440,12 +4440,12 @@ public class TenantProfileService {
     }
 
     public org.apache.airavata.model.security.AuthzToken authzToken; // required
-    public String gatewayId; // required
+    public String airavataInternalGatewayId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       AUTHZ_TOKEN((short)1, "authzToken"),
-      GATEWAY_ID((short)2, "gatewayId");
+      AIRAVATA_INTERNAL_GATEWAY_ID((short)2, "airavataInternalGatewayId");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -4462,8 +4462,8 @@ public class TenantProfileService {
         switch(fieldId) {
           case 1: // AUTHZ_TOKEN
             return AUTHZ_TOKEN;
-          case 2: // GATEWAY_ID
-            return GATEWAY_ID;
+          case 2: // AIRAVATA_INTERNAL_GATEWAY_ID
+            return AIRAVATA_INTERNAL_GATEWAY_ID;
           default:
             return null;
         }
@@ -4509,7 +4509,7 @@ public class TenantProfileService {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.AUTHZ_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("authzToken", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.security.AuthzToken.class)));
-      tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+      tmpMap.put(_Fields.AIRAVATA_INTERNAL_GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("airavataInternalGatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getGateway_args.class, metaDataMap);
@@ -4520,11 +4520,11 @@ public class TenantProfileService {
 
     public getGateway_args(
       org.apache.airavata.model.security.AuthzToken authzToken,
-      String gatewayId)
+      String airavataInternalGatewayId)
     {
       this();
       this.authzToken = authzToken;
-      this.gatewayId = gatewayId;
+      this.airavataInternalGatewayId = airavataInternalGatewayId;
     }
 
     /**
@@ -4534,8 +4534,8 @@ public class TenantProfileService {
       if (other.isSetAuthzToken()) {
         this.authzToken = new org.apache.airavata.model.security.AuthzToken(other.authzToken);
       }
-      if (other.isSetGatewayId()) {
-        this.gatewayId = other.gatewayId;
+      if (other.isSetAiravataInternalGatewayId()) {
+        this.airavataInternalGatewayId = other.airavataInternalGatewayId;
       }
     }
 
@@ -4546,7 +4546,7 @@ public class TenantProfileService {
     @Override
     public void clear() {
       this.authzToken = null;
-      this.gatewayId = null;
+      this.airavataInternalGatewayId = null;
     }
 
     public org.apache.airavata.model.security.AuthzToken getAuthzToken() {
@@ -4573,27 +4573,27 @@ public class TenantProfileService {
       }
     }
 
-    public String getGatewayId() {
-      return this.gatewayId;
+    public String getAiravataInternalGatewayId() {
+      return this.airavataInternalGatewayId;
     }
 
-    public getGateway_args setGatewayId(String gatewayId) {
-      this.gatewayId = gatewayId;
+    public getGateway_args setAiravataInternalGatewayId(String airavataInternalGatewayId) {
+      this.airavataInternalGatewayId = airavataInternalGatewayId;
       return this;
     }
 
-    public void unsetGatewayId() {
-      this.gatewayId = null;
+    public void unsetAiravataInternalGatewayId() {
+      this.airavataInternalGatewayId = null;
     }
 
-    /** Returns true if field gatewayId is set (has been assigned a value) and false otherwise */
-    public boolean isSetGatewayId() {
-      return this.gatewayId != null;
+    /** Returns true if field airavataInternalGatewayId is set (has been assigned a value) and false otherwise */
+    public boolean isSetAiravataInternalGatewayId() {
+      return this.airavataInternalGatewayId != null;
     }
 
-    public void setGatewayIdIsSet(boolean value) {
+    public void setAiravataInternalGatewayIdIsSet(boolean value) {
       if (!value) {
-        this.gatewayId = null;
+        this.airavataInternalGatewayId = null;
       }
     }
 
@@ -4607,11 +4607,11 @@ public class TenantProfileService {
         }
         break;
 
-      case GATEWAY_ID:
+      case AIRAVATA_INTERNAL_GATEWAY_ID:
         if (value == null) {
-          unsetGatewayId();
+          unsetAiravataInternalGatewayId();
         } else {
-          setGatewayId((String)value);
+          setAiravataInternalGatewayId((String)value);
         }
         break;
 
@@ -4623,8 +4623,8 @@ public class TenantProfileService {
       case AUTHZ_TOKEN:
         return getAuthzToken();
 
-      case GATEWAY_ID:
-        return getGatewayId();
+      case AIRAVATA_INTERNAL_GATEWAY_ID:
+        return getAiravataInternalGatewayId();
 
       }
       throw new IllegalStateException();
@@ -4639,8 +4639,8 @@ public class TenantProfileService {
       switch (field) {
       case AUTHZ_TOKEN:
         return isSetAuthzToken();
-      case GATEWAY_ID:
-        return isSetGatewayId();
+      case AIRAVATA_INTERNAL_GATEWAY_ID:
+        return isSetAiravataInternalGatewayId();
       }
       throw new IllegalStateException();
     }
@@ -4667,12 +4667,12 @@ public class TenantProfileService {
           return false;
       }
 
-      boolean this_present_gatewayId = true && this.isSetGatewayId();
-      boolean that_present_gatewayId = true && that.isSetGatewayId();
-      if (this_present_gatewayId || that_present_gatewayId) {
-        if (!(this_present_gatewayId && that_present_gatewayId))
+      boolean this_present_airavataInternalGatewayId = true && this.isSetAiravataInternalGatewayId();
+      boolean that_present_airavataInternalGatewayId = true && that.isSetAiravataInternalGatewayId();
+      if (this_present_airavataInternalGatewayId || that_present_airavataInternalGatewayId) {
+        if (!(this_present_airavataInternalGatewayId && that_present_airavataInternalGatewayId))
           return false;
-        if (!this.gatewayId.equals(that.gatewayId))
+        if (!this.airavataInternalGatewayId.equals(that.airavataInternalGatewayId))
           return false;
       }
 
@@ -4688,10 +4688,10 @@ public class TenantProfileService {
       if (present_authzToken)
         list.add(authzToken);
 
-      boolean present_gatewayId = true && (isSetGatewayId());
-      list.add(present_gatewayId);
-      if (present_gatewayId)
-        list.add(gatewayId);
+      boolean present_airavataInternalGatewayId = true && (isSetAiravataInternalGatewayId());
+      list.add(present_airavataInternalGatewayId);
+      if (present_airavataInternalGatewayId)
+        list.add(airavataInternalGatewayId);
 
       return list.hashCode();
     }
@@ -4714,12 +4714,12 @@ public class TenantProfileService {
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetGatewayId()).compareTo(other.isSetGatewayId());
+      lastComparison = Boolean.valueOf(isSetAiravataInternalGatewayId()).compareTo(other.isSetAiravataInternalGatewayId());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetGatewayId()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayId, other.gatewayId);
+      if (isSetAiravataInternalGatewayId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.airavataInternalGatewayId, other.airavataInternalGatewayId);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -4752,11 +4752,11 @@ public class TenantProfileService {
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("gatewayId:");
-      if (this.gatewayId == null) {
+      sb.append("airavataInternalGatewayId:");
+      if (this.airavataInternalGatewayId == null) {
         sb.append("null");
       } else {
-        sb.append(this.gatewayId);
+        sb.append(this.airavataInternalGatewayId);
       }
       first = false;
       sb.append(")");
@@ -4768,8 +4768,8 @@ public class TenantProfileService {
       if (authzToken == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'authzToken' was not present! Struct: " + toString());
       }
-      if (gatewayId == null) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' was not present! Struct: " + toString());
+      if (airavataInternalGatewayId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'airavataInternalGatewayId' was not present! Struct: " + toString());
       }
       // check for sub-struct validity
       if (authzToken != null) {
@@ -4820,10 +4820,10 @@ public class TenantProfileService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 2: // GATEWAY_ID
+            case 2: // AIRAVATA_INTERNAL_GATEWAY_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.gatewayId = iprot.readString();
-                struct.setGatewayIdIsSet(true);
+                struct.airavataInternalGatewayId = iprot.readString();
+                struct.setAiravataInternalGatewayIdIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -4848,9 +4848,9 @@ public class TenantProfileService {
           struct.authzToken.write(oprot);
           oprot.writeFieldEnd();
         }
-        if (struct.gatewayId != null) {
-          oprot.writeFieldBegin(GATEWAY_ID_FIELD_DESC);
-          oprot.writeString(struct.gatewayId);
+        if (struct.airavataInternalGatewayId != null) {
+          oprot.writeFieldBegin(AIRAVATA_INTERNAL_GATEWAY_ID_FIELD_DESC);
+          oprot.writeString(struct.airavataInternalGatewayId);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -4871,7 +4871,7 @@ public class TenantProfileService {
       public void write(org.apache.thrift.protocol.TProtocol prot, getGateway_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         struct.authzToken.write(oprot);
-        oprot.writeString(struct.gatewayId);
+        oprot.writeString(struct.airavataInternalGatewayId);
       }
 
       @Override
@@ -4880,8 +4880,8 @@ public class TenantProfileService {
         struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
         struct.authzToken.read(iprot);
         struct.setAuthzTokenIsSet(true);
-        struct.gatewayId = iprot.readString();
-        struct.setGatewayIdIsSet(true);
+        struct.airavataInternalGatewayId = iprot.readString();
+        struct.setAiravataInternalGatewayIdIsSet(true);
       }
     }
 
