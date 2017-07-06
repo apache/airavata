@@ -73,6 +73,10 @@ public class AppCatalogJPAUtils {
             factory.getCache().evictAll();
         }
         appCatEntityManager = factory.createEntityManager();
+        // clear the entitymanager cache
+        if (appCatEntityManager != null) {
+            appCatEntityManager.clear();
+        }
         return appCatEntityManager;
     }
 
