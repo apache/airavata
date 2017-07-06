@@ -17,7 +17,8 @@ scigap02.sciencegateways.iu.edu
 scigap03.sciencegateways.iu.edu
 
 [pga]
-scigap04.sciencegateways.iu.edu
+#scigap04.sciencegateways.iu.edu
+gf4.ucs.indiana.edu
 
 [keycloak]
 gf7.ucs.indiana.edu
