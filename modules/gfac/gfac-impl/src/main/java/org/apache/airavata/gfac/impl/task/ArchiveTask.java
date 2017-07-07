@@ -146,7 +146,7 @@ public class ArchiveTask implements Task {
             commandInfo = new RawCommandInfo("cd " + destParent + " && mkdir " + storageArchiveDir +
                     " && tar -xvf " + archiveTar + " -C " + storageArchiveDir + " && rm " + archiveTar +
                     " && chmod 755 -R " + storageArchiveDir + "/*");
-            executeCommand(srcSession, commandInfo, new StandardOutReader());
+            executeCommand(destSession, commandInfo, new StandardOutReader());
         } catch (CredentialStoreException e) {
             String msg = "Storage authentication issue, make sure you are passing valid credential token";
             log.error(msg, e);
