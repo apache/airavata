@@ -827,12 +827,16 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     }
 
     /**
-     * * Sharing Entity with Users and Groups
+     * Sharing Entity with Users and Groups
      * *
-     *
+     * @param domainId
      * @param entityId
      * @param userList
-     * @param permissionType
+     * @param permissionTypeId
+     * @param cascadePermission
+     * @return
+     * @throws SharingRegistryException
+     * @throws TException
      */
     @Override
     public boolean shareEntityWithUsers(String domainId, String entityId, List<String> userList, String permissionTypeId, boolean cascadePermission) throws SharingRegistryException, TException {
