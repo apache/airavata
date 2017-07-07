@@ -44,6 +44,7 @@ httpd_log_dir:
 
 pga_vhost_template: "pga-vhost.conf.j2"
 pga_ssl_vhost_template: "pga-ssl-vhost.conf.j2"
+pga_config_template: "pga_config.php.j2"
 
 ## WSO2 IS related variables
 tenant_domain: "prod.testdrive"
