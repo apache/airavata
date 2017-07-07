@@ -49,9 +49,9 @@ public class UserRepository extends AbstractRepository<User, UserEntity, UserPK>
         query += "s." + DBConstants.SharingTable.ENTITY_ID + " = '" + entityId + "' AND ";
         query += "s." + DBConstants.SharingTable.PERMISSION_TYPE_ID + " = '" + permissionTypeId + "'";
 
-//        if(permissionTypeId.equals((new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId))){
-//            query += "AND s." + DBConstants.SharingTable.SHARING_TYPE + " LIKE 'DIRECT_%'";
-//        }
+        if(permissionTypeId.equals((new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId))){
+            query += "AND s." + DBConstants.SharingTable.SHARING_TYPE + " LIKE 'DIRECT_%'";
+        }
 
         query += " ORDER BY s.createdTime DESC";
         return select(query, 0, -1);
