@@ -56,7 +56,7 @@ oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 gateway_id: "default"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}/testdrive"
-gateway_data_store_resource_id: "scigap04.sciencegateways.iu.edu_6bfe414c-db48-4203-b8ea-b14812c72a32"
+gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCUF51b2cYYqqadLHL9M/oPY0ZHZlWbdOdaIgjpzIzMnO7M9hKrHVY2pqyLPvqCLzaunxITPWsTqw0E8hwub4ttGLAx/O4kIf+BgyZK7iuwXWhI7u85/o58IfrD4B+jVCYKRNayuLR+lJWsiOeS6HSlunpTKTEhFGeOHn2UzdbLfgWYQ3VUFDtKN1oDPDT78ml5c2RCibJ21jltpevVfEtCUctERpTfniWSuQZggP1qiLNa1+PfiJ3mGsEzJFDntQvQetdinaAbEaT7+sctS8nBNjapkmYMf6tBl3S0bLttYPH51f8lUQAFaAzrestO1JpJNnIeY01/S3MWIlAWASnn"
 
 ## Portal related variables
