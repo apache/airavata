@@ -97,7 +97,7 @@
 
 # step 6: Change pga configurations
 - name: Copy pga config file
-  template: src=pga_config.php.j2 dest="{{ doc_root_dir }}/app/config/pga_config.php" owner="{{user}}" group="{{group}}"
+  template: src={{ pga_config_template }} dest="{{ doc_root_dir }}/app/config/pga_config.php" owner="{{user}}" group="{{group}}"
   become: yes
 
 - name: Checkout the portal theme (if a custom theme is defined)
