@@ -540,7 +540,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                     null,
                     null,
                     null,
-                    0, 10000);
+                    0, 100);
             logger.debug("getUsersWithRole: all users count=" + allUsers.size());
             allUsers.sort((a, b) -> a.getCreatedTimestamp() - b.getCreatedTimestamp() > 0 ? -1 : 1);
             // The 100 most recently created users
@@ -568,7 +568,9 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             throw exception;
         } finally {
             if (client != null) {
+                logger.debug("getUsersWithRole: closing client...");
                 client.close();
+                logger.debug("getUsersWithRole: client closed");
             }
         }
     }
