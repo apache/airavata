@@ -534,15 +534,18 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         Keycloak client = null;
         try{
             client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, realmAdminCreds);
-            // FIXME: this only gets the first 1000 users to search through for the given role
+            // FIXME: this only searches through the most recent 100 users for the given role (assuming there are no more than 10,000 users in the gateway)
             List<UserRepresentation> allUsers = client.realm(tenantId).users().search(null,
                     null,
                     null,
                     null,
-                    0, 1000);
+                    0, 10000);
+            allUsers.sort((a, b) -> a.getCreatedTimestamp() - b.getCreatedTimestamp() > 0 ? -1 : 1);
+            // The 100 most recently created users
+            List<UserRepresentation> mostRecentUsers = allUsers.subList(0, Math.min(allUsers.size(), 100));
 
             List<UserProfile> usersWithRole = new ArrayList<>();
-            for (UserRepresentation user: allUsers) {
+            for (UserRepresentation user: mostRecentUsers) {
                 UserResource userResource = client.realm(tenantId).users().get(user.getId());
 
                 List<RoleRepresentation> roleRepresentations = userResource.roles().realmLevel().listAll();
