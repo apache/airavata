@@ -535,14 +535,17 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         try{
             client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, realmAdminCreds);
             // FIXME: this only searches through the most recent 100 users for the given role (assuming there are no more than 10,000 users in the gateway)
+            logger.debug("getUsersWithRole: fetching all users...");
             List<UserRepresentation> allUsers = client.realm(tenantId).users().search(null,
                     null,
                     null,
                     null,
                     0, 10000);
+            logger.debug("getUsersWithRole: all users count=" + allUsers.size());
             allUsers.sort((a, b) -> a.getCreatedTimestamp() - b.getCreatedTimestamp() > 0 ? -1 : 1);
             // The 100 most recently created users
             List<UserRepresentation> mostRecentUsers = allUsers.subList(0, Math.min(allUsers.size(), 100));
+            logger.debug("getUsersWithRole: most recent users count=" + mostRecentUsers.size());
 
             List<UserProfile> usersWithRole = new ArrayList<>();
             for (UserRepresentation user: mostRecentUsers) {
@@ -556,6 +559,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                     }
                 }
             }
+            logger.debug("getUsersWithRole: most recent users with role count=" + usersWithRole.size());
             return usersWithRole;
         } catch (ApplicationSettingsException ex) {
             logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
