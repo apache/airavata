@@ -113,23 +113,23 @@ public class ServerMain {
 		List<String> serverList = new ArrayList<>(Arrays.asList(serverNames.split(",")));
 		if (serverList.indexOf(ALL_IN_ONE) > -1) {
 			serverList.clear();
-			serverList.add(REGISTRY_SERVER);  // registry server should start before everything
+			serverList.add(DB_EVENT_MANAGER); // DB Event Manager should start before everything
+			serverList.add(REGISTRY_SERVER);  // registry server should start before everything else
 			serverList.add(CREDENTIAL_STORE); // credential store should start before api server
 			serverList.add(SHARING_SERVER);
 			serverList.add(API_SERVER);
 			serverList.add(ORCHESTRATOR);
 			serverList.add(GFAC_SERVER);
 			serverList.add(PROFILE_SERVICE);
-			serverList.add(DB_EVENT_MANAGER);
 		} else if (serverList.indexOf(API_ORCH) > -1) {
 			serverList.clear();
-            serverList.add(REGISTRY_SERVER);  // registry server should start before everything
+			serverList.add(DB_EVENT_MANAGER); // DB Event Manager should start before everything
+			serverList.add(REGISTRY_SERVER);  // registry server should start before everything else
             serverList.add(CREDENTIAL_STORE); // credential store should start before api server
 			serverList.add(SHARING_SERVER);
 			serverList.add(API_SERVER);
 			serverList.add(ORCHESTRATOR);
 			serverList.add(PROFILE_SERVICE);
-			serverList.add(DB_EVENT_MANAGER);
 		} else if (serverList.indexOf(EXECUTION) > -1) {
 			serverList.clear();
 			serverList.add(GFAC_SERVER);
