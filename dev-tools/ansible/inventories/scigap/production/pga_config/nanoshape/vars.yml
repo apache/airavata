@@ -23,13 +23,13 @@ pga_repo: "https://github.com/apache/airavata-php-gateway.git"
 git_branch: "develop"
 user: "pga"
 group: "pga"
-doc_root_dir: "/var/www/portals/nanoconfinement"
-vhost_servername: "nanoconfinement.sciencegateways.iu.edu"
+doc_root_dir: "/var/www/portals/nanoshape"
+vhost_servername: "nanoshape.sciencegateways.iu.edu"
 vhost_ssl: True
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/letsencrypt/live/nanoconfinement.sciencegateways.iu.edu/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/nanoconfinement.sciencegateways.iu.edu/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/nanoconfinement.sciencegateways.iu.edu/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/nanoshape.sciencegateways.iu.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/nanoshape.sciencegateways.iu.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/nanoshape.sciencegateways.iu.edu/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
@@ -40,7 +40,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
 
 auth_options:
-  - name: "Nano Confinement"
+  - name: "Nano Shape"
     oauth_grant_type: "password"
   - name: "CILogon"
     oauth_grant_type: "authorization_code"
@@ -48,9 +48,9 @@ auth_options:
     logo: "/assets/cilogon-logo-24x24-b.png"
 oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 
-gateway_id: "nanoconfinement"
+gateway_id: "nano-shape"
 # relative to document root dir
-experiment_data_dir: "{{ user_data_dir }}/nanoconfinement"
+experiment_data_dir: "{{ user_data_dir }}/nanoshape"
 gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCIUqpKWHwawFHnbWvs6pie+fDA9NlqMZNvzil7e8FQz7543+FOzdTl/octACjGnSTwHewpyTe9sAUVcnq6VJ5XYtApR68zMasEzyCZUMWhMqEuxopRZcUGDJVcq5hD4RZcer3aMPWSVmXVCNJeT4EsB52Zp2DfDVgfaOOfY8Ga4mcR2IdOyizV8HWXTH6vWFK+dD1GoPY0ECikwlsF1QA0vzqAcb1NYOTc70hZ9Pb0/78XF790joZ80hRsHGIc7IfncoLgRUkKSkMaoXbfy/tbqf76V0ZxaQOgayaLGF19oBlREO6ZQ3rDCOWgVJC32dCwAsaL9qWd0IZrprUEUQOd"
 
@@ -59,7 +59,7 @@ super_admin_portal: "false"
 admin_emails: "['smarru@iu.edu','sgg@iu.edu','vjadhao@iu.edu']"
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
-portal_theme: "nanoconfinement-gateway-theme"
-portal_theme_repo: "https://github.com/softmaterialslab/nanoconfinement-gateway-theme.git"
-portal_title: "Nano Confinement Science Gateway"
+portal_theme: "nanoshape-gateway-theme"
+portal_theme_repo: "https://github.com/softmaterialslab/nanoshape-gateway-theme.git"
+portal_title: "Nano Shape Science Gateway"
 ...
