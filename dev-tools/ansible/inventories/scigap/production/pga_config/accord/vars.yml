@@ -23,7 +23,7 @@ pga_repo: "https://github.com/apache/airavata-php-gateway.git"
 git_branch: "develop"
 user: "pga"
 group: "pga"
-doc_root_dir: "/var/www/portals/testdrive"
+doc_root_dir: "/var/www/portals/accord"
 vhost_servername: "accord.hpc.virginia.edu"
 vhost_serveralias: "www.accord.hpc.virginia.edu"
 vhost_ssl: True
@@ -51,7 +51,7 @@ oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 
 gateway_id: "virginaaccord"
 # relative to document root dir
-experiment_data_dir: "{{ user_data_dir }}/testdrive"
+experiment_data_dir: "{{ user_data_dir }}/accord"
 gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCUF51b2cYYqqadLHL9M/oPY0ZHZlWbdOdaIgjpzIzMnO7M9hKrHVY2pqyLPvqCLzaunxITPWsTqw0E8hwub4ttGLAx/O4kIf+BgyZK7iuwXWhI7u85/o58IfrD4B+jVCYKRNayuLR+lJWsiOeS6HSlunpTKTEhFGeOHn2UzdbLfgWYQ3VUFDtKN1oDPDT78ml5c2RCibJ21jltpevVfEtCUctERpTfniWSuQZggP1qiLNa1+PfiJ3mGsEzJFDntQvQetdinaAbEaT7+sctS8nBNjapkmYMf6tBl3S0bLttYPH51f8lUQAFaAzrestO1JpJNnIeY01/S3MWIlAWASnn"
 
