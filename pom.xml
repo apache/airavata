@@ -687,6 +687,7 @@
                 <module>modules/cluster-monitoring</module>
                 <module>modules/user-profile-migration</module>
                 <module>airavata-services</module>
+                <module>modules/db-event-manager</module>
                 <!-- Deprecated Modules-->
                 <!--<module>modules/integration-tests</module>-->
                 <!--<module>modules/workflow-model</module>-->
