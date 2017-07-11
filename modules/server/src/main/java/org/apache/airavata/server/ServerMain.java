@@ -62,8 +62,8 @@ public class ServerMain {
 	private static final String SHARING_SERVER = "sharing_server";
 	private static final String GFAC_SERVER = "gfac";
 	private static final String ORCHESTRATOR = "orchestrator";
-	private static final String USER_PROFILE = "user_profile";
 	private static final String PROFILE_SERVICE = "profile_service";
+	private static final String DB_EVENT_MANAGER = "db_event_manager";
 
     private static ServerCnxnFactory cnxnFactory;
 //	private static boolean shutdownHookCalledBefore=false;
@@ -120,6 +120,7 @@ public class ServerMain {
 			serverList.add(ORCHESTRATOR);
 			serverList.add(GFAC_SERVER);
 			serverList.add(PROFILE_SERVICE);
+			serverList.add(DB_EVENT_MANAGER);
 		} else if (serverList.indexOf(API_ORCH) > -1) {
 			serverList.clear();
             serverList.add(REGISTRY_SERVER);  // registry server should start before everything
@@ -128,6 +129,7 @@ public class ServerMain {
 			serverList.add(API_SERVER);
 			serverList.add(ORCHESTRATOR);
 			serverList.add(PROFILE_SERVICE);
+			serverList.add(DB_EVENT_MANAGER);
 		} else if (serverList.indexOf(EXECUTION) > -1) {
 			serverList.clear();
 			serverList.add(GFAC_SERVER);
