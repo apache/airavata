@@ -21,6 +21,7 @@
 ---
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/accord"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/brandeis"
+- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/gatech"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/georgiastate"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/iugateway"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/lsu"
