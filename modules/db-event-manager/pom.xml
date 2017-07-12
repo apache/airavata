@@ -21,7 +21,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>db-event-manager</artifactId>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
     <name>Airavata DB Event Manager</name>
     <url>http://airavata.apache.org/</url>
 

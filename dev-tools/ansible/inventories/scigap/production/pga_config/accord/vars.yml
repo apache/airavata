@@ -34,7 +34,7 @@ ssl_certificate_key_file: "/etc/letsencrypt/live/accord.hpc.virginia.edu/privkey
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
-admin_username: "tdaadmin"
+admin_username: "admin"
 admin_password: "{{ vault_admin_password }}"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
@@ -53,7 +53,7 @@ gateway_id: "virginaaccord"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}/accord"
 gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
-gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCUF51b2cYYqqadLHL9M/oPY0ZHZlWbdOdaIgjpzIzMnO7M9hKrHVY2pqyLPvqCLzaunxITPWsTqw0E8hwub4ttGLAx/O4kIf+BgyZK7iuwXWhI7u85/o58IfrD4B+jVCYKRNayuLR+lJWsiOeS6HSlunpTKTEhFGeOHn2UzdbLfgWYQ3VUFDtKN1oDPDT78ml5c2RCibJ21jltpevVfEtCUctERpTfniWSuQZggP1qiLNa1+PfiJ3mGsEzJFDntQvQetdinaAbEaT7+sctS8nBNjapkmYMf6tBl3S0bLttYPH51f8lUQAFaAzrestO1JpJNnIeY01/S3MWIlAWASnn"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCXi0HChWm8JB3dj2Spaz1uAsFWDjZE5NZ/GVQ9Wz++H2TSltoIAj/2lFiIMEwMXsJ4qs9vkHP/co0VHoEBVK7l8D/ZjWJ0imqrlsaagf3N9PowHMcC++VbjUFgdGgP8PYEZDOCNZY1gnokW5oMrxSTZCMgkYZf7Ldv3U+ngiQU1WQFeu2usGKXTLZ+FeIEGwElJKukaifm0jn6nE8osUtpwuhJvV9xZjRqoCZiMsruwyDO0b/fq0JpcUsz9CyYivjB5Y41qju1yYioxn579/o0iVMIwVXduN56Tb9mQ2+h2d8lkAR4Tm/bFGi/ADy46fKkMYkaABDIxDjhQRLGlrjH"
 
 ## Portal related variables
 super_admin_portal: "false"
