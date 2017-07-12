@@ -33,7 +33,7 @@ vhost_ssl: False
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
-admin_username: "adminuser"
+admin_username: "admin"
 admin_password: "{{ vault_admin_password }}"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
@@ -44,7 +44,7 @@ auth_options:
     oauth_grant_type: "password"
 oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 
-gateway_id: "georgiastate"
+gateway_id: "georgia-tech"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}/georgia-tech"
 gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
