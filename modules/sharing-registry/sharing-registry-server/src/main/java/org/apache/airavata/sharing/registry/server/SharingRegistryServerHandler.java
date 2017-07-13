@@ -567,7 +567,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
         try{
             HashMap<String, String> filters = new HashMap<>();
             filters.put(DBConstants.EntityTypeTable.DOMAIN_ID, domain);
-            return (new EntityTypeRepository()).select(domain, offset, limit);
+            return (new EntityTypeRepository()).select(filters, offset, limit);
         }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
             throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
