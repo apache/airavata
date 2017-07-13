@@ -48,7 +48,7 @@ gateway_id: "new-mexico-state"
 # relative to document root dir
 experiment_data_dir: "{{ user_data_dir }}/new-mexico-state"
 gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
-gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCFSg9IEgsXlGhgPkj4hPuON30rbE3/gUUn4K3NVvBFKLyQQ8Pm/NR6dZmFglQR1HxBRSnq4WmH3EVyxHuT7MkQDAjTkclEuhaRjcYN0nua8g4dI9SgO9DeqbOyurVIuw/YChP5nC+6/ubMyzYPr6Z5xU5QHZI/QlVG4nz3joMIKkRXt/bsaEvv+/nzED/j6FTdK6P6dg1ESkNVZUPqhtWpwuC28Et7/86jcEObJedwx8geLoxKogPZ6kqO+Q/WUHDtMpFYtwuPaiYuN3Pb/GCvnDRsSoFmtRU+UH1UIdEy0piYUuBW+5aCv/PbH/UtHFg1Y1942TYCXv4rl1i/KW1z"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCRYbUBGqEqUkcsAkQPetJDTTIWGGFbB7DBzvSQUT26SqHpRZQR3J4lCvzmH8/T3KoQC4uxnph5RpiemMeoQIxIJ8hH9Pod3Z0xK2qu6b/jDrbX+UbepkBl8Xc8aE6UWAX4C6rnn1X4ktqLp9GDE2G9CN4+pZxDanK5h7+68qsiz/rpzUEHVDPzo1A5YRPE2cFgOp4s207zE/GaXH2A/+vucdbTmoy2hND3uYkaaMe4ygMlakDDlkMTl5dlgaHuoqVu0pOSnsUimpxV87LpXqWaD1d6G+IVW1CNjKtVBvz/z4aFMLWhqWLYZlLpsoGi4ZqXf3u0A4ajL+6uXgiGuIRX"
 
 ## Portal related variables
 super_admin_portal: "false"
