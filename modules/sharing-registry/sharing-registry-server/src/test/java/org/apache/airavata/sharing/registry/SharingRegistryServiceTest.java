@@ -27,7 +27,6 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
-import org.databene.contiperf.PerfTest;
 import org.databene.contiperf.junit.ContiPerfRule;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -54,7 +53,7 @@ public class SharingRegistryServiceTest {
 
 
     @Test
-    @PerfTest(invocations = 50, threads = 10)
+//    @PerfTest(invocations = 50, threads = 10)
     public void test() throws TException, InterruptedException {
         String serverHost = "localhost";
         int serverPort = 7878;
