@@ -534,15 +534,29 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         Keycloak client = null;
         try{
             client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, realmAdminCreds);
-            // FIXME: this only gets the first 1000 users to search through for the given role
-            List<UserRepresentation> allUsers = client.realm(tenantId).users().search(null,
-                    null,
-                    null,
-                    null,
-                    0, 1000);
+            // FIXME: this only searches through the most recent 100 users for the given role (assuming there are no more than 10,000 users in the gateway)
+            int totalUserCount = client.realm(tenantId).users().count();
+            logger.debug("getUsersWithRole: totalUserCount=" + totalUserCount);
+            // Load all users in batches
+            List<UserRepresentation> allUsers = new ArrayList<>();
+            int userBatchSize = 100;
+            for (int start = 0; start < totalUserCount; start=start+userBatchSize) {
+
+                logger.debug("getUsersWithRole: fetching " + userBatchSize + " users...");
+                allUsers.addAll(client.realm(tenantId).users().search(null,
+                        null,
+                        null,
+                        null,
+                        start, userBatchSize));
+            }
+            logger.debug("getUsersWithRole: all users count=" + allUsers.size());
+            allUsers.sort((a, b) -> a.getCreatedTimestamp() - b.getCreatedTimestamp() > 0 ? -1 : 1);
+            // The 100 most recently created users
+            List<UserRepresentation> mostRecentUsers = allUsers.subList(0, Math.min(allUsers.size(), 100));
+            logger.debug("getUsersWithRole: most recent users count=" + mostRecentUsers.size());
 
             List<UserProfile> usersWithRole = new ArrayList<>();
-            for (UserRepresentation user: allUsers) {
+            for (UserRepresentation user: mostRecentUsers) {
                 UserResource userResource = client.realm(tenantId).users().get(user.getId());
 
                 List<RoleRepresentation> roleRepresentations = userResource.roles().realmLevel().listAll();
@@ -553,6 +567,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                     }
                 }
             }
+            logger.debug("getUsersWithRole: most recent users with role count=" + usersWithRole.size());
             return usersWithRole;
         } catch (ApplicationSettingsException ex) {
             logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
@@ -561,7 +576,9 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             throw exception;
         } finally {
             if (client != null) {
+                logger.debug("getUsersWithRole: closing client...");
                 client.close();
+                logger.debug("getUsersWithRole: client closed");
             }
         }
     }
