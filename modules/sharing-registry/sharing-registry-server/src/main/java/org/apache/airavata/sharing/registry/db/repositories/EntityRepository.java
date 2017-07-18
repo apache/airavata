@@ -130,7 +130,7 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
         }
 
         query = query.substring(0, query.length() - 5);
-        query += " ORDER BY p."+DBConstants.EntityTable.ORIGINAL_ENTITY_CREATION_TIME+" DESC";
+        query += " ORDER BY E."+DBConstants.EntityTable.ORIGINAL_ENTITY_CREATION_TIME+" DESC";
 
         final String nativeQuery = query;
         int newLimit = limit < 0 ? DBConstants.SELECT_MAX_ROWS: limit;
