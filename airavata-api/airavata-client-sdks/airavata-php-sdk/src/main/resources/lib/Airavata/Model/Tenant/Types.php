@@ -38,6 +38,271 @@ final class TenantApprovalStatus {
   );
 }
 
+class TenantPreferences {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $tenantAdminFirstName = null;
+  /**
+   * @var string
+   */
+  public $tenantAdminLastName = null;
+  /**
+   * @var string
+   */
+  public $tenantAdminEmail = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        10 => array(
+          'var' => 'tenantAdminFirstName',
+          'type' => TType::STRING,
+          ),
+        11 => array(
+          'var' => 'tenantAdminLastName',
+          'type' => TType::STRING,
+          ),
+        12 => array(
+          'var' => 'tenantAdminEmail',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['tenantAdminFirstName'])) {
+        $this->tenantAdminFirstName = $vals['tenantAdminFirstName'];
+      }
+      if (isset($vals['tenantAdminLastName'])) {
+        $this->tenantAdminLastName = $vals['tenantAdminLastName'];
+      }
+      if (isset($vals['tenantAdminEmail'])) {
+        $this->tenantAdminEmail = $vals['tenantAdminEmail'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'TenantPreferences';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 10:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->tenantAdminFirstName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 11:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->tenantAdminLastName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 12:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->tenantAdminEmail);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('TenantPreferences');
+    if ($this->tenantAdminFirstName !== null) {
+      $xfer += $output->writeFieldBegin('tenantAdminFirstName', TType::STRING, 10);
+      $xfer += $output->writeString($this->tenantAdminFirstName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->tenantAdminLastName !== null) {
+      $xfer += $output->writeFieldBegin('tenantAdminLastName', TType::STRING, 11);
+      $xfer += $output->writeString($this->tenantAdminLastName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->tenantAdminEmail !== null) {
+      $xfer += $output->writeFieldBegin('tenantAdminEmail', TType::STRING, 12);
+      $xfer += $output->writeString($this->tenantAdminEmail);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class TenantConfig {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $oauthClientId = null;
+  /**
+   * @var string
+   */
+  public $oauthClientSecret = null;
+  /**
+   * @var string
+   */
+  public $identityServerUserName = null;
+  /**
+   * @var string
+   */
+  public $identityServerPasswordToken = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        16 => array(
+          'var' => 'oauthClientId',
+          'type' => TType::STRING,
+          ),
+        17 => array(
+          'var' => 'oauthClientSecret',
+          'type' => TType::STRING,
+          ),
+        13 => array(
+          'var' => 'identityServerUserName',
+          'type' => TType::STRING,
+          ),
+        14 => array(
+          'var' => 'identityServerPasswordToken',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['oauthClientId'])) {
+        $this->oauthClientId = $vals['oauthClientId'];
+      }
+      if (isset($vals['oauthClientSecret'])) {
+        $this->oauthClientSecret = $vals['oauthClientSecret'];
+      }
+      if (isset($vals['identityServerUserName'])) {
+        $this->identityServerUserName = $vals['identityServerUserName'];
+      }
+      if (isset($vals['identityServerPasswordToken'])) {
+        $this->identityServerPasswordToken = $vals['identityServerPasswordToken'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'TenantConfig';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 16:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->oauthClientId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 17:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->oauthClientSecret);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 13:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->identityServerUserName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 14:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->identityServerPasswordToken);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('TenantConfig');
+    if ($this->identityServerUserName !== null) {
+      $xfer += $output->writeFieldBegin('identityServerUserName', TType::STRING, 13);
+      $xfer += $output->writeString($this->identityServerUserName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->identityServerPasswordToken !== null) {
+      $xfer += $output->writeFieldBegin('identityServerPasswordToken', TType::STRING, 14);
+      $xfer += $output->writeString($this->identityServerPasswordToken);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->oauthClientId !== null) {
+      $xfer += $output->writeFieldBegin('oauthClientId', TType::STRING, 16);
+      $xfer += $output->writeString($this->oauthClientId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->oauthClientSecret !== null) {
+      $xfer += $output->writeFieldBegin('oauthClientSecret', TType::STRING, 17);
+      $xfer += $output->writeString($this->oauthClientSecret);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 class Tenant {
   static $_TSPEC;
 
@@ -80,35 +345,7 @@ class Tenant {
   /**
    * @var string
    */
-  public $tenantAdminFirstName = null;
-  /**
-   * @var string
-   */
-  public $tenantAdminLastName = null;
-  /**
-   * @var string
-   */
-  public $tenantAdminEmail = null;
-  /**
-   * @var string
-   */
-  public $identityServerUserName = null;
-  /**
-   * @var string
-   */
-  public $identityServerPasswordToken = null;
-  /**
-   * @var string
-   */
   public $declinedReason = null;
-  /**
-   * @var string
-   */
-  public $oauthClientId = null;
-  /**
-   * @var string
-   */
-  public $oauthClientSecret = null;
   /**
    * @var int
    */
@@ -157,36 +394,8 @@ class Tenant {
           'var' => 'reviewProposalDescription',
           'type' => TType::STRING,
           ),
-        10 => array(
-          'var' => 'tenantAdminFirstName',
-          'type' => TType::STRING,
-          ),
-        11 => array(
-          'var' => 'tenantAdminLastName',
-          'type' => TType::STRING,
-          ),
-        12 => array(
-          'var' => 'tenantAdminEmail',
-          'type' => TType::STRING,
-          ),
-        13 => array(
-          'var' => 'identityServerUserName',
-          'type' => TType::STRING,
-          ),
-        14 => array(
-          'var' => 'identityServerPasswordToken',
-          'type' => TType::STRING,
-          ),
         15 => array(
           'var' => 'declinedReason',
-          'type' => TType::STRING,
-          ),
-        16 => array(
-          'var' => 'oauthClientId',
-          'type' => TType::STRING,
-          ),
-        17 => array(
-          'var' => 'oauthClientSecret',
           'type' => TType::STRING,
           ),
         18 => array(
@@ -227,29 +436,8 @@ class Tenant {
       if (isset($vals['reviewProposalDescription'])) {
         $this->reviewProposalDescription = $vals['reviewProposalDescription'];
       }
-      if (isset($vals['tenantAdminFirstName'])) {
-        $this->tenantAdminFirstName = $vals['tenantAdminFirstName'];
-      }
-      if (isset($vals['tenantAdminLastName'])) {
-        $this->tenantAdminLastName = $vals['tenantAdminLastName'];
-      }
-      if (isset($vals['tenantAdminEmail'])) {
-        $this->tenantAdminEmail = $vals['tenantAdminEmail'];
-      }
-      if (isset($vals['identityServerUserName'])) {
-        $this->identityServerUserName = $vals['identityServerUserName'];
-      }
-      if (isset($vals['identityServerPasswordToken'])) {
-        $this->identityServerPasswordToken = $vals['identityServerPasswordToken'];
-      }
       if (isset($vals['declinedReason'])) {
         $this->declinedReason = $vals['declinedReason'];
-      }
-      if (isset($vals['oauthClientId'])) {
-        $this->oauthClientId = $vals['oauthClientId'];
-      }
-      if (isset($vals['oauthClientSecret'])) {
-        $this->oauthClientSecret = $vals['oauthClientSecret'];
       }
       if (isset($vals['requestCreationTime'])) {
         $this->requestCreationTime = $vals['requestCreationTime'];
@@ -342,58 +530,9 @@ class Tenant {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 10:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->tenantAdminFirstName);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 11:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->tenantAdminLastName);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 12:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->tenantAdminEmail);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 13:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->identityServerUserName);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 14:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->identityServerPasswordToken);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
         case 15:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->declinedReason);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 16:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->oauthClientId);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 17:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->oauthClientSecret);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -470,44 +609,9 @@ class Tenant {
       $xfer += $output->writeString($this->reviewProposalDescription);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->tenantAdminFirstName !== null) {
-      $xfer += $output->writeFieldBegin('tenantAdminFirstName', TType::STRING, 10);
-      $xfer += $output->writeString($this->tenantAdminFirstName);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->tenantAdminLastName !== null) {
-      $xfer += $output->writeFieldBegin('tenantAdminLastName', TType::STRING, 11);
-      $xfer += $output->writeString($this->tenantAdminLastName);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->tenantAdminEmail !== null) {
-      $xfer += $output->writeFieldBegin('tenantAdminEmail', TType::STRING, 12);
-      $xfer += $output->writeString($this->tenantAdminEmail);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->identityServerUserName !== null) {
-      $xfer += $output->writeFieldBegin('identityServerUserName', TType::STRING, 13);
-      $xfer += $output->writeString($this->identityServerUserName);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->identityServerPasswordToken !== null) {
-      $xfer += $output->writeFieldBegin('identityServerPasswordToken', TType::STRING, 14);
-      $xfer += $output->writeString($this->identityServerPasswordToken);
-      $xfer += $output->writeFieldEnd();
-    }
     if ($this->declinedReason !== null) {
       $xfer += $output->writeFieldBegin('declinedReason', TType::STRING, 15);
       $xfer += $output->writeString($this->declinedReason);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->oauthClientId !== null) {
-      $xfer += $output->writeFieldBegin('oauthClientId', TType::STRING, 16);
-      $xfer += $output->writeString($this->oauthClientId);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->oauthClientSecret !== null) {
-      $xfer += $output->writeFieldBegin('oauthClientSecret', TType::STRING, 17);
-      $xfer += $output->writeString($this->oauthClientSecret);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->requestCreationTime !== null) {

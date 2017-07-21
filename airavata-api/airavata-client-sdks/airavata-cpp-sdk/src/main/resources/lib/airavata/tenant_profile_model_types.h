@@ -45,16 +45,157 @@ struct TenantApprovalStatus {
     DEACTIVATED = 3,
     CANCELLED = 4,
     DENIED = 5,
-    CREATED = 6
+    CREATED = 6,
+    DEPLOYED = 7
   };
 };
 
 extern const std::map<int, const char*> _TenantApprovalStatus_VALUES_TO_NAMES;
 
+class TenantPreferences;
+
+class TenantConfig;
+
 class Tenant;
 
+typedef struct _TenantPreferences__isset {
+  _TenantPreferences__isset() : tenantAdminFirstName(false), tenantAdminLastName(false), tenantAdminEmail(false) {}
+  bool tenantAdminFirstName :1;
+  bool tenantAdminLastName :1;
+  bool tenantAdminEmail :1;
+} _TenantPreferences__isset;
+
+class TenantPreferences {
+ public:
+
+  TenantPreferences(const TenantPreferences&);
+  TenantPreferences& operator=(const TenantPreferences&);
+  TenantPreferences() : tenantAdminFirstName(), tenantAdminLastName(), tenantAdminEmail() {
+  }
+
+  virtual ~TenantPreferences() throw();
+  std::string tenantAdminFirstName;
+  std::string tenantAdminLastName;
+  std::string tenantAdminEmail;
+
+  _TenantPreferences__isset __isset;
+
+  void __set_tenantAdminFirstName(const std::string& val);
+
+  void __set_tenantAdminLastName(const std::string& val);
+
+  void __set_tenantAdminEmail(const std::string& val);
+
+  bool operator == (const TenantPreferences & rhs) const
+  {
+    if (__isset.tenantAdminFirstName != rhs.__isset.tenantAdminFirstName)
+      return false;
+    else if (__isset.tenantAdminFirstName && !(tenantAdminFirstName == rhs.tenantAdminFirstName))
+      return false;
+    if (__isset.tenantAdminLastName != rhs.__isset.tenantAdminLastName)
+      return false;
+    else if (__isset.tenantAdminLastName && !(tenantAdminLastName == rhs.tenantAdminLastName))
+      return false;
+    if (__isset.tenantAdminEmail != rhs.__isset.tenantAdminEmail)
+      return false;
+    else if (__isset.tenantAdminEmail && !(tenantAdminEmail == rhs.tenantAdminEmail))
+      return false;
+    return true;
+  }
+  bool operator != (const TenantPreferences &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const TenantPreferences & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(TenantPreferences &a, TenantPreferences &b);
+
+inline std::ostream& operator<<(std::ostream& out, const TenantPreferences& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
+typedef struct _TenantConfig__isset {
+  _TenantConfig__isset() : oauthClientId(false), oauthClientSecret(false), identityServerUserName(false), identityServerPasswordToken(false) {}
+  bool oauthClientId :1;
+  bool oauthClientSecret :1;
+  bool identityServerUserName :1;
+  bool identityServerPasswordToken :1;
+} _TenantConfig__isset;
+
+class TenantConfig {
+ public:
+
+  TenantConfig(const TenantConfig&);
+  TenantConfig& operator=(const TenantConfig&);
+  TenantConfig() : oauthClientId(), oauthClientSecret(), identityServerUserName(), identityServerPasswordToken() {
+  }
+
+  virtual ~TenantConfig() throw();
+  std::string oauthClientId;
+  std::string oauthClientSecret;
+  std::string identityServerUserName;
+  std::string identityServerPasswordToken;
+
+  _TenantConfig__isset __isset;
+
+  void __set_oauthClientId(const std::string& val);
+
+  void __set_oauthClientSecret(const std::string& val);
+
+  void __set_identityServerUserName(const std::string& val);
+
+  void __set_identityServerPasswordToken(const std::string& val);
+
+  bool operator == (const TenantConfig & rhs) const
+  {
+    if (__isset.oauthClientId != rhs.__isset.oauthClientId)
+      return false;
+    else if (__isset.oauthClientId && !(oauthClientId == rhs.oauthClientId))
+      return false;
+    if (__isset.oauthClientSecret != rhs.__isset.oauthClientSecret)
+      return false;
+    else if (__isset.oauthClientSecret && !(oauthClientSecret == rhs.oauthClientSecret))
+      return false;
+    if (__isset.identityServerUserName != rhs.__isset.identityServerUserName)
+      return false;
+    else if (__isset.identityServerUserName && !(identityServerUserName == rhs.identityServerUserName))
+      return false;
+    if (__isset.identityServerPasswordToken != rhs.__isset.identityServerPasswordToken)
+      return false;
+    else if (__isset.identityServerPasswordToken && !(identityServerPasswordToken == rhs.identityServerPasswordToken))
+      return false;
+    return true;
+  }
+  bool operator != (const TenantConfig &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const TenantConfig & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(TenantConfig &a, TenantConfig &b);
+
+inline std::ostream& operator<<(std::ostream& out, const TenantConfig& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
 typedef struct _Tenant__isset {
-  _Tenant__isset() : tenantName(false), domain(false), emailAddress(false), tenantAcronym(false), tenantURL(false), tenantPublicAbstract(false), reviewProposalDescription(false), tenantAdminFirstName(false), tenantAdminLastName(false), tenantAdminEmail(false), identityServerUserName(false), identityServerPasswordToken(false), declinedReason(false), oauthClientId(false), oauthClientSecret(false), requestCreationTime(false), requesterUsername(false) {}
+  _Tenant__isset() : tenantName(false), domain(false), emailAddress(false), tenantAcronym(false), tenantURL(false), tenantPublicAbstract(false), reviewProposalDescription(false), declinedReason(false), requestCreationTime(false), requesterUsername(false) {}
   bool tenantName :1;
   bool domain :1;
   bool emailAddress :1;
@@ -62,14 +203,7 @@ typedef struct _Tenant__isset {
   bool tenantURL :1;
   bool tenantPublicAbstract :1;
   bool reviewProposalDescription :1;
-  bool tenantAdminFirstName :1;
-  bool tenantAdminLastName :1;
-  bool tenantAdminEmail :1;
-  bool identityServerUserName :1;
-  bool identityServerPasswordToken :1;
   bool declinedReason :1;
-  bool oauthClientId :1;
-  bool oauthClientSecret :1;
   bool requestCreationTime :1;
   bool requesterUsername :1;
 } _Tenant__isset;
@@ -79,7 +213,7 @@ class Tenant {
 
   Tenant(const Tenant&);
   Tenant& operator=(const Tenant&);
-  Tenant() : tenantId(), tenantApprovalStatus((TenantApprovalStatus::type)0), tenantName(), domain(), emailAddress(), tenantAcronym(), tenantURL(), tenantPublicAbstract(), reviewProposalDescription(), tenantAdminFirstName(), tenantAdminLastName(), tenantAdminEmail(), identityServerUserName(), identityServerPasswordToken(), declinedReason(), oauthClientId(), oauthClientSecret(), requestCreationTime(0), requesterUsername() {
+  Tenant() : tenantId(), tenantApprovalStatus((TenantApprovalStatus::type)0), tenantName(), domain(), emailAddress(), tenantAcronym(), tenantURL(), tenantPublicAbstract(), reviewProposalDescription(), declinedReason(), requestCreationTime(0), requesterUsername() {
   }
 
   virtual ~Tenant() throw();
@@ -92,14 +226,7 @@ class Tenant {
   std::string tenantURL;
   std::string tenantPublicAbstract;
   std::string reviewProposalDescription;
-  std::string tenantAdminFirstName;
-  std::string tenantAdminLastName;
-  std::string tenantAdminEmail;
-  std::string identityServerUserName;
-  std::string identityServerPasswordToken;
   std::string declinedReason;
-  std::string oauthClientId;
-  std::string oauthClientSecret;
   int64_t requestCreationTime;
   std::string requesterUsername;
 
@@ -123,21 +250,7 @@ class Tenant {
 
   void __set_reviewProposalDescription(const std::string& val);
 
-  void __set_tenantAdminFirstName(const std::string& val);
-
-  void __set_tenantAdminLastName(const std::string& val);
-
-  void __set_tenantAdminEmail(const std::string& val);
-
-  void __set_identityServerUserName(const std::string& val);
-
-  void __set_identityServerPasswordToken(const std::string& val);
-
   void __set_declinedReason(const std::string& val);
-
-  void __set_oauthClientId(const std::string& val);
-
-  void __set_oauthClientSecret(const std::string& val);
 
   void __set_requestCreationTime(const int64_t val);
 
@@ -177,37 +290,9 @@ class Tenant {
       return false;
     else if (__isset.reviewProposalDescription && !(reviewProposalDescription == rhs.reviewProposalDescription))
       return false;
-    if (__isset.tenantAdminFirstName != rhs.__isset.tenantAdminFirstName)
-      return false;
-    else if (__isset.tenantAdminFirstName && !(tenantAdminFirstName == rhs.tenantAdminFirstName))
-      return false;
-    if (__isset.tenantAdminLastName != rhs.__isset.tenantAdminLastName)
-      return false;
-    else if (__isset.tenantAdminLastName && !(tenantAdminLastName == rhs.tenantAdminLastName))
-      return false;
-    if (__isset.tenantAdminEmail != rhs.__isset.tenantAdminEmail)
-      return false;
-    else if (__isset.tenantAdminEmail && !(tenantAdminEmail == rhs.tenantAdminEmail))
-      return false;
-    if (__isset.identityServerUserName != rhs.__isset.identityServerUserName)
-      return false;
-    else if (__isset.identityServerUserName && !(identityServerUserName == rhs.identityServerUserName))
-      return false;
-    if (__isset.identityServerPasswordToken != rhs.__isset.identityServerPasswordToken)
-      return false;
-    else if (__isset.identityServerPasswordToken && !(identityServerPasswordToken == rhs.identityServerPasswordToken))
-      return false;
     if (__isset.declinedReason != rhs.__isset.declinedReason)
       return false;
     else if (__isset.declinedReason && !(declinedReason == rhs.declinedReason))
-      return false;
-    if (__isset.oauthClientId != rhs.__isset.oauthClientId)
-      return false;
-    else if (__isset.oauthClientId && !(oauthClientId == rhs.oauthClientId))
-      return false;
-    if (__isset.oauthClientSecret != rhs.__isset.oauthClientSecret)
-      return false;
-    else if (__isset.oauthClientSecret && !(oauthClientSecret == rhs.oauthClientSecret))
       return false;
     if (__isset.requestCreationTime != rhs.__isset.requestCreationTime)
       return false;

@@ -37,7 +37,8 @@ int _kTenantApprovalStatusValues[] = {
   TenantApprovalStatus::DEACTIVATED,
   TenantApprovalStatus::CANCELLED,
   TenantApprovalStatus::DENIED,
-  TenantApprovalStatus::CREATED
+  TenantApprovalStatus::CREATED,
+  TenantApprovalStatus::DEPLOYED
 };
 const char* _kTenantApprovalStatusNames[] = {
   "REQUESTED",
@@ -46,9 +47,296 @@ const char* _kTenantApprovalStatusNames[] = {
   "DEACTIVATED",
   "CANCELLED",
   "DENIED",
-  "CREATED"
+  "CREATED",
+  "DEPLOYED"
 };
-const std::map<int, const char*> _TenantApprovalStatus_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(7, _kTenantApprovalStatusValues, _kTenantApprovalStatusNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _TenantApprovalStatus_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(8, _kTenantApprovalStatusValues, _kTenantApprovalStatusNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
+
+TenantPreferences::~TenantPreferences() throw() {
+}
+
+
+void TenantPreferences::__set_tenantAdminFirstName(const std::string& val) {
+  this->tenantAdminFirstName = val;
+__isset.tenantAdminFirstName = true;
+}
+
+void TenantPreferences::__set_tenantAdminLastName(const std::string& val) {
+  this->tenantAdminLastName = val;
+__isset.tenantAdminLastName = true;
+}
+
+void TenantPreferences::__set_tenantAdminEmail(const std::string& val) {
+  this->tenantAdminEmail = val;
+__isset.tenantAdminEmail = true;
+}
+
+uint32_t TenantPreferences::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 10:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->tenantAdminFirstName);
+          this->__isset.tenantAdminFirstName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 11:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->tenantAdminLastName);
+          this->__isset.tenantAdminLastName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 12:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->tenantAdminEmail);
+          this->__isset.tenantAdminEmail = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t TenantPreferences::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("TenantPreferences");
+
+  if (this->__isset.tenantAdminFirstName) {
+    xfer += oprot->writeFieldBegin("tenantAdminFirstName", ::apache::thrift::protocol::T_STRING, 10);
+    xfer += oprot->writeString(this->tenantAdminFirstName);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.tenantAdminLastName) {
+    xfer += oprot->writeFieldBegin("tenantAdminLastName", ::apache::thrift::protocol::T_STRING, 11);
+    xfer += oprot->writeString(this->tenantAdminLastName);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.tenantAdminEmail) {
+    xfer += oprot->writeFieldBegin("tenantAdminEmail", ::apache::thrift::protocol::T_STRING, 12);
+    xfer += oprot->writeString(this->tenantAdminEmail);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(TenantPreferences &a, TenantPreferences &b) {
+  using ::std::swap;
+  swap(a.tenantAdminFirstName, b.tenantAdminFirstName);
+  swap(a.tenantAdminLastName, b.tenantAdminLastName);
+  swap(a.tenantAdminEmail, b.tenantAdminEmail);
+  swap(a.__isset, b.__isset);
+}
+
+TenantPreferences::TenantPreferences(const TenantPreferences& other0) {
+  tenantAdminFirstName = other0.tenantAdminFirstName;
+  tenantAdminLastName = other0.tenantAdminLastName;
+  tenantAdminEmail = other0.tenantAdminEmail;
+  __isset = other0.__isset;
+}
+TenantPreferences& TenantPreferences::operator=(const TenantPreferences& other1) {
+  tenantAdminFirstName = other1.tenantAdminFirstName;
+  tenantAdminLastName = other1.tenantAdminLastName;
+  tenantAdminEmail = other1.tenantAdminEmail;
+  __isset = other1.__isset;
+  return *this;
+}
+void TenantPreferences::printTo(std::ostream& out) const {
+  using ::apache::thrift::to_string;
+  out << "TenantPreferences(";
+  out << "tenantAdminFirstName="; (__isset.tenantAdminFirstName ? (out << to_string(tenantAdminFirstName)) : (out << "<null>"));
+  out << ", " << "tenantAdminLastName="; (__isset.tenantAdminLastName ? (out << to_string(tenantAdminLastName)) : (out << "<null>"));
+  out << ", " << "tenantAdminEmail="; (__isset.tenantAdminEmail ? (out << to_string(tenantAdminEmail)) : (out << "<null>"));
+  out << ")";
+}
+
+
+TenantConfig::~TenantConfig() throw() {
+}
+
+
+void TenantConfig::__set_oauthClientId(const std::string& val) {
+  this->oauthClientId = val;
+__isset.oauthClientId = true;
+}
+
+void TenantConfig::__set_oauthClientSecret(const std::string& val) {
+  this->oauthClientSecret = val;
+__isset.oauthClientSecret = true;
+}
+
+void TenantConfig::__set_identityServerUserName(const std::string& val) {
+  this->identityServerUserName = val;
+__isset.identityServerUserName = true;
+}
+
+void TenantConfig::__set_identityServerPasswordToken(const std::string& val) {
+  this->identityServerPasswordToken = val;
+__isset.identityServerPasswordToken = true;
+}
+
+uint32_t TenantConfig::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  apache::thrift::protocol::TInputRecursionTracker tracker(*iprot);
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 16:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->oauthClientId);
+          this->__isset.oauthClientId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 17:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->oauthClientSecret);
+          this->__isset.oauthClientSecret = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 13:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->identityServerUserName);
+          this->__isset.identityServerUserName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 14:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->identityServerPasswordToken);
+          this->__isset.identityServerPasswordToken = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t TenantConfig::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
+  xfer += oprot->writeStructBegin("TenantConfig");
+
+  if (this->__isset.identityServerUserName) {
+    xfer += oprot->writeFieldBegin("identityServerUserName", ::apache::thrift::protocol::T_STRING, 13);
+    xfer += oprot->writeString(this->identityServerUserName);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.identityServerPasswordToken) {
+    xfer += oprot->writeFieldBegin("identityServerPasswordToken", ::apache::thrift::protocol::T_STRING, 14);
+    xfer += oprot->writeString(this->identityServerPasswordToken);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.oauthClientId) {
+    xfer += oprot->writeFieldBegin("oauthClientId", ::apache::thrift::protocol::T_STRING, 16);
+    xfer += oprot->writeString(this->oauthClientId);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.oauthClientSecret) {
+    xfer += oprot->writeFieldBegin("oauthClientSecret", ::apache::thrift::protocol::T_STRING, 17);
+    xfer += oprot->writeString(this->oauthClientSecret);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(TenantConfig &a, TenantConfig &b) {
+  using ::std::swap;
+  swap(a.oauthClientId, b.oauthClientId);
+  swap(a.oauthClientSecret, b.oauthClientSecret);
+  swap(a.identityServerUserName, b.identityServerUserName);
+  swap(a.identityServerPasswordToken, b.identityServerPasswordToken);
+  swap(a.__isset, b.__isset);
+}
+
+TenantConfig::TenantConfig(const TenantConfig& other2) {
+  oauthClientId = other2.oauthClientId;
+  oauthClientSecret = other2.oauthClientSecret;
+  identityServerUserName = other2.identityServerUserName;
+  identityServerPasswordToken = other2.identityServerPasswordToken;
+  __isset = other2.__isset;
+}
+TenantConfig& TenantConfig::operator=(const TenantConfig& other3) {
+  oauthClientId = other3.oauthClientId;
+  oauthClientSecret = other3.oauthClientSecret;
+  identityServerUserName = other3.identityServerUserName;
+  identityServerPasswordToken = other3.identityServerPasswordToken;
+  __isset = other3.__isset;
+  return *this;
+}
+void TenantConfig::printTo(std::ostream& out) const {
+  using ::apache::thrift::to_string;
+  out << "TenantConfig(";
+  out << "oauthClientId="; (__isset.oauthClientId ? (out << to_string(oauthClientId)) : (out << "<null>"));
+  out << ", " << "oauthClientSecret="; (__isset.oauthClientSecret ? (out << to_string(oauthClientSecret)) : (out << "<null>"));
+  out << ", " << "identityServerUserName="; (__isset.identityServerUserName ? (out << to_string(identityServerUserName)) : (out << "<null>"));
+  out << ", " << "identityServerPasswordToken="; (__isset.identityServerPasswordToken ? (out << to_string(identityServerPasswordToken)) : (out << "<null>"));
+  out << ")";
+}
 
 
 Tenant::~Tenant() throw() {
@@ -98,44 +386,9 @@ void Tenant::__set_reviewProposalDescription(const std::string& val) {
 __isset.reviewProposalDescription = true;
 }
 
-void Tenant::__set_tenantAdminFirstName(const std::string& val) {
-  this->tenantAdminFirstName = val;
-__isset.tenantAdminFirstName = true;
-}
-
-void Tenant::__set_tenantAdminLastName(const std::string& val) {
-  this->tenantAdminLastName = val;
-__isset.tenantAdminLastName = true;
-}
-
-void Tenant::__set_tenantAdminEmail(const std::string& val) {
-  this->tenantAdminEmail = val;
-__isset.tenantAdminEmail = true;
-}
-
-void Tenant::__set_identityServerUserName(const std::string& val) {
-  this->identityServerUserName = val;
-__isset.identityServerUserName = true;
-}
-
-void Tenant::__set_identityServerPasswordToken(const std::string& val) {
-  this->identityServerPasswordToken = val;
-__isset.identityServerPasswordToken = true;
-}
-
 void Tenant::__set_declinedReason(const std::string& val) {
   this->declinedReason = val;
 __isset.declinedReason = true;
-}
-
-void Tenant::__set_oauthClientId(const std::string& val) {
-  this->oauthClientId = val;
-__isset.oauthClientId = true;
-}
-
-void Tenant::__set_oauthClientSecret(const std::string& val) {
-  this->oauthClientSecret = val;
-__isset.oauthClientSecret = true;
 }
 
 void Tenant::__set_requestCreationTime(const int64_t val) {
@@ -181,9 +434,9 @@ uint32_t Tenant::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast0;
-          xfer += iprot->readI32(ecast0);
-          this->tenantApprovalStatus = (TenantApprovalStatus::type)ecast0;
+          int32_t ecast4;
+          xfer += iprot->readI32(ecast4);
+          this->tenantApprovalStatus = (TenantApprovalStatus::type)ecast4;
           isset_tenantApprovalStatus = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -245,66 +498,10 @@ uint32_t Tenant::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 10:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->tenantAdminFirstName);
-          this->__isset.tenantAdminFirstName = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 11:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->tenantAdminLastName);
-          this->__isset.tenantAdminLastName = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 12:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->tenantAdminEmail);
-          this->__isset.tenantAdminEmail = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 13:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->identityServerUserName);
-          this->__isset.identityServerUserName = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 14:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->identityServerPasswordToken);
-          this->__isset.identityServerPasswordToken = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
       case 15:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->declinedReason);
           this->__isset.declinedReason = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 16:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->oauthClientId);
-          this->__isset.oauthClientId = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 17:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->oauthClientSecret);
-          this->__isset.oauthClientSecret = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -389,44 +586,9 @@ uint32_t Tenant::write(::apache::thrift::protocol::TProtocol* oprot) const {
     xfer += oprot->writeString(this->reviewProposalDescription);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.tenantAdminFirstName) {
-    xfer += oprot->writeFieldBegin("tenantAdminFirstName", ::apache::thrift::protocol::T_STRING, 10);
-    xfer += oprot->writeString(this->tenantAdminFirstName);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.tenantAdminLastName) {
-    xfer += oprot->writeFieldBegin("tenantAdminLastName", ::apache::thrift::protocol::T_STRING, 11);
-    xfer += oprot->writeString(this->tenantAdminLastName);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.tenantAdminEmail) {
-    xfer += oprot->writeFieldBegin("tenantAdminEmail", ::apache::thrift::protocol::T_STRING, 12);
-    xfer += oprot->writeString(this->tenantAdminEmail);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.identityServerUserName) {
-    xfer += oprot->writeFieldBegin("identityServerUserName", ::apache::thrift::protocol::T_STRING, 13);
-    xfer += oprot->writeString(this->identityServerUserName);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.identityServerPasswordToken) {
-    xfer += oprot->writeFieldBegin("identityServerPasswordToken", ::apache::thrift::protocol::T_STRING, 14);
-    xfer += oprot->writeString(this->identityServerPasswordToken);
-    xfer += oprot->writeFieldEnd();
-  }
   if (this->__isset.declinedReason) {
     xfer += oprot->writeFieldBegin("declinedReason", ::apache::thrift::protocol::T_STRING, 15);
     xfer += oprot->writeString(this->declinedReason);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.oauthClientId) {
-    xfer += oprot->writeFieldBegin("oauthClientId", ::apache::thrift::protocol::T_STRING, 16);
-    xfer += oprot->writeString(this->oauthClientId);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.oauthClientSecret) {
-    xfer += oprot->writeFieldBegin("oauthClientSecret", ::apache::thrift::protocol::T_STRING, 17);
-    xfer += oprot->writeString(this->oauthClientSecret);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.requestCreationTime) {
@@ -455,62 +617,41 @@ void swap(Tenant &a, Tenant &b) {
   swap(a.tenantURL, b.tenantURL);
   swap(a.tenantPublicAbstract, b.tenantPublicAbstract);
   swap(a.reviewProposalDescription, b.reviewProposalDescription);
-  swap(a.tenantAdminFirstName, b.tenantAdminFirstName);
-  swap(a.tenantAdminLastName, b.tenantAdminLastName);
-  swap(a.tenantAdminEmail, b.tenantAdminEmail);
-  swap(a.identityServerUserName, b.identityServerUserName);
-  swap(a.identityServerPasswordToken, b.identityServerPasswordToken);
   swap(a.declinedReason, b.declinedReason);
-  swap(a.oauthClientId, b.oauthClientId);
-  swap(a.oauthClientSecret, b.oauthClientSecret);
   swap(a.requestCreationTime, b.requestCreationTime);
   swap(a.requesterUsername, b.requesterUsername);
   swap(a.__isset, b.__isset);
 }
 
-Tenant::Tenant(const Tenant& other1) {
-  tenantId = other1.tenantId;
-  tenantApprovalStatus = other1.tenantApprovalStatus;
-  tenantName = other1.tenantName;
-  domain = other1.domain;
-  emailAddress = other1.emailAddress;
-  tenantAcronym = other1.tenantAcronym;
-  tenantURL = other1.tenantURL;
-  tenantPublicAbstract = other1.tenantPublicAbstract;
-  reviewProposalDescription = other1.reviewProposalDescription;
-  tenantAdminFirstName = other1.tenantAdminFirstName;
-  tenantAdminLastName = other1.tenantAdminLastName;
-  tenantAdminEmail = other1.tenantAdminEmail;
-  identityServerUserName = other1.identityServerUserName;
-  identityServerPasswordToken = other1.identityServerPasswordToken;
-  declinedReason = other1.declinedReason;
-  oauthClientId = other1.oauthClientId;
-  oauthClientSecret = other1.oauthClientSecret;
-  requestCreationTime = other1.requestCreationTime;
-  requesterUsername = other1.requesterUsername;
-  __isset = other1.__isset;
+Tenant::Tenant(const Tenant& other5) {
+  tenantId = other5.tenantId;
+  tenantApprovalStatus = other5.tenantApprovalStatus;
+  tenantName = other5.tenantName;
+  domain = other5.domain;
+  emailAddress = other5.emailAddress;
+  tenantAcronym = other5.tenantAcronym;
+  tenantURL = other5.tenantURL;
+  tenantPublicAbstract = other5.tenantPublicAbstract;
+  reviewProposalDescription = other5.reviewProposalDescription;
+  declinedReason = other5.declinedReason;
+  requestCreationTime = other5.requestCreationTime;
+  requesterUsername = other5.requesterUsername;
+  __isset = other5.__isset;
 }
-Tenant& Tenant::operator=(const Tenant& other2) {
-  tenantId = other2.tenantId;
-  tenantApprovalStatus = other2.tenantApprovalStatus;
-  tenantName = other2.tenantName;
-  domain = other2.domain;
-  emailAddress = other2.emailAddress;
-  tenantAcronym = other2.tenantAcronym;
-  tenantURL = other2.tenantURL;
-  tenantPublicAbstract = other2.tenantPublicAbstract;
-  reviewProposalDescription = other2.reviewProposalDescription;
-  tenantAdminFirstName = other2.tenantAdminFirstName;
-  tenantAdminLastName = other2.tenantAdminLastName;
-  tenantAdminEmail = other2.tenantAdminEmail;
-  identityServerUserName = other2.identityServerUserName;
-  identityServerPasswordToken = other2.identityServerPasswordToken;
-  declinedReason = other2.declinedReason;
-  oauthClientId = other2.oauthClientId;
-  oauthClientSecret = other2.oauthClientSecret;
-  requestCreationTime = other2.requestCreationTime;
-  requesterUsername = other2.requesterUsername;
-  __isset = other2.__isset;
+Tenant& Tenant::operator=(const Tenant& other6) {
+  tenantId = other6.tenantId;
+  tenantApprovalStatus = other6.tenantApprovalStatus;
+  tenantName = other6.tenantName;
+  domain = other6.domain;
+  emailAddress = other6.emailAddress;
+  tenantAcronym = other6.tenantAcronym;
+  tenantURL = other6.tenantURL;
+  tenantPublicAbstract = other6.tenantPublicAbstract;
+  reviewProposalDescription = other6.reviewProposalDescription;
+  declinedReason = other6.declinedReason;
+  requestCreationTime = other6.requestCreationTime;
+  requesterUsername = other6.requesterUsername;
+  __isset = other6.__isset;
   return *this;
 }
 void Tenant::printTo(std::ostream& out) const {
@@ -525,14 +666,7 @@ void Tenant::printTo(std::ostream& out) const {
   out << ", " << "tenantURL="; (__isset.tenantURL ? (out << to_string(tenantURL)) : (out << "<null>"));
   out << ", " << "tenantPublicAbstract="; (__isset.tenantPublicAbstract ? (out << to_string(tenantPublicAbstract)) : (out << "<null>"));
   out << ", " << "reviewProposalDescription="; (__isset.reviewProposalDescription ? (out << to_string(reviewProposalDescription)) : (out << "<null>"));
-  out << ", " << "tenantAdminFirstName="; (__isset.tenantAdminFirstName ? (out << to_string(tenantAdminFirstName)) : (out << "<null>"));
-  out << ", " << "tenantAdminLastName="; (__isset.tenantAdminLastName ? (out << to_string(tenantAdminLastName)) : (out << "<null>"));
-  out << ", " << "tenantAdminEmail="; (__isset.tenantAdminEmail ? (out << to_string(tenantAdminEmail)) : (out << "<null>"));
-  out << ", " << "identityServerUserName="; (__isset.identityServerUserName ? (out << to_string(identityServerUserName)) : (out << "<null>"));
-  out << ", " << "identityServerPasswordToken="; (__isset.identityServerPasswordToken ? (out << to_string(identityServerPasswordToken)) : (out << "<null>"));
   out << ", " << "declinedReason="; (__isset.declinedReason ? (out << to_string(declinedReason)) : (out << "<null>"));
-  out << ", " << "oauthClientId="; (__isset.oauthClientId ? (out << to_string(oauthClientId)) : (out << "<null>"));
-  out << ", " << "oauthClientSecret="; (__isset.oauthClientSecret ? (out << to_string(oauthClientSecret)) : (out << "<null>"));
   out << ", " << "requestCreationTime="; (__isset.requestCreationTime ? (out << to_string(requestCreationTime)) : (out << "<null>"));
   out << ", " << "requesterUsername="; (__isset.requesterUsername ? (out << to_string(requesterUsername)) : (out << "<null>"));
   out << ")";
