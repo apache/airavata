@@ -24,6 +24,10 @@
 package org.apache.airavata.model.workspace;
 
 
+import java.util.Map;
+import java.util.HashMap;
+import org.apache.thrift.TEnum;
+
 public enum GatewayApprovalStatus implements org.apache.thrift.TEnum {
   REQUESTED(0),
   APPROVED(1),

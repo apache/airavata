@@ -69,16 +69,12 @@ import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.QueueStatusModel;
-import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
-import org.apache.airavata.service.profile.user.cpi.UserProfileService;
-import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
 import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
 import org.apache.airavata.sharing.registry.models.*;
@@ -88,7 +84,6 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.MessageFormat;
 import java.util.*;
 
 public class AiravataServerHandler implements Airavata.Iface {
@@ -4700,9 +4695,21 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public boolean createGroup(AuthzToken authzToken, GroupModel groupModel) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public String createGroup(AuthzToken authzToken, GroupModel groupModel) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
-            throw new UnsupportedOperationException("Method not supported yet");
+            //TODO Validations for authorization
+            SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
+
+            UserGroup sharingUserGroup = new UserGroup();
+            sharingUserGroup.setGroupId(UUID.randomUUID().toString());
+            sharingUserGroup.setName(groupModel.getName());
+            sharingUserGroup.setDescription(groupModel.getDescription());
+            sharingUserGroup.setGroupType(GroupType.USER_LEVEL_GROUP);
+            sharingUserGroup.setDomainId(authzToken.getClaimsMap().get(Constants.GATEWAY_ID));
+
+            String groupId = sharingClient.createGroup(sharingUserGroup);
+            sharingClient.addUsersToGroup(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupModel.getMembers(), groupId);
+            return groupId;
         } catch (Exception e) {
             String msg = "Error Creating Group" ;
             logger.error(msg, e);
@@ -4717,7 +4724,19 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean updateGroup(AuthzToken authzToken, GroupModel groupModel) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
-            throw new UnsupportedOperationException("Method not supported yet");
+            //TODO Validations for authorization
+            SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
+
+            UserGroup sharingUserGroup = new UserGroup();
+            sharingUserGroup.setGroupId(groupModel.getId());
+            sharingUserGroup.setName(groupModel.getName());
+            sharingUserGroup.setDescription(groupModel.getDescription());
+            sharingUserGroup.setGroupType(GroupType.USER_LEVEL_GROUP);
+            sharingUserGroup.setDomainId(authzToken.getClaimsMap().get(Constants.GATEWAY_ID));
+
+            //adding and removal of users should be handle separately
+            sharingClient.updateGroup(sharingUserGroup);
+            return true;
         } catch (Exception e) {
             String msg = "Error Updating Group" ;
             logger.error(msg, e);
@@ -4729,10 +4748,14 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public boolean deleteGroup(AuthzToken authzToken, String groupId, String ownerId, String gatewayId) throws
+    public boolean deleteGroup(AuthzToken authzToken, String groupId, String ownerId) throws
             InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
-            throw new UnsupportedOperationException("Method not supported yet");
+            //TODO Validations for authorization
+            SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
+
+            sharingClient.deleteGroup(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId);
+            return true;
         } catch (Exception e) {
             String msg = "Error Deleting Group. Group ID: " + groupId ;
             logger.error(msg, e);
@@ -4747,7 +4770,20 @@ public class AiravataServerHandler implements Airavata.Iface {
     public GroupModel getGroup(AuthzToken authzToken, String groupId) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
-            throw new UnsupportedOperationException("Method not supported yet");
+            SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
+            UserGroup userGroup = sharingClient.getGroup(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId);
+
+            GroupModel groupModel = new GroupModel();
+            groupModel.setId(userGroup.getGroupId());
+            groupModel.setName(userGroup.getName());
+            groupModel.setDescription(userGroup.getDescription());
+            groupModel.setOwnerId(userGroup.getOwnerId());
+
+            sharingClient.getGroupMembersOfTypeUser(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, 0, -1).stream().forEach(user->
+                    groupModel.addToMembers(user.getUserId())
+            );
+
+            return groupModel;
         } catch (Exception e) {
             String msg = "Error Retreiving Group. Group ID: " + groupId ;
             logger.error(msg, e);
@@ -4759,7 +4795,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public List<GroupModel> getAllGroupsUserBelongs(AuthzToken authzToken, String userName, String gatewayId)
+    public List<GroupModel> getAllGroupsUserBelongs(AuthzToken authzToken, String userName)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             throw new UnsupportedOperationException("Method not supported yet");
