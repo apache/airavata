@@ -24,12 +24,12 @@ git_branch: "develop"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/new-mexico-state"
-vhost_servername: "nmsu.scigap.org"
-vhost_ssl: False
+vhost_servername: "sciencegateway.nmsu.edu"
+vhost_ssl: True
 # TODO: have Ansible manage these files as well
-#ssl_certificate_file: "/etc/letsencrypt/live/hpcgateway.gsu.edu/cert.pem"
-#ssl_certificate_chain_file: "/etc/letsencrypt/live/hpcgateway.gsu.edu/fullchain.pem"
-#ssl_certificate_key_file: "/etc/letsencrypt/live/hpcgateway.gsu.edu/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/sciencegateway.nmsu.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/sciencegateway.nmsu.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/sciencegateway.nmsu.edu/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"

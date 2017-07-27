@@ -24,12 +24,12 @@ git_branch: "develop"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/alabama-birmingham"
-vhost_servername: "uab.scigap.org"
-vhost_ssl: False
+vhost_servername: "torana.rc.uab.edu"
+vhost_ssl: true
 # TODO: have Ansible manage these files as well
-#ssl_certificate_file: "/etc/letsencrypt/live/hpcgateway.gsu.edu/cert.pem"
-#ssl_certificate_chain_file: "/etc/letsencrypt/live/hpcgateway.gsu.edu/fullchain.pem"
-#ssl_certificate_key_file: "/etc/letsencrypt/live/hpcgateway.gsu.edu/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/torana.rc.uab.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/torana.rc.uab.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/torana.rc.uab.edu/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
