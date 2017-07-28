@@ -126,23 +126,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 AUTHENTICATION_BACKENDS = [
-    'django_airavata.apps.auth.backends.WSO2ISBackend'
+    'django_airavata.apps.auth.backends.KeycloakBackend'
 ]
-
-WSO2IS_CLIENT_ID = 'fGwm3EW0EmaiV0jI6GBmmOiQ2Xca'
-WSO2IS_CLIENT_SECRET = 'fMLLvWH6YEHwgl4Nb0hHu9AC5Jwa'
-WSO2IS_AUTHORIZE_URL = 'https://localhost:9443/oauth2/authorize'
-WSO2IS_TOKEN_URL = 'https://localhost:9443/oauth2/token'
-WSO2IS_USERINFO_URL = 'https://localhost:9443/oauth2/userinfo?schema=openid'
-WSO2IS_VERIFY_SSL = False
 
 LOGIN_URL = '/auth/login'
 LOGIN_REDIRECT_URL = '/'
-
-GATEWAY_ID = 'php_reference_gateway'
-AIRAVATA_API_HOST = 'localhost'
-AIRAVATA_API_PORT = 8930
-AIRAVATA_API_SECURE = False
 
 LOGGING = {
     'version': 1,
@@ -158,3 +146,9 @@ LOGGING = {
         },
     },
 }
+
+# Allow all settings to be overridden by settings_local.py file
+try:
+    from django_airavata.settings_local import *
+except ImportError:
+    pass
