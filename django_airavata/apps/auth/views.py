@@ -14,14 +14,34 @@ logger = logging.getLogger(__name__)
 # Create your views here.
 
 def start_login(request):
-    client_id = settings.KEYCLOAK_CLIENT_ID
-    base_authorize_url = settings.KEYCLOAK_AUTHORIZE_URL
-    oauth2_session = OAuth2Session(client_id, scope='openid', redirect_uri=request.build_absolute_uri(reverse('airavata_auth_callback')))
-    authorization_url, state = oauth2_session.authorization_url(base_authorize_url)
-    logger.debug("authorization_url={}, state={}".format(authorization_url, state))
-    # Store state in session for later validation
-    request.session['OAUTH2_STATE'] = state
-    return redirect(authorization_url)
+    # TODO: If the gateway is configured to not allow username password authentication, then redirect to Keycloak
+    # client_id = settings.KEYCLOAK_CLIENT_ID
+    # base_authorize_url = settings.KEYCLOAK_AUTHORIZE_URL
+    # oauth2_session = OAuth2Session(client_id, scope='openid', redirect_uri=request.build_absolute_uri(reverse('django_airavata_auth:callback')))
+    # authorization_url, state = oauth2_session.authorization_url(base_authorize_url)
+    # logger.debug("authorization_url={}, state={}".format(authorization_url, state))
+    # # Store state in session for later validation
+    # request.session['OAUTH2_STATE'] = state
+    # return redirect(authorization_url)
+    return render(request, 'django_airavata_auth/login.html')
+
+def handle_login(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(username=username, password=password, request=request)
+    logger.debug("authenticated user: {}".format(user))
+    try:
+        if user is not None:
+            login(request, user)
+            return redirect(settings.LOGIN_REDIRECT_URL)
+        else:
+            # TODO: add error message that login failed
+            return render(request, 'django_airavata_auth/login.html', {
+                'username': username
+            })
+    except Exception as err:
+        logger.exception("An error occurred while logging in with username and password")
+        return redirect(reverse('django_airavata_auth:error'))
 
 def start_logout(request):
     logout(request)
@@ -34,7 +54,7 @@ def callback(request):
         return redirect(settings.LOGIN_REDIRECT_URL)
     except Exception as err:
         logger.exception("An error occurred while processing OAuth2 callback: {}".format(request.build_absolute_uri()))
-        return redirect(reverse('airavata_auth_error'))
+        return redirect(reverse('django_airavata_auth:error'))
 
 def auth_error(request):
     return render(request, 'django_airavata_auth/auth_error.html', {
