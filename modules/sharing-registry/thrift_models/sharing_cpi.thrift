@@ -19,6 +19,8 @@
  */
 
 namespace java org.apache.airavata.sharing.registry.service.cpi
+namespace php Airavata.API.Sharing
+namespace py apache.airavata.api.sharing
 
 include "./sharing_models.thrift"
 

@@ -23,7 +23,7 @@
 #    and Data Model java beans in java, C++, PHP and Python.
 
 show_usage() {
-	echo -e "Usage: $0 [--native-thrift] [Language to generate stubs]"
+	echo -e "Usage: $0 [docker-machine start--native-thrift] [Language to generate stubs]"
 	echo ""
 	echo "options:"
 	echo -e "\tjava Generate/Update Java Stubs"
@@ -77,7 +77,9 @@ setup() {
 
     # Thrift files
     AIRAVATA_API_THRIFT_FILE="${BASEDIR}airavata-apis/airavata_api.thrift"
+    SHARING_API_THRIFT_FILE="${BASEDIR}../modules/sharing-registry/thrift_models/sharing_cpi.thrift"
     DATAMODEL_THRIFT_FILE="${BASEDIR}data-models/airavata_data_models.thrift"
+    SHARING_DATAMODEL_THRIFT_FILE="${BASEDIR}../modules/sharing-registry/thrift_models/sharing_models.thrift"
     APP_CATALOG_THRIFT_FILE="${BASEDIR}data-models/app-catalog-models/app_catalog_models.thrift"
     RESOURCE_CATALOG_THRIFT_FILE="${BASEDIR}data-models/resource-catalog-models/resource_catalog_models.thrift"
     WORKFLOW_THRIFT_FILE="${BASEDIR}data-models/workflow-models/workflow_data_model.thrift"
@@ -228,9 +230,11 @@ generate_php_stubs() {
     # Using thrift Java generator, generate the PHP classes based on Airavata API. This
     #   The airavata_api.thrift includes rest of data models.
     $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${DATAMODEL_THRIFT_FILE}  || fail unable to generate PHP thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${SHARING_DATAMODEL_THRIFT_FILE}  || fail unable to generate PHP thrift classes
     $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${APP_CATALOG_THRIFT_FILE}  || fail unable to generate PHP thrift classes
     $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${RESOURCE_CATALOG_THRIFT_FILE}   || fail unable to generate PHP thrift classes
     $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${AIRAVATA_API_THRIFT_FILE} || fail unable to generate PHP thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${SHARING_API_THRIFT_FILE} || fail unable to generate PHP thrift classes
     $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${PROFILE_SERVICE_THRIFT_FILE} || fail unable to generate PHP thrift classes
 
     # For the generated java classes add the ASF V2 License header
@@ -282,6 +286,8 @@ generate_python_stubs() {
     # Using thrift Python generator, generate the python classes based on Airavata API. This
     #   The airavata_api.thrift includes rest of data models.
     $THRIFT_EXEC ${THRIFT_ARGS} --gen py ${AIRAVATA_API_THRIFT_FILE}  || fail unable to generate Python thrift classes
+
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen py ${SHARING_API_THRIFT_FILE}  || fail unable to generate Python thrift classes
 
     # For the generated CPP classes add the ASF V2 License header
     #add_license_header #PYTHON_GEN_DIR
