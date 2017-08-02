@@ -39,6 +39,8 @@ public final class Constants {
     public static final String KEYSTORE_PASSWORD = "keystore.password";
     public static final String TLS_CLIENT_TIMEOUT = "TLS.client.timeout";
 
+    public static final String IS_SHARING_TLS_ENABLED = "sharing.tls.enabled";
+
     public static final String API_METHOD_NAME = "api.method.name";
 
     //constants in XACML authorization response.
