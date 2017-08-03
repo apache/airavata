@@ -1,24 +1,3 @@
-<!--
-
-
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-    KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
-
--->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -46,6 +25,7 @@
 <li><a href="#Fn_SharingRegistryService_deleteGroup">deleteGroup</a></li>
 <li><a href="#Fn_SharingRegistryService_deletePermissionType">deletePermissionType</a></li>
 <li><a href="#Fn_SharingRegistryService_deleteUser">deleteUser</a></li>
+<li><a href="#Fn_SharingRegistryService_getAllMemberGroupsForUser">getAllMemberGroupsForUser</a></li>
 <li><a href="#Fn_SharingRegistryService_getDomain">getDomain</a></li>
 <li><a href="#Fn_SharingRegistryService_getDomains">getDomains</a></li>
 <li><a href="#Fn_SharingRegistryService_getEntity">getEntity</a></li>
@@ -90,7 +70,7 @@
 <h3 id="Svc_SharingRegistryService">Service: SharingRegistryService</h3>
 <div class="definition"><h4 id="Fn_SharingRegistryService_createDomain">Function: SharingRegistryService.createDomain</h4>
 <pre><code>string</code> createDomain(<code><a href="sharing_models.html#Struct_Domain">sharing_models.Domain</a></code> domain)
-    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
+    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>, <code><a href="sharing_models.html#Struct_DuplicateEntryException">sharing_models.DuplicateEntryException</a></code>
 </pre><p>API method to create a new domain</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_updateDomain">Function: SharingRegistryService.updateDomain</h4>
 <pre><code>bool</code> updateDomain(<code><a href="sharing_models.html#Struct_Domain">sharing_models.Domain</a></code> domain)
@@ -115,7 +95,7 @@
 </pre><p>API method to get all domain.</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_createUser">Function: SharingRegistryService.createUser</h4>
 <pre><code>string</code> createUser(<code><a href="sharing_models.html#Struct_User">sharing_models.User</a></code> user)
-    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
+    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>, <code><a href="sharing_models.html#Struct_DuplicateEntryException">sharing_models.DuplicateEntryException</a></code>
 </pre><p>API method to register a user in the system</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_updatedUser">Function: SharingRegistryService.updatedUser</h4>
 <pre><code>bool</code> updatedUser(<code><a href="sharing_models.html#Struct_User">sharing_models.User</a></code> user)
@@ -211,9 +191,13 @@
                                      <code>string</code> groupId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to remove a child group from parent group.</p>
-<br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_createEntityType">Function: SharingRegistryService.createEntityType</h4>
-<pre><code>string</code> createEntityType(<code><a href="sharing_models.html#Struct_EntityType">sharing_models.EntityType</a></code> entityType)
+<br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_getAllMemberGroupsForUser">Function: SharingRegistryService.getAllMemberGroupsForUser</h4>
+<pre><code>list&lt;<code><a href="sharing_models.html#Struct_UserGroup">sharing_models.UserGroup</a></code>&gt;</code> getAllMemberGroupsForUser(<code>string</code> domainId,
+                                                         <code>string</code> userId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
+</pre></div><div class="definition"><h4 id="Fn_SharingRegistryService_createEntityType">Function: SharingRegistryService.createEntityType</h4>
+<pre><code>string</code> createEntityType(<code><a href="sharing_models.html#Struct_EntityType">sharing_models.EntityType</a></code> entityType)
+    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>, <code><a href="sharing_models.html#Struct_DuplicateEntryException">sharing_models.DuplicateEntryException</a></code>
 </pre><p>API method to create a new entity type</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_updateEntityType">Function: SharingRegistryService.updateEntityType</h4>
 <pre><code>bool</code> updateEntityType(<code><a href="sharing_models.html#Struct_EntityType">sharing_models.EntityType</a></code> entityType)
@@ -285,7 +269,7 @@
 </pre><p>API method to get a list of shared groups given the entity id</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_createPermissionType">Function: SharingRegistryService.createPermissionType</h4>
 <pre><code>string</code> createPermissionType(<code><a href="sharing_models.html#Struct_PermissionType">sharing_models.PermissionType</a></code> permissionType)
-    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
+    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>, <code><a href="sharing_models.html#Struct_DuplicateEntryException">sharing_models.DuplicateEntryException</a></code>
 </pre><p>API method to create permission type</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_updatePermissionType">Function: SharingRegistryService.updatePermissionType</h4>
 <pre><code>bool</code> updatePermissionType(<code><a href="sharing_models.html#Struct_PermissionType">sharing_models.PermissionType</a></code> permissionType)

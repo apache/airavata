@@ -59,7 +59,8 @@ struct MessageType {
     JOB = 4,
     LAUNCHPROCESS = 5,
     TERMINATEPROCESS = 6,
-    PROCESSOUTPUT = 7
+    PROCESSOUTPUT = 7,
+    DB_EVENT = 8
   };
 };
 

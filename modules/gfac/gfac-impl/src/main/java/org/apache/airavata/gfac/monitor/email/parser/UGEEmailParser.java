@@ -55,6 +55,10 @@ public class UGEEmailParser implements EmailParser {
 
     private void parseContent(Message message, JobStatusResult jobStatusResult) throws MessagingException, AiravataException {
         String subject = message.getSubject();
+
+        //FIXME - HACK to handle Little Dog email issue from SIU
+        subject = subject.replace("Set in error state", "Failed");
+
         Pattern pattern = Pattern.compile(REGEX);
         Matcher matcher = pattern.matcher(subject);
         try {

@@ -1,0 +1,21 @@
+---
+keycloak_version: "2.5.4.Final"
+keycloak_downlaod_url: "https://downloads.jboss.org/keycloak/{{keycloak_version}}/keycloak-{{keycloak_version}}.tar.gz"
+keycloak_install_dir: "keycloak-{{keycloak_version}}"
+keycloak_db_connector_name: "mysql-connector-java-5.1.41"
+keycloak_ssl_keystore_file: "keycloak.jks"
+keycloak_ssl_keystore_file_name: "keycloak.jks"
+keycloak_ssl_keystore_password: "Airavata"
+mysql_db_connector_download_url: "https://dev.mysql.com/get/Downloads/Connector-J/{{keycloak_db_connector_name}}.tar.gz"
+keycloak_master_account_username: "username"
+keycloak_master_account_password: "password"
+keycloak_server_port: "443"
+
+keycloak_db_host: "localhost"
+keycloak_db_port: "3306"
+keycloak_db_schema_name: "keycloak"
+keycloak_db_url: "jdbc:mysql://{{keycloak_db_host}}:{{keycloak_db_port}}/{{keycloak_db_schema_name}}"
+keycloak_db_username: "username"
+keycloak_db_password: "password"
+keycloak_db_pool_size: "20"
+...

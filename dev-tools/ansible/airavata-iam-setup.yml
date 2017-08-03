@@ -1,0 +1,8 @@
+---
+- hosts: prod-keycloak
+  tags: keycloak
+  roles:
+    - java
+    - keycloak
+
+...

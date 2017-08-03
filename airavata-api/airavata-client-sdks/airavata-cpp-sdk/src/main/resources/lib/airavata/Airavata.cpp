@@ -51463,8 +51463,8 @@ uint32_t Airavata_createGroup_result::read(::apache::thrift::protocol::TProtocol
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool(this->success);
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->success);
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -51521,8 +51521,8 @@ uint32_t Airavata_createGroup_result::write(::apache::thrift::protocol::TProtoco
   xfer += oprot->writeStructBegin("Airavata_createGroup_result");
 
   if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_BOOL, 0);
-    xfer += oprot->writeBool(this->success);
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
+    xfer += oprot->writeString(this->success);
     xfer += oprot->writeFieldEnd();
   } else if (this->__isset.ire) {
     xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
@@ -51573,8 +51573,8 @@ uint32_t Airavata_createGroup_presult::read(::apache::thrift::protocol::TProtoco
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool((*(this->success)));
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString((*(this->success)));
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -51933,7 +51933,6 @@ uint32_t Airavata_deleteGroup_args::read(::apache::thrift::protocol::TProtocol* 
   bool isset_authzToken = false;
   bool isset_groupId = false;
   bool isset_ownerId = false;
-  bool isset_gatewayId = false;
 
   while (true)
   {
@@ -51967,14 +51966,6 @@ uint32_t Airavata_deleteGroup_args::read(::apache::thrift::protocol::TProtocol* 
           xfer += iprot->skip(ftype);
         }
         break;
-      case 4:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->gatewayId);
-          isset_gatewayId = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -51989,8 +51980,6 @@ uint32_t Airavata_deleteGroup_args::read(::apache::thrift::protocol::TProtocol* 
   if (!isset_groupId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_ownerId)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_gatewayId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -52010,10 +51999,6 @@ uint32_t Airavata_deleteGroup_args::write(::apache::thrift::protocol::TProtocol*
 
   xfer += oprot->writeFieldBegin("ownerId", ::apache::thrift::protocol::T_STRING, 3);
   xfer += oprot->writeString(this->ownerId);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 4);
-  xfer += oprot->writeString(this->gatewayId);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -52041,10 +52026,6 @@ uint32_t Airavata_deleteGroup_pargs::write(::apache::thrift::protocol::TProtocol
 
   xfer += oprot->writeFieldBegin("ownerId", ::apache::thrift::protocol::T_STRING, 3);
   xfer += oprot->writeString((*(this->ownerId)));
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 4);
-  xfer += oprot->writeString((*(this->gatewayId)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -52548,7 +52529,6 @@ uint32_t Airavata_getAllGroupsUserBelongs_args::read(::apache::thrift::protocol:
 
   bool isset_authzToken = false;
   bool isset_userName = false;
-  bool isset_gatewayId = false;
 
   while (true)
   {
@@ -52574,14 +52554,6 @@ uint32_t Airavata_getAllGroupsUserBelongs_args::read(::apache::thrift::protocol:
           xfer += iprot->skip(ftype);
         }
         break;
-      case 3:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->gatewayId);
-          isset_gatewayId = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -52594,8 +52566,6 @@ uint32_t Airavata_getAllGroupsUserBelongs_args::read(::apache::thrift::protocol:
   if (!isset_authzToken)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_userName)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_gatewayId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -52611,10 +52581,6 @@ uint32_t Airavata_getAllGroupsUserBelongs_args::write(::apache::thrift::protocol
 
   xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString(this->userName);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 3);
-  xfer += oprot->writeString(this->gatewayId);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -52638,10 +52604,6 @@ uint32_t Airavata_getAllGroupsUserBelongs_pargs::write(::apache::thrift::protoco
 
   xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->userName)));
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 3);
-  xfer += oprot->writeString((*(this->gatewayId)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -64625,10 +64587,10 @@ void AiravataClient::recv_getAllAccessibleUsers(std::vector<std::string> & _retu
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllAccessibleUsers failed: unknown result");
 }
 
-bool AiravataClient::createGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel)
+void AiravataClient::createGroup(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel)
 {
   send_createGroup(authzToken, groupModel);
-  return recv_createGroup();
+  recv_createGroup(_return);
 }
 
 void AiravataClient::send_createGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel)
@@ -64646,7 +64608,7 @@ void AiravataClient::send_createGroup(const  ::apache::airavata::model::security
   oprot_->getTransport()->flush();
 }
 
-bool AiravataClient::recv_createGroup()
+void AiravataClient::recv_createGroup(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -64671,7 +64633,6 @@ bool AiravataClient::recv_createGroup()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  bool _return;
   Airavata_createGroup_presult result;
   result.success = &_return;
   result.read(iprot_);
@@ -64679,7 +64640,8 @@ bool AiravataClient::recv_createGroup()
   iprot_->getTransport()->readEnd();
 
   if (result.__isset.success) {
-    return _return;
+    // _return pointer has now been filled
+    return;
   }
   if (result.__isset.ire) {
     throw result.ire;
@@ -64767,13 +64729,13 @@ bool AiravataClient::recv_updateGroup()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "updateGroup failed: unknown result");
 }
 
-bool AiravataClient::deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId, const std::string& gatewayId)
+bool AiravataClient::deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId)
 {
-  send_deleteGroup(authzToken, groupId, ownerId, gatewayId);
+  send_deleteGroup(authzToken, groupId, ownerId);
   return recv_deleteGroup();
 }
 
-void AiravataClient::send_deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId, const std::string& gatewayId)
+void AiravataClient::send_deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("deleteGroup", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -64782,7 +64744,6 @@ void AiravataClient::send_deleteGroup(const  ::apache::airavata::model::security
   args.authzToken = &authzToken;
   args.groupId = &groupId;
   args.ownerId = &ownerId;
-  args.gatewayId = &gatewayId;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -64911,13 +64872,13 @@ void AiravataClient::recv_getGroup( ::apache::airavata::model::group::GroupModel
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getGroup failed: unknown result");
 }
 
-void AiravataClient::getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId)
+void AiravataClient::getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName)
 {
-  send_getAllGroupsUserBelongs(authzToken, userName, gatewayId);
+  send_getAllGroupsUserBelongs(authzToken, userName);
   recv_getAllGroupsUserBelongs(_return);
 }
 
-void AiravataClient::send_getAllGroupsUserBelongs(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId)
+void AiravataClient::send_getAllGroupsUserBelongs(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("getAllGroupsUserBelongs", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -64925,7 +64886,6 @@ void AiravataClient::send_getAllGroupsUserBelongs(const  ::apache::airavata::mod
   Airavata_getAllGroupsUserBelongs_pargs args;
   args.authzToken = &authzToken;
   args.userName = &userName;
-  args.gatewayId = &gatewayId;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -75856,7 +75816,7 @@ void AiravataProcessor::process_createGroup(int32_t seqid, ::apache::thrift::pro
 
   Airavata_createGroup_result result;
   try {
-    result.success = iface_->createGroup(args.authzToken, args.groupModel);
+    iface_->createGroup(result.success, args.authzToken, args.groupModel);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -75988,7 +75948,7 @@ void AiravataProcessor::process_deleteGroup(int32_t seqid, ::apache::thrift::pro
 
   Airavata_deleteGroup_result result;
   try {
-    result.success = iface_->deleteGroup(args.authzToken, args.groupId, args.ownerId, args.gatewayId);
+    result.success = iface_->deleteGroup(args.authzToken, args.groupId, args.ownerId);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -76120,7 +76080,7 @@ void AiravataProcessor::process_getAllGroupsUserBelongs(int32_t seqid, ::apache:
 
   Airavata_getAllGroupsUserBelongs_result result;
   try {
-    iface_->getAllGroupsUserBelongs(result.success, args.authzToken, args.userName, args.gatewayId);
+    iface_->getAllGroupsUserBelongs(result.success, args.authzToken, args.userName);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -92843,10 +92803,10 @@ void AiravataConcurrentClient::recv_getAllAccessibleUsers(std::vector<std::strin
   } // end while(true)
 }
 
-bool AiravataConcurrentClient::createGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel)
+void AiravataConcurrentClient::createGroup(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel)
 {
   int32_t seqid = send_createGroup(authzToken, groupModel);
-  return recv_createGroup(seqid);
+  recv_createGroup(_return, seqid);
 }
 
 int32_t AiravataConcurrentClient::send_createGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel)
@@ -92868,7 +92828,7 @@ int32_t AiravataConcurrentClient::send_createGroup(const  ::apache::airavata::mo
   return cseqid;
 }
 
-bool AiravataConcurrentClient::recv_createGroup(const int32_t seqid)
+void AiravataConcurrentClient::recv_createGroup(std::string& _return, const int32_t seqid)
 {
 
   int32_t rseqid = 0;
@@ -92906,7 +92866,6 @@ bool AiravataConcurrentClient::recv_createGroup(const int32_t seqid)
         using ::apache::thrift::protocol::TProtocolException;
         throw TProtocolException(TProtocolException::INVALID_DATA);
       }
-      bool _return;
       Airavata_createGroup_presult result;
       result.success = &_return;
       result.read(iprot_);
@@ -92914,8 +92873,9 @@ bool AiravataConcurrentClient::recv_createGroup(const int32_t seqid)
       iprot_->getTransport()->readEnd();
 
       if (result.__isset.success) {
+        // _return pointer has now been filled
         sentry.commit();
-        return _return;
+        return;
       }
       if (result.__isset.ire) {
         sentry.commit();
@@ -93045,13 +93005,13 @@ bool AiravataConcurrentClient::recv_updateGroup(const int32_t seqid)
   } // end while(true)
 }
 
-bool AiravataConcurrentClient::deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId, const std::string& gatewayId)
+bool AiravataConcurrentClient::deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId)
 {
-  int32_t seqid = send_deleteGroup(authzToken, groupId, ownerId, gatewayId);
+  int32_t seqid = send_deleteGroup(authzToken, groupId, ownerId);
   return recv_deleteGroup(seqid);
 }
 
-int32_t AiravataConcurrentClient::send_deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId, const std::string& gatewayId)
+int32_t AiravataConcurrentClient::send_deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId)
 {
   int32_t cseqid = this->sync_.generateSeqId();
   ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
@@ -93061,7 +93021,6 @@ int32_t AiravataConcurrentClient::send_deleteGroup(const  ::apache::airavata::mo
   args.authzToken = &authzToken;
   args.groupId = &groupId;
   args.ownerId = &ownerId;
-  args.gatewayId = &gatewayId;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -93249,13 +93208,13 @@ void AiravataConcurrentClient::recv_getGroup( ::apache::airavata::model::group::
   } // end while(true)
 }
 
-void AiravataConcurrentClient::getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId)
+void AiravataConcurrentClient::getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName)
 {
-  int32_t seqid = send_getAllGroupsUserBelongs(authzToken, userName, gatewayId);
+  int32_t seqid = send_getAllGroupsUserBelongs(authzToken, userName);
   recv_getAllGroupsUserBelongs(_return, seqid);
 }
 
-int32_t AiravataConcurrentClient::send_getAllGroupsUserBelongs(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId)
+int32_t AiravataConcurrentClient::send_getAllGroupsUserBelongs(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName)
 {
   int32_t cseqid = this->sync_.generateSeqId();
   ::apache::thrift::async::TConcurrentSendSentry sentry(&this->sync_);
@@ -93264,7 +93223,6 @@ int32_t AiravataConcurrentClient::send_getAllGroupsUserBelongs(const  ::apache::
   Airavata_getAllGroupsUserBelongs_pargs args;
   args.authzToken = &authzToken;
   args.userName = &userName;
-  args.gatewayId = &gatewayId;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();

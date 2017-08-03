@@ -2968,11 +2968,11 @@ class AiravataIf {
   virtual bool shareResourceWithUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & userPermissionList) = 0;
   virtual bool revokeSharingOfResourceFromUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const std::map<std::string,  ::apache::airavata::model::group::ResourcePermissionType::type> & userPermissionList) = 0;
   virtual void getAllAccessibleUsers(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const  ::apache::airavata::model::group::ResourcePermissionType::type permissionType) = 0;
-  virtual bool createGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel) = 0;
+  virtual void createGroup(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel) = 0;
   virtual bool updateGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel) = 0;
-  virtual bool deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId, const std::string& gatewayId) = 0;
+  virtual bool deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId) = 0;
   virtual void getGroup( ::apache::airavata::model::group::GroupModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId) = 0;
-  virtual void getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId) = 0;
+  virtual void getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName) = 0;
 };
 
 class AiravataIfFactory {
@@ -3551,22 +3551,21 @@ class AiravataNull : virtual public AiravataIf {
   void getAllAccessibleUsers(std::vector<std::string> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* resourceId */, const  ::apache::airavata::model::group::ResourceType::type /* resourceType */, const  ::apache::airavata::model::group::ResourcePermissionType::type /* permissionType */) {
     return;
   }
-  bool createGroup(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const  ::apache::airavata::model::group::GroupModel& /* groupModel */) {
-    bool _return = false;
-    return _return;
+  void createGroup(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const  ::apache::airavata::model::group::GroupModel& /* groupModel */) {
+    return;
   }
   bool updateGroup(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const  ::apache::airavata::model::group::GroupModel& /* groupModel */) {
     bool _return = false;
     return _return;
   }
-  bool deleteGroup(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* groupId */, const std::string& /* ownerId */, const std::string& /* gatewayId */) {
+  bool deleteGroup(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* groupId */, const std::string& /* ownerId */) {
     bool _return = false;
     return _return;
   }
   void getGroup( ::apache::airavata::model::group::GroupModel& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* groupId */) {
     return;
   }
-  void getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* userName */, const std::string& /* gatewayId */) {
+  void getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* userName */) {
     return;
   }
 };
@@ -26806,11 +26805,11 @@ class Airavata_createGroup_result {
 
   Airavata_createGroup_result(const Airavata_createGroup_result&);
   Airavata_createGroup_result& operator=(const Airavata_createGroup_result&);
-  Airavata_createGroup_result() : success(0) {
+  Airavata_createGroup_result() : success() {
   }
 
   virtual ~Airavata_createGroup_result() throw();
-  bool success;
+  std::string success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -26818,7 +26817,7 @@ class Airavata_createGroup_result {
 
   _Airavata_createGroup_result__isset __isset;
 
-  void __set_success(const bool val);
+  void __set_success(const std::string& val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -26867,7 +26866,7 @@ class Airavata_createGroup_presult {
 
 
   virtual ~Airavata_createGroup_presult() throw();
-  bool* success;
+  std::string* success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -27021,22 +27020,19 @@ class Airavata_deleteGroup_args {
 
   Airavata_deleteGroup_args(const Airavata_deleteGroup_args&);
   Airavata_deleteGroup_args& operator=(const Airavata_deleteGroup_args&);
-  Airavata_deleteGroup_args() : groupId(), ownerId(), gatewayId() {
+  Airavata_deleteGroup_args() : groupId(), ownerId() {
   }
 
   virtual ~Airavata_deleteGroup_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
   std::string groupId;
   std::string ownerId;
-  std::string gatewayId;
 
   void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
   void __set_groupId(const std::string& val);
 
   void __set_ownerId(const std::string& val);
-
-  void __set_gatewayId(const std::string& val);
 
   bool operator == (const Airavata_deleteGroup_args & rhs) const
   {
@@ -27045,8 +27041,6 @@ class Airavata_deleteGroup_args {
     if (!(groupId == rhs.groupId))
       return false;
     if (!(ownerId == rhs.ownerId))
-      return false;
-    if (!(gatewayId == rhs.gatewayId))
       return false;
     return true;
   }
@@ -27070,7 +27064,6 @@ class Airavata_deleteGroup_pargs {
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
   const std::string* groupId;
   const std::string* ownerId;
-  const std::string* gatewayId;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -27305,27 +27298,22 @@ class Airavata_getAllGroupsUserBelongs_args {
 
   Airavata_getAllGroupsUserBelongs_args(const Airavata_getAllGroupsUserBelongs_args&);
   Airavata_getAllGroupsUserBelongs_args& operator=(const Airavata_getAllGroupsUserBelongs_args&);
-  Airavata_getAllGroupsUserBelongs_args() : userName(), gatewayId() {
+  Airavata_getAllGroupsUserBelongs_args() : userName() {
   }
 
   virtual ~Airavata_getAllGroupsUserBelongs_args() throw();
    ::apache::airavata::model::security::AuthzToken authzToken;
   std::string userName;
-  std::string gatewayId;
 
   void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
   void __set_userName(const std::string& val);
-
-  void __set_gatewayId(const std::string& val);
 
   bool operator == (const Airavata_getAllGroupsUserBelongs_args & rhs) const
   {
     if (!(authzToken == rhs.authzToken))
       return false;
     if (!(userName == rhs.userName))
-      return false;
-    if (!(gatewayId == rhs.gatewayId))
       return false;
     return true;
   }
@@ -27348,7 +27336,6 @@ class Airavata_getAllGroupsUserBelongs_pargs {
   virtual ~Airavata_getAllGroupsUserBelongs_pargs() throw();
   const  ::apache::airavata::model::security::AuthzToken* authzToken;
   const std::string* userName;
-  const std::string* gatewayId;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -27958,20 +27945,20 @@ class AiravataClient : virtual public AiravataIf {
   void getAllAccessibleUsers(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const  ::apache::airavata::model::group::ResourcePermissionType::type permissionType);
   void send_getAllAccessibleUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const  ::apache::airavata::model::group::ResourcePermissionType::type permissionType);
   void recv_getAllAccessibleUsers(std::vector<std::string> & _return);
-  bool createGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel);
+  void createGroup(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel);
   void send_createGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel);
-  bool recv_createGroup();
+  void recv_createGroup(std::string& _return);
   bool updateGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel);
   void send_updateGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel);
   bool recv_updateGroup();
-  bool deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId, const std::string& gatewayId);
-  void send_deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId, const std::string& gatewayId);
+  bool deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId);
+  void send_deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId);
   bool recv_deleteGroup();
   void getGroup( ::apache::airavata::model::group::GroupModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId);
   void send_getGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId);
   void recv_getGroup( ::apache::airavata::model::group::GroupModel& _return);
-  void getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId);
-  void send_getAllGroupsUserBelongs(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId);
+  void getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName);
+  void send_getAllGroupsUserBelongs(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName);
   void recv_getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
@@ -29932,13 +29919,14 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  bool createGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel) {
+  void createGroup(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->createGroup(authzToken, groupModel);
+      ifaces_[i]->createGroup(_return, authzToken, groupModel);
     }
-    return ifaces_[i]->createGroup(authzToken, groupModel);
+    ifaces_[i]->createGroup(_return, authzToken, groupModel);
+    return;
   }
 
   bool updateGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel) {
@@ -29950,13 +29938,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->updateGroup(authzToken, groupModel);
   }
 
-  bool deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId, const std::string& gatewayId) {
+  bool deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->deleteGroup(authzToken, groupId, ownerId, gatewayId);
+      ifaces_[i]->deleteGroup(authzToken, groupId, ownerId);
     }
-    return ifaces_[i]->deleteGroup(authzToken, groupId, ownerId, gatewayId);
+    return ifaces_[i]->deleteGroup(authzToken, groupId, ownerId);
   }
 
   void getGroup( ::apache::airavata::model::group::GroupModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId) {
@@ -29969,13 +29957,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId) {
+  void getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAllGroupsUserBelongs(_return, authzToken, userName, gatewayId);
+      ifaces_[i]->getAllGroupsUserBelongs(_return, authzToken, userName);
     }
-    ifaces_[i]->getAllGroupsUserBelongs(_return, authzToken, userName, gatewayId);
+    ifaces_[i]->getAllGroupsUserBelongs(_return, authzToken, userName);
     return;
   }
 
@@ -30501,20 +30489,20 @@ class AiravataConcurrentClient : virtual public AiravataIf {
   void getAllAccessibleUsers(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const  ::apache::airavata::model::group::ResourcePermissionType::type permissionType);
   int32_t send_getAllAccessibleUsers(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceId, const  ::apache::airavata::model::group::ResourceType::type resourceType, const  ::apache::airavata::model::group::ResourcePermissionType::type permissionType);
   void recv_getAllAccessibleUsers(std::vector<std::string> & _return, const int32_t seqid);
-  bool createGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel);
+  void createGroup(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel);
   int32_t send_createGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel);
-  bool recv_createGroup(const int32_t seqid);
+  void recv_createGroup(std::string& _return, const int32_t seqid);
   bool updateGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel);
   int32_t send_updateGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel);
   bool recv_updateGroup(const int32_t seqid);
-  bool deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId, const std::string& gatewayId);
-  int32_t send_deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId, const std::string& gatewayId);
+  bool deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId);
+  int32_t send_deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId);
   bool recv_deleteGroup(const int32_t seqid);
   void getGroup( ::apache::airavata::model::group::GroupModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId);
   int32_t send_getGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId);
   void recv_getGroup( ::apache::airavata::model::group::GroupModel& _return, const int32_t seqid);
-  void getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId);
-  int32_t send_getAllGroupsUserBelongs(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId);
+  void getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName);
+  int32_t send_getAllGroupsUserBelongs(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName);
   void recv_getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const int32_t seqid);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;

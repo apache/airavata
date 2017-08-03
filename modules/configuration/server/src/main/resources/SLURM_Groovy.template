@@ -13,6 +13,7 @@ if (queueName != null && queueName != "") out.print '#SBATCH -p ' + queueName + 
    if (standardErrorFile != null && standardErrorFile != "") out.print '#SBATCH -e ' + standardErrorFile + '\n'
    if (qualityOfService != null && qualityOfService != "") out.print '#SBATCH --qos=' + qualityOfService + '\n'
    if (reservation != null && reservation != "") out.print '#SBATCH --reservation=' + reservation + '\n'
+   if (queueSpecificMacros != null) for(queueMacro in queueSpecificMacros)  out.print queueMacro +'\n'
 %>
 #SBATCH --mail-type=ALL
 

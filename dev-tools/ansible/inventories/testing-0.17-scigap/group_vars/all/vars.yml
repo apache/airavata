@@ -66,6 +66,7 @@ api_secured: "false"
 tls_enable: "false"
 api_server_tls_port: "9930"
 enable_sharing: "true"
+iam_server_url: "https://iam.scigap.org/auth"
 
 # Orchestrator  related variables
 orchestrator_name: "orchestrator-node0"
@@ -109,3 +110,7 @@ monitor_email_password: "airavata"
 # Sharing Registry related variables
 sharing_registry_host: "{{ ansible_fqdn }}"
 sharing_registry_port: 7878
+
+# Profile Service related variables
+profile_service_host: "{{ ansible_fqdn }}"
+profile_service_port: 8962

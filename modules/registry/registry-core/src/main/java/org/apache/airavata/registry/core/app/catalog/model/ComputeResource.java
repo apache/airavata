@@ -61,6 +61,18 @@ public class ComputeResource implements Serializable {
     @Column(name = "GATEWAY_USAGE_EXECUTABLE")
     private String gatewayUsageExec;
 
+    @Column(name = "CPUS_PER_NODE")
+    private Integer cpusPerNode;
+
+    @Column(name = "DEFAULT_NODE_COUNT")
+    private Integer defaultNodeCount;
+
+    @Column(name = "DEFAULT_CPU_COUNT")
+    private Integer defaultCPUCount;
+
+    @Column(name = "DEFAULT_WALLTIME")
+    private Integer defaultWalltime;
+
     public Timestamp getCreationTime() {
         return creationTime;
     }
@@ -139,5 +151,37 @@ public class ComputeResource implements Serializable {
 
     public void setGatewayUsageExec(String gatewayUsageExec) {
         this.gatewayUsageExec = gatewayUsageExec;
+    }
+
+    public Integer getCpusPerNode() {
+        return cpusPerNode;
+    }
+
+    public void setCpusPerNode(Integer cpusPerNode) {
+        this.cpusPerNode = cpusPerNode;
+    }
+
+    public Integer getDefaultNodeCount() {
+        return defaultNodeCount;
+    }
+
+    public void setDefaultNodeCount(Integer defaultNodeCount) {
+        this.defaultNodeCount = defaultNodeCount;
+    }
+
+    public Integer getDefaultCPUCount() {
+        return defaultCPUCount;
+    }
+
+    public void setDefaultCPUCount(Integer defaultCPUCount) {
+        this.defaultCPUCount = defaultCPUCount;
+    }
+
+    public Integer getDefaultWalltime() {
+        return defaultWalltime;
+    }
+
+    public void setDefaultWalltime(Integer defaultWalltime) {
+        this.defaultWalltime = defaultWalltime;
     }
 }

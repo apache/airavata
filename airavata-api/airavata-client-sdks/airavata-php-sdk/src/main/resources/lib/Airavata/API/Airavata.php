@@ -4045,7 +4045,7 @@ interface AiravataIf {
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param \Airavata\Model\Group\GroupModel $groupModel
-   * @return bool
+   * @return string
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
@@ -4066,14 +4066,13 @@ interface AiravataIf {
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $groupId
    * @param string $ownerId
-   * @param string $gatewayId
    * @return bool
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function deleteGroup(\Airavata\Model\Security\AuthzToken $authzToken, $groupId, $ownerId, $gatewayId);
+  public function deleteGroup(\Airavata\Model\Security\AuthzToken $authzToken, $groupId, $ownerId);
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $groupId
@@ -4087,14 +4086,13 @@ interface AiravataIf {
   /**
    * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $userName
-   * @param string $gatewayId
    * @return \Airavata\Model\Group\GroupModel[]
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    * @throws \Airavata\API\Error\AuthorizationException
    */
-  public function getAllGroupsUserBelongs(\Airavata\Model\Security\AuthzToken $authzToken, $userName, $gatewayId);
+  public function getAllGroupsUserBelongs(\Airavata\Model\Security\AuthzToken $authzToken, $userName);
 }
 
 class AiravataClient implements \Airavata\API\AiravataIf {
@@ -14860,19 +14858,18 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("updateGroup failed: unknown result");
   }
 
-  public function deleteGroup(\Airavata\Model\Security\AuthzToken $authzToken, $groupId, $ownerId, $gatewayId)
+  public function deleteGroup(\Airavata\Model\Security\AuthzToken $authzToken, $groupId, $ownerId)
   {
-    $this->send_deleteGroup($authzToken, $groupId, $ownerId, $gatewayId);
+    $this->send_deleteGroup($authzToken, $groupId, $ownerId);
     return $this->recv_deleteGroup();
   }
 
-  public function send_deleteGroup(\Airavata\Model\Security\AuthzToken $authzToken, $groupId, $ownerId, $gatewayId)
+  public function send_deleteGroup(\Airavata\Model\Security\AuthzToken $authzToken, $groupId, $ownerId)
   {
     $args = new \Airavata\API\Airavata_deleteGroup_args();
     $args->authzToken = $authzToken;
     $args->groupId = $groupId;
     $args->ownerId = $ownerId;
-    $args->gatewayId = $gatewayId;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -14990,18 +14987,17 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("getGroup failed: unknown result");
   }
 
-  public function getAllGroupsUserBelongs(\Airavata\Model\Security\AuthzToken $authzToken, $userName, $gatewayId)
+  public function getAllGroupsUserBelongs(\Airavata\Model\Security\AuthzToken $authzToken, $userName)
   {
-    $this->send_getAllGroupsUserBelongs($authzToken, $userName, $gatewayId);
+    $this->send_getAllGroupsUserBelongs($authzToken, $userName);
     return $this->recv_getAllGroupsUserBelongs();
   }
 
-  public function send_getAllGroupsUserBelongs(\Airavata\Model\Security\AuthzToken $authzToken, $userName, $gatewayId)
+  public function send_getAllGroupsUserBelongs(\Airavata\Model\Security\AuthzToken $authzToken, $userName)
   {
     $args = new \Airavata\API\Airavata_getAllGroupsUserBelongs_args();
     $args->authzToken = $authzToken;
     $args->userName = $userName;
-    $args->gatewayId = $gatewayId;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -65533,7 +65529,7 @@ class Airavata_createGroup_result {
   static $_TSPEC;
 
   /**
-   * @var bool
+   * @var string
    */
   public $success = null;
   /**
@@ -65558,7 +65554,7 @@ class Airavata_createGroup_result {
       self::$_TSPEC = array(
         0 => array(
           'var' => 'success',
-          'type' => TType::BOOL,
+          'type' => TType::STRING,
           ),
         1 => array(
           'var' => 'ire',
@@ -65621,8 +65617,8 @@ class Airavata_createGroup_result {
       switch ($fid)
       {
         case 0:
-          if ($ftype == TType::BOOL) {
-            $xfer += $input->readBool($this->success);
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -65673,8 +65669,8 @@ class Airavata_createGroup_result {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_createGroup_result');
     if ($this->success !== null) {
-      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
-      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->ire !== null) {
@@ -66002,10 +65998,6 @@ class Airavata_deleteGroup_args {
    * @var string
    */
   public $ownerId = null;
-  /**
-   * @var string
-   */
-  public $gatewayId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -66023,10 +66015,6 @@ class Airavata_deleteGroup_args {
           'var' => 'ownerId',
           'type' => TType::STRING,
           ),
-        4 => array(
-          'var' => 'gatewayId',
-          'type' => TType::STRING,
-          ),
         );
     }
     if (is_array($vals)) {
@@ -66038,9 +66026,6 @@ class Airavata_deleteGroup_args {
       }
       if (isset($vals['ownerId'])) {
         $this->ownerId = $vals['ownerId'];
-      }
-      if (isset($vals['gatewayId'])) {
-        $this->gatewayId = $vals['gatewayId'];
       }
     }
   }
@@ -66086,13 +66071,6 @@ class Airavata_deleteGroup_args {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 4:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->gatewayId);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -66122,11 +66100,6 @@ class Airavata_deleteGroup_args {
     if ($this->ownerId !== null) {
       $xfer += $output->writeFieldBegin('ownerId', TType::STRING, 3);
       $xfer += $output->writeString($this->ownerId);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->gatewayId !== null) {
-      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 4);
-      $xfer += $output->writeString($this->gatewayId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -66605,10 +66578,6 @@ class Airavata_getAllGroupsUserBelongs_args {
    * @var string
    */
   public $userName = null;
-  /**
-   * @var string
-   */
-  public $gatewayId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -66622,10 +66591,6 @@ class Airavata_getAllGroupsUserBelongs_args {
           'var' => 'userName',
           'type' => TType::STRING,
           ),
-        3 => array(
-          'var' => 'gatewayId',
-          'type' => TType::STRING,
-          ),
         );
     }
     if (is_array($vals)) {
@@ -66634,9 +66599,6 @@ class Airavata_getAllGroupsUserBelongs_args {
       }
       if (isset($vals['userName'])) {
         $this->userName = $vals['userName'];
-      }
-      if (isset($vals['gatewayId'])) {
-        $this->gatewayId = $vals['gatewayId'];
       }
     }
   }
@@ -66675,13 +66637,6 @@ class Airavata_getAllGroupsUserBelongs_args {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 3:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->gatewayId);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -66706,11 +66661,6 @@ class Airavata_getAllGroupsUserBelongs_args {
     if ($this->userName !== null) {
       $xfer += $output->writeFieldBegin('userName', TType::STRING, 2);
       $xfer += $output->writeString($this->userName);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->gatewayId !== null) {
-      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 3);
-      $xfer += $output->writeString($this->gatewayId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

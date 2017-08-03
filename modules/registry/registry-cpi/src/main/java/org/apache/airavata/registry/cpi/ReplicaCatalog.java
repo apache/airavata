@@ -51,4 +51,7 @@ public interface ReplicaCatalog {
     DataProductModel getParentDataProduct(String productUri) throws ReplicaCatalogException;
 
     List<DataProductModel> getChildDataProducts(String productUri) throws ReplicaCatalogException;
+
+    List<DataProductModel> searchDataProductsByName(String gatewayId, String userId, String productName,
+                                                    int limit, int offset) throws ReplicaCatalogException;
 }

@@ -37,14 +37,14 @@ include "../data-models/app-catalog-models/application_io_models.thrift"
 include "../data-models/app-catalog-models/application_deployment_model.thrift"
 include "../data-models/app-catalog-models/application_interface_model.thrift"
 include "../data-models/resource-catalog-models/compute_resource_model.thrift"
-include "../data-models/resource-catalog-models/credential_summary.thrift"
 include "../data-models/resource-catalog-models/storage_resource_model.thrift"
 include "../data-models/resource-catalog-models/gateway_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/user_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/data_movement_models.thrift"
 include "../data-models/workflow-models/workflow_data_model.thrift"
 include "../data-models/replica-catalog-models/replica_catalog_models.thrift"
-include "../data-models/user-group-models/group_manager_model.thrift"
+include "../data-models/user-tenant-group-models/group_manager_model.thrift"
+include "../data-models/user-tenant-group-models/user_profile_model.thrift"
 
 namespace java org.apache.airavata.api
 namespace php Airavata.API
@@ -3436,7 +3436,7 @@ service Airavata {
                                                  3: airavata_errors.AiravataSystemException ase,
                                                  4: airavata_errors.AuthorizationException ae)
 
-bool createGroup(1: required security_model.AuthzToken authzToken, 2: required group_manager_model.GroupModel groupModel)
+string createGroup(1: required security_model.AuthzToken authzToken, 2: required group_manager_model.GroupModel groupModel)
                 throws (1: airavata_errors.InvalidRequestException ire,
                                                   2: airavata_errors.AiravataClientException ace,
                                                   3: airavata_errors.AiravataSystemException ase,
@@ -3448,7 +3448,7 @@ bool createGroup(1: required security_model.AuthzToken authzToken, 2: required g
                                                    3: airavata_errors.AiravataSystemException ase,
                                                    4: airavata_errors.AuthorizationException ae)
 
- bool deleteGroup(1: required security_model.AuthzToken authzToken, 2: required string groupId, 3: required string ownerId, 4: required string gatewayId)
+ bool deleteGroup(1: required security_model.AuthzToken authzToken, 2: required string groupId, 3: required string ownerId)
                  throws (1: airavata_errors.InvalidRequestException ire,
                                                     2: airavata_errors.AiravataClientException ace,
                                                     3: airavata_errors.AiravataSystemException ase,
@@ -3460,7 +3460,7 @@ bool createGroup(1: required security_model.AuthzToken authzToken, 2: required g
                                                      3: airavata_errors.AiravataSystemException ase,
                                                      4: airavata_errors.AuthorizationException ae)
 
- list<group_manager_model.GroupModel> getAllGroupsUserBelongs(1: required security_model.AuthzToken authzToken, 2: required string userName, 3: required string gatewayId)
+ list<group_manager_model.GroupModel> getAllGroupsUserBelongs(1: required security_model.AuthzToken authzToken, 2: required string userName)
                    throws (1: airavata_errors.InvalidRequestException ire,
                                                       2: airavata_errors.AiravataClientException ace,
                                                       3: airavata_errors.AiravataSystemException ase,

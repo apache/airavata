@@ -1,0 +1,35 @@
+# Common settings
+# NOTE: the gateway-id will also be used for the realm id in Keycloak
+gateway-id = gateway-id
+gateway.url = http://localhost
+gateway.admin.username = admin
+gateway.admin.first.name = Admin
+gateway.admin.last.name = User
+gateway.admin.email.address = sgg@iu.edu
+
+# WSO2 Identity Server settings
+wso2is.admin.username = username
+wso2is.admin.password = password
+wso2is.admin.rolename = admin
+wso2is.admin-read-only.rolename = admin-read-only
+wso2is.gateway-user.rolename = gateway-user
+wso2is.user-pending.rolename = user-pending
+wso2is.gateway-provider.rolename = gateway-provider
+
+# Airavata Service settings
+airavata.service.host = localhost
+airavata.service.port = 8930
+airavata.service.secure = false
+
+# Profile Service settings
+profile.service.host = localhost
+profile.service.port = 8962
+
+# Keycloak settings
+# username and password for master realm admin user
+keycloak.admin.username = username
+keycloak.admin.password = password
+keycloak.service-url = https://iam.scigap.org/auth
+keycloak.truststore.path = ../../modules/configuration/server/src/main/resources/client_truststore.jks
+keycloak.truststore.password = password
+keycloak.user.temp.password = tempPassword

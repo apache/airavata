@@ -1,0 +1,185 @@
+---
+# Download keycloak distribution
+- name: Download and unarchive keycloak
+  unarchive:  src="{{ keycloak_downlaod_url }}"
+              dest="{{ user_home }}"
+              copy=no
+              owner="{{ user }}"
+              group="{{ group }}"
+              creates="{{user_home}}/{{ keycloak_install_dir }}/bin/standalone.sh"
+  become: true
+  become_user: "{{ user }}"
+  tags:
+       - always
+
+# <---------------------------- Setup Mysql database for keycloak ------------------->
+
+# create folder structure
+- file:
+    path: "{{user_home}}/{{ keycloak_install_dir }}/modules/system/layers/keycloak/org/mysql/main"
+    state: directory
+    mode: 0755
+  become: true
+  become_user: "{{ user }}"
+  tags:
+       - always
+
+- name: Download and unarchive mysql jdbc driver
+  unarchive: src="{{ mysql_db_connector_download_url }}"
+      dest="{{ user_home }}"
+      copy=no
+      owner="{{ user }}"
+      group="{{ group }}"
+      creates="{{user_home}}/{keycloak_db_connector_name}}/{{keycloak_db_connector_name}}-bin.jar"
+  become: true
+  become_user: "{{ user }}"
+  tags:
+       - always
+
+- name: move jdbc connector to keycloak module
+  command: mv {{user_home}}/{{keycloak_db_connector_name}}/{{keycloak_db_connector_name}}-bin.jar {{user_home}}/{{ keycloak_install_dir }}/modules/system/layers/keycloak/org/mysql/main/
+  become: true
+  become_user: "{{ user }}"
+  tags:
+       - always
+
+- name: copy jdbc module configuration file
+  template: >
+    src=module.j2
+    dest="{{user_home}}/{{ keycloak_install_dir }}/modules/system/layers/keycloak/org/mysql/main/module.xml"
+    owner="{{ user }}"
+    group="{{ group }}"
+    mode="u=rw,g=r,o=r"
+  become: true
+  become_user: "{{ user }}"
+  tags:
+       - always
+
+# </---------------------------- Setup Mysql database for keycloak - END ------------------->
+
+# <---------------------------- Server Configuration -------------------------------->
+
+# Only Executed for haCluster mode (Mysql setup & without SSl configuration)
+- name: copy keycloak configuration file (HaCluster)
+  template: >
+    src=standalone-ha.xml.j2
+    dest="{{ user_home }}/{{ keycloak_install_dir }}/standalone/configuration/standalone-ha.xml"
+    owner="{{ user }}"
+    group="{{ group }}"
+    mode="u=rw,g=r,o=r"
+  become: true
+  become_user: "{{ user }}"
+  tags:
+       - hacluster
+
+# Only Executed for standalone mode (SSL Configuration & MySql)
+- name: copy keycloak configuration file (Standalone)
+  template: >
+    src=standalone.xml.j2
+    dest="{{ user_home }}/{{ keycloak_install_dir }}/standalone/configuration/standalone.xml"
+    owner="{{ user }}"
+    group="{{ group }}"
+    mode="u=rw,g=r,o=r"
+  become: true
+  become_user: "{{ user }}"
+  tags:
+       - standalone
+
+# Copy the SSL certificate files to remote
+
+- name: copy ssl certificate files to remote
+  copy:
+    src: "{{keycloak_ssl_keystore_file}}"
+    dest: "{{ user_home }}/{{ keycloak_install_dir }}/standalone/configuration/{{keycloak_ssl_keystore_file_name}}"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0644
+  become: true
+  become_user: "{{ user }}"
+  tags:
+        - standalone
+# </------------------------------ Server Configuration ends ---------------------------->
+
+# <---------- setup init script for keycloak, starts the server after reboot ----------->
+
+# Init script to start keycloak in HaCluster mode
+- name: copy init script file (HaCluster)
+  template: >
+    src=keycloak-hacluster-init.j2
+    dest="/etc/init.d/keycloak"
+    owner="{{ user }}"
+    group="{{ group }}"
+    mode="u=rwx,g=r,o=r"
+  become: yes
+  become_user: root
+  tags:
+       - hacluster
+
+# Init script to start keycloak in Standalone mode
+- name: copy init script file (Standalone)
+  template: >
+    src=keycloak-standalone-init.j2
+    dest="/etc/init.d/keycloak"
+    owner="{{ user }}"
+    group="{{ group }}"
+    mode="u=rwx,g=rx,o=rx"
+  become: yes
+  become_user: root
+  tags:
+       - standalone
+
+# System command to add the init script to enable on startup
+- name: add init script to chkconfig and startup on boot
+  command: chkconfig --level 345 keycloak on
+  become: yes
+  become_user: root
+  tags:
+       - always
+
+# </---------- setup init script for keycloak, starts the server after reboot ----------->
+
+# <-------------------------Initialize a new admin for keycloak-------------------------->
+
+- name: Add master realm admin account
+  command: "{{user_home}}/{{ keycloak_install_dir }}/bin/add-user-keycloak.sh -r master -u {{ keycloak_master_account_username }} -p {{ keycloak_master_account_password }}"
+  args:
+    creates: "{{user_home}}/{{ keycloak_install_dir }}/standalone/configuration/keycloak-add-user.json"
+  become: yes
+  become_user: root
+  tags:
+       - always
+
+
+# <--------------------------open keycloak Identity server firewall port------------------------------>
+- name: open firewall port {{ keycloak_server_port }}
+  firewalld: port="{{ keycloak_server_port }}/tcp"
+             zone=public permanent=true state=enabled immediate=yes
+  become: yes
+  become_user: root
+  tags:
+        - always
+
+# <--------------------------start keycloak Identity server------------------------------>
+- name: reload Keycloak init script
+  command: systemctl daemon-reload
+  become: yes
+  become_user: root
+  tags:
+       - always
+
+# FIXME: restarting Keycloak server doesn't work
+- name: stop Keycloak server
+  service: name=keycloak state=stopped
+  ignore_errors: yes
+  become: yes
+  become_user: root
+  tags:
+       - always
+
+- name: start Keycloak server
+  service: name=keycloak state=started
+  become: yes
+  become_user: root
+  tags:
+       - always
+...

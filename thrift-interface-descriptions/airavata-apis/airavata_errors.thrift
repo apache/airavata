@@ -118,6 +118,15 @@ exception AuthorizationException {
     1: required string message
 }
 
+/**
+* This exception is thrown when you try to save a duplicate entity that already exists
+*   in the database.
+*
+*   message: contains the associated error message
+**/
+exception DuplicateEntryException {
+    1: required string message
+}
 
 /**
  * This exception is thrown by Airavata Services when a call fails as a result of

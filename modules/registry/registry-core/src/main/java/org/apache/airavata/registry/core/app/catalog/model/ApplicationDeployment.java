@@ -47,6 +47,8 @@ public class ApplicationDeployment implements Serializable {
     private int defaultNodeCount;
     @Column(name = "DEFAULT_CPU_COUNT")
     private int defaultCPUCount;
+    @Column(name = "DEFAULT_WALLTIME")
+    private int defaultWalltime;
     @Column(name = "EDITABLE_BY_USER")
     private boolean editableByUser;
 
@@ -174,6 +176,14 @@ public class ApplicationDeployment implements Serializable {
 
     public void setDefaultCPUCount(int defaultCPUCount) {
         this.defaultCPUCount = defaultCPUCount;
+    }
+
+    public int getDefaultWalltime() {
+        return defaultWalltime;
+    }
+
+    public void setDefaultWalltime(int defaultWalltime) {
+        this.defaultWalltime = defaultWalltime;
     }
 
     public boolean isEditableByUser() {

@@ -51,7 +51,7 @@ final class ResourceJobManagerType {
     3 => 'LSF',
     4 => 'UGE',
     5 => 'CLOUD',
-      6 => 'AIRAVATA_CUSTOM',
+    6 => 'AIRAVATA_CUSTOM',
   );
 }
 
@@ -539,6 +539,14 @@ class BatchQueue {
    */
   public $defaultCPUCount = null;
   /**
+   * @var int
+   */
+  public $defaultWalltime = null;
+  /**
+   * @var string
+   */
+  public $queueSpecificMacros = null;
+  /**
    * @var bool
    */
   public $isDefaultQueue = null;
@@ -587,6 +595,14 @@ class BatchQueue {
           'type' => TType::I32,
           ),
         11 => array(
+          'var' => 'defaultWalltime',
+          'type' => TType::I32,
+          ),
+        12 => array(
+          'var' => 'queueSpecificMacros',
+          'type' => TType::STRING,
+          ),
+        13 => array(
           'var' => 'isDefaultQueue',
           'type' => TType::BOOL,
           ),
@@ -622,6 +638,12 @@ class BatchQueue {
       }
       if (isset($vals['defaultCPUCount'])) {
         $this->defaultCPUCount = $vals['defaultCPUCount'];
+      }
+      if (isset($vals['defaultWalltime'])) {
+        $this->defaultWalltime = $vals['defaultWalltime'];
+      }
+      if (isset($vals['queueSpecificMacros'])) {
+        $this->queueSpecificMacros = $vals['queueSpecificMacros'];
       }
       if (isset($vals['isDefaultQueue'])) {
         $this->isDefaultQueue = $vals['isDefaultQueue'];
@@ -719,6 +741,20 @@ class BatchQueue {
           }
           break;
         case 11:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->defaultWalltime);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 12:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->queueSpecificMacros);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 13:
           if ($ftype == TType::BOOL) {
             $xfer += $input->readBool($this->isDefaultQueue);
           } else {
@@ -788,8 +824,18 @@ class BatchQueue {
       $xfer += $output->writeI32($this->defaultCPUCount);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->defaultWalltime !== null) {
+      $xfer += $output->writeFieldBegin('defaultWalltime', TType::I32, 11);
+      $xfer += $output->writeI32($this->defaultWalltime);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->queueSpecificMacros !== null) {
+      $xfer += $output->writeFieldBegin('queueSpecificMacros', TType::STRING, 12);
+      $xfer += $output->writeString($this->queueSpecificMacros);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->isDefaultQueue !== null) {
-      $xfer += $output->writeFieldBegin('isDefaultQueue', TType::BOOL, 11);
+      $xfer += $output->writeFieldBegin('isDefaultQueue', TType::BOOL, 13);
       $xfer += $output->writeBool($this->isDefaultQueue);
       $xfer += $output->writeFieldEnd();
     }
@@ -1885,6 +1931,22 @@ class ComputeResourceDescription {
    * @var string
    */
   public $gatewayUsageExecutable = null;
+  /**
+   * @var int
+   */
+  public $cpusPerNode = null;
+  /**
+   * @var int
+   */
+  public $defaultNodeCount = null;
+  /**
+   * @var int
+   */
+  public $defaultCPUCount = null;
+  /**
+   * @var int
+   */
+  public $defaultWalltime = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -1976,6 +2038,22 @@ class ComputeResourceDescription {
           'var' => 'gatewayUsageExecutable',
           'type' => TType::STRING,
           ),
+        15 => array(
+          'var' => 'cpusPerNode',
+          'type' => TType::I32,
+          ),
+        16 => array(
+          'var' => 'defaultNodeCount',
+          'type' => TType::I32,
+          ),
+        17 => array(
+          'var' => 'defaultCPUCount',
+          'type' => TType::I32,
+          ),
+        18 => array(
+          'var' => 'defaultWalltime',
+          'type' => TType::I32,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -2020,6 +2098,18 @@ class ComputeResourceDescription {
       }
       if (isset($vals['gatewayUsageExecutable'])) {
         $this->gatewayUsageExecutable = $vals['gatewayUsageExecutable'];
+      }
+      if (isset($vals['cpusPerNode'])) {
+        $this->cpusPerNode = $vals['cpusPerNode'];
+      }
+      if (isset($vals['defaultNodeCount'])) {
+        $this->defaultNodeCount = $vals['defaultNodeCount'];
+      }
+      if (isset($vals['defaultCPUCount'])) {
+        $this->defaultCPUCount = $vals['defaultCPUCount'];
+      }
+      if (isset($vals['defaultWalltime'])) {
+        $this->defaultWalltime = $vals['defaultWalltime'];
       }
     }
   }
@@ -2207,6 +2297,34 @@ class ComputeResourceDescription {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 15:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->cpusPerNode);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 16:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->defaultNodeCount);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 17:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->defaultCPUCount);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 18:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->defaultWalltime);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -2361,6 +2479,26 @@ class ComputeResourceDescription {
     if ($this->gatewayUsageExecutable !== null) {
       $xfer += $output->writeFieldBegin('gatewayUsageExecutable', TType::STRING, 14);
       $xfer += $output->writeString($this->gatewayUsageExecutable);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->cpusPerNode !== null) {
+      $xfer += $output->writeFieldBegin('cpusPerNode', TType::I32, 15);
+      $xfer += $output->writeI32($this->cpusPerNode);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->defaultNodeCount !== null) {
+      $xfer += $output->writeFieldBegin('defaultNodeCount', TType::I32, 16);
+      $xfer += $output->writeI32($this->defaultNodeCount);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->defaultCPUCount !== null) {
+      $xfer += $output->writeFieldBegin('defaultCPUCount', TType::I32, 17);
+      $xfer += $output->writeI32($this->defaultCPUCount);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->defaultWalltime !== null) {
+      $xfer += $output->writeFieldBegin('defaultWalltime', TType::I32, 18);
+      $xfer += $output->writeI32($this->defaultWalltime);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

@@ -81,6 +81,8 @@ public class ReplicaCatalogTest {
             String productUri = replicacatalog.registerDataProduct(dataProductModel);
             org.junit.Assert.assertNotNull(productUri);
             dataProductModel = replicacatalog.getDataProduct(productUri);
+            Assert.assertTrue(replicacatalog.searchDataProductsByName(dataProductModel.getGatewayId(), dataProductModel.getOwnerName(),
+                    dataProductModel.getProductName().substring(1, 5), -1, 0).size() == 1);
             Assert.assertNotNull(dataProductModel);
             boolean result = replicacatalog.removeDataProduct(productUri);
             Assert.assertTrue(result);

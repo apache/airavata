@@ -67,29 +67,31 @@ enum GatewayApprovalStatus {
     DEACTIVATED,
     CANCELLED,
     DENIED,
-    CREATED
+    CREATED,
+    DEPLOYED
 }
 
 struct Gateway {
-    1: required string gatewayId,
-    2: required GatewayApprovalStatus gatewayApprovalStatus,
-    3: optional string gatewayName,
-    4: optional string domain,
-    5: optional string emailAddress
-    6: optional string gatewayAcronym,
-    7: optional string gatewayURL,
-    8: optional string gatewayPublicAbstract,
-    9: optional string reviewProposalDescription,
-    10: optional string gatewayAdminFirstName,
-    11: optional string gatewayAdminLastName,
-    12: optional string gatewayAdminEmail,
-    13: optional string identityServerUserName,
-    14: optional string identityServerPasswordToken,
-    15: optional string declinedReason,
-    16: optional string oauthClientId,
-    17: optional string oauthClientSecret,
-    18: optional i64 requestCreationTime,
-    19: optional string requesterUsername
+    1: optional string airavataInternalGatewayId,
+    2: required string gatewayId,
+    3: required GatewayApprovalStatus gatewayApprovalStatus,
+    4: optional string gatewayName,
+    5: optional string domain,
+    6: optional string emailAddress
+    7: optional string gatewayAcronym,
+    8: optional string gatewayURL,
+    9: optional string gatewayPublicAbstract,
+    10: optional string reviewProposalDescription,
+    11: optional string gatewayAdminFirstName,
+    12: optional string gatewayAdminLastName,
+    13: optional string gatewayAdminEmail,
+    14: optional string identityServerUserName,
+    15: optional string identityServerPasswordToken,
+    16: optional string declinedReason,
+    17: optional string oauthClientId,
+    18: optional string oauthClientSecret,
+    19: optional i64 requestCreationTime,
+    20: optional string requesterUsername
 }
 
 enum NotificationPriority {

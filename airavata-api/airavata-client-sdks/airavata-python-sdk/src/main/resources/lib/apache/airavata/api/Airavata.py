@@ -3429,13 +3429,12 @@ class Iface:
     """
     pass
 
-  def deleteGroup(self, authzToken, groupId, ownerId, gatewayId):
+  def deleteGroup(self, authzToken, groupId, ownerId):
     """
     Parameters:
      - authzToken
      - groupId
      - ownerId
-     - gatewayId
     """
     pass
 
@@ -3447,12 +3446,11 @@ class Iface:
     """
     pass
 
-  def getAllGroupsUserBelongs(self, authzToken, userName, gatewayId):
+  def getAllGroupsUserBelongs(self, authzToken, userName):
     """
     Parameters:
      - authzToken
      - userName
-     - gatewayId
     """
     pass
 
@@ -12483,24 +12481,22 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "updateGroup failed: unknown result")
 
-  def deleteGroup(self, authzToken, groupId, ownerId, gatewayId):
+  def deleteGroup(self, authzToken, groupId, ownerId):
     """
     Parameters:
      - authzToken
      - groupId
      - ownerId
-     - gatewayId
     """
-    self.send_deleteGroup(authzToken, groupId, ownerId, gatewayId)
+    self.send_deleteGroup(authzToken, groupId, ownerId)
     return self.recv_deleteGroup()
 
-  def send_deleteGroup(self, authzToken, groupId, ownerId, gatewayId):
+  def send_deleteGroup(self, authzToken, groupId, ownerId):
     self._oprot.writeMessageBegin('deleteGroup', TMessageType.CALL, self._seqid)
     args = deleteGroup_args()
     args.authzToken = authzToken
     args.groupId = groupId
     args.ownerId = ownerId
-    args.gatewayId = gatewayId
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
@@ -12569,22 +12565,20 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getGroup failed: unknown result")
 
-  def getAllGroupsUserBelongs(self, authzToken, userName, gatewayId):
+  def getAllGroupsUserBelongs(self, authzToken, userName):
     """
     Parameters:
      - authzToken
      - userName
-     - gatewayId
     """
-    self.send_getAllGroupsUserBelongs(authzToken, userName, gatewayId)
+    self.send_getAllGroupsUserBelongs(authzToken, userName)
     return self.recv_getAllGroupsUserBelongs()
 
-  def send_getAllGroupsUserBelongs(self, authzToken, userName, gatewayId):
+  def send_getAllGroupsUserBelongs(self, authzToken, userName):
     self._oprot.writeMessageBegin('getAllGroupsUserBelongs', TMessageType.CALL, self._seqid)
     args = getAllGroupsUserBelongs_args()
     args.authzToken = authzToken
     args.userName = userName
-    args.gatewayId = gatewayId
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
@@ -17969,7 +17963,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = deleteGroup_result()
     try:
-      result.success = self._handler.deleteGroup(args.authzToken, args.groupId, args.ownerId, args.gatewayId)
+      result.success = self._handler.deleteGroup(args.authzToken, args.groupId, args.ownerId)
       msg_type = TMessageType.REPLY
     except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
       raise
@@ -18031,7 +18025,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = getAllGroupsUserBelongs_result()
     try:
-      result.success = self._handler.getAllGroupsUserBelongs(args.authzToken, args.userName, args.gatewayId)
+      result.success = self._handler.getAllGroupsUserBelongs(args.authzToken, args.userName)
       msg_type = TMessageType.REPLY
     except (TTransport.TTransportException, KeyboardInterrupt, SystemExit):
       raise
@@ -53909,7 +53903,7 @@ class createGroup_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -53933,8 +53927,8 @@ class createGroup_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool()
+        if ftype == TType.STRING:
+          self.success = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 1:
@@ -53972,8 +53966,8 @@ class createGroup_result:
       return
     oprot.writeStructBegin('createGroup_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     if self.ire is not None:
       oprot.writeFieldBegin('ire', TType.STRUCT, 1)
@@ -54228,7 +54222,6 @@ class deleteGroup_args:
    - authzToken
    - groupId
    - ownerId
-   - gatewayId
   """
 
   thrift_spec = (
@@ -54236,14 +54229,12 @@ class deleteGroup_args:
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
     (2, TType.STRING, 'groupId', None, None, ), # 2
     (3, TType.STRING, 'ownerId', None, None, ), # 3
-    (4, TType.STRING, 'gatewayId', None, None, ), # 4
   )
 
-  def __init__(self, authzToken=None, groupId=None, ownerId=None, gatewayId=None,):
+  def __init__(self, authzToken=None, groupId=None, ownerId=None,):
     self.authzToken = authzToken
     self.groupId = groupId
     self.ownerId = ownerId
-    self.gatewayId = gatewayId
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -54270,11 +54261,6 @@ class deleteGroup_args:
           self.ownerId = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 4:
-        if ftype == TType.STRING:
-          self.gatewayId = iprot.readString()
-        else:
-          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -54297,10 +54283,6 @@ class deleteGroup_args:
       oprot.writeFieldBegin('ownerId', TType.STRING, 3)
       oprot.writeString(self.ownerId)
       oprot.writeFieldEnd()
-    if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 4)
-      oprot.writeString(self.gatewayId)
-      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -54311,8 +54293,6 @@ class deleteGroup_args:
       raise TProtocol.TProtocolException(message='Required field groupId is unset!')
     if self.ownerId is None:
       raise TProtocol.TProtocolException(message='Required field ownerId is unset!')
-    if self.gatewayId is None:
-      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
     return
 
 
@@ -54321,7 +54301,6 @@ class deleteGroup_args:
     value = (value * 31) ^ hash(self.authzToken)
     value = (value * 31) ^ hash(self.groupId)
     value = (value * 31) ^ hash(self.ownerId)
-    value = (value * 31) ^ hash(self.gatewayId)
     return value
 
   def __repr__(self):
@@ -54664,20 +54643,17 @@ class getAllGroupsUserBelongs_args:
   Attributes:
    - authzToken
    - userName
-   - gatewayId
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
     (2, TType.STRING, 'userName', None, None, ), # 2
-    (3, TType.STRING, 'gatewayId', None, None, ), # 3
   )
 
-  def __init__(self, authzToken=None, userName=None, gatewayId=None,):
+  def __init__(self, authzToken=None, userName=None,):
     self.authzToken = authzToken
     self.userName = userName
-    self.gatewayId = gatewayId
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -54699,11 +54675,6 @@ class getAllGroupsUserBelongs_args:
           self.userName = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRING:
-          self.gatewayId = iprot.readString()
-        else:
-          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -54722,10 +54693,6 @@ class getAllGroupsUserBelongs_args:
       oprot.writeFieldBegin('userName', TType.STRING, 2)
       oprot.writeString(self.userName)
       oprot.writeFieldEnd()
-    if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 3)
-      oprot.writeString(self.gatewayId)
-      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -54734,8 +54701,6 @@ class getAllGroupsUserBelongs_args:
       raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
     if self.userName is None:
       raise TProtocol.TProtocolException(message='Required field userName is unset!')
-    if self.gatewayId is None:
-      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
     return
 
 
@@ -54743,7 +54708,6 @@ class getAllGroupsUserBelongs_args:
     value = 17
     value = (value * 31) ^ hash(self.authzToken)
     value = (value * 31) ^ hash(self.userName)
-    value = (value * 31) ^ hash(self.gatewayId)
     return value
 
   def __repr__(self):

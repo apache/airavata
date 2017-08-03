@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -159,8 +160,9 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 
 	@Override
 	public void scpThirdParty(String sourceFile,
+							  Session srcSession,
 							  String destinationFile,
-							  Session clientSession,
+							  Session destSession,
 							  DIRECTION direction,
 							  boolean ignoreEmptyFile) throws GFacException {
 		int retryCount= 0;
@@ -169,11 +171,7 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 				retryCount++;
 				log.info("Transferring from:" + sourceFile + " To: " + destinationFile);
 				try {
-					if (direction == DIRECTION.FROM) {
-                        SSHUtils.scpThirdParty(sourceFile, getSession(), destinationFile, clientSession, ignoreEmptyFile);
-                    } else {
-                        SSHUtils.scpThirdParty(sourceFile, clientSession, destinationFile, getSession(), ignoreEmptyFile);
-                    }
+					SSHUtils.scpThirdParty(sourceFile, srcSession, destinationFile, destSession, ignoreEmptyFile);
 					break; // exit while loop
 				} catch (JSchException e) {
 					if (retryCount == MAX_RETRY_COUNT) {
@@ -195,22 +193,38 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 	 * one file with that extension. In case if there are more than one file one random file name from the matching ones
 	 * will be returned.
 	 *
-	 * @param fileExtension
+	 * @param fileRegex
 	 * @param parentPath
 	 * @param session
 	 * @return
 	 */
+	//FIXME Find a better way to find wildcard file names
 	@Override
-	public String getFileNameFromExtension(String fileExtension, String parentPath, Session session) throws GFacException {
+	public List<String> getFileNameFromExtension(String fileRegex, String parentPath, Session session) throws GFacException {
 		try {
 			List<String> fileNames = SSHUtils.listDirectory(parentPath, session);
+			List<String> matchingNames = new ArrayList<>();
 			for(String fileName : fileNames){
-				if(fileName.endsWith(fileExtension)){
-					return fileName;
+				String tempFileName = fileName;
+
+				//FIXME Find better way to match wildcard file names
+				String[] splits = fileRegex.split("\\*");
+				boolean matching = true;
+				for(String split : splits){
+					if(!tempFileName.contains(split)){
+						matching = false;
+						break;
+					}else{
+						int idx = tempFileName.indexOf(split);
+						tempFileName = tempFileName.substring(idx + split.length());
+					}
+				}
+				if(matching){
+					matchingNames.add(fileName);
 				}
 			}
-			log.warn("No matching file found for extension: " + fileExtension + " in the " + parentPath + " directory");
-			return null;
+			log.warn("No matching file found for extension: " + fileRegex + " in the " + parentPath + " directory");
+			return matchingNames;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new GFacException("Failed to list directory " + parentPath);

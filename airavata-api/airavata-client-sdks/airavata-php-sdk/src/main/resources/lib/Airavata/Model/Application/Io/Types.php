@@ -173,9 +173,9 @@ class InputDataObjectType {
           'var' => 'storageResourceId',
           'type' => TType::STRING,
           ),
-          13 => array(
-              'var' => 'isReadOnly',
-              'type' => TType::BOOL,
+        13 => array(
+          'var' => 'isReadOnly',
+          'type' => TType::BOOL,
           ),
         );
     }
