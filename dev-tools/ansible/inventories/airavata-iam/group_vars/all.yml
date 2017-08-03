@@ -1,0 +1,16 @@
+ansible_connection: ssh
+# ansible_user: centos
+ansible_user: iam
+
+user: iam
+group: wheel
+user_home: "/home/{{ user }}"
+
+# Keycloak Identity server variables
+keycloak_db_host: "localhost"
+keycloak_db_port: "3306"
+keycloak_db_schema_name: "keycloak"
+keycloak_db_url: "jdbc:mysql://{{keycloak_db_host}}:{{keycloak_db_port}}/{{keycloak_db_schema_name}}"
+keycloak_db_username: "username"
+keycloak_db_password: "password"
+keycloak_db_pool_size: "20"

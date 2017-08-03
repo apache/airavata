@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -133,10 +134,15 @@ public abstract class AbstractRepository<T, E, Id> {
         return gatewayList;
     }
 
-    public List<T> select(String queryString, int offset, int limit) throws SharingRegistryException {
+    public List<T> select(String queryString, Map<String,Object> queryParameters, int offset, int limit) throws SharingRegistryException {
         int newLimit = limit < 0 ? DBConstants.SELECT_MAX_ROWS: limit;
-        List resultSet = execute(entityManager -> entityManager.createQuery(queryString).setFirstResult(offset)
-                .setMaxResults(newLimit).getResultList());
+        List resultSet = execute(entityManager -> {
+            Query q =  entityManager.createQuery(queryString);
+            for(Map.Entry<String, Object> queryParam : queryParameters.entrySet()){
+                q.setParameter(queryParam.getKey(), queryParam.getValue());
+            }
+            return q.setFirstResult(offset).setMaxResults(newLimit).getResultList();
+        });
         Mapper mapper = ObjectMapperSingleton.getInstance();
         List<T> gatewayList = new ArrayList<>();
         resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));

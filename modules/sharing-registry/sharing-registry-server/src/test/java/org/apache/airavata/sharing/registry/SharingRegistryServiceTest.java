@@ -27,7 +27,6 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
-import org.databene.contiperf.PerfTest;
 import org.databene.contiperf.junit.ContiPerfRule;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -54,7 +53,7 @@ public class SharingRegistryServiceTest {
 
 
     @Test
-    @PerfTest(invocations = 50, threads = 10)
+//    @PerfTest(invocations = 50, threads = 10)
     public void test() throws TException, InterruptedException {
         String serverHost = "localhost";
         int serverPort = 7878;
@@ -146,6 +145,9 @@ public class SharingRegistryServiceTest {
         userGroup1.setGroupType(GroupType.USER_LEVEL_GROUP);
 
         sharingServiceClient.createGroup(userGroup1);
+        userGroup1.setDescription("updated description");
+        sharingServiceClient.updateGroup(userGroup1);
+        Assert.assertTrue(sharingServiceClient.getGroup(domainId, userGroup1.groupId).description.equals("updated description"));
         Assert.assertTrue(sharingServiceClient.isGroupExists(domainId, "test-group-1"));
 
         UserGroup userGroup2 = new UserGroup();

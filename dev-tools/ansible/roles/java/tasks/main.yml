@@ -23,10 +23,14 @@
 - name: download oracle java 8 rpm
   get_url: url="{{ java_rpm_url }}" dest="{{ java_dir_source }}" headers='Cookie:oraclelicense=accept-securebackup-cookie'
   become: yes
+  tags:
+       - always
 
 - name: Install oracle java 8
   yum: name="{{ java_dir_source }}/{{ java_rpm_filename }}" state=present
   become: yes
+  tags:
+       - always
 
 - name: set Oracle Java {{ java_version_string }} as default
   alternatives:
@@ -39,3 +43,5 @@
     - { path: "{{ java_home }}/bin", exe: 'javac' }
     - { path: "{{ java_home }}/bin", exe: 'javadoc' }
   become: yes
+  tags:
+       - always

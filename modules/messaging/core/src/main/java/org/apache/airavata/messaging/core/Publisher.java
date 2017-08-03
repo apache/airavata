@@ -24,7 +24,7 @@ import org.apache.airavata.common.exception.AiravataException;
 /**
  * This is the basic publisher interface.
  */
-@FunctionalInterface
+//@FunctionalInterface
 public interface Publisher {
 
     /**
@@ -33,4 +33,12 @@ public interface Publisher {
      * @throws AiravataException
      */
     public void publish(MessageContext messageContext) throws AiravataException;
+
+    /**
+     * For publishing DB Events
+     * @param messageContext object of message context which will include actual db event and other information
+     * @param routingKey
+     * @throws AiravataException
+     */
+    public void publish(MessageContext messageContext, String routingKey) throws AiravataException;
 }

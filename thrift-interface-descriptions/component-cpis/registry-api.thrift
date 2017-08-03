@@ -24,6 +24,7 @@
 */
 
 include "../data-models/airavata_data_models.thrift"
+include "../data-models/user-tenant-group-models/user_profile_model.thrift"
 include "../data-models/experiment-catalog-models/status_models.thrift"
 include "../data-models/experiment-catalog-models/job_model.thrift"
 include "../data-models/experiment-catalog-models/experiment_model.thrift"
@@ -79,7 +80,7 @@ service RegistryService {
        *
        **/
       string addGateway(1: required workspace_model.Gateway gateway)
-             throws (1: registry_api_errors.RegistryServiceException rse)
+             throws (1: registry_api_errors.RegistryServiceException rse, 2: airavata_errors.DuplicateEntryException dee)
 
 
       /**
@@ -2126,6 +2127,19 @@ service RegistryService {
                          throws (1: registry_api_errors.RegistryServiceException rse)
 
                /**
+                * Adds a new User Profile.
+                *
+                * @param userProfile
+                *   The user profile to add.
+                *
+                * @return userId
+                *   Returns the userId of the user profile added.
+                *
+               */
+               string addUser(1: required user_profile_model.UserProfile userProfile)
+                        throws (1: registry_api_errors.RegistryServiceException rse, 2: airavata_errors.DuplicateEntryException dee)
+
+               /**
                 * Add a Compute Resource Preference to a registered user resource profile.
                 *
                 * @param userId
@@ -2419,5 +2433,9 @@ service RegistryService {
 
               list<replica_catalog_models.DataProductModel> getChildDataProducts(1: required  string productUri)
                             throws (1: registry_api_errors.RegistryServiceException rse)
+
+              list<replica_catalog_models.DataProductModel> searchDataProductsByName(1: required  string gatewayId,
+               2: required string userId, 3: required string productName, 4: required i32 limit, 5: required i32 offset)
+                                          throws (1: registry_api_errors.RegistryServiceException rse)
 
 }

@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -350,6 +351,49 @@ public class ReplicaCatalogImpl implements ReplicaCatalog {
             });
             return returnModels;
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new ReplicaCatalogException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+    }
+
+    @Override
+    public List<DataProductModel> searchDataProductsByName(String gatewayId, String userId, String productName, int limit, int offset) throws ReplicaCatalogException {
+        EntityManager em = null;
+        try {
+            String query = "SELECT dp FROM DataProduct dp " +
+                    "WHERE dp.gatewayId = '" + gatewayId + "' AND dp.ownerName='" + userId + "' AND dp.productName LIKE '%"
+                    + productName + "%' ORDER BY dp.creationTime DESC";
+
+
+            em = ReplicaCatalogJPAUtils.getEntityManager();
+            em.getTransaction().begin();
+            Query q;
+
+            //pagination
+            if (offset >= 0 && limit >= 0) {
+                q = em.createQuery(query).setFirstResult(offset).setMaxResults(limit);
+            } else {
+                q = em.createQuery(query);
+            }
+
+            ArrayList<DataProductModel> returnModels = new ArrayList<>();
+            List resultList = q.getResultList();
+            for (Object o : resultList) {
+                DataProduct dataProduct = (DataProduct) o;
+                returnModels.add(ThriftDataModelConversion.getDataProductModel(dataProduct));
+            }
+            em.getTransaction().commit();
+            em.close();
+            return returnModels;
+        } catch (Exception e) {
+            e.printStackTrace();
             logger.error(e.getMessage(), e);
             throw new ReplicaCatalogException(e);
         } finally {

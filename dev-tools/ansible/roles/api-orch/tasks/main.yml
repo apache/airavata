@@ -50,6 +50,7 @@
     cred_store_server_host: "{{ ansible_default_ipv4.address }}"
     registry_host: "{{ ansible_default_ipv4.address }}"
     sharing_registry_host: "{{ ansible_default_ipv4.address }}"
+    profile_service_host: "{{ ansible_default_ipv4.address }}"
 
 
 - name: Copy Airavata server properties file
@@ -90,6 +91,7 @@
     - "{{ orchestrator_port }}/tcp"
     - "{{ cred_store_port }}/tcp"
     - "{{ registry_port }}/tcp"
+    - "{{ profile_service_port }}/tcp"
   become_user: root
 
 - name: stop api-orch

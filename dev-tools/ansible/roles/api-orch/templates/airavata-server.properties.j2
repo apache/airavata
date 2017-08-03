@@ -286,7 +286,7 @@ zookeeper.timeout=30000
 ## API Security Configuration
 ########################################################################
 api.secured={{ api_secured }}
-security.manager.class=org.apache.airavata.api.server.security.DefaultAiravataSecurityManager
+security.manager.class=org.apache.airavata.service.security.KeyCloakSecurityManager
 ### TLS related configuration ####
 TLS.enabled={{ tls_enable }}
 TLS.api.server.port={{ api_server_tls_port }}
@@ -297,11 +297,39 @@ keystore.password={{ keystore_passwd }}
 #### trust store configuration ####
 trust.store={{ keystores_location }}/{{ client_truststore_src_path | basename }}
 trust.store.password=airavata
-#### remote authorization server url ####
-remote.oauth.authorization.server=https://idp.scigap.org:9443/services/
-#### xacml based authorization policy ####
-authorization.policy=airavata-default-xacml-policy
 #### authorization cache related configuration ####
 authz.cache.enabled=true
-authz.cache.manager.class=org.apache.airavata.api.server.security.authzcache.DefaultAuthzCacheManager
+authz.cache.manager.class=org.apache.airavata.service.security.authzcache.DefaultAuthzCacheManager
 in.memory.cache.size=1000
+
+# Kafka Logging related configuration
+isRunningOnAws=false
+kafka.broker.list=localhost:9092
+kafka.topic.prefix=local
+enable.kafka.logging=false
+
+###########################################################################
+# Profile Service Configuration
+###########################################################################
+profile.service.server.host={{ profile_service_host }}
+profile.service.server.port={{ profile_service_port }}
+profile_service=org.apache.airavata.service.profile.server.ProfileServiceServer
+# MariaDB properties
+profile.service.jdbc.url=jdbc:mariadb://{{ db_server }}:3306/{{ profile_service }}
+profile.service.jdbc.user={{ db_user }}
+profile.service.jdbc.password={{ db_password }}
+profile.service.jdbc.driver=org.mariadb.jdbc.Driver
+profile.service.validationQuery=SELECT 1
+
+###########################################################################
+# Iam Admin services Configuration
+###########################################################################
+iam.server.url={{ iam_server_url }}
+new.gateway.admin.temp.password=Password@123
+iam.server.super.admin.username={{ iam_server_super_admin_username }}
+iam.server.super.admin.password={{ iam_server_super_admin_password }}
+
+###########################################################################
+# DB Event Manager Runner
+###########################################################################
+db_event_manager=org.apache.airavata.db.event.manager.DBEventManagerRunner

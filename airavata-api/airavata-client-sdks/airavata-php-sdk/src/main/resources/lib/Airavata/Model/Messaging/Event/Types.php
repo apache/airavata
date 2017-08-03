@@ -39,6 +39,7 @@ final class MessageType {
   const LAUNCHPROCESS = 5;
   const TERMINATEPROCESS = 6;
   const PROCESSOUTPUT = 7;
+  const DB_EVENT = 8;
   static public $__names = array(
     0 => 'EXPERIMENT',
     1 => 'EXPERIMENT_CANCEL',
@@ -48,6 +49,7 @@ final class MessageType {
     5 => 'LAUNCHPROCESS',
     6 => 'TERMINATEPROCESS',
     7 => 'PROCESSOUTPUT',
+    8 => 'DB_EVENT',
   );
 }
 

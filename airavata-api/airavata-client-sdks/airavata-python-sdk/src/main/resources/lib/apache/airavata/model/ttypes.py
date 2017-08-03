@@ -12,6 +12,7 @@ import apache.airavata.model.workspace.ttypes
 import apache.airavata.api.error.ttypes
 import apache.airavata.model.messaging.event.ttypes
 import apache.airavata.model.security.ttypes
+import apache.airavata.model.dbevent.ttypes
 import apache.airavata.model.experiment.ttypes
 import apache.airavata.model.job.ttypes
 import apache.airavata.model.task.ttypes
@@ -22,6 +23,7 @@ import apache.airavata.model.data.movement.ttypes
 import apache.airavata.model.data.replica.ttypes
 import apache.airavata.model.user.ttypes
 import apache.airavata.model.group.ttypes
+import apache.airavata.model.tenant.ttypes
 import credential_store_data_models.ttypes
 
 

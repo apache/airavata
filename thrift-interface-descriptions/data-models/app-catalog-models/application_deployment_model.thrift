@@ -129,5 +129,6 @@ struct ApplicationDeploymentDescription {
 	13: optional string defaultQueueName,
 	14: optional i32 defaultNodeCount,
 	15: optional i32 defaultCPUCount,
-	16: optional bool editableByUser
+	16: optional i32 defaultWalltime,
+	17: optional bool editableByUser,
 }

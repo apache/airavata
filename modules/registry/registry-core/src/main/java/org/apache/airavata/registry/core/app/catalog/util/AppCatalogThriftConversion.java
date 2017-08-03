@@ -51,6 +51,10 @@ public class AppCatalogThriftConversion {
         resource.setResourceDescription(description.getResourceDescription());
         resource.setResourceId(description.getComputeResourceId());
         resource.setMaxMemoryPerNode(description.getMaxMemoryPerNode());
+        resource.setCpusPerNode(description.getCpusPerNode());
+        resource.setDefaultNodeCount(description.getDefaultNodeCount());
+        resource.setDefaultCPUCount(description.getDefaultCPUCount());
+        resource.setDefaultWalltime(description.getDefaultWalltime());
         resource.setEnabled(description.isEnabled());
         resource.setGatewayUsageReporting(description.isGatewayUsageReporting());
         resource.setGatewayUsageExec(description.getGatewayUsageExecutable());
@@ -73,6 +77,10 @@ public class AppCatalogThriftConversion {
         description.setHostName(resource.getHostName());
         description.setResourceDescription(resource.getResourceDescription());
         description.setMaxMemoryPerNode(resource.getMaxMemoryPerNode());
+        description.setCpusPerNode(resource.getCpusPerNode());
+        description.setDefaultNodeCount(resource.getDefaultNodeCount());
+        description.setDefaultCPUCount(resource.getDefaultCPUCount());
+        description.setDefaultWalltime(resource.getDefaultWalltime());
         description.setEnabled(resource.isEnabled());
         description.setGatewayUsageReporting(resource.isGatewayUsageReporting());
         description.setGatewayUsageExecutable(resource.getGatewayUsageExec());
@@ -257,6 +265,8 @@ public class AppCatalogThriftConversion {
         batchQueue.setCpuPerNode(resource.getCpuPerNode());
         batchQueue.setDefaultNodeCount(resource.getDefaultNodeCount());
         batchQueue.setDefaultCPUCount(resource.getDefaultCPUCount());
+        batchQueue.setDefaultWalltime(resource.getDefaultWalltime());
+        batchQueue.setQueueSpecificMacros(resource.getQueueSpecificMacros());
         batchQueue.setIsDefaultQueue(resource.isDefaultQueue());
         return batchQueue;
     }
@@ -273,6 +283,8 @@ public class AppCatalogThriftConversion {
         batchQueue.setCpuPerNode(resource.getCpuPerNode());
         batchQueue.setDefaultCPUCount(resource.getDefaultCPUCount());
         batchQueue.setDefaultNodeCount(resource.getDefaultNodeCount());
+        batchQueue.setDefaultWalltime(resource.getDefaultWalltime());
+        batchQueue.setQueueSpecificMacros(resource.getQueueSpecificMacros());
         batchQueue.setIsDefaultQueue(resource.isIsDefaultQueue());
         return batchQueue;
     }
@@ -724,6 +736,7 @@ public class AppCatalogThriftConversion {
         description.setDefaultQueueName(resource.getDefaultQueueName());
         description.setDefaultCPUCount(resource.getDefaultCPUCount());
         description.setDefaultNodeCount(resource.getDefaultNodeCount());
+        description.setDefaultWalltime(resource.getDefaultWalltime());
         description.setEditableByUser(resource.isEditableByUser());
 
         ModuleLoadCmdResource cmdResource = new ModuleLoadCmdResource();

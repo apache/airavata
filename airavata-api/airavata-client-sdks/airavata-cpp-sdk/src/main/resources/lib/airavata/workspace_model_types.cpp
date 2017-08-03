@@ -37,7 +37,8 @@ int _kGatewayApprovalStatusValues[] = {
   GatewayApprovalStatus::DEACTIVATED,
   GatewayApprovalStatus::CANCELLED,
   GatewayApprovalStatus::DENIED,
-  GatewayApprovalStatus::CREATED
+  GatewayApprovalStatus::CREATED,
+  GatewayApprovalStatus::DEPLOYED
 };
 const char* _kGatewayApprovalStatusNames[] = {
   "REQUESTED",
@@ -46,9 +47,10 @@ const char* _kGatewayApprovalStatusNames[] = {
   "DEACTIVATED",
   "CANCELLED",
   "DENIED",
-  "CREATED"
+  "CREATED",
+  "DEPLOYED"
 };
-const std::map<int, const char*> _GatewayApprovalStatus_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(7, _kGatewayApprovalStatusValues, _kGatewayApprovalStatusNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _GatewayApprovalStatus_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(8, _kGatewayApprovalStatusValues, _kGatewayApprovalStatusNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kNotificationPriorityValues[] = {
   NotificationPriority::LOW,
@@ -664,6 +666,11 @@ Gateway::~Gateway() throw() {
 }
 
 
+void Gateway::__set_airavataInternalGatewayId(const std::string& val) {
+  this->airavataInternalGatewayId = val;
+__isset.airavataInternalGatewayId = true;
+}
+
 void Gateway::__set_gatewayId(const std::string& val) {
   this->gatewayId = val;
 }
@@ -782,13 +789,21 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->airavataInternalGatewayId);
+          this->__isset.airavataInternalGatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->gatewayId);
           isset_gatewayId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 2:
+      case 3:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast18;
           xfer += iprot->readI32(ecast18);
@@ -798,7 +813,7 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 3:
+      case 4:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->gatewayName);
           this->__isset.gatewayName = true;
@@ -806,7 +821,7 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 4:
+      case 5:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->domain);
           this->__isset.domain = true;
@@ -814,7 +829,7 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 5:
+      case 6:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->emailAddress);
           this->__isset.emailAddress = true;
@@ -822,7 +837,7 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 6:
+      case 7:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->gatewayAcronym);
           this->__isset.gatewayAcronym = true;
@@ -830,7 +845,7 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 7:
+      case 8:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->gatewayURL);
           this->__isset.gatewayURL = true;
@@ -838,7 +853,7 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 8:
+      case 9:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->gatewayPublicAbstract);
           this->__isset.gatewayPublicAbstract = true;
@@ -846,7 +861,7 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 9:
+      case 10:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->reviewProposalDescription);
           this->__isset.reviewProposalDescription = true;
@@ -854,7 +869,7 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 10:
+      case 11:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->gatewayAdminFirstName);
           this->__isset.gatewayAdminFirstName = true;
@@ -862,7 +877,7 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 11:
+      case 12:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->gatewayAdminLastName);
           this->__isset.gatewayAdminLastName = true;
@@ -870,7 +885,7 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 12:
+      case 13:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->gatewayAdminEmail);
           this->__isset.gatewayAdminEmail = true;
@@ -878,7 +893,7 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 13:
+      case 14:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->identityServerUserName);
           this->__isset.identityServerUserName = true;
@@ -886,7 +901,7 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 14:
+      case 15:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->identityServerPasswordToken);
           this->__isset.identityServerPasswordToken = true;
@@ -894,7 +909,7 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 15:
+      case 16:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->declinedReason);
           this->__isset.declinedReason = true;
@@ -902,7 +917,7 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 16:
+      case 17:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->oauthClientId);
           this->__isset.oauthClientId = true;
@@ -910,7 +925,7 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 17:
+      case 18:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->oauthClientSecret);
           this->__isset.oauthClientSecret = true;
@@ -918,7 +933,7 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 18:
+      case 19:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->requestCreationTime);
           this->__isset.requestCreationTime = true;
@@ -926,7 +941,7 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 19:
+      case 20:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->requesterUsername);
           this->__isset.requesterUsername = true;
@@ -955,96 +970,101 @@ uint32_t Gateway::write(::apache::thrift::protocol::TProtocol* oprot) const {
   apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
   xfer += oprot->writeStructBegin("Gateway");
 
-  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  if (this->__isset.airavataInternalGatewayId) {
+    xfer += oprot->writeFieldBegin("airavataInternalGatewayId", ::apache::thrift::protocol::T_STRING, 1);
+    xfer += oprot->writeString(this->airavataInternalGatewayId);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString(this->gatewayId);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("gatewayApprovalStatus", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeFieldBegin("gatewayApprovalStatus", ::apache::thrift::protocol::T_I32, 3);
   xfer += oprot->writeI32((int32_t)this->gatewayApprovalStatus);
   xfer += oprot->writeFieldEnd();
 
   if (this->__isset.gatewayName) {
-    xfer += oprot->writeFieldBegin("gatewayName", ::apache::thrift::protocol::T_STRING, 3);
+    xfer += oprot->writeFieldBegin("gatewayName", ::apache::thrift::protocol::T_STRING, 4);
     xfer += oprot->writeString(this->gatewayName);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.domain) {
-    xfer += oprot->writeFieldBegin("domain", ::apache::thrift::protocol::T_STRING, 4);
+    xfer += oprot->writeFieldBegin("domain", ::apache::thrift::protocol::T_STRING, 5);
     xfer += oprot->writeString(this->domain);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.emailAddress) {
-    xfer += oprot->writeFieldBegin("emailAddress", ::apache::thrift::protocol::T_STRING, 5);
+    xfer += oprot->writeFieldBegin("emailAddress", ::apache::thrift::protocol::T_STRING, 6);
     xfer += oprot->writeString(this->emailAddress);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.gatewayAcronym) {
-    xfer += oprot->writeFieldBegin("gatewayAcronym", ::apache::thrift::protocol::T_STRING, 6);
+    xfer += oprot->writeFieldBegin("gatewayAcronym", ::apache::thrift::protocol::T_STRING, 7);
     xfer += oprot->writeString(this->gatewayAcronym);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.gatewayURL) {
-    xfer += oprot->writeFieldBegin("gatewayURL", ::apache::thrift::protocol::T_STRING, 7);
+    xfer += oprot->writeFieldBegin("gatewayURL", ::apache::thrift::protocol::T_STRING, 8);
     xfer += oprot->writeString(this->gatewayURL);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.gatewayPublicAbstract) {
-    xfer += oprot->writeFieldBegin("gatewayPublicAbstract", ::apache::thrift::protocol::T_STRING, 8);
+    xfer += oprot->writeFieldBegin("gatewayPublicAbstract", ::apache::thrift::protocol::T_STRING, 9);
     xfer += oprot->writeString(this->gatewayPublicAbstract);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.reviewProposalDescription) {
-    xfer += oprot->writeFieldBegin("reviewProposalDescription", ::apache::thrift::protocol::T_STRING, 9);
+    xfer += oprot->writeFieldBegin("reviewProposalDescription", ::apache::thrift::protocol::T_STRING, 10);
     xfer += oprot->writeString(this->reviewProposalDescription);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.gatewayAdminFirstName) {
-    xfer += oprot->writeFieldBegin("gatewayAdminFirstName", ::apache::thrift::protocol::T_STRING, 10);
+    xfer += oprot->writeFieldBegin("gatewayAdminFirstName", ::apache::thrift::protocol::T_STRING, 11);
     xfer += oprot->writeString(this->gatewayAdminFirstName);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.gatewayAdminLastName) {
-    xfer += oprot->writeFieldBegin("gatewayAdminLastName", ::apache::thrift::protocol::T_STRING, 11);
+    xfer += oprot->writeFieldBegin("gatewayAdminLastName", ::apache::thrift::protocol::T_STRING, 12);
     xfer += oprot->writeString(this->gatewayAdminLastName);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.gatewayAdminEmail) {
-    xfer += oprot->writeFieldBegin("gatewayAdminEmail", ::apache::thrift::protocol::T_STRING, 12);
+    xfer += oprot->writeFieldBegin("gatewayAdminEmail", ::apache::thrift::protocol::T_STRING, 13);
     xfer += oprot->writeString(this->gatewayAdminEmail);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.identityServerUserName) {
-    xfer += oprot->writeFieldBegin("identityServerUserName", ::apache::thrift::protocol::T_STRING, 13);
+    xfer += oprot->writeFieldBegin("identityServerUserName", ::apache::thrift::protocol::T_STRING, 14);
     xfer += oprot->writeString(this->identityServerUserName);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.identityServerPasswordToken) {
-    xfer += oprot->writeFieldBegin("identityServerPasswordToken", ::apache::thrift::protocol::T_STRING, 14);
+    xfer += oprot->writeFieldBegin("identityServerPasswordToken", ::apache::thrift::protocol::T_STRING, 15);
     xfer += oprot->writeString(this->identityServerPasswordToken);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.declinedReason) {
-    xfer += oprot->writeFieldBegin("declinedReason", ::apache::thrift::protocol::T_STRING, 15);
+    xfer += oprot->writeFieldBegin("declinedReason", ::apache::thrift::protocol::T_STRING, 16);
     xfer += oprot->writeString(this->declinedReason);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.oauthClientId) {
-    xfer += oprot->writeFieldBegin("oauthClientId", ::apache::thrift::protocol::T_STRING, 16);
+    xfer += oprot->writeFieldBegin("oauthClientId", ::apache::thrift::protocol::T_STRING, 17);
     xfer += oprot->writeString(this->oauthClientId);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.oauthClientSecret) {
-    xfer += oprot->writeFieldBegin("oauthClientSecret", ::apache::thrift::protocol::T_STRING, 17);
+    xfer += oprot->writeFieldBegin("oauthClientSecret", ::apache::thrift::protocol::T_STRING, 18);
     xfer += oprot->writeString(this->oauthClientSecret);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.requestCreationTime) {
-    xfer += oprot->writeFieldBegin("requestCreationTime", ::apache::thrift::protocol::T_I64, 18);
+    xfer += oprot->writeFieldBegin("requestCreationTime", ::apache::thrift::protocol::T_I64, 19);
     xfer += oprot->writeI64(this->requestCreationTime);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.requesterUsername) {
-    xfer += oprot->writeFieldBegin("requesterUsername", ::apache::thrift::protocol::T_STRING, 19);
+    xfer += oprot->writeFieldBegin("requesterUsername", ::apache::thrift::protocol::T_STRING, 20);
     xfer += oprot->writeString(this->requesterUsername);
     xfer += oprot->writeFieldEnd();
   }
@@ -1055,6 +1075,7 @@ uint32_t Gateway::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
 void swap(Gateway &a, Gateway &b) {
   using ::std::swap;
+  swap(a.airavataInternalGatewayId, b.airavataInternalGatewayId);
   swap(a.gatewayId, b.gatewayId);
   swap(a.gatewayApprovalStatus, b.gatewayApprovalStatus);
   swap(a.gatewayName, b.gatewayName);
@@ -1078,6 +1099,7 @@ void swap(Gateway &a, Gateway &b) {
 }
 
 Gateway::Gateway(const Gateway& other19) {
+  airavataInternalGatewayId = other19.airavataInternalGatewayId;
   gatewayId = other19.gatewayId;
   gatewayApprovalStatus = other19.gatewayApprovalStatus;
   gatewayName = other19.gatewayName;
@@ -1100,6 +1122,7 @@ Gateway::Gateway(const Gateway& other19) {
   __isset = other19.__isset;
 }
 Gateway& Gateway::operator=(const Gateway& other20) {
+  airavataInternalGatewayId = other20.airavataInternalGatewayId;
   gatewayId = other20.gatewayId;
   gatewayApprovalStatus = other20.gatewayApprovalStatus;
   gatewayName = other20.gatewayName;
@@ -1125,7 +1148,8 @@ Gateway& Gateway::operator=(const Gateway& other20) {
 void Gateway::printTo(std::ostream& out) const {
   using ::apache::thrift::to_string;
   out << "Gateway(";
-  out << "gatewayId=" << to_string(gatewayId);
+  out << "airavataInternalGatewayId="; (__isset.airavataInternalGatewayId ? (out << to_string(airavataInternalGatewayId)) : (out << "<null>"));
+  out << ", " << "gatewayId=" << to_string(gatewayId);
   out << ", " << "gatewayApprovalStatus=" << to_string(gatewayApprovalStatus);
   out << ", " << "gatewayName="; (__isset.gatewayName ? (out << to_string(gatewayName)) : (out << "<null>"));
   out << ", " << "domain="; (__isset.domain ? (out << to_string(domain)) : (out << "<null>"));

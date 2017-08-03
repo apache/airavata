@@ -423,6 +423,22 @@ public class ApplicationSettings {
         return getSetting(ServerSettings.USER_PROFILE_SERVER_PORT);
     }
 
+    public static String getProfileServiceServerHost() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.PROFILE_SERVICE_SERVER_HOST);
+    }
+
+    public static String getProfileServiceServerPort() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.PROFILE_SERVICE_SERVER_PORT);
+    }
+
+    public static String getIamServerUrl() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.IAM_SERVER_URL);
+    }
+
+    public static String getGatewayAdminTempPwd() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.NEW_GATEWAY_ADMIN_TEMP_PASSWORD);
+    }
+
     /**
      * @deprecated use {{@link #getSetting(String)}}
      * @return

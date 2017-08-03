@@ -64,6 +64,8 @@ class AuthenticationException;
 
 class AuthorizationException;
 
+class DuplicateEntryException;
+
 class AiravataClientException;
 
 class ValidatorResult;
@@ -316,6 +318,48 @@ class AuthorizationException : public ::apache::thrift::TException {
 void swap(AuthorizationException &a, AuthorizationException &b);
 
 inline std::ostream& operator<<(std::ostream& out, const AuthorizationException& obj)
+{
+  obj.printTo(out);
+  return out;
+}
+
+
+class DuplicateEntryException : public ::apache::thrift::TException {
+ public:
+
+  DuplicateEntryException(const DuplicateEntryException&);
+  DuplicateEntryException& operator=(const DuplicateEntryException&);
+  DuplicateEntryException() : message() {
+  }
+
+  virtual ~DuplicateEntryException() throw();
+  std::string message;
+
+  void __set_message(const std::string& val);
+
+  bool operator == (const DuplicateEntryException & rhs) const
+  {
+    if (!(message == rhs.message))
+      return false;
+    return true;
+  }
+  bool operator != (const DuplicateEntryException &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const DuplicateEntryException & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+  mutable std::string thriftTExceptionMessageHolder_;
+  const char* what() const throw();
+};
+
+void swap(DuplicateEntryException &a, DuplicateEntryException &b);
+
+inline std::ostream& operator<<(std::ostream& out, const DuplicateEntryException& obj)
 {
   obj.printTo(out);
   return out;

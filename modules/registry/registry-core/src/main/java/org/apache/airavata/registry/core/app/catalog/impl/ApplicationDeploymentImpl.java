@@ -65,6 +65,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             deploymentResource.setDefaultQueueName(deploymentDescription.getDefaultQueueName());
             deploymentResource.setDefaultCPUCount(deploymentDescription.getDefaultCPUCount());
             deploymentResource.setDefaultNodeCount(deploymentDescription.getDefaultNodeCount());
+            deploymentResource.setDefaultWalltime(deploymentDescription.getDefaultWalltime());
             deploymentResource.setEditableByUser(deploymentDescription.isEditableByUser());
             ApplicationParallelismType parallelism = deploymentDescription.getParallelism();
             if (parallelism != null){
@@ -173,6 +174,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             existingDep.setDefaultQueueName(updatedDeployment.getDefaultQueueName());
             existingDep.setDefaultCPUCount(updatedDeployment.getDefaultCPUCount());
             existingDep.setDefaultNodeCount(updatedDeployment.getDefaultNodeCount());
+            existingDep.setDefaultWalltime(updatedDeployment.getDefaultWalltime());
             existingDep.setEditableByUser(updatedDeployment.isEditableByUser());
             if (updatedDeployment.getParallelism() != null){
                 existingDep.setParallelism(updatedDeployment.getParallelism().toString());

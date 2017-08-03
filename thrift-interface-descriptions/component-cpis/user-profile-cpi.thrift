@@ -23,7 +23,7 @@
  *
 */
 
-include "../data-models/user-group-models/user_profile_model.thrift"
+include "../data-models/user-tenant-group-models/user_profile_model.thrift"
 include "user_profile_cpi_errors.thrift"
 
 

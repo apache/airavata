@@ -57,19 +57,37 @@ return array(
         'oauth-client-secret' => '{{ oauth_client_secret }}',
 
         /**
-         * OAuth Grant Type (password or authorization_code)
+         * Authentication options
          */
-        'oauth-grant-type' => 'password',
+        'auth-options' => [
+            {% for auth_option in auth_options %}
+            [
+                'oauth-grant-type' => '{{ auth_option["oauth_grant_type"] }}',
+                'name' => '{{ auth_option["name"] }}',
+                {% if "oauth_authorize_url_extra_params" in auth_option %}
+                'oauth-authorize-url-extra-params' => '{{ auth_option["oauth_authorize_url_extra_params"] }}',
+                {% endif %}
+                {% if "logo" in auth_option %}
+                'logo' => '{{ auth_option["logo"] }}',
+                {% endif %}
+            ],
+            {% endfor %}
+        ],
 
         /**
-         * Identity server domain
+         * OAuth call back url (only if the grant type is authorization_code)
          */
-        'server' => 'idp.scigap.org',
+        'oauth-callback-url' => '{{ oauth_callback_url }}',
+
+        /**
+         * For OIDC servers that support the discovery protocol.
+         */
+        'openid-connect-discovery-url' => '{{ oidc_discovery_url }}',
 
         /**
          * Identity server url
          */
-        'service-url' => 'https://idp.scigap.org:9443/',
+        'service-url' => '{{ oauth_service_url }}',
 
         /**
          * Enable HTTPS server verification
@@ -79,12 +97,7 @@ return array(
         /**
          * Path to the server certificate file
          */
-        'cafile-path' => app_path() . '/resources/security/idp_scigap_org.pem',
-
-        /**
-         * Allow self signed server certificates
-         */
-        'allow-self-signed-cert' => false
+        'cafile-path' => app_path() . '/resources/security/incommon_rsa_server_ca.pem',
     ],
 
 
@@ -105,6 +118,17 @@ return array(
          * Airavata API server port
          */
         'airavata-port' => '{{ airavata_port }}',
+
+        /**
+         * Airavata Profile Service server location. Use tls:// as the protocol to
+         * connect over TLS
+         */
+        'airavata-profile-service-server' => '{{ airavata_profile_service_server }}',
+
+        /**
+         * Airavata Profile Service port
+         */
+        'airavata-profile-service-port' => '{{ airavata_profile_service_port }}',
 
         /**
          * Airavata API server thrift communication timeout
