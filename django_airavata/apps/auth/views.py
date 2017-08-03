@@ -7,7 +7,7 @@ from django.urls import reverse
 from requests_oauthlib import OAuth2Session
 
 import logging
-from urllib.parse import urlencode
+from urllib.parse import quote
 
 logger = logging.getLogger(__name__)
 
@@ -45,8 +45,8 @@ def handle_login(request):
 
 def start_logout(request):
     logout(request)
-    # TODO: implement Keycloak logout
-    return redirect('/')
+    redirect_url = request.build_absolute_uri(reverse(settings.LOGOUT_REDIRECT_URL))
+    return redirect(settings.KEYCLOAK_LOGOUT_URL + "?redirect_uri=" + quote(redirect_url))
 
 def callback(request):
     try:

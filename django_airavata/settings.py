@@ -130,8 +130,9 @@ AUTHENTICATION_BACKENDS = [
     'django_airavata.apps.auth.backends.KeycloakBackend'
 ]
 
-LOGIN_URL = '/auth/login'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = 'django_airavata_auth:login'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
 
 LOGGING = {
     'version': 1,

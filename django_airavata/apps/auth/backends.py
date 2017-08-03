@@ -56,7 +56,7 @@ class KeycloakBackend(object):
 
     def _get_token_and_userinfo_redirect_flow(self, request):
         authorization_code_url=request.build_absolute_uri()
-        redirect_url=request.build_absolute_uri(reverse('airavata_auth_callback'))
+        redirect_url=request.build_absolute_uri(reverse('django_airavata_auth:callback'))
         client_id = settings.KEYCLOAK_CLIENT_ID
         client_secret = settings.KEYCLOAK_CLIENT_SECRET
         token_url = settings.KEYCLOAK_TOKEN_URL

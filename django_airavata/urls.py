@@ -23,6 +23,5 @@ urlpatterns = [
     url(r'^auth/', include('django_airavata.apps.auth.urls')),
     url(r'^workspace/', include('django_airavata.apps.workspace.urls')),
     url(r'^api/', include('django_airavata.apps.api.urls')),
-    # This is just a dummy view to test authentication
-    url(r'^$', views.home)
+    url(r'^$', views.home, name='home')
 ]
