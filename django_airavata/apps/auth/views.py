@@ -45,6 +45,7 @@ def handle_login(request):
 
 def start_logout(request):
     logout(request)
+    # TODO: implement Keycloak logout
     return redirect('/')
 
 def callback(request):

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+        <h1>Welcome!</h1>
+        <p>This is the Django based web portal for the Airavata project. This
+        portal can be used as the basis for developing a science gateway using
+        Airavata.</p>
+        {% if user.is_authenticated %}
+        <p><a class="btn btn-primary btn-lg" href="{% url 'django_airavata_workspace:projects' %}" role="button">Go to your Projects »</a></p>
+        {% else %}
+        <p><a class="btn btn-primary btn-lg" href="{% url 'django_airavata_auth:login' %}" role="button">Login »</a></p>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}
