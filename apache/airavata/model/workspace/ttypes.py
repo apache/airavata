@@ -22,6 +22,7 @@ class GatewayApprovalStatus(object):
     CANCELLED = 4
     DENIED = 5
     CREATED = 6
+    DEPLOYED = 7
 
     _VALUES_TO_NAMES = {
         0: "REQUESTED",
@@ -31,6 +32,7 @@ class GatewayApprovalStatus(object):
         4: "CANCELLED",
         5: "DENIED",
         6: "CREATED",
+        7: "DEPLOYED",
     }
 
     _NAMES_TO_VALUES = {
@@ -41,6 +43,7 @@ class GatewayApprovalStatus(object):
         "CANCELLED": 4,
         "DENIED": 5,
         "CREATED": 6,
+        "DEPLOYED": 7,
     }
 
 
@@ -431,6 +434,7 @@ class User(object):
 class Gateway(object):
     """
     Attributes:
+     - airavataInternalGatewayId
      - gatewayId
      - gatewayApprovalStatus
      - gatewayName
@@ -454,28 +458,30 @@ class Gateway(object):
 
     thrift_spec = (
         None,  # 0
-        (1, TType.STRING, 'gatewayId', 'UTF8', None, ),  # 1
-        (2, TType.I32, 'gatewayApprovalStatus', None, None, ),  # 2
-        (3, TType.STRING, 'gatewayName', 'UTF8', None, ),  # 3
-        (4, TType.STRING, 'domain', 'UTF8', None, ),  # 4
-        (5, TType.STRING, 'emailAddress', 'UTF8', None, ),  # 5
-        (6, TType.STRING, 'gatewayAcronym', 'UTF8', None, ),  # 6
-        (7, TType.STRING, 'gatewayURL', 'UTF8', None, ),  # 7
-        (8, TType.STRING, 'gatewayPublicAbstract', 'UTF8', None, ),  # 8
-        (9, TType.STRING, 'reviewProposalDescription', 'UTF8', None, ),  # 9
-        (10, TType.STRING, 'gatewayAdminFirstName', 'UTF8', None, ),  # 10
-        (11, TType.STRING, 'gatewayAdminLastName', 'UTF8', None, ),  # 11
-        (12, TType.STRING, 'gatewayAdminEmail', 'UTF8', None, ),  # 12
-        (13, TType.STRING, 'identityServerUserName', 'UTF8', None, ),  # 13
-        (14, TType.STRING, 'identityServerPasswordToken', 'UTF8', None, ),  # 14
-        (15, TType.STRING, 'declinedReason', 'UTF8', None, ),  # 15
-        (16, TType.STRING, 'oauthClientId', 'UTF8', None, ),  # 16
-        (17, TType.STRING, 'oauthClientSecret', 'UTF8', None, ),  # 17
-        (18, TType.I64, 'requestCreationTime', None, None, ),  # 18
-        (19, TType.STRING, 'requesterUsername', 'UTF8', None, ),  # 19
+        (1, TType.STRING, 'airavataInternalGatewayId', 'UTF8', None, ),  # 1
+        (2, TType.STRING, 'gatewayId', 'UTF8', None, ),  # 2
+        (3, TType.I32, 'gatewayApprovalStatus', None, None, ),  # 3
+        (4, TType.STRING, 'gatewayName', 'UTF8', None, ),  # 4
+        (5, TType.STRING, 'domain', 'UTF8', None, ),  # 5
+        (6, TType.STRING, 'emailAddress', 'UTF8', None, ),  # 6
+        (7, TType.STRING, 'gatewayAcronym', 'UTF8', None, ),  # 7
+        (8, TType.STRING, 'gatewayURL', 'UTF8', None, ),  # 8
+        (9, TType.STRING, 'gatewayPublicAbstract', 'UTF8', None, ),  # 9
+        (10, TType.STRING, 'reviewProposalDescription', 'UTF8', None, ),  # 10
+        (11, TType.STRING, 'gatewayAdminFirstName', 'UTF8', None, ),  # 11
+        (12, TType.STRING, 'gatewayAdminLastName', 'UTF8', None, ),  # 12
+        (13, TType.STRING, 'gatewayAdminEmail', 'UTF8', None, ),  # 13
+        (14, TType.STRING, 'identityServerUserName', 'UTF8', None, ),  # 14
+        (15, TType.STRING, 'identityServerPasswordToken', 'UTF8', None, ),  # 15
+        (16, TType.STRING, 'declinedReason', 'UTF8', None, ),  # 16
+        (17, TType.STRING, 'oauthClientId', 'UTF8', None, ),  # 17
+        (18, TType.STRING, 'oauthClientSecret', 'UTF8', None, ),  # 18
+        (19, TType.I64, 'requestCreationTime', None, None, ),  # 19
+        (20, TType.STRING, 'requesterUsername', 'UTF8', None, ),  # 20
     )
 
-    def __init__(self, gatewayId=None, gatewayApprovalStatus=None, gatewayName=None, domain=None, emailAddress=None, gatewayAcronym=None, gatewayURL=None, gatewayPublicAbstract=None, reviewProposalDescription=None, gatewayAdminFirstName=None, gatewayAdminLastName=None, gatewayAdminEmail=None, identityServerUserName=None, identityServerPasswordToken=None, declinedReason=None, oauthClientId=None, oauthClientSecret=None, requestCreationTime=None, requesterUsername=None,):
+    def __init__(self, airavataInternalGatewayId=None, gatewayId=None, gatewayApprovalStatus=None, gatewayName=None, domain=None, emailAddress=None, gatewayAcronym=None, gatewayURL=None, gatewayPublicAbstract=None, reviewProposalDescription=None, gatewayAdminFirstName=None, gatewayAdminLastName=None, gatewayAdminEmail=None, identityServerUserName=None, identityServerPasswordToken=None, declinedReason=None, oauthClientId=None, oauthClientSecret=None, requestCreationTime=None, requesterUsername=None,):
+        self.airavataInternalGatewayId = airavataInternalGatewayId
         self.gatewayId = gatewayId
         self.gatewayApprovalStatus = gatewayApprovalStatus
         self.gatewayName = gatewayName
@@ -507,95 +513,100 @@ class Gateway(object):
                 break
             if fid == 1:
                 if ftype == TType.STRING:
-                    self.gatewayId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                    self.airavataInternalGatewayId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             elif fid == 2:
+                if ftype == TType.STRING:
+                    self.gatewayId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
                 if ftype == TType.I32:
                     self.gatewayApprovalStatus = iprot.readI32()
                 else:
                     iprot.skip(ftype)
-            elif fid == 3:
+            elif fid == 4:
                 if ftype == TType.STRING:
                     self.gatewayName = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 4:
+            elif fid == 5:
                 if ftype == TType.STRING:
                     self.domain = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 5:
+            elif fid == 6:
                 if ftype == TType.STRING:
                     self.emailAddress = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 6:
+            elif fid == 7:
                 if ftype == TType.STRING:
                     self.gatewayAcronym = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 7:
+            elif fid == 8:
                 if ftype == TType.STRING:
                     self.gatewayURL = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 8:
+            elif fid == 9:
                 if ftype == TType.STRING:
                     self.gatewayPublicAbstract = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 9:
+            elif fid == 10:
                 if ftype == TType.STRING:
                     self.reviewProposalDescription = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 10:
+            elif fid == 11:
                 if ftype == TType.STRING:
                     self.gatewayAdminFirstName = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 11:
+            elif fid == 12:
                 if ftype == TType.STRING:
                     self.gatewayAdminLastName = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 12:
+            elif fid == 13:
                 if ftype == TType.STRING:
                     self.gatewayAdminEmail = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 13:
+            elif fid == 14:
                 if ftype == TType.STRING:
                     self.identityServerUserName = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 14:
+            elif fid == 15:
                 if ftype == TType.STRING:
                     self.identityServerPasswordToken = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 15:
+            elif fid == 16:
                 if ftype == TType.STRING:
                     self.declinedReason = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 16:
+            elif fid == 17:
                 if ftype == TType.STRING:
                     self.oauthClientId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 17:
+            elif fid == 18:
                 if ftype == TType.STRING:
                     self.oauthClientSecret = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
-            elif fid == 18:
+            elif fid == 19:
                 if ftype == TType.I64:
                     self.requestCreationTime = iprot.readI64()
                 else:
                     iprot.skip(ftype)
-            elif fid == 19:
+            elif fid == 20:
                 if ftype == TType.STRING:
                     self.requesterUsername = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
@@ -610,80 +621,84 @@ class Gateway(object):
             oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
             return
         oprot.writeStructBegin('Gateway')
+        if self.airavataInternalGatewayId is not None:
+            oprot.writeFieldBegin('airavataInternalGatewayId', TType.STRING, 1)
+            oprot.writeString(self.airavataInternalGatewayId.encode('utf-8') if sys.version_info[0] == 2 else self.airavataInternalGatewayId)
+            oprot.writeFieldEnd()
         if self.gatewayId is not None:
-            oprot.writeFieldBegin('gatewayId', TType.STRING, 1)
+            oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
             oprot.writeString(self.gatewayId.encode('utf-8') if sys.version_info[0] == 2 else self.gatewayId)
             oprot.writeFieldEnd()
         if self.gatewayApprovalStatus is not None:
-            oprot.writeFieldBegin('gatewayApprovalStatus', TType.I32, 2)
+            oprot.writeFieldBegin('gatewayApprovalStatus', TType.I32, 3)
             oprot.writeI32(self.gatewayApprovalStatus)
             oprot.writeFieldEnd()
         if self.gatewayName is not None:
-            oprot.writeFieldBegin('gatewayName', TType.STRING, 3)
+            oprot.writeFieldBegin('gatewayName', TType.STRING, 4)
             oprot.writeString(self.gatewayName.encode('utf-8') if sys.version_info[0] == 2 else self.gatewayName)
             oprot.writeFieldEnd()
         if self.domain is not None:
-            oprot.writeFieldBegin('domain', TType.STRING, 4)
+            oprot.writeFieldBegin('domain', TType.STRING, 5)
             oprot.writeString(self.domain.encode('utf-8') if sys.version_info[0] == 2 else self.domain)
             oprot.writeFieldEnd()
         if self.emailAddress is not None:
-            oprot.writeFieldBegin('emailAddress', TType.STRING, 5)
+            oprot.writeFieldBegin('emailAddress', TType.STRING, 6)
             oprot.writeString(self.emailAddress.encode('utf-8') if sys.version_info[0] == 2 else self.emailAddress)
             oprot.writeFieldEnd()
         if self.gatewayAcronym is not None:
-            oprot.writeFieldBegin('gatewayAcronym', TType.STRING, 6)
+            oprot.writeFieldBegin('gatewayAcronym', TType.STRING, 7)
             oprot.writeString(self.gatewayAcronym.encode('utf-8') if sys.version_info[0] == 2 else self.gatewayAcronym)
             oprot.writeFieldEnd()
         if self.gatewayURL is not None:
-            oprot.writeFieldBegin('gatewayURL', TType.STRING, 7)
+            oprot.writeFieldBegin('gatewayURL', TType.STRING, 8)
             oprot.writeString(self.gatewayURL.encode('utf-8') if sys.version_info[0] == 2 else self.gatewayURL)
             oprot.writeFieldEnd()
         if self.gatewayPublicAbstract is not None:
-            oprot.writeFieldBegin('gatewayPublicAbstract', TType.STRING, 8)
+            oprot.writeFieldBegin('gatewayPublicAbstract', TType.STRING, 9)
             oprot.writeString(self.gatewayPublicAbstract.encode('utf-8') if sys.version_info[0] == 2 else self.gatewayPublicAbstract)
             oprot.writeFieldEnd()
         if self.reviewProposalDescription is not None:
-            oprot.writeFieldBegin('reviewProposalDescription', TType.STRING, 9)
+            oprot.writeFieldBegin('reviewProposalDescription', TType.STRING, 10)
             oprot.writeString(self.reviewProposalDescription.encode('utf-8') if sys.version_info[0] == 2 else self.reviewProposalDescription)
             oprot.writeFieldEnd()
         if self.gatewayAdminFirstName is not None:
-            oprot.writeFieldBegin('gatewayAdminFirstName', TType.STRING, 10)
+            oprot.writeFieldBegin('gatewayAdminFirstName', TType.STRING, 11)
             oprot.writeString(self.gatewayAdminFirstName.encode('utf-8') if sys.version_info[0] == 2 else self.gatewayAdminFirstName)
             oprot.writeFieldEnd()
         if self.gatewayAdminLastName is not None:
-            oprot.writeFieldBegin('gatewayAdminLastName', TType.STRING, 11)
+            oprot.writeFieldBegin('gatewayAdminLastName', TType.STRING, 12)
             oprot.writeString(self.gatewayAdminLastName.encode('utf-8') if sys.version_info[0] == 2 else self.gatewayAdminLastName)
             oprot.writeFieldEnd()
         if self.gatewayAdminEmail is not None:
-            oprot.writeFieldBegin('gatewayAdminEmail', TType.STRING, 12)
+            oprot.writeFieldBegin('gatewayAdminEmail', TType.STRING, 13)
             oprot.writeString(self.gatewayAdminEmail.encode('utf-8') if sys.version_info[0] == 2 else self.gatewayAdminEmail)
             oprot.writeFieldEnd()
         if self.identityServerUserName is not None:
-            oprot.writeFieldBegin('identityServerUserName', TType.STRING, 13)
+            oprot.writeFieldBegin('identityServerUserName', TType.STRING, 14)
             oprot.writeString(self.identityServerUserName.encode('utf-8') if sys.version_info[0] == 2 else self.identityServerUserName)
             oprot.writeFieldEnd()
         if self.identityServerPasswordToken is not None:
-            oprot.writeFieldBegin('identityServerPasswordToken', TType.STRING, 14)
+            oprot.writeFieldBegin('identityServerPasswordToken', TType.STRING, 15)
             oprot.writeString(self.identityServerPasswordToken.encode('utf-8') if sys.version_info[0] == 2 else self.identityServerPasswordToken)
             oprot.writeFieldEnd()
         if self.declinedReason is not None:
-            oprot.writeFieldBegin('declinedReason', TType.STRING, 15)
+            oprot.writeFieldBegin('declinedReason', TType.STRING, 16)
             oprot.writeString(self.declinedReason.encode('utf-8') if sys.version_info[0] == 2 else self.declinedReason)
             oprot.writeFieldEnd()
         if self.oauthClientId is not None:
-            oprot.writeFieldBegin('oauthClientId', TType.STRING, 16)
+            oprot.writeFieldBegin('oauthClientId', TType.STRING, 17)
             oprot.writeString(self.oauthClientId.encode('utf-8') if sys.version_info[0] == 2 else self.oauthClientId)
             oprot.writeFieldEnd()
         if self.oauthClientSecret is not None:
-            oprot.writeFieldBegin('oauthClientSecret', TType.STRING, 17)
+            oprot.writeFieldBegin('oauthClientSecret', TType.STRING, 18)
             oprot.writeString(self.oauthClientSecret.encode('utf-8') if sys.version_info[0] == 2 else self.oauthClientSecret)
             oprot.writeFieldEnd()
         if self.requestCreationTime is not None:
-            oprot.writeFieldBegin('requestCreationTime', TType.I64, 18)
+            oprot.writeFieldBegin('requestCreationTime', TType.I64, 19)
             oprot.writeI64(self.requestCreationTime)
             oprot.writeFieldEnd()
         if self.requesterUsername is not None:
-            oprot.writeFieldBegin('requesterUsername', TType.STRING, 19)
+            oprot.writeFieldBegin('requesterUsername', TType.STRING, 20)
             oprot.writeString(self.requesterUsername.encode('utf-8') if sys.version_info[0] == 2 else self.requesterUsername)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()

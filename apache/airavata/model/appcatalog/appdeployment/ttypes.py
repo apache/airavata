@@ -353,6 +353,7 @@ class ApplicationDeploymentDescription(object):
      - defaultQueueName
      - defaultNodeCount
      - defaultCPUCount
+     - defaultWalltime
      - editableByUser
     """
 
@@ -373,10 +374,11 @@ class ApplicationDeploymentDescription(object):
         (13, TType.STRING, 'defaultQueueName', 'UTF8', None, ),  # 13
         (14, TType.I32, 'defaultNodeCount', None, None, ),  # 14
         (15, TType.I32, 'defaultCPUCount', None, None, ),  # 15
-        (16, TType.BOOL, 'editableByUser', None, None, ),  # 16
+        (16, TType.I32, 'defaultWalltime', None, None, ),  # 16
+        (17, TType.BOOL, 'editableByUser', None, None, ),  # 17
     )
 
-    def __init__(self, appDeploymentId=thrift_spec[1][4], appModuleId=None, computeHostId=None, executablePath=None, parallelism=thrift_spec[5][4], appDeploymentDescription=None, moduleLoadCmds=None, libPrependPaths=None, libAppendPaths=None, setEnvironment=None, preJobCommands=None, postJobCommands=None, defaultQueueName=None, defaultNodeCount=None, defaultCPUCount=None, editableByUser=None,):
+    def __init__(self, appDeploymentId=thrift_spec[1][4], appModuleId=None, computeHostId=None, executablePath=None, parallelism=thrift_spec[5][4], appDeploymentDescription=None, moduleLoadCmds=None, libPrependPaths=None, libAppendPaths=None, setEnvironment=None, preJobCommands=None, postJobCommands=None, defaultQueueName=None, defaultNodeCount=None, defaultCPUCount=None, defaultWalltime=None, editableByUser=None,):
         self.appDeploymentId = appDeploymentId
         self.appModuleId = appModuleId
         self.computeHostId = computeHostId
@@ -392,6 +394,7 @@ class ApplicationDeploymentDescription(object):
         self.defaultQueueName = defaultQueueName
         self.defaultNodeCount = defaultNodeCount
         self.defaultCPUCount = defaultCPUCount
+        self.defaultWalltime = defaultWalltime
         self.editableByUser = editableByUser
 
     def read(self, iprot):
@@ -515,6 +518,11 @@ class ApplicationDeploymentDescription(object):
                 else:
                     iprot.skip(ftype)
             elif fid == 16:
+                if ftype == TType.I32:
+                    self.defaultWalltime = iprot.readI32()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 17:
                 if ftype == TType.BOOL:
                     self.editableByUser = iprot.readBool()
                 else:
@@ -607,8 +615,12 @@ class ApplicationDeploymentDescription(object):
             oprot.writeFieldBegin('defaultCPUCount', TType.I32, 15)
             oprot.writeI32(self.defaultCPUCount)
             oprot.writeFieldEnd()
+        if self.defaultWalltime is not None:
+            oprot.writeFieldBegin('defaultWalltime', TType.I32, 16)
+            oprot.writeI32(self.defaultWalltime)
+            oprot.writeFieldEnd()
         if self.editableByUser is not None:
-            oprot.writeFieldBegin('editableByUser', TType.BOOL, 16)
+            oprot.writeFieldBegin('editableByUser', TType.BOOL, 17)
             oprot.writeBool(self.editableByUser)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()

@@ -88,6 +88,7 @@ class InputDataObjectType(object):
      - requiredToAddedToCommandLine
      - dataStaged
      - storageResourceId
+     - isReadOnly
     """
 
     thrift_spec = (
@@ -104,9 +105,10 @@ class InputDataObjectType(object):
         (10, TType.BOOL, 'requiredToAddedToCommandLine', None, None, ),  # 10
         (11, TType.BOOL, 'dataStaged', None, None, ),  # 11
         (12, TType.STRING, 'storageResourceId', 'UTF8', None, ),  # 12
+        (13, TType.BOOL, 'isReadOnly', None, None, ),  # 13
     )
 
-    def __init__(self, name=None, value=None, type=None, applicationArgument=None, standardInput=None, userFriendlyDescription=None, metaData=None, inputOrder=None, isRequired=None, requiredToAddedToCommandLine=None, dataStaged=None, storageResourceId=None,):
+    def __init__(self, name=None, value=None, type=None, applicationArgument=None, standardInput=None, userFriendlyDescription=None, metaData=None, inputOrder=None, isRequired=None, requiredToAddedToCommandLine=None, dataStaged=None, storageResourceId=None, isReadOnly=None,):
         self.name = name
         self.value = value
         self.type = type
@@ -119,6 +121,7 @@ class InputDataObjectType(object):
         self.requiredToAddedToCommandLine = requiredToAddedToCommandLine
         self.dataStaged = dataStaged
         self.storageResourceId = storageResourceId
+        self.isReadOnly = isReadOnly
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -189,6 +192,11 @@ class InputDataObjectType(object):
                     self.storageResourceId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
+            elif fid == 13:
+                if ftype == TType.BOOL:
+                    self.isReadOnly = iprot.readBool()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -246,6 +254,10 @@ class InputDataObjectType(object):
         if self.storageResourceId is not None:
             oprot.writeFieldBegin('storageResourceId', TType.STRING, 12)
             oprot.writeString(self.storageResourceId.encode('utf-8') if sys.version_info[0] == 2 else self.storageResourceId)
+            oprot.writeFieldEnd()
+        if self.isReadOnly is not None:
+            oprot.writeFieldBegin('isReadOnly', TType.BOOL, 13)
+            oprot.writeBool(self.isReadOnly)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
