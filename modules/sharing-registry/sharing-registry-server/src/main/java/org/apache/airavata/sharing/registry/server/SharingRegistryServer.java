@@ -84,6 +84,7 @@ public class SharingRegistryServer implements IServer {
             }else{
                 TSSLTransportFactory.TSSLTransportParameters TLSParams =
                         new TSSLTransportFactory.TSSLTransportParameters();
+                TLSParams.requireClientAuth(true);
                 TLSParams.setKeyStore(ServerSettings.getKeyStorePath(), ServerSettings.getKeyStorePassword());
                 TLSParams.setTrustStore(ServerSettings.getTrustStorePath(), ServerSettings.getTrustStorePassword());
                 TServerSocket TLSServerTransport = TSSLTransportFactory.getServerSocket(
