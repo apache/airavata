@@ -92,6 +92,7 @@
     - "{{ cred_store_port }}/tcp"
     - "{{ registry_port }}/tcp"
     - "{{ profile_service_port }}/tcp"
+    - "{{ sharing_registry_port }}/tcp"
   become_user: root
 
 - name: stop api-orch
