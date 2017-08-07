@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django_airavata.apps.workspace.apps.WorkspaceConfig',
     'rest_framework',
     'django_airavata.apps.api.apps.ApiConfig',
+    'django_airavata.apps.groups.apps.GroupsConfig',
 ]
 
 MIDDLEWARE = [
@@ -53,6 +54,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_airavata.apps.auth.middleware.authz_token_middleware',
     'django_airavata.middleware.airavata_client',
+    'django_airavata.middleware.sharing_client',
 ]
 
 ROOT_URLCONF = 'django_airavata.urls'
