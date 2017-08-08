@@ -80,6 +80,10 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                         log.info("User profile specific DB Event communicated by " + dbEventMessage.getPublisherService());
 
                         UserProfile  userProfile = new UserProfile();
+                        //AIRAVATA-2506: Sharing Service treats airavataInternalUserId as the userId. AiravataAPIServerHandler
+                        //also treats airavataInternalUserId as the userId when creating entities, entityTypes using the sharing
+                        //service.
+                        userProfile.setUserId(userProfile.getAiravataInternalUserId());
                         ThriftUtils.createThriftFromBytes(dBEventMessageContext.getPublisher().getPublisherContext().getEntityDataModel(), userProfile);
 
                         User user = ThriftDataModelConversion.getUser(userProfile);
