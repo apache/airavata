@@ -695,6 +695,7 @@
                 <!--<module>modules/xbaya-gui</module>-->
                 <module>modules/distribution</module>
                 <!--<module>modules/test-suite</module>-->
+                <module>modules/compute-account-provisioning</module>
             </modules>
         </profile>
         <profile>
