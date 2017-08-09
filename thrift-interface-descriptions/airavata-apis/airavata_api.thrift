@@ -36,6 +36,7 @@ include "../data-models/experiment-catalog-models/scheduling_model.thrift"
 include "../data-models/app-catalog-models/application_io_models.thrift"
 include "../data-models/app-catalog-models/application_deployment_model.thrift"
 include "../data-models/app-catalog-models/application_interface_model.thrift"
+include "../data-models/resource-catalog-models/account_provisioning_model.thrift"
 include "../data-models/resource-catalog-models/compute_resource_model.thrift"
 include "../data-models/resource-catalog-models/storage_resource_model.thrift"
 include "../data-models/resource-catalog-models/gateway_resource_profile_model.thrift"
@@ -2949,7 +2950,17 @@ service Airavata {
               3: airavata_errors.AiravataSystemException ase,
               4: airavata_errors.AuthorizationException ae)
 
+  list<string> getSSHAccountProvisionerNames(1: required security_model.AuthzToken authzToken)
+    	throws (1: airavata_errors.InvalidRequestException ire,
+              2: airavata_errors.AiravataClientException ace,
+              3: airavata_errors.AiravataSystemException ase,
+              4: airavata_errors.AuthorizationException ae)
 
+  list<account_provisioning_model.SSHAccountProvisionerConfigParam> getSSHAccountProvisionerConfigParams(1: required security_model.AuthzToken authzToken, 2: required string provisionerName)
+    	throws (1: airavata_errors.InvalidRequestException ire,
+              2: airavata_errors.AiravataClientException ace,
+              3: airavata_errors.AiravataSystemException ase,
+              4: airavata_errors.AuthorizationException ae)
 
 
   /*
