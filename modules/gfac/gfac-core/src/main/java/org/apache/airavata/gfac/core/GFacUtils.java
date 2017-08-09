@@ -850,7 +850,7 @@ public class GFacUtils {
     public static String getTemplateFileName(ResourceJobManagerType resourceJobManagerType) {
         switch (resourceJobManagerType) {
             case FORK:
-                return "UGE_Groovy.template";
+                return "FORK_Groovy.template";
             case PBS:
                 return "PBS_Groovy.template";
             case SLURM:
