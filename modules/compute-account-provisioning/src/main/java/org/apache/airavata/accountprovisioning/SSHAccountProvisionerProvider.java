@@ -20,15 +20,18 @@
 
 package org.apache.airavata.accountprovisioning;
 
+import java.util.List;
 import java.util.Map;
 
-public interface SSHAccountProvisioner {
+public interface SSHAccountProvisionerProvider {
 
-    void init(Map<ConfigParam, String> config);
-    boolean hasAccount(String username);
-    boolean canCreateAccount();
-    void createAccount(String username, String sshPublicKey);
-    boolean canInstallSSHKey();
-    void installSSHKey(String username, String sshPublicKey);
-    String getScratchLocation(String username);
+    /**
+     * An identifying name for the SSHAccountProvisioner instances created by this provider.
+     * This name should be unique amongst all SSHAccountProvisioner implementations.
+     */
+    default String getName() {
+        return this.getClass().getName();
+    }
+    List<ConfigParam> getConfigParams();
+    SSHAccountProvisioner createSSHAccountProvisioner(Map<ConfigParam,String> config);
 }

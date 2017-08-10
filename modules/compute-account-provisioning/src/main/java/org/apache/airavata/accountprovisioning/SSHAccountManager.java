@@ -20,12 +20,18 @@
 
 package org.apache.airavata.accountprovisioning;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
+import org.apache.airavata.model.credential.store.PasswordCredential;
+import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.thrift.TException;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class SSHAccountManager {
@@ -41,8 +47,24 @@ public class SSHAccountManager {
         String provisionerName = null;
         Map<ConfigParam,String> provisionerConfig = null;
 
+        CredentialStoreService.Client credentialStoreServiceClient = getCredentialStoreClient();
+        // Resolve any CRED_STORE_PASSWORD_TOKEN config parameters to passwords
+        Map<ConfigParam,String> resolvedConfig = new HashMap<>();
+        for (Map.Entry<ConfigParam,String> configEntry : provisionerConfig.entrySet() ) {
+            if (configEntry.getKey().getType() == ConfigParam.ConfigParamType.CRED_STORE_PASSWORD_TOKEN) {
+                try {
+                    PasswordCredential password = credentialStoreServiceClient.getPasswordCredential(configEntry.getValue(), gatewayId);
+                    resolvedConfig.put(configEntry.getKey(), password.getPassword());
+                } catch (TException e) {
+                    throw new RuntimeException("Failed to get password needed to configure " + provisionerName);
+                }
+            } else {
+                resolvedConfig.put(configEntry.getKey(), configEntry.getValue());
+            }
+        }
+
         // instantiate and init the account provisioner
-        SSHAccountProvisioner sshAccountProvisioner = SSHAccountProvisionerFactory.createSSHAccountProvisioner(provisionerName, provisionerConfig);
+        SSHAccountProvisioner sshAccountProvisioner = SSHAccountProvisionerFactory.createSSHAccountProvisioner(provisionerName, resolvedConfig);
 
         // First check if username has an account
         boolean hasAccount = sshAccountProvisioner.hasAccount(username);
@@ -61,9 +83,20 @@ public class SSHAccountManager {
         String scratchLocation = sshAccountProvisioner.getScratchLocation(username);
     }
 
-    private RegistryService.Client getRegistryServiceClient() throws RegistryServiceException {
+    private static RegistryService.Client getRegistryServiceClient() throws RegistryServiceException {
 
         // TODO: finish implementing
         return RegistryServiceClientFactory.createRegistryClient(null, 0);
+    }
+
+    private static CredentialStoreService.Client getCredentialStoreClient() {
+
+        try {
+            String credServerHost = ServerSettings.getCredentialStoreServerHost();
+            int credServerPort = Integer.valueOf(ServerSettings.getCredentialStoreServerPort());
+            return CredentialStoreClientFactory.createAiravataCSClient(null, 0);
+        } catch (CredentialStoreException | ApplicationSettingsException e) {
+            throw new RuntimeException("Failed to create credential store service client", e);
+        }
     }
 }

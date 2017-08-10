@@ -22,47 +22,23 @@ package org.apache.airavata.accountprovisioning.provisioner;
 
 import org.apache.airavata.accountprovisioning.ConfigParam;
 import org.apache.airavata.accountprovisioning.SSHAccountProvisioner;
+import org.apache.airavata.accountprovisioning.SSHAccountProvisionerProvider;
 
+import java.util.List;
 import java.util.Map;
 
-public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner {
+public class IULdapSSHAccountProvisionerProvider implements SSHAccountProvisionerProvider {
 
     @Override
-    public void init(Map<ConfigParam, String> config) {
-
-        // TODO: implement
-    }
-
-    @Override
-    public boolean hasAccount(String username) {
-        // TODO: implement
-        return false;
-    }
-
-    @Override
-    public boolean canCreateAccount() {
-        return false;
-    }
-
-    @Override
-    public void createAccount(String username, String sshPublicKey) {
-
-        throw new UnsupportedOperationException("IULdapSSHAccountProvisioner does not support creating cluster accounts at this time.");
-    }
-
-    @Override
-    public boolean canInstallSSHKey() {
-        return true;
-    }
-
-    @Override
-    public void installSSHKey(String username, String sshPublicKey) {
-        // TODO: implement
-    }
-
-    @Override
-    public String getScratchLocation(String username) {
+    public List<ConfigParam> getConfigParams() {
         // TODO: implement
         return null;
+    }
+
+    @Override
+    public SSHAccountProvisioner createSSHAccountProvisioner(Map<ConfigParam,String> config) {
+        SSHAccountProvisioner sshAccountProvisioner = new IULdapSSHAccountProvisioner();
+        sshAccountProvisioner.init(config);
+        return sshAccountProvisioner;
     }
 }
