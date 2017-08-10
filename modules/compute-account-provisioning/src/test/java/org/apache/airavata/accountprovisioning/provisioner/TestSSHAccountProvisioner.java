@@ -25,17 +25,18 @@ import org.apache.airavata.accountprovisioning.SSHAccountProvisioner;
 
 import java.util.Map;
 
-public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner {
+public class TestSSHAccountProvisioner implements SSHAccountProvisioner {
+
+    private Map<ConfigParam, String> config;
 
     @Override
     public void init(Map<ConfigParam, String> config) {
 
-        // TODO: implement
+        this.config = config;
     }
 
     @Override
     public boolean hasAccount(String username) {
-        // TODO: implement
         return false;
     }
 
@@ -47,22 +48,24 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner {
     @Override
     public void createAccount(String username, String sshPublicKey) {
 
-        throw new UnsupportedOperationException("IULdapSSHAccountProvisioner does not support creating cluster accounts at this time.");
     }
 
     @Override
     public boolean canInstallSSHKey() {
-        return true;
+        return false;
     }
 
     @Override
     public void installSSHKey(String username, String sshPublicKey) {
-        // TODO: implement
+
     }
 
     @Override
     public String getScratchLocation(String username) {
-        // TODO: implement
         return null;
+    }
+
+    public Map<ConfigParam, String> getConfig() {
+        return config;
     }
 }
