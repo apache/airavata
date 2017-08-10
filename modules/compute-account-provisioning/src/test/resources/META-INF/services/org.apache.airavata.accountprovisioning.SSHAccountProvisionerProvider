@@ -18,5 +18,4 @@
 #
 #
 
-
-org.apache.airavata.accountprovisioning.provisioner.IULdapSSHAccountProvisioner
+org.apache.airavata.accountprovisioning.provisioner.TestSSHAccountProvisionerProvider

@@ -20,30 +20,42 @@
 
 package org.apache.airavata.accountprovisioning;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 
 public class SSHAccountProvisionerFactory {
 
-    public static List<String> getSSHAccountProvisionerImplementationNames() {
+    private static ServiceLoader<SSHAccountProvisionerProvider> sshAccountProvisionerProviders = ServiceLoader.load(SSHAccountProvisionerProvider.class);
 
-        // TODO: implement
-        return null;
+    public static List<String> getSSHAccountProvisionerImplementationNames() {
+        List<String> names = new ArrayList<>();
+        for (SSHAccountProvisionerProvider sshAccountProvisionerProvider : sshAccountProvisionerProviders ) {
+            names.add(sshAccountProvisionerProvider.getName());
+        }
+        return names;
     }
 
     public static List<ConfigParam> getSSHAccountProvisionerConfigParams(String provisionerName) {
 
-        // TODO: implement
-        return null;
+        return getSSHAccountProvisionerProvider(provisionerName).getConfigParams();
     }
 
     public static SSHAccountProvisioner createSSHAccountProvisioner(String provisionerName, Map<ConfigParam, String> config) {
 
+        SSHAccountProvisionerProvider sshAccountProvisionerProvider = getSSHAccountProvisionerProvider(provisionerName);
+
+        return sshAccountProvisionerProvider.createSSHAccountProvisioner(config);
     }
 
-    private CredentialStoreService.Client getCredentialStoreClient() throws CredentialStoreException {
+    private static SSHAccountProvisionerProvider getSSHAccountProvisionerProvider(String provisionerName) {
 
-        // TODO: finish implementing
-        return CredentialStoreClientFactory.createAiravataCSClient(null, 0);
+        for (SSHAccountProvisionerProvider sshAccountProvisionerProvider : sshAccountProvisionerProviders ) {
+            if (sshAccountProvisionerProvider.getName().equals(provisionerName)) {
+                return sshAccountProvisionerProvider;
+            }
+        }
+        throw new RuntimeException("Unknown SSHAccountProvisioner named " + provisionerName);
     }
 }

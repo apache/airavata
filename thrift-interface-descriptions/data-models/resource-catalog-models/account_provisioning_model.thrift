@@ -25,7 +25,7 @@ namespace py apache.airavata.model.appcatalog.accountprovisioning
 
 enum SSHAccountProvisionerConfigParamType {
     STRING,
-    CRED_TOKEN
+    CRED_STORE_PASSWORD_TOKEN
 }
 
 struct SSHAccountProvisioner {
