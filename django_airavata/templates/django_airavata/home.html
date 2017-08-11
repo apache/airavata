@@ -9,6 +9,7 @@
         Airavata.</p>
         {% if user.is_authenticated %}
         <p><a class="btn btn-primary btn-lg" href="{% url 'django_airavata_workspace:projects' %}" role="button">Go to your Projects »</a></p>
+        <p><a class="btn btn-primary btn-lg" href="{% url 'django_airavata_groups:manage' %}" role="button">Manage your Groups »</a></p>
         {% else %}
         <p><a class="btn btn-primary btn-lg" href="{% url 'django_airavata_auth:login' %}" role="button">Login »</a></p>
         {% endif %}
