@@ -35,6 +35,6 @@ struct SSHAccountProvisioner {
 struct SSHAccountProvisionerConfigParam {
     1: required string name;
     2: required SSHAccountProvisionerConfigParamType type = SSHAccountProvisionerConfigParamType.STRING;
-    3: required bool optional = false;
+    3: required bool isOptional = false;
     4: optional string description;
 }
