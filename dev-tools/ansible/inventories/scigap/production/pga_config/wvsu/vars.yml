@@ -1,0 +1,71 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+pga_repo: "https://github.com/apache/airavata-php-gateway.git"
+git_branch: "master"
+user: "pga"
+group: "pga"
+doc_root_dir: "/var/www/portals/{{ gateway_id }}"
+vhost_servername: "sciencegateway.wvstateu.edu"
+#vhost_serveralias: "www.seagrid.org"
+#vhost_servername: "beta.seagrid.org"
+vhost_ssl: True
+# TODO: have Ansible manage these files as well
+ssl_certificate_file: "/etc/letsencrypt/live/sciencegateway.wvstateu.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/sciencegateway.wvstateu.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/sciencegateway.wvstateu.edu/privkey.pem"
+#ssl_certificate_file: "/etc/letsencrypt/live/beta.seagrid.org/cert.pem"
+#ssl_certificate_chain_file: "/etc/letsencrypt/live/beta.seagrid.org/fullchain.pem"
+#ssl_certificate_key_file: "/etc/letsencrypt/live/beta.seagrid.org/privkey.pem"
+
+
+## Keycloak related variables
+tenant_domain: "{{ gateway_id }}"
+admin_username: "admin"
+admin_password: "{{ vault_admin_password }}"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
+
+auth_options:
+  - name: "WVirginia State University"
+    oauth_grant_type: "password"
+ # - name: "CILogon"
+  #  oauth_grant_type: "authorization_code"
+ #   oauth_authorize_url_extra_params: "kc_idp_hint=cilogon"
+  #  logo: "/assets/cilogon-logo-24x24-b.png"
+oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
+
+gateway_id: "wvirginia-state-university"
+# relative to document root dir
+experiment_data_dir: "{{ user_data_dir }}/wvirginia-state-university"
+gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCHm/f06vFCah0lVLnykei1cwkKMGwaCdn//BjZtG/9OnV7fjDzjISBCuz+LEC/FJKv3BaByAQ0Tvq0GxIgBzR31r2Qpp7yKJyl1THpftrshPOD2M1FOJfebc9QAnVKdQQpIGtA5/viOnZfV0nnEXqiKjafsAdwnSP3097XSvD7UvQGwkhmG4oIbs66RTh19gUB3/4QZZBEbUDBaeHrxzwS/NXaQorCfrZt2mJCNeFLdhiqqg2JbT4g4X/Crps6es/o3fN6mRsFnRu9Y5Xhh/FFyT/u8IiW18FzHaH9hfOhyxeKRQCk0nJV+aREcmJ3wIk7VRA/bKGWcVDqZRHRvcPR"
+
+## Portal related variables
+super_admin_portal: "false"
+admin_emails: "['smalkaram@wvstateu.edu', 'sgrc-iu-group@iu.edu']"
+portal_email_username: "pga.airavata@gmail.com"
+portal_email_password: "{{ vault_portal_email_password }}"
+#portal_theme: "base"
+#portal_theme_repo: "https://github.com/SciGaP/seagrid-website-theme.git"
+portal_title: "WVirginia State University"
+...
