@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .forms import CreateForm
+from .forms import AddForm
 from django.contrib import messages
 from apache.airavata.model.sharing.ttypes import UserGroup
 from apache.airavata.model.sharing.ttypes import GroupCardinality
@@ -80,5 +81,32 @@ def groups_create(request):
         form = CreateForm(initial={'domain_id': gateway_id, 'group_owner': username, 'group_type': group_type, 'group_cardinality': group_cardinality})
 
     return render(request, 'django_airavata_groups/groups_create.html', {
+        'form': form
+    })
+
+@login_required
+def add_members(request):
+
+    gateway_id = settings.GATEWAY_ID
+    group_id = request.GET.get('group_id')
+    logger.info(group_id)
+
+    if request.method == 'POST':
+        form = AddForm(request.POST, request.FILES)
+        logger.info(form.errors)
+        if form.is_valid():
+            try:
+                added = request.sharing_client.addUsersToGroup(gateway_id, users, group_id)
+                return redirect('/')
+            except Exception as e:
+                logger.exception("Failed to add user")
+                return redirect('/')
+    else:
+        #user_list = request.sharing_client.getUsers(gateway_id, 0, -1)
+        #form = AddForm()
+        #form['user_list'].widget.choices = user_list
+        form = AddForm(data={'users': ['abc', 'ghi']}, user_choices=[('abc', 'abc'), ('def', 'def'), ('ghi', 'ghi')])
+
+    return render(request, 'django_airavata_groups/add_members.html', {
         'form': form
     })
