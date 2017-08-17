@@ -60,6 +60,7 @@ public enum Script {
     JOB_SUBMITTER_COMMAND("jobSubmitterCommand"),
     EXECUTABLE_PATH("executablePath"),
     INPUTS("inputs"),
+    INPUTS_ALL("inputsAll"),
     POST_JOB_COMMANDS("postJobCommands"),
     USED_MEM("usedMem"),
     PROCESS_PER_NODE("processPerNode"),
