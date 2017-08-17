@@ -21,12 +21,17 @@ def groups_manage(request):
     username = request.user.username
 
     try:
-        group_list = request.sharing_client.getGroups(gateway_id, 0, -1)
+        owner_list = request.sharing_client.getGroups(gateway_id, 0, -1)
         owner = []
-        for group in group_list:
+        for group in owner_list:
             if group.ownerId == username:
                 owner.append(group)
-        member = request.sharing_client.getAllMemberGroupsForUser(gateway_id, username)
+        member_list = request.sharing_client.getAllMemberGroupsForUser(gateway_id, username)
+        member = []
+        for group in member_list:
+            if group.ownerId != username:
+                member.append(group)
+        logger.info('member: '+str(member))
         return render(request, 'django_airavata_groups/groups_manage.html', {
             'owner': owner
         }, {
@@ -102,6 +107,7 @@ def add_members(request):
                 logger.exception("Failed to add user")
                 return redirect('/')
     else:
+        #add = request.sharing_client.addUsersToGroup(gateway_id, ['tilaks'], '5076f7213d5c450ca6c8147527cd5a11Test Group')
         #user_list = request.sharing_client.getUsers(gateway_id, 0, -1)
         #form = AddForm()
         #form['user_list'].widget.choices = user_list

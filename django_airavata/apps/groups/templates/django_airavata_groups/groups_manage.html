@@ -76,8 +76,14 @@
                         <td>{{ group.name }}</td>
                         <td>{{ group.domainId }}</td>
                         <td>
-                            <input type="button" class="btn btn-primary btn-xs start-approval" value="View"/>
-                            <input type="button" class="btn btn-primary btn-xs start-approval" value="Leave"/>
+                            <a href="{% url 'django_airavata_groups:add' %}?group_id={{ group.groupId }}">
+                                <button type="button" class="btn btn-primary btn-xs start-approval">View
+                                </button>
+                            </a>
+                            <a href="{% url 'django_airavata_groups:add' %}">
+                                <button type="button" class="btn btn-primary btn-xs start-approval">Leave
+                                </button>
+                            </a>
                         </td>
                     </tr>
                     {% endfor %}
