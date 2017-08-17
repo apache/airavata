@@ -1,14 +1,28 @@
 
-{% extends 'base.html' %}
+{% extends 'base-vue.html' %}
 
 {% block content %}
 
 <h1>Projects</h1>
 
-<ul>
-    {% for project in projects  %}
-        <li>{{ project.name }}</li>
-    {% endfor %}
+<ul id="projects-list">
+    <li v-for="project in projects">
+        ${ project.name }
+    </li>
 </ul>
 
 {% endblock content %}
+
+{% block scripts %}
+{{ block.super }}
+
+<script type="text/javascript">
+    new Vue({
+        delimiters: ['${', '}'],
+        el: '#projects-list',
+        data: {
+            projects: {{ projects_data|safe }}
+        }
+    })
+</script>
+{% endblock %}
