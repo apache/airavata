@@ -19,30 +19,38 @@
     <div class="row">
         <div class="col-md-12 table-responsive">
             <h3>Groups you own</h3>
+            <br>
+            <br>
             <table class="table table-striped table-bordered">
                 <thead>
                     <tr>
-                        <th>GROUP_ID</th>
-                        <th>NAME</th>
-                        <th>DOMAIN_ID</th>
-                        <th>
-                        <!-- for View Button -->
-                        </th>
+                        <th style="text-align:center">GROUP_ID</th>
+                        <th style="text-align:center">NAME</th>
+                        <th style="text-align:center">DOMAIN_ID</th>
+                        <th style="text-align:center">OPTIONS</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody align="center">
                     {% for group in owner %}
-                    <tr align="center">
+                    <tr>
                         <td>{{ group.groupId }}</td>
                         <td>{{ group.name }}</td>
                         <td>{{ group.domainId }}</td>
                         <td>
-                            <a href="{% url 'django_airavata_groups:add' %}?group_id={{ group.groupId }}">
-                                <button type="button" class="btn btn-primary btn-xs start-approval">View
+                            <a href="{% url 'django_airavata_groups:view' %}?group_id={{ group.groupId }}">
+                                <button type="button" class="btn btn-primary btn-xs">View
                                 </button>
                             </a>
-                            <a href="{% url 'django_airavata_groups:add' %}">
-                                <button type="button" class="btn btn-primary btn-xs start-approval">Edit
+                            <a href="{% url 'django_airavata_groups:add' %}?group_id={{ group.groupId }}">
+                                <button type="button" class="btn btn-primary btn-xs">Add M
+                                </button>
+                            </a>
+                            <a href="{% url 'django_airavata_groups:remove' %}?group_id={{ group.groupId }}">
+                                <button type="button" class="btn btn-primary btn-xs">Remove M
+                                </button>
+                            </a>
+                            <a href="{% url 'django_airavata_groups:delete' %}?group_id={{ group.groupId }}">
+                                <button type="button" class="btn btn-danger btn-xs">Delete
                                 </button>
                             </a>
                         </td>
@@ -58,30 +66,30 @@
     <div class="row">
         <div class="col-md-12 table-responsive">
             <h3>Groups you're a member of</h3>
+            <br>
+            <br>
             <table class="table table-striped table-bordered">
                 <thead>
                     <tr>
-                        <th>GROUP_ID</th>
-                        <th>NAME</th>
-                        <th>DOMAIN_ID</th>
-                        <th>
-                        <!-- for View Button -->
-                        </th>
+                        <th style="text-align:center">GROUP_ID</th>
+                        <th style="text-align:center">NAME</th>
+                        <th style="text-align:center">DOMAIN_ID</th>
+                        <th style="text-align:center">OPTIONS</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody align="center">
                     {% for group in member %}
-                    <tr align="center">
+                    <tr>
                         <td>{{ group.groupId }}</td>
                         <td>{{ group.name }}</td>
                         <td>{{ group.domainId }}</td>
                         <td>
-                            <a href="{% url 'django_airavata_groups:add' %}?group_id={{ group.groupId }}">
-                                <button type="button" class="btn btn-primary btn-xs start-approval">View
+                            <a href="{% url 'django_airavata_groups:view' %}?group_id={{ group.groupId }}">
+                                <button type="button" class="btn btn-primary btn-xs">View
                                 </button>
                             </a>
-                            <a href="{% url 'django_airavata_groups:add' %}">
-                                <button type="button" class="btn btn-primary btn-xs start-approval">Leave
+                            <a href="{% url 'django_airavata_groups:leave' %}?group_id={{ group.groupId }}">
+                                <button type="button" class="btn btn-danger btn-xs">Leave
                                 </button>
                             </a>
                         </td>

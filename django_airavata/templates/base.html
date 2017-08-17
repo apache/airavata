@@ -26,6 +26,9 @@
             {% if user.is_authenticated %}
             <ul id="user-nav" class="nav navbar-nav">
                 <li>
+                    <a href="{% url 'django_airavata_groups:manage' %}">Manage</a>
+                </li>
+                <li>
                     <a href="{% url 'home' %}">Home</a>
                 </li>
                 <li class="dropdown">

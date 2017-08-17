@@ -31,14 +31,11 @@ def groups_manage(request):
         for group in member_list:
             if group.ownerId != username:
                 member.append(group)
-        logger.info('member: '+str(member))
         return render(request, 'django_airavata_groups/groups_manage.html', {
-            'owner': owner
-        }, {
-            'member': member
+            'owner': owner, 'member': member
         })
     except:
-        logger.exception("Failed to load manage")
+        logger.exception("Failed to load the Manage Groups page")
         return redirect('/')
 
 @login_required
@@ -55,7 +52,7 @@ def groups_list(request):
             'list': group_list
         })
     except Exception as e:
-        logger.exception("Failed to load groups")
+        logger.exception("Failed to load the list of groups")
         return redirect('/')
 
 @login_required
@@ -69,18 +66,15 @@ def groups_create(request):
 
     if request.method == 'POST':
         form = CreateForm(request.POST, request.FILES, initial={'domain_id': gateway_id, 'group_owner': username, 'group_type': group_type, 'group_cardinality': group_cardinality})
-        logger.info(form.errors)
         if form.is_valid():
             group_id = str(uuid.uuid4().hex) + form.cleaned_data.get('group_name')
-            created_time = int(datetime.datetime.now().timestamp())
-            updated_time = int(datetime.datetime.now().timestamp())
-            group = UserGroup(groupId=group_id, domainId=gateway_id, name=form.cleaned_data.get('group_name'), description=form.cleaned_data.get('description'), ownerId=username, groupType=group_type, groupCardinality=group_cardinality, createdTime=created_time, updatedTime=updated_time)
+            group = UserGroup(groupId=group_id, domainId=gateway_id, name=form.cleaned_data.get('group_name'), description=form.cleaned_data.get('description'), ownerId=username, groupType=group_type, groupCardinality=group_cardinality, createdTime=None, updatedTime=None)
             try:
                 create = request.sharing_client.createGroup(group)
-                return redirect('/')
+                return redirect('/groups')
             except Exception as e:
-                logger.exception("Failed to create group")
-                return redirect('/')
+                logger.exception("Failed to create the group")
+                return redirect('/groups')
 
     else:
         form = CreateForm(initial={'domain_id': gateway_id, 'group_owner': username, 'group_type': group_type, 'group_cardinality': group_cardinality})
@@ -90,11 +84,28 @@ def groups_create(request):
     })
 
 @login_required
-def add_members(request):
+def view_group(request):
 
     gateway_id = settings.GATEWAY_ID
     group_id = request.GET.get('group_id')
-    logger.info(group_id)
+    user = request.user.username
+
+    try:
+        details = request.sharing_client.getGroup(gateway_id, group_id)
+        members = request.sharing_client.getGroupMembersOfTypeUser(gateway_id, group_id, 0, -1)
+        c_time = datetime.datetime.fromtimestamp(details.createdTime/1000.0)
+        u_time = datetime.datetime.fromtimestamp(details.updatedTime/1000.0)
+        return render(request, 'django_airavata_groups/group_details.html', {
+            'group': details, 'c_time': c_time, 'u_time': u_time, 'members': members, 'u_id': user
+        })
+    except Exception as e:
+        logger.exception("Failed to load the group details")
+        return redirect('/groups')
+
+@login_required
+def add_members(request):
+
+    gateway_id = settings.GATEWAY_ID
 
     if request.method == 'POST':
         form = AddForm(request.POST, request.FILES)
@@ -104,7 +115,7 @@ def add_members(request):
                 added = request.sharing_client.addUsersToGroup(gateway_id, users, group_id)
                 return redirect('/')
             except Exception as e:
-                logger.exception("Failed to add user")
+                logger.exception("Failed to add the user list to the group")
                 return redirect('/')
     else:
         #add = request.sharing_client.addUsersToGroup(gateway_id, ['tilaks'], '5076f7213d5c450ca6c8147527cd5a11Test Group')
@@ -116,3 +127,57 @@ def add_members(request):
     return render(request, 'django_airavata_groups/add_members.html', {
         'form': form
     })
+
+
+@login_required
+def remove_members(request):
+
+    gateway_id = settings.GATEWAY_ID
+
+    if request.method == 'POST':
+        form = AddForm(request.POST, request.FILES)
+        logger.info(form.errors)
+        if form.is_valid():
+            try:
+                added = request.sharing_client.addUsersToGroup(gateway_id, users, group_id)
+                return redirect('/')
+            except Exception as e:
+                logger.exception("Failed to add the user list to the group")
+                return redirect('/')
+    else:
+        #add = request.sharing_client.addUsersToGroup(gateway_id, ['tilaks'], '5076f7213d5c450ca6c8147527cd5a11Test Group')
+        #user_list = request.sharing_client.getUsers(gateway_id, 0, -1)
+        #form = AddForm()
+        #form['user_list'].widget.choices = user_list
+        form = AddForm(data={'users': ['abc', 'ghi']}, user_choices=[('abc', 'abc'), ('def', 'def'), ('ghi', 'ghi')])
+
+    return render(request, 'django_airavata_groups/add_members.html', {
+        'form': form
+    })
+
+@login_required
+def delete_group(request):
+
+    gateway_id = settings.GATEWAY_ID
+    group_id = request.GET.get('group_id')
+
+    try:
+        delete = request.sharing_client.deleteGroup(gateway_id, group_id)
+        return redirect('/groups')
+    except Exception as e:
+        logger.exception("Failed to delete the group")
+        return redirect('/groups')
+
+@login_required
+def leave_group(request):
+
+    gateway_id = settings.GATEWAY_ID
+    group_id = request.GET.get('group_id')
+    user = request.user.username
+
+    try:
+        leave = request.sharing_client.removeUsersFromGroup(gateway_id, ['user'], group_id)
+        return redirect('/groups')
+    except Exception as e:
+        logger.exception("Failed to leave the group")
+        return redirect('/groups')
