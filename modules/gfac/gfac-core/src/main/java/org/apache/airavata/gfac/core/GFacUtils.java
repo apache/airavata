@@ -540,7 +540,7 @@ public class GFacUtils {
         if (exportCommands != null) {
             List<String> exportCommandList = exportCommands.stream()
                     .sorted((e1, e2) -> e1.getEnvPathOrder() - e2.getEnvPathOrder())
-                    .map(map -> "export " + map.getName() + "=" + map.getValue())
+                    .map(map -> map.getName() + "=" + map.getValue())
                     .collect(Collectors.toList());
             groovyMap.add(Script.EXPORTS, exportCommandList);
         }
