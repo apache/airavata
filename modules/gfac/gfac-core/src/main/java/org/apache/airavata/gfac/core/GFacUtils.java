@@ -31,6 +31,7 @@ import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.CommandObject;
+import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.application.io.DataType;
@@ -534,6 +535,16 @@ public class GFacUtils {
         }
 
         ApplicationDeploymentDescription appDepDescription = processContext.getApplicationDeploymentDescription();
+
+        List<SetEnvPaths> exportCommands = appDepDescription.getSetEnvironment();
+        if (exportCommands != null) {
+            List<String> exportCommandList = exportCommands.stream()
+                    .sorted((e1, e2) -> e1.getEnvPathOrder() - e2.getEnvPathOrder())
+                    .map(map -> "export " + map.getName() + "=" + map.getValue())
+                    .collect(Collectors.toList());
+            groovyMap.add(Script.EXPORTS, exportCommandList);
+        }
+
         List<CommandObject> moduleCmds = appDepDescription.getModuleLoadCmds();
         if (moduleCmds != null) {
             List<String> modulesCmdCollect = moduleCmds.stream()
