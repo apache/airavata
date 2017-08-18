@@ -41,14 +41,6 @@
                                 <button type="button" class="btn btn-primary btn-xs">View
                                 </button>
                             </a>
-                            <a href="{% url 'django_airavata_groups:add' %}?group_id={{ group.groupId }}">
-                                <button type="button" class="btn btn-primary btn-xs">Add M
-                                </button>
-                            </a>
-                            <a href="{% url 'django_airavata_groups:remove' %}?group_id={{ group.groupId }}">
-                                <button type="button" class="btn btn-primary btn-xs">Remove M
-                                </button>
-                            </a>
                             <a href="{% url 'django_airavata_groups:delete' %}?group_id={{ group.groupId }}">
                                 <button type="button" class="btn btn-danger btn-xs">Delete
                                 </button>

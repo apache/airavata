@@ -3,7 +3,6 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .forms import CreateForm
-from .forms import AddForm
 from django.contrib import messages
 from apache.airavata.model.sharing.ttypes import UserGroup
 from apache.airavata.model.sharing.ttypes import GroupCardinality
@@ -60,8 +59,10 @@ def groups_create(request):
 
     gateway_id = settings.GATEWAY_ID
     username = request.user.username
-    #Replace group_type assignment with user role
+    #If role = user
     group_type = 1
+    #Else if role = admin
+    #group_type = 2
     group_cardinality = GroupCardinality.MULTI_USER
 
     if request.method == 'POST':
@@ -103,59 +104,6 @@ def view_group(request):
         return redirect('/groups')
 
 @login_required
-def add_members(request):
-
-    gateway_id = settings.GATEWAY_ID
-
-    if request.method == 'POST':
-        form = AddForm(request.POST, request.FILES)
-        logger.info(form.errors)
-        if form.is_valid():
-            try:
-                added = request.sharing_client.addUsersToGroup(gateway_id, users, group_id)
-                return redirect('/')
-            except Exception as e:
-                logger.exception("Failed to add the user list to the group")
-                return redirect('/')
-    else:
-        #add = request.sharing_client.addUsersToGroup(gateway_id, ['tilaks'], '5076f7213d5c450ca6c8147527cd5a11Test Group')
-        #user_list = request.sharing_client.getUsers(gateway_id, 0, -1)
-        #form = AddForm()
-        #form['user_list'].widget.choices = user_list
-        form = AddForm(data={'users': ['abc', 'ghi']}, user_choices=[('abc', 'abc'), ('def', 'def'), ('ghi', 'ghi')])
-
-    return render(request, 'django_airavata_groups/add_members.html', {
-        'form': form
-    })
-
-
-@login_required
-def remove_members(request):
-
-    gateway_id = settings.GATEWAY_ID
-
-    if request.method == 'POST':
-        form = AddForm(request.POST, request.FILES)
-        logger.info(form.errors)
-        if form.is_valid():
-            try:
-                added = request.sharing_client.addUsersToGroup(gateway_id, users, group_id)
-                return redirect('/')
-            except Exception as e:
-                logger.exception("Failed to add the user list to the group")
-                return redirect('/')
-    else:
-        #add = request.sharing_client.addUsersToGroup(gateway_id, ['tilaks'], '5076f7213d5c450ca6c8147527cd5a11Test Group')
-        #user_list = request.sharing_client.getUsers(gateway_id, 0, -1)
-        #form = AddForm()
-        #form['user_list'].widget.choices = user_list
-        form = AddForm(data={'users': ['abc', 'ghi']}, user_choices=[('abc', 'abc'), ('def', 'def'), ('ghi', 'ghi')])
-
-    return render(request, 'django_airavata_groups/add_members.html', {
-        'form': form
-    })
-
-@login_required
 def delete_group(request):
 
     gateway_id = settings.GATEWAY_ID
@@ -176,7 +124,7 @@ def leave_group(request):
     user = request.user.username
 
     try:
-        leave = request.sharing_client.removeUsersFromGroup(gateway_id, ['user'], group_id)
+        leave = request.sharing_client.removeUsersFromGroup(gateway_id, [user], group_id)
         return redirect('/groups')
     except Exception as e:
         logger.exception("Failed to leave the group")
