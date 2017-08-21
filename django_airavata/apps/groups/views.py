@@ -2,7 +2,7 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from .forms import CreateForm
+from .forms import CreateForm, AddForm, RemoveForm
 from django.contrib import messages
 from apache.airavata.model.sharing.ttypes import UserGroup
 from apache.airavata.model.sharing.ttypes import GroupCardinality
@@ -72,6 +72,7 @@ def groups_create(request):
             group = UserGroup(groupId=group_id, domainId=gateway_id, name=form.cleaned_data.get('group_name'), description=form.cleaned_data.get('description'), ownerId=username, groupType=group_type, groupCardinality=group_cardinality, createdTime=None, updatedTime=None)
             try:
                 create = request.sharing_client.createGroup(group)
+                messages.success(request, 'Group '+group_id+' has been created successfully!')
                 return redirect('/groups')
             except Exception as e:
                 logger.exception("Failed to create the group")
@@ -104,6 +105,47 @@ def view_group(request):
         return redirect('/groups')
 
 @login_required
+def edit_group(request):
+
+    gateway_id = settings.GATEWAY_ID
+    group_id = request.GET.get('group_id')
+    users = request.POST.getlist('users')
+    members = request.POST.getlist('members')
+
+    try:
+        user_choices = request.sharing_client.getUsers(gateway_id, 0, -1)
+        member_choices = request.sharing_client.getGroupMembersOfTypeUser(gateway_id, group_id, 0, -1)
+        for user in user_choices:
+            for member in member_choices:
+                if user.userId == member.userId:
+                    user_choices.remove(user)
+        if request.method == 'POST':
+            add_form = AddForm(request.POST, user_choices=[(user.userId, user.userId) for user in user_choices])
+            remove_form = RemoveForm(request.POST, user_choices=[(member.userId, member.userId) for member in member_choices])
+            if 'add' in request.POST:
+                if add_form.is_valid():
+                    add = request.sharing_client.addUsersToGroup(gateway_id, users, group_id)
+                    messages.success(request, 'Selected members have been added successfully!')
+                    return redirect('/groups')
+            elif 'remove' in request.POST:
+                if remove_form.is_valid():
+                    remove = request.sharing_client.removeUsersFromGroup(gateway_id, members, group_id)
+                    messages.success(request, 'Selected members have been removed successfully!')
+                    return redirect('/groups')
+
+        else:
+            add_form = AddForm(user_choices=[(user.userId, user.userId) for user in user_choices])
+            remove_form = RemoveForm(user_choices=[(member.userId, member.userId) for member in member_choices])
+
+    except Exception as e:
+        logger.exception("Failed to edit the group")
+        return redirect('/groups')
+
+    return render(request, 'django_airavata_groups/group_edit.html', {
+        'group_id': group_id, 'add_form': add_form, 'remove_form': remove_form
+    })
+
+@login_required
 def delete_group(request):
 
     gateway_id = settings.GATEWAY_ID
@@ -111,6 +153,7 @@ def delete_group(request):
 
     try:
         delete = request.sharing_client.deleteGroup(gateway_id, group_id)
+        messages.success(request, 'Group '+group_id+' has been deleted successfully!')
         return redirect('/groups')
     except Exception as e:
         logger.exception("Failed to delete the group")
@@ -125,6 +168,7 @@ def leave_group(request):
 
     try:
         leave = request.sharing_client.removeUsersFromGroup(gateway_id, [user], group_id)
+        messages.success(request, 'You are no longer a member of '+group_id+'.')
         return redirect('/groups')
     except Exception as e:
         logger.exception("Failed to leave the group")

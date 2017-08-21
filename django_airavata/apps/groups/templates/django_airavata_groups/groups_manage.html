@@ -15,6 +15,15 @@
     </div>
     <br>
     <hr>
+    {% if messages %}
+    <div class="alert alert-info">
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
     <br>
     <div class="row">
         <div class="col-md-12 table-responsive">
@@ -38,12 +47,13 @@
                         <td>{{ group.domainId }}</td>
                         <td>
                             <a href="{% url 'django_airavata_groups:view' %}?group_id={{ group.groupId }}">
-                                <button type="button" class="btn btn-primary btn-xs">View
-                                </button>
+                                <button type="button" class="btn btn-primary btn-xs">View</button>
+                            </a>
+                            <a href="{% url 'django_airavata_groups:edit' %}?group_id={{ group.groupId }}">
+                                <button type="button" class="btn btn-primary btn-xs">Edit</button>
                             </a>
                             <a href="{% url 'django_airavata_groups:delete' %}?group_id={{ group.groupId }}">
-                                <button type="button" class="btn btn-danger btn-xs">Delete
-                                </button>
+                                <button type="button" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete the group? This action cannot be undone!')">Delete</button>
                             </a>
                         </td>
                     </tr>
@@ -77,12 +87,10 @@
                         <td>{{ group.domainId }}</td>
                         <td>
                             <a href="{% url 'django_airavata_groups:view' %}?group_id={{ group.groupId }}">
-                                <button type="button" class="btn btn-primary btn-xs">View
-                                </button>
+                                <button type="button" class="btn btn-primary btn-xs">View</button>
                             </a>
                             <a href="{% url 'django_airavata_groups:leave' %}?group_id={{ group.groupId }}">
-                                <button type="button" class="btn btn-danger btn-xs">Leave
-                                </button>
+                                <button type="button" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to leave the group? This action cannot be undone!')">Leave</button>
                             </a>
                         </td>
                     </tr>

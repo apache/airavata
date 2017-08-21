@@ -13,3 +13,19 @@ class CreateForm(forms.Form):
     group_type = forms.ChoiceField(widget=forms.RadioSelect, choices=CHOICES1, required=True, disabled=True)
     CHOICES2 = (('0', 'Single User',), ('1', 'Multi User',))
     group_cardinality = forms.ChoiceField(widget=forms.RadioSelect, choices=CHOICES2, required=True, disabled=True)
+
+#class AddForm(forms.Form):
+#    users = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, required=False)
+
+#class RemoveForm(forms.Form):
+#    members = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, required=False)
+
+class AddForm(forms.Form):
+    def __init__(self, data=None, user_choices=None):
+        super().__init__(data=data)
+        self.fields["users"] = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=user_choices)
+
+class RemoveForm(forms.Form):
+    def __init__(self, data=None, user_choices=None):
+        super().__init__(data=data)
+        self.fields["members"] = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=user_choices)
