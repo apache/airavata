@@ -34,6 +34,8 @@ import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +44,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class SSHAccountManager {
+
+    private final static Logger logger = LoggerFactory.getLogger(SSHAccountManager.class);
 
     // TODO: change return type to one that returns some details of the SSH account setup, for example the scratch location
     public static void setupSSHAccount(String gatewayId, String computeResourceId, String username, SSHCredential sshCredential) {
@@ -84,8 +88,9 @@ public class SSHAccountManager {
         // Install SSH key
         sshAccountProvisioner.installSSHKey(username, sshCredential.getPublicKey());
 
+        // TODO: replace hard coded port 22 with port from SSHJobSubmission interface
         // Verify can authenticate to host
-        boolean validated = SSHUtil.validate(username, computeResourceDescription.getHostName(), 22, sshCredential);
+        boolean validated = SSHUtil.validate(computeResourceDescription.getHostName(), 22, username, sshCredential);
         if (!validated) {
             throw new RuntimeException("Failed to validate installation of key for [" + username
                     + "] on [" + computeResourceDescription.getHostName() + "] using SSH Account Provisioner ["
@@ -93,8 +98,10 @@ public class SSHAccountManager {
         }
 
         // create the scratch location on the host
-        // TODO: create the scratch location
         String scratchLocation = sshAccountProvisioner.getScratchLocation(username);
+        SSHUtil.execute(computeResourceDescription.getHostName(), 22, username, sshCredential, "mkdir -p " + scratchLocation);
+
+        // TODO: return information about provisioned account
     }
 
     private static Map<ConfigParam, String> resolveProvisionerConfig(String gatewayId, String provisionerName, Map<ConfigParam, String> provisionerConfig) {
