@@ -44,4 +44,5 @@
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/wvsu"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/iugeosurvey"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/scbglsu"
+- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/NCSAIndustry"
 ...
