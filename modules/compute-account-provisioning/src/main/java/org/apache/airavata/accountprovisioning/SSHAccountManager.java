@@ -27,7 +27,11 @@ import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.registry.api.RegistryService;
@@ -47,24 +51,37 @@ public class SSHAccountManager {
 
     private final static Logger logger = LoggerFactory.getLogger(SSHAccountManager.class);
 
-    // TODO: change return type to one that returns some details of the SSH account setup, for example the scratch location
-    public static void setupSSHAccount(String gatewayId, String computeResourceId, String username, SSHCredential sshCredential) {
+    public static UserComputeResourcePreference setupSSHAccount(String gatewayId, String computeResourceId, String username, SSHCredential sshCredential) {
 
         // get compute resource preferences for the gateway and hostname
-        // TODO: close the registry service client transport when done with it
         RegistryService.Client registryServiceClient = getRegistryServiceClient();
         ComputeResourcePreference computeResourcePreference = null;
         ComputeResourceDescription computeResourceDescription = null;
+        SSHJobSubmission sshJobSubmission = null;
         try {
             computeResourcePreference = registryServiceClient.getGatewayComputeResourcePreference(gatewayId, computeResourceId);
             computeResourceDescription = registryServiceClient.getComputeResource(computeResourceId);
+            // Find the SSHJobSubmission
+            for (JobSubmissionInterface jobSubmissionInterface : computeResourceDescription.getJobSubmissionInterfaces()) {
+                if (jobSubmissionInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH) {
+                    sshJobSubmission = registryServiceClient.getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
+                    break;
+                }
+            }
         } catch(TException e) {
             throw new RuntimeException(e);
+        } finally {
+            if (registryServiceClient.getInputProtocol().getTransport().isOpen()) {
+                registryServiceClient.getInputProtocol().getTransport().close();
+            }
+        }
+
+        if (sshJobSubmission == null) {
+            throw new RuntimeException("Compute resource [" + computeResourceId + "] does not have an SSH Job Submission interface.");
         }
 
         // get the account provisioner and config values for the preferences
         if (!computeResourcePreference.isSetSshAccountProvisioner()) {
-            // TODO: provide better exception?
             throw new RuntimeException("Compute resource [" + computeResourceId + "] does not have an SSH Account Provisioner configured for it.");
         }
         String provisionerName = computeResourcePreference.getSshAccountProvisioner();
@@ -79,18 +96,16 @@ public class SSHAccountManager {
         boolean hasAccount = sshAccountProvisioner.hasAccount(username);
 
         if (!hasAccount && !sshAccountProvisioner.canCreateAccount()) {
-            // TODO: provide better exception
             throw new RuntimeException("User [" + username + "] doesn't have account and [" + provisionerName + "] doesn't support creating account.");
         }
-
-        // TODO: first check if SSH key is already installed, or do we care?
 
         // Install SSH key
         sshAccountProvisioner.installSSHKey(username, sshCredential.getPublicKey());
 
-        // TODO: replace hard coded port 22 with port from SSHJobSubmission interface
         // Verify can authenticate to host
-        boolean validated = SSHUtil.validate(computeResourceDescription.getHostName(), 22, username, sshCredential);
+        String sshHostname = sshJobSubmission.getAlternativeSSHHostName() != null ? sshJobSubmission.getAlternativeSSHHostName() : computeResourceDescription.getHostName();
+        int sshPort = sshJobSubmission.getSshPort();
+        boolean validated = SSHUtil.validate(sshHostname, sshPort, username, sshCredential);
         if (!validated) {
             throw new RuntimeException("Failed to validate installation of key for [" + username
                     + "] on [" + computeResourceDescription.getHostName() + "] using SSH Account Provisioner ["
@@ -99,9 +114,13 @@ public class SSHAccountManager {
 
         // create the scratch location on the host
         String scratchLocation = sshAccountProvisioner.getScratchLocation(username);
-        SSHUtil.execute(computeResourceDescription.getHostName(), 22, username, sshCredential, "mkdir -p " + scratchLocation);
+        SSHUtil.execute(sshHostname, sshPort, username, sshCredential, "mkdir -p " + scratchLocation);
 
-        // TODO: return information about provisioned account
+        UserComputeResourcePreference userComputeResourcePreference = new UserComputeResourcePreference();
+        userComputeResourcePreference.setComputeResourceId(computeResourceId);
+        userComputeResourcePreference.setLoginUserName(username);
+        userComputeResourcePreference.setScratchLocation(scratchLocation);
+        return userComputeResourcePreference;
     }
 
     private static Map<ConfigParam, String> resolveProvisionerConfig(String gatewayId, String provisionerName, Map<ConfigParam, String> provisionerConfig) {
