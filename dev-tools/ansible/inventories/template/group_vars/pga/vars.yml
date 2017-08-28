@@ -1,0 +1,70 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+# NOTE: copied from scigap/production/pga_config/seagrid/vars.yml on 8-28-2017. Variables are added and removed all
+# the time so make sure you have the latest by comparing with scigap/production/pga_config/seagrid/vars.yml
+
+# Update all entries below that have CHANGEME as the value
+
+pga_repo: "https://github.com/apache/airavata-php-gateway.git"
+git_branch: "master"
+user: "pga"
+group: "pga"
+doc_root_dir: "/var/www/portals/{{ gateway_id }}"
+#vhost_servername: "CHANGEME"
+#vhost_serveralias: "CHANGEME"
+# Enable and change the following to enable SSL
+#vhost_ssl: True
+#ssl_certificate_file: "/etc/pki/tls/certs/seagrid_org_cert.cer"
+#ssl_certificate_chain_file: "/etc/pki/tls/certs/seagrid_org_interm.cer"
+#ssl_certificate_key_file: "/etc/pki/tls/private/portal.seagrid.key"
+
+
+## Keycloak related variables
+tenant_domain: "{{ gateway_id }}"
+admin_username: "admin"
+admin_password: "CHANGME"
+oauth_client_key: "CHANGME"
+oauth_client_secret: "CHANGME"
+oidc_discovery_url: "CHANGME"
+
+auth_options:
+  - name: "CHANGME"
+    oauth_grant_type: "password"
+oauth_callback_url: "http://{{ vhost_servername }}/callback-url"
+# or if SSL then:
+#oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
+
+gateway_id: "CHANGEME"
+# relative to document root dir
+experiment_data_dir: "{{ user_data_dir }}/CHANGEME"
+gateway_data_store_resource_id: "CHANGEME"
+gateway_data_store_ssh_public_key: "CHANGEME"
+
+## Portal related variables
+super_admin_portal: "false"
+admin_emails: "CHANGEME"
+#example: admin_emails: "['emailaddress1@example.com', 'emailaddress2@example.com']"
+portal_email_username: "CHANGEME"
+portal_email_password: "CHANGEME"
+portal_theme: "base"
+portal_title: "CHANGEME"
+...
