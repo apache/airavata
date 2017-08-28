@@ -44,14 +44,12 @@ Now you should be ready to run `ansible-playbook` and other ansible commands.
 
 ## Useful commands
 
-- `ansible-playbook -i inventories/develop site.yml`
-- `ansible-playbook -i inventories/develop site.yml -t "tags"`
-- `ansible-playbook -i inventories/develop site.yml --start-at-task="name of the ansible task"`
-
-To deploy pga run following. see site.yml (playbook) file for other available tags.
-
-- `ansible-playbook -i inventories/develop site.yml -t "pga"`
+- Deploy database: `ansible-playbook -i inventories/path/to/inventory/dir database.yml`
+- Deploy Airavata middleware: `ansible-playbook -i inventories/path/to/inventory/dir airavata.yml`
+- Deploy Keycloak IAM server: `ansible-playbook -i inventories/path/to/inventory/dir keycloak.yml`
+- Deploy PGA: `ansible-playbook -i inventories/path/to/inventory/dir pga.yml`
+- Deploy everything: `ansible-playbook -i inventories/path/to/inventory/dir site.yml`
 
 ## Configurations
 
-- Set correct private key file to `ansible_ssh_private_key_file` property in group_vars/all
+- copy the `inventories/template` directory and modify CHANGEME values
