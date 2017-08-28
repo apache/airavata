@@ -4,10 +4,11 @@
 <div class="jumbotron">
     <div class="container">
         <h1>Welcome!</h1>
-        <p>This is the Django based web portal for the Airavata Sharing Service. This UI can be used for Group Management.</p>
+        <p>This is the Django based web portal for the Airavata project. This
+        portal can be used as the basis for developing a science gateway using
+        Airavata.</p>
         {% if user.is_authenticated %}
         <p><a class="btn btn-primary btn-lg" href="{% url 'django_airavata_workspace:projects' %}" role="button">Go to your Projects »</a></p>
-        <p><a class="btn btn-primary btn-lg" href="{% url 'django_airavata_groups:manage' %}" role="button">Manage your Groups »</a></p>
         {% else %}
         <p><a class="btn btn-primary btn-lg" href="{% url 'django_airavata_auth:login' %}" role="button">Login »</a></p>
         {% endif %}

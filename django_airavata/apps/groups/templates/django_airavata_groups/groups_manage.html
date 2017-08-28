@@ -33,26 +33,22 @@
             <table class="table table-striped table-bordered">
                 <thead>
                     <tr>
-                        <th style="text-align:center">GROUP_ID</th>
                         <th style="text-align:center">NAME</th>
-                        <th style="text-align:center">DOMAIN_ID</th>
                         <th style="text-align:center">OPTIONS</th>
                     </tr>
                 </thead>
                 <tbody align="center">
                     {% for group in owner %}
                     <tr>
-                        <td>{{ group.groupId }}</td>
                         <td>{{ group.name }}</td>
-                        <td>{{ group.domainId }}</td>
                         <td>
-                            <a href="{% url 'django_airavata_groups:view' %}?group_id={{ group.groupId }}">
+                            <a href="{% url 'django_airavata_groups:view' %}?group_id={{ group.groupId | urlencode }}">
                                 <button type="button" class="btn btn-primary btn-xs">View</button>
                             </a>
-                            <a href="{% url 'django_airavata_groups:edit' %}?group_id={{ group.groupId }}">
+                            <a href="{% url 'django_airavata_groups:edit' %}?group_id={{ group.groupId | urlencode }}">
                                 <button type="button" class="btn btn-primary btn-xs">Edit</button>
                             </a>
-                            <a href="{% url 'django_airavata_groups:delete' %}?group_id={{ group.groupId }}">
+                            <a href="{% url 'django_airavata_groups:delete' %}?group_id={{ group.groupId | urlencode }}">
                                 <button type="button" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete the group? This action cannot be undone!')">Delete</button>
                             </a>
                         </td>
@@ -73,23 +69,19 @@
             <table class="table table-striped table-bordered">
                 <thead>
                     <tr>
-                        <th style="text-align:center">GROUP_ID</th>
                         <th style="text-align:center">NAME</th>
-                        <th style="text-align:center">DOMAIN_ID</th>
                         <th style="text-align:center">OPTIONS</th>
                     </tr>
                 </thead>
                 <tbody align="center">
                     {% for group in member %}
                     <tr>
-                        <td>{{ group.groupId }}</td>
                         <td>{{ group.name }}</td>
-                        <td>{{ group.domainId }}</td>
                         <td>
-                            <a href="{% url 'django_airavata_groups:view' %}?group_id={{ group.groupId }}">
+                            <a href="{% url 'django_airavata_groups:view' %}?group_id={{ group.groupId | urlencode }}">
                                 <button type="button" class="btn btn-primary btn-xs">View</button>
                             </a>
-                            <a href="{% url 'django_airavata_groups:leave' %}?group_id={{ group.groupId }}">
+                            <a href="{% url 'django_airavata_groups:leave' %}?group_id={{ group.groupId | urlencode }}">
                                 <button type="button" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to leave the group? This action cannot be undone!')">Leave</button>
                             </a>
                         </td>

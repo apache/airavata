@@ -18,16 +18,8 @@
                     </thead>
                     <tbody align="center">
                         <tr>
-                            <td>Group ID</td>
-                            <td>{{ group.groupId }}</td>
-                        </tr>
-                        <tr>
                             <td>Group Name</td>
                             <td>{{ group.name }}</td>
-                        </tr>
-                        <tr>
-                            <td>Domain ID</td>
-                            <td>{{ group.domainId }}</td>
                         </tr>
                         <tr>
                             <td>Description</td>
@@ -36,22 +28,6 @@
                         <tr>
                             <td>Onwer ID</td>
                             <td>{{ group.ownerId }}</td>
-                        </tr>
-                        <tr>
-                            <td>Group Type</td>
-                            {% if group.groupType == 1 %}
-                            <td>User Level Group</td>
-                            {% else %}
-                            <td>Admin Level Group</td>
-                            {% endif %}
-                        </tr>
-                        <tr>
-                            <td>Group Cardinality</td>
-                            {% if group.groupCardinality == 0 %}
-                            <td>Single User Group</td>
-                            {% else %}
-                            <td>Multi User Group</td>
-                            {% endif %}
                         </tr>
                         {% if u_id == group.ownerId %}
                         <tr>

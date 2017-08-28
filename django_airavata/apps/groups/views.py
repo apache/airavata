@@ -21,6 +21,9 @@ def groups_manage(request):
 
     try:
         owner_list = request.sharing_client.getGroups(gateway_id, 0, -1)
+        for group in owner_list:
+            if group.groupCardinality == 0:
+                owner_list.remove(group)
         owner = []
         for group in owner_list:
             if group.ownerId == username:
@@ -38,23 +41,6 @@ def groups_manage(request):
         return redirect('/')
 
 @login_required
-def groups_list(request):
-
-    gateway_id = settings.GATEWAY_ID
-
-    try:
-        group_list = request.sharing_client.getGroups(gateway_id, 0, -1)
-        for group in group_list:
-            if group.groupCardinality == 0:
-                group_list.remove(group)
-        return render(request, 'django_airavata_groups/groups_list.html', {
-            'list': group_list
-        })
-    except Exception as e:
-        logger.exception("Failed to load the list of groups")
-        return redirect('/')
-
-@login_required
 def groups_create(request):
 
     gateway_id = settings.GATEWAY_ID
@@ -68,7 +54,8 @@ def groups_create(request):
     if request.method == 'POST':
         form = CreateForm(request.POST, request.FILES, initial={'domain_id': gateway_id, 'group_owner': username, 'group_type': group_type, 'group_cardinality': group_cardinality})
         if form.is_valid():
-            group_id = str(uuid.uuid4().hex) + form.cleaned_data.get('group_name')
+            group_name = form.cleaned_data.get('group_name').replace(" ","-").lower()
+            group_id = group_name + str(uuid.uuid4().hex)
             group = UserGroup(groupId=group_id, domainId=gateway_id, name=form.cleaned_data.get('group_name'), description=form.cleaned_data.get('description'), ownerId=username, groupType=group_type, groupCardinality=group_cardinality, createdTime=None, updatedTime=None)
             try:
                 create = request.sharing_client.createGroup(group)
@@ -136,13 +123,14 @@ def edit_group(request):
         else:
             add_form = AddForm(user_choices=[(user.userId, user.userId) for user in user_choices])
             remove_form = RemoveForm(user_choices=[(member.userId, member.userId) for member in member_choices])
+            group_details = request.sharing_client.getGroup(gateway_id, group_id)
 
     except Exception as e:
         logger.exception("Failed to edit the group")
         return redirect('/groups')
 
     return render(request, 'django_airavata_groups/group_edit.html', {
-        'group_id': group_id, 'add_form': add_form, 'remove_form': remove_form
+        'group_name': group_details.name, 'add_form': add_form, 'remove_form': remove_form
     })
 
 @login_required
