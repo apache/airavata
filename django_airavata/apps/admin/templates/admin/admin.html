@@ -1,0 +1,10 @@
+{% extends "base_temp.html" %}
+{% load static %}
+{% block content %}
+    <div id=app></div>
+{% endblock %}
+{% block scripts %}
+    <script type=text/javascript src="{% static 'js/manifest.js' %}"></script>
+    <script type=text/javascript src="{% static 'js/vendor.js' %}"></script>
+    <script type=text/javascript src="{% static 'js/app.js' %}"></script>
+{% endblock %}
