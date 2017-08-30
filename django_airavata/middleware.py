@@ -45,7 +45,8 @@ def get_airavata_client(transport):
     protocol = TBinaryProtocol.TBinaryProtocol(transport)
 
     # Create a Airavata client to use the protocol encoder
-    return Airavata.Client(protocol)
+    client=Airavata.Client(protocol)
+    return client
 
 def get_sharing_client(transport):
 
