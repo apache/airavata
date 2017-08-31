@@ -93,6 +93,11 @@
             <artifactId>services-security</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>compute-account-provisioning</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!--<dependency>-->
             <!--<groupId>org.apache.airavata</groupId>-->
             <!--<artifactId>group-manager</artifactId>-->
