@@ -30,6 +30,8 @@ enum SSHAccountProvisionerConfigParamType {
 
 struct SSHAccountProvisioner {
     1: required string name;
+    2: required bool canCreateAccount;
+    3: required bool canInstallSSHKey;
 }
 
 struct SSHAccountProvisionerConfigParam {

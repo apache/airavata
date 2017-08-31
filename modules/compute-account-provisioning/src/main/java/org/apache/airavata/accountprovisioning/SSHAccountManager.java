@@ -51,6 +51,30 @@ public class SSHAccountManager {
 
     private final static Logger logger = LoggerFactory.getLogger(SSHAccountManager.class);
 
+    public static boolean doesUserHaveSSHAccount(String gatewayId, String computeResourceId, String username) {
+
+        // get compute resource preferences for the gateway and hostname
+        RegistryService.Client registryServiceClient = getRegistryServiceClient();
+        ComputeResourcePreference computeResourcePreference = null;
+        try {
+            computeResourcePreference = registryServiceClient.getGatewayComputeResourcePreference(gatewayId, computeResourceId);
+        } catch(TException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (registryServiceClient.getInputProtocol().getTransport().isOpen()) {
+                registryServiceClient.getInputProtocol().getTransport().close();
+            }
+        }
+
+        // get the account provisioner and config values for the preferences
+        if (!computeResourcePreference.isSetSshAccountProvisioner()) {
+            throw new RuntimeException("Compute resource [" + computeResourceId + "] does not have an SSH Account Provisioner configured for it.");
+        }
+        SSHAccountProvisioner sshAccountProvisioner = createSshAccountProvisioner(gatewayId, computeResourcePreference);
+
+        return sshAccountProvisioner.hasAccount(username);
+    }
+
     public static UserComputeResourcePreference setupSSHAccount(String gatewayId, String computeResourceId, String username, SSHCredential sshCredential) {
 
         // get compute resource preferences for the gateway and hostname
@@ -84,19 +108,15 @@ public class SSHAccountManager {
         if (!computeResourcePreference.isSetSshAccountProvisioner()) {
             throw new RuntimeException("Compute resource [" + computeResourceId + "] does not have an SSH Account Provisioner configured for it.");
         }
-        String provisionerName = computeResourcePreference.getSshAccountProvisioner();
-        Map<ConfigParam,String> provisionerConfig = convertConfigParams(provisionerName, computeResourcePreference.getSshAccountProvisionerConfig());
-
-        Map<ConfigParam, String> resolvedConfig = resolveProvisionerConfig(gatewayId, provisionerName, provisionerConfig);
 
         // instantiate and init the account provisioner
-        SSHAccountProvisioner sshAccountProvisioner = SSHAccountProvisionerFactory.createSSHAccountProvisioner(provisionerName, resolvedConfig);
+        SSHAccountProvisioner sshAccountProvisioner = createSshAccountProvisioner(gatewayId, computeResourcePreference);
 
         // First check if username has an account
         boolean hasAccount = sshAccountProvisioner.hasAccount(username);
 
         if (!hasAccount && !sshAccountProvisioner.canCreateAccount()) {
-            throw new RuntimeException("User [" + username + "] doesn't have account and [" + provisionerName + "] doesn't support creating account.");
+            throw new RuntimeException("User [" + username + "] doesn't have account and [" + computeResourceId + "] doesn't have a SSH Account Provisioner that supports creating accounts.");
         }
 
         // Install SSH key
@@ -121,6 +141,16 @@ public class SSHAccountManager {
         userComputeResourcePreference.setLoginUserName(username);
         userComputeResourcePreference.setScratchLocation(scratchLocation);
         return userComputeResourcePreference;
+    }
+
+    private static SSHAccountProvisioner createSshAccountProvisioner(String gatewayId, ComputeResourcePreference computeResourcePreference) {
+        String provisionerName = computeResourcePreference.getSshAccountProvisioner();
+        Map<ConfigParam,String> provisionerConfig = convertConfigParams(provisionerName, computeResourcePreference.getSshAccountProvisionerConfig());
+
+        Map<ConfigParam, String> resolvedConfig = resolveProvisionerConfig(gatewayId, provisionerName, provisionerConfig);
+
+        // instantiate and init the account provisioner
+        return SSHAccountProvisionerFactory.createSSHAccountProvisioner(provisionerName, resolvedConfig);
     }
 
     private static Map<ConfigParam, String> resolveProvisionerConfig(String gatewayId, String provisionerName, Map<ConfigParam, String> provisionerConfig) {
