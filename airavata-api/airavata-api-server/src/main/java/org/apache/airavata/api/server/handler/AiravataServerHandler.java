@@ -19,6 +19,7 @@
  */
 package org.apache.airavata.api.server.handler;
 
+import org.apache.airavata.accountprovisioning.SSHAccountManager;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavata_apiConstants;
 import org.apache.airavata.api.server.util.ThriftClientPool;
@@ -35,6 +36,8 @@ import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.Type;
 import org.apache.airavata.model.WorkflowModel;
+import org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisioner;
+import org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
@@ -3960,6 +3963,58 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while updating gateway data storage preference. More info : " + e.getMessage());
             registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    public List<SSHAccountProvisioner> getSSHAccountProvisionerNames(AuthzToken authzToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+
+        // TODO: implement
+        return null;
+    }
+
+    @Override
+    @SecurityCheck
+    public List<SSHAccountProvisionerConfigParam> getSSHAccountProvisionerConfigParams(AuthzToken authzToken, String provisionerName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+
+        // TODO: implement
+        return null;
+    }
+
+    @Override
+    @SecurityCheck
+    public boolean doesUserHaveSSHAccount(AuthzToken authzToken, String computeResourceId, String username) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        return SSHAccountManager.doesUserHaveSSHAccount(gatewayId, computeResourceId, username);
+    }
+
+    @Override
+    @SecurityCheck
+    public UserComputeResourcePreference setupUserComputeResourcePreferencesForSSH(AuthzToken authzToken, String computeResourceId, String username, String airavataCredStoreToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        CredentialStoreService.Client csClient = csClientPool.getResource();
+        SSHCredential sshCredential = null;
+        try {
+            sshCredential = csClient.getSSHCredential(airavataCredStoreToken, gatewayId);
+        }catch (Exception e){
+            logger.error("Error occurred while retrieving SSH Credential", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error occurred while retrieving SSH Credential. More info : " + e.getMessage());
+            csClientPool.returnBrokenResource(csClient);
+            throw exception;
+        }
+
+        try {
+            UserComputeResourcePreference userComputeResourcePreference = SSHAccountManager.setupSSHAccount(gatewayId, computeResourceId, username, sshCredential);
+            return userComputeResourcePreference;
+        }catch (Exception e){
+            logger.error("Error occurred while automatically setting up SSH account for user [" + username + "]", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error occurred while automatically setting up SSH account for user [" + username + "]. More info : " + e.getMessage());
             throw exception;
         }
     }
