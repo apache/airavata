@@ -25,7 +25,6 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
-import org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
@@ -181,11 +180,11 @@ public class SSHAccountManager {
         }
     }
 
-    private static Map<ConfigParam, String> convertConfigParams(String provisionerName, Map<SSHAccountProvisionerConfigParam, String> thriftConfigParams) {
+    private static Map<ConfigParam, String> convertConfigParams(String provisionerName, Map<String, String> thriftConfigParams) {
         List<ConfigParam> configParams = SSHAccountProvisionerFactory.getSSHAccountProvisionerConfigParams(provisionerName);
         Map<String, ConfigParam> configParamMap = configParams.stream().collect(Collectors.toMap(ConfigParam::getName, Function.identity()));
 
-        return thriftConfigParams.entrySet().stream().collect(Collectors.toMap(entry -> configParamMap.get(entry.getKey().getName()), entry -> entry.getValue()));
+        return thriftConfigParams.entrySet().stream().collect(Collectors.toMap(entry -> configParamMap.get(entry.getKey()), entry -> entry.getValue()));
     }
 
     private static RegistryService.Client getRegistryServiceClient() {
