@@ -20,10 +20,7 @@
 package org.apache.airavata.registry.core.app.catalog.resources;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.registry.core.app.catalog.model.ComputeResource;
-import org.apache.airavata.registry.core.app.catalog.model.ComputeResourcePreference;
-import org.apache.airavata.registry.core.app.catalog.model.ComputeResourcePreferencePK;
-import org.apache.airavata.registry.core.app.catalog.model.GatewayProfile;
+import org.apache.airavata.registry.core.app.catalog.model.*;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogJPAUtils;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogQueryGenerator;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogResourceType;
@@ -56,6 +53,8 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
     private String reservation;
     private Timestamp reservationStartTime;
     private Timestamp reservationEndTime;
+    private String sshAccountProvisioner;
+    private Map<String,String> sshAccountProvisionerConfigurations;
 
     private GatewayProfileResource gatewayProfile;
     private ComputeResourceResource computeHostResource;
@@ -198,6 +197,22 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
 
     public void setReservationEndTime(Timestamp reservationEndTime) {
         this.reservationEndTime = reservationEndTime;
+    }
+
+    public String getSshAccountProvisioner() {
+        return sshAccountProvisioner;
+    }
+
+    public void setSshAccountProvisioner(String sshAccountProvisioner) {
+        this.sshAccountProvisioner = sshAccountProvisioner;
+    }
+
+    public Map<String, String> getSshAccountProvisionerConfigurations() {
+        return sshAccountProvisionerConfigurations;
+    }
+
+    public void setSshAccountProvisionerConfigurations(Map<String, String> sshAccountProvisionerConfigurations) {
+        this.sshAccountProvisionerConfigurations = sshAccountProvisionerConfigurations;
     }
 
     @Override
@@ -408,14 +423,7 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             ComputeResourcePreference existingPreference = em.find(ComputeResourcePreference.class, new ComputeResourcePreferencePK(gatewayId, resourceId));
-            if (em.isOpen()) {
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
-                }
-                em.close();
-            }
 
-            em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             ComputeResource computeResource = em.find(ComputeResource.class, resourceId);
             GatewayProfile gatewayProf = em.find(GatewayProfile.class, gatewayId);
@@ -437,6 +445,17 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
                 existingPreference.setReservation(reservation);
                 existingPreference.setReservationStartTime(reservationStartTime);
                 existingPreference.setReservationEndTime(reservationEndTime);
+                existingPreference.setSshAccountProvisioner(sshAccountProvisioner);
+                if (sshAccountProvisionerConfigurations != null && !sshAccountProvisionerConfigurations.isEmpty()) {
+                    List<SSHAccountProvisionerConfiguration> configurations = new ArrayList<>();
+                    for (String sshAccountProvisionerConfigName : sshAccountProvisionerConfigurations.keySet()) {
+                        String value = sshAccountProvisionerConfigurations.get(sshAccountProvisionerConfigName);
+                        configurations.add(new SSHAccountProvisionerConfiguration(sshAccountProvisionerConfigName, value, existingPreference));
+                    }
+                    existingPreference.setSshAccountProvisionerConfigurations(configurations);
+                } else {
+                    existingPreference.setSshAccountProvisionerConfigurations(null);
+                }
                 em.merge(existingPreference);
             } else {
                 ComputeResourcePreference resourcePreference = new ComputeResourcePreference();
@@ -457,6 +476,15 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
                 resourcePreference.setReservation(reservation);
                 resourcePreference.setReservationStartTime(reservationStartTime);
                 resourcePreference.setReservationEndTime(reservationEndTime);
+                existingPreference.setSshAccountProvisioner(sshAccountProvisioner);
+                if (sshAccountProvisionerConfigurations != null && !sshAccountProvisionerConfigurations.isEmpty()){
+                    List<SSHAccountProvisionerConfiguration> configurations = new ArrayList<>();
+                    for (String sshAccountProvisionerConfigName : sshAccountProvisionerConfigurations.keySet()) {
+                        String value = sshAccountProvisionerConfigurations.get(sshAccountProvisionerConfigName);
+                        configurations.add(new SSHAccountProvisionerConfiguration(sshAccountProvisionerConfigName, value, existingPreference));
+                    }
+                    existingPreference.setSshAccountProvisionerConfigurations(configurations);
+                }
                 em.persist(resourcePreference);
             }
             em.getTransaction().commit();
