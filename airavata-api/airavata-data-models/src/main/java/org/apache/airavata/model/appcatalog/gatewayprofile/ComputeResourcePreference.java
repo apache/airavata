@@ -23,32 +23,15 @@
  */
 package org.apache.airavata.model.appcatalog.gatewayprofile;
 
+import org.apache.thrift.EncodingUtils;
+import org.apache.thrift.protocol.TTupleProtocol;
 import org.apache.thrift.scheme.IScheme;
 import org.apache.thrift.scheme.SchemeFactory;
 import org.apache.thrift.scheme.StandardScheme;
-
 import org.apache.thrift.scheme.TupleScheme;
-import org.apache.thrift.protocol.TTupleProtocol;
-import org.apache.thrift.protocol.TProtocolException;
-import org.apache.thrift.EncodingUtils;
-import org.apache.thrift.TException;
-import org.apache.thrift.async.AsyncMethodCallback;
-import org.apache.thrift.server.AbstractNonblockingServer.*;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.EnumMap;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.EnumSet;
-import java.util.Collections;
-import java.util.BitSet;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
+
 import javax.annotation.Generated;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.*;
 
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked"})
 /**
@@ -127,7 +110,7 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
   private long reservationStartTime; // optional
   private long reservationEndTime; // optional
   private String sshAccountProvisioner; // optional
-  private Map<org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam,String> sshAccountProvisionerConfig; // optional
+  private Map<String,String> sshAccountProvisionerConfig; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -281,7 +264,7 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.SSH_ACCOUNT_PROVISIONER_CONFIG, new org.apache.thrift.meta_data.FieldMetaData("sshAccountProvisionerConfig", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
-            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam.class), 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING), 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ComputeResourcePreference.class, metaDataMap);
@@ -347,18 +330,7 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
       this.sshAccountProvisioner = other.sshAccountProvisioner;
     }
     if (other.isSetSshAccountProvisionerConfig()) {
-      Map<org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam,String> __this__sshAccountProvisionerConfig = new HashMap<org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam,String>(other.sshAccountProvisionerConfig.size());
-      for (Map.Entry<org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam, String> other_element : other.sshAccountProvisionerConfig.entrySet()) {
-
-        org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam other_element_key = other_element.getKey();
-        String other_element_value = other_element.getValue();
-
-        org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam __this__sshAccountProvisionerConfig_copy_key = new org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam(other_element_key);
-
-        String __this__sshAccountProvisionerConfig_copy_value = other_element_value;
-
-        __this__sshAccountProvisionerConfig.put(__this__sshAccountProvisionerConfig_copy_key, __this__sshAccountProvisionerConfig_copy_value);
-      }
+      Map<String,String> __this__sshAccountProvisionerConfig = new HashMap<String,String>(other.sshAccountProvisionerConfig);
       this.sshAccountProvisionerConfig = __this__sshAccountProvisionerConfig;
     }
   }
@@ -752,18 +724,18 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
     return (this.sshAccountProvisionerConfig == null) ? 0 : this.sshAccountProvisionerConfig.size();
   }
 
-  public void putToSshAccountProvisionerConfig(org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam key, String val) {
+  public void putToSshAccountProvisionerConfig(String key, String val) {
     if (this.sshAccountProvisionerConfig == null) {
-      this.sshAccountProvisionerConfig = new HashMap<org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam,String>();
+      this.sshAccountProvisionerConfig = new HashMap<String,String>();
     }
     this.sshAccountProvisionerConfig.put(key, val);
   }
 
-  public Map<org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam,String> getSshAccountProvisionerConfig() {
+  public Map<String,String> getSshAccountProvisionerConfig() {
     return this.sshAccountProvisionerConfig;
   }
 
-  public void setSshAccountProvisionerConfig(Map<org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam,String> sshAccountProvisionerConfig) {
+  public void setSshAccountProvisionerConfig(Map<String,String> sshAccountProvisionerConfig) {
     this.sshAccountProvisionerConfig = sshAccountProvisionerConfig;
   }
 
@@ -908,7 +880,7 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
       if (value == null) {
         unsetSshAccountProvisionerConfig();
       } else {
-        setSshAccountProvisionerConfig((Map<org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam,String>)value);
+        setSshAccountProvisionerConfig((Map<String,String>)value);
       }
       break;
 
@@ -1767,13 +1739,12 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
                 org.apache.thrift.protocol.TMap _map0 = iprot.readMapBegin();
-                struct.sshAccountProvisionerConfig = new HashMap<org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam,String>(2*_map0.size);
-                org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam _key1;
+                struct.sshAccountProvisionerConfig = new HashMap<String,String>(2*_map0.size);
+                String _key1;
                 String _val2;
                 for (int _i3 = 0; _i3 < _map0.size; ++_i3)
                 {
-                  _key1 = new org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam();
-                  _key1.read(iprot);
+                  _key1 = iprot.readString();
                   _val2 = iprot.readString();
                   struct.sshAccountProvisionerConfig.put(_key1, _val2);
                 }
@@ -1896,10 +1867,10 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
         if (struct.isSetSshAccountProvisionerConfig()) {
           oprot.writeFieldBegin(SSH_ACCOUNT_PROVISIONER_CONFIG_FIELD_DESC);
           {
-            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRUCT, org.apache.thrift.protocol.TType.STRING, struct.sshAccountProvisionerConfig.size()));
-            for (Map.Entry<org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam, String> _iter4 : struct.sshAccountProvisionerConfig.entrySet())
+            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, struct.sshAccountProvisionerConfig.size()));
+            for (Map.Entry<String, String> _iter4 : struct.sshAccountProvisionerConfig.entrySet())
             {
-              _iter4.getKey().write(oprot);
+              oprot.writeString(_iter4.getKey());
               oprot.writeString(_iter4.getValue());
             }
             oprot.writeMapEnd();
@@ -2012,9 +1983,9 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
       if (struct.isSetSshAccountProvisionerConfig()) {
         {
           oprot.writeI32(struct.sshAccountProvisionerConfig.size());
-          for (Map.Entry<org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam, String> _iter5 : struct.sshAccountProvisionerConfig.entrySet())
+          for (Map.Entry<String, String> _iter5 : struct.sshAccountProvisionerConfig.entrySet())
           {
-            _iter5.getKey().write(oprot);
+            oprot.writeString(_iter5.getKey());
             oprot.writeString(_iter5.getValue());
           }
         }
@@ -2083,14 +2054,13 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
       }
       if (incoming.get(13)) {
         {
-          org.apache.thrift.protocol.TMap _map6 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRUCT, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.sshAccountProvisionerConfig = new HashMap<org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam,String>(2*_map6.size);
-          org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam _key7;
+          org.apache.thrift.protocol.TMap _map6 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.sshAccountProvisionerConfig = new HashMap<String,String>(2*_map6.size);
+          String _key7;
           String _val8;
           for (int _i9 = 0; _i9 < _map6.size; ++_i9)
           {
-            _key7 = new org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam();
-            _key7.read(iprot);
+            _key7 = iprot.readString();
             _val8 = iprot.readString();
             struct.sshAccountProvisionerConfig.put(_key7, _val8);
           }
