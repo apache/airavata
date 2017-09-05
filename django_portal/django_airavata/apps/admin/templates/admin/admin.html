@@ -1,14 +1,19 @@
 {% extends "main_base.html" %}
 {% load static %}
-{% block css %}
-    <link rel=stylesheet type=text/css href={% static 'css/app.css' %}>
-{% endblock %}
 {% block content %}
-    {{ block.super }}
     <div id=app></div>
 {% endblock %}
+{% block css %}
+<link rel=stylesheet type=text/css href={% static 'css/app.css' %}>
+ {% endblock %}
 {% block scripts %}
+    {{ block.super }}
     <script type=text/javascript src="{% static 'js/manifest.js' %}"></script>
     <script type=text/javascript src="{% static 'js/vendor.js' %}"></script>
     <script type=text/javascript src="{% static 'js/app.js' %}"></script>
+    <script>
+        if(AiravataApp){
+            AiravataApp.initializeApacheAiravataDashboard('ExperimentsDashboard');
+        }
+    </script>
 {% endblock %}
