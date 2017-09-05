@@ -65,7 +65,7 @@ data_sharing_enabled: "false"
 
 ## Portal related variables
 super_admin_portal: "true"
-admin_emails: "['eroma.abeysinghe@gmail.com','sgg@iu.edu']"
+admin_emails: "['sgrc-iu-group@iu.edu']"
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
 portal_theme: "base"
