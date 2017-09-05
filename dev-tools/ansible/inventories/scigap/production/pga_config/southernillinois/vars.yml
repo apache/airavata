@@ -56,7 +56,7 @@ gateway_data_store_ssh_public_key: ""
 
 ## Portal related variables
 super_admin_portal: "false"
-admin_emails: "['sgg@iu.edu']"
+admin_emails: "['sgrc-iu-group@iu.edu','saisusheel.sunkara@siu.edu']"
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
 portal_theme: "siu-gateway-theme"
