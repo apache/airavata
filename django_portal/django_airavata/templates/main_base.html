@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+{% if user.is_authenticated %}
 <nav class=c-nav><a href="/admin" class="c-nav__item is-active" data-toggle=tooltip data-placement=right title=Dashboard><i
     class="fa fa-dashboard"></i> <span class=sr-only>Dashboard</span> </a><a href=#0 class=c-nav__item
                                                                              data-toggle=tooltip data-placement=right
@@ -13,4 +14,5 @@
                                                                             data-toggle=tooltip data-placement=right
                                                                             title="Admin Dashboard"><i
     class="fa fa-wrench"></i> <span class=sr-only>Admin Dashboard</span></a></nav>
+    {% endif %}
 {% endblock %}
