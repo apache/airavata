@@ -22,7 +22,7 @@
 # This script will generate/regenerate the thrift stubs for Airavata Components: Credential Store, Orchestrator, GFac.
 
 show_usage() {
-	echo -e "Usage: $0 [Component to generate stubs]"
+	echo -e "Usage: $0 [--native-thrift] [Component to generate stubs]"
 	echo ""
 	echo "options:"
 	echo -e "\tcs Generate/Update Credential Store Stubs"
@@ -31,6 +31,7 @@ show_usage() {
 	echo -e "\registry Generate/Update Registry Stubs"
 	echo -e "\tall Generate/Update all stubs (Credential Store, Orchestrator, GFac, Registry)."
 	echo -e "\t-h[elp] Print the usage options of this script"
+	echo -e "\t--native-thrift Use natively installed thrift instead of Docker image"
 }
 
 if [ $# -lt 1 ]
@@ -45,47 +46,55 @@ then
 	exit 0
 fi
 
-# Generation of thrift files will require installing Apache Thrift. Please add thrift to your path.
-#  Verify is thrift is installed, is in the path is at a specified version.
+REQUIRED_THRIFT_VERSION='0.10.0'
+THRIFT_DOCKER_IMAGE='thrift'
+THRIFT_NATIVE="false"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PARENT_DIR=`dirname "$SCRIPT_DIR"`
 
-REQUIRED_THRIFT_VERSION='0.9.3'
-if hash thrift &> /dev/null; then
-  THRIFT_EXEC=$(which thrift)
-else
-  THRIFT_EXEC=/usr/local/bin/thrift
-fi
+setup() {
+    if [[ $THRIFT_NATIVE == "true" ]]; then
+        if hash thrift &> /dev/null; then
+          THRIFT_EXEC=$(which thrift)
+        else
+          THRIFT_EXEC=/usr/local/bin/thrift
+        fi
+        BASEDIR="$PARENT_DIR"
+    else
+        THRIFT_EXEC="docker run --rm -v $PARENT_DIR:/data $THRIFT_DOCKER_IMAGE:$REQUIRED_THRIFT_VERSION thrift"
+        BASEDIR="/data"
+    fi
 
-VERSION=$($THRIFT_EXEC -version 2>/dev/null | grep -F "${REQUIRED_THRIFT_VERSION}" |  wc -l)
-if [ "$VERSION" -ne 1 ] ; then
-    echo -e "ERROR:\t Apache Thrift version ${REQUIRED_THRIFT_VERSION} is required."
-    echo -e "It is either not installed or is not in the path"
-    exit 1
-fi
+    VERSION=$($THRIFT_EXEC -version 2>/dev/null | grep -F "${REQUIRED_THRIFT_VERSION}" |  wc -l)
+    if [ "$VERSION" -ne 1 ] ; then
+        echo -e "ERROR:\t Apache Thrift version ${REQUIRED_THRIFT_VERSION} is required."
+        echo -e "It is either not installed or is not in the path"
+        exit 1
+    fi
 
-# Global Constants used across the script
-BASE_TARGET_DIR='target'
+    # Global Constants used across the script
+    BASE_TARGET_DIR="$SCRIPT_DIR/target"
 
-CS_THRIFT_FILE='credential-store-cpi.thrift'
-CS_SRC_DIR='../../modules/credential-store/credential-store-stubs/src/main/java'
+    CS_THRIFT_FILE="$BASEDIR/component-cpis/credential-store-cpi.thrift"
+    CS_SRC_DIR='../../modules/credential-store/credential-store-stubs/src/main/java'
 
-ORCHESTRATOR_THRIFT_FILE='orchestrator-cpi.thrift'
-ORCHESTRATOR_SRC_DIR='../../modules/orchestrator/orchestrator-client/src/main/java'
+    ORCHESTRATOR_THRIFT_FILE="$BASEDIR/component-cpis/orchestrator-cpi.thrift"
+    ORCHESTRATOR_SRC_DIR='../../modules/orchestrator/orchestrator-client/src/main/java'
 
-GFAC_THRIFT_FILE='gfac-cpi.thrift'
-GFAC_SRC_DIR='../../modules/gfac/gfac-client/src/main/java/'
+    GFAC_THRIFT_FILE="$BASEDIR/component-cpis/gfac-cpi.thrift"
+    GFAC_SRC_DIR='../../modules/gfac/gfac-client/src/main/java/'
 
-REGISTRY_THRIFT_FILE='registry-api.thrift'
-REGISTRY_SRC_DIR='../../modules/registry/registry-server/registry-api-stubs/src/main/java/'
+    REGISTRY_THRIFT_FILE="$BASEDIR/component-cpis/registry-api.thrift"
+    REGISTRY_SRC_DIR='../../modules/registry/registry-server/registry-api-stubs/src/main/java/'
 
-USER_PROFILE_THRIFT_FILE='user-profile-cpi.thrift'
-USER_PROFILE_SRC_DIR='../../modules/user-profile/user-profile-stubs/src/main/java/'
+    # Initialize the thrift arguments.
+    #  Since most of the Airavata API and Data Models have includes, use recursive option by default.
+    #  Generate all the files in target directory
+    THRIFT_ARGS="-r -o ${BASEDIR}/component-cpis/target"
+    # Ensure the required target directories exists, if not create.
+    mkdir -p ${BASE_TARGET_DIR}
+}
 
-# Initialize the thrift arguments.
-#  Since most of the Airavata API and Data Models have includes, use recursive option by default.
-#  Generate all the files in target directory
-THRIFT_ARGS="-r -o ${BASE_TARGET_DIR}"
-# Ensure the required target directories exists, if not create.
-mkdir -p ${BASE_TARGET_DIR}
 
 # The Funcation fail prints error messages on failure and quits the script.
 fail() {
@@ -178,27 +187,31 @@ generate_thrift_stubs() {
 for arg in "$@"
 do
     case "$arg" in
-    all)    echo "Generate all (credential store, orchestrator, gfac, user_profile) Stubs"
+    all)    echo "Generate all (credential store, orchestrator, gfac) Stubs"
+            setup
             generate_thrift_stubs ${CS_THRIFT_FILE} ${CS_SRC_DIR}
             generate_thrift_stubs ${ORCHESTRATOR_THRIFT_FILE} ${ORCHESTRATOR_SRC_DIR}
             generate_thrift_stubs ${GFAC_THRIFT_FILE} ${GFAC_SRC_DIR}
             generate_thrift_stubs ${REGISTRY_THRIFT_FILE} ${REGISTRY_SRC_DIR}
-            generate_thrift_stubs ${USER_PROFILE_THRIFT_FILE} ${USER_PROFILE_SRC_DIR}
             ;;
     cs)   echo "Generating Credential Store Stubs"
+            setup
             generate_thrift_stubs ${CS_THRIFT_FILE} ${CS_SRC_DIR}
             ;;
     orch)    echo "Generate Orchestrator Stubs"
+            setup
             generate_thrift_stubs ${ORCHESTRATOR_THRIFT_FILE} ${ORCHESTRATOR_SRC_DIR}
             ;;
     gfac)    echo "Generate GFac Stubs"
+            setup
             generate_thrift_stubs ${GFAC_THRIFT_FILE} ${GFAC_SRC_DIR}
             ;;
     registry)    echo "Generate Registry Stubs"
+            setup
             generate_thrift_stubs ${REGISTRY_THRIFT_FILE} ${REGISTRY_SRC_DIR}
             ;;
-    up)    echo "Generate User profile Stubs"
-            generate_thrift_stubs ${USER_PROFILE_THRIFT_FILE} ${USER_PROFILE_SRC_DIR}
+    --native-thrift)
+            THRIFT_NATIVE="true"
             ;;
     *)      echo "Invalid or unsupported option"
     	    show_usage
