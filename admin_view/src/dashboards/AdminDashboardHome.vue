@@ -2,7 +2,7 @@
   <div class="new_app">
     <div class="new_app_header">
       <h4 style="display: inline-block">Application Catalog</h4>
-      <router-link :to="{name:'newapp'}"><button v-on="this.$emit('new_application')">New Application <span>+</span></button></router-link>
+      <router-link :to="{name:'details'}"><button v-on="this.$emit('new_application')">New Application <span>+</span></button></router-link>
     </div>
     <div class="applications">
       <h6 style="color: #666666;">APPLICATIONS</h6>
