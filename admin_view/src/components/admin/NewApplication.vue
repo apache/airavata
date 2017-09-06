@@ -3,21 +3,21 @@
     <h3>Create A New Application</h3>
     <div class="main">
       <div class="tabs">
-        <div class="tab" v-bind:class="tabs[0]"><label class="lbl" v-on:click="tab_handler(0)">Details</label></div>
-        <div class="tab" v-bind:class="tabs[1]"><label class="lbl" v-on:click="tab_handler(1)">Interface</label></div>
-        <div class="tab" v-bind:class="tabs[2]"><label class="lbl" v-on:click="tab_handler(2)">Deployments</label></div>
+        <div class="tab" v-bind:class="tabs[0]" v-on:click="tab_handler(0)"><router-link class="link" :to="{name:'details'}"><label class="lbl">Details</label></router-link></div>
+        <div class="tab" v-bind:class="tabs[1]" v-on:click="tab_handler(1)"><router-link class="link" :to="{name:'interface'}"><label class="lbl">Interface</label></router-link></div>
+        <div class="tab" v-bind:class="tabs[2]" v-on:click="tab_handler(2)"><router-link class="link" :to="{name:'deployments'}"><label class="lbl">Deployments</label></router-link></div>
         <div class="tab" style="width: 100%"></div>
       </div>
-      <application-details></application-details>
+      <router-view></router-view>
     </div>
   </div>
 </template>
 <script>
-  import ApplicationDetails from '../ApplicationDetails.vue'
-
+  import ApplicationDetails from './ApplicationDetails.vue'
+  import ApplicationInterface from './ApplicationInterface.vue'
   export default {
     components: {
-      ApplicationDetails
+      ApplicationDetails,ApplicationInterface
     },
 
     data: function () {
@@ -74,10 +74,15 @@
 
   .lbl {
     margin: 10px;
+    color: inherit;
+  }
+
+  .link{
+    color: inherit;
   }
 
   .active {
-    color: inherit;
+    color: #333333;
     border-top: solid #999999 1px;
     border-left: solid #999999 1px;
     border-right: solid #999999 1px;
