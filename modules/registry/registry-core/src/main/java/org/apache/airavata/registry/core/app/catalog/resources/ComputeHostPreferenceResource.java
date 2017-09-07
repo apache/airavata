@@ -55,6 +55,7 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
     private Timestamp reservationEndTime;
     private String sshAccountProvisioner;
     private Map<String,String> sshAccountProvisionerConfigurations;
+    private String sshAccountProvisionerAdditionalInfo;
 
     private GatewayProfileResource gatewayProfile;
     private ComputeResourceResource computeHostResource;
@@ -213,6 +214,14 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
 
     public void setSshAccountProvisionerConfigurations(Map<String, String> sshAccountProvisionerConfigurations) {
         this.sshAccountProvisionerConfigurations = sshAccountProvisionerConfigurations;
+    }
+
+    public String getSshAccountProvisionerAdditionalInfo() {
+        return sshAccountProvisionerAdditionalInfo;
+    }
+
+    public void setSshAccountProvisionerAdditionalInfo(String sshAccountProvisionerAdditionalInfo) {
+        this.sshAccountProvisionerAdditionalInfo = sshAccountProvisionerAdditionalInfo;
     }
 
     @Override
@@ -456,6 +465,7 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
                 } else {
                     existingPreference.setSshAccountProvisionerConfigurations(null);
                 }
+                existingPreference.setSshAccountProvisionerAdditionalInfo(sshAccountProvisionerAdditionalInfo);
                 em.merge(existingPreference);
             } else {
                 ComputeResourcePreference resourcePreference = new ComputeResourcePreference();
@@ -476,15 +486,17 @@ public class ComputeHostPreferenceResource extends AppCatAbstractResource {
                 resourcePreference.setReservation(reservation);
                 resourcePreference.setReservationStartTime(reservationStartTime);
                 resourcePreference.setReservationEndTime(reservationEndTime);
-                existingPreference.setSshAccountProvisioner(sshAccountProvisioner);
+                resourcePreference.setSshAccountProvisioner(sshAccountProvisioner);
                 if (sshAccountProvisionerConfigurations != null && !sshAccountProvisionerConfigurations.isEmpty()){
                     List<SSHAccountProvisionerConfiguration> configurations = new ArrayList<>();
                     for (String sshAccountProvisionerConfigName : sshAccountProvisionerConfigurations.keySet()) {
                         String value = sshAccountProvisionerConfigurations.get(sshAccountProvisionerConfigName);
-                        configurations.add(new SSHAccountProvisionerConfiguration(sshAccountProvisionerConfigName, value, existingPreference));
+                        configurations.add(new SSHAccountProvisionerConfiguration(sshAccountProvisionerConfigName, value, resourcePreference));
                     }
-                    existingPreference.setSshAccountProvisionerConfigurations(configurations);
+                    resourcePreference.setSshAccountProvisionerConfigurations(configurations);
                 }
+                resourcePreference.setSshAccountProvisionerAdditionalInfo(sshAccountProvisionerAdditionalInfo);
+
                 em.persist(resourcePreference);
             }
             em.getTransaction().commit();

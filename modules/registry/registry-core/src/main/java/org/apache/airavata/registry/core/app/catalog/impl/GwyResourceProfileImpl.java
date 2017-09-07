@@ -94,6 +94,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                         Map<String,String> sshAccountProvisionerConfigurationsCopy = new HashMap<>(preference.getSshAccountProvisionerConfig());
                         resource.setSshAccountProvisionerConfigurations(sshAccountProvisionerConfigurationsCopy);
                     }
+                    resource.setSshAccountProvisionerAdditionalInfo(preference.getSshAccountProvisionerAdditionalInfo());
                     resource.save();
                 }
             }
@@ -164,6 +165,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                         Map<String,String> sshAccountProvisionerConfigurationsCopy = new HashMap<>(preference.getSshAccountProvisionerConfig());
                         resource.setSshAccountProvisionerConfigurations(sshAccountProvisionerConfigurationsCopy);
                     }
+                    resource.setSshAccountProvisionerAdditionalInfo(preference.getSshAccountProvisionerAdditionalInfo());
                     resource.save();
                 }
             }

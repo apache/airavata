@@ -77,7 +77,8 @@ struct ComputeResourcePreference {
     13: optional i64 reservationStartTime,
     14: optional i64 reservationEndTime,
     15: optional string sshAccountProvisioner,
-    16: optional map<string, string> sshAccountProvisionerConfig
+    16: optional map<string, string> sshAccountProvisionerConfig,
+    17: optional string sshAccountProvisionerAdditionalInfo
 }
 
 struct StoragePreference {

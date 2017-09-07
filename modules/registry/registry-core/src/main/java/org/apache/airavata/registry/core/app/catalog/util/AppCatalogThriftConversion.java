@@ -880,6 +880,7 @@ public class AppCatalogThriftConversion {
             Map<String, String> sshAccountProvisionerConfigCopy = new HashMap<>(resource.getSshAccountProvisionerConfigurations());
             preference.setSshAccountProvisionerConfig(sshAccountProvisionerConfigCopy);
         }
+        preference.setSshAccountProvisionerAdditionalInfo(resource.getSshAccountProvisionerAdditionalInfo());
         return preference;
     }
 
