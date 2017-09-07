@@ -105,6 +105,7 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
   private static final org.apache.thrift.protocol.TField RESERVATION_END_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("reservationEndTime", org.apache.thrift.protocol.TType.I64, (short)14);
   private static final org.apache.thrift.protocol.TField SSH_ACCOUNT_PROVISIONER_FIELD_DESC = new org.apache.thrift.protocol.TField("sshAccountProvisioner", org.apache.thrift.protocol.TType.STRING, (short)15);
   private static final org.apache.thrift.protocol.TField SSH_ACCOUNT_PROVISIONER_CONFIG_FIELD_DESC = new org.apache.thrift.protocol.TField("sshAccountProvisionerConfig", org.apache.thrift.protocol.TType.MAP, (short)16);
+  private static final org.apache.thrift.protocol.TField SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO_FIELD_DESC = new org.apache.thrift.protocol.TField("sshAccountProvisionerAdditionalInfo", org.apache.thrift.protocol.TType.STRING, (short)17);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -128,6 +129,7 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
   private long reservationEndTime; // optional
   private String sshAccountProvisioner; // optional
   private Map<String,String> sshAccountProvisionerConfig; // optional
+  private String sshAccountProvisionerAdditionalInfo; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -154,7 +156,8 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
     RESERVATION_START_TIME((short)13, "reservationStartTime"),
     RESERVATION_END_TIME((short)14, "reservationEndTime"),
     SSH_ACCOUNT_PROVISIONER((short)15, "sshAccountProvisioner"),
-    SSH_ACCOUNT_PROVISIONER_CONFIG((short)16, "sshAccountProvisionerConfig");
+    SSH_ACCOUNT_PROVISIONER_CONFIG((short)16, "sshAccountProvisionerConfig"),
+    SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO((short)17, "sshAccountProvisionerAdditionalInfo");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -201,6 +204,8 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
           return SSH_ACCOUNT_PROVISIONER;
         case 16: // SSH_ACCOUNT_PROVISIONER_CONFIG
           return SSH_ACCOUNT_PROVISIONER_CONFIG;
+        case 17: // SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO
+          return SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO;
         default:
           return null;
       }
@@ -245,7 +250,7 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
   private static final int __RESERVATIONSTARTTIME_ISSET_ID = 1;
   private static final int __RESERVATIONENDTIME_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.LOGIN_USER_NAME,_Fields.PREFERRED_JOB_SUBMISSION_PROTOCOL,_Fields.PREFERRED_DATA_MOVEMENT_PROTOCOL,_Fields.PREFERRED_BATCH_QUEUE,_Fields.SCRATCH_LOCATION,_Fields.ALLOCATION_PROJECT_NUMBER,_Fields.RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN,_Fields.USAGE_REPORTING_GATEWAY_ID,_Fields.QUALITY_OF_SERVICE,_Fields.RESERVATION,_Fields.RESERVATION_START_TIME,_Fields.RESERVATION_END_TIME,_Fields.SSH_ACCOUNT_PROVISIONER,_Fields.SSH_ACCOUNT_PROVISIONER_CONFIG};
+  private static final _Fields optionals[] = {_Fields.LOGIN_USER_NAME,_Fields.PREFERRED_JOB_SUBMISSION_PROTOCOL,_Fields.PREFERRED_DATA_MOVEMENT_PROTOCOL,_Fields.PREFERRED_BATCH_QUEUE,_Fields.SCRATCH_LOCATION,_Fields.ALLOCATION_PROJECT_NUMBER,_Fields.RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN,_Fields.USAGE_REPORTING_GATEWAY_ID,_Fields.QUALITY_OF_SERVICE,_Fields.RESERVATION,_Fields.RESERVATION_START_TIME,_Fields.RESERVATION_END_TIME,_Fields.SSH_ACCOUNT_PROVISIONER,_Fields.SSH_ACCOUNT_PROVISIONER_CONFIG,_Fields.SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -283,6 +288,8 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
         new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING), 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+    tmpMap.put(_Fields.SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO, new org.apache.thrift.meta_data.FieldMetaData("sshAccountProvisionerAdditionalInfo", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ComputeResourcePreference.class, metaDataMap);
   }
@@ -350,6 +357,9 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
       Map<String,String> __this__sshAccountProvisionerConfig = new HashMap<String,String>(other.sshAccountProvisionerConfig);
       this.sshAccountProvisionerConfig = __this__sshAccountProvisionerConfig;
     }
+    if (other.isSetSshAccountProvisionerAdditionalInfo()) {
+      this.sshAccountProvisionerAdditionalInfo = other.sshAccountProvisionerAdditionalInfo;
+    }
   }
 
   public ComputeResourcePreference deepCopy() {
@@ -377,6 +387,7 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
     this.reservationEndTime = 0;
     this.sshAccountProvisioner = null;
     this.sshAccountProvisionerConfig = null;
+    this.sshAccountProvisionerAdditionalInfo = null;
   }
 
   public String getComputeResourceId() {
@@ -771,6 +782,29 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
     }
   }
 
+  public String getSshAccountProvisionerAdditionalInfo() {
+    return this.sshAccountProvisionerAdditionalInfo;
+  }
+
+  public void setSshAccountProvisionerAdditionalInfo(String sshAccountProvisionerAdditionalInfo) {
+    this.sshAccountProvisionerAdditionalInfo = sshAccountProvisionerAdditionalInfo;
+  }
+
+  public void unsetSshAccountProvisionerAdditionalInfo() {
+    this.sshAccountProvisionerAdditionalInfo = null;
+  }
+
+  /** Returns true if field sshAccountProvisionerAdditionalInfo is set (has been assigned a value) and false otherwise */
+  public boolean isSetSshAccountProvisionerAdditionalInfo() {
+    return this.sshAccountProvisionerAdditionalInfo != null;
+  }
+
+  public void setSshAccountProvisionerAdditionalInfoIsSet(boolean value) {
+    if (!value) {
+      this.sshAccountProvisionerAdditionalInfo = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case COMPUTE_RESOURCE_ID:
@@ -901,6 +935,14 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
       }
       break;
 
+    case SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO:
+      if (value == null) {
+        unsetSshAccountProvisionerAdditionalInfo();
+      } else {
+        setSshAccountProvisionerAdditionalInfo((String)value);
+      }
+      break;
+
     }
   }
 
@@ -954,6 +996,9 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
     case SSH_ACCOUNT_PROVISIONER_CONFIG:
       return getSshAccountProvisionerConfig();
 
+    case SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO:
+      return getSshAccountProvisionerAdditionalInfo();
+
     }
     throw new IllegalStateException();
   }
@@ -997,6 +1042,8 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
       return isSetSshAccountProvisioner();
     case SSH_ACCOUNT_PROVISIONER_CONFIG:
       return isSetSshAccountProvisionerConfig();
+    case SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO:
+      return isSetSshAccountProvisionerAdditionalInfo();
     }
     throw new IllegalStateException();
   }
@@ -1158,6 +1205,15 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
         return false;
     }
 
+    boolean this_present_sshAccountProvisionerAdditionalInfo = true && this.isSetSshAccountProvisionerAdditionalInfo();
+    boolean that_present_sshAccountProvisionerAdditionalInfo = true && that.isSetSshAccountProvisionerAdditionalInfo();
+    if (this_present_sshAccountProvisionerAdditionalInfo || that_present_sshAccountProvisionerAdditionalInfo) {
+      if (!(this_present_sshAccountProvisionerAdditionalInfo && that_present_sshAccountProvisionerAdditionalInfo))
+        return false;
+      if (!this.sshAccountProvisionerAdditionalInfo.equals(that.sshAccountProvisionerAdditionalInfo))
+        return false;
+    }
+
     return true;
   }
 
@@ -1244,6 +1300,11 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
     list.add(present_sshAccountProvisionerConfig);
     if (present_sshAccountProvisionerConfig)
       list.add(sshAccountProvisionerConfig);
+
+    boolean present_sshAccountProvisionerAdditionalInfo = true && (isSetSshAccountProvisionerAdditionalInfo());
+    list.add(present_sshAccountProvisionerAdditionalInfo);
+    if (present_sshAccountProvisionerAdditionalInfo)
+      list.add(sshAccountProvisionerAdditionalInfo);
 
     return list.hashCode();
   }
@@ -1416,6 +1477,16 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetSshAccountProvisionerAdditionalInfo()).compareTo(other.isSetSshAccountProvisionerAdditionalInfo());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetSshAccountProvisionerAdditionalInfo()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sshAccountProvisionerAdditionalInfo, other.sshAccountProvisionerAdditionalInfo);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -1576,6 +1647,16 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
         sb.append("null");
       } else {
         sb.append(this.sshAccountProvisionerConfig);
+      }
+      first = false;
+    }
+    if (isSetSshAccountProvisionerAdditionalInfo()) {
+      if (!first) sb.append(", ");
+      sb.append("sshAccountProvisionerAdditionalInfo:");
+      if (this.sshAccountProvisionerAdditionalInfo == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.sshAccountProvisionerAdditionalInfo);
       }
       first = false;
     }
@@ -1772,6 +1853,14 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 17: // SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.sshAccountProvisionerAdditionalInfo = iprot.readString();
+              struct.setSshAccountProvisionerAdditionalInfoIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1895,6 +1984,13 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
           oprot.writeFieldEnd();
         }
       }
+      if (struct.sshAccountProvisionerAdditionalInfo != null) {
+        if (struct.isSetSshAccountProvisionerAdditionalInfo()) {
+          oprot.writeFieldBegin(SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO_FIELD_DESC);
+          oprot.writeString(struct.sshAccountProvisionerAdditionalInfo);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1957,7 +2053,10 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
       if (struct.isSetSshAccountProvisionerConfig()) {
         optionals.set(13);
       }
-      oprot.writeBitSet(optionals, 14);
+      if (struct.isSetSshAccountProvisionerAdditionalInfo()) {
+        optionals.set(14);
+      }
+      oprot.writeBitSet(optionals, 15);
       if (struct.isSetLoginUserName()) {
         oprot.writeString(struct.loginUserName);
       }
@@ -2007,6 +2106,9 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
           }
         }
       }
+      if (struct.isSetSshAccountProvisionerAdditionalInfo()) {
+        oprot.writeString(struct.sshAccountProvisionerAdditionalInfo);
+      }
     }
 
     @Override
@@ -2016,7 +2118,7 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
       struct.setComputeResourceIdIsSet(true);
       struct.overridebyAiravata = iprot.readBool();
       struct.setOverridebyAiravataIsSet(true);
-      BitSet incoming = iprot.readBitSet(14);
+      BitSet incoming = iprot.readBitSet(15);
       if (incoming.get(0)) {
         struct.loginUserName = iprot.readString();
         struct.setLoginUserNameIsSet(true);
@@ -2083,6 +2185,10 @@ public class ComputeResourcePreference implements org.apache.thrift.TBase<Comput
           }
         }
         struct.setSshAccountProvisionerConfigIsSet(true);
+      }
+      if (incoming.get(14)) {
+        struct.sshAccountProvisionerAdditionalInfo = iprot.readString();
+        struct.setSshAccountProvisionerAdditionalInfoIsSet(true);
       }
     }
   }
