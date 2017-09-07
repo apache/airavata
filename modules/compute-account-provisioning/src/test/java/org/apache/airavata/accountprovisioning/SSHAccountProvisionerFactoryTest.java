@@ -27,13 +27,15 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class SSHAccountProvisionerFactoryTest {
 
     @Test
     public void testGetSSHAccountProvisionerImplementationNames() {
 
-        List<String> sshAccountProvisionerNames = SSHAccountProvisionerFactory.getSSHAccountProvisionerImplementationNames();
+        List<SSHAccountProvisionerProvider> sshAccountProvisionerProviders = SSHAccountProvisionerFactory.getSSHAccountProvisionerProviders();
+        List<String> sshAccountProvisionerNames = sshAccountProvisionerProviders.stream().map(SSHAccountProvisionerProvider::getName).collect(Collectors.toList());
         Assert.assertTrue("names should contain TestSSHAccountProvisioner", sshAccountProvisionerNames.contains("TestSSHAccountProvisioner"));
     }
 
