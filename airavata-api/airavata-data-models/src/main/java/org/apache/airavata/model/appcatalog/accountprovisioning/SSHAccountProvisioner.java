@@ -58,6 +58,7 @@ public class SSHAccountProvisioner implements org.apache.thrift.TBase<SSHAccount
   private static final org.apache.thrift.protocol.TField NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("name", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField CAN_CREATE_ACCOUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("canCreateAccount", org.apache.thrift.protocol.TType.BOOL, (short)2);
   private static final org.apache.thrift.protocol.TField CAN_INSTALL_SSHKEY_FIELD_DESC = new org.apache.thrift.protocol.TField("canInstallSSHKey", org.apache.thrift.protocol.TType.BOOL, (short)3);
+  private static final org.apache.thrift.protocol.TField CONFIG_PARAMS_FIELD_DESC = new org.apache.thrift.protocol.TField("configParams", org.apache.thrift.protocol.TType.LIST, (short)4);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -68,12 +69,14 @@ public class SSHAccountProvisioner implements org.apache.thrift.TBase<SSHAccount
   private String name; // required
   private boolean canCreateAccount; // required
   private boolean canInstallSSHKey; // required
+  private List<SSHAccountProvisionerConfigParam> configParams; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     NAME((short)1, "name"),
     CAN_CREATE_ACCOUNT((short)2, "canCreateAccount"),
-    CAN_INSTALL_SSHKEY((short)3, "canInstallSSHKey");
+    CAN_INSTALL_SSHKEY((short)3, "canInstallSSHKey"),
+    CONFIG_PARAMS((short)4, "configParams");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -94,6 +97,8 @@ public class SSHAccountProvisioner implements org.apache.thrift.TBase<SSHAccount
           return CAN_CREATE_ACCOUNT;
         case 3: // CAN_INSTALL_SSHKEY
           return CAN_INSTALL_SSHKEY;
+        case 4: // CONFIG_PARAMS
+          return CONFIG_PARAMS;
         default:
           return null;
       }
@@ -146,6 +151,9 @@ public class SSHAccountProvisioner implements org.apache.thrift.TBase<SSHAccount
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.CAN_INSTALL_SSHKEY, new org.apache.thrift.meta_data.FieldMetaData("canInstallSSHKey", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+    tmpMap.put(_Fields.CONFIG_PARAMS, new org.apache.thrift.meta_data.FieldMetaData("configParams", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, SSHAccountProvisionerConfigParam.class))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(SSHAccountProvisioner.class, metaDataMap);
   }
@@ -156,7 +164,8 @@ public class SSHAccountProvisioner implements org.apache.thrift.TBase<SSHAccount
   public SSHAccountProvisioner(
     String name,
     boolean canCreateAccount,
-    boolean canInstallSSHKey)
+    boolean canInstallSSHKey,
+    List<SSHAccountProvisionerConfigParam> configParams)
   {
     this();
     this.name = name;
@@ -164,6 +173,7 @@ public class SSHAccountProvisioner implements org.apache.thrift.TBase<SSHAccount
     setCanCreateAccountIsSet(true);
     this.canInstallSSHKey = canInstallSSHKey;
     setCanInstallSSHKeyIsSet(true);
+    this.configParams = configParams;
   }
 
   /**
@@ -176,6 +186,13 @@ public class SSHAccountProvisioner implements org.apache.thrift.TBase<SSHAccount
     }
     this.canCreateAccount = other.canCreateAccount;
     this.canInstallSSHKey = other.canInstallSSHKey;
+    if (other.isSetConfigParams()) {
+      List<SSHAccountProvisionerConfigParam> __this__configParams = new ArrayList<SSHAccountProvisionerConfigParam>(other.configParams.size());
+      for (SSHAccountProvisionerConfigParam other_element : other.configParams) {
+        __this__configParams.add(new SSHAccountProvisionerConfigParam(other_element));
+      }
+      this.configParams = __this__configParams;
+    }
   }
 
   public SSHAccountProvisioner deepCopy() {
@@ -189,6 +206,7 @@ public class SSHAccountProvisioner implements org.apache.thrift.TBase<SSHAccount
     this.canCreateAccount = false;
     setCanInstallSSHKeyIsSet(false);
     this.canInstallSSHKey = false;
+    this.configParams = null;
   }
 
   public String getName() {
@@ -258,6 +276,44 @@ public class SSHAccountProvisioner implements org.apache.thrift.TBase<SSHAccount
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __CANINSTALLSSHKEY_ISSET_ID, value);
   }
 
+  public int getConfigParamsSize() {
+    return (this.configParams == null) ? 0 : this.configParams.size();
+  }
+
+  public java.util.Iterator<SSHAccountProvisionerConfigParam> getConfigParamsIterator() {
+    return (this.configParams == null) ? null : this.configParams.iterator();
+  }
+
+  public void addToConfigParams(SSHAccountProvisionerConfigParam elem) {
+    if (this.configParams == null) {
+      this.configParams = new ArrayList<SSHAccountProvisionerConfigParam>();
+    }
+    this.configParams.add(elem);
+  }
+
+  public List<SSHAccountProvisionerConfigParam> getConfigParams() {
+    return this.configParams;
+  }
+
+  public void setConfigParams(List<SSHAccountProvisionerConfigParam> configParams) {
+    this.configParams = configParams;
+  }
+
+  public void unsetConfigParams() {
+    this.configParams = null;
+  }
+
+  /** Returns true if field configParams is set (has been assigned a value) and false otherwise */
+  public boolean isSetConfigParams() {
+    return this.configParams != null;
+  }
+
+  public void setConfigParamsIsSet(boolean value) {
+    if (!value) {
+      this.configParams = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case NAME:
@@ -284,6 +340,14 @@ public class SSHAccountProvisioner implements org.apache.thrift.TBase<SSHAccount
       }
       break;
 
+    case CONFIG_PARAMS:
+      if (value == null) {
+        unsetConfigParams();
+      } else {
+        setConfigParams((List<SSHAccountProvisionerConfigParam>)value);
+      }
+      break;
+
     }
   }
 
@@ -297,6 +361,9 @@ public class SSHAccountProvisioner implements org.apache.thrift.TBase<SSHAccount
 
     case CAN_INSTALL_SSHKEY:
       return isCanInstallSSHKey();
+
+    case CONFIG_PARAMS:
+      return getConfigParams();
 
     }
     throw new IllegalStateException();
@@ -315,6 +382,8 @@ public class SSHAccountProvisioner implements org.apache.thrift.TBase<SSHAccount
       return isSetCanCreateAccount();
     case CAN_INSTALL_SSHKEY:
       return isSetCanInstallSSHKey();
+    case CONFIG_PARAMS:
+      return isSetConfigParams();
     }
     throw new IllegalStateException();
   }
@@ -359,6 +428,15 @@ public class SSHAccountProvisioner implements org.apache.thrift.TBase<SSHAccount
         return false;
     }
 
+    boolean this_present_configParams = true && this.isSetConfigParams();
+    boolean that_present_configParams = true && that.isSetConfigParams();
+    if (this_present_configParams || that_present_configParams) {
+      if (!(this_present_configParams && that_present_configParams))
+        return false;
+      if (!this.configParams.equals(that.configParams))
+        return false;
+    }
+
     return true;
   }
 
@@ -380,6 +458,11 @@ public class SSHAccountProvisioner implements org.apache.thrift.TBase<SSHAccount
     list.add(present_canInstallSSHKey);
     if (present_canInstallSSHKey)
       list.add(canInstallSSHKey);
+
+    boolean present_configParams = true && (isSetConfigParams());
+    list.add(present_configParams);
+    if (present_configParams)
+      list.add(configParams);
 
     return list.hashCode();
   }
@@ -422,6 +505,16 @@ public class SSHAccountProvisioner implements org.apache.thrift.TBase<SSHAccount
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetConfigParams()).compareTo(other.isSetConfigParams());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetConfigParams()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.configParams, other.configParams);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -457,6 +550,14 @@ public class SSHAccountProvisioner implements org.apache.thrift.TBase<SSHAccount
     sb.append("canInstallSSHKey:");
     sb.append(this.canInstallSSHKey);
     first = false;
+    if (!first) sb.append(", ");
+    sb.append("configParams:");
+    if (this.configParams == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.configParams);
+    }
+    first = false;
     sb.append(")");
     return sb.toString();
   }
@@ -473,6 +574,10 @@ public class SSHAccountProvisioner implements org.apache.thrift.TBase<SSHAccount
 
     if (!isSetCanInstallSSHKey()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'canInstallSSHKey' is unset! Struct:" + toString());
+    }
+
+    if (!isSetConfigParams()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'configParams' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -538,6 +643,25 @@ public class SSHAccountProvisioner implements org.apache.thrift.TBase<SSHAccount
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 4: // CONFIG_PARAMS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
+                struct.configParams = new ArrayList<SSHAccountProvisionerConfigParam>(_list0.size);
+                SSHAccountProvisionerConfigParam _elem1;
+                for (int _i2 = 0; _i2 < _list0.size; ++_i2)
+                {
+                  _elem1 = new SSHAccountProvisionerConfigParam();
+                  _elem1.read(iprot);
+                  struct.configParams.add(_elem1);
+                }
+                iprot.readListEnd();
+              }
+              struct.setConfigParamsIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -562,6 +686,18 @@ public class SSHAccountProvisioner implements org.apache.thrift.TBase<SSHAccount
       oprot.writeFieldBegin(CAN_INSTALL_SSHKEY_FIELD_DESC);
       oprot.writeBool(struct.canInstallSSHKey);
       oprot.writeFieldEnd();
+      if (struct.configParams != null) {
+        oprot.writeFieldBegin(CONFIG_PARAMS_FIELD_DESC);
+        {
+          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.configParams.size()));
+          for (SSHAccountProvisionerConfigParam _iter3 : struct.configParams)
+          {
+            _iter3.write(oprot);
+          }
+          oprot.writeListEnd();
+        }
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -582,6 +718,13 @@ public class SSHAccountProvisioner implements org.apache.thrift.TBase<SSHAccount
       oprot.writeString(struct.name);
       oprot.writeBool(struct.canCreateAccount);
       oprot.writeBool(struct.canInstallSSHKey);
+      {
+        oprot.writeI32(struct.configParams.size());
+        for (SSHAccountProvisionerConfigParam _iter4 : struct.configParams)
+        {
+          _iter4.write(oprot);
+        }
+      }
     }
 
     @Override
@@ -593,6 +736,18 @@ public class SSHAccountProvisioner implements org.apache.thrift.TBase<SSHAccount
       struct.setCanCreateAccountIsSet(true);
       struct.canInstallSSHKey = iprot.readBool();
       struct.setCanInstallSSHKeyIsSet(true);
+      {
+        org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+        struct.configParams = new ArrayList<SSHAccountProvisionerConfigParam>(_list5.size);
+        SSHAccountProvisionerConfigParam _elem6;
+        for (int _i7 = 0; _i7 < _list5.size; ++_i7)
+        {
+          _elem6 = new SSHAccountProvisionerConfigParam();
+          _elem6.read(iprot);
+          struct.configParams.add(_elem6);
+        }
+      }
+      struct.setConfigParamsIsSet(true);
     }
   }
 
