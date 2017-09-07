@@ -2950,13 +2950,7 @@ service Airavata {
               3: airavata_errors.AiravataSystemException ase,
               4: airavata_errors.AuthorizationException ae)
 
-  list<account_provisioning_model.SSHAccountProvisioner> getSSHAccountProvisionerNames(1: required security_model.AuthzToken authzToken)
-    	throws (1: airavata_errors.InvalidRequestException ire,
-              2: airavata_errors.AiravataClientException ace,
-              3: airavata_errors.AiravataSystemException ase,
-              4: airavata_errors.AuthorizationException ae)
-
-  list<account_provisioning_model.SSHAccountProvisionerConfigParam> getSSHAccountProvisionerConfigParams(1: required security_model.AuthzToken authzToken, 2: required string provisionerName)
+  list<account_provisioning_model.SSHAccountProvisioner> getSSHAccountProvisioners(1: required security_model.AuthzToken authzToken)
     	throws (1: airavata_errors.InvalidRequestException ire,
               2: airavata_errors.AiravataClientException ace,
               3: airavata_errors.AiravataSystemException ase,
@@ -2966,7 +2960,7 @@ service Airavata {
    * Check if user has an SSH account on the given compute resource. This
    * method will only work if the compute resource has an SSHAccountProvisioner configured for it.
    */
-  bool doesUserHaveSSHAccount(1: required security_model.AuthzToken authzToken, 2: required string computeResourceId, 3: required string username)
+  bool doesUserHaveSSHAccount(1: required security_model.AuthzToken authzToken, 2: required string computeResourceId, 3: required string userId)
     	throws (1: airavata_errors.InvalidRequestException ire,
               2: airavata_errors.AiravataClientException ace,
               3: airavata_errors.AiravataSystemException ase,
@@ -2979,7 +2973,7 @@ service Airavata {
    * call addUserComputeResourcePreference to persist it.
    */
   user_resource_profile_model.UserComputeResourcePreference setupUserComputeResourcePreferencesForSSH(1: required security_model.AuthzToken authzToken,
-            2: required string computeResourceId, 3: required string username, 4: required string airavataCredStoreToken)
+            2: required string computeResourceId, 3: required string userId, 4: required string airavataCredStoreToken)
     	throws (1: airavata_errors.InvalidRequestException ire,
               2: airavata_errors.AiravataClientException ace,
               3: airavata_errors.AiravataSystemException ase,

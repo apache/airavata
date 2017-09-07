@@ -29,17 +29,19 @@ public class SSHAccountProvisionerFactory {
 
     private static ServiceLoader<SSHAccountProvisionerProvider> sshAccountProvisionerProviders = ServiceLoader.load(SSHAccountProvisionerProvider.class);
 
-    public static List<String> getSSHAccountProvisionerImplementationNames() {
-        List<String> names = new ArrayList<>();
-        for (SSHAccountProvisionerProvider sshAccountProvisionerProvider : sshAccountProvisionerProviders ) {
-            names.add(sshAccountProvisionerProvider.getName());
-        }
-        return names;
+    public static List<SSHAccountProvisionerProvider> getSSHAccountProvisionerProviders() {
+        List<SSHAccountProvisionerProvider> providers = new ArrayList<>();
+        sshAccountProvisionerProviders.forEach(providers::add);
+        return providers;
     }
 
     public static List<ConfigParam> getSSHAccountProvisionerConfigParams(String provisionerName) {
 
         return getSSHAccountProvisionerProvider(provisionerName).getConfigParams();
+    }
+
+    public static boolean canCreateAccount(String provisionerName) {
+        return getSSHAccountProvisionerProvider(provisionerName).canCreateAccount();
     }
 
     public static SSHAccountProvisioner createSSHAccountProvisioner(String provisionerName, Map<ConfigParam, String> config) {

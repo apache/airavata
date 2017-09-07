@@ -41,18 +41,8 @@ public class TestSSHAccountProvisioner implements SSHAccountProvisioner {
     }
 
     @Override
-    public boolean canCreateAccount() {
-        return false;
-    }
-
-    @Override
     public void createAccount(String username, String sshPublicKey) {
 
-    }
-
-    @Override
-    public boolean canInstallSSHKey() {
-        return false;
     }
 
     @Override

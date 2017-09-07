@@ -63,4 +63,14 @@ public class TestSSHAccountProvisionerProvider implements SSHAccountProvisionerP
         sshAccountProvisioner.init(config);
         return sshAccountProvisioner;
     }
+
+    @Override
+    public boolean canCreateAccount() {
+        return false;
+    }
+
+    @Override
+    public boolean canInstallSSHKey() {
+        return true;
+    }
 }

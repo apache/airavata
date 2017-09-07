@@ -19,7 +19,10 @@
  */
 package org.apache.airavata.api.server.handler;
 
+import org.apache.airavata.accountprovisioning.ConfigParam;
 import org.apache.airavata.accountprovisioning.SSHAccountManager;
+import org.apache.airavata.accountprovisioning.SSHAccountProvisionerFactory;
+import org.apache.airavata.accountprovisioning.SSHAccountProvisionerProvider;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavata_apiConstants;
 import org.apache.airavata.api.server.util.ThriftClientPool;
@@ -38,6 +41,7 @@ import org.apache.airavata.messaging.core.Type;
 import org.apache.airavata.model.WorkflowModel;
 import org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisioner;
 import org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam;
+import org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParamType;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
@@ -3969,30 +3973,48 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public List<SSHAccountProvisioner> getSSHAccountProvisionerNames(AuthzToken authzToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public List<SSHAccountProvisioner> getSSHAccountProvisioners(AuthzToken authzToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 
-        // TODO: implement
-        return null;
+        List<SSHAccountProvisioner> sshAccountProvisioners = new ArrayList<>();
+        List<SSHAccountProvisionerProvider> sshAccountProvisionerProviders = SSHAccountProvisionerFactory.getSSHAccountProvisionerProviders();
+        for (SSHAccountProvisionerProvider provider : sshAccountProvisionerProviders) {
+            // TODO: Move this Thrift conversion to utility class
+            SSHAccountProvisioner sshAccountProvisioner = new SSHAccountProvisioner();
+            sshAccountProvisioner.setCanCreateAccount(provider.canCreateAccount());
+            sshAccountProvisioner.setCanInstallSSHKey(provider.canInstallSSHKey());
+            sshAccountProvisioner.setName(provider.getName());
+            List<SSHAccountProvisionerConfigParam> sshAccountProvisionerConfigParams = new ArrayList<>();
+            for (ConfigParam configParam : provider.getConfigParams()) {
+                SSHAccountProvisionerConfigParam sshAccountProvisionerConfigParam = new SSHAccountProvisionerConfigParam();
+                sshAccountProvisionerConfigParam.setName(configParam.getName());
+                sshAccountProvisionerConfigParam.setDescription(configParam.getDescription());
+                sshAccountProvisionerConfigParam.setIsOptional(configParam.isOptional());
+                switch (configParam.getType()){
+                    case STRING:
+                        sshAccountProvisionerConfigParam.setType(SSHAccountProvisionerConfigParamType.STRING);
+                        break;
+                    case CRED_STORE_PASSWORD_TOKEN:
+                        sshAccountProvisionerConfigParam.setType(SSHAccountProvisionerConfigParamType.CRED_STORE_PASSWORD_TOKEN);
+                        break;
+                }
+                sshAccountProvisionerConfigParams.add(sshAccountProvisionerConfigParam);
+            }
+            sshAccountProvisioner.setConfigParams(sshAccountProvisionerConfigParams);
+            sshAccountProvisioners.add(sshAccountProvisioner);
+        }
+        return sshAccountProvisioners;
     }
 
     @Override
     @SecurityCheck
-    public List<SSHAccountProvisionerConfigParam> getSSHAccountProvisionerConfigParams(AuthzToken authzToken, String provisionerName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-
-        // TODO: implement
-        return null;
-    }
-
-    @Override
-    @SecurityCheck
-    public boolean doesUserHaveSSHAccount(AuthzToken authzToken, String computeResourceId, String username) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public boolean doesUserHaveSSHAccount(AuthzToken authzToken, String computeResourceId, String userId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        return SSHAccountManager.doesUserHaveSSHAccount(gatewayId, computeResourceId, username);
+        return SSHAccountManager.doesUserHaveSSHAccount(gatewayId, computeResourceId, userId);
     }
 
     @Override
     @SecurityCheck
-    public UserComputeResourcePreference setupUserComputeResourcePreferencesForSSH(AuthzToken authzToken, String computeResourceId, String username, String airavataCredStoreToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public UserComputeResourcePreference setupUserComputeResourcePreferencesForSSH(AuthzToken authzToken, String computeResourceId, String userId, String airavataCredStoreToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
         CredentialStoreService.Client csClient = csClientPool.getResource();
         SSHCredential sshCredential = null;
@@ -4008,13 +4030,13 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
 
         try {
-            UserComputeResourcePreference userComputeResourcePreference = SSHAccountManager.setupSSHAccount(gatewayId, computeResourceId, username, sshCredential);
+            UserComputeResourcePreference userComputeResourcePreference = SSHAccountManager.setupSSHAccount(gatewayId, computeResourceId, userId, sshCredential);
             return userComputeResourcePreference;
         }catch (Exception e){
-            logger.error("Error occurred while automatically setting up SSH account for user [" + username + "]", e);
+            logger.error("Error occurred while automatically setting up SSH account for user [" + userId + "]", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error occurred while automatically setting up SSH account for user [" + username + "]. More info : " + e.getMessage());
+            exception.setMessage("Error occurred while automatically setting up SSH account for user [" + userId + "]. More info : " + e.getMessage());
             throw exception;
         }
     }
