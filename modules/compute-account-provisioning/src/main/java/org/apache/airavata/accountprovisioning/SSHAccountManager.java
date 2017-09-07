@@ -165,7 +165,7 @@ public class SSHAccountManager {
                         PasswordCredential password = credentialStoreServiceClient.getPasswordCredential(configEntry.getValue(), gatewayId);
                         resolvedConfig.put(configEntry.getKey(), password.getPassword());
                     } catch (TException e) {
-                        throw new RuntimeException("Failed to get password needed to configure " + provisionerName);
+                        throw new RuntimeException("Failed to get password needed to configure " + provisionerName, e);
                     }
                 } else {
                     resolvedConfig.put(configEntry.getKey(), configEntry.getValue());
@@ -182,6 +182,8 @@ public class SSHAccountManager {
     }
 
     private static Map<ConfigParam, String> convertConfigParams(String provisionerName, Map<String, String> thriftConfigParams) {
+        // TODO: also check that all required parameters are present?
+        // TODO: also, this doesn't handle optional entries which should be skipped if missing from thriftConfigParams
         List<ConfigParam> configParams = SSHAccountProvisionerFactory.getSSHAccountProvisionerConfigParams(provisionerName);
         Map<String, ConfigParam> configParamMap = configParams.stream().collect(Collectors.toMap(ConfigParam::getName, Function.identity()));
 
@@ -204,7 +206,7 @@ public class SSHAccountManager {
         try {
             String credServerHost = ServerSettings.getCredentialStoreServerHost();
             int credServerPort = Integer.valueOf(ServerSettings.getCredentialStoreServerPort());
-            return CredentialStoreClientFactory.createAiravataCSClient(null, 0);
+            return CredentialStoreClientFactory.createAiravataCSClient(credServerHost, credServerPort);
         } catch (CredentialStoreException | ApplicationSettingsException e) {
             throw new RuntimeException("Failed to create credential store service client", e);
         }
