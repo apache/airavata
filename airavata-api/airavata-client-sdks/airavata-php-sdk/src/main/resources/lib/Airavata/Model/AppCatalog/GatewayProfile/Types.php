@@ -118,6 +118,10 @@ class ComputeResourcePreference {
    * @var array
    */
   public $sshAccountProvisionerConfig = null;
+  /**
+   * @var string
+   */
+  public $sshAccountProvisionerAdditionalInfo = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -194,6 +198,10 @@ class ComputeResourcePreference {
             'type' => TType::STRING,
             ),
           ),
+        17 => array(
+          'var' => 'sshAccountProvisionerAdditionalInfo',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -244,6 +252,9 @@ class ComputeResourcePreference {
       }
       if (isset($vals['sshAccountProvisionerConfig'])) {
         $this->sshAccountProvisionerConfig = $vals['sshAccountProvisionerConfig'];
+      }
+      if (isset($vals['sshAccountProvisionerAdditionalInfo'])) {
+        $this->sshAccountProvisionerAdditionalInfo = $vals['sshAccountProvisionerAdditionalInfo'];
       }
     }
   }
@@ -392,6 +403,13 @@ class ComputeResourcePreference {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 17:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->sshAccountProvisionerAdditionalInfo);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -496,6 +514,11 @@ class ComputeResourcePreference {
         }
         $output->writeMapEnd();
       }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->sshAccountProvisionerAdditionalInfo !== null) {
+      $xfer += $output->writeFieldBegin('sshAccountProvisionerAdditionalInfo', TType::STRING, 17);
+      $xfer += $output->writeString($this->sshAccountProvisionerAdditionalInfo);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
