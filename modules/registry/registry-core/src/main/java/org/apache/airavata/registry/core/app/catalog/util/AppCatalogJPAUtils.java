@@ -965,6 +965,7 @@ public class AppCatalogJPAUtils {
                 }
                 resource.setSshAccountProvisionerConfigurations(sshAccountProvisionerConfigurations);
             }
+            resource.setSshAccountProvisionerAdditionalInfo(o.getSshAccountProvisionerAdditionalInfo());
         }
         return resource;
     }

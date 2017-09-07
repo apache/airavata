@@ -62,6 +62,8 @@ public class ComputeResourcePreference {
     private Timestamp reservationEndTime;
     @Column(name = "SSH_ACCOUNT_PROVISIONER")
     private String sshAccountProvisioner;
+    @Column(name = "SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO")
+    private String sshAccountProvisionerAdditionalInfo;
 
 
     @ManyToOne(cascade= CascadeType.MERGE)
@@ -226,5 +228,13 @@ public class ComputeResourcePreference {
 
     public void setSshAccountProvisionerConfigurations(Collection<SSHAccountProvisionerConfiguration> sshAccountProvisionerConfigurations) {
         this.sshAccountProvisionerConfigurations = sshAccountProvisionerConfigurations;
+    }
+
+    public String getSshAccountProvisionerAdditionalInfo() {
+        return sshAccountProvisionerAdditionalInfo;
+    }
+
+    public void setSshAccountProvisionerAdditionalInfo(String sshAccountProvisionerAdditionalInfo) {
+        this.sshAccountProvisionerAdditionalInfo = sshAccountProvisionerAdditionalInfo;
     }
 }
