@@ -25,10 +25,8 @@ import java.util.Map;
 public interface SSHAccountProvisioner {
 
     void init(Map<ConfigParam, String> config);
-    boolean hasAccount(String username);
-    boolean canCreateAccount();
-    void createAccount(String username, String sshPublicKey);
-    boolean canInstallSSHKey();
-    void installSSHKey(String username, String sshPublicKey);
-    String getScratchLocation(String username);
+    boolean hasAccount(String userId);
+    void createAccount(String userId, String sshPublicKey);
+    void installSSHKey(String userId, String sshPublicKey);
+    String getScratchLocation(String userId);
 }

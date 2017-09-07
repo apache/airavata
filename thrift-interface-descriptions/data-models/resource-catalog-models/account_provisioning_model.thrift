@@ -28,15 +28,17 @@ enum SSHAccountProvisionerConfigParamType {
     CRED_STORE_PASSWORD_TOKEN
 }
 
-struct SSHAccountProvisioner {
-    1: required string name;
-    2: required bool canCreateAccount;
-    3: required bool canInstallSSHKey;
-}
 
 struct SSHAccountProvisionerConfigParam {
     1: required string name;
     2: required SSHAccountProvisionerConfigParamType type = SSHAccountProvisionerConfigParamType.STRING;
     3: required bool isOptional = false;
     4: optional string description;
+}
+
+struct SSHAccountProvisioner {
+    1: required string name;
+    2: required bool canCreateAccount;
+    3: required bool canInstallSSHKey;
+    4: required list<SSHAccountProvisionerConfigParam> configParams;
 }

@@ -110,11 +110,12 @@ public class SSHAccountManager {
 
         // instantiate and init the account provisioner
         SSHAccountProvisioner sshAccountProvisioner = createSshAccountProvisioner(gatewayId, computeResourcePreference);
+        boolean canCreateAccount = SSHAccountProvisionerFactory.canCreateAccount(computeResourcePreference.getSshAccountProvisioner());
 
         // First check if username has an account
         boolean hasAccount = sshAccountProvisioner.hasAccount(username);
 
-        if (!hasAccount && !sshAccountProvisioner.canCreateAccount()) {
+        if (!hasAccount && !canCreateAccount) {
             throw new RuntimeException("User [" + username + "] doesn't have account and [" + computeResourceId + "] doesn't have a SSH Account Provisioner that supports creating accounts.");
         }
 

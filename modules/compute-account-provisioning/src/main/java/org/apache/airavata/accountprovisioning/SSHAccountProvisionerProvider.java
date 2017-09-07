@@ -34,5 +34,6 @@ public interface SSHAccountProvisionerProvider {
     }
     List<ConfigParam> getConfigParams();
     SSHAccountProvisioner createSSHAccountProvisioner(Map<ConfigParam,String> config);
-    // TODO: should canCreateAccount and canInstallSSHKey move here? All metadata about provisioner could be on this class
+    boolean canCreateAccount();
+    boolean canInstallSSHKey();
 }

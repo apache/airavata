@@ -24,6 +24,7 @@ import org.apache.airavata.accountprovisioning.ConfigParam;
 import org.apache.airavata.accountprovisioning.SSHAccountProvisioner;
 import org.apache.airavata.accountprovisioning.SSHAccountProvisionerProvider;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -31,8 +32,24 @@ public class IULdapSSHAccountProvisionerProvider implements SSHAccountProvisione
 
     @Override
     public List<ConfigParam> getConfigParams() {
-        // TODO: implement
-        return null;
+        List<ConfigParam> configParams = new ArrayList<>();
+        configParams.add(new ConfigParam("ldap-host")
+                .setDescription("Hostname of LDAP server")
+                .setOptional(false)
+                .setType(ConfigParam.ConfigParamType.STRING));
+        configParams.add(new ConfigParam("ldap-port")
+                .setDescription("Port of LDAP server")
+                .setOptional(false)
+                .setType(ConfigParam.ConfigParamType.STRING));
+        configParams.add(new ConfigParam("ldap-username")
+                .setDescription("Username for LDAP server")
+                .setOptional(false)
+                .setType(ConfigParam.ConfigParamType.STRING));
+        configParams.add(new ConfigParam("ldap-password")
+                .setDescription("Password for LDAP server")
+                .setOptional(false)
+                .setType(ConfigParam.ConfigParamType.CRED_STORE_PASSWORD_TOKEN));
+        return configParams;
     }
 
     @Override
@@ -40,5 +57,15 @@ public class IULdapSSHAccountProvisionerProvider implements SSHAccountProvisione
         SSHAccountProvisioner sshAccountProvisioner = new IULdapSSHAccountProvisioner();
         sshAccountProvisioner.init(config);
         return sshAccountProvisioner;
+    }
+
+    @Override
+    public boolean canCreateAccount() {
+        return false;
+    }
+
+    @Override
+    public boolean canInstallSSHKey() {
+        return true;
     }
 }

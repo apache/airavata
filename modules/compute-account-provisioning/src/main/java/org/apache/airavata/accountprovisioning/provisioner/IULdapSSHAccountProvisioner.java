@@ -40,19 +40,9 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner {
     }
 
     @Override
-    public boolean canCreateAccount() {
-        return false;
-    }
-
-    @Override
     public void createAccount(String username, String sshPublicKey) {
 
         throw new UnsupportedOperationException("IULdapSSHAccountProvisioner does not support creating cluster accounts at this time.");
-    }
-
-    @Override
-    public boolean canInstallSSHKey() {
-        return true;
     }
 
     @Override
