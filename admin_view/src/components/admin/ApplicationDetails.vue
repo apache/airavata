@@ -31,23 +31,7 @@
 
 </script>
 <style>
-  .entry{
-    margin-top:20px;
-    display: block;
 
-  }
-
-  .entry .heading{
-    font-size:1.0em;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
-
-  .entry input,textarea{
-    width: 100%;
-    border-radius: 2px;
-    border: solid #dddddd 1px;;
-  }
 
   .btns{
     margin-top:50px;
@@ -82,4 +66,6 @@
     color:  #007BFF;
     background-color: white;
   }
+
+
 </style>

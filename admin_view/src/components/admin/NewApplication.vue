@@ -49,6 +49,7 @@
 <style>
   .new_app {
     margin: 45px;
+    width: 70%;
   }
 
   .main {
@@ -96,11 +97,7 @@
     width: 100%;
   }
 
-  .main_section {
-    width: 100%;
-    display: block;
-    margin-top: 50px;
-  }
+
 
 
 </style>
