@@ -1,7 +1,7 @@
 <template>
-  <div class="entry">
+  <div class="boolean-selector-main">
     <div class="boolean-selector-heading">{{heading}}</div>
-    <div class="boolean-selctors">
+    <div class="boolean-selector">
       <div>
         <input type="radio" v-bind:checked="val" v-on:click="val=!val;"/>
         <label>True</label>
@@ -31,17 +31,20 @@
   }
 </script>
 <style>
-  .boolean-selctors{
+  .boolean-selector-main{
+    display: block;
+  }
+  .boolean-selector{
     display: flex;
     font-weight: 100;
   }
 
-  .boolean-selctors div{
+  .boolean-selector div{
     display: flex;
     margin-right: 25px;
   }
 
-  .boolean-selctors div label{
+  .boolean-selector div label{
     margin-left: 10px;
     text-align: center;
     font-weight: bold;

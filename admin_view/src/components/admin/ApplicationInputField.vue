@@ -17,7 +17,13 @@
       <div class="heading">Application argument</div>
       <input type="text"/>
     </div>
-    <boolean-radio-button v-bind:heading="'Data is staged'"></boolean-radio-button>
+    <div class="entry boolean-selectors">
+      <boolean-radio-button v-bind:heading="'Data is staged'"></boolean-radio-button>
+      <boolean-radio-button v-bind:heading="'Required'"></boolean-radio-button>
+    </div>
+    <div class="entry boolean-selectors">
+      <boolean-radio-button v-bind:heading="'Required on command line'"></boolean-radio-button>
+    </div>
   </div>
 </template>
 <script>
@@ -26,7 +32,8 @@
     components:{
       BooleanRadioButton
     },
-    methods:{}
+    methods:{},
+    props:['data']
   }
 </script>
 
@@ -49,6 +56,14 @@
     margin-bottom: 40px;
     margin-left:15px;
     margin-right: 15px;
+  }
+
+  .entry.boolean-selectors{
+    display: flex;
+  }
+
+  .entry.boolean-selectors div{
+    margin-right: 60px;
   }
 
 
