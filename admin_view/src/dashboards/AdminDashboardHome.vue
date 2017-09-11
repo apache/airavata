@@ -71,7 +71,7 @@
     float: right;
     padding-right: 15px;
     padding-left: 15px;
-    padding-bottom: 3px;
+    padding-bottom: 8px;
     padding-top: 3px;
   }
 
