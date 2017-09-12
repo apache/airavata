@@ -28,13 +28,26 @@ class ProjectList(APIView):
         projects = request.airavata_client.getUserProjects(request.authz_token, gateway_id, username, -1, 0)
         serializer = serializers.ProjectSerializer(projects, many=True, context={'request': request})
         return Response(serializer.data)
-    # TODO: add project creation
+
+    def post(self, request, format=None):
+        gateway_id = settings.GATEWAY_ID
+        username = request.user.username
+        serializer = serializers.ProjectSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            project = serializer.create(serializer.validated_data)
+            project_id = request.airavata_client.createProject(request.authz_token, gateway_id, project)
+            project.projectID = project_id
+            serializer = serializers.ProjectSerializer(project, context={'request': request})
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ProjectDetail(APIView):
     def get(self, request, project_id, format=None):
         gateway_id = settings.GATEWAY_ID
         username = request.user.username
 
+        print(project_id)
         project = request.airavata_client.getProject(request.authz_token, project_id)
         serializer = serializers.ProjectSerializer(project, context={'request': request})
         return Response(serializer.data)
