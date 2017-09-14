@@ -1,14 +1,15 @@
 
 from . import serializers
 
-from rest_framework import status
+from rest_framework import status, mixins
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
+from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 from django.conf import settings
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
@@ -16,42 +17,87 @@ from django.views.decorators.csrf import csrf_exempt
 @api_view(['GET'])
 def api_root(request, format=None):
     return Response({
-        'projects': reverse('api_project_list', request=request, format=format),
+        'projects': reverse('project-list', request=request, format=format),
         'experiments': reverse('api_experiment_list', request=request, format=format)
     })
 
-class ProjectList(APIView):
-    def get(self, request, format=None):
-        gateway_id = settings.GATEWAY_ID
-        username = request.user.username
+class GenericAPIBackedViewSet(GenericViewSet):
 
-        projects = request.airavata_client.getUserProjects(request.authz_token, gateway_id, username, -1, 0)
-        serializer = serializers.ProjectSerializer(projects, many=True, context={'request': request})
-        return Response(serializer.data)
+    def get_list(self):
+        """
+        Subclasses must implement.
+        """
+        raise NotImplementedError()
 
-    def post(self, request, format=None):
-        gateway_id = settings.GATEWAY_ID
-        username = request.user.username
-        serializer = serializers.ProjectSerializer(data=request.data, context={'request': request})
-        if serializer.is_valid():
-            project = serializer.create(serializer.validated_data)
-            project_id = request.airavata_client.createProject(request.authz_token, gateway_id, project)
-            project.projectID = project_id
-            serializer = serializers.ProjectSerializer(project, context={'request': request})
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def get_instance(self, lookup_value):
+        """
+        Subclasses must implement.
+        """
+        raise NotImplementedError()
 
-class ProjectDetail(APIView):
-    def get(self, request, project_id, format=None):
-        gateway_id = settings.GATEWAY_ID
-        username = request.user.username
+    def get_queryset(self):
+        return self.get_list()
 
-        print(project_id)
-        project = request.airavata_client.getProject(request.authz_token, project_id)
-        serializer = serializers.ProjectSerializer(project, context={'request': request})
-        return Response(serializer.data)
-    # TODO: add project update (PUT)
+    def get_object(self):
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+        lookup_value = self.kwargs[lookup_url_kwarg]
+        inst = self.get_instance(lookup_value)
+        if inst is None:
+            raise Http404
+        self.check_object_permissions(self.request, inst)
+        return inst
+
+    @property
+    def username(self):
+        return self.request.user.username
+
+    @property
+    def gateway_id(self):
+        return settings.GATEWAY_ID
+
+    @property
+    def authz_token(self):
+        return self.request.authz_token
+
+class CreateUpdateRetrieveListViewSet(mixins.CreateModelMixin,
+                                      mixins.RetrieveModelMixin,
+                                      mixins.UpdateModelMixin,
+                                      mixins.DestroyModelMixin,
+                                      mixins.ListModelMixin,
+                                      GenericAPIBackedViewSet):
+    """
+    A viewset that provides default `create()`, `retrieve()`, `update()`,
+    `partial_update()` and `list()` actions.
+
+    Subclasses must implement the following:
+    * get_list(self)
+    * get_instance(self, lookup_value)
+    * perform_create(self, serializer) - should return instance with id populated
+    * perform_update(self, serializer)
+    """
+    pass
+
+
+class ProjectViewSet(CreateUpdateRetrieveListViewSet):
+
+    serializer_class = serializers.ProjectSerializer
+
+    def get_list(self):
+        # TODO: support pagination
+        return self.request.airavata_client.getUserProjects(self.authz_token, self.gateway_id, self.username, -1, 0)
+
+    def get_instance(self, lookup_value):
+        return self.request.airavata_client.getProject(self.authz_token, lookup_value)
+
+    def perform_create(self, serializer):
+        project = serializer.save()
+        project_id = self.request.airavata_client.createProject(self.authz_token, self.gateway_id, project)
+        project.projectID = project_id
+
+    def perform_update(self, serializer):
+        project = serializer.save()
+        self.request.airavata_client.updateProject(self.authz_token, project.projectID, project)
+
 
 class ExperimentList(APIView):
     def get(self, request, format=None):

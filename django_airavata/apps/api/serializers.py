@@ -42,6 +42,7 @@ class GatewayIdDefaultField(serializers.CharField):
         self.default = settings.GATEWAY_ID
 
 class ProjectSerializer(serializers.Serializer):
+    url = FullyEncodedHyperlinkedIdentityField(view_name='project-detail', lookup_field='projectID', lookup_url_kwarg='pk')
     projectID = serializers.CharField(read_only=True)
     name = serializers.CharField(required=True)
     description = serializers.CharField(required=False)
@@ -53,7 +54,9 @@ class ProjectSerializer(serializers.Serializer):
         return Project(**validated_data)
 
     def update(self, instance, validated_data):
-        raise Exception("Not implemented")
+        instance.name = validated_data.get('name', instance.name)
+        instance.description = validated_data.get('description', instance.description)
+        return instance
 
     def get_username(self):
         return self.context.request.user.username
@@ -62,7 +65,7 @@ class ExperimentSerializer(serializers.Serializer):
 
     experimentId = serializers.CharField(read_only=True)
     projectId = serializers.CharField(required=True)
-    project = FullyEncodedHyperlinkedIdentityField(view_name='api_project_detail', lookup_field='projectId', lookup_url_kwarg='project_id')
+    project = FullyEncodedHyperlinkedIdentityField(view_name='project-detail', lookup_field='projectId', lookup_url_kwarg='project_id')
     gatewayId = GatewayIdDefaultField()
     experimentType = serializers.CharField(required=True)
     userName = GatewayUsernameDefaultField()

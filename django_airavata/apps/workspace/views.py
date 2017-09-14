@@ -1,5 +1,5 @@
 
-from django_airavata.apps.api.views import ProjectList
+from django_airavata.apps.api.views import ProjectViewSet
 from rest_framework.renderers import JSONRenderer
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
