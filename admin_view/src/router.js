@@ -1,6 +1,6 @@
-import AdminDashboardHome from './dashboards/AdminDashboardHome.vue'
+import AdminDashboardHome from './components/dashboards/AdminDashboardHome.vue'
 import NewApplication from './components/admin/NewApplication.vue'
-import ExperimentsDashboard from './dashboards/ExperimentDashboard.vue'
+import ExperimentsDashboard from './components/dashboards/ExperimentDashboard.vue'
 import ApplicationDetails from'./components/admin/ApplicationDetails.vue'
 import ApplicationInterface from './components/admin/ApplicationInterface.vue'
 import ApplicationDeployments from  './components/admin/ApplicationDeployments.vue'
@@ -13,7 +13,8 @@ const routes=[
     {
       path:'details',
       component:ApplicationDetails,
-      name:'details'
+      name:'details',
+
     },{
       path:'interface',
       component:ApplicationInterface,

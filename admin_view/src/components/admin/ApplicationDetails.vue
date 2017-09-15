@@ -1,27 +1,29 @@
 <template>
   <div class="main_section">
-    <h4>Application Details</h4>
-    <div class="entry">
-      <div class="heading">Application Name</div>
-      <input type="text"/>
-    </div>
-    <div class="entry">
-      <div class="heading">Application Version</div>
-      <input type="text"/>
-    </div>
-    <div class="entry">
-      <div class="heading" >Experiment Description</div>
-      <textarea  style="height: 80px;" type="text"/>
-    </div>
-    <div class="btns">
-      <input class="cancel" type="button" value="Cancel"/>
-      <input class="save" type="button" value="Save"/>
+    <div class="new-application-tab-main">
+      <h4>Application Details</h4>
+      <div class="entry">
+        <div class="heading">Application Name</div>
+        <input type="text"/>
+      </div>
+      <div class="entry">
+        <div class="heading">Application Version</div>
+        <input type="text"/>
+      </div>
+      <div class="entry">
+        <div class="heading" >Experiment Description</div>
+        <textarea  style="height: 80px;" type="text"/>
+      </div>
+      <new-application-buttons></new-application-buttons>
     </div>
   </div>
 </template>
 <script>
-
+  import NewApplicationButtons from './NewApplicationButtons.vue';
   export default{
+    components:{
+      NewApplicationButtons
+    },
     data:function () {
       return {
 
@@ -33,39 +35,6 @@
 <style>
 
 
-  .btns{
-    margin-top:50px;
-    display: inline-block;
-    width: 100%;
-  }
-
-  .btns input{
-    float: right;
-    margin-left: 20px;
-    text-align: center;
-    border-color: #007BFF;
-    border-style: solid;
-    border-radius: 3px;
-    padding-top: 5px;
-    padding-bottom:5px;
-    padding-left:15px;
-    padding-right: 15px;
-  }
-
-  .btns input:hover{
-    background-color: #3ca41a;
-    color: #f1fff3;
-  }
-
-  .save{
-    background-color: #007BFF;
-    color: white;
-  }
-
-  .cancel{
-    color:  #007BFF;
-    background-color: white;
-  }
 
 
 </style>

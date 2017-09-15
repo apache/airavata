@@ -3,11 +3,11 @@
     <div class="boolean-selector-heading">{{heading}}</div>
     <div class="boolean-selector">
       <div>
-        <input type="radio" v-bind:checked="val" v-on:click="val=!val;"/>
+        <input type="radio" v-model="selectorVal.boolValue" value="true"/>
         <label>True</label>
       </div>
       <div>
-        <input type="radio" v-bind:checked="!val"  v-on:click="val=!val;"/>
+        <input type="radio" v-model="selectorVal.boolValue" value="false"/>
         <label>False</label>
       </div>
     </div>
@@ -16,16 +16,25 @@
 <script>
 
   export default {
-    data:function() {
-      return{
-        'val':false,
-        'selctor-id':'na'
-      };
+    mounted:function(){
+      console.log('Selctor Value: '+ this.selectorVal.boolValue);
+      this.selectorVal.boolValue=this.selectorVal.boolValue;
     },
-    props:['val','heading','selctor-id'],
-    watch:{
-      val:function (newVal,oldVal) {
-        this.$emit('boolean-selector',this.selector-id,this.val);
+    props:{
+      selectorVal:{
+        type:Object,
+        default:function () {
+          return {
+            'boolValue':'false',
+          };
+        }
+      },
+      heading:{
+        type:String
+      },
+      selectorId:{
+        type:String,
+        default:'na'
       }
     }
   }
@@ -52,9 +61,11 @@
   }
 
   .boolean-selector-heading{
-    font-size:1.3em;
+    font-size:1.1em;
     font-weight: 400;
     margin-bottom: 10px;
+    color: black;
+    width: 100%;
 
   }
 </style>

@@ -18,8 +18,8 @@
   </div>
 </template>
 <script>
-  import DashboardItem from '../components/DashboardItem.vue'
-  import NewApplication from '../components/admin/NewApplication.vue'
+  import DashboardItem from '../DashboardItem.vue'
+  import NewApplication from '../admin/NewApplication.vue'
   export default {
     data:function () {
       return {

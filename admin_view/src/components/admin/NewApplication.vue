@@ -3,9 +3,9 @@
     <h3>Create A New Application</h3>
     <div class="main">
       <div class="tabs">
-        <div class="tab" v-bind:class="tabs[0]" v-on:click="tab_handler(0)"><router-link class="link" :to="{name:'details'}"><label class="lbl">Details</label></router-link></div>
-        <div class="tab" v-bind:class="tabs[1]" v-on:click="tab_handler(1)"><router-link class="link" :to="{name:'interface'}"><label class="lbl">Interface</label></router-link></div>
-        <div class="tab" v-bind:class="tabs[2]" v-on:click="tab_handler(2)"><router-link class="link" :to="{name:'deployments'}"><label class="lbl">Deployments</label></router-link></div>
+        <div class="tab" v-bind:class="tabs['details']"><router-link class="link" :to="{name:'details'}"><label class="lbl">Details</label></router-link></div>
+        <div class="tab" v-bind:class="tabs['interface']"><router-link class="link" :to="{name:'interface'}"><label class="lbl">Interface</label></router-link></div>
+        <div class="tab" v-bind:class="tabs['deployments']"><router-link class="link" :to="{name:'deployments'}"><label class="lbl">Deployments</label></router-link></div>
         <div class="tab" style="width: 100%"></div>
       </div>
       <router-view></router-view>
@@ -19,7 +19,10 @@
     components: {
       ApplicationDetails,ApplicationInterface
     },
-
+    mounted:function () {
+      this.current_active_tab=this.$route.name;
+      this.previous_active_tab='';
+    },
     data: function () {
       return {
         current_active_tab: 0,
@@ -28,20 +31,23 @@
     },
     computed: {
       tabs: function () {
-        var tabs_active = new Array(3).fill('');
+        var tabs_active = {
+          'details':'',
+          'interface':'',
+          'deployments':''
+        };
         tabs_active[this.current_active_tab] = 'active';
-        if (this.previous_active_tab > 0 && this.previous_active_tab < 3) {
+        if (tabs_active.hasOwnProperty(this.previous_active_tab)) {
           tabs_active[this.previous_active_tab] = '';
         }
         return tabs_active;
       }
     },
-    methods: {
-      tab_handler: function (tab_id) {
-        if (this.current_active_tab != tab_id) {
-          this.previous_active_tab = this.current_active_tab;
-          this.current_active_tab = tab_id;
-        }
+    watch:{
+      '$route' (to, from) {
+        this.previous_active_tab=from.name
+        this.current_active_tab=to.name
+
       }
     }
   }

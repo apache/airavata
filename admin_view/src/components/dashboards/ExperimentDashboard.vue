@@ -27,9 +27,9 @@
   </div>
 </template>
 <script>
-  import DashboardItem from '../components/DashboardItem.vue'
-  import RecentExperiment from '../components/RecentExperiment.vue'
-  import {addIndex} from '../utils.js'
+  import DashboardItem from '../DashboardItem.vue'
+  import RecentExperiment from '../RecentExperiment.vue'
+  import {addIndex} from '../../utils.js'
 
   export default{
     'name':'main-section',
