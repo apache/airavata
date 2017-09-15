@@ -1,28 +1,16 @@
+{% extends 'base.html' %}
 
-{% extends 'base-vue.html' %}
+{% load static %}
 
 {% block content %}
 
 <h1>Projects</h1>
 
-<ul id="projects-list">
-    <li v-for="project in projects">
-        ${ project.name }
-    </li>
-</ul>
+<div id="app"></div>
 
 {% endblock content %}
 
 {% block scripts %}
-{{ block.super }}
 
-<script type="text/javascript">
-    new Vue({
-        delimiters: ['${', '}'],
-        el: '#projects-list',
-        data: {
-            projects: {{ projects_data|safe }}
-        }
-    })
-</script>
+<script src="{% static "django_airavata_workspace/build/main.js" %}"></script>
 {% endblock %}
