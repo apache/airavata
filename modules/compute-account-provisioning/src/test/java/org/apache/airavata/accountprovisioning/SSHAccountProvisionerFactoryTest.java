@@ -43,7 +43,7 @@ public class SSHAccountProvisionerFactoryTest {
     public void testGetSSHAccountProvisionerConfigParams() {
 
         List<ConfigParam> configParams = SSHAccountProvisionerFactory.getSSHAccountProvisionerConfigParams("TestSSHAccountProvisioner");
-        Assert.assertEquals(4, configParams.size());
+        Assert.assertEquals(5, configParams.size());
         ConfigParam ldaphost = configParams.get(0);
         Assert.assertEquals("ldaphost", ldaphost.getName());
         Assert.assertEquals(ConfigParam.ConfigParamType.STRING, ldaphost.getType());
@@ -51,11 +51,15 @@ public class SSHAccountProvisionerFactoryTest {
         Assert.assertEquals("ldapport", ldapport.getName());
         Assert.assertEquals(ConfigParam.ConfigParamType.STRING, ldapport.getType());
         ConfigParam ldapUsername = configParams.get(2);
-        Assert.assertEquals("ldap-username", ldapUsername.getName());
+        Assert.assertEquals("ldap_username", ldapUsername.getName());
         Assert.assertEquals(ConfigParam.ConfigParamType.STRING, ldapUsername.getType());
         ConfigParam ldapPassword = configParams.get(3);
-        Assert.assertEquals("ldap-password", ldapPassword.getName());
+        Assert.assertEquals("ldap_password", ldapPassword.getName());
         Assert.assertEquals(ConfigParam.ConfigParamType.CRED_STORE_PASSWORD_TOKEN, ldapPassword.getType());
+        ConfigParam ldapBaseDN = configParams.get(4);
+        Assert.assertArrayEquals("ldapBaseDN", ldapBaseDN.getName()  );
+        Assert.assertArrayEquals( ConfigParam.ConfigParamType.STRING,ldapBaseDN.getType() );
+
     }
 
     @Test

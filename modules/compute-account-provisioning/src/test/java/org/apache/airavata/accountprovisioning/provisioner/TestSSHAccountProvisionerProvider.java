@@ -46,14 +46,18 @@ public class TestSSHAccountProvisionerProvider implements SSHAccountProvisionerP
                 .setDescription("Port of LDAP server")
                 .setOptional(false)
                 .setType(ConfigParam.ConfigParamType.STRING));
-        configParams.add(new ConfigParam("ldap-username")
+        configParams.add(new ConfigParam("ldap_username")
                 .setDescription("Username for LDAP server")
                 .setOptional(false)
                 .setType(ConfigParam.ConfigParamType.STRING));
-        configParams.add(new ConfigParam("ldap-password")
+        configParams.add(new ConfigParam("ldap_password")
                 .setDescription("Password for LDAP server")
                 .setOptional(false)
                 .setType(ConfigParam.ConfigParamType.CRED_STORE_PASSWORD_TOKEN));
+        configParams.add(new ConfigParam("ldapBaseDN")
+                .setDescription( "Base DN for the ldap entry" )
+                .setOptional( false )
+                .setType( ConfigParam.ConfigParamType.STRING );
         return configParams;
     }
 
