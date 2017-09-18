@@ -2,7 +2,7 @@
 from . import serializers
 
 from rest_framework import status, mixins
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, detail_route
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
@@ -81,6 +81,7 @@ class CreateUpdateRetrieveListViewSet(mixins.CreateModelMixin,
 class ProjectViewSet(CreateUpdateRetrieveListViewSet):
 
     serializer_class = serializers.ProjectSerializer
+    lookup_field = 'project_id'
 
     def get_list(self):
         # TODO: support pagination
@@ -98,6 +99,11 @@ class ProjectViewSet(CreateUpdateRetrieveListViewSet):
         project = serializer.save()
         self.request.airavata_client.updateProject(self.authz_token, project.projectID, project)
 
+    @detail_route()
+    def experiments(self, request, project_id=None):
+        experiments = request.airavata_client.getExperimentsInProject(self.authz_token, project_id, -1, 0)
+        serializer = serializers.ExperimentSerializer(experiments, many=True, context={'request': request})
+        return Response(serializer.data)
 
 class ExperimentList(APIView):
     def get(self, request, format=None):
@@ -105,14 +111,5 @@ class ExperimentList(APIView):
         username = request.user.username
 
         experiments = request.airavata_client.getUserExperiments(request.authz_token, gateway_id, username, -1, 0)
-        serializer = serializers.ExperimentSerializer(experiments, many=True, context={'request': request})
-        return Response(serializer.data)
-
-class ProjectExperimentList(APIView):
-    def get(self, request, project_id, format=None):
-        gateway_id = settings.GATEWAY_ID
-        username = request.user.username
-
-        experiments = request.airavata_client.getExperimentsInProject(request.authz_token, project_id, -1, 0)
         serializer = serializers.ExperimentSerializer(experiments, many=True, context={'request': request})
         return Response(serializer.data)
