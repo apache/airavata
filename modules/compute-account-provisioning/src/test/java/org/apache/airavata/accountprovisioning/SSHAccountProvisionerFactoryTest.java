@@ -56,10 +56,6 @@ public class SSHAccountProvisionerFactoryTest {
         ConfigParam ldapPassword = configParams.get(3);
         Assert.assertEquals("ldap_password", ldapPassword.getName());
         Assert.assertEquals(ConfigParam.ConfigParamType.CRED_STORE_PASSWORD_TOKEN, ldapPassword.getType());
-        ConfigParam ldapBaseDN = configParams.get(4);
-        Assert.assertArrayEquals("ldapBaseDN", ldapBaseDN.getName()  );
-        Assert.assertArrayEquals( ConfigParam.ConfigParamType.STRING,ldapBaseDN.getType() );
-
     }
 
     @Test

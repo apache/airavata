@@ -57,7 +57,7 @@ public class TestSSHAccountProvisionerProvider implements SSHAccountProvisionerP
         configParams.add(new ConfigParam("ldapBaseDN")
                 .setDescription( "Base DN for the ldap entry" )
                 .setOptional( false )
-                .setType( ConfigParam.ConfigParamType.STRING );
+                .setType( ConfigParam.ConfigParamType.STRING ));
         return configParams;
     }
 
