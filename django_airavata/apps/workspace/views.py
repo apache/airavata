@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 @login_required
 def projects_list(request):
 
-    response = ProjectList().get(request)
+    response = ProjectViewSet.as_view({'get': 'list'})(request)
     projects_json = JSONRenderer().render(response.data)
 
     return render(request, 'django_airavata_workspace/projects_list.html', {
