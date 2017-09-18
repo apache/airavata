@@ -42,13 +42,13 @@ class GatewayIdDefaultField(serializers.CharField):
         self.default = settings.GATEWAY_ID
 
 class ProjectSerializer(serializers.Serializer):
-    url = FullyEncodedHyperlinkedIdentityField(view_name='project-detail', lookup_field='projectID', lookup_url_kwarg='project_id')
+    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-detail', lookup_field='projectID', lookup_url_kwarg='project_id')
     projectID = serializers.CharField(read_only=True)
     name = serializers.CharField(required=True)
     description = serializers.CharField(required=False)
     owner = GatewayUsernameDefaultField()
     gatewayId = GatewayIdDefaultField()
-    experiments = FullyEncodedHyperlinkedIdentityField(view_name='project-experiments', lookup_field='projectID', lookup_url_kwarg='project_id')
+    experiments = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-experiments', lookup_field='projectID', lookup_url_kwarg='project_id')
 
     def create(self, validated_data):
         return Project(**validated_data)
@@ -65,7 +65,7 @@ class ExperimentSerializer(serializers.Serializer):
 
     experimentId = serializers.CharField(read_only=True)
     projectId = serializers.CharField(required=True)
-    project = FullyEncodedHyperlinkedIdentityField(view_name='project-detail', lookup_field='projectId', lookup_url_kwarg='project_id')
+    project = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-detail', lookup_field='projectId', lookup_url_kwarg='project_id')
     gatewayId = GatewayIdDefaultField()
     experimentType = serializers.CharField(required=True)
     userName = GatewayUsernameDefaultField()

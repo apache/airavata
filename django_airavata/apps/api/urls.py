@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 router = routers.SimpleRouter()
 router.register(r'projects', views.ProjectViewSet, base_name='project')
 
+app_name = 'django_airavata_api'
 urlpatterns = [
     url(r'^$', views.api_root),
     # url(r'^projects/$', views.ProjectList.as_view(), name='api_project_list'),

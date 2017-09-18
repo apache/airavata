@@ -17,8 +17,8 @@ from django.views.decorators.csrf import csrf_exempt
 @api_view(['GET'])
 def api_root(request, format=None):
     return Response({
-        'projects': reverse('project-list', request=request, format=format),
-        'experiments': reverse('api_experiment_list', request=request, format=format)
+        'projects': reverse('django_airavata_api:project-list', request=request, format=format),
+        'experiments': reverse('django_airavata_api:api_experiment_list', request=request, format=format)
     })
 
 class GenericAPIBackedViewSet(GenericViewSet):
