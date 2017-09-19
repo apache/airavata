@@ -4,12 +4,14 @@
     <div class="new-application-tab-main">
       <h4>Application Interface</h4>
       <div class="entry boolean-selectors">
-        <boolean-radio-button v-bind:heading="'Enable Archiving Working Directory'" v-bind:selectorVal="dataStaged"></boolean-radio-button>
-        <boolean-radio-button v-bind:heading="'Enable Optional File Inputs'" v-bind:selectorVal="dataStaged"></boolean-radio-button>
+        <boolean-radio-button v-bind:heading="'Enable Archiving Working Directory'" v-bind:selectorVal="work_dir"></boolean-radio-button>
+        <boolean-radio-button v-bind:heading="'Enable Optional File Inputs'" v-bind:selectorVal="optional_files"></boolean-radio-button>
       </div>
-      <application-input-field class="interface-main"></application-input-field>
+      <div>
+        <application-input-field class="interface-main"  v-for="data in inputFields" v-bind:data="data" v-bind:key="data.input_id" v-on:delete_input_field="delete_event_trigger(data.input_id);"></application-input-field>
+      </div>
       <div class="entry">
-        <button class="interface-btn">Add Application <span>input</span></button>
+        <button class="interface-btn" v-on:click="addApplicationInput();">Add Application <span>input</span></button>
       </div>
       <div class="entry">
         <div class="heading">Output fields</div>
@@ -25,17 +27,38 @@
   import NewApplicationButtons from './NewApplicationButtons.vue';
   export default {
     components:{
+
       ApplicationInputField,BooleanRadioButton,NewApplicationButtons
     },
     data:function () {
       return {
-        'inputFields':[{}]
+        'inputFields':[],
+        'id':0,
+        work_dir:{'boolValue':'false'},
+        optional_files:{'boolValue':'true'}
       };
+    },
+    mounted:function () {
+      this.addApplicationInput();
     },
     methods:{
       addApplicationInput:function () {
-
+        this.inputFields.push({
+          input_id:this.id++,
+          name:'',
+          value:'',
+          type:'',
+          appArg:'',
+          dataStaged:{'boolValue':'true'},
+          required:{'boolValue':'false'},
+          requiredOnCmd:{'boolValue':'false'}
+        });
+      },
+      delete_event_trigger:function(input_id){
+        console.log('deleting input Field: '+input_id);
+        this.inputFields=this.inputFields.filter((data)=>data.input_id!=input_id);
       }
+
     }
   };
 </script>

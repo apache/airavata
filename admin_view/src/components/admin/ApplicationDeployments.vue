@@ -24,6 +24,43 @@
         <textarea  style="height: 80px;" type="text"/>
       </div>
     </div>
+    <div class="new-application-tab-main">
+      <h4>Module load commands</h4>
+      <div class="entry">
+        <div class="heading">Module load commands</div>
+        <input type="text"/>
+      </div>
+      <div class="entry">
+        <input type="button" class="deployment btn" value="Add command"/>
+      </div>
+    </div>
+
+    <div class="new-application-tab-main">
+      <h4>Library Prepend Paths</h4>
+      <div class="entry">
+        <input type="button" class="deployment btn" value="Add path"/>
+      </div>
+    </div>
+    <div class="new-application-tab-main">
+      <h4>Library Append Paths</h4>
+      <input type="button" class="deployment btn" value="Add path"/>
+    </div>
+    <div class="new-application-tab-main">
+      <h4>Environments</h4>
+      <input type="button" class="deployment btn" value="Add environment"/>
+    </div>
+    <div class="new-application-tab-main">
+      <h4>Pre Job Commands</h4>
+      <input type="button" class="deployment btn" value="Add command"/>
+    </div>
+    <div class="new-application-tab-main">
+      <h4>Post Job Commands</h4>
+      <input type="button" class="deployment btn" value="Add command"/>
+    </div>
+    <div class="new-application-tab-main">
+      <h4>Defaults</h4>
+      <input type="button" class="deployment btn" value="Add command"/>
+    </div>
   </div>
 </template>
 <style>
@@ -31,6 +68,27 @@
     font-size:1.0em;
     font-weight: bold;
     margin-bottom: 10px;
+  }
+
+  .deployment.btn{
+    float: right;
+    text-align: center;
+    border-color: #007BFF;
+    border-style: solid;
+    border-radius: 3px;
+    padding-top: 5px;
+    padding-bottom:5px;
+    padding-left:15px;
+    padding-right: 15px;
+    color:  #007BFF;
+    background-color: white;
+    width: auto;
+    float: left;
+  }
+
+  .deployment.btn:hover{
+    color:white;
+    background-color: rgba(0,105,217,1);
   }
 </style>
 

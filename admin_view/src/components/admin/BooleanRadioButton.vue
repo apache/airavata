@@ -17,7 +17,7 @@
 
   export default {
     mounted:function(){
-      console.log('Selctor Value: '+ this.selectorVal.boolValue);
+      //console.log('Selctor Value: '+ this.selectorVal.boolValue);
       this.selectorVal.boolValue=this.selectorVal.boolValue;
     },
     props:{
