@@ -58,9 +58,6 @@ class ProjectSerializer(serializers.Serializer):
         instance.description = validated_data.get('description', instance.description)
         return instance
 
-    def get_username(self):
-        return self.context.request.user.username
-
 class ExperimentSerializer(serializers.Serializer):
 
     experimentId = serializers.CharField(read_only=True)
