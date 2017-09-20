@@ -20,13 +20,24 @@
 
 package org.apache.airavata.accountprovisioning;
 
-import java.util.Map;
+/**
+ * Thrown by {@link SSHAccountProvisioner} when provided userId doesn't map to a local account for any user. For
+ * example, the provided userId maps to a username that doesn't have an account on the cluster but that also doesn't
+ * exist at that institution.
+ */
+public class InvalidUsernameException extends Exception {
+    public InvalidUsernameException() {
+    }
 
-public interface SSHAccountProvisioner {
+    public InvalidUsernameException(String message) {
+        super(message);
+    }
 
-    void init(Map<ConfigParam, String> config);
-    boolean hasAccount(String userId) throws InvalidUsernameException;
-    void createAccount(String userId, String sshPublicKey) throws InvalidUsernameException;
-    void installSSHKey(String userId, String sshPublicKey) throws InvalidUsernameException;
-    String getScratchLocation(String userId) throws InvalidUsernameException;
+    public InvalidUsernameException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public InvalidUsernameException(Throwable cause) {
+        super(cause);
+    }
 }

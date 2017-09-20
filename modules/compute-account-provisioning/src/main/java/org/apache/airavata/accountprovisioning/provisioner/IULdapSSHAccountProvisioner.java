@@ -21,6 +21,7 @@
 package org.apache.airavata.accountprovisioning.provisioner;
 
 import org.apache.airavata.accountprovisioning.ConfigParam;
+import org.apache.airavata.accountprovisioning.InvalidUsernameException;
 import org.apache.airavata.accountprovisioning.SSHAccountManager;
 import org.apache.airavata.accountprovisioning.SSHAccountProvisioner;
 import org.apache.directory.api.ldap.model.entry.DefaultAttribute;
@@ -62,7 +63,7 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner  {
     }
 
     @Override
-    public boolean hasAccount(String userId) {
+    public boolean hasAccount(String userId) throws InvalidUsernameException {
         String username = getUsername(userId);
         boolean result = withLdapConnection(ldapConnection -> {
             try {
@@ -75,13 +76,13 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner  {
     }
 
     @Override
-    public void createAccount(String userId, String sshPublicKey) {
+    public void createAccount(String userId, String sshPublicKey) throws InvalidUsernameException {
 
         throw new UnsupportedOperationException("IULdapSSHAccountProvisioner does not support creating cluster accounts at this time.");
     }
 
     @Override
-    public void installSSHKey(String userId, String sshPublicKey) {
+    public void installSSHKey(String userId, String sshPublicKey) throws InvalidUsernameException {
         String username = getUsername(userId);
         boolean success = withLdapConnection(ldapConnection -> {
             try {
@@ -119,7 +120,7 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner  {
     }
 
     @Override
-    public String getScratchLocation(String userId) {
+    public String getScratchLocation(String userId) throws InvalidUsernameException {
         String username = getUsername(userId);
         String scratchLocation = canonicalScratchLocation.replace("${username}",username);
         return scratchLocation;
@@ -147,15 +148,15 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner  {
      * Convert from Airavata userId to cluster username. The assumption here is that a userId will be
      * an IU email address and the username is just the username portion of the email address.
      */
-    private String getUsername(String userId) {
+    private String getUsername(String userId) throws InvalidUsernameException {
         int atSignIndex = userId.indexOf("@");
         if (atSignIndex < 0) {
-            throw new RuntimeException("userId is not an email address: " + userId);
+            throw new InvalidUsernameException("userId is not an email address: " + userId);
         }
         return userId.substring(0, atSignIndex);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InvalidUsernameException {
         String ldapPassword = args[0];
         IULdapSSHAccountProvisioner sshAccountProvisioner = new IULdapSSHAccountProvisioner();
         Map<ConfigParam,String> config = new HashMap<>();

@@ -20,13 +20,24 @@
 
 package org.apache.airavata.accountprovisioning;
 
-import java.util.Map;
+/**
+ * This exception indicates that some SSHAccountProvisioner setup is missing or incorrect.
+ * Message should indicate what is invalid and potentially how to fix it.
+ */
+public class InvalidSetupException extends Exception {
 
-public interface SSHAccountProvisioner {
+    public InvalidSetupException() {
+    }
 
-    void init(Map<ConfigParam, String> config);
-    boolean hasAccount(String userId) throws InvalidUsernameException;
-    void createAccount(String userId, String sshPublicKey) throws InvalidUsernameException;
-    void installSSHKey(String userId, String sshPublicKey) throws InvalidUsernameException;
-    String getScratchLocation(String userId) throws InvalidUsernameException;
+    public InvalidSetupException(String message) {
+        super(message);
+    }
+
+    public InvalidSetupException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public InvalidSetupException(Throwable cause) {
+        super(cause);
+    }
 }
