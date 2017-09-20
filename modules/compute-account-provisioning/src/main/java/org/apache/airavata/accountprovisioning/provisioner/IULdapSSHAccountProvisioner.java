@@ -104,7 +104,17 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner  {
                     modifyRequest.addModification(new DefaultAttribute(SSH_PUBLIC_KEY_ATTRIBUTE_NAME, sshPublicKey), ModificationOperation.ADD_ATTRIBUTE);
                 } else {
 
-                    modifyRequest.addModification(new DefaultAttribute(SSH_PUBLIC_KEY_ATTRIBUTE_NAME, sshPublicKey), ModificationOperation.REPLACE_ATTRIBUTE);
+                    String oldSshPublicKey = entry.get(SSH_PUBLIC_KEY_ATTRIBUTE_NAME).getString();
+                    if (!oldSshPublicKey.equals(sshPublicKey)) {
+                        // Disallow overwriting the SSH key
+                        throw new RuntimeException("User [" + username + "] already has an SSH public key in LDAP for ["
+                                + ldapBaseDN + "] and overwriting it isn't allowed.");
+                        // modifyRequest.addModification(new DefaultAttribute(SSH_PUBLIC_KEY_ATTRIBUTE_NAME,
+                        //        sshPublicKey), ModificationOperation.REPLACE_ATTRIBUTE);
+                    } else {
+                        // SSH key is already installed so just return
+                        return true;
+                    }
                 }
                 ModifyResponse modifyResponse = ldapConnection.modify(modifyRequest);
                 if (modifyResponse.getLdapResult().getResultCode() != ResultCodeEnum.SUCCESS) {
