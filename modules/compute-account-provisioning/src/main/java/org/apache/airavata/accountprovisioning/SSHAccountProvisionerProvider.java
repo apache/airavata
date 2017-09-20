@@ -32,8 +32,29 @@ public interface SSHAccountProvisionerProvider {
     default String getName() {
         return this.getClass().getName();
     }
+
+    /**
+     * Return the {@link ConfigParam}s for the associated SSHAccountProvisioner.
+     * @return
+     */
     List<ConfigParam> getConfigParams();
+
+    /**
+     * Instantiate and initialize the associated SSHAccountProvisioner.
+     * @param config
+     * @return
+     */
     SSHAccountProvisioner createSSHAccountProvisioner(Map<ConfigParam,String> config);
+
+    /**
+     * Return true if the associated SSHAccountProvisioner can create accounts for a user on a compute host.
+     * @return
+     */
     boolean canCreateAccount();
+
+    /**
+     * Return true if the associated SSHAccountProvisioner can install an SSH public key on a compute host for the user.
+     * @return
+     */
     boolean canInstallSSHKey();
 }
