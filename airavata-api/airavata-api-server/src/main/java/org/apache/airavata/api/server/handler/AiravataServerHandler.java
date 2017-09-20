@@ -19,10 +19,7 @@
  */
 package org.apache.airavata.api.server.handler;
 
-import org.apache.airavata.accountprovisioning.ConfigParam;
-import org.apache.airavata.accountprovisioning.SSHAccountManager;
-import org.apache.airavata.accountprovisioning.SSHAccountProvisionerFactory;
-import org.apache.airavata.accountprovisioning.SSHAccountProvisionerProvider;
+import org.apache.airavata.accountprovisioning.*;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavata_apiConstants;
 import org.apache.airavata.api.server.util.ThriftClientPool;
@@ -4008,8 +4005,18 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public boolean doesUserHaveSSHAccount(AuthzToken authzToken, String computeResourceId, String userId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        return SSHAccountManager.doesUserHaveSSHAccount(gatewayId, computeResourceId, userId);
+        try {
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            return SSHAccountManager.doesUserHaveSSHAccount(gatewayId, computeResourceId, userId);
+        } catch (Exception e) {
+            String errorMessage = "Error occurred while checking if [" + userId + "] has an SSH Account on [" +
+                    computeResourceId + "].";
+            logger.error(errorMessage, e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(errorMessage + " More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
