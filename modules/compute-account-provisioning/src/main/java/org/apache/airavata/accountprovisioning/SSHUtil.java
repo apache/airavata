@@ -53,7 +53,7 @@ public class SSHUtil {
             session.connect();
             return true;
         } catch (JSchException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new RuntimeException(e);
         } finally {
             if (session != null && session.isConnected()) {
                 session.disconnect();

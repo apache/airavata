@@ -50,7 +50,7 @@ public class SSHAccountManager {
 
     private final static Logger logger = LoggerFactory.getLogger(SSHAccountManager.class);
 
-    public static boolean doesUserHaveSSHAccount(String gatewayId, String computeResourceId, String username) {
+    public static boolean doesUserHaveSSHAccount(String gatewayId, String computeResourceId, String username) throws InvalidSetupException, InvalidUsernameException {
 
         // get compute resource preferences for the gateway and hostname
         RegistryService.Client registryServiceClient = getRegistryServiceClient();
@@ -58,23 +58,32 @@ public class SSHAccountManager {
         try {
             computeResourcePreference = registryServiceClient.getGatewayComputeResourcePreference(gatewayId, computeResourceId);
         } catch(TException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to get ComputeResourcePreference for [" + gatewayId + "] and [" + computeResourceId + "]: " + e.getMessage(), e);
         } finally {
             if (registryServiceClient.getInputProtocol().getTransport().isOpen()) {
                 registryServiceClient.getInputProtocol().getTransport().close();
+            }
+            if (registryServiceClient.getOutputProtocol().getTransport().isOpen()) {
+                registryServiceClient.getOutputProtocol().getTransport().close();
             }
         }
 
         // get the account provisioner and config values for the preferences
         if (!computeResourcePreference.isSetSshAccountProvisioner()) {
-            throw new RuntimeException("Compute resource [" + computeResourceId + "] does not have an SSH Account Provisioner configured for it.");
+            throw new InvalidSetupException("Compute resource [" + computeResourceId + "] does not have an SSH Account Provisioner configured for it.");
         }
         SSHAccountProvisioner sshAccountProvisioner = createSshAccountProvisioner(gatewayId, computeResourcePreference);
 
-        return sshAccountProvisioner.hasAccount(username);
+        try {
+            return sshAccountProvisioner.hasAccount(username);
+        } catch (InvalidUsernameException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("hasAccount call failed for username [" + username + "]: " + e.getMessage(), e);
+        }
     }
 
-    public static UserComputeResourcePreference setupSSHAccount(String gatewayId, String computeResourceId, String username, SSHCredential sshCredential) {
+    public static UserComputeResourcePreference setupSSHAccount(String gatewayId, String computeResourceId, String username, SSHCredential sshCredential) throws InvalidSetupException, InvalidUsernameException {
 
         // get compute resource preferences for the gateway and hostname
         RegistryService.Client registryServiceClient = getRegistryServiceClient();
@@ -92,20 +101,26 @@ public class SSHAccountManager {
                 }
             }
         } catch(TException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to retrieve compute resource information for [" + gatewayId + "] and " +
+                    "[" + computeResourceId + "]: " + e.getMessage(), e);
         } finally {
             if (registryServiceClient.getInputProtocol().getTransport().isOpen()) {
                 registryServiceClient.getInputProtocol().getTransport().close();
             }
+            if (registryServiceClient.getOutputProtocol().getTransport().isOpen()) {
+                registryServiceClient.getOutputProtocol().getTransport().close();
+            }
         }
 
         if (sshJobSubmission == null) {
-            throw new RuntimeException("Compute resource [" + computeResourceId + "] does not have an SSH Job Submission interface.");
+            throw new InvalidSetupException("Compute resource [" + computeResourceId + "] does not have an SSH Job Submission " +
+                    "interface.");
         }
 
         // get the account provisioner and config values for the preferences
         if (!computeResourcePreference.isSetSshAccountProvisioner()) {
-            throw new RuntimeException("Compute resource [" + computeResourceId + "] does not have an SSH Account Provisioner configured for it.");
+            throw new InvalidSetupException("Compute resource [" + computeResourceId + "] does not have an SSH Account Provisioner " +
+                    "configured for it.");
         }
 
         // instantiate and init the account provisioner
@@ -113,19 +128,39 @@ public class SSHAccountManager {
         boolean canCreateAccount = SSHAccountProvisionerFactory.canCreateAccount(computeResourcePreference.getSshAccountProvisioner());
 
         // First check if username has an account
-        boolean hasAccount = sshAccountProvisioner.hasAccount(username);
+        boolean hasAccount = false;
+        try {
+            hasAccount = sshAccountProvisioner.hasAccount(username);
+        } catch (InvalidUsernameException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("hasAccount call failed for username [" + username + "]: " + e.getMessage(), e);
+        }
 
         if (!hasAccount && !canCreateAccount) {
-            throw new RuntimeException("User [" + username + "] doesn't have account and [" + computeResourceId + "] doesn't have a SSH Account Provisioner that supports creating accounts.");
+            throw new InvalidSetupException("User [" + username + "] doesn't have account and [" + computeResourceId + "] doesn't " +
+                    "have a SSH Account Provisioner that supports creating accounts.");
         }
 
         // Install SSH key
-        sshAccountProvisioner.installSSHKey(username, sshCredential.getPublicKey());
+        try {
+            sshAccountProvisioner.installSSHKey(username, sshCredential.getPublicKey());
+        } catch (InvalidUsernameException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("installSSHKey call failed for username [" + username + "]: " + e.getMessage(), e);
+        }
 
         // Verify can authenticate to host
         String sshHostname = sshJobSubmission.getAlternativeSSHHostName() != null ? sshJobSubmission.getAlternativeSSHHostName() : computeResourceDescription.getHostName();
         int sshPort = sshJobSubmission.getSshPort();
-        boolean validated = SSHUtil.validate(sshHostname, sshPort, username, sshCredential);
+        boolean validated = false;
+        try {
+            validated = SSHUtil.validate(sshHostname, sshPort, username, sshCredential);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to validate SSH public key installation for account for user [" +
+                    username + "] on host [" + sshHostname + "]: " + e.getMessage(), e);
+        }
         if (!validated) {
             throw new RuntimeException("Failed to validate installation of key for [" + username
                     + "] on [" + computeResourceDescription.getHostName() + "] using SSH Account Provisioner ["
@@ -134,7 +169,12 @@ public class SSHAccountManager {
 
         // create the scratch location on the host
         String scratchLocation = sshAccountProvisioner.getScratchLocation(username);
-        SSHUtil.execute(sshHostname, sshPort, username, sshCredential, "mkdir -p " + scratchLocation);
+        try {
+            SSHUtil.execute(sshHostname, sshPort, username, sshCredential, "mkdir -p " + scratchLocation);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create scratch location [" + scratchLocation + "] for user [" +
+                    username + "] on host [" + sshHostname + "]: " + e.getMessage(), e);
+        }
 
         UserComputeResourcePreference userComputeResourcePreference = new UserComputeResourcePreference();
         userComputeResourcePreference.setComputeResourceId(computeResourceId);
@@ -143,7 +183,7 @@ public class SSHAccountManager {
         return userComputeResourcePreference;
     }
 
-    private static SSHAccountProvisioner createSshAccountProvisioner(String gatewayId, ComputeResourcePreference computeResourcePreference) {
+    private static SSHAccountProvisioner createSshAccountProvisioner(String gatewayId, ComputeResourcePreference computeResourcePreference) throws InvalidSetupException {
         String provisionerName = computeResourcePreference.getSshAccountProvisioner();
         Map<ConfigParam,String> provisionerConfig = convertConfigParams(provisionerName, computeResourcePreference.getSshAccountProvisionerConfig());
 
@@ -153,7 +193,7 @@ public class SSHAccountManager {
         return SSHAccountProvisionerFactory.createSSHAccountProvisioner(provisionerName, resolvedConfig);
     }
 
-    private static Map<ConfigParam, String> resolveProvisionerConfig(String gatewayId, String provisionerName, Map<ConfigParam, String> provisionerConfig) {
+    private static Map<ConfigParam, String> resolveProvisionerConfig(String gatewayId, String provisionerName, Map<ConfigParam, String> provisionerConfig) throws InvalidSetupException {
         CredentialStoreService.Client credentialStoreServiceClient = null;
         try {
             credentialStoreServiceClient = getCredentialStoreClient();
@@ -163,6 +203,10 @@ public class SSHAccountManager {
                 if (configEntry.getKey().getType() == ConfigParam.ConfigParamType.CRED_STORE_PASSWORD_TOKEN) {
                     try {
                         PasswordCredential password = credentialStoreServiceClient.getPasswordCredential(configEntry.getValue(), gatewayId);
+                        if (password == null) {
+                            throw new InvalidSetupException("Password credential doesn't exist for config param ["
+                                    + configEntry.getKey().getName() + "] for token [" + configEntry.getValue() + "] for provisioner [" + provisionerName + "].");
+                        }
                         resolvedConfig.put(configEntry.getKey(), password.getPassword());
                     } catch (TException e) {
                         throw new RuntimeException("Failed to get password needed to configure " + provisionerName, e);
@@ -177,17 +221,24 @@ public class SSHAccountManager {
                 if (credentialStoreServiceClient.getInputProtocol().getTransport().isOpen()) {
                     credentialStoreServiceClient.getInputProtocol().getTransport().close();
                 }
+                if (credentialStoreServiceClient.getOutputProtocol().getTransport().isOpen()) {
+                    credentialStoreServiceClient.getOutputProtocol().getTransport().close();
+                }
             }
         }
     }
 
-    private static Map<ConfigParam, String> convertConfigParams(String provisionerName, Map<String, String> thriftConfigParams) {
-        // TODO: also check that all required parameters are present?
-        // TODO: also, this doesn't handle optional entries which should be skipped if missing from thriftConfigParams
+    private static Map<ConfigParam, String> convertConfigParams(String provisionerName, Map<String, String> thriftConfigParams) throws InvalidSetupException {
         List<ConfigParam> configParams = SSHAccountProvisionerFactory.getSSHAccountProvisionerConfigParams(provisionerName);
         Map<String, ConfigParam> configParamMap = configParams.stream().collect(Collectors.toMap(ConfigParam::getName, Function.identity()));
 
-        return thriftConfigParams.entrySet().stream().collect(Collectors.toMap(entry -> configParamMap.get(entry.getKey()), entry -> entry.getValue()));
+        Map<ConfigParam, String> result = thriftConfigParams.entrySet().stream().collect(Collectors.toMap(entry -> configParamMap.get(entry.getKey()), entry -> entry.getValue()));
+        for (ConfigParam configParam : configParams) {
+            if (!configParam.isOptional() && !result.containsKey(configParam)) {
+                throw new InvalidSetupException("Missing required ConfigParam named [" + configParam.getName() + "] for provisioner [" + provisionerName + "].");
+            }
+        }
+        return result;
     }
 
     private static RegistryService.Client getRegistryServiceClient() {

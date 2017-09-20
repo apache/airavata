@@ -21,6 +21,7 @@
 package org.apache.airavata.accountprovisioning.provisioner;
 
 import org.apache.airavata.accountprovisioning.ConfigParam;
+import org.apache.airavata.accountprovisioning.InvalidUsernameException;
 import org.apache.airavata.accountprovisioning.SSHAccountProvisioner;
 
 import java.util.Map;
@@ -36,25 +37,26 @@ public class TestSSHAccountProvisioner implements SSHAccountProvisioner {
     }
 
     @Override
-    public boolean hasAccount(String username) {
+    public boolean hasAccount(String userId) throws InvalidUsernameException {
         return false;
     }
 
     @Override
-    public void createAccount(String username, String sshPublicKey) {
+    public void createAccount(String userId, String sshPublicKey) throws InvalidUsernameException {
 
     }
 
     @Override
-    public void installSSHKey(String username, String sshPublicKey) {
+    public void installSSHKey(String userId, String sshPublicKey) throws InvalidUsernameException {
 
     }
 
     @Override
-    public String getScratchLocation(String username) {
+    public String getScratchLocation(String userId) throws InvalidUsernameException {
         return null;
     }
 
+    // This is here just to facilitate testing
     public Map<ConfigParam, String> getConfig() {
         return config;
     }
