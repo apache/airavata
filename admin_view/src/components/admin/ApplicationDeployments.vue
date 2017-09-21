@@ -1,4 +1,5 @@
 <template>
+
   <div class="main_section">
 
     <div class="new-application-tab-main">

@@ -1,4 +1,5 @@
 <template>
+
   <div class="main_section">
 
     <div class="new-application-tab-main">
@@ -8,7 +9,7 @@
         <boolean-radio-button v-bind:heading="'Enable Optional File Inputs'" v-bind:selectorVal="optional_files"></boolean-radio-button>
       </div>
       <div>
-        <application-input-field class="interface-main"  v-for="data in inputFields" v-bind:data="data" v-bind:key="data.input_id" v-on:delete_input_field="delete_event_trigger(data.input_id);"></application-input-field>
+        <application-input-field class="interface-main"  v-for="data in obj.inputFields" v-bind:data="data" v-bind:key="data.input_id" v-on:delete_input_field="delete_event_trigger(data.input_id);"></application-input-field>
       </div>
       <div class="entry">
         <button class="interface-btn" v-on:click="addApplicationInput();">Add Application <span>input</span></button>
@@ -25,6 +26,9 @@
   import ApplicationInputField from './ApplicationInputField.vue';
   import BooleanRadioButton from './BooleanRadioButton.vue';
   import NewApplicationButtons from './NewApplicationButtons.vue';
+
+  import { mapGetters } from 'vuex';
+
   export default {
     components:{
 
@@ -32,18 +36,27 @@
     },
     data:function () {
       return {
-        'inputFields':[],
         'id':0,
         work_dir:{'boolValue':'false'},
         optional_files:{'boolValue':'true'}
       };
+    },
+    props:{
+      'obj':{
+        type:Object,
+        default:function () {
+          return {
+            'inputFields':[]
+          };
+        }
+      }
     },
     mounted:function () {
       this.addApplicationInput();
     },
     methods:{
       addApplicationInput:function () {
-        this.inputFields.push({
+        this.obj.inputFields.push({
           input_id:this.id++,
           name:'',
           value:'',
@@ -56,9 +69,8 @@
       },
       delete_event_trigger:function(input_id){
         console.log('deleting input Field: '+input_id);
-        this.inputFields=this.inputFields.filter((data)=>data.input_id!=input_id);
-      }
-
+        this.obj.inputFields=this.obj.inputFields.filter((data)=>data.input_id!=input_id);
+      },
     }
   };
 </script>

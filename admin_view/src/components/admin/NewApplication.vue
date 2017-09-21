@@ -4,11 +4,13 @@
     <div class="main">
       <div class="tabs">
         <div class="tab" v-bind:class="tabs['details']"><router-link class="link" :to="{name:'details'}"><label class="lbl">Details</label></router-link></div>
-        <div class="tab" v-bind:class="tabs['interface']"><router-link class="link" :to="{name:'interface'}"><label class="lbl">Interface</label></router-link></div>
+        <div class="tab" v-bind:class="tabs['interface']" v-bind:obj="appInterfaceTabData"><router-link class="link" :to="{name:'interface'}"><label class="lbl">Interface</label></router-link></div>
         <div class="tab" v-bind:class="tabs['deployments']"><router-link class="link" :to="{name:'deployments'}"><label class="lbl">Deployments</label></router-link></div>
         <div class="tab" style="width: 100%"></div>
       </div>
-      <router-view></router-view>
+      <transition mode="out-in">
+        <router-view :key="$route.path"></router-view>
+      </transition>
     </div>
   </div>
 </template>
@@ -26,7 +28,8 @@
     data: function () {
       return {
         current_active_tab: 0,
-        previous_active_tab: -1
+        previous_active_tab: -1,
+        appInterfaceTabData:{'inputFields':[]}
       };
     },
     computed: {
