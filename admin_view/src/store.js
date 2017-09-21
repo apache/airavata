@@ -1,27 +1,67 @@
-import Vuex from 'vuex';
 
-const store=Vuex.Store({
+const store={
   modules:{
-    appInputField:{
+    appInterfaceTab:{
       state:{
-        inputs:{},
+        inputFields:[],
+        counter:0
       },
       mutations:{
-        addInputField:function(id,name='',value='',type='',applicationArgument='',dataStaged=null,requiredOnCMDLine=none){
-          store.inputs[id]={
-            name:name,
-            value:value,
-            type:type,
-            applicationArgument:applicationArgument,
-            dataStaged:dataStaged,
-            requiredOnCMDLine:requiredOnCMDLine
-          };
-        },
-        getInputField:function(id){
-          return store.inputs[id];
-        },
-
+        createAppInterfaceInputField:function (state) {
+          state.inputFields.push(
+            {
+              input_id:state.counter++,
+              name:'',
+              value:'',
+              type:'',
+              appArg:'',
+              dataStaged:false,
+              requiredId:false,
+              requiredOnCmdId:false
+            }
+          );
+        }
+      },
+      getters:{
+        getAppInterface:state=>{
+          return state.data;
+        }
+      }
+    },
+    appDetailsTab:{
+      state:{
+        data:{},
+      },
+      mutations:{
+        addAppDetails:function (state,data) {
+          state.data=data;
+        }
+      },
+      getters:{
+        getAppDetails:(state,getters)=>{
+          return state.data;
+        }
+      }
+    },
+    appDeploymentsTab:{
+      state:{
+        data:{},
+      },
+      mutations:{
+        addAppDeployments:function (state,data) {
+          state.data=data;
+        }
+      },
+      getters:{
+        getAppDeployments:(state,getters)=>{
+          return state.data;
+        }
       }
     }
   }
-});
+};
+
+export default {
+  'store':store
+}
+
