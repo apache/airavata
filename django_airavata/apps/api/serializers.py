@@ -1,6 +1,6 @@
 from apache.airavata.model.experiment.ttypes import ExperimentModel
 from apache.airavata.model.workspace.ttypes import Project
-
+from apache.airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule
 from django.conf import settings
 
 from rest_framework import serializers
@@ -70,6 +70,19 @@ class ExperimentSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         return ExperimentModel(**validated_data)
+
+    def update(self, instance, validated_data):
+        raise Exception("Not implemented")
+
+
+class ApplicationModuleSerializer(serializers.Serializer):
+    appModuleId=serializers.CharField(required=True)
+    appModuleName=serializers.CharField(required=True)
+    appModuleDescription = serializers.CharField()
+    appModuleVersion=serializers.CharField()
+
+    def create(self, validated_data):
+        return ApplicationModule(**validated_data)
 
     def update(self, instance, validated_data):
         raise Exception("Not implemented")

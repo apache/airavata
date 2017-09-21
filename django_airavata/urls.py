@@ -19,7 +19,7 @@ from django.contrib import admin
 from . import views
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    url(r'^admin/', include('django_airavata.apps.admin.urls')),
     url(r'^auth/', include('django_airavata.apps.auth.urls')),
     url(r'^workspace/', include('django_airavata.apps.workspace.urls')),
     url(r'^api/', include('django_airavata.apps.api.urls')),

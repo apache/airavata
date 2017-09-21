@@ -15,6 +15,7 @@ router.register(r'projects', views.ProjectViewSet, base_name='project')
 app_name = 'django_airavata_api'
 urlpatterns = [
     url(r'^', include(router.urls)),
+    url(r'^applications/$', views.ApplicationList.as_view(), name='application_module_list')
 ]
 
 if logger.isEnabledFor(logging.DEBUG):

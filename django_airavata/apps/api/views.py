@@ -17,8 +17,8 @@ from django.views.decorators.csrf import csrf_exempt
 @api_view(['GET'])
 def api_root(request, format=None):
     return Response({
-        'projects': reverse('django_airavata_api:project-list', request=request, format=format),
-        'experiments': reverse('django_airavata_api:api_experiment_list', request=request, format=format)
+        'projects': reverse('project-list', request=request, format=format),
+        'admin': reverse('api_experiment_list', request=request, format=format)
     })
 
 class GenericAPIBackedViewSet(GenericViewSet):
@@ -128,4 +128,13 @@ class ExperimentList(APIView):
 
         experiments = request.airavata_client.getUserExperiments(request.authz_token, gateway_id, username, -1, 0)
         serializer = serializers.ExperimentSerializer(experiments, many=True, context={'request': request})
+        return Response(serializer.data)
+
+
+class ApplicationList(APIView):
+
+    def get(self,request,format=None):
+        gateway_id = settings.GATEWAY_ID
+        app_modules=request.airavata_client.getAllAppModules(request.authz_token,gateway_id)
+        serializer=serializers.ApplicationModuleSerializer(app_modules,many=True,context={'request':request})
         return Response(serializer.data)
