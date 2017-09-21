@@ -59,26 +59,41 @@ class GenericAPIBackedViewSet(GenericViewSet):
     def authz_token(self):
         return self.request.authz_token
 
-class CreateUpdateRetrieveListViewSet(mixins.CreateModelMixin,
-                                      mixins.RetrieveModelMixin,
-                                      mixins.UpdateModelMixin,
-                                      mixins.DestroyModelMixin,
-                                      mixins.ListModelMixin,
-                                      GenericAPIBackedViewSet):
+
+class ReadOnlyAPIBackedViewSet(mixins.RetrieveModelMixin,
+                               mixins.ListModelMixin,
+                               GenericAPIBackedViewSet):
+    """
+    A viewset that provides default `retrieve()` and `list()` actions.
+
+    Subclasses must implement the following:
+    * get_list(self)
+    * get_instance(self, lookup_value)
+    """
+    pass
+
+
+class APIBackedViewSet(mixins.CreateModelMixin,
+                       mixins.RetrieveModelMixin,
+                       mixins.UpdateModelMixin,
+                       mixins.DestroyModelMixin,
+                       mixins.ListModelMixin,
+                       GenericAPIBackedViewSet):
     """
     A viewset that provides default `create()`, `retrieve()`, `update()`,
-    `partial_update()` and `list()` actions.
+    `partial_update()`, `destroy()` and `list()` actions.
 
     Subclasses must implement the following:
     * get_list(self)
     * get_instance(self, lookup_value)
     * perform_create(self, serializer) - should return instance with id populated
     * perform_update(self, serializer)
+    * perform_destroy(self, instance)
     """
     pass
 
 
-class ProjectViewSet(CreateUpdateRetrieveListViewSet):
+class ProjectViewSet(APIBackedViewSet):
 
     serializer_class = serializers.ProjectSerializer
     lookup_field = 'project_id'
@@ -105,6 +120,7 @@ class ProjectViewSet(CreateUpdateRetrieveListViewSet):
         serializer = serializers.ExperimentSerializer(experiments, many=True, context={'request': request})
         return Response(serializer.data)
 
+# TODO: convert to ViewSet
 class ExperimentList(APIView):
     def get(self, request, format=None):
         gateway_id = settings.GATEWAY_ID
