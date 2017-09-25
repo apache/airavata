@@ -76,13 +76,13 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner  {
     }
 
     @Override
-    public void createAccount(String userId, String sshPublicKey) throws InvalidUsernameException {
+    public String createAccount(String userId, String sshPublicKey) throws InvalidUsernameException {
 
         throw new UnsupportedOperationException("IULdapSSHAccountProvisioner does not support creating cluster accounts at this time.");
     }
 
     @Override
-    public void installSSHKey(String userId, String sshPublicKey) throws InvalidUsernameException {
+    public String installSSHKey(String userId, String sshPublicKey) throws InvalidUsernameException {
         String username = getUsername(userId);
         boolean success = withLdapConnection(ldapConnection -> {
             try {
@@ -127,6 +127,7 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner  {
                 throw new RuntimeException(e);
             }
         });
+        return username;
     }
 
     @Override

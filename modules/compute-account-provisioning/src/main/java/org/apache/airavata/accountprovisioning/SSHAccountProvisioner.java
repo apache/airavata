@@ -50,17 +50,19 @@ public interface SSHAccountProvisioner {
      * unimplemented for this SSHAccountProvisioner.
      * @param userId the Airavata user id
      * @param sshPublicKey the public key part of an Airavata managed SSH credential
+     * @return username
      * @throws InvalidUsernameException
      */
-    void createAccount(String userId, String sshPublicKey) throws InvalidUsernameException;
+    String createAccount(String userId, String sshPublicKey) throws InvalidUsernameException;
 
     /**
      * Install an SSH key for the user on the compute host.
      * @param userId the Airavata user id
      * @param sshPublicKey the public key part of an Airavata managed SSH credential
+     * @return username
      * @throws InvalidUsernameException
      */
-    void installSSHKey(String userId, String sshPublicKey) throws InvalidUsernameException;
+    String installSSHKey(String userId, String sshPublicKey) throws InvalidUsernameException;
 
     /**
      * Get the scratch location that should be created for the user. Note: this method doesn't create the scratch
