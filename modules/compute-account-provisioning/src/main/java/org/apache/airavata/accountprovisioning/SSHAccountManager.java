@@ -183,6 +183,15 @@ public class SSHAccountManager {
         return userComputeResourcePreference;
     }
 
+    private static String getSSHHostname(ComputeResourceDescription computeResourceDescription, SSHJobSubmission sshJobSubmission) {
+        String alternativeSSHHostName = sshJobSubmission.getAlternativeSSHHostName();
+        if (alternativeSSHHostName != null && !"".equals(alternativeSSHHostName.trim())) {
+            return alternativeSSHHostName;
+        } else {
+            return computeResourceDescription.getHostName();
+        }
+    }
+
     private static SSHAccountProvisioner createSshAccountProvisioner(String gatewayId, ComputeResourcePreference computeResourcePreference) throws InvalidSetupException {
         String provisionerName = computeResourcePreference.getSshAccountProvisioner();
         Map<ConfigParam,String> provisionerConfig = convertConfigParams(provisionerName, computeResourcePreference.getSshAccountProvisionerConfig());
