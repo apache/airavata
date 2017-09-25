@@ -50,7 +50,16 @@ public class SSHAccountManager {
 
     private final static Logger logger = LoggerFactory.getLogger(SSHAccountManager.class);
 
-    public static boolean doesUserHaveSSHAccount(String gatewayId, String computeResourceId, String username) throws InvalidSetupException, InvalidUsernameException {
+    /**
+     * Check if user has an SSH account on the compute resource.
+     * @param gatewayId
+     * @param computeResourceId
+     * @param userId Airavata user id
+     * @return
+     * @throws InvalidSetupException
+     * @throws InvalidUsernameException
+     */
+    public static boolean doesUserHaveSSHAccount(String gatewayId, String computeResourceId, String userId) throws InvalidSetupException, InvalidUsernameException {
 
         // get compute resource preferences for the gateway and hostname
         RegistryService.Client registryServiceClient = getRegistryServiceClient();
@@ -75,15 +84,25 @@ public class SSHAccountManager {
         SSHAccountProvisioner sshAccountProvisioner = createSshAccountProvisioner(gatewayId, computeResourcePreference);
 
         try {
-            return sshAccountProvisioner.hasAccount(username);
+            return sshAccountProvisioner.hasAccount(userId);
         } catch (InvalidUsernameException e) {
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException("hasAccount call failed for username [" + username + "]: " + e.getMessage(), e);
+            throw new RuntimeException("hasAccount call failed for userId [" + userId + "]: " + e.getMessage(), e);
         }
     }
 
-    public static UserComputeResourcePreference setupSSHAccount(String gatewayId, String computeResourceId, String username, SSHCredential sshCredential) throws InvalidSetupException, InvalidUsernameException {
+    /**
+     * Add SSH key to compute resource on behalf of user.
+     * @param gatewayId
+     * @param computeResourceId
+     * @param userId Airavata user id
+     * @param sshCredential
+     * @return a populated but not persisted UserComputeResourcePreference instance
+     * @throws InvalidSetupException
+     * @throws InvalidUsernameException
+     */
+    public static UserComputeResourcePreference setupSSHAccount(String gatewayId, String computeResourceId, String userId, SSHCredential sshCredential) throws InvalidSetupException, InvalidUsernameException {
 
         // get compute resource preferences for the gateway and hostname
         RegistryService.Client registryServiceClient = getRegistryServiceClient();
@@ -127,32 +146,34 @@ public class SSHAccountManager {
         SSHAccountProvisioner sshAccountProvisioner = createSshAccountProvisioner(gatewayId, computeResourcePreference);
         boolean canCreateAccount = SSHAccountProvisionerFactory.canCreateAccount(computeResourcePreference.getSshAccountProvisioner());
 
-        // First check if username has an account
+        // First check if userId has an account
         boolean hasAccount = false;
         try {
-            hasAccount = sshAccountProvisioner.hasAccount(username);
+            hasAccount = sshAccountProvisioner.hasAccount(userId);
         } catch (InvalidUsernameException e) {
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException("hasAccount call failed for username [" + username + "]: " + e.getMessage(), e);
+            throw new RuntimeException("hasAccount call failed for userId [" + userId + "]: " + e.getMessage(), e);
         }
 
         if (!hasAccount && !canCreateAccount) {
-            throw new InvalidSetupException("User [" + username + "] doesn't have account and [" + computeResourceId + "] doesn't " +
+            throw new InvalidSetupException("User [" + userId + "] doesn't have account and [" + computeResourceId + "] doesn't " +
                     "have a SSH Account Provisioner that supports creating accounts.");
         }
+        // TODO: create account for user if user doesn't have account
 
+        String username = null;
         // Install SSH key
         try {
-            sshAccountProvisioner.installSSHKey(username, sshCredential.getPublicKey());
+            username = sshAccountProvisioner.installSSHKey(userId, sshCredential.getPublicKey());
         } catch (InvalidUsernameException e) {
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException("installSSHKey call failed for username [" + username + "]: " + e.getMessage(), e);
+            throw new RuntimeException("installSSHKey call failed for userId [" + userId + "]: " + e.getMessage(), e);
         }
 
         // Verify can authenticate to host
-        String sshHostname = sshJobSubmission.getAlternativeSSHHostName() != null ? sshJobSubmission.getAlternativeSSHHostName() : computeResourceDescription.getHostName();
+        String sshHostname = getSSHHostname(computeResourceDescription, sshJobSubmission);
         int sshPort = sshJobSubmission.getSshPort();
         boolean validated = false;
         try {
@@ -168,7 +189,7 @@ public class SSHAccountManager {
         }
 
         // create the scratch location on the host
-        String scratchLocation = sshAccountProvisioner.getScratchLocation(username);
+        String scratchLocation = sshAccountProvisioner.getScratchLocation(userId);
         try {
             SSHUtil.execute(sshHostname, sshPort, username, sshCredential, "mkdir -p " + scratchLocation);
         } catch (Exception e) {

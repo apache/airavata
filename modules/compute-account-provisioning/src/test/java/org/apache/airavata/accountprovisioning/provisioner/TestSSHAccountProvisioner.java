@@ -42,13 +42,15 @@ public class TestSSHAccountProvisioner implements SSHAccountProvisioner {
     }
 
     @Override
-    public void createAccount(String userId, String sshPublicKey) throws InvalidUsernameException {
+    public String createAccount(String userId, String sshPublicKey) throws InvalidUsernameException {
 
+        return userId;
     }
 
     @Override
-    public void installSSHKey(String userId, String sshPublicKey) throws InvalidUsernameException {
+    public String installSSHKey(String userId, String sshPublicKey) throws InvalidUsernameException {
 
+        return userId;
     }
 
     @Override
