@@ -3485,6 +3485,11 @@ interface AiravataIf {
    *  Resource specific credential store token. If this token is specified, then it is superceeded by the gateway's
    *   default credential store.
    * 
+   * validated:
+   *  If true the the configuration has been validated in the sense that the username and credential can be used to
+   *  login to the remote host and the scratchLocation is a valid location that the user has permission to write to.
+   *  Should be treated as read-only and only mutated by Airavata middleware.
+   * 
    * 
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
@@ -3716,6 +3721,11 @@ interface AiravataIf {
    * resourceSpecificCredentialStoreToken:
    *  Resource specific credential store token. If this token is specified, then it is superceeded by the gateway's
    *   default credential store.
+   * 
+   * validated:
+   *  If true the the configuration has been validated in the sense that the username and credential can be used to
+   *  login to the remote host and the scratchLocation is a valid location that the user has permission to write to.
+   *  Should be treated as read-only and only mutated by Airavata middleware.
    * 
    * 
    * @throws \Airavata\API\Error\InvalidRequestException
