@@ -148,7 +148,7 @@ public class SSHUtil {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        boolean result = validate(username, hostname, 22, sshCredential);
+        boolean result = validate(hostname, 22, username, sshCredential);
         System.out.println(result);
     }
 }
