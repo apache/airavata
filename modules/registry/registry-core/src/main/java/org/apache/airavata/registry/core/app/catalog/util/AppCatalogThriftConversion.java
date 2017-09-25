@@ -901,6 +901,7 @@ public class AppCatalogThriftConversion {
         if (resource.getReservationEndTime() != null) {
             preference.setReservationEndTime(resource.getReservationEndTime().getTime());
         }
+        preference.setValidated(resource.isValidated());
         return preference;
     }
 

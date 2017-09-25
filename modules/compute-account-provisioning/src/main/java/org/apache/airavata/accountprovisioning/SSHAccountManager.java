@@ -180,6 +180,7 @@ public class SSHAccountManager {
         userComputeResourcePreference.setComputeResourceId(computeResourceId);
         userComputeResourcePreference.setLoginUserName(username);
         userComputeResourcePreference.setScratchLocation(scratchLocation);
+        userComputeResourcePreference.setValidated(true);
         return userComputeResourcePreference;
     }
 

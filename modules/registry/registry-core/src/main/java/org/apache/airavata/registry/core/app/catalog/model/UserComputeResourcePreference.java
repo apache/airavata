@@ -54,6 +54,8 @@ public class UserComputeResourcePreference {
     private Timestamp reservationStartTime;
     @Column(name = "RESERVATION_END_TIME")
     private Timestamp reservationEndTime;
+    @Column(name = "VALIDATED")
+    private boolean validated;
 
 
     @ManyToOne(cascade= CascadeType.MERGE)
@@ -183,5 +185,13 @@ public class UserComputeResourcePreference {
 
     public void setReservationEndTime(Timestamp reservationEndTime) {
         this.reservationEndTime = reservationEndTime;
+    }
+
+    public boolean isValidated() {
+        return validated;
+    }
+
+    public void setValidated(boolean validated) {
+        this.validated = validated;
     }
 }

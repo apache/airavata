@@ -987,6 +987,7 @@ public class AppCatalogJPAUtils {
             resource.setReservation(o.getReservation());
             resource.setReservationStartTime(o.getReservationStartTime());
             resource.setReservationEndTime(o.getReservationEndTime());
+            resource.setValidated(o.isValidated());
         }
         return resource;
     }
