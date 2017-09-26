@@ -23,7 +23,7 @@
 #    and Data Model java beans in java, C++, PHP and Python.
 
 show_usage() {
-	echo -e "Usage: $0 [--native-thrift] [Language to generate stubs]"
+	echo -e "Usage: $0 [docker-machine start--native-thrift] [Language to generate stubs]"
 	echo ""
 	echo "options:"
 	echo -e "\tjava Generate/Update Java Stubs"
@@ -47,9 +47,11 @@ then
 	exit 0
 fi
 
-REQUIRED_THRIFT_VERSION='0.9.3'
+REQUIRED_THRIFT_VERSION='0.10.0'
 THRIFT_DOCKER_IMAGE='thrift'
 THRIFT_NATIVE="false"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+AIRAVATA_DIR=`dirname "$SCRIPT_DIR"`
 
 setup() {
     if [[ $THRIFT_NATIVE == "true" ]]; then
@@ -58,10 +60,10 @@ setup() {
         else
           THRIFT_EXEC=/usr/local/bin/thrift
         fi
-        BASEDIR=""
+        BASEDIR="$AIRAVATA_DIR"
     else
-        THRIFT_EXEC="docker run --rm -v $PWD:/data $THRIFT_DOCKER_IMAGE:$REQUIRED_THRIFT_VERSION thrift"
-        BASEDIR="/data/"
+        BASEDIR="/data"
+        THRIFT_EXEC="docker run --rm -v $AIRAVATA_DIR:$BASEDIR $THRIFT_DOCKER_IMAGE:$REQUIRED_THRIFT_VERSION thrift"
     fi
 
     VERSION=$($THRIFT_EXEC -version 2>/dev/null | grep -F "${REQUIRED_THRIFT_VERSION}" |  wc -l)
@@ -73,15 +75,17 @@ setup() {
 
     # Global Constants used across the script
     AIRAVATA_API_IDL_DIR='airavata-apis'
-    BASE_TARGET_DIR='target'
+    BASE_TARGET_DIR="$SCRIPT_DIR/target"
 
     # Thrift files
-    AIRAVATA_API_THRIFT_FILE="${BASEDIR}airavata-apis/airavata_api.thrift"
-    DATAMODEL_THRIFT_FILE="${BASEDIR}data-models/airavata_data_models.thrift"
-    APP_CATALOG_THRIFT_FILE="${BASEDIR}data-models/app-catalog-models/app_catalog_models.thrift"
-    RESOURCE_CATALOG_THRIFT_FILE="${BASEDIR}data-models/resource-catalog-models/resource_catalog_models.thrift"
-    WORKFLOW_THRIFT_FILE="${BASEDIR}data-models/workflow-models/workflow_data_model.thrift"
-    PROFILE_SERVICE_THRIFT_FILE="${BASEDIR}service-cpis/profile-service/profile-service-cpi.thrift"
+    AIRAVATA_API_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/airavata-apis/airavata_api.thrift"
+    SHARING_API_THRIFT_FILE="${BASEDIR}/modules/sharing-registry/thrift_models/sharing_cpi.thrift"
+    DATAMODEL_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/airavata_data_models.thrift"
+    SHARING_DATAMODEL_THRIFT_FILE="${BASEDIR}/modules/sharing-registry/thrift_models/sharing_models.thrift"
+    APP_CATALOG_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/app-catalog-models/app_catalog_models.thrift"
+    RESOURCE_CATALOG_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/resource-catalog-models/resource_catalog_models.thrift"
+    WORKFLOW_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/data-models/workflow-models/workflow_data_model.thrift"
+    PROFILE_SERVICE_THRIFT_FILE="${BASEDIR}/thrift-interface-descriptions/service-cpis/profile-service/profile-service-cpi.thrift"
 
     DATAMODEL_SRC_DIR='../airavata-api/airavata-data-models/src/main/java'
     JAVA_API_SDK_DIR='../airavata-api/airavata-api-stubs/src/main/java'
@@ -92,7 +96,7 @@ setup() {
     # Initialize the thrift arguments.
     #  Since most of the Airavata API and Data Models have includes, use recursive option by default.
     #  Generate all the files in target directory
-    THRIFT_ARGS="-r -o ${BASEDIR}${BASE_TARGET_DIR}"
+    THRIFT_ARGS="-r -o ${BASEDIR}/thrift-interface-descriptions/target"
     # Ensure the required target directories exists, if not create.
     mkdir -p ${BASE_TARGET_DIR}
 }
@@ -227,11 +231,13 @@ generate_php_stubs() {
 
     # Using thrift Java generator, generate the PHP classes based on Airavata API. This
     #   The airavata_api.thrift includes rest of data models.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${DATAMODEL_THRIFT_FILE}  || fail unable to generate PHP thrift classes
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${APP_CATALOG_THRIFT_FILE}  || fail unable to generate PHP thrift classes
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${RESOURCE_CATALOG_THRIFT_FILE}   || fail unable to generate PHP thrift classes
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${AIRAVATA_API_THRIFT_FILE} || fail unable to generate PHP thrift classes
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${PROFILE_SERVICE_THRIFT_FILE} || fail unable to generate PHP thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${DATAMODEL_THRIFT_FILE}  || fail unable to generate PHP thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${SHARING_DATAMODEL_THRIFT_FILE}  || fail unable to generate PHP thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${APP_CATALOG_THRIFT_FILE}  || fail unable to generate PHP thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${RESOURCE_CATALOG_THRIFT_FILE}   || fail unable to generate PHP thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${AIRAVATA_API_THRIFT_FILE} || fail unable to generate PHP thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${SHARING_API_THRIFT_FILE} || fail unable to generate PHP thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen php ${PROFILE_SERVICE_THRIFT_FILE} || fail unable to generate PHP thrift classes
 
     # For the generated java classes add the ASF V2 License header
     ## TODO Write PHP license parser
@@ -282,6 +288,8 @@ generate_python_stubs() {
     # Using thrift Python generator, generate the python classes based on Airavata API. This
     #   The airavata_api.thrift includes rest of data models.
     $THRIFT_EXEC ${THRIFT_ARGS} --gen py ${AIRAVATA_API_THRIFT_FILE}  || fail unable to generate Python thrift classes
+
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen py ${SHARING_API_THRIFT_FILE}  || fail unable to generate Python thrift classes
 
     # For the generated CPP classes add the ASF V2 License header
     #add_license_header #PYTHON_GEN_DIR

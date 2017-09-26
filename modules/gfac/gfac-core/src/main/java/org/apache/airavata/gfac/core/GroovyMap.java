@@ -96,6 +96,7 @@ public class GroovyMap extends HashMap<String, Object> {
                 .add(Script.JOB_SUBMITTER_COMMAND, null)
                 .add(Script.EXECUTABLE_PATH, null)
                 .add(Script.INPUTS, null)
+                .add(Script.INPUTS_ALL, null)
                 .add(Script.POST_JOB_COMMANDS, null)
                 .add(Script.USED_MEM, null)
                 .add(Script.PROCESS_PER_NODE, null)
