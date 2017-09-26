@@ -1,0 +1,4 @@
+Create Database module based on the thrift IDL's
+Jira Issue number: https://issues.apache.org/jira/browse/AIRAVATA-2523?filter=-1
+
+The main task is to create databse schemas for different users and resource allocation types like community,campus,third party etc
