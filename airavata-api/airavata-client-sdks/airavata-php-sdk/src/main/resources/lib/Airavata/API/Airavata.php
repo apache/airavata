@@ -3428,6 +3428,76 @@ interface AiravataIf {
    */
   public function deleteGatewayStoragePreference(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayID, $storageId);
   /**
+   * @param \Airavata\Model\Security\AuthzToken $authzToken
+   * @return \Airavata\Model\AppCatalog\AccountProvisioning\SSHAccountProvisioner[]
+   * @throws \Airavata\API\Error\InvalidRequestException
+   * @throws \Airavata\API\Error\AiravataClientException
+   * @throws \Airavata\API\Error\AiravataSystemException
+   * @throws \Airavata\API\Error\AuthorizationException
+   */
+  public function getSSHAccountProvisioners(\Airavata\Model\Security\AuthzToken $authzToken);
+  /**
+   * Check if user has an SSH account on the given compute resource. This
+   * method will only work if the compute resource has an SSHAccountProvisioner configured for it.
+   * 
+   * @param \Airavata\Model\Security\AuthzToken $authzToken
+   * @param string $computeResourceId
+   * @param string $userId
+   * @return bool
+   * @throws \Airavata\API\Error\InvalidRequestException
+   * @throws \Airavata\API\Error\AiravataClientException
+   * @throws \Airavata\API\Error\AiravataSystemException
+   * @throws \Airavata\API\Error\AuthorizationException
+   */
+  public function doesUserHaveSSHAccount(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $userId);
+  /**
+   * Setup and return a UserComputeResourcePreference object for this user to SSH into the given compute resource with
+   * the given SSH credential. This method will only work if the compute resource has an SSHAccountProvisioner
+   * configured for it. The returned UserComputeResourcePreference object is not saved; it is up to the client to
+   * call addUserComputeResourcePreference to persist it.
+   * 
+   * @param \Airavata\Model\Security\AuthzToken $authzToken
+   * @param string $computeResourceId
+   * @param string $userId
+   * @param string $airavataCredStoreToken
+   * @return \Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference User specific preferences for a Computer Resource
+   * 
+   * computeResourceId:
+   *   Corelate the preference to a compute resource.
+   * 
+   * 
+   * loginUserName:
+   *   If turned true, Airavata will override the preferences of better alternatives exist.
+   * 
+   * 
+   * preferredBatchQueue:
+   *  Gateways can choose a defualt batch queue based on average job dimention, reservations or other metrics.
+   * 
+   * scratchLocation:
+   *  Path to the local scratch space on a HPC cluster. Typically used to create working directory for job execution.
+   * 
+   * allocationProjectNumber:
+   *  Typically used on HPC machines to charge computing usage to a account number. For instance, on XSEDE once an
+   *    allocation is approved, an allocation number is assigned. Before passing this number with job submittions, the
+   *    account to be used has to be added to the allocation.
+   * 
+   * resourceSpecificCredentialStoreToken:
+   *  Resource specific credential store token. If this token is specified, then it is superceeded by the gateway's
+   *   default credential store.
+   * 
+   * validated:
+   *  If true the the configuration has been validated in the sense that the username and credential can be used to
+   *  login to the remote host and the scratchLocation is a valid location that the user has permission to write to.
+   *  Should be treated as read-only and only mutated by Airavata middleware.
+   * 
+   * 
+   * @throws \Airavata\API\Error\InvalidRequestException
+   * @throws \Airavata\API\Error\AiravataClientException
+   * @throws \Airavata\API\Error\AiravataSystemException
+   * @throws \Airavata\API\Error\AuthorizationException
+   */
+  public function setupUserComputeResourcePreferencesForSSH(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $userId, $airavataCredStoreToken);
+  /**
    * Register User Resource Profile.
    * 
    * @param UserResourceProfile
@@ -3651,6 +3721,11 @@ interface AiravataIf {
    * resourceSpecificCredentialStoreToken:
    *  Resource specific credential store token. If this token is specified, then it is superceeded by the gateway's
    *   default credential store.
+   * 
+   * validated:
+   *  If true the the configuration has been validated in the sense that the username and credential can be used to
+   *  login to the remote host and the scratchLocation is a valid location that the user has permission to write to.
+   *  Should be treated as read-only and only mutated by Airavata middleware.
    * 
    * 
    * @throws \Airavata\API\Error\InvalidRequestException
@@ -12719,6 +12794,200 @@ class AiravataClient implements \Airavata\API\AiravataIf {
       throw $result->ae;
     }
     throw new \Exception("deleteGatewayStoragePreference failed: unknown result");
+  }
+
+  public function getSSHAccountProvisioners(\Airavata\Model\Security\AuthzToken $authzToken)
+  {
+    $this->send_getSSHAccountProvisioners($authzToken);
+    return $this->recv_getSSHAccountProvisioners();
+  }
+
+  public function send_getSSHAccountProvisioners(\Airavata\Model\Security\AuthzToken $authzToken)
+  {
+    $args = new \Airavata\API\Airavata_getSSHAccountProvisioners_args();
+    $args->authzToken = $authzToken;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'getSSHAccountProvisioners', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('getSSHAccountProvisioners', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_getSSHAccountProvisioners()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_getSSHAccountProvisioners_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Airavata_getSSHAccountProvisioners_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->ire !== null) {
+      throw $result->ire;
+    }
+    if ($result->ace !== null) {
+      throw $result->ace;
+    }
+    if ($result->ase !== null) {
+      throw $result->ase;
+    }
+    if ($result->ae !== null) {
+      throw $result->ae;
+    }
+    throw new \Exception("getSSHAccountProvisioners failed: unknown result");
+  }
+
+  public function doesUserHaveSSHAccount(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $userId)
+  {
+    $this->send_doesUserHaveSSHAccount($authzToken, $computeResourceId, $userId);
+    return $this->recv_doesUserHaveSSHAccount();
+  }
+
+  public function send_doesUserHaveSSHAccount(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $userId)
+  {
+    $args = new \Airavata\API\Airavata_doesUserHaveSSHAccount_args();
+    $args->authzToken = $authzToken;
+    $args->computeResourceId = $computeResourceId;
+    $args->userId = $userId;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'doesUserHaveSSHAccount', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('doesUserHaveSSHAccount', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_doesUserHaveSSHAccount()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_doesUserHaveSSHAccount_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Airavata_doesUserHaveSSHAccount_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->ire !== null) {
+      throw $result->ire;
+    }
+    if ($result->ace !== null) {
+      throw $result->ace;
+    }
+    if ($result->ase !== null) {
+      throw $result->ase;
+    }
+    if ($result->ae !== null) {
+      throw $result->ae;
+    }
+    throw new \Exception("doesUserHaveSSHAccount failed: unknown result");
+  }
+
+  public function setupUserComputeResourcePreferencesForSSH(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $userId, $airavataCredStoreToken)
+  {
+    $this->send_setupUserComputeResourcePreferencesForSSH($authzToken, $computeResourceId, $userId, $airavataCredStoreToken);
+    return $this->recv_setupUserComputeResourcePreferencesForSSH();
+  }
+
+  public function send_setupUserComputeResourcePreferencesForSSH(\Airavata\Model\Security\AuthzToken $authzToken, $computeResourceId, $userId, $airavataCredStoreToken)
+  {
+    $args = new \Airavata\API\Airavata_setupUserComputeResourcePreferencesForSSH_args();
+    $args->authzToken = $authzToken;
+    $args->computeResourceId = $computeResourceId;
+    $args->userId = $userId;
+    $args->airavataCredStoreToken = $airavataCredStoreToken;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'setupUserComputeResourcePreferencesForSSH', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('setupUserComputeResourcePreferencesForSSH', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_setupUserComputeResourcePreferencesForSSH()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_setupUserComputeResourcePreferencesForSSH_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Airavata_setupUserComputeResourcePreferencesForSSH_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->ire !== null) {
+      throw $result->ire;
+    }
+    if ($result->ace !== null) {
+      throw $result->ace;
+    }
+    if ($result->ase !== null) {
+      throw $result->ase;
+    }
+    if ($result->ae !== null) {
+      throw $result->ae;
+    }
+    throw new \Exception("setupUserComputeResourcePreferencesForSSH failed: unknown result");
   }
 
   public function registerUserResourceProfile(\Airavata\Model\Security\AuthzToken $authzToken, \Airavata\Model\AppCatalog\UserResourceProfile\UserResourceProfile $userResourceProfile)
@@ -55771,6 +56040,919 @@ class Airavata_deleteGatewayStoragePreference_result {
 
 }
 
+class Airavata_getSSHAccountProvisioners_args {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\Security\AuthzToken
+   */
+  public $authzToken = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'authzToken',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Security\AuthzToken',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['authzToken'])) {
+        $this->authzToken = $vals['authzToken'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_getSSHAccountProvisioners_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->authzToken = new \Airavata\Model\Security\AuthzToken();
+            $xfer += $this->authzToken->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_getSSHAccountProvisioners_args');
+    if ($this->authzToken !== null) {
+      if (!is_object($this->authzToken)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('authzToken', TType::STRUCT, 1);
+      $xfer += $this->authzToken->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_getSSHAccountProvisioners_result {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\AppCatalog\AccountProvisioning\SSHAccountProvisioner[]
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\API\Error\InvalidRequestException
+   */
+  public $ire = null;
+  /**
+   * @var \Airavata\API\Error\AiravataClientException
+   */
+  public $ace = null;
+  /**
+   * @var \Airavata\API\Error\AiravataSystemException
+   */
+  public $ase = null;
+  /**
+   * @var \Airavata\API\Error\AuthorizationException
+   */
+  public $ae = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\AppCatalog\AccountProvisioning\SSHAccountProvisioner',
+            ),
+          ),
+        1 => array(
+          'var' => 'ire',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\InvalidRequestException',
+          ),
+        2 => array(
+          'var' => 'ace',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataClientException',
+          ),
+        3 => array(
+          'var' => 'ase',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataSystemException',
+          ),
+        4 => array(
+          'var' => 'ae',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AuthorizationException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['ire'])) {
+        $this->ire = $vals['ire'];
+      }
+      if (isset($vals['ace'])) {
+        $this->ace = $vals['ace'];
+      }
+      if (isset($vals['ase'])) {
+        $this->ase = $vals['ase'];
+      }
+      if (isset($vals['ae'])) {
+        $this->ae = $vals['ae'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_getSSHAccountProvisioners_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::LST) {
+            $this->success = array();
+            $_size253 = 0;
+            $_etype256 = 0;
+            $xfer += $input->readListBegin($_etype256, $_size253);
+            for ($_i257 = 0; $_i257 < $_size253; ++$_i257)
+            {
+              $elem258 = null;
+              $elem258 = new \Airavata\Model\AppCatalog\AccountProvisioning\SSHAccountProvisioner();
+              $xfer += $elem258->read($input);
+              $this->success []= $elem258;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->ire = new \Airavata\API\Error\InvalidRequestException();
+            $xfer += $this->ire->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ace = new \Airavata\API\Error\AiravataClientException();
+            $xfer += $this->ace->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->ase = new \Airavata\API\Error\AiravataSystemException();
+            $xfer += $this->ase->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRUCT) {
+            $this->ae = new \Airavata\API\Error\AuthorizationException();
+            $xfer += $this->ae->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_getSSHAccountProvisioners_result');
+    if ($this->success !== null) {
+      if (!is_array($this->success)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('success', TType::LST, 0);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->success));
+        {
+          foreach ($this->success as $iter259)
+          {
+            $xfer += $iter259->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ire !== null) {
+      $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
+      $xfer += $this->ire->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ace !== null) {
+      $xfer += $output->writeFieldBegin('ace', TType::STRUCT, 2);
+      $xfer += $this->ace->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ase !== null) {
+      $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
+      $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ae !== null) {
+      $xfer += $output->writeFieldBegin('ae', TType::STRUCT, 4);
+      $xfer += $this->ae->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_doesUserHaveSSHAccount_args {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\Security\AuthzToken
+   */
+  public $authzToken = null;
+  /**
+   * @var string
+   */
+  public $computeResourceId = null;
+  /**
+   * @var string
+   */
+  public $userId = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'authzToken',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Security\AuthzToken',
+          ),
+        2 => array(
+          'var' => 'computeResourceId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'userId',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['authzToken'])) {
+        $this->authzToken = $vals['authzToken'];
+      }
+      if (isset($vals['computeResourceId'])) {
+        $this->computeResourceId = $vals['computeResourceId'];
+      }
+      if (isset($vals['userId'])) {
+        $this->userId = $vals['userId'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_doesUserHaveSSHAccount_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->authzToken = new \Airavata\Model\Security\AuthzToken();
+            $xfer += $this->authzToken->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->computeResourceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->userId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_doesUserHaveSSHAccount_args');
+    if ($this->authzToken !== null) {
+      if (!is_object($this->authzToken)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('authzToken', TType::STRUCT, 1);
+      $xfer += $this->authzToken->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->computeResourceId !== null) {
+      $xfer += $output->writeFieldBegin('computeResourceId', TType::STRING, 2);
+      $xfer += $output->writeString($this->computeResourceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->userId !== null) {
+      $xfer += $output->writeFieldBegin('userId', TType::STRING, 3);
+      $xfer += $output->writeString($this->userId);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_doesUserHaveSSHAccount_result {
+  static $_TSPEC;
+
+  /**
+   * @var bool
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\API\Error\InvalidRequestException
+   */
+  public $ire = null;
+  /**
+   * @var \Airavata\API\Error\AiravataClientException
+   */
+  public $ace = null;
+  /**
+   * @var \Airavata\API\Error\AiravataSystemException
+   */
+  public $ase = null;
+  /**
+   * @var \Airavata\API\Error\AuthorizationException
+   */
+  public $ae = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::BOOL,
+          ),
+        1 => array(
+          'var' => 'ire',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\InvalidRequestException',
+          ),
+        2 => array(
+          'var' => 'ace',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataClientException',
+          ),
+        3 => array(
+          'var' => 'ase',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataSystemException',
+          ),
+        4 => array(
+          'var' => 'ae',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AuthorizationException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['ire'])) {
+        $this->ire = $vals['ire'];
+      }
+      if (isset($vals['ace'])) {
+        $this->ace = $vals['ace'];
+      }
+      if (isset($vals['ase'])) {
+        $this->ase = $vals['ase'];
+      }
+      if (isset($vals['ae'])) {
+        $this->ae = $vals['ae'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_doesUserHaveSSHAccount_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->ire = new \Airavata\API\Error\InvalidRequestException();
+            $xfer += $this->ire->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ace = new \Airavata\API\Error\AiravataClientException();
+            $xfer += $this->ace->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->ase = new \Airavata\API\Error\AiravataSystemException();
+            $xfer += $this->ase->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRUCT) {
+            $this->ae = new \Airavata\API\Error\AuthorizationException();
+            $xfer += $this->ae->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_doesUserHaveSSHAccount_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
+      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ire !== null) {
+      $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
+      $xfer += $this->ire->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ace !== null) {
+      $xfer += $output->writeFieldBegin('ace', TType::STRUCT, 2);
+      $xfer += $this->ace->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ase !== null) {
+      $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
+      $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ae !== null) {
+      $xfer += $output->writeFieldBegin('ae', TType::STRUCT, 4);
+      $xfer += $this->ae->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_setupUserComputeResourcePreferencesForSSH_args {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\Security\AuthzToken
+   */
+  public $authzToken = null;
+  /**
+   * @var string
+   */
+  public $computeResourceId = null;
+  /**
+   * @var string
+   */
+  public $userId = null;
+  /**
+   * @var string
+   */
+  public $airavataCredStoreToken = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'authzToken',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Security\AuthzToken',
+          ),
+        2 => array(
+          'var' => 'computeResourceId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'userId',
+          'type' => TType::STRING,
+          ),
+        4 => array(
+          'var' => 'airavataCredStoreToken',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['authzToken'])) {
+        $this->authzToken = $vals['authzToken'];
+      }
+      if (isset($vals['computeResourceId'])) {
+        $this->computeResourceId = $vals['computeResourceId'];
+      }
+      if (isset($vals['userId'])) {
+        $this->userId = $vals['userId'];
+      }
+      if (isset($vals['airavataCredStoreToken'])) {
+        $this->airavataCredStoreToken = $vals['airavataCredStoreToken'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_setupUserComputeResourcePreferencesForSSH_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->authzToken = new \Airavata\Model\Security\AuthzToken();
+            $xfer += $this->authzToken->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->computeResourceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->userId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->airavataCredStoreToken);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_setupUserComputeResourcePreferencesForSSH_args');
+    if ($this->authzToken !== null) {
+      if (!is_object($this->authzToken)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('authzToken', TType::STRUCT, 1);
+      $xfer += $this->authzToken->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->computeResourceId !== null) {
+      $xfer += $output->writeFieldBegin('computeResourceId', TType::STRING, 2);
+      $xfer += $output->writeString($this->computeResourceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->userId !== null) {
+      $xfer += $output->writeFieldBegin('userId', TType::STRING, 3);
+      $xfer += $output->writeString($this->userId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->airavataCredStoreToken !== null) {
+      $xfer += $output->writeFieldBegin('airavataCredStoreToken', TType::STRING, 4);
+      $xfer += $output->writeString($this->airavataCredStoreToken);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_setupUserComputeResourcePreferencesForSSH_result {
+  static $_TSPEC;
+
+  /**
+   * @var \Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference
+   */
+  public $success = null;
+  /**
+   * @var \Airavata\API\Error\InvalidRequestException
+   */
+  public $ire = null;
+  /**
+   * @var \Airavata\API\Error\AiravataClientException
+   */
+  public $ace = null;
+  /**
+   * @var \Airavata\API\Error\AiravataSystemException
+   */
+  public $ase = null;
+  /**
+   * @var \Airavata\API\Error\AuthorizationException
+   */
+  public $ae = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference',
+          ),
+        1 => array(
+          'var' => 'ire',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\InvalidRequestException',
+          ),
+        2 => array(
+          'var' => 'ace',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataClientException',
+          ),
+        3 => array(
+          'var' => 'ase',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataSystemException',
+          ),
+        4 => array(
+          'var' => 'ae',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AuthorizationException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['ire'])) {
+        $this->ire = $vals['ire'];
+      }
+      if (isset($vals['ace'])) {
+        $this->ace = $vals['ace'];
+      }
+      if (isset($vals['ase'])) {
+        $this->ase = $vals['ase'];
+      }
+      if (isset($vals['ae'])) {
+        $this->ae = $vals['ae'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_setupUserComputeResourcePreferencesForSSH_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::STRUCT) {
+            $this->success = new \Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference();
+            $xfer += $this->success->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->ire = new \Airavata\API\Error\InvalidRequestException();
+            $xfer += $this->ire->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ace = new \Airavata\API\Error\AiravataClientException();
+            $xfer += $this->ace->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->ase = new \Airavata\API\Error\AiravataSystemException();
+            $xfer += $this->ase->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRUCT) {
+            $this->ae = new \Airavata\API\Error\AuthorizationException();
+            $xfer += $this->ae->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_setupUserComputeResourcePreferencesForSSH_result');
+    if ($this->success !== null) {
+      if (!is_object($this->success)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('success', TType::STRUCT, 0);
+      $xfer += $this->success->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ire !== null) {
+      $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
+      $xfer += $this->ire->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ace !== null) {
+      $xfer += $output->writeFieldBegin('ace', TType::STRUCT, 2);
+      $xfer += $this->ace->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ase !== null) {
+      $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
+      $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ae !== null) {
+      $xfer += $output->writeFieldBegin('ae', TType::STRUCT, 4);
+      $xfer += $this->ae->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 class Airavata_registerUserResourceProfile_args {
   static $_TSPEC;
 
@@ -58577,15 +59759,15 @@ class Airavata_getAllUserComputeResourcePreferences_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size253 = 0;
-            $_etype256 = 0;
-            $xfer += $input->readListBegin($_etype256, $_size253);
-            for ($_i257 = 0; $_i257 < $_size253; ++$_i257)
+            $_size260 = 0;
+            $_etype263 = 0;
+            $xfer += $input->readListBegin($_etype263, $_size260);
+            for ($_i264 = 0; $_i264 < $_size260; ++$_i264)
             {
-              $elem258 = null;
-              $elem258 = new \Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference();
-              $xfer += $elem258->read($input);
-              $this->success []= $elem258;
+              $elem265 = null;
+              $elem265 = new \Airavata\Model\AppCatalog\UserResourceProfile\UserComputeResourcePreference();
+              $xfer += $elem265->read($input);
+              $this->success []= $elem265;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -58645,9 +59827,9 @@ class Airavata_getAllUserComputeResourcePreferences_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter259)
+          foreach ($this->success as $iter266)
           {
-            $xfer += $iter259->write($output);
+            $xfer += $iter266->write($output);
           }
         }
         $output->writeListEnd();
@@ -58906,15 +60088,15 @@ class Airavata_getAllUserStoragePreferences_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size260 = 0;
-            $_etype263 = 0;
-            $xfer += $input->readListBegin($_etype263, $_size260);
-            for ($_i264 = 0; $_i264 < $_size260; ++$_i264)
+            $_size267 = 0;
+            $_etype270 = 0;
+            $xfer += $input->readListBegin($_etype270, $_size267);
+            for ($_i271 = 0; $_i271 < $_size267; ++$_i271)
             {
-              $elem265 = null;
-              $elem265 = new \Airavata\Model\AppCatalog\UserResourceProfile\UserStoragePreference();
-              $xfer += $elem265->read($input);
-              $this->success []= $elem265;
+              $elem272 = null;
+              $elem272 = new \Airavata\Model\AppCatalog\UserResourceProfile\UserStoragePreference();
+              $xfer += $elem272->read($input);
+              $this->success []= $elem272;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -58974,9 +60156,9 @@ class Airavata_getAllUserStoragePreferences_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter266)
+          foreach ($this->success as $iter273)
           {
-            $xfer += $iter266->write($output);
+            $xfer += $iter273->write($output);
           }
         }
         $output->writeListEnd();
@@ -59189,15 +60371,15 @@ class Airavata_getAllUserResourceProfiles_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size267 = 0;
-            $_etype270 = 0;
-            $xfer += $input->readListBegin($_etype270, $_size267);
-            for ($_i271 = 0; $_i271 < $_size267; ++$_i271)
+            $_size274 = 0;
+            $_etype277 = 0;
+            $xfer += $input->readListBegin($_etype277, $_size274);
+            for ($_i278 = 0; $_i278 < $_size274; ++$_i278)
             {
-              $elem272 = null;
-              $elem272 = new \Airavata\Model\AppCatalog\UserResourceProfile\UserResourceProfile();
-              $xfer += $elem272->read($input);
-              $this->success []= $elem272;
+              $elem279 = null;
+              $elem279 = new \Airavata\Model\AppCatalog\UserResourceProfile\UserResourceProfile();
+              $xfer += $elem279->read($input);
+              $this->success []= $elem279;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -59257,9 +60439,9 @@ class Airavata_getAllUserResourceProfiles_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter273)
+          foreach ($this->success as $iter280)
           {
-            $xfer += $iter273->write($output);
+            $xfer += $iter280->write($output);
           }
         }
         $output->writeListEnd();
@@ -60846,14 +62028,14 @@ class Airavata_getAllWorkflows_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size274 = 0;
-            $_etype277 = 0;
-            $xfer += $input->readListBegin($_etype277, $_size274);
-            for ($_i278 = 0; $_i278 < $_size274; ++$_i278)
+            $_size281 = 0;
+            $_etype284 = 0;
+            $xfer += $input->readListBegin($_etype284, $_size281);
+            for ($_i285 = 0; $_i285 < $_size281; ++$_i285)
             {
-              $elem279 = null;
-              $xfer += $input->readString($elem279);
-              $this->success []= $elem279;
+              $elem286 = null;
+              $xfer += $input->readString($elem286);
+              $this->success []= $elem286;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -60913,9 +62095,9 @@ class Airavata_getAllWorkflows_result {
       {
         $output->writeListBegin(TType::STRING, count($this->success));
         {
-          foreach ($this->success as $iter280)
+          foreach ($this->success as $iter287)
           {
-            $xfer += $output->writeString($iter280);
+            $xfer += $output->writeString($iter287);
           }
         }
         $output->writeListEnd();
@@ -61128,15 +62310,15 @@ class Airavata_getLatestQueueStatuses_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size281 = 0;
-            $_etype284 = 0;
-            $xfer += $input->readListBegin($_etype284, $_size281);
-            for ($_i285 = 0; $_i285 < $_size281; ++$_i285)
+            $_size288 = 0;
+            $_etype291 = 0;
+            $xfer += $input->readListBegin($_etype291, $_size288);
+            for ($_i292 = 0; $_i292 < $_size288; ++$_i292)
             {
-              $elem286 = null;
-              $elem286 = new \Airavata\Model\Status\QueueStatusModel();
-              $xfer += $elem286->read($input);
-              $this->success []= $elem286;
+              $elem293 = null;
+              $elem293 = new \Airavata\Model\Status\QueueStatusModel();
+              $xfer += $elem293->read($input);
+              $this->success []= $elem293;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -61196,9 +62378,9 @@ class Airavata_getLatestQueueStatuses_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter287)
+          foreach ($this->success as $iter294)
           {
-            $xfer += $iter287->write($output);
+            $xfer += $iter294->write($output);
           }
         }
         $output->writeListEnd();
@@ -64249,15 +65431,15 @@ class Airavata_getChildDataProducts_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size288 = 0;
-            $_etype291 = 0;
-            $xfer += $input->readListBegin($_etype291, $_size288);
-            for ($_i292 = 0; $_i292 < $_size288; ++$_i292)
+            $_size295 = 0;
+            $_etype298 = 0;
+            $xfer += $input->readListBegin($_etype298, $_size295);
+            for ($_i299 = 0; $_i299 < $_size295; ++$_i299)
             {
-              $elem293 = null;
-              $elem293 = new \Airavata\Model\Data\Replica\DataProductModel();
-              $xfer += $elem293->read($input);
-              $this->success []= $elem293;
+              $elem300 = null;
+              $elem300 = new \Airavata\Model\Data\Replica\DataProductModel();
+              $xfer += $elem300->read($input);
+              $this->success []= $elem300;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -64317,9 +65499,9 @@ class Airavata_getChildDataProducts_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter294)
+          foreach ($this->success as $iter301)
           {
-            $xfer += $iter294->write($output);
+            $xfer += $iter301->write($output);
           }
         }
         $output->writeListEnd();
@@ -64463,17 +65645,17 @@ class Airavata_shareResourceWithUsers_args {
         case 4:
           if ($ftype == TType::MAP) {
             $this->userPermissionList = array();
-            $_size295 = 0;
-            $_ktype296 = 0;
-            $_vtype297 = 0;
-            $xfer += $input->readMapBegin($_ktype296, $_vtype297, $_size295);
-            for ($_i299 = 0; $_i299 < $_size295; ++$_i299)
+            $_size302 = 0;
+            $_ktype303 = 0;
+            $_vtype304 = 0;
+            $xfer += $input->readMapBegin($_ktype303, $_vtype304, $_size302);
+            for ($_i306 = 0; $_i306 < $_size302; ++$_i306)
             {
-              $key300 = '';
-              $val301 = 0;
-              $xfer += $input->readString($key300);
-              $xfer += $input->readI32($val301);
-              $this->userPermissionList[$key300] = $val301;
+              $key307 = '';
+              $val308 = 0;
+              $xfer += $input->readString($key307);
+              $xfer += $input->readI32($val308);
+              $this->userPermissionList[$key307] = $val308;
             }
             $xfer += $input->readMapEnd();
           } else {
@@ -64519,10 +65701,10 @@ class Airavata_shareResourceWithUsers_args {
       {
         $output->writeMapBegin(TType::STRING, TType::I32, count($this->userPermissionList));
         {
-          foreach ($this->userPermissionList as $kiter302 => $viter303)
+          foreach ($this->userPermissionList as $kiter309 => $viter310)
           {
-            $xfer += $output->writeString($kiter302);
-            $xfer += $output->writeI32($viter303);
+            $xfer += $output->writeString($kiter309);
+            $xfer += $output->writeI32($viter310);
           }
         }
         $output->writeMapEnd();
@@ -64821,17 +66003,17 @@ class Airavata_revokeSharingOfResourceFromUsers_args {
         case 4:
           if ($ftype == TType::MAP) {
             $this->userPermissionList = array();
-            $_size304 = 0;
-            $_ktype305 = 0;
-            $_vtype306 = 0;
-            $xfer += $input->readMapBegin($_ktype305, $_vtype306, $_size304);
-            for ($_i308 = 0; $_i308 < $_size304; ++$_i308)
+            $_size311 = 0;
+            $_ktype312 = 0;
+            $_vtype313 = 0;
+            $xfer += $input->readMapBegin($_ktype312, $_vtype313, $_size311);
+            for ($_i315 = 0; $_i315 < $_size311; ++$_i315)
             {
-              $key309 = '';
-              $val310 = 0;
-              $xfer += $input->readString($key309);
-              $xfer += $input->readI32($val310);
-              $this->userPermissionList[$key309] = $val310;
+              $key316 = '';
+              $val317 = 0;
+              $xfer += $input->readString($key316);
+              $xfer += $input->readI32($val317);
+              $this->userPermissionList[$key316] = $val317;
             }
             $xfer += $input->readMapEnd();
           } else {
@@ -64877,10 +66059,10 @@ class Airavata_revokeSharingOfResourceFromUsers_args {
       {
         $output->writeMapBegin(TType::STRING, TType::I32, count($this->userPermissionList));
         {
-          foreach ($this->userPermissionList as $kiter311 => $viter312)
+          foreach ($this->userPermissionList as $kiter318 => $viter319)
           {
-            $xfer += $output->writeString($kiter311);
-            $xfer += $output->writeI32($viter312);
+            $xfer += $output->writeString($kiter318);
+            $xfer += $output->writeI32($viter319);
           }
         }
         $output->writeMapEnd();
@@ -65316,14 +66498,14 @@ class Airavata_getAllAccessibleUsers_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size313 = 0;
-            $_etype316 = 0;
-            $xfer += $input->readListBegin($_etype316, $_size313);
-            for ($_i317 = 0; $_i317 < $_size313; ++$_i317)
+            $_size320 = 0;
+            $_etype323 = 0;
+            $xfer += $input->readListBegin($_etype323, $_size320);
+            for ($_i324 = 0; $_i324 < $_size320; ++$_i324)
             {
-              $elem318 = null;
-              $xfer += $input->readString($elem318);
-              $this->success []= $elem318;
+              $elem325 = null;
+              $xfer += $input->readString($elem325);
+              $this->success []= $elem325;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -65383,9 +66565,9 @@ class Airavata_getAllAccessibleUsers_result {
       {
         $output->writeListBegin(TType::STRING, count($this->success));
         {
-          foreach ($this->success as $iter319)
+          foreach ($this->success as $iter326)
           {
-            $xfer += $output->writeString($iter319);
+            $xfer += $output->writeString($iter326);
           }
         }
         $output->writeListEnd();
@@ -66771,15 +67953,15 @@ class Airavata_getAllGroupsUserBelongs_result {
         case 0:
           if ($ftype == TType::LST) {
             $this->success = array();
-            $_size320 = 0;
-            $_etype323 = 0;
-            $xfer += $input->readListBegin($_etype323, $_size320);
-            for ($_i324 = 0; $_i324 < $_size320; ++$_i324)
+            $_size327 = 0;
+            $_etype330 = 0;
+            $xfer += $input->readListBegin($_etype330, $_size327);
+            for ($_i331 = 0; $_i331 < $_size327; ++$_i331)
             {
-              $elem325 = null;
-              $elem325 = new \Airavata\Model\Group\GroupModel();
-              $xfer += $elem325->read($input);
-              $this->success []= $elem325;
+              $elem332 = null;
+              $elem332 = new \Airavata\Model\Group\GroupModel();
+              $xfer += $elem332->read($input);
+              $this->success []= $elem332;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -66839,9 +68021,9 @@ class Airavata_getAllGroupsUserBelongs_result {
       {
         $output->writeListBegin(TType::STRUCT, count($this->success));
         {
-          foreach ($this->success as $iter326)
+          foreach ($this->success as $iter333)
           {
-            $xfer += $iter326->write($output);
+            $xfer += $iter333->write($output);
           }
         }
         $output->writeListEnd();

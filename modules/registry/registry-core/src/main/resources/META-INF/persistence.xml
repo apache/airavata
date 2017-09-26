@@ -51,6 +51,7 @@
         <class>org.apache.airavata.registry.core.app.catalog.model.ApplicationIntOutput</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.GatewayProfile</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.ComputeResourcePreference</class>
+        <class>org.apache.airavata.registry.core.app.catalog.model.SSHAccountProvisionerConfiguration</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.UserResourceProfile</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.UserComputeResourcePreference</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.UserStoragePreference</class>
