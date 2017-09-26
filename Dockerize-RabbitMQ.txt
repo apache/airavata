@@ -1,0 +1,4 @@
+Dockerize RabbitMQ  
+This is a sub-task of issue "Dockerize RabbitMQ" - AIRAVATA-2090 (https://issues.apache.org/jira/browse/AIRAVATA-2090)
+
+Related Documentation can be found at : https://cwiki.apache.org/confluence/display/AIRAVATA/4.+Dockerizing+all+Airavata+components
