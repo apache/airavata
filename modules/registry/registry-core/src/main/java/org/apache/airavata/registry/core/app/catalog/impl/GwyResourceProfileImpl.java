@@ -89,6 +89,12 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                     if (preference.getReservationEndTime() > 0) {
                         resource.setReservationEndTime(AiravataUtils.getTime(preference.getReservationEndTime()));
                     }
+                    resource.setSshAccountProvisioner(preference.getSshAccountProvisioner());
+                    if (preference.getSshAccountProvisionerConfig() != null && !preference.getSshAccountProvisionerConfig().isEmpty()) {
+                        Map<String,String> sshAccountProvisionerConfigurationsCopy = new HashMap<>(preference.getSshAccountProvisionerConfig());
+                        resource.setSshAccountProvisionerConfigurations(sshAccountProvisionerConfigurationsCopy);
+                    }
+                    resource.setSshAccountProvisionerAdditionalInfo(preference.getSshAccountProvisionerAdditionalInfo());
                     resource.save();
                 }
             }
@@ -154,6 +160,12 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                     if (preference.getReservationEndTime() > 0) {
                         resource.setReservationEndTime(AiravataUtils.getTime(preference.getReservationEndTime()));
                     }
+                    resource.setSshAccountProvisioner(preference.getSshAccountProvisioner());
+                    if (preference.getSshAccountProvisionerConfig() != null && !preference.getSshAccountProvisionerConfig().isEmpty()) {
+                        Map<String,String> sshAccountProvisionerConfigurationsCopy = new HashMap<>(preference.getSshAccountProvisionerConfig());
+                        resource.setSshAccountProvisionerConfigurations(sshAccountProvisionerConfigurationsCopy);
+                    }
+                    resource.setSshAccountProvisionerAdditionalInfo(preference.getSshAccountProvisionerAdditionalInfo());
                     resource.save();
                 }
             }

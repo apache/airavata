@@ -25,6 +25,7 @@ namespace py apache.airavata.model.appcatalog.gatewayprofile
 
 include "compute_resource_model.thrift"
 include "data_movement_models.thrift"
+include "account_provisioning_model.thrift"
 
 /**
  * Gateway specific preferences for a Computer Resource
@@ -74,7 +75,10 @@ struct ComputeResourcePreference {
     11: optional string qualityOfService,
     12: optional string reservation,
     13: optional i64 reservationStartTime,
-    14: optional i64 reservationEndTime
+    14: optional i64 reservationEndTime,
+    15: optional string sshAccountProvisioner,
+    16: optional map<string, string> sshAccountProvisionerConfig,
+    17: optional string sshAccountProvisionerAdditionalInfo
 }
 
 struct StoragePreference {

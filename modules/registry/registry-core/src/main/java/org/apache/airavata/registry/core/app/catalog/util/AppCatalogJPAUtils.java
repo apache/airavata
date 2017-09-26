@@ -957,6 +957,15 @@ public class AppCatalogJPAUtils {
             resource.setReservation(o.getReservation());
             resource.setReservationStartTime(o.getReservationStartTime());
             resource.setReservationEndTime(o.getReservationEndTime());
+            resource.setSshAccountProvisioner(o.getSshAccountProvisioner());
+            if (o.getSshAccountProvisionerConfigurations() != null && !o.getSshAccountProvisionerConfigurations().isEmpty()) {
+                Map<String,String> sshAccountProvisionerConfigurations = new HashMap<>();
+                for (SSHAccountProvisionerConfiguration config : o.getSshAccountProvisionerConfigurations()){
+                    sshAccountProvisionerConfigurations.put(config.getConfigName(), config.getConfigValue());
+                }
+                resource.setSshAccountProvisionerConfigurations(sshAccountProvisionerConfigurations);
+            }
+            resource.setSshAccountProvisionerAdditionalInfo(o.getSshAccountProvisionerAdditionalInfo());
         }
         return resource;
     }
@@ -978,6 +987,7 @@ public class AppCatalogJPAUtils {
             resource.setReservation(o.getReservation());
             resource.setReservationStartTime(o.getReservationStartTime());
             resource.setReservationEndTime(o.getReservationEndTime());
+            resource.setValidated(o.isValidated());
         }
         return resource;
     }

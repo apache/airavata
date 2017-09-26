@@ -796,14 +796,14 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
           case 3: // COMPUTE_RESOURCE_PREFERENCES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
-                struct.computeResourcePreferences = new java.util.ArrayList<ComputeResourcePreference>(_list0.size);
-                ComputeResourcePreference _elem1;
-                for (int _i2 = 0; _i2 < _list0.size; ++_i2)
+                org.apache.thrift.protocol.TList _list10 = iprot.readListBegin();
+                struct.computeResourcePreferences = new java.util.ArrayList<ComputeResourcePreference>(_list10.size);
+                ComputeResourcePreference _elem11;
+                for (int _i12 = 0; _i12 < _list10.size; ++_i12)
                 {
-                  _elem1 = new ComputeResourcePreference();
-                  _elem1.read(iprot);
-                  struct.computeResourcePreferences.add(_elem1);
+                  _elem11 = new ComputeResourcePreference();
+                  _elem11.read(iprot);
+                  struct.computeResourcePreferences.add(_elem11);
                 }
                 iprot.readListEnd();
               }
@@ -815,14 +815,14 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
           case 4: // STORAGE_PREFERENCES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list3 = iprot.readListBegin();
-                struct.storagePreferences = new java.util.ArrayList<StoragePreference>(_list3.size);
-                StoragePreference _elem4;
-                for (int _i5 = 0; _i5 < _list3.size; ++_i5)
+                org.apache.thrift.protocol.TList _list13 = iprot.readListBegin();
+                struct.storagePreferences = new java.util.ArrayList<StoragePreference>(_list13.size);
+                StoragePreference _elem14;
+                for (int _i15 = 0; _i15 < _list13.size; ++_i15)
                 {
-                  _elem4 = new StoragePreference();
-                  _elem4.read(iprot);
-                  struct.storagePreferences.add(_elem4);
+                  _elem14 = new StoragePreference();
+                  _elem14.read(iprot);
+                  struct.storagePreferences.add(_elem14);
                 }
                 iprot.readListEnd();
               }
@@ -877,9 +877,9 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
           oprot.writeFieldBegin(COMPUTE_RESOURCE_PREFERENCES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.computeResourcePreferences.size()));
-            for (ComputeResourcePreference _iter6 : struct.computeResourcePreferences)
+            for (ComputeResourcePreference _iter16 : struct.computeResourcePreferences)
             {
-              _iter6.write(oprot);
+              _iter16.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -891,9 +891,9 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
           oprot.writeFieldBegin(STORAGE_PREFERENCES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.storagePreferences.size()));
-            for (StoragePreference _iter7 : struct.storagePreferences)
+            for (StoragePreference _iter17 : struct.storagePreferences)
             {
-              _iter7.write(oprot);
+              _iter17.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -955,18 +955,18 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
       if (struct.isSetComputeResourcePreferences()) {
         {
           oprot.writeI32(struct.computeResourcePreferences.size());
-          for (ComputeResourcePreference _iter8 : struct.computeResourcePreferences)
+          for (ComputeResourcePreference _iter18 : struct.computeResourcePreferences)
           {
-            _iter8.write(oprot);
+            _iter18.write(oprot);
           }
         }
       }
       if (struct.isSetStoragePreferences()) {
         {
           oprot.writeI32(struct.storagePreferences.size());
-          for (StoragePreference _iter9 : struct.storagePreferences)
+          for (StoragePreference _iter19 : struct.storagePreferences)
           {
-            _iter9.write(oprot);
+            _iter19.write(oprot);
           }
         }
       }
@@ -990,28 +990,28 @@ public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayRe
       }
       if (incoming.get(1)) {
         {
-          org.apache.thrift.protocol.TList _list10 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.computeResourcePreferences = new java.util.ArrayList<ComputeResourcePreference>(_list10.size);
-          ComputeResourcePreference _elem11;
-          for (int _i12 = 0; _i12 < _list10.size; ++_i12)
+          org.apache.thrift.protocol.TList _list20 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.computeResourcePreferences = new java.util.ArrayList<ComputeResourcePreference>(_list20.size);
+          ComputeResourcePreference _elem21;
+          for (int _i22 = 0; _i22 < _list20.size; ++_i22)
           {
-            _elem11 = new ComputeResourcePreference();
-            _elem11.read(iprot);
-            struct.computeResourcePreferences.add(_elem11);
+            _elem21 = new ComputeResourcePreference();
+            _elem21.read(iprot);
+            struct.computeResourcePreferences.add(_elem21);
           }
         }
         struct.setComputeResourcePreferencesIsSet(true);
       }
       if (incoming.get(2)) {
         {
-          org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.storagePreferences = new java.util.ArrayList<StoragePreference>(_list13.size);
-          StoragePreference _elem14;
-          for (int _i15 = 0; _i15 < _list13.size; ++_i15)
+          org.apache.thrift.protocol.TList _list23 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.storagePreferences = new java.util.ArrayList<StoragePreference>(_list23.size);
+          StoragePreference _elem24;
+          for (int _i25 = 0; _i25 < _list23.size; ++_i25)
           {
-            _elem14 = new StoragePreference();
-            _elem14.read(iprot);
-            struct.storagePreferences.add(_elem14);
+            _elem24 = new StoragePreference();
+            _elem24.read(iprot);
+            struct.storagePreferences.add(_elem24);
           }
         }
         struct.setStoragePreferencesIsSet(true);

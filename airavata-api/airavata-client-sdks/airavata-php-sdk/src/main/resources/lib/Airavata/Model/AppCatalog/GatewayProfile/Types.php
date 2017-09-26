@@ -110,6 +110,18 @@ class ComputeResourcePreference {
    * @var int
    */
   public $reservationEndTime = null;
+  /**
+   * @var string
+   */
+  public $sshAccountProvisioner = null;
+  /**
+   * @var array
+   */
+  public $sshAccountProvisionerConfig = null;
+  /**
+   * @var string
+   */
+  public $sshAccountProvisionerAdditionalInfo = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -170,6 +182,26 @@ class ComputeResourcePreference {
           'var' => 'reservationEndTime',
           'type' => TType::I64,
           ),
+        15 => array(
+          'var' => 'sshAccountProvisioner',
+          'type' => TType::STRING,
+          ),
+        16 => array(
+          'var' => 'sshAccountProvisionerConfig',
+          'type' => TType::MAP,
+          'ktype' => TType::STRING,
+          'vtype' => TType::STRING,
+          'key' => array(
+            'type' => TType::STRING,
+          ),
+          'val' => array(
+            'type' => TType::STRING,
+            ),
+          ),
+        17 => array(
+          'var' => 'sshAccountProvisionerAdditionalInfo',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -214,6 +246,15 @@ class ComputeResourcePreference {
       }
       if (isset($vals['reservationEndTime'])) {
         $this->reservationEndTime = $vals['reservationEndTime'];
+      }
+      if (isset($vals['sshAccountProvisioner'])) {
+        $this->sshAccountProvisioner = $vals['sshAccountProvisioner'];
+      }
+      if (isset($vals['sshAccountProvisionerConfig'])) {
+        $this->sshAccountProvisionerConfig = $vals['sshAccountProvisionerConfig'];
+      }
+      if (isset($vals['sshAccountProvisionerAdditionalInfo'])) {
+        $this->sshAccountProvisionerAdditionalInfo = $vals['sshAccountProvisionerAdditionalInfo'];
       }
     }
   }
@@ -335,6 +376,40 @@ class ComputeResourcePreference {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 15:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->sshAccountProvisioner);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 16:
+          if ($ftype == TType::MAP) {
+            $this->sshAccountProvisionerConfig = array();
+            $_size0 = 0;
+            $_ktype1 = 0;
+            $_vtype2 = 0;
+            $xfer += $input->readMapBegin($_ktype1, $_vtype2, $_size0);
+            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
+            {
+              $key5 = '';
+              $val6 = '';
+              $xfer += $input->readString($key5);
+              $xfer += $input->readString($val6);
+              $this->sshAccountProvisionerConfig[$key5] = $val6;
+            }
+            $xfer += $input->readMapEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 17:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->sshAccountProvisionerAdditionalInfo);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -416,6 +491,34 @@ class ComputeResourcePreference {
     if ($this->reservationEndTime !== null) {
       $xfer += $output->writeFieldBegin('reservationEndTime', TType::I64, 14);
       $xfer += $output->writeI64($this->reservationEndTime);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->sshAccountProvisioner !== null) {
+      $xfer += $output->writeFieldBegin('sshAccountProvisioner', TType::STRING, 15);
+      $xfer += $output->writeString($this->sshAccountProvisioner);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->sshAccountProvisionerConfig !== null) {
+      if (!is_array($this->sshAccountProvisionerConfig)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('sshAccountProvisionerConfig', TType::MAP, 16);
+      {
+        $output->writeMapBegin(TType::STRING, TType::STRING, count($this->sshAccountProvisionerConfig));
+        {
+          foreach ($this->sshAccountProvisionerConfig as $kiter7 => $viter8)
+          {
+            $xfer += $output->writeString($kiter7);
+            $xfer += $output->writeString($viter8);
+          }
+        }
+        $output->writeMapEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->sshAccountProvisionerAdditionalInfo !== null) {
+      $xfer += $output->writeFieldBegin('sshAccountProvisionerAdditionalInfo', TType::STRING, 17);
+      $xfer += $output->writeString($this->sshAccountProvisionerAdditionalInfo);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -711,15 +814,15 @@ class GatewayResourceProfile {
         case 3:
           if ($ftype == TType::LST) {
             $this->computeResourcePreferences = array();
-            $_size0 = 0;
-            $_etype3 = 0;
-            $xfer += $input->readListBegin($_etype3, $_size0);
-            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
+            $_size9 = 0;
+            $_etype12 = 0;
+            $xfer += $input->readListBegin($_etype12, $_size9);
+            for ($_i13 = 0; $_i13 < $_size9; ++$_i13)
             {
-              $elem5 = null;
-              $elem5 = new \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference();
-              $xfer += $elem5->read($input);
-              $this->computeResourcePreferences []= $elem5;
+              $elem14 = null;
+              $elem14 = new \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference();
+              $xfer += $elem14->read($input);
+              $this->computeResourcePreferences []= $elem14;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -729,15 +832,15 @@ class GatewayResourceProfile {
         case 4:
           if ($ftype == TType::LST) {
             $this->storagePreferences = array();
-            $_size6 = 0;
-            $_etype9 = 0;
-            $xfer += $input->readListBegin($_etype9, $_size6);
-            for ($_i10 = 0; $_i10 < $_size6; ++$_i10)
+            $_size15 = 0;
+            $_etype18 = 0;
+            $xfer += $input->readListBegin($_etype18, $_size15);
+            for ($_i19 = 0; $_i19 < $_size15; ++$_i19)
             {
-              $elem11 = null;
-              $elem11 = new \Airavata\Model\AppCatalog\GatewayProfile\StoragePreference();
-              $xfer += $elem11->read($input);
-              $this->storagePreferences []= $elem11;
+              $elem20 = null;
+              $elem20 = new \Airavata\Model\AppCatalog\GatewayProfile\StoragePreference();
+              $xfer += $elem20->read($input);
+              $this->storagePreferences []= $elem20;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -789,9 +892,9 @@ class GatewayResourceProfile {
       {
         $output->writeListBegin(TType::STRUCT, count($this->computeResourcePreferences));
         {
-          foreach ($this->computeResourcePreferences as $iter12)
+          foreach ($this->computeResourcePreferences as $iter21)
           {
-            $xfer += $iter12->write($output);
+            $xfer += $iter21->write($output);
           }
         }
         $output->writeListEnd();
@@ -806,9 +909,9 @@ class GatewayResourceProfile {
       {
         $output->writeListBegin(TType::STRUCT, count($this->storagePreferences));
         {
-          foreach ($this->storagePreferences as $iter13)
+          foreach ($this->storagePreferences as $iter22)
           {
-            $xfer += $iter13->write($output);
+            $xfer += $iter22->write($output);
           }
         }
         $output->writeListEnd();
