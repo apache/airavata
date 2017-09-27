@@ -6,7 +6,7 @@ import ExperimentsDashboard from './components/dashboards/ExperimentDashboard.vu
 import AdminDashboard from './components/dashboards/AdminDashboard.vue';
 
 import router from './router';
-import store from './store';
+import store from './store/store';
 
 Vue.config.productionTip = false;
 
