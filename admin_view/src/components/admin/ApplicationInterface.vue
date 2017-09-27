@@ -6,13 +6,13 @@
       <h4>Application Interface</h4>
       <div class="entry boolean-selectors">
         <boolean-radio-button v-bind:heading="'Enable Archiving Working Directory'" v-bind:selectorVal="work_dir"></boolean-radio-button>
-        <boolean-radio-button v-bind:heading="'Enable Optional File Inputs'" v-bind:selectorVal="optional_files"></boolean-radio-button>
+        <boolean-radio-button v-bind:heading="'Enable Optional File Inputs'" v-bind:selectorVal="optional_files" v-bind:def="'true'"></boolean-radio-button>
       </div>
       <div>
-        <application-input-field class="interface-main"  v-for="data in obj.inputFields" v-bind:data="data" v-bind:key="data.input_id" v-on:delete_input_field="delete_event_trigger(data.input_id);"></application-input-field>
+        <application-input-field class="interface-main"  v-for="inp_id in getAppInputFieldsId" v-bind:key="inp_id" v-bind:input_id="inp_id" v-on:delete_input_field="deleteAppInterfaceInputField(inp_id);"></application-input-field>
       </div>
       <div class="entry">
-        <button class="interface-btn" v-on:click="addApplicationInput();">Add Application <span>input</span></button>
+        <button class="interface-btn" v-on:click="createAppInterfaceInputField();">Add Application <span>input</span></button>
       </div>
       <div class="entry">
         <div class="heading">Output fields</div>
@@ -27,7 +27,9 @@
   import BooleanRadioButton from './BooleanRadioButton.vue';
   import NewApplicationButtons from './NewApplicationButtons.vue';
 
-  import { mapGetters } from 'vuex';
+  import { createNamespacedHelpers } from 'vuex'
+
+  const {mapGetters,mapActions} = createNamespacedHelpers('appInterfaceTab')
 
   export default {
     components:{
@@ -42,35 +44,20 @@
       };
     },
     props:{
-      'obj':{
-        type:Object,
-        default:function () {
-          return {
-            'inputFields':[]
-          };
-        }
-      }
     },
     mounted:function () {
-      this.addApplicationInput();
+      if(!this.isInitialized){
+        var id=this.createAppInterfaceInputField();
+        console.log('Mounted',id);
+        this.initialized(true)
+      }
+
+    },
+    computed:{
+      ...mapGetters(['getAppInputFieldsId','isInitialized'])
     },
     methods:{
-      addApplicationInput:function () {
-        this.obj.inputFields.push({
-          input_id:this.id++,
-          name:'',
-          value:'',
-          type:'',
-          appArg:'',
-          dataStaged:{'boolValue':'true'},
-          required:{'boolValue':'false'},
-          requiredOnCmd:{'boolValue':'false'}
-        });
-      },
-      delete_event_trigger:function(input_id){
-        console.log('deleting input Field: '+input_id);
-        this.obj.inputFields=this.obj.inputFields.filter((data)=>data.input_id!=input_id);
-      },
+      ...mapActions(['createAppInterfaceInputField','deleteAppInterfaceInputField','initialized'])
     }
   };
 </script>

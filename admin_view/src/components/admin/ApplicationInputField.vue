@@ -1,65 +1,95 @@
 <template>
-  <div class="main_section interface-main">
+  <div class="main_section interface-main" >
     <div class="input-field-header">
       Input Fields
       <img v-on:click="delete_event_trigger();" src="/static/images/delete.png"/>
     </div>
     <div class="entry">
       <div class="heading">Name</div>
-      <input type="text" v-model="data.name"/>
+      <input type="text" v-model="name"/>
     </div>
     <div class="entry">
-      <div class="heading" v-model="data.value">Value</div>
+      <div class="heading" v-model="value">Value</div>
       <input type="text"/>
     </div>
     <div class="entry">
-      <div class="heading" v-model="data.type">Type</div>
+      <div class="heading" v-model="type">Type</div>
       <input type="text"/>
     </div>
     <div class="entry">
       <div class="heading">Application argument</div>
-      <input v-model="data.appArg" type="text"/>
+      <input v-model="appArg" type="text"/>
     </div>
     <div class="entry boolean-selectors">
-      <boolean-radio-button v-bind:heading="'Data is staged'" v-bind:selectorVal="data.dataStaged"></boolean-radio-button>
-      <boolean-radio-button v-bind:heading="'Required'" v-bind:selectorVal="data.required"></boolean-radio-button>
+      <boolean-radio-button v-bind:heading="'Data is staged'" v-bind:selectorId="dataStaged" v-on:boolselector.prevent="boolValueHandler"></boolean-radio-button>
+      <boolean-radio-button v-bind:heading="'Required'" v-bind:selectorId="required" v-on:boolselector.prevent="boolValueHandler"></boolean-radio-button>
     </div>
     <div class="entry boolean-selectors">
-      <boolean-radio-button v-bind:heading="'Required on command line'" v-bind:selectorVal="data.requiredOnCmd"></boolean-radio-button>
+      <boolean-radio-button v-bind:heading="'Required on command line'" v-bind:selectorId="requiredOnCmd" v-on:boolselector.prevent="boolValueHandler"></boolean-radio-button>
     </div>
   </div>
 </template>
 <script>
   import BooleanRadioButton from './BooleanRadioButton.vue'
+
+  import { createNamespacedHelpers } from 'vuex'
+
+  const {mapGetters,mapActions} = createNamespacedHelpers('appInterfaceTab')
+
   export default {
     components:{
       BooleanRadioButton
     },
+    created:function () {
+      this.$on('',
+        function (selectorID=null,value=null) {
+          console.log("SelctorId: "+selectorID+'  Value: '+value);
+        })
+    },
     methods:{
       delete_event_trigger:function(){
         this.$emit('delete_input_field');
+      },
+      boolValueHandler:function (selectorID=null,value=null) {
+        console.log("SelctorId: "+selectorID+'  Value: '+value);
+      },
+      syncDataFromStore:function () {
+        console.log(this.input_id)
+        var val=this.getAppInputField(this.input_id)
+        this.name=val['name']
+        this.value=val['value']
+        this.type=val['type']
+        this.appArg=val['appArg']
+      },
+      ...mapActions(['updateFieldValues'])
+
+    },
+    mounted:function(){
+      this.syncDataFromStore()
+    },
+    data:function () {
+      return{
+        'dataStaged':0,
+        'required':1,
+        'requiredOnCmd':2,
+        name:'',
+        value:'',
+        type:'',
+        appArg:''
       }
     },
-    created:function(){
-      this.data=this.data;
-    },
-    props:{
-      data:{
-        type:Object,
-        default:function () {
-          return{
-            name:'',
-            value:'',
-            type:'',
-            appArg:'',
-            dataStaged:{'boolValue':'true'},
-            required:{'boolValue':'false'},
-            requiredOnCmd:{'boolValue':'false'}
-          };
-        }
-      }
+    props:['input_id'],
+    computed:{
+      ...mapGetters(['getAppInputField'])
     },
     watch:{
+      name:function (newValue) {
+        var param={
+          'id':this.input_id,
+          'update':{'name':newValue}
+        };
+        this.updateFieldValues(param)
+      }
     }
   }
 </script>

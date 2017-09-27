@@ -3,11 +3,11 @@
     <div class="boolean-selector-heading">{{heading}}</div>
     <div class="boolean-selector">
       <div>
-        <input type="radio" v-model="selectorVal.boolValue" value="true"/>
+        <input type="radio" v-model="boolValue" value="true"/>
         <label>True</label>
       </div>
       <div>
-        <input type="radio" v-model="selectorVal.boolValue" value="false"/>
+        <input type="radio" v-model="boolValue" value="false"/>
         <label>False</label>
       </div>
     </div>
@@ -16,25 +16,38 @@
 <script>
 
   export default {
-    mounted:function(){
-      //console.log('Selctor Value: '+ this.selectorVal.boolValue);
-      this.selectorVal.boolValue=this.selectorVal.boolValue;
+    created:function(){
+      this.boolValue=this.def;
+    },
+    data:function () {
+      return {
+        'boolValue':'false'
+      }
     },
     props:{
-      selectorVal:{
-        type:Object,
+      def:{
+        type:String,
         default:function () {
-          return {
-            'boolValue':'false',
-          };
+          return 'false';
         }
       },
       heading:{
         type:String
       },
       selectorId:{
-        type:String,
-        default:'na'
+        type:Number,
+        default:-1
+      }
+    },
+    methods:{
+      triggerValueChangeEvent:function (value) {
+        this.$emit('bool_selector',this.selectorId,(value=='true'))
+        console.log('Triggered Change event')
+      }
+    },
+    watch:{
+      boolValue:function(newValue){
+            this.triggerValueChangeEvent(newValue);
       }
     }
   }
