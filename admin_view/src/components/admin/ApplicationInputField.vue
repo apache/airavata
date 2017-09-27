@@ -9,12 +9,12 @@
       <input type="text" v-model="name"/>
     </div>
     <div class="entry">
-      <div class="heading" v-model="value">Value</div>
-      <input type="text"/>
+      <div class="heading" >Value</div>
+      <input type="text" v-model="value"/>
     </div>
     <div class="entry">
-      <div class="heading" v-model="type">Type</div>
-      <input type="text"/>
+      <div class="heading" >Type</div>
+      <input type="text" v-model="type"/>
     </div>
     <div class="entry">
       <div class="heading">Application argument</div>
@@ -61,6 +61,15 @@
         this.type=val['type']
         this.appArg=val['appArg']
       },
+      updateStore:function (fieldName,newValue) {
+        var param={
+          'id':this.input_id,
+        };
+        var update={}
+        update[fieldName]=newValue
+        param['update']=update
+        this.updateFieldValues(param)
+      },
       ...mapActions(['updateFieldValues'])
 
     },
@@ -84,11 +93,17 @@
     },
     watch:{
       name:function (newValue) {
-        var param={
-          'id':this.input_id,
-          'update':{'name':newValue}
-        };
-        this.updateFieldValues(param)
+        this.updateStore('name',newValue)
+      },
+      value:function (newValue) {
+        this.updateStore('value',newValue)
+
+      },
+      type:function (newValue) {
+        this.updateStore('type',newValue)
+      },
+      appArg:function (newValue) {
+        this.updateStore('appArg',newValue)
       }
     }
   }
