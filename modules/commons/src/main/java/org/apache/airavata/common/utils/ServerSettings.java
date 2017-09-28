@@ -132,7 +132,6 @@ public class ServerSettings extends ApplicationSettings {
 
     // Iam Server Constants
     public static final String IAM_SERVER_URL = "iam.server.url";
-    public static final String NEW_GATEWAY_ADMIN_TEMP_PASSWORD="new.gateway.admin.temp.password";
     public static final String IAM_SERVER_SUPER_ADMIN_USERNAME = "iam.server.super.admin.username";
     public static final String IAM_SERVER_SUPER_ADMIN_PASSWORD = "iam.server.super.admin.password";
 
