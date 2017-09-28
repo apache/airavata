@@ -5,6 +5,7 @@ from django.conf import settings
 
 from rest_framework import serializers
 
+import datetime
 from urllib.parse import quote
 
 
@@ -18,6 +19,16 @@ class FullyEncodedHyperlinkedIdentityField(serializers.HyperlinkedIdentityField)
         kwargs = {self.lookup_url_kwarg: "__PLACEHOLDER__"}
         url = self.reverse(view_name, kwargs=kwargs, request=request, format=format)
         return url.replace("__PLACEHOLDER__", encoded_lookup_value)
+
+class UTCPosixTimestampDateTimeField(serializers.DateTimeField):
+    def to_representation(self, obj):
+        dt = datetime.datetime.utcfromtimestamp(obj/1000)
+        return super().to_representation(dt)
+
+    def to_internal_value(self, data):
+        dt = super().to_internal_value(data)
+        return int(dt.timestamp() * 1000)
+
 
 class GetGatewayUsername(object):
 
@@ -49,6 +60,7 @@ class ProjectSerializer(serializers.Serializer):
     owner = GatewayUsernameDefaultField()
     gatewayId = GatewayIdDefaultField()
     experiments = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-experiments', lookup_field='projectID', lookup_url_kwarg='project_id')
+    creationTime = UTCPosixTimestampDateTimeField()
 
     def create(self, validated_data):
         return Project(**validated_data)
