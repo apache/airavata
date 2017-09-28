@@ -1,24 +1,23 @@
 <template>
     <ul id="project-list">
-        <li v-for="project in projects">
-            {{ project.name }}
-        </li>
+        <project-list-item v-bind:project="project" v-for="project in projects" v-bind:key="project.projectID">
+        </project-list-item>
     </ul>
 </template>
 
 <script>
+import ProjectListItem from './ProjectListItem.vue'
+
 export default {
-  name: 'project-list',
-  data () {
-    return {
-      projects: [
-              {"name": "Project 1"},
-              {"name": "Project 2"},
-              {"name": "Project 3"},
-              {"name": "Project 4"},
-          ]
-      }
-  }
+    name: 'project-list',
+    props: ['projects'],
+    data: function () {
+        return {
+        }
+    },
+    components: {
+        ProjectListItem
+    }
 }
 </script>
 
