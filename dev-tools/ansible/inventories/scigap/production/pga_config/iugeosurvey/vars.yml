@@ -40,7 +40,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
 
 auth_options:
-  - name: "IU Geology Survey"
+  - name: "Indiana Geological Survey"
     oauth_grant_type: "password"
 oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 
@@ -55,7 +55,7 @@ super_admin_portal: "false"
 admin_emails: "['sgrc-iu-group@iu.edu','wangyinz@indiana.edu']"
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
-#portal_theme: "gsu-gateway-theme"
-#portal_theme_repo: "https://github.com/SciGaP/gsu-gateway-theme"
-portal_title: "IU Geology Survey"
+portal_theme: "iu-geosurvey-gateway-theme"
+portal_theme_repo: "https://github.com/SciGaP/iu-geosurvey-gateway-theme.git"
+portal_title: "Indiana Geological Survey"
 ...
