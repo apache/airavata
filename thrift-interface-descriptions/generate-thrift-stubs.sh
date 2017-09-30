@@ -30,6 +30,7 @@ show_usage() {
 	echo -e "\tphp Generate/Update PHP Stubs"
 	echo -e "\tcpp Generate/Update C++ Stubs"
 	echo -e "\tpython Generate/Update Python Stubs."
+	echo -e "\tgo Generate/Update Python Stubs."
 	echo -e "\tall Generate/Update all stubs (Java, PHP, C++, Python)."
 	echo -e "\t-h[elp] Print the usage options of this script"
 	echo -e "\t--native-thrift Use natively installed thrift instead of Docker image"
@@ -88,6 +89,7 @@ setup() {
     PHP_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-php-sdk/src/main/resources/lib'
     CPP_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-cpp-sdk/src/main/resources/lib/airavata/'
     PYTHON_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-python-sdk/src/main/resources/lib/'
+    GO_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-go-sdk/src/main/resources/lib/'
 
     # Initialize the thrift arguments.
     #  Since most of the Airavata API and Data Models have includes, use recursive option by default.
@@ -292,6 +294,38 @@ generate_python_stubs() {
 
 }
 
+
+
+####################################
+# Generate/Update Go Stubs #
+####################################
+
+generate_php_stubs() {
+
+    #PHP generation directory
+    GO_GEN_DIR=${BASE_TARGET_DIR}/gen-go
+
+    # As a precaution  remove and previously generated files if exists
+    rm -rf ${GO_GEN_DIR}
+
+    # Using thrift Java generator, generate the PHP classes based on Airavata API. This
+    #   The airavata_api.thrift includes rest of data models.
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen go ${DATAMODEL_THRIFT_FILE}  || fail unable to generate go thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen go ${APP_CATALOG_THRIFT_FILE}  || fail unable to generate go thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen go ${RESOURCE_CATALOG_THRIFT_FILE}   || fail unable to generate go thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen go ${AIRAVATA_API_THRIFT_FILE} || fail unable to generate go thrift classes
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen go ${PROFILE_SERVICE_THRIFT_FILE} || fail unable to generate go thrift classes
+
+    # For the generated java classes add the ASF V2 License header
+    ## TODO Write PHP license parser
+
+    # Compare the newly generated classes with existing java generated skeleton/stub sources and replace the changed ones.
+    #  Only copying the API related classes and avoiding copy of any data models which already exist in the data-models.
+    copy_changed_files ${GO_GEN_DIR} ${GO_SDK_DIR}
+
+}
+
+
 for arg in "$@"
 do
     case "$arg" in
@@ -317,6 +351,10 @@ do
     python)    echo "Generate Python Stubs"
             setup
             generate_python_stubs
+            ;;
+    go)    echo "Generate Go Stubs"
+            setup
+            generate_go_stubs
             ;;
     --native-thrift)
             THRIFT_NATIVE="true"
