@@ -4,12 +4,11 @@
 package application_deployment_model
 
 import (
+	"airavata_commons"
 	"bytes"
 	"fmt"
 	"git.apache.org/thrift.git/lib/go/thrift"
-	"airavata_commons"
 	"parallelism_model"
-
 )
 
 // (needed to ensure safety because of naive import list construction.)
@@ -22,4 +21,3 @@ var _ = parallelism_model.GoUnusedProtection__
 
 func init() {
 }
-

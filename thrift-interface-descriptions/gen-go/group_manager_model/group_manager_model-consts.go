@@ -4,11 +4,10 @@
 package group_manager_model
 
 import (
+	"airavata_commons"
 	"bytes"
 	"fmt"
 	"git.apache.org/thrift.git/lib/go/thrift"
-	"airavata_commons"
-
 )
 
 // (needed to ensure safety because of naive import list construction.)
@@ -20,4 +19,3 @@ var _ = airavata_commons.GoUnusedProtection__
 
 func init() {
 }
-

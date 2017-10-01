@@ -3,5 +3,4 @@
 
 package group_manager_model
 
-var GoUnusedProtection__ int;
-
+var GoUnusedProtection__ int

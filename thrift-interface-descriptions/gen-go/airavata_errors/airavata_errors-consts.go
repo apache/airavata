@@ -5,10 +5,9 @@ package airavata_errors
 
 import (
 	"bytes"
+	"experiment_model"
 	"fmt"
 	"git.apache.org/thrift.git/lib/go/thrift"
-	"experiment_model"
-
 )
 
 // (needed to ensure safety because of naive import list construction.)
@@ -20,4 +19,3 @@ var _ = experiment_model.GoUnusedProtection__
 
 func init() {
 }
-

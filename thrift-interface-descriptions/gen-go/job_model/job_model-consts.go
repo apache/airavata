@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"git.apache.org/thrift.git/lib/go/thrift"
 	"status_models"
-
 )
 
 // (needed to ensure safety because of naive import list construction.)
@@ -20,4 +19,3 @@ var _ = status_models.GoUnusedProtection__
 
 func init() {
 }
-

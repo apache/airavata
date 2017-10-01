@@ -4,28 +4,27 @@
 package airavata_data_models
 
 import (
-	"bytes"
-	"fmt"
-	"git.apache.org/thrift.git/lib/go/thrift"
 	"airavata_commons"
-	"workspace_model"
 	"airavata_errors"
-	"messaging_events"
-	"security_model"
+	"bytes"
+	"credential_store_data_models"
+	"data_movement_models"
 	"db_event_model"
 	"experiment_model"
-	"job_model"
-	"task_model"
-	"process_model"
-	"scheduling_model"
-	"status_models"
-	"data_movement_models"
-	"replica_catalog_models"
-	"user_profile_model"
+	"fmt"
+	"git.apache.org/thrift.git/lib/go/thrift"
 	"group_manager_model"
+	"job_model"
+	"messaging_events"
+	"process_model"
+	"replica_catalog_models"
+	"scheduling_model"
+	"security_model"
+	"status_models"
+	"task_model"
 	"tenant_profile_model"
-	"credential_store_data_models"
-
+	"user_profile_model"
+	"workspace_model"
 )
 
 // (needed to ensure safety because of naive import list construction.)

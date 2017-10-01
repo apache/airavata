@@ -3,5 +3,4 @@
 
 package credential_store_data_models
 
-var GoUnusedProtection__ int;
-
+var GoUnusedProtection__ int

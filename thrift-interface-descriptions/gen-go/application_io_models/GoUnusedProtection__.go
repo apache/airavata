@@ -3,5 +3,4 @@
 
 package application_io_models
 
-var GoUnusedProtection__ int;
-
+var GoUnusedProtection__ int

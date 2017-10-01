@@ -4,13 +4,12 @@
 package compute_resource_model
 
 import (
+	"airavata_commons"
 	"bytes"
+	"data_movement_models"
 	"fmt"
 	"git.apache.org/thrift.git/lib/go/thrift"
-	"airavata_commons"
 	"parallelism_model"
-	"data_movement_models"
-
 )
 
 // (needed to ensure safety because of naive import list construction.)
@@ -24,4 +23,3 @@ var _ = data_movement_models.GoUnusedProtection__
 
 func init() {
 }
-

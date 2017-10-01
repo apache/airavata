@@ -31,67 +31,81 @@ var _ = bytes.Equal
 // Hybrid Applications.
 //
 type ApplicationParallelismType int64
+
 const (
-  ApplicationParallelismType_SERIAL ApplicationParallelismType = 0
-  ApplicationParallelismType_MPI ApplicationParallelismType = 1
-  ApplicationParallelismType_OPENMP ApplicationParallelismType = 2
-  ApplicationParallelismType_OPENMP_MPI ApplicationParallelismType = 3
-  ApplicationParallelismType_CCM ApplicationParallelismType = 4
-  ApplicationParallelismType_CRAY_MPI ApplicationParallelismType = 5
+	ApplicationParallelismType_SERIAL     ApplicationParallelismType = 0
+	ApplicationParallelismType_MPI        ApplicationParallelismType = 1
+	ApplicationParallelismType_OPENMP     ApplicationParallelismType = 2
+	ApplicationParallelismType_OPENMP_MPI ApplicationParallelismType = 3
+	ApplicationParallelismType_CCM        ApplicationParallelismType = 4
+	ApplicationParallelismType_CRAY_MPI   ApplicationParallelismType = 5
 )
 
 func (p ApplicationParallelismType) String() string {
-  switch p {
-  case ApplicationParallelismType_SERIAL: return "SERIAL"
-  case ApplicationParallelismType_MPI: return "MPI"
-  case ApplicationParallelismType_OPENMP: return "OPENMP"
-  case ApplicationParallelismType_OPENMP_MPI: return "OPENMP_MPI"
-  case ApplicationParallelismType_CCM: return "CCM"
-  case ApplicationParallelismType_CRAY_MPI: return "CRAY_MPI"
-  }
-  return "<UNSET>"
+	switch p {
+	case ApplicationParallelismType_SERIAL:
+		return "SERIAL"
+	case ApplicationParallelismType_MPI:
+		return "MPI"
+	case ApplicationParallelismType_OPENMP:
+		return "OPENMP"
+	case ApplicationParallelismType_OPENMP_MPI:
+		return "OPENMP_MPI"
+	case ApplicationParallelismType_CCM:
+		return "CCM"
+	case ApplicationParallelismType_CRAY_MPI:
+		return "CRAY_MPI"
+	}
+	return "<UNSET>"
 }
 
 func ApplicationParallelismTypeFromString(s string) (ApplicationParallelismType, error) {
-  switch s {
-  case "SERIAL": return ApplicationParallelismType_SERIAL, nil 
-  case "MPI": return ApplicationParallelismType_MPI, nil 
-  case "OPENMP": return ApplicationParallelismType_OPENMP, nil 
-  case "OPENMP_MPI": return ApplicationParallelismType_OPENMP_MPI, nil 
-  case "CCM": return ApplicationParallelismType_CCM, nil 
-  case "CRAY_MPI": return ApplicationParallelismType_CRAY_MPI, nil 
-  }
-  return ApplicationParallelismType(0), fmt.Errorf("not a valid ApplicationParallelismType string")
+	switch s {
+	case "SERIAL":
+		return ApplicationParallelismType_SERIAL, nil
+	case "MPI":
+		return ApplicationParallelismType_MPI, nil
+	case "OPENMP":
+		return ApplicationParallelismType_OPENMP, nil
+	case "OPENMP_MPI":
+		return ApplicationParallelismType_OPENMP_MPI, nil
+	case "CCM":
+		return ApplicationParallelismType_CCM, nil
+	case "CRAY_MPI":
+		return ApplicationParallelismType_CRAY_MPI, nil
+	}
+	return ApplicationParallelismType(0), fmt.Errorf("not a valid ApplicationParallelismType string")
 }
 
-
-func ApplicationParallelismTypePtr(v ApplicationParallelismType) *ApplicationParallelismType { return &v }
+func ApplicationParallelismTypePtr(v ApplicationParallelismType) *ApplicationParallelismType {
+	return &v
+}
 
 func (p ApplicationParallelismType) MarshalText() ([]byte, error) {
-return []byte(p.String()), nil
+	return []byte(p.String()), nil
 }
 
 func (p *ApplicationParallelismType) UnmarshalText(text []byte) error {
-q, err := ApplicationParallelismTypeFromString(string(text))
-if (err != nil) {
-return err
-}
-*p = q
-return nil
+	q, err := ApplicationParallelismTypeFromString(string(text))
+	if err != nil {
+		return err
+	}
+	*p = q
+	return nil
 }
 
 func (p *ApplicationParallelismType) Scan(value interface{}) error {
-v, ok := value.(int64)
-if !ok {
-return errors.New("Scan value is not int64")
-}
-*p = ApplicationParallelismType(v)
-return nil
+	v, ok := value.(int64)
+	if !ok {
+		return errors.New("Scan value is not int64")
+	}
+	*p = ApplicationParallelismType(v)
+	return nil
 }
 
-func (p * ApplicationParallelismType) Value() (driver.Value, error) {
-  if p == nil {
-    return nil, nil
-  }
-return int64(*p), nil
+func (p *ApplicationParallelismType) Value() (driver.Value, error) {
+	if p == nil {
+		return nil, nil
+	}
+	return int64(*p), nil
 }

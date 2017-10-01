@@ -3,5 +3,4 @@
 
 package tenant_profile_model
 
-var GoUnusedProtection__ int;
-
+var GoUnusedProtection__ int

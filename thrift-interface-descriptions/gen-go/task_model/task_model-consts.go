@@ -4,16 +4,15 @@
 package task_model
 
 import (
-	"bytes"
-	"fmt"
-	"git.apache.org/thrift.git/lib/go/thrift"
 	"airavata_commons"
+	"application_io_models"
+	"bytes"
 	"compute_resource_model"
 	"data_movement_models"
-	"application_io_models"
-	"status_models"
+	"fmt"
+	"git.apache.org/thrift.git/lib/go/thrift"
 	"job_model"
-
+	"status_models"
 )
 
 // (needed to ensure safety because of naive import list construction.)
@@ -30,4 +29,3 @@ var _ = job_model.GoUnusedProtection__
 
 func init() {
 }
-

@@ -5,10 +5,9 @@ package application_io_models
 
 import (
 	"bytes"
+	"compute_resource_model"
 	"fmt"
 	"git.apache.org/thrift.git/lib/go/thrift"
-	"compute_resource_model"
-
 )
 
 // (needed to ensure safety because of naive import list construction.)
@@ -20,4 +19,3 @@ var _ = compute_resource_model.GoUnusedProtection__
 
 func init() {
 }
-

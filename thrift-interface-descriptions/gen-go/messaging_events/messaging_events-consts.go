@@ -4,13 +4,12 @@
 package messaging_events
 
 import (
+	"airavata_commons"
+	"application_io_models"
 	"bytes"
 	"fmt"
 	"git.apache.org/thrift.git/lib/go/thrift"
 	"status_models"
-	"application_io_models"
-	"airavata_commons"
-
 )
 
 // (needed to ensure safety because of naive import list construction.)
@@ -24,4 +23,3 @@ var _ = airavata_commons.GoUnusedProtection__
 
 func init() {
 }
-

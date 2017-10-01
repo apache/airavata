@@ -3,5 +3,4 @@
 
 package messaging_events
 
-var GoUnusedProtection__ int;
-
+var GoUnusedProtection__ int

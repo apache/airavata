@@ -4,11 +4,10 @@
 package user_profile_model
 
 import (
+	"airavata_commons"
 	"bytes"
 	"fmt"
 	"git.apache.org/thrift.git/lib/go/thrift"
-	"airavata_commons"
-
 )
 
 // (needed to ensure safety because of naive import list construction.)
@@ -17,8 +16,8 @@ var _ = fmt.Printf
 var _ = bytes.Equal
 
 var _ = airavata_commons.GoUnusedProtection__
+
 const USER_PROFILE_VERSION = "1.0"
 
 func init() {
 }
-

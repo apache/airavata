@@ -4,31 +4,30 @@
 package airavata_api
 
 import (
-	"bytes"
-	"fmt"
-	"git.apache.org/thrift.git/lib/go/thrift"
-	"airavata_errors"
-	"security_model"
 	"airavata_data_models"
-	"credential_store_data_models"
-	"status_models"
-	"job_model"
-	"experiment_model"
-	"workspace_model"
-	"scheduling_model"
-	"application_io_models"
+	"airavata_errors"
 	"application_deployment_model"
 	"application_interface_model"
+	"application_io_models"
+	"bytes"
 	"compute_resource_model"
-	"storage_resource_model"
-	"gateway_resource_profile_model"
-	"user_resource_profile_model"
+	"credential_store_data_models"
 	"data_movement_models"
-	"workflow_data_model"
-	"replica_catalog_models"
+	"experiment_model"
+	"fmt"
+	"gateway_resource_profile_model"
+	"git.apache.org/thrift.git/lib/go/thrift"
 	"group_manager_model"
+	"job_model"
+	"replica_catalog_models"
+	"scheduling_model"
+	"security_model"
+	"status_models"
+	"storage_resource_model"
 	"user_profile_model"
-
+	"user_resource_profile_model"
+	"workflow_data_model"
+	"workspace_model"
 )
 
 // (needed to ensure safety because of naive import list construction.)
@@ -57,8 +56,8 @@ var _ = workflow_data_model.GoUnusedProtection__
 var _ = replica_catalog_models.GoUnusedProtection__
 var _ = group_manager_model.GoUnusedProtection__
 var _ = user_profile_model.GoUnusedProtection__
+
 const AIRAVATA_API_VERSION = "0.17.0"
 
 func init() {
 }
-

@@ -3,5 +3,4 @@
 
 package experiment_model
 
-var GoUnusedProtection__ int;
-
+var GoUnusedProtection__ int

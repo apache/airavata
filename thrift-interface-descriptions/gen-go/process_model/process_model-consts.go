@@ -4,15 +4,14 @@
 package process_model
 
 import (
+	"airavata_commons"
+	"application_io_models"
 	"bytes"
 	"fmt"
 	"git.apache.org/thrift.git/lib/go/thrift"
-	"airavata_commons"
-	"application_io_models"
+	"scheduling_model"
 	"status_models"
 	"task_model"
-	"scheduling_model"
-
 )
 
 // (needed to ensure safety because of naive import list construction.)
@@ -28,4 +27,3 @@ var _ = scheduling_model.GoUnusedProtection__
 
 func init() {
 }
-

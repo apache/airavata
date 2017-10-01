@@ -3,5 +3,4 @@
 
 package airavata_commons
 
-var GoUnusedProtection__ int;
-
+var GoUnusedProtection__ int
