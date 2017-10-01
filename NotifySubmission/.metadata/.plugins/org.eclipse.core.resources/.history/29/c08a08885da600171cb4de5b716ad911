@@ -1,0 +1,7 @@
+namespace java com.notifySubmission.server
+      
+    typedef i32 int  
+      
+    service NotifySubmission {  
+            int add(1:int n1, 2:int n2), 
+    }
