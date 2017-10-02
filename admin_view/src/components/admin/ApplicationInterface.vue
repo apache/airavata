@@ -5,8 +5,8 @@
     <div class="new-application-tab-main">
       <h4>Application Interface</h4>
       <div class="entry boolean-selectors">
-        <boolean-radio-button v-bind:heading="'Enable Archiving Working Directory'" v-bind:selectorVal="work_dir"></boolean-radio-button>
-        <boolean-radio-button v-bind:heading="'Enable Optional File Inputs'" v-bind:selectorVal="optional_files" v-bind:def="'true'"></boolean-radio-button>
+        <boolean-radio-button v-bind:heading="'Enable Archiving Working Directory'" v-bind:selectorVal="work_dir" v-bind:selectorId="booleanSelectorIDs[0]" v-on:bool_selector="updateStore"></boolean-radio-button>
+        <boolean-radio-button v-bind:heading="'Enable Optional File Inputs'" v-bind:selectorVal="optional_files" v-bind:def="'true'" v-bind:selectorId="booleanSelectorIDs[1]"  v-on:bool_selector="updateStore"></boolean-radio-button>
       </div>
       <div>
         <application-input-field class="interface-main"  v-for="inp_id in getAppInputFieldsId" v-bind:key="inp_id" v-bind:input_id="inp_id" v-on:delete_input_field="deleteAppInterfaceInputField(inp_id);"></application-input-field>
@@ -40,7 +40,8 @@
       return {
         'id':0,
         work_dir:{'boolValue':'false'},
-        optional_files:{'boolValue':'true'}
+        optional_files:{'boolValue':'true'},
+        booleanSelectorIDs:['enableArchiveWorkingDirectory','enableOutputFileInputs']
       };
     },
     props:{
@@ -50,14 +51,24 @@
         var id=this.createAppInterfaceInputField();
         console.log('Mounted',id);
         this.initialized(true)
+        this.work_dir={'boolValue':this.isEnableArchiveWorkingDirectory().toString()}
+        this.optional_files={'boolValue':this.isEnableOutputFileInput().toString()}
       }
 
     },
     computed:{
-      ...mapGetters(['getAppInputFieldsId','isInitialized'])
+      ...mapGetters(['getAppInputFieldsId','isInitialized','isEnableArchiveWorkingDirectory','isEnableOutputFileInput'])
     },
     methods:{
-      ...mapActions(['createAppInterfaceInputField','deleteAppInterfaceInputField','initialized'])
+      updateStore:function (fieldName,newValue) {
+        if(fieldName == this.booleanSelectorIDs[0] ){
+            this.changeEnableArchiveWorkingDirectory(newValue)
+        }else if(fieldName == this.booleanSelectorIDs[1]){
+          this.changeEnableOutputFileInput(newValue)
+          console.log(fieldName)
+        }
+      },
+      ...mapActions(['createAppInterfaceInputField','deleteAppInterfaceInputField','initialized','changeEnableOutputFileInput','changeEnableArchiveWorkingDirectory'])
     }
   };
 </script>

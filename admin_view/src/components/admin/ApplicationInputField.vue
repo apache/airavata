@@ -21,11 +21,11 @@
       <input v-model="appArg" type="text"/>
     </div>
     <div class="entry boolean-selectors">
-      <boolean-radio-button v-bind:heading="'Data is staged'" v-bind:selectorId="dataStaged" v-on:boolselector.prevent="boolValueHandler"></boolean-radio-button>
-      <boolean-radio-button v-bind:heading="'Required'" v-bind:selectorId="required" v-on:boolselector.prevent="boolValueHandler"></boolean-radio-button>
+      <boolean-radio-button v-bind:heading="'Data is staged'" v-bind:selectorId="dataStaged" v-on:bool_selector="boolValueHandler"></boolean-radio-button>
+      <boolean-radio-button v-bind:heading="'Required'" v-bind:selectorId="required" v-on:bool_selector="boolValueHandler"></boolean-radio-button>
     </div>
     <div class="entry boolean-selectors">
-      <boolean-radio-button v-bind:heading="'Required on command line'" v-bind:selectorId="requiredOnCmd" v-on:boolselector.prevent="boolValueHandler"></boolean-radio-button>
+      <boolean-radio-button v-bind:heading="'Required on command line'" v-bind:selectorId="requiredOnCmd" v-on:bool_selector="boolValueHandler"></boolean-radio-button>
     </div>
   </div>
 </template>
@@ -41,17 +41,14 @@
       BooleanRadioButton
     },
     created:function () {
-      this.$on('',
-        function (selectorID=null,value=null) {
-          console.log("SelctorId: "+selectorID+'  Value: '+value);
-        })
     },
     methods:{
       delete_event_trigger:function(){
         this.$emit('delete_input_field');
       },
-      boolValueHandler:function (selectorID=null,value=null) {
-        console.log("SelctorId: "+selectorID+'  Value: '+value);
+      boolValueHandler:function (selectorID,value) {
+        console.log('Event Capture',selectorID,value);
+        this.updateStore(selectorID,value)
       },
       syncDataFromStore:function () {
         console.log(this.input_id)
@@ -71,16 +68,15 @@
         this.updateFieldValues(param)
       },
       ...mapActions(['updateFieldValues'])
-
     },
     mounted:function(){
       this.syncDataFromStore()
     },
     data:function () {
       return{
-        'dataStaged':0,
-        'required':1,
-        'requiredOnCmd':2,
+        'dataStaged':'dataStaged',
+        'required':'required',
+        'requiredOnCmd':'requiredOnCmd',
         name:'',
         value:'',
         type:'',

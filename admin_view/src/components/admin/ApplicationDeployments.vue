@@ -74,6 +74,9 @@
     </div>
   </div>
 </template>
+<script>
+
+</script>
 <style>
   .heading {
     font-size: 1.0em;

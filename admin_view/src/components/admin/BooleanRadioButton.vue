@@ -35,14 +35,15 @@
         type:String
       },
       selectorId:{
-        type:Number,
-        default:-1
+        type:String,
+        default:''
       }
     },
     methods:{
       triggerValueChangeEvent:function (value) {
-        this.$emit('bool_selector',this.selectorId,(value=='true'))
+        var update=[this.selectorId,(value=='true')]
         console.log('Triggered Change event')
+        this.$emit('bool_selector',this.selectorId,(value=='true'))
       }
     },
     watch:{
