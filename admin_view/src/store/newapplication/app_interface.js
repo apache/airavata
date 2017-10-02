@@ -7,7 +7,9 @@ export default{
   state:{
     inputFields:{},
     counter:0,
-    initialized:false
+    initialized:false,
+    enableArchiveWorkingDirectory:false,
+    enableOutputFileInputs:false
   },
   mutations:{
     createAppInterfaceInputFieldObject(state,id){
@@ -18,8 +20,8 @@ export default{
         type: '',
         appArg: '',
         dataStaged: false,
-        requiredId: false,
-        requiredOnCmdId: false
+        required: false,
+        requiredOnCmd: false
       });
       console.log('Creating App Input Field INS: ',state.inputFields);
     },
@@ -51,6 +53,12 @@ export default{
     },
     deleteAllInputFields:function (state) {
       state.inputFields={}
+    },
+    setEnableArchiveWorkingDirectory:function (state,value) {
+      state.enableArchiveWorkingDirectory=value
+    },
+    setEnableOutputFileInput:function (state,value) {
+      state.enableOutputFileInputs=value
     }
   },
   getters:{
@@ -60,6 +68,8 @@ export default{
     isInitialized:state=>{
       return state.initialized;
     },
+    isEnableArchiveWorkingDirectory:state=>state.enableArchiveWorkingDirectory,
+    isEnableOutputFileInput:state=>state.enableOutputFileInputs,
     getAppInputFields:state=>{
       return state.inputFields;
     },
@@ -86,6 +96,12 @@ export default{
     },
     initialized:function (context, initialize) {
       context.commit('setInitialize',initialize)
+    },
+    changeEnableOutputFileInput:function(context,value){
+      context.commit('setEnableOutputFileInput',value)
+    },
+    changeEnableArchiveWorkingDirectory:function (context,value) {
+      context.commit('setEnableArchiveWorkingDirectory',value)
     }
   }
 }
