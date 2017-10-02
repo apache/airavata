@@ -34,5 +34,7 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="/Users/nikithachettiar/Downloads/libthrift-0.9.3-javadoc.jar"/>
 	<classpathentry kind="lib" path="/Users/nikithachettiar/Downloads/libthrift-0.10.0.jar"/>
+	<classpathentry kind="lib" path="/Users/nikithachettiar/Downloads/javax.mail.jar"/>
+	<classpathentry kind="lib" path="/Users/nikithachettiar/Downloads/mailactivation/activation.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
