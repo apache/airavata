@@ -34,11 +34,11 @@ func Usage() {
 
 func main() {
 	flag.Usage = Usage
-	server := flag.Bool("server", false, "Run server")
+	//server := flag.Bool("server", false, "Run server")
 	protocol := flag.String("P", "binary", "Specify the protocol (binary, compact, json, simplejson)")
 	framed := flag.Bool("framed", false, "Use framed transport")
 	buffered := flag.Bool("buffered", false, "Use buffered transport")
-	addr := flag.String("addr", "apidev.scigap.org:9090", "Address to listen to")
+	addr := flag.String("addr", "apidev.scigap.org:9930", "Address to listen to")
 	secure := flag.Bool("secure", true, "Use tls secure transport")
 
 	flag.Parse()
