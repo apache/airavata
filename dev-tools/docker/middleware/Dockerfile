@@ -12,7 +12,7 @@ MAINTAINER Jeffrey Ravindran <jeffravi@iu.edu>
 RUN useradd -ms /bin/bash airavata # check group: `cut -d: -f1 /etc/group`
 
 #Work directory - TODO:: Move to config
-WORKDIR /usr/local/src
+#WORKDIR /usr/local/src
 
 # Install Modules
 RUN yum -y update; yum clean all
@@ -26,4 +26,5 @@ RUN yum install firewalld -y && \
 RUN git clone -b master https://git-wip-us.apache.org/repos/asf/airavata.git
 
 #Building the project using Maven
-RUN mvn clean install -Dmaven.test.skip=true
+RUN cd /airavata && \
+	mvn clean install -Dmaven.test.skip=true
