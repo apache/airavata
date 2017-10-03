@@ -1,4 +1,6 @@
-Dockerize RabbitMQ  
-This is a sub-task of issue "Dockerize RabbitMQ" - AIRAVATA-2090 (https://issues.apache.org/jira/browse/AIRAVATA-2090)
-
-Related Documentation can be found at : https://cwiki.apache.org/confluence/display/AIRAVATA/4.+Dockerizing+all+Airavata+components
+# Containerize Airavata components 
+### Goal  
+Individual components should be separated and put inside separate VMs. Communication and configuration of VMs should occur through a single command. Orchestration of components could be achieved through Docker Swarm, Mesos, or Kubernetes which suits best. Dependencies and order of deployment should be handled in order to achieve successful deployment of all components
+ 
+### Research so far:  
+In accordance with the proposed design, all airavata components will be containerized into separate VMs and then a single command will be used to orchestrate all components
