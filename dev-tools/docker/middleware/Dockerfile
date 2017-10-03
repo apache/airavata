@@ -24,3 +24,6 @@ RUN yum install firewalld -y && \
 	
 #Checkout master branch
 RUN git clone -b master https://git-wip-us.apache.org/repos/asf/airavata.git
+
+#Building the project using Maven
+RUN mvn clean install -Dmaven.test.skip=true
