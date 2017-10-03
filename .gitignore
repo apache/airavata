@@ -16,7 +16,7 @@
 *.ipr
 *.iws
 *.iml
-*target
+#*target
 ## Additional for IntelliJ
 out/
 
