@@ -6,10 +6,12 @@ export default{
   namespaced: true,
   state:{
     inputFields:{},
+    outputFields:{},
     counter:0,
     initialized:false,
     enableArchiveWorkingDirectory:false,
-    enableOutputFileInputs:false
+    enableOutputFileInputs:false,
+    missingFields:false
   },
   mutations:{
     createAppInterfaceInputFieldObject(state,id){
@@ -19,9 +21,13 @@ export default{
         value: '',
         type: '',
         appArg: '',
-        dataStaged: false,
+        userFriendlyDescr:'',
+        inpOrder:'',
+        dataStaged: null,
         required: false,
-        requiredOnCmd: false
+        requiredOnCmd: false,
+        isReadOnly:true,
+        standardInput:true
       });
       console.log('Creating App Input Field INS: ',state.inputFields);
     },
@@ -59,9 +65,15 @@ export default{
     },
     setEnableOutputFileInput:function (state,value) {
       state.enableOutputFileInputs=value
+    },
+    setMissingField:function (state,value) {
+      state.missingFields=value;
     }
   },
   getters:{
+    isMissing:state=>{
+      return state.missingFields;
+    },
     getAppInputField:state=>id=>{
       return state.inputFields[id];
     },
@@ -102,6 +114,9 @@ export default{
     },
     changeEnableArchiveWorkingDirectory:function (context,value) {
       context.commit('setEnableArchiveWorkingDirectory',value)
+    },
+    triggerMissingField:function (context,value) {
+      context.commit('setMissingField',value)
     }
   }
 }
