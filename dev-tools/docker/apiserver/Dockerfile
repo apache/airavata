@@ -12,3 +12,4 @@ ARG BUILD_FILE="apache-airavata-server-0.17-SNAPSHOT-bin.tar.gz"
 ARG COMPONENT="apiserver"
 
 #Starting apiserver
+CMD sh $WORK_DIR/apache-airavata-server-0.17-SNAPSHOT/bin/airavata-server-start.sh $COMPONENT
