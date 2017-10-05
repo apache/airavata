@@ -1,5 +1,12 @@
 version: '3'
 services:
- middleware:
-  build: ./middleware
-  container_name: middleware
+ base:
+  build: .
+  container_name: base
+  image: airavata/base
+ apiserver:
+  build: ./apiserver
+  container_name: apiserver
+  image: airavata/apiserver
+  depends_on:
+   - base
