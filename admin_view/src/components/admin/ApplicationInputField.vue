@@ -1,5 +1,5 @@
 <template>
-  <div class="main_section interface-main" >
+  <div class="main_section interface-main">
     <div class="input-field-header">
       Input Fields
       <img v-on:click="delete_event_trigger();" src="/static/images/delete.png"/>
@@ -9,104 +9,166 @@
       <input type="text" v-model="name"/>
     </div>
     <div class="entry">
-      <div class="heading" >Value</div>
+      <div class="heading">Value</div>
       <input type="text" v-model="value"/>
     </div>
     <div class="entry">
-      <div class="heading" >Type</div>
-      <input type="text" v-model="type"/>
+      <div class="heading">Type</div>
+      <select v-model="type">
+        <option value="String">String</option>
+        <option value="Integer">Integer</option>
+        <option value="Float">Float</option>
+        <option value="URI">URI</option>
+      </select>
     </div>
     <div class="entry">
       <div class="heading">Application argument</div>
       <input v-model="appArg" type="text"/>
     </div>
     <div class="entry boolean-selectors">
-      <boolean-radio-button v-bind:heading="'Data is staged'" v-bind:selectorId="dataStaged" v-on:bool_selector="boolValueHandler"></boolean-radio-button>
-      <boolean-radio-button v-bind:heading="'Required'" v-bind:selectorId="required" v-on:bool_selector="boolValueHandler"></boolean-radio-button>
+      <boolean-radio-button v-bind:heading="'Standard input'" v-bind:selectorId="standardInput.fieldType"
+                            v-bind:def="getAppInputFieldValue(standardInput)"
+                            v-on:bool_selector="boolValueHandler"></boolean-radio-button>
+      <boolean-radio-button v-bind:heading="'Is read only'" v-bind:selectorId="isReadOnly.fieldType"
+                            v-bind:def="getAppInputFieldValue(isReadOnly)"
+                            v-on:bool_selector="boolValueHandler"></boolean-radio-button>
+    </div>
+    <div class="entry">
+      <div class="heading">User friendly description</div>
+      <textarea style="height: 80px;" type="text" v-model="userFriendlyDescr"/>
+    </div>
+    <div class="entry">
+      <div class="heading">Input order</div>
+      <input v-model="inpOrder" type="text"/>
     </div>
     <div class="entry boolean-selectors">
-      <boolean-radio-button v-bind:heading="'Required on command line'" v-bind:selectorId="requiredOnCmd" v-on:bool_selector="boolValueHandler"></boolean-radio-button>
+      <boolean-radio-button v-bind:heading="'Data is staged'" v-bind:selectorId="dataStaged.fieldType"
+                            v-bind:def="getAppInputFieldValue(dataStaged)"
+                            v-on:bool_selector="boolValueHandler"></boolean-radio-button>
+      <boolean-radio-button v-bind:heading="'Required'" v-bind:selectorId="required.fieldType"
+                            v-bind:def="getAppInputFieldValue(required)"
+                            v-on:bool_selector="boolValueHandler"></boolean-radio-button>
+    </div>
+    <div class="entry boolean-selectors">
+      <boolean-radio-button v-bind:heading="'Required on command line'" v-bind:selectorId="requiredOnCmd.fieldType"
+                            v-on:bool_selector="boolValueHandler"></boolean-radio-button>
     </div>
   </div>
 </template>
 <script>
   import BooleanRadioButton from './BooleanRadioButton.vue'
 
-  import { createNamespacedHelpers } from 'vuex'
+  import {createNamespacedHelpers} from 'vuex'
 
-  const {mapGetters,mapActions} = createNamespacedHelpers('appInterfaceTab')
+  const {mapGetters, mapActions} = createNamespacedHelpers('appInterfaceTab')
 
   export default {
-    components:{
+    components: {
       BooleanRadioButton
     },
-    created:function () {
+    created: function () {
+      this.syncDataFromStore();
     },
-    methods:{
-      delete_event_trigger:function(){
+    methods: {
+      delete_event_trigger: function () {
         this.$emit('delete_input_field');
       },
-      boolValueHandler:function (selectorID,value) {
-        console.log('Event Capture',selectorID,value);
-        this.updateStore(selectorID,value)
+      boolValueHandler: function (selectorID, value) {
+        console.log('Event Capture', selectorID, value);
+        if (typeof value !== Boolean){
+          throw "event value not boolean"
+        }
+        this.updateStore(selectorID, value)
       },
-      syncDataFromStore:function () {
+      syncDataFromStore: function () {
         console.log(this.input_id)
-        var val=this.getAppInputField(this.input_id)
-        this.name=val['name']
-        this.value=val['value']
-        this.type=val['type']
-        this.appArg=val['appArg']
-      },
-      updateStore:function (fieldName,newValue) {
-        var param={
-          'id':this.input_id,
-        };
-        var update={}
-        update[fieldName]=newValue
-        param['update']=update
-        this.updateFieldValues(param)
-      },
-      ...mapActions(['updateFieldValues'])
-    },
-    mounted:function(){
-      this.syncDataFromStore()
-    },
-    data:function () {
-      return{
-        'dataStaged':'dataStaged',
-        'required':'required',
-        'requiredOnCmd':'requiredOnCmd',
-        name:'',
-        value:'',
-        type:'',
-        appArg:''
-      }
-    },
-    props:['input_id'],
-    computed:{
-      ...mapGetters(['getAppInputField'])
-    },
-    watch:{
-      name:function (newValue) {
-        this.updateStore('name',newValue)
-      },
-      value:function (newValue) {
-        this.updateStore('value',newValue)
+        var val = this.getAppInputField(this.input_id)
+        this.name = val['name']
+        this.value = val['value']
+        this.type = val['type']
+        this.appArg = val['appArg']
+        this.userFriendlyDescr = val['userFriendlyDescr']
+        this.inpOrder = val['inpOrder']
 
       },
-      type:function (newValue) {
-        this.updateStore('type',newValue)
+      updateStore: function (fieldName, newValue) {
+        var param = {
+          'id': this.input_id,
+        };
+        var update = {}
+        update[fieldName] = newValue
+        param['update'] = update
+        this.updateInputFieldValues(param)
       },
-      appArg:function (newValue) {
-        this.updateStore('appArg',newValue)
+      ...mapActions(['updateInputFieldValues'])
+    },
+    mounted: function () {
+      this.syncDataFromStore()
+    },
+    data: function () {
+      return {
+        'dataStaged': {
+          'id': this.input_id,
+          'fieldName': 'dataStaged'
+        },
+        'required':
+          {
+            'id': this.input_id,
+            'fieldName': 'required'
+          },
+        'requiredOnCmd':
+          {
+            'id': this.input_id,
+            'fieldName': 'requiredOnCmd'
+          },
+        'standardInput':
+          {
+            'id': this.input_id,
+            'fieldName': 'standardInput'
+          },
+        'isReadOnly':
+          {
+            'id': this.input_id,
+            'fieldName': 'isReadOnly'
+          },
+        name: '',
+        value: '',
+        type: '',
+        appArg: '',
+        userFriendlyDescr: '',
+        inpOrder: ''
+      }
+    },
+    props: ['input_id'],
+    computed: {
+      ...mapGetters(['getAppInputField', 'getAppInputFieldValue'])
+    },
+    watch: {
+      inpOrder: function (newValue) {
+        this.updateStore('inpOrder', newValue)
+      },
+      userFriendlyDescr: function (newValue) {
+        this.updateStore('userFriendlyDescr', newValue)
+      },
+      name: function (newValue) {
+        this.updateStore('name', newValue)
+      },
+      value: function (newValue) {
+        this.updateStore('value', newValue)
+
+      },
+      type: function (newValue) {
+        this.updateStore('type', newValue)
+      },
+      appArg: function (newValue) {
+        this.updateStore('appArg', newValue)
       }
     }
   }
 </script>
 
 <style>
-  .input-field-header{
+  .input-field-header {
     background-color: #F8F8F8;
     width: 100%;
     padding: 15px;
@@ -114,27 +176,30 @@
     text-align: left;
   }
 
-  .input-field-header img{
+  .input-field-header img {
     float: right;
-    }
+  }
 
-
-
-  .main_section.interface-main .entry{
+  .main_section.interface-main .entry {
     margin-bottom: 40px;
-    margin-left:15px;
+    margin-left: 15px;
     margin-right: 15px;
   }
 
-  .entry.boolean-selectors{
+  .entry.boolean-selectors {
     display: flex;
   }
 
-  .entry.boolean-selectors div{
+  .entry.boolean-selectors div {
     margin-right: 60px;
   }
 
-  .interface-main{
+  .entry select {
+    width: 100%;
+    height: 30px;
+  }
+
+  .interface-main {
     border: solid 1px #dddddd;
     border-radius: 4px;
   }

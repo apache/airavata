@@ -1,7 +1,7 @@
 <template>
   <div class="btns">
-    <input class="cancel" type="button" value="Cancel"/>
-    <input class="save" type="button" value="Save"/>
+    <input class="cancel" type="button" value="Cancel" v-on:click="$emit('cancel')"/>
+    <input class="save" type="button" value="Save" v-on:click="$emit('save')"/>
   </div>
 </template>
 <style>

@@ -9,7 +9,7 @@
         <boolean-radio-button v-bind:heading="'Enable Optional File Inputs'" v-bind:selectorVal="optional_files" v-bind:def="'true'" v-bind:selectorId="booleanSelectorIDs[1]"  v-on:bool_selector="updateStore"></boolean-radio-button>
       </div>
       <div>
-        <application-input-field class="interface-main"  v-for="inp_id in getAppInputFieldsId" v-bind:key="inp_id" v-bind:input_id="inp_id" v-on:delete_input_field="deleteAppInterfaceInputField(inp_id);"></application-input-field>
+        <application-input-field class="interface-main" v-for="inp_id in getAppInputFieldsIds" v-bind:key="inp_id" v-bind:input_id="inp_id" v-on:delete_input_field="deleteAppInterfaceInputField(inp_id);"></application-input-field>
       </div>
       <div class="entry">
         <button class="interface-btn" v-on:click="createAppInterfaceInputField();">Add Application <span>input</span></button>
@@ -26,6 +26,7 @@
   import ApplicationInputField from './ApplicationInputField.vue';
   import BooleanRadioButton from './BooleanRadioButton.vue';
   import NewApplicationButtons from './NewApplicationButtons.vue';
+  import ApplicationOutputField from './ApplicationOutputField.vue'
 
   import { createNamespacedHelpers } from 'vuex'
 
@@ -33,14 +34,13 @@
 
   export default {
     components:{
-
-      ApplicationInputField,BooleanRadioButton,NewApplicationButtons
+      ApplicationInputField,BooleanRadioButton,NewApplicationButtons,ApplicationOutputField
     },
     data:function () {
       return {
         'id':0,
-        work_dir:{'boolValue':'false'},
-        optional_files:{'boolValue':'true'},
+        work_dir:{'boolValue':false},
+        optional_files:{'boolValue':true},
         booleanSelectorIDs:['enableArchiveWorkingDirectory','enableOutputFileInputs']
       };
     },
@@ -51,13 +51,13 @@
         var id=this.createAppInterfaceInputField();
         console.log('Mounted',id);
         this.initialized(true)
-        this.work_dir={'boolValue':this.isEnableArchiveWorkingDirectory().toString()}
+        this.work_dir={'boolValue':this.isEnableArchiveWorkingDirectory.toString()}
         this.optional_files={'boolValue':this.isEnableOutputFileInput().toString()}
       }
 
     },
     computed:{
-      ...mapGetters(['getAppInputFieldsId','isInitialized','isEnableArchiveWorkingDirectory','isEnableOutputFileInput'])
+      ...mapGetters(['getAppInputFieldsIds','getAppOutputFieldIds','isInitialized','isEnableArchiveWorkingDirectory','isEnableOutputFileInput'])
     },
     methods:{
       updateStore:function (fieldName,newValue) {
@@ -68,7 +68,7 @@
           console.log(fieldName)
         }
       },
-      ...mapActions(['createAppInterfaceInputField','deleteAppInterfaceInputField','initialized','changeEnableOutputFileInput','changeEnableArchiveWorkingDirectory'])
+      ...mapActions(['createAppInterfaceInputField','deleteAppInterfaceInputField','createAppInterfaceOutputField','deleteAppInterfaceOutputField','initialized','changeEnableOutputFileInput','changeEnableArchiveWorkingDirectory'])
     }
   };
 </script>

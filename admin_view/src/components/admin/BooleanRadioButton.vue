@@ -17,7 +17,7 @@
 
   export default {
     created:function(){
-      this.boolValue=this.def;
+      this.boolValue=this.def.toString();
     },
     data:function () {
       return {
@@ -26,9 +26,9 @@
     },
     props:{
       def:{
-        type:String,
+        type:Boolean,
         default:function () {
-          return 'false';
+          return false;
         }
       },
       heading:{

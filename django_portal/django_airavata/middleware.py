@@ -46,6 +46,7 @@ def get_airavata_client(transport):
 
     # Create a Airavata client to use the protocol encoder
     client=Airavata.Client(protocol)
+    client.registerApplicationModule()
     return client
 
 def get_sharing_client(transport):

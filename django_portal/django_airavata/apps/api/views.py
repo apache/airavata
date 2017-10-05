@@ -125,3 +125,9 @@ class ApplicationList(APIView):
         app_modules=request.airavata_client.getAllAppModules(request.authz_token,gateway_id)
         serializer=serializers.ApplicationModuleSerializer(app_modules,many=True,context={'request':request})
         return Response(serializer.data)
+
+class RegisterApplicationInterface(APIView):
+
+    def post(self,request,format=None):
+        gateway_id = settings.GATEWAY_ID
+
