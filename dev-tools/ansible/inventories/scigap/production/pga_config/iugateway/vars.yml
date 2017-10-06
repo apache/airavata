@@ -42,9 +42,9 @@ oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.wel
 auth_options:
   - name: "IU Gateway"
     oauth_grant_type: "password"
-  - name: "CILogon"
+  - name: "IU CAS"
     oauth_grant_type: "authorization_code"
-    oauth_authorize_url_extra_params: "kc_idp_hint=oidc"
+    oauth_authorize_url_extra_params: "kc_idp_hint=cilogon"
     logo: "/assets/cilogon-logo-24x24-b.png"
 oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 
@@ -56,7 +56,7 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCjKGnD
 
 ## Portal related variables
 super_admin_portal: "false"
-admin_emails: "['athota@iu.edu', 'sgg@iu.edu']"
+admin_emails: "['athota@iu.edu', 'sgrc-iu-group@iu.edu']"
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
 portal_theme: "iugateway"
