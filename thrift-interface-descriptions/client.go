@@ -22,7 +22,7 @@ package main
 import (
 	"crypto/tls"
 	"fmt"
-	"git.apache.org/thrift.git/lib/go/thrift"
+	"thrift-lib"
 	"airavata_api"
 	"security_model"
 	"context"
