@@ -11,17 +11,17 @@ return array(
         /**
          * Admin Role Name
          */
-        'admin-role-name' => '{{ admin_role_name }}',
+        'admin-role-name' => 'admin',
 
         /**
          * Read only Admin Role Name
          */
-        'read-only-admin-role-name' => '{{ admin_readonly_role_name }}',
+        'read-only-admin-role-name' => 'admin-read-only',
 
         /**
          * Gateway user role
          */
-        'user-role-name' => '{{ user_role_name }}',
+        'user-role-name' => 'gateway-user',
 
         /**
          * Initial user role. This is the initial user role assigned to a new
@@ -29,70 +29,62 @@ return array(
          * grant new users that role, or set to some other role ('user-pending')
          * to require admin approval before users have access.
          */
-        'initial-role-name' => '{{ initial_role_name }}',
+        'initial-role-name' => 'user-pending',
 
         /**
          * Tenant Domain
          */
-        'tenant-domain' => '{{ tenant_domain }}',
+        'tenant-domain' => 'test-gateway',
 
         /**
          * Tenant admin's username
          */
-        'admin-username' => '{{ admin_username }}',
+        'admin-username' => 'admin',
 
         /**
          * Tenant admin's password
          */
-        'admin-password' => '{{ admin_password }}',
+        'admin-password' => 'admin',
 
         /**
          * OAuth client key
          */
-        'oauth-client-key' => '{{ oauth_client_key }}',
+        'oauth-client-key' => 'admin',
 
         /**
          * OAuth client secret
          */
-        'oauth-client-secret' => '{{ oauth_client_secret }}',
+        'oauth-client-secret' => 'admin',
 
         /**
          * Authentication options
          */
         'auth-options' => [
-            {% for auth_option in auth_options %}
-            [
-                'oauth-grant-type' => '{{ auth_option["oauth_grant_type"] }}',
-                'name' => '{{ auth_option["name"] }}',
-                {% if "oauth_authorize_url_extra_params" in auth_option %}
-                'oauth-authorize-url-extra-params' => '{{ auth_option["oauth_authorize_url_extra_params"] }}',
-                {% endif %}
-                {% if "logo" in auth_option %}
-                'logo' => '{{ auth_option["logo"] }}',
-                {% endif %}
-            ],
-            {% endfor %}
-        ],
+                        [
+                'oauth-grant-type' => 'password',
+                'name' => 'admin',
+                                            ],
+                    ],
 
         /**
          * OAuth call back url (only if the grant type is authorization_code)
          */
-        'oauth-callback-url' => '{{ oauth_callback_url }}',
+        'oauth-callback-url' => 'http://127.0.0.1/callback-url',
 
         /**
          * For OIDC servers that support the discovery protocol.
          */
-        'openid-connect-discovery-url' => '{{ oidc_discovery_url }}',
+        'openid-connect-discovery-url' => 'admin',
 
         /**
          * Identity server url
          */
-        'service-url' => '{{ oauth_service_url }}',
+        'service-url' => 'CHANGEME',
 
         /**
          * Enable HTTPS server verification
          */
-        'verify-peer' => {{ auth_verify_peer }},
+        'verify-peer' => true,
 
         /**
          * Path to the server certificate file
@@ -112,23 +104,23 @@ return array(
          * Airavata API server location. Use tls:// as the protocol to
          * connect TLS enabled Airavata
          */
-        'airavata-server' => '{{ airavata_server }}',
+        'airavata-server' => 'tls://127.0.0.1',
 
         /**
          * Airavata API server port
          */
-        'airavata-port' => '{{ airavata_port }}',
+        'airavata-port' => '8930',
 
         /**
          * Airavata Profile Service server location. Use tls:// as the protocol to
          * connect over TLS
          */
-        'airavata-profile-service-server' => '{{ airavata_profile_service_server }}',
+        'airavata-profile-service-server' => '127.0.0.1',
 
         /**
          * Airavata Profile Service port
          */
-        'airavata-profile-service-port' => '{{ airavata_profile_service_port }}',
+        'airavata-profile-service-port' => '8962',
 
         /**
          * Airavata API server thrift communication timeout
@@ -138,7 +130,7 @@ return array(
         /**
          * PGA Gateway ID
          */
-        'gateway-id' => '{{ gateway_id }}',
+        'gateway-id' => 'test-gateway',
 
         /**
          * Maximum size of a file which is allowed to upload to the server
@@ -148,7 +140,7 @@ return array(
         /**
          * absolute path of the data dir
          */
-        'experiment-data-absolute-path' => '{{ experiment_data_dir }}',
+        'experiment-data-absolute-path' => '/var/www/portals/gateway-user-data/expr-dir',
 
         /**
          * Advanced experiments options
@@ -188,12 +180,12 @@ return array(
          /**
          * Gateway data store resource id
          */
-         'gateway-data-store-resource-id' => '{{ gateway_data_store_resource_id }}',
+         'gateway-data-store-resource-id' => 'gateway_res_id',
 
          /**
           * Data Sharing enabled
           */
-          'data-sharing-enabled' => {{ data_sharing_enabled }}
+          'data-sharing-enabled' => true
     ],
 
     /**
@@ -205,33 +197,33 @@ return array(
         /**
          * Whether this portal is the SciGaP admin portal
          */
-        'super-admin-portal' => {{ super_admin_portal }},
+        'super-admin-portal' => false,
 
         /**
          * Set the name of theme in use here
          */
-        'theme' => '{{ portal_theme }}',
+        'theme' => 'base',
 
         /**
          * Portal title
          */
-        'portal-title' => '{{ portal_title }}',
+        'portal-title' => 'Gateway',
 
         /**
          * Email address of the portal admin. Portal admin well get email notifications for events
          * such as new user creation
          */
-        'admin-emails' => {{ admin_emails }},
+        'admin-emails' => "emailaddress1@example.com",
 
         /**
          * Email account that the portal should login to send emails
          */
-        'portal-email-username' => '{{ portal_email_username }}',
+        'portal-email-username' => 'root',
 
         /**
          * Password for the portal's email account
          */
-        'portal-email-password' => '{{ portal_email_password }}',
+        'portal-email-password' => 'root',
 
         /**
          * SMTP server on which the portal should connect
