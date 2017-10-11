@@ -155,7 +155,7 @@ public class AiravataAPIServer implements IServer{
 			securityManager.initializeSecurityInfra();
 
         } catch (TTransportException e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
             setStatus(ServerStatus.FAILED);
 			logger.error("Failed to start API server ...");
 			throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
