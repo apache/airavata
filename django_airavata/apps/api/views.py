@@ -1,17 +1,23 @@
 
 from . import serializers
 
-from rest_framework import status, mixins
+from rest_framework import status, mixins, pagination
 from rest_framework.decorators import api_view, detail_route
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from rest_framework.utils.urls import replace_query_param
 
 from django.conf import settings
 from django.http import JsonResponse, Http404
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+
+from collections import OrderedDict
+import logging
+
+log = logging.getLogger(__name__)
 
 # Create your views here.
 @api_view(['GET'])
@@ -92,15 +98,74 @@ class APIBackedViewSet(mixins.CreateModelMixin,
     """
     pass
 
+class APIResultIterator(object):
+    """
+    Iterable container over API results which allow limit/offset style slicing.
+    """
+
+    limit = -1
+    offset = 0
+
+    def get_results(self, limit=-1, offset=0):
+        raise NotImplementedError("Subclasses must implement get_results")
+
+    def __iter__(self):
+        results = self.get_results(self.limit, self.offset)
+        for result in results:
+            yield result
+
+    def __getitem__(self, key):
+        if isinstance(key, slice):
+            self.limit = key.stop - key.start
+            self.offset = key.start
+            return iter(self)
+        else:
+            return self.get_results(1, key)
+
+class APIResultPagination(pagination.LimitOffsetPagination):
+    """
+    Based on DRF's LimitOffsetPagination; Airavata API pagination results don't
+    have a known count, so it isn't always possible to know how many pages there
+    are.
+    """
+    def paginate_queryset(self, queryset, request, view=None):
+        assert isinstance(queryset, APIResultIterator), "queryset is not an APIResultIterator: {}".format(queryset)
+        self.limit = self.get_limit(request)
+        if self.limit is None:
+            return None
+
+        self.offset = self.get_offset(request)
+        self.request = request
+
+        return list(queryset[self.offset:self.offset + self.limit])
+
+    def get_paginated_response(self, data):
+        has_next_link = len(data) >= self.limit
+        return Response(OrderedDict([
+            ('next', self.get_next_link() if has_next_link else None),
+            ('previous', self.get_previous_link()),
+            ('results', data)
+        ]))
+
+    def get_next_link(self):
+        url = self.request.build_absolute_uri()
+        url = replace_query_param(url, self.limit_query_param, self.limit)
+
+        offset = self.offset + self.limit
+        return replace_query_param(url, self.offset_query_param, offset)
 
 class ProjectViewSet(APIBackedViewSet):
 
     serializer_class = serializers.ProjectSerializer
     lookup_field = 'project_id'
+    pagination_class = APIResultPagination
 
     def get_list(self):
-        # TODO: support pagination
-        return self.request.airavata_client.getUserProjects(self.authz_token, self.gateway_id, self.username, -1, 0)
+        view = self
+        class ProjectResultIterator(APIResultIterator):
+            def get_results(self, limit=-1, offset=0):
+                return view.request.airavata_client.getUserProjects(view.authz_token, view.gateway_id, view.username, limit, offset)
+        return ProjectResultIterator()
 
     def get_instance(self, lookup_value):
         return self.request.airavata_client.getProject(self.authz_token, lookup_value)
