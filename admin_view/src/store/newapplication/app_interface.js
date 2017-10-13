@@ -54,7 +54,6 @@ export default{
         console.log('props',prop)
         if(inpField.hasOwnProperty(prop)){
           inpField[prop]=updateValue[prop];
-          console.log('type',typeof fields[id][prop])
         }
       }
       Vue.set(state,param.fieldType,fields)
@@ -95,7 +94,6 @@ export default{
     },
     getAppInputFieldValue:state=>param=>{
       var val=state.inputFields[param.id][param['fieldName']]
-      console.log('Get App Input Field',param['fieldName'],param['id'])
       return val
     },
     getAppOutputFieldValue:state=>param=>{
