@@ -17,7 +17,10 @@ urlpatterns = [
     # url(r'^projects/(?P<project_id>.+)/$', views.ProjectDetail.as_view(), name='api_project_detail'),
     url(r'^experiments/$', views.ExperimentList.as_view(), name='api_experiment_list'),
     url(r'^', include(router.urls)),
-    url(r'^applications/$', views.ApplicationList.as_view(), name='application_module_list')
+    url(r'^applications/$', views.ApplicationList.as_view(), name='application_module_list'),
+    url(r'^new/application/module$', views.RegisterApplicationModule.as_view(), name='register_application_module'),
+    url(r'^new/application/interface', views.RegisterApplicationInterface.as_view(), name='register_application_interface'),
+    url(r'^new/application/deployment', views.RegisterApplicationDeployments.as_view(), name='register_application_deployments'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
