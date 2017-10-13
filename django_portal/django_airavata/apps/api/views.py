@@ -1,4 +1,3 @@
-
 from . import serializers
 
 from rest_framework import status, mixins
@@ -7,11 +6,16 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from rest_framework.parsers import JSONParser
 
 from django.conf import settings
 from django.http import JsonResponse, Http404
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+
+from apache.airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule,ApplicationDeploymentDescription
+from apache.airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDescription
+
 
 # Create your views here.
 @api_view(['GET'])
@@ -21,8 +25,8 @@ def api_root(request, format=None):
         'admin': reverse('api_experiment_list', request=request, format=format)
     })
 
-class GenericAPIBackedViewSet(GenericViewSet):
 
+class GenericAPIBackedViewSet(GenericViewSet):
     def get_list(self):
         """
         Subclasses must implement.
@@ -59,6 +63,7 @@ class GenericAPIBackedViewSet(GenericViewSet):
     def authz_token(self):
         return self.request.authz_token
 
+
 class CreateUpdateRetrieveListViewSet(mixins.CreateModelMixin,
                                       mixins.RetrieveModelMixin,
                                       mixins.UpdateModelMixin,
@@ -79,7 +84,6 @@ class CreateUpdateRetrieveListViewSet(mixins.CreateModelMixin,
 
 
 class ProjectViewSet(CreateUpdateRetrieveListViewSet):
-
     serializer_class = serializers.ProjectSerializer
 
     def get_list(self):
@@ -108,6 +112,7 @@ class ExperimentList(APIView):
         serializer = serializers.ExperimentSerializer(experiments, many=True, context={'request': request})
         return Response(serializer.data)
 
+
 class ProjectExperimentList(APIView):
     def get(self, request, project_id, format=None):
         gateway_id = settings.GATEWAY_ID
@@ -119,15 +124,40 @@ class ProjectExperimentList(APIView):
 
 
 class ApplicationList(APIView):
-
-    def get(self,request,format=None):
+    def get(self, request, format=None):
         gateway_id = settings.GATEWAY_ID
-        app_modules=request.airavata_client.getAllAppModules(request.authz_token,gateway_id)
-        serializer=serializers.ApplicationModuleSerializer(app_modules,many=True,context={'request':request})
+        app_modules = request.airavata_client.getAllAppModules(request.authz_token, gateway_id)
+        serializer = serializers.ApplicationModuleSerializer(app_modules, many=True, context={'request': request})
         return Response(serializer.data)
 
-class RegisterApplicationInterface(APIView):
 
-    def post(self,request,format=None):
+class RegisterApplicationModule(APIView):
+    parser_classes = JSONParser
+
+    def post(self, request, format=None):
         gateway_id = settings.GATEWAY_ID
+        app_module = ApplicationModule(request.data['name'], request.data['version'], request.data['description'])
+        response = request.airavata_client.registerApplicationModule(request.authz_token, gateway_id, app_module)
+        return response
 
+
+class RegisterApplicationInterface(APIView):
+    parser_classes = JSONParser
+
+    def post(self, request, format=None):
+        gateway_id = settings.GATEWAY_ID
+        params = request.data
+        app_interface = ApplicationInterfaceDescription(**params)
+        response = request.airavata_client.registerApplicationInterface(request.authz_token, gateway_id, app_interface)
+        return response
+
+
+class RegisterApplicationDeployments(APIView):
+    parser_classes = JSONParser
+
+    def post(self, request, format=None):
+        gateway_id = settings.GATEWAY_ID
+        params = request.data
+        app_deployment=ApplicationDeploymentDescription(**params)
+        response=request.airavata_client.registerApplicationDeployment(request.authz_token, gateway_id,app_deployment)
+        return response
