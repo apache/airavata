@@ -5,8 +5,8 @@
     <div class="new-application-tab-main">
       <h4>Application Interface</h4>
       <div class="entry boolean-selectors">
-        <boolean-radio-button v-bind:heading="'Enable Archiving Working Directory'" v-bind:selectorVal="work_dir" v-bind:selectorId="booleanSelectorIDs[0]" v-on:bool_selector="updateStore"></boolean-radio-button>
-        <boolean-radio-button v-bind:heading="'Enable Optional File Inputs'" v-bind:selectorVal="optional_files" v-bind:def="'true'" v-bind:selectorId="booleanSelectorIDs[1]"  v-on:bool_selector="updateStore"></boolean-radio-button>
+        <boolean-radio-button v-bind:heading="'Enable Archiving Working Directory'" v-bind:selectorVal="work_dir" v-bind:def="null"  v-bind:selectorId="booleanSelectorIDs[0]" v-on:bool_selector="updateStore"></boolean-radio-button>
+        <boolean-radio-button v-bind:heading="'Enable Optional File Inputs'" v-bind:selectorVal="optional_files" v-bind:def="null" v-bind:selectorId="booleanSelectorIDs[1]"  v-on:bool_selector="updateStore"></boolean-radio-button>
       </div>
       <div>
         <application-input-field class="interface-main" v-for="inp_id in getAppInputFieldsIds" v-bind:key="inp_id" v-bind:input_id="inp_id" v-on:delete_input_field="deleteAppInterfaceInputField(inp_id);"></application-input-field>
@@ -14,9 +14,12 @@
       <div class="entry">
         <button class="interface-btn" v-on:click="createAppInterfaceInputField();">Add Application <span>input</span></button>
       </div>
+      <div>
+        <application-output-field class="interface-main" v-for="out_id in getAppOutputFieldIds" v-bind:key="out_id" v-bind:output_id="out_id" v-on:delete_output_field="deleteAppInterfaceOutputField(out_id);"></application-output-field>
+      </div>
       <div class="entry">
         <div class="heading">Output fields</div>
-        <button class="interface-btn">Add Application <span>output</span></button>
+        <button class="interface-btn" v-on:click="createAppInterfaceOutputField()">Add Application <span>output</span></button>
       </div>
       <new-application-buttons></new-application-buttons>
     </div>
@@ -48,8 +51,9 @@
     },
     mounted:function () {
       if(!this.isInitialized){
-        var id=this.createAppInterfaceInputField();
-        console.log('Mounted',id);
+        var inpId=this.createAppInterfaceInputField();
+        var outId=this.createAppInterfaceOutputField();
+        console.log('Mounted',inpId,outId);
         this.initialized(true)
         this.work_dir={'boolValue':this.isEnableArchiveWorkingDirectory.toString()}
         this.optional_files={'boolValue':this.isEnableOutputFileInput().toString()}

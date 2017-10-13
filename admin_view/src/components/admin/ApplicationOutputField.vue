@@ -1,7 +1,7 @@
 <template>
   <div class="main_section interface-main" >
     <div class="input-field-header">
-      Input Fields
+      Output Fields
       <img v-on:click="delete_event_trigger();" src="/static/images/delete.png"/>
     </div>
     <div class="entry">
@@ -48,17 +48,18 @@
     created:function () {
       this.syncDataFromStore();
     },
+    props:['output_id'],
     methods:{
       delete_event_trigger:function(){
-        this.$emit('delete_input_field');
+        this.$emit('delete_output_field');
       },
       boolValueHandler:function (selectorID,value) {
         console.log('Event Capture',selectorID,value);
         this.updateStore(selectorID,value)
       },
       syncDataFromStore:function () {
-        console.log(this.input_id)
-        var val=this.getAppInputField(this.input_id)
+        console.log(this.output_id)
+        var val=this.getAppOutputField(this.output_id)
         this.name=val['name']
         this.value=val['value']
         this.type=val['type']
@@ -66,14 +67,14 @@
       },
       updateStore:function (fieldName,newValue) {
         var param={
-          'id':this.input_id,
+          'id':this.output_id,
         };
         var update={}
         update[fieldName]=newValue
         param['update']=update
-        this.updateInputFieldValues(param)
+        this.updateOutputField(param)
       },
-      ...mapActions(['updateInputFieldValues'])
+      ...mapActions(['updateOutputField'])
     },
     mounted:function(){
       this.syncDataFromStore()
@@ -89,7 +90,7 @@
         appArg:''
       }
     },
-    props:['input_id'],
+
     computed:{
       ...mapGetters(['getAppOutputField'])
     },

@@ -75,8 +75,8 @@
       },
       boolValueHandler: function (selectorID, value) {
         console.log('Event Capture', selectorID, value);
-        if (typeof value !== Boolean){
-          throw "event value not boolean"
+        if (typeof(value) != "boolean"){
+          throw "event value not boolean: "
         }
         this.updateStore(selectorID, value)
       },

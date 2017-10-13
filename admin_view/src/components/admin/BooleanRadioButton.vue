@@ -17,7 +17,7 @@
 
   export default {
     created:function(){
-      this.boolValue=this.def.toString();
+      this.boolValue=this.def!=null?this.def.toString():null
     },
     data:function () {
       return {
