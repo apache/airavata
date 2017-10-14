@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework.utils.urls import replace_query_param
+from rest_framework.utils.urls import replace_query_param, remove_query_param
 
 from django.conf import settings
 from django.http import JsonResponse, Http404
@@ -137,6 +137,12 @@ class APIResultPagination(pagination.LimitOffsetPagination):
         self.offset = self.get_offset(request)
         self.request = request
 
+        # When a paged view is called from another view (for example, to get the
+        # initial data to display), this pagination class needs to know the name
+        # of the view being paginated.
+        if view and hasattr(view, 'pagination_viewname'):
+            self.viewname = view.pagination_viewname
+
         return list(queryset[self.offset:self.offset + self.limit])
 
     def get_paginated_response(self, data):
@@ -148,17 +154,37 @@ class APIResultPagination(pagination.LimitOffsetPagination):
         ]))
 
     def get_next_link(self):
-        url = self.request.build_absolute_uri()
+        url = self.get_base_url()
         url = replace_query_param(url, self.limit_query_param, self.limit)
 
         offset = self.offset + self.limit
         return replace_query_param(url, self.offset_query_param, offset)
+
+    def get_previous_link(self):
+        if self.offset <= 0:
+            return None
+
+        url = self.get_base_url()
+        url = replace_query_param(url, self.limit_query_param, self.limit)
+
+        if self.offset - self.limit <= 0:
+            return remove_query_param(url, self.offset_query_param)
+
+        offset = self.offset - self.limit
+        return replace_query_param(url, self.offset_query_param, offset)
+
+    def get_base_url(self):
+        if hasattr(self, 'viewname'):
+            return self.request.build_absolute_uri(reverse(self.viewname))
+        else:
+            return self.request.build_absolute_uri()
 
 class ProjectViewSet(APIBackedViewSet):
 
     serializer_class = serializers.ProjectSerializer
     lookup_field = 'project_id'
     pagination_class = APIResultPagination
+    pagination_viewname = 'django_airavata_api:project-list'
 
     def get_list(self):
         view = self
