@@ -3,7 +3,7 @@ import ProjectListContainer from './views/ProjectListContainer.vue'
 
 new Vue({
   el: '#project-list',
-  template: '<project-list-container v-bind:initialProjects="projects"></project-list-container>',
+  template: '<project-list-container v-bind:initialProjectsData="projectsData"></project-list-container>',
   data: {
       projects: null
   },
@@ -11,8 +11,8 @@ new Vue({
       ProjectListContainer
   },
   beforeMount: function () {
-      if (this.$el.dataset.projects) {
-          this.projects = JSON.parse(this.$el.dataset.projects);
+      if (this.$el.dataset.projectsData) {
+          this.projectsData = JSON.parse(this.$el.dataset.projectsData);
       }
   }
 })
