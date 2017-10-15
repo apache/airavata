@@ -11,9 +11,9 @@
 </template>
 
 <script>
-import Project from '../models/Project'
 import ProjectList from './ProjectList.vue'
-import ProjectService from '../services/ProjectService'
+
+import { services } from 'django-airavata-common'
 
 export default {
     props: ['initialProjectsData'],
@@ -46,7 +46,7 @@ export default {
         }
     },
     beforeMount: function () {
-        ProjectService.list(this.initialProjectsData)
+        services.ProjectService.list(this.initialProjectsData)
             .then(result => this.projectsPaginator = result);
     }
 }
