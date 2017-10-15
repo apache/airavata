@@ -11,17 +11,18 @@
 </template>
 
 <script>
-import Project from '../models/Project';
+import Project from '../models/Project'
 import ProjectList from './ProjectList.vue'
+import ProjectService from '../services/ProjectService'
 
 export default {
     props: ['initialProjectsData'],
     name: 'project-list-container',
     data () {
         return {
-            projects: this.initialProjectsData.results,
-            next: this.initialProjectsData.next,
-            previous: this.initialProjectsData.previous,
+            projects: null,
+            next: null,
+            previous: null,
         }
     },
     components: {
@@ -51,6 +52,25 @@ export default {
                 this.projects = json.results.map(project => new Project(project));
             });
         },
+    },
+    beforeMount: function () {
+        if (this.initialProjectsData) {
+            // TODO: Initialize project list iterator
+            ProjectService.list(this.initialProjectsData)
+                .then(result => {
+                    this.projects = result.projects;
+                    this.next = result.next;
+                    this.previous = result.previous;
+                });
+        } else {
+            ProjectService.list()
+                .then(result => {
+                    this.projects = result.projects;
+                    this.next = result.next;
+                    this.previous = result.previous;
+                });
+        }
+        // TODO: load projects if initialProjectsData is null
     }
 }
 </script>

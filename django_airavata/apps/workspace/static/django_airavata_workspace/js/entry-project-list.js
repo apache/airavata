@@ -5,7 +5,7 @@ new Vue({
   el: '#project-list',
   template: '<project-list-container v-bind:initialProjectsData="projectsData"></project-list-container>',
   data: {
-      projects: null
+      projectsData: null
   },
   components: {
       ProjectListContainer
