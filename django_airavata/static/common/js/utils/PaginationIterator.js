@@ -38,6 +38,8 @@ export default class PaginationIterator {
         } else {
             this.results = pagedResponse.results;
         }
+        this.offset = pagedResponse.offset;
+        this.limit = pagedResponse.limit;
         return this;
     }
 }

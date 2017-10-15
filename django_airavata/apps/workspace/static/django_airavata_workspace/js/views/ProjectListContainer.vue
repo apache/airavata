@@ -1,6 +1,9 @@
 <template>
     <div>
         <project-list v-bind:projects="projects"></project-list>
+        <div>
+            Showing {{ first }} - {{ last }}
+        </div>
         <div v-if="hasNext">
             <a href="#" v-on:click.prevent="nextProjects">Next</a>
         </div>
@@ -43,6 +46,16 @@ export default {
         },
         hasPrevious: function() {
             return this.projectsPaginator && this.projectsPaginator.hasPrevious();
+        },
+        first: function() {
+            return this.projectsPaginator ? this.projectsPaginator.offset + 1 : null;
+        },
+        last: function() {
+            if (this.projectsPaginator) {
+                return this.projectsPaginator.offset + this.projectsPaginator.results.length;
+            } else {
+                return null;
+            }
         }
     },
     beforeMount: function () {

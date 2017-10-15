@@ -150,7 +150,9 @@ class APIResultPagination(pagination.LimitOffsetPagination):
         return Response(OrderedDict([
             ('next', self.get_next_link() if has_next_link else None),
             ('previous', self.get_previous_link()),
-            ('results', data)
+            ('results', data),
+            ('limit', self.limit),
+            ('offset', self.offset)
         ]))
 
     def get_next_link(self):
