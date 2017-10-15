@@ -1,4 +1,11 @@
 import Vue from 'vue'
+import Utils from '../../utils'
+
+const fieldMapper={
+  name:'appModuleName',
+  version:'appModuleVersion',
+  description:'appModuleDescription'
+}
 
 export default{
   namespaced: true,
@@ -14,6 +21,9 @@ export default{
           Vue.set(state,prop,update[prop])
         }
       }
+    },
+    registerAppDetails:function (state) {
+      return Utils.post('','')
     }
   },
   getters:{
@@ -25,11 +35,17 @@ export default{
     },
     getAppDescription:(state)=>{
       return state.description;
+    },
+    getAppDetails:(state)=>{
+      return state;
     }
   },
   actions:{
     updateAppDetails:function (context,update) {
       context.commit('addAppDetails',update)
+    },
+    registerAppModule:function (context) {
+      Vue.$http.post()
     }
   }
 }
