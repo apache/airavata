@@ -1,10 +1,10 @@
 <template>
     <div>
         <project-list v-bind:projects="projects"></project-list>
-        <div v-if="next">
+        <div v-if="hasNext">
             <a href="#" v-on:click.prevent="nextProjects">Next</a>
         </div>
-        <div v-if="previous">
+        <div v-if="hasPrevious">
             <a href="#" v-on:click.prevent="previousProjects">Previous</a>
         </div>
     </div>
@@ -20,57 +20,34 @@ export default {
     name: 'project-list-container',
     data () {
         return {
-            projects: null,
-            next: null,
-            previous: null,
+            projectsPaginator: null,
         }
     },
     components: {
         ProjectList
     },
     methods: {
-        // TODO: refactor these two methods since they are practically the same
         nextProjects: function(event) {
-            fetch(this.next, {
-                credentials: 'include'
-            })
-            .then(response => response.json())
-            .then(json => {
-                this.next = json.next;
-                this.previous = json.previous;
-                this.projects = json.results.map(project => new Project(project));
-            });
+            this.projectsPaginator.next();
         },
         previousProjects: function(event) {
-            fetch(this.previous, {
-                credentials: 'include'
-            })
-            .then(response => response.json())
-            .then(json => {
-                this.next = json.next;
-                this.previous = json.previous;
-                this.projects = json.results.map(project => new Project(project));
-            });
+            this.projectsPaginator.previous();
         },
     },
-    beforeMount: function () {
-        if (this.initialProjectsData) {
-            // TODO: Initialize project list iterator
-            ProjectService.list(this.initialProjectsData)
-                .then(result => {
-                    this.projects = result.projects;
-                    this.next = result.next;
-                    this.previous = result.previous;
-                });
-        } else {
-            ProjectService.list()
-                .then(result => {
-                    this.projects = result.projects;
-                    this.next = result.next;
-                    this.previous = result.previous;
-                });
+    computed: {
+        projects: function() {
+            return this.projectsPaginator ? this.projectsPaginator.results : null;
+        },
+        hasNext: function() {
+            return this.projectsPaginator && this.projectsPaginator.hasNext();
+        },
+        hasPrevious: function() {
+            return this.projectsPaginator && this.projectsPaginator.hasPrevious();
         }
-        // TODO: load projects if initialProjectsData is null
+    },
+    beforeMount: function () {
+        ProjectService.list(this.initialProjectsData)
+            .then(result => this.projectsPaginator = result);
     }
 }
 </script>
