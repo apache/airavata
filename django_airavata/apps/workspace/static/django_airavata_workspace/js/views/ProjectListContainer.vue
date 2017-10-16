@@ -1,8 +1,10 @@
 <template>
-    <div>
-        <project-list v-bind:projects="projects"></project-list>
-        <pager v-bind:paginator="projectsPaginator"
-            v-on:next="nextProjects" v-on:previous="previousProjects"></pager>
+    <div class="card">
+        <div class="card-body">
+            <project-list v-bind:projects="projects"></project-list>
+            <pager v-bind:paginator="projectsPaginator"
+                v-on:next="nextProjects" v-on:previous="previousProjects"></pager>
+        </div>
     </div>
 </template>
 
