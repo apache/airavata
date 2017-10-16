@@ -1,22 +1,15 @@
 <template>
     <div>
         <project-list v-bind:projects="projects"></project-list>
-        <div>
-            Showing {{ first }} - {{ last }}
-        </div>
-        <div v-if="hasNext">
-            <a href="#" v-on:click.prevent="nextProjects">Next</a>
-        </div>
-        <div v-if="hasPrevious">
-            <a href="#" v-on:click.prevent="previousProjects">Previous</a>
-        </div>
+        <pager v-bind:paginator="projectsPaginator"
+            v-on:next="nextProjects" v-on:previous="previousProjects"></pager>
     </div>
 </template>
 
 <script>
 import ProjectList from './ProjectList.vue'
 
-import { services } from 'django-airavata-common'
+import { components as comps, services } from 'django-airavata-common'
 
 export default {
     props: ['initialProjectsData'],
@@ -27,7 +20,8 @@ export default {
         }
     },
     components: {
-        ProjectList
+        'project-list': ProjectList,
+        'pager': comps.Pager
     },
     methods: {
         nextProjects: function(event) {
@@ -41,22 +35,6 @@ export default {
         projects: function() {
             return this.projectsPaginator ? this.projectsPaginator.results : null;
         },
-        hasNext: function() {
-            return this.projectsPaginator && this.projectsPaginator.hasNext();
-        },
-        hasPrevious: function() {
-            return this.projectsPaginator && this.projectsPaginator.hasPrevious();
-        },
-        first: function() {
-            return this.projectsPaginator ? this.projectsPaginator.offset + 1 : null;
-        },
-        last: function() {
-            if (this.projectsPaginator) {
-                return this.projectsPaginator.offset + this.projectsPaginator.results.length;
-            } else {
-                return null;
-            }
-        }
     },
     beforeMount: function () {
         services.ProjectService.list(this.initialProjectsData)
