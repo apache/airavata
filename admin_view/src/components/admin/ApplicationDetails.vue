@@ -15,7 +15,7 @@
         <div class="heading" >Experiment Description</div>
         <textarea  style="height: 80px;" type="text" v-model="description"/>
       </div>
-      <new-application-buttons></new-application-buttons>
+      <new-application-buttons v-on:save="registerAppModule()"></new-application-buttons>
     </div>
   </div>
 </template>
@@ -52,7 +52,7 @@
         this.updateAppDetails(update)
       },
       ...mapGetters(['getAppName','getAppVersion','getAppDescription']),
-      ...mapActions(['updateAppDetails'])
+      ...mapActions(['updateAppDetails','registerAppModule'])
     },
     watch:{
       name:function (newValue) {

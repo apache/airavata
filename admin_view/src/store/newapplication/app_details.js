@@ -23,7 +23,7 @@ export default{
       }
     },
     registerAppDetails:function (state) {
-      return Utils.post('','')
+      return Utils.post('/api/new/application/module',state)
     }
   },
   getters:{
@@ -45,7 +45,7 @@ export default{
       context.commit('addAppDetails',update)
     },
     registerAppModule:function (context) {
-      Vue.$http.post()
+      context.commit("registerAppDetails")
     }
   }
 }
