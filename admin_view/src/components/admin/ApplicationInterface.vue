@@ -5,8 +5,8 @@
     <div class="new-application-tab-main">
       <h4>Application Interface</h4>
       <div class="entry boolean-selectors">
-        <boolean-radio-button v-bind:heading="'Enable Archiving Working Directory'" v-bind:selectorVal="work_dir" v-bind:def="null"  v-bind:selectorId="booleanSelectorIDs[0]" v-on:bool_selector="updateStore"></boolean-radio-button>
-        <boolean-radio-button v-bind:heading="'Enable Optional File Inputs'" v-bind:selectorVal="optional_files" v-bind:def="null" v-bind:selectorId="booleanSelectorIDs[1]"  v-on:bool_selector="updateStore"></boolean-radio-button>
+        <boolean-radio-button v-bind:heading="'Enable Archiving Working Directory'" v-bind:selectorVal="work_dir" v-bind:def="isEnableArchiveWorkingDirectory"  v-bind:selectorId="booleanSelectorIDs[0]" v-on:bool_selector="updateStore"></boolean-radio-button>
+        <boolean-radio-button v-bind:heading="'Enable Optional File Inputs'" v-bind:selectorVal="optional_files" v-bind:def="isEnableOutputFileInput" v-bind:selectorId="booleanSelectorIDs[1]"  v-on:bool_selector="updateStore"></boolean-radio-button>
       </div>
       <div>
         <application-input-field class="interface-main" v-for="inp_id in getAppInputFieldsIds" v-bind:key="inp_id" v-bind:input_id="inp_id" v-on:delete_input_field="deleteAppInterfaceInputField(inp_id);"></application-input-field>
@@ -42,8 +42,8 @@
     data:function () {
       return {
         'id':0,
-        work_dir:{'boolValue':false},
-        optional_files:{'boolValue':true},
+        work_dir:{'boolValue':null},
+        optional_files:{'boolValue':null},
         booleanSelectorIDs:['enableArchiveWorkingDirectory','enableOutputFileInputs']
       };
     },
@@ -53,10 +53,10 @@
       if(!this.isInitialized){
         var inpId=this.createAppInterfaceInputField();
         var outId=this.createAppInterfaceOutputField();
-        console.log('Mounted',inpId,outId);
         this.initialized(true)
-        this.work_dir={'boolValue':this.isEnableArchiveWorkingDirectory.toString()}
-        this.optional_files={'boolValue':this.isEnableOutputFileInput().toString()}
+        this.work_dir={'boolValue':this.isEnableArchiveWorkingDirectory}
+        this.optional_files={'boolValue':this.isEnableOutputFileInput}
+        console.log("Work Dir, Optional",this.work_dir,this.optional_files)
       }
 
     },
@@ -69,7 +69,6 @@
             this.changeEnableArchiveWorkingDirectory(newValue)
         }else if(fieldName == this.booleanSelectorIDs[1]){
           this.changeEnableOutputFileInput(newValue)
-          console.log(fieldName)
         }
       },
       ...mapActions(['createAppInterfaceInputField','deleteAppInterfaceInputField','createAppInterfaceOutputField','deleteAppInterfaceOutputField','initialized','changeEnableOutputFileInput','changeEnableArchiveWorkingDirectory'])

@@ -1,5 +1,5 @@
 <template>
-  <div class="main_section interface-main" >
+  <div class="main_section interface-main">
     <div class="input-field-header">
       Output Fields
       <img v-on:click="delete_event_trigger();" src="/static/images/delete.png"/>
@@ -9,11 +9,11 @@
       <input type="text" v-model="name"/>
     </div>
     <div class="entry">
-      <div class="heading" >Value</div>
+      <div class="heading">Value</div>
       <input type="text" v-model="value"/>
     </div>
     <div class="entry">
-      <div class="heading" >Type</div>
+      <div class="heading">Type</div>
       <select v-model="type">
         <option value="String">String</option>
         <option value="Integer">Integer</option>
@@ -26,100 +26,114 @@
       <input v-model="appArg" type="text"/>
     </div>
     <div class="entry boolean-selectors">
-      <boolean-radio-button v-bind:heading="'Data Movement'" v-bind:selectorId="dataMovement" v-on:bool_selector="boolValueHandler"></boolean-radio-button>
-      <boolean-radio-button v-bind:heading="'Output Required'" v-bind:selectorId="required" v-on:bool_selector="boolValueHandler"></boolean-radio-button>
+      <boolean-radio-button v-bind:heading="'Data Movement'" v-bind:selectorId="dataMovement.fieldName"
+                            v-bind:def="getAppOutputFieldValue(dataMovement)"
+                            v-on:bool_selector="boolValueHandler"></boolean-radio-button>
+      <boolean-radio-button v-bind:heading="'Output Required'" v-bind:selectorId="required.fieldName"
+                            v-bind:def="getAppOutputFieldValue(required)"
+                            v-on:bool_selector="boolValueHandler"></boolean-radio-button>
     </div>
     <div class="entry boolean-selectors">
-      <boolean-radio-button v-bind:heading="'Required on command line'" v-bind:selectorId="requiredOnCmd" v-on:bool_selector="boolValueHandler"></boolean-radio-button>
+      <boolean-radio-button v-bind:heading="'Required on command line'" v-bind:selectorId="requiredOnCmd.fieldName"
+                            v-bind:def="getAppOutputFieldValue(requiredOnCmd)"
+                            v-on:bool_selector="boolValueHandler"></boolean-radio-button>
     </div>
   </div>
 </template>
 <script>
   import BooleanRadioButton from './BooleanRadioButton.vue'
 
-  import { createNamespacedHelpers } from 'vuex'
+  import {createNamespacedHelpers} from 'vuex'
 
-  const {mapGetters,mapActions} = createNamespacedHelpers('appInterfaceTab')
+  const {mapGetters, mapActions} = createNamespacedHelpers('appInterfaceTab')
 
   export default {
-    components:{
+    components: {
       BooleanRadioButton
     },
-    created:function () {
+    created: function () {
       this.syncDataFromStore();
     },
-    props:['output_id'],
-    methods:{
-      delete_event_trigger:function(){
+    props: ['output_id'],
+    methods: {
+      delete_event_trigger: function () {
         this.$emit('delete_output_field');
       },
-      boolValueHandler:function (selectorID,value) {
-        console.log('Event Capture',selectorID,value);
-        this.updateStore(selectorID,value)
+      boolValueHandler: function (selectorID, value) {
+        this.updateStore(selectorID, value)
       },
-      syncDataFromStore:function () {
-        console.log(this.output_id)
-        var val=this.getAppOutputField(this.output_id)
-        this.name=val['name']
-        this.value=val['value']
-        this.type=val['type']
-        this.appArg=val['appArg']
+      syncDataFromStore: function () {
+        var val = this.getAppOutputField(this.output_id)
+        this.name = val['name']
+        this.value = val['value']
+        this.type = val['type']
+        this.appArg = val['appArg']
       },
-      updateStore:function (fieldName,newValue) {
-        var param={
-          'id':this.output_id,
+      updateStore: function (fieldName, newValue) {
+        var param = {
+          'id': this.output_id,
         };
-        var update={}
-        update[fieldName]=newValue
-        param['update']=update
+        var update = {}
+        update[fieldName] = newValue
+        param['update'] = update
         this.updateOutputField(param)
       },
       ...mapActions(['updateOutputField'])
     },
-    mounted:function(){
+    mounted: function () {
       this.syncDataFromStore()
     },
-    data:function () {
-      return{
-        'required':'required',
-        'requiredOnCmd':'requiredOnCmd',
-        'dataMovement':'dataMovement',
-        name:'',
-        value:'',
-        type:'',
-        appArg:''
+    data: function () {
+      return {
+        'required': {
+          'id': this.output_id,
+          'fieldName': 'required'
+        },
+        'requiredOnCmd':
+          {
+            'id': this.output_id,
+            'fieldName': 'requiredOnCmd'
+          },
+        'dataMovement': {
+          'id': this.output_id,
+          'fieldName': 'dataMovement'
+        },
+        name: '',
+        value: '',
+        type: '',
+        appArg: ''
       }
     },
 
-    computed:{
-      ...mapGetters(['getAppOutputField'])
+    computed: {
+      ...mapGetters(['getAppOutputField','getAppOutputFieldValue'])
     },
-    watch:{
-      inpOrder:function (newValue) {
-        this.updateStore('inpOrder',newValue)
+    watch: {
+      inpOrder: function (newValue) {
+        this.updateStore('inpOrder', newValue)
       },
-      userFriendlyDescr:function (newValue) {
-        this.updateStore('userFriendlyDescr',newValue)
+      userFriendlyDescr: function (newValue) {
+        this.updateStore('userFriendlyDescr', newValue)
       },
-      name:function (newValue) {
-        this.updateStore('name',newValue)
+      name: function (newValue) {
+        this.updateStore('name', newValue)
       },
-      value:function (newValue) {
-        this.updateStore('value',newValue)
+      value: function (newValue) {
+        this.updateStore('value', newValue)
 
       },
-      type:function (newValue) {
-        this.updateStore('type',newValue)
+      type: function (newValue) {
+        this.updateStore('type', newValue)
       },
-      appArg:function (newValue) {
-        this.updateStore('appArg',newValue)
+      appArg: function (newValue) {
+        this.updateStore('appArg', newValue)
       }
     }
   }
 </script>
 
 <style>
-  .input-field-header{
+  .input-field-header {
     background-color: #F8F8F8;
     width: 100%;
     padding: 15px;
@@ -127,31 +141,30 @@
     text-align: left;
   }
 
-  .input-field-header img{
+  .input-field-header img {
     float: right;
   }
 
-
-
-  .main_section.interface-main .entry{
+  .main_section.interface-main .entry {
     margin-bottom: 40px;
-    margin-left:15px;
+    margin-left: 15px;
     margin-right: 15px;
   }
 
-  .entry.boolean-selectors{
+  .entry.boolean-selectors {
     display: flex;
   }
 
-  .entry.boolean-selectors div{
+  .entry.boolean-selectors div {
     margin-right: 60px;
   }
-  .entry select{
-    width:100%;
-    height:30px;
+
+  .entry select {
+    width: 100%;
+    height: 30px;
   }
 
-  .interface-main{
+  .interface-main {
     border: solid 1px #dddddd;
     border-radius: 4px;
   }

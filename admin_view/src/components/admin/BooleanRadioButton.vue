@@ -16,12 +16,14 @@
 <script>
 
   export default {
-    created:function(){
+    mounted:function(){
+      this.initialized=false
       this.boolValue=this.def!=null?this.def.toString():null
     },
     data:function () {
       return {
-        'boolValue':'false'
+        'boolValue':null,
+        'initialized':true
       }
     },
     props:{
@@ -40,10 +42,10 @@
       }
     },
     methods:{
-      triggerValueChangeEvent:function (value) {
+      triggerValueChangeEvent:function (value,oldValue) {
         var update=[this.selectorId,(value=='true')]
-        console.log('Triggered Change event')
-        this.$emit('bool_selector',this.selectorId,(value=='true'))
+        var val=value==null?null:(value=='true')
+        this.$emit('bool_selector',this.selectorId,val)
       }
     },
     watch:{

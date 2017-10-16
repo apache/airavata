@@ -26,10 +26,10 @@
       <input v-model="appArg" type="text"/>
     </div>
     <div class="entry boolean-selectors">
-      <boolean-radio-button v-bind:heading="'Standard input'" v-bind:selectorId="standardInput.fieldType"
+      <boolean-radio-button v-bind:heading="'Standard input'" v-bind:selectorId="standardInput.fieldName"
                             v-bind:def="getAppInputFieldValue(standardInput)"
                             v-on:bool_selector="boolValueHandler"></boolean-radio-button>
-      <boolean-radio-button v-bind:heading="'Is read only'" v-bind:selectorId="isReadOnly.fieldType"
+      <boolean-radio-button v-bind:heading="'Is read only'" v-bind:selectorId="isReadOnly.fieldName"
                             v-bind:def="getAppInputFieldValue(isReadOnly)"
                             v-on:bool_selector="boolValueHandler"></boolean-radio-button>
     </div>
@@ -42,15 +42,16 @@
       <input v-model="inpOrder" type="text"/>
     </div>
     <div class="entry boolean-selectors">
-      <boolean-radio-button v-bind:heading="'Data is staged'" v-bind:selectorId="dataStaged.fieldType"
+      <boolean-radio-button v-bind:heading="'Data is staged'" v-bind:selectorId="dataStaged.fieldName"
                             v-bind:def="getAppInputFieldValue(dataStaged)"
                             v-on:bool_selector="boolValueHandler"></boolean-radio-button>
-      <boolean-radio-button v-bind:heading="'Required'" v-bind:selectorId="required.fieldType"
+      <boolean-radio-button v-bind:heading="'Required'" v-bind:selectorId="required.fieldName"
                             v-bind:def="getAppInputFieldValue(required)"
                             v-on:bool_selector="boolValueHandler"></boolean-radio-button>
     </div>
     <div class="entry boolean-selectors">
-      <boolean-radio-button v-bind:heading="'Required on command line'" v-bind:selectorId="requiredOnCmd.fieldType"
+      <boolean-radio-button v-bind:heading="'Required on command line'" v-bind:selectorId="requiredOnCmd.fieldName"
+                            v-bind:def="getAppInputFieldValue(requiredOnCmd)"
                             v-on:bool_selector="boolValueHandler"></boolean-radio-button>
     </div>
   </div>
@@ -74,14 +75,12 @@
         this.$emit('delete_input_field');
       },
       boolValueHandler: function (selectorID, value) {
-        console.log('Event Capture', selectorID, value);
         if (typeof(value) != "boolean"){
           throw "event value not boolean: "
         }
         this.updateStore(selectorID, value)
       },
       syncDataFromStore: function () {
-        console.log(this.input_id)
         var val = this.getAppInputField(this.input_id)
         this.name = val['name']
         this.value = val['value']
