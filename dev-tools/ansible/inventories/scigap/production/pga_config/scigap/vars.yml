@@ -62,7 +62,7 @@ gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62
 
 ## Portal related variables
 super_admin_portal: "true"
-admin_emails: "['sgg@iu.edu','eroma.abeysinghe@gmail.com','supun.nakandala@gmail.com']"
+admin_emails: "['sgrc-iu-group@iu.edu']"
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
 portal_theme: "scigap"

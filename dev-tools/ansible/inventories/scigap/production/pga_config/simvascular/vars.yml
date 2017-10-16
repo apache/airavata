@@ -31,6 +31,9 @@ ssl_certificate_file: "/etc/letsencrypt/live/gateway.simvascular.org/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/gateway.simvascular.org/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/gateway.simvascular.org/privkey.pem"
 
+# Custom pga_config file (gateway level maximum values)
+pga_config_template: "{{ inventory_dir }}/pga_config/simvascular/files/pga_config.php.j2"
+
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
 admin_username: "admin"
@@ -56,7 +59,7 @@ gateway_data_store_ssh_public_key: ""
 
 ## Portal related variables
 super_admin_portal: "false"
-admin_emails: "['sgg@iu.edu']"
+admin_emails: "['sgrc-iu-group@iu.edu','amarsden@stanford.edu']"
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
 portal_theme: "simvascular-gateway-theme"

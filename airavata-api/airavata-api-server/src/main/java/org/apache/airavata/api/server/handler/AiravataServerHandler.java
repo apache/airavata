@@ -949,7 +949,8 @@ public class AiravataServerHandler implements Airavata.Iface {
                 searchCriteria.setValue(gatewayId + ":PROJECT");
                 filters.add(searchCriteria);
                 sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                        userName + "@" + gatewayId, filters, offset, limit).stream().forEach(p -> accessibleProjectIds.add(p.entityId));
+                        userName + "@" + gatewayId, filters, 0, -1).stream().forEach(p -> accessibleProjectIds
+                        .add(p.entityId));
                 List<Project> result = regClient.searchProjects(gatewayId, userName, accessibleProjectIds, new HashMap<>(), limit, offset);
                 registryClientPool.returnResource(regClient);
                 sharingClientPool.returnResource(sharingClient);
