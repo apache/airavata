@@ -19,6 +19,7 @@
  */
 package org.apache.airavata.api.server.handler;
 
+import org.apache.airavata.accountprovisioning.*;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavata_apiConstants;
 import org.apache.airavata.api.server.util.ThriftClientPool;
@@ -35,6 +36,9 @@ import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.Type;
 import org.apache.airavata.model.WorkflowModel;
+import org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisioner;
+import org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParam;
+import org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvisionerConfigParamType;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
@@ -945,7 +949,8 @@ public class AiravataServerHandler implements Airavata.Iface {
                 searchCriteria.setValue(gatewayId + ":PROJECT");
                 filters.add(searchCriteria);
                 sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
-                        userName + "@" + gatewayId, filters, offset, limit).stream().forEach(p -> accessibleProjectIds.add(p.entityId));
+                        userName + "@" + gatewayId, filters, 0, -1).stream().forEach(p -> accessibleProjectIds
+                        .add(p.entityId));
                 List<Project> result = regClient.searchProjects(gatewayId, userName, accessibleProjectIds, new HashMap<>(), limit, offset);
                 registryClientPool.returnResource(regClient);
                 sharingClientPool.returnResource(sharingClient);
@@ -3960,6 +3965,86 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while updating gateway data storage preference. More info : " + e.getMessage());
             registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    public List<SSHAccountProvisioner> getSSHAccountProvisioners(AuthzToken authzToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+
+        List<SSHAccountProvisioner> sshAccountProvisioners = new ArrayList<>();
+        List<SSHAccountProvisionerProvider> sshAccountProvisionerProviders = SSHAccountProvisionerFactory.getSSHAccountProvisionerProviders();
+        for (SSHAccountProvisionerProvider provider : sshAccountProvisionerProviders) {
+            // TODO: Move this Thrift conversion to utility class
+            SSHAccountProvisioner sshAccountProvisioner = new SSHAccountProvisioner();
+            sshAccountProvisioner.setCanCreateAccount(provider.canCreateAccount());
+            sshAccountProvisioner.setCanInstallSSHKey(provider.canInstallSSHKey());
+            sshAccountProvisioner.setName(provider.getName());
+            List<SSHAccountProvisionerConfigParam> sshAccountProvisionerConfigParams = new ArrayList<>();
+            for (ConfigParam configParam : provider.getConfigParams()) {
+                SSHAccountProvisionerConfigParam sshAccountProvisionerConfigParam = new SSHAccountProvisionerConfigParam();
+                sshAccountProvisionerConfigParam.setName(configParam.getName());
+                sshAccountProvisionerConfigParam.setDescription(configParam.getDescription());
+                sshAccountProvisionerConfigParam.setIsOptional(configParam.isOptional());
+                switch (configParam.getType()){
+                    case STRING:
+                        sshAccountProvisionerConfigParam.setType(SSHAccountProvisionerConfigParamType.STRING);
+                        break;
+                    case CRED_STORE_PASSWORD_TOKEN:
+                        sshAccountProvisionerConfigParam.setType(SSHAccountProvisionerConfigParamType.CRED_STORE_PASSWORD_TOKEN);
+                        break;
+                }
+                sshAccountProvisionerConfigParams.add(sshAccountProvisionerConfigParam);
+            }
+            sshAccountProvisioner.setConfigParams(sshAccountProvisionerConfigParams);
+            sshAccountProvisioners.add(sshAccountProvisioner);
+        }
+        return sshAccountProvisioners;
+    }
+
+    @Override
+    @SecurityCheck
+    public boolean doesUserHaveSSHAccount(AuthzToken authzToken, String computeResourceId, String userId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        try {
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            return SSHAccountManager.doesUserHaveSSHAccount(gatewayId, computeResourceId, userId);
+        } catch (Exception e) {
+            String errorMessage = "Error occurred while checking if [" + userId + "] has an SSH Account on [" +
+                    computeResourceId + "].";
+            logger.error(errorMessage, e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(errorMessage + " More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    public UserComputeResourcePreference setupUserComputeResourcePreferencesForSSH(AuthzToken authzToken, String computeResourceId, String userId, String airavataCredStoreToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        CredentialStoreService.Client csClient = csClientPool.getResource();
+        SSHCredential sshCredential = null;
+        try {
+            sshCredential = csClient.getSSHCredential(airavataCredStoreToken, gatewayId);
+        }catch (Exception e){
+            logger.error("Error occurred while retrieving SSH Credential", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error occurred while retrieving SSH Credential. More info : " + e.getMessage());
+            csClientPool.returnBrokenResource(csClient);
+            throw exception;
+        }
+
+        try {
+            UserComputeResourcePreference userComputeResourcePreference = SSHAccountManager.setupSSHAccount(gatewayId, computeResourceId, userId, sshCredential);
+            return userComputeResourcePreference;
+        }catch (Exception e){
+            logger.error("Error occurred while automatically setting up SSH account for user [" + userId + "]", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error occurred while automatically setting up SSH account for user [" + userId + "]. More info : " + e.getMessage());
             throw exception;
         }
     }
