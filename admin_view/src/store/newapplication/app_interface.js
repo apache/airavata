@@ -9,8 +9,8 @@ export default{
     outputFields:{},
     counter:0,
     initialized:false,
-    enableArchiveWorkingDirectory:false,
-    enableOutputFileInputs:false,
+    enableArchiveWorkingDirectory:null,
+    enableOutputFileInputs:null,
     missingFields:false
   },
   mutations:{
@@ -46,12 +46,9 @@ export default{
       var id=param.id
       var updateValue=param.update
       var fields=Object.assign({},state[param.fieldType])
-      console.log(fields)
       var inpField=fields[id]
       var keys=Object.keys(updateValue)
-      console.log('keys',keys)
       for(var prop in updateValue){
-        console.log('props',prop)
         if(inpField.hasOwnProperty(prop)){
           inpField[prop]=updateValue[prop];
         }
