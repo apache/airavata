@@ -23,43 +23,43 @@ pga_repo: "https://github.com/apache/airavata-php-gateway.git"
 git_branch: "master"
 user: "pga"
 group: "pga"
-doc_root_dir: "/var/www/portals/utah-university"
-vhost_servername: "cybergateway.chpc.utah.edu"
-vhost_ssl: True
+doc_root_dir: "/var/www/portals/{{ gateway_id }}"
+vhost_servername: "new.ultrascan.scigap.org"
+vhost_ssl: false
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/letsencrypt/live/cybergateway.chpc.utah.edu/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/cybergateway.chpc.utah.edu/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/cybergateway.chpc.utah.edu/privkey.pem"
+#ssl_certificate_file: "/etc/letsencrypt/live/hpcgateway.uky.edu/cert.pem"
+#ssl_certificate_chain_file: "/etc/letsencrypt/live/hpcgateway.uky.edu/fullchain.pem"
+#ssl_certificate_key_file: "/etc/letsencrypt/live/hpcgateway.uky.edu/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
-admin_username: "adminuser"
+admin_username: "admin"
 admin_password: "{{ vault_admin_password }}"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
 oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
 
 auth_options:
-  - name: "Utah Science Gateway"
+  - name: "Ultrascan Gateway"
     oauth_grant_type: "password"
-  - name: "CILogon"
-    oauth_grant_type: "authorization_code"
-    oauth_authorize_url_extra_params: "kc_idp_hint=cilogon"
-    logo: "/assets/cilogon-logo-24x24-b.png"
-oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
+# - name: "CILogon"
+#    oauth_grant_type: "authorization_code"
+#   oauth_authorize_url_extra_params: "kc_idp_hint=cilogon"
+#   logo: "/assets/cilogon-logo-24x24-b.png"
+oauth_callback_url: "http://{{ vhost_servername }}/callback-url"
 
-gateway_id: "utah"
+gateway_id: "ultrascan"
 # relative to document root dir
-experiment_data_dir: "{{ user_data_dir }}/utah-university"
+experiment_data_dir: "{{ user_data_dir }}/ultrascan-new"
 gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
-gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCiR1OU3jrSqoDxkieAQuB4YXnEllg+74h9nWKXSa7G6S8BDuSOVQl6YFdk1nCpJ9pGEoCziYa+fgTmQ98eXFEaXglRyu2Cq7HkPgKnBR5xtsx+Qslm/jBxO2C/kez7eGJH8F8bSOq6o4hUsPP8XUdzvf76o+wZ25RErqzQl1Go8E1sOi4fXkH4eR8cCsI093ZquuUgwIZjoqcj+bwCRoZWCqyOhXEzYqZmng4EvBm3VnPf77xdVxAZELDd7oKiTf4y1cEExIJyQJqwCJJjic9Utuf13lEROfnV2nELf1YdaLwWoFKJgc+bBaoxxxoo1hdKW7hFQDmgHCWASSIX0fx/"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCloIIv+f8p/YbCyn0i1tOdwGW0mi/KdZCO8X0e7pPLhL7UZmrjKPCBWqlH92EKr6RnCENx5YCmmRm7DOqm1RuuER//2bxd5w+VmURAmuM1MdVpMocT6z9a51F9YEbfQfTLzES6fXyeRqq7aMljqYWovdM6uSFuIahvaTOwU0G/VrW0NBc411K0Kl1fWxpbPVy+ZCJJzCyP7JBV6sZMFFhT1/VQwsp1/0bBZwTPvaVwPcfibp65t99k4oxhGFVBhxBQ9KCki1uMr0sXJqB3udbBW26CFL9NHFttEuPjXRU+wQBkdsTfGzpbpjQZ7isCDDLWMMKiHXqwqU+6tH1biGUX"
 
 ## Portal related variables
 super_admin_portal: "false"
-admin_emails: "['sgrc-iu-group@iu.edu','Anita.Orendt@utah.edu']"
+admin_emails: "['sgrc-iu-group@iu.edu']"
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
-portal_theme: "utah-sciencegateway-theme"
-portal_theme_repo: "https://github.com/SciGaP/utah-sciencegateway-theme.git"
-portal_title: "Utah Science Gateway"
+#portal_theme: "gsu-gateway-theme"
+#portal_theme_repo: "https://github.com/SciGaP/gsu-gateway-theme"
+portal_title: "Ultrascan Gateway Portal"
 ...

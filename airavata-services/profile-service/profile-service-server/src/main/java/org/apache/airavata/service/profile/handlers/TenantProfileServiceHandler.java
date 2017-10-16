@@ -20,8 +20,15 @@
 */
 package org.apache.airavata.service.profile.handlers;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.DBEventManagerConstants;
 import org.apache.airavata.common.utils.DBEventService;
+import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
+import org.apache.airavata.credential.store.cpi.CredentialStoreService;
+import org.apache.airavata.credential.store.exception.CredentialStoreException;
+import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.dbevent.CrudType;
 import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.error.AuthorizationException;
@@ -76,6 +83,10 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
             // Assign UUID to gateway
             gateway.setAiravataInternalGatewayId(UUID.randomUUID().toString());
             if (!checkDuplicateGateway(gateway)) {
+                // If admin password, copy it in the credential store under the requested gateway's gatewayId
+                if (gateway.getIdentityServerPasswordToken() != null) {
+                    copyAdminPasswordToGateway(authzToken, gateway);
+                }
                 gateway = tenantProfileRepository.create(gateway);
                 if (gateway != null) {
                     logger.info("Added Airavata Gateway with Id: " + gateway.getGatewayId());
@@ -108,6 +119,15 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     @SecurityCheck
     public boolean updateGateway(AuthzToken authzToken, Gateway updatedGateway) throws TenantProfileServiceException, AuthorizationException, TException {
         try {
+
+            // if admin password token changes then copy the admin password and store under this gateway id and then update the admin password token
+            Gateway existingGateway = tenantProfileRepository.getGateway(updatedGateway.getAiravataInternalGatewayId());
+            if (updatedGateway.getIdentityServerPasswordToken() != null
+                    && (existingGateway.getIdentityServerPasswordToken() == null
+                        || !existingGateway.getIdentityServerPasswordToken().equals(updatedGateway.getIdentityServerPasswordToken()))) {
+                copyAdminPasswordToGateway(authzToken, updatedGateway);
+            }
+
             if (tenantProfileRepository.update(updatedGateway) != null) {
                 logger.debug("Updated gateway-profile with ID: " + updatedGateway.getGatewayId());
                 // replicate tenant at end-places
@@ -221,6 +241,36 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
             TenantProfileServiceException exception = new TenantProfileServiceException();
             exception.setMessage("Error checking if duplicate gateway-profiles exists, reason: " + ex.getMessage());
             throw exception;
+        }
+    }
+
+    // admin passwords are stored in credential store in the super portal gateway and need to be
+    // copied to a credential that is stored in the requested/newly created gateway
+    private void copyAdminPasswordToGateway(AuthzToken authzToken, Gateway gateway) throws TException, ApplicationSettingsException {
+        CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
+        try {
+            String requestGatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            PasswordCredential adminPasswordCredential = csClient.getPasswordCredential(gateway.getIdentityServerPasswordToken(), requestGatewayId);
+            adminPasswordCredential.setGatewayId(gateway.getGatewayId());
+            String newAdminPasswordCredentialToken = csClient.addPasswordCredential(adminPasswordCredential);
+            gateway.setIdentityServerPasswordToken(newAdminPasswordCredentialToken);
+        } finally {
+            if (csClient.getInputProtocol().getTransport().isOpen()) {
+                csClient.getInputProtocol().getTransport().close();
+            }
+            if (csClient.getOutputProtocol().getTransport().isOpen()) {
+                csClient.getOutputProtocol().getTransport().close();
+            }
+        }
+    }
+
+    private CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
+        final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
+        final String serverHost = ServerSettings.getCredentialStoreServerHost();
+        try {
+            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
+        } catch (CredentialStoreException e) {
+            throw new TException("Unable to create credential store client...", e);
         }
     }
 }
