@@ -18,20 +18,3 @@ RUN yum install firewalld -y && \
 
 # Setup the user
 RUN useradd -ms /bin/bash airavata # check group: `cut -d: -f1 /etc/group`
-
-#Setting WorkDirectory
-ARG WORK_DIR="/home/airavata"
-ENV WORK_DIR $WORK_DIR
-ARG BUILD_FILE="apache-airavata-server-0.17-SNAPSHOT-bin.tar.gz"
-
-#Checkout develop branch
-WORKDIR $WORK_DIR
-RUN git clone -b develop https://git-wip-us.apache.org/repos/asf/airavata.git
-
-#Building the project using Maven
-RUN cd $WORK_DIR/airavata && \
-	mvn clean install -Dmaven.test.skip=true
-
-#Extracting the Build
-RUN cp $WORK_DIR/airavata/modules/distribution/target/$BUILD_FILE $WORK_DIR && \
-	tar xvzf $BUILD_FILE
