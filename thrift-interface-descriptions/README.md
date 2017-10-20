@@ -42,27 +42,31 @@ https://issues.apache.org/jira/browse/AIRAVATA-2522 (Links to an external site.)
 
 `mkdir src`
 
-6) change directory to 'src' and 'git.apache.org/thrift.git/lib/go/thrift'. This will store all the native thrift go stubs which  are required to run go program:
+6) change directory to 'src' and 'thrift-lib'. This will store all the native thrift go stubs which  are required to run go program:
 
 `cd src`
+
 `mkdir -p git.apache.org/thrift.git/lib/go/thrift`
+
 `cd git.apache.org/thrift.git/lib/go/thrift`
 
 6) copy all the go stubs located inside '~/thrift/lib/go/thrift'(Thrift-directory) to 'src' subfolder of 'thrift-lib'( gopath--src directory)
 
 `cp -r ~/thrift/lib/go/thrift/* .`
 
-7) Airavata-repo: cd to 'ago-tools' inside auravta folder:
+7) Airavata-repo: go to 'airavata/thrift-interface-descriptions/':
 
-`cd ~/airavata/tools/go-tools`
+`cd ~/airavata/thrift-interface-descriptions/`
 
 8) type to generate new folder 'go-gen' : 
 
-`thrift -r --gen go ../../thrift-interface-descriptions/airavata-apis/airavata_api.thrift`
+`thrift -r --gen go airavata-apis/airavata_api.thrift`
+
 
 9) copy all the go stubs generated in the 'go-gen' folder to 'src' folder of go-path:
 
 `cp -r gen-go/ $GOPATH/src/ `
+
 
 11) `chmod 777 build.sh` 
 
