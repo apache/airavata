@@ -45,10 +45,8 @@ https://issues.apache.org/jira/browse/AIRAVATA-2522 (Links to an external site.)
 6) change directory to 'src' and 'thrift-lib'. This will store all the native thrift go stubs which  are required to run go program:
 
 `cd src`
-
-`mkdir thrift-lib`
-
-`cd thrift-lib` 
+`mkdir -p git.apache.org/thrift.git/lib/go/thrift`
+`cd git.apache.org/thrift.git/lib/go/thrift`
 
 6) copy all the go stubs located inside '~/thrift/lib/go/thrift'(Thrift-directory) to 'src' subfolder of 'thrift-lib'( gopath--src directory)
 
