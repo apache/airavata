@@ -42,7 +42,7 @@ https://issues.apache.org/jira/browse/AIRAVATA-2522 (Links to an external site.)
 
 `mkdir src`
 
-6) change directory to 'src' and 'thrift-lib'. This will store all the native thrift go stubs which  are required to run go program:
+6) change directory to 'src' and 'git.apache.org/thrift.git/lib/go/thrift'. This will store all the native thrift go stubs which  are required to run go program:
 
 `cd src`
 `mkdir -p git.apache.org/thrift.git/lib/go/thrift`
@@ -63,7 +63,6 @@ https://issues.apache.org/jira/browse/AIRAVATA-2522 (Links to an external site.)
 9) copy all the go stubs generated in the 'go-gen' folder to 'src' folder of go-path:
 
 `cp -r gen-go/ $GOPATH/src/ `
-
 
 11) `chmod 777 build.sh` 
 
