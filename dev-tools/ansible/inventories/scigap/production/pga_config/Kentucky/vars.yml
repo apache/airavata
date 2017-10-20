@@ -23,16 +23,13 @@ pga_repo: "https://github.com/apache/airavata-php-gateway.git"
 git_branch: "master"
 user: "pga"
 group: "pga"
-doc_root_dir: "/var/www/portals/simvascular"
-vhost_servername: "gateway.simvascular.org"
-vhost_ssl: True
+doc_root_dir: "/var/www/portals/{{ gateway_id }}"
+vhost_servername: "hpcgateway.uky.edu"
+vhost_ssl: true
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/letsencrypt/live/gateway.simvascular.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/gateway.simvascular.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/gateway.simvascular.org/privkey.pem"
-
-# Custom pga_config file (gateway level maximum values)
-pga_config_template: "{{ inventory_dir }}/pga_config/simvascular/files/pga_config.php.j2"
+ssl_certificate_file: "/etc/letsencrypt/live/hpcgateway.uky.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/hpcgateway.uky.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/hpcgateway.uky.edu/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
@@ -43,7 +40,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
 
 auth_options:
-  - name: "SimVascular"
+  - name: "University of Kentucky HPC Gateway"
     oauth_grant_type: "password"
   - name: "CILogon"
     oauth_grant_type: "authorization_code"
@@ -51,18 +48,18 @@ auth_options:
     logo: "/assets/cilogon-logo-24x24-b.png"
 oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 
-gateway_id: "simvascular"
+gateway_id: "university-of-kentucky-hpc-gateway"
 # relative to document root dir
-experiment_data_dir: "{{ user_data_dir }}/simvascular"
+experiment_data_dir: "{{ user_data_dir }}/{{ gateway_id }}"
 gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
-gateway_data_store_ssh_public_key: ""
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC8nCMkOgELG+FgKIC5wTdGn6ZRlnCfhn5ebrpMDagXTM0lacLplKThhOg4EXFOjxGOW83f4HBjKBJXpqRUunCL053Foox9/xqtk6Sa7jwRugL0rIBQJC4hZiHin2W0zHseoIQtghz+AbyofjUABYxOCpbKUuR3plyVv/68iqZOscPmVDw2bS9MLBHRZI5BvZ8FwKSEtn7uEV+XXvI4FXaRQfTg/arbgLietD+y+EyxOkSW3PXtu4xvQ2e6AA9LTKn2fGLHS/atEXgS+pBxVKWcCgpOxUCgNq/F8OQWEVDGFG3Pz3b45n7O62YWUgbS1Jn+FQVRw5Pfb4P31+hF3EJX"
 
 ## Portal related variables
 super_admin_portal: "false"
-admin_emails: "['sgrc-iu-group@iu.edu','amarsden@stanford.edu','nwilson@osmsc.com']"
+admin_emails: "['sgrc-iu-group@iu.edu','vgazu2@uky.edu']"
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
-portal_theme: "simvascular-gateway-theme"
-portal_theme_repo: "https://github.com/SciGaP/simvascular-gateway-theme.git"
-portal_title: "SimVascular Gateway Portal"
+#portal_theme: "gsu-gateway-theme"
+#portal_theme_repo: "https://github.com/SciGaP/gsu-gateway-theme"
+portal_title: "University of Kentucky HPC Gateway"
 ...
