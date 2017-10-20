@@ -17,36 +17,62 @@ https://issues.apache.org/jira/browse/AIRAVATA-2522 (Links to an external site.)
 
 
 
-### GO client to get all the project under airavata
 
-##### the main task is to replicate the task of Marcus: https://github.com/machristie/airavata-python3-client  
+### To Do : GO client to get all the project under airavata
 
-1) clone this repostory
-2) install `go` by following the link : https://tecadmin.net/install-go-on-ubuntu/
-   
-   2) 1) for example, lets say that the gopath is `$HOME/Projects/Proj1/`
-   2) 2) make sure to note down the `gopath` directory you set
+##### the main task is to replicate the task of Marcus: https://github.com/machristie/airavata-python3-client
+1) clone the current forked airavata repository by:
 
-3)  Thrift repo(external and separate). Keep this part external and separate from airavata directory. Install thrift by  'cloning' and 'following the README' in the following repo: 
-  `"https://github.com/apache/thrift"`
+ `git clone https://github.com/satyamsah/airavata`
 
-4) This is gopath directory: create a directory named src under `$HOME/Projects/Proj1/` (which is gopath)
+2) install 'go' by following the link : https://tecadmin.net/install-go-on-ubuntu/
+   1) lets say that the 'gopath' is '$HOME/Projects/Proj1/' and  make sure to note down the 'gopath' directory you set
 
-5) cd `src` and `mkdir -p git.apache.org/thrift.git/lib/go/thrift` to create subfolders 'git.apache.org/thrift.git/lib/go/thrift'
+3) `cd ~`
 
-6) copy all the go stubs located inside `thrift/lib/go/thrift` to `src` subfolder of `git.apache.org/thrift.git/lib/go/thrift`
+4)  Installing thrift repo. Install thrift by  'cloning' and 'following the README' in 
+ the following repo "https://github.com/apache/thrift" : 
 
-7) Airavata-repo: go to `airavata/thrift-interface-descriptions/`
+    1)  `git clone https://github.com/apache/thrift`
+    2)   execute the steps to install thrift and follow readme.
 
-8) type `thrift -r --gen go airavata-apis/airavata_api.thrift` to generate new folder `go-gen`
+ 
+4) `cd $GOPATH`
+5) create a directory named `src` under which is inside gopath:
 
-9) copy all the go stubs generated in the `go-gen` folder to `src` folder of go-path
+`mkdir src`
 
-10) go to `airavata/thrift-interface-descriptions/`:
+6) change directory to 'src' and 'thrift-lib'. This will store all the native thrift go stubs which  are required to run go program:
 
-11) type `chmod 777 build.sh`
+`cd src`
 
-12) type `./build.sh <your-testdrive-dev-username> <your-testdrive-dev-password>`. If you don't have account , contact me. I will share my credentials.
+`mkdir thrift-lib`
+
+`cd thrift-lib` 
+
+6) copy all the go stubs located inside '~/thrift/lib/go/thrift'(Thrift-directory) to 'src' subfolder of 'thrift-lib'( gopath--src directory)
+
+`cp -r ~/thrift/lib/go/thrift/* .`
+
+7) Airavata-repo: go to 'airavata/thrift-interface-descriptions/':
+
+`cd ~/airavata/thrift-interface-descriptions/`
+
+8) type to generate new folder 'go-gen' : 
+
+`thrift -r --gen go airavata-apis/airavata_api.thrift`
+
+
+9) copy all the go stubs generated in the 'go-gen' folder to 'src' folder of go-path:
+
+`cp -r gen-go/ $GOPATH/src/ `
+
+
+11) `chmod 777 build.sh` 
+
+12) If you don't have testdrive dev  credentials , contact me. I will share my credentials.:
+
+   `./build.sh <your-testdrive-dev-username> <your-testdrive-dev-password>`
 
 13) You will get the list of projects in json format. Copy the json output
 
