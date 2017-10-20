@@ -54,14 +54,13 @@ https://issues.apache.org/jira/browse/AIRAVATA-2522 (Links to an external site.)
 
 `cp -r ~/thrift/lib/go/thrift/* .`
 
-7) Airavata-repo: go to 'airavata/thrift-interface-descriptions/':
+7) Airavata-repo: go to 'airavata/tools/go-tools':
 
-`cd ~/airavata/thrift-interface-descriptions/`
+`cd ~/airavata/tools/go-tools`
 
 8) type to generate new folder 'go-gen' : 
 
-`thrift -r --gen go airavata-apis/airavata_api.thrift`
-
+#`thrift -r --gen go airavata-apis/airavata_api.thrift`
 
 9) copy all the go stubs generated in the 'go-gen' folder to 'src' folder of go-path:
 
