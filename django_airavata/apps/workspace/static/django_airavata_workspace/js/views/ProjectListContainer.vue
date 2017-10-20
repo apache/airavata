@@ -11,7 +11,8 @@
 <script>
 import ProjectList from './ProjectList.vue'
 
-import { components as comps, services } from 'django-airavata-common'
+import { services } from 'django-airavata-api'
+import { components as comps } from 'django-airavata-common'
 
 export default {
     props: ['initialProjectsData'],

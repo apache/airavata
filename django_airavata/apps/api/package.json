@@ -1,29 +1,21 @@
 {
-  "name": "django-airavata-workspace-views",
-  "description": "A Vue.js project",
+  "name": "django-airavata-api",
+  "description": "Model and service classes for using the Django Airavata REST API",
   "version": "1.0.0",
   "author": "Marcus Christie <machristie@apache.org>",
   "private": true,
+  "main": "./static/django_airavata_api/dist/main.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --progress --hide-modules",
     "watch": "cross-env NODE_ENV=development webpack --watch",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
-  "dependencies": {
-    "django-airavata-api": "file:../api",
-    "django-airavata-common": "file:../..",
-    "moment": "^2.18.1",
-    "vue": "^2.3.3"
-  },
+  "dependencies": {},
   "devDependencies": {
     "babel-core": "^6.0.0",
     "babel-loader": "^6.0.0",
     "babel-preset-env": "^1.5.1",
     "cross-env": "^3.0.0",
-    "css-loader": "^0.25.0",
-    "file-loader": "^0.9.0",
-    "vue-loader": "^12.1.0",
-    "vue-template-compiler": "^2.3.3",
     "webpack": "^2.6.1",
     "webpack-dev-server": "^2.4.5"
   }

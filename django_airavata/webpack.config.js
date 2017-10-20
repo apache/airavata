@@ -59,14 +59,7 @@ module.exports = {
       'vue$': 'vue/dist/vue.esm.js'
     }
   },
-  devServer: {
-    historyApiFallback: true,
-    noInfo: true
-  },
-  performance: {
-    hints: false
-  },
-  devtool: '#eval-source-map'
+  externals: ['vue'],
 }
 
 if (process.env.NODE_ENV === 'production') {

@@ -13,8 +13,12 @@
 </template>
 
 <script>
+import { utils } from 'django-airavata-api';
 
 export default {
+    props: {
+        paginator: utils.PaginationIterator,
+    },
     props: ['paginator'],
     name: 'pager',
     methods: {
