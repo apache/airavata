@@ -109,6 +109,39 @@ struct NSFDemographics {
 }
 
 /**
+ * A structure holding the cutomized admin dashboard information.
+ *
+ *
+*/
+struct CustomDashboard {
+    1: required string airavataInternalUserId = airavata_commons.DEFAULT_ID,
+    2: optional string experimentId,
+    3: optional string name,
+    4: optional string description,
+    5: optional string project,
+    6: optional string owner,
+    7: optional string application,
+    8: optional string computeResource,
+    9: optional string jobName,
+    10: optional string jobId,
+    11: optional string jobStatus,
+    12: optional string jobCreationTime,
+    13: optional string notificationsTo,
+    14: optional string workingDir,
+    15: optional string jobDescription,
+    16: optional string creationTime,
+    17: optional string lastModifiedTime,
+    18: optional string wallTime,
+    19: optional string cpuCount,
+    20: optional string nodeCount,
+    21: optional string queue,
+    22: optional string inputs,
+    23: optional string outputs,
+    24: optional string storageDir,
+    25: optional string errors
+}
+
+/**
  * A structure holding the user profile and its child models.
  *
  * Notes:
@@ -192,5 +225,6 @@ struct UserProfile {
     22: optional list<string> labeledURI,
     23: optional string gpgKey,
     24: optional string timeZone,
-    25: optional NSFDemographics nsfDemographics
+    25: optional NSFDemographics nsfDemographics,
+    26: optional CustomDashboard customDashboard
 }
