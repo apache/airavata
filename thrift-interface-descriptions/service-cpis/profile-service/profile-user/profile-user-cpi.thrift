@@ -72,4 +72,26 @@ service UserProfileService {
                   throws (1: profile_user_cpi_errors.UserProfileServiceException upe,
                           2: airavata_errors.AuthorizationException ae);
 
+
+  bool isUserDashboardCustomized (1: required security_model.AuthzToken authzToken,
+                                 2: required string userId)
+                                 throws (1: profile_user_cpi_errors.UserProfileServiceException upe,
+                                         2: airavata_errors.AuthorizationException ae);
+
+  user_profile_model.CustomDashboard getCustomizedDashboardAttributes (1: required security_model.AuthzToken authzToken,
+                                                                      2: required string userId)
+                                                                      throws (1: profile_user_cpi_errors.UserProfileServiceException upe,
+                                                                              2: airavata_errors.AuthorizationException ae);
+
+
+  bool updateCustomizedDashboardAttributes (1: required security_model.AuthzToken authzToken,
+                                                                       2: required string userId)
+                                                                       throws (1: profile_user_cpi_errors.UserProfileServiceException upe,
+                                                                               2: airavata_errors.AuthorizationException ae);
+
+  bool deleteCustomizedDashboard (1: required security_model.AuthzToken authzToken,
+                                                                        2: required string userId)
+                                                                        throws (1: profile_user_cpi_errors.UserProfileServiceException upe,
+                                                                                2: airavata_errors.AuthorizationException ae);
+
 }
