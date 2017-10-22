@@ -28,6 +28,7 @@ import org.apache.airavata.model.dbevent.CrudType;
 import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.model.user.CustomDashboard;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
 import org.apache.airavata.service.profile.commons.user.entities.UserProfileEntity;
@@ -192,6 +193,26 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
             exception.setMessage("Error while finding user profile. More info : " + e.getMessage());
             throw exception;
         }
+    }
+
+    @Override
+    public boolean isUserDashboardCustomized(AuthzToken authzToken, String userId) throws UserProfileServiceException, AuthorizationException, TException {
+        return false;
+    }
+
+    @Override
+    public CustomDashboard getCustomizedDashboardAttributes(AuthzToken authzToken, String userId) throws UserProfileServiceException, AuthorizationException, TException {
+        return null;
+    }
+
+    @Override
+    public boolean updateCustomizedDashboardAttributes(AuthzToken authzToken, String userId) throws UserProfileServiceException, AuthorizationException, TException {
+        return false;
+    }
+
+    @Override
+    public boolean deleteCustomizedDashboard(AuthzToken authzToken, String userId) throws UserProfileServiceException, AuthorizationException, TException {
+        return false;
     }
 
     private IamAdminServices.Client getIamAdminServicesClient() throws UserProfileServiceException {
