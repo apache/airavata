@@ -1,7 +1,0 @@
-namespace java com.notifySubmission.server
-      
-    typedef i32 int  
-      
-    service NotifySubmissionService {  
-            string notifySubmission(1:int n1, 2:int n2), 
-    }

@@ -1,6 +1,9 @@
 package com.notifySubmission.server;
 
 import org.apache.thrift.*;
+
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 import javax.mail.*;
 import javax.mail.internet.*;
@@ -15,7 +18,25 @@ public class NotifySubmissionServerHandler implements NotifySubmissionService.If
 	}
 
 	private void sendMail(String requestId, String adminId) {
-
+		Properties login = new Properties();
+		FileReader in = null;
+		try  {
+			in = new FileReader("login.properties");
+		    login.load(in);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		final String username = login.getProperty("username");
+		final String password = login.getProperty("password");
 		final String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory";
 		// Get a Properties object
 		Properties props = System.getProperties();
@@ -28,8 +49,8 @@ public class NotifySubmissionServerHandler implements NotifySubmissionService.If
 		props.put("mail.debug", "true");
 		props.put("mail.store.protocol", "pop3");
 		props.put("mail.transport.protocol", "smtp");
-		final String username = "demosga123@gmail.com";//
-		final String password = "sgauser123";
+		//final String username = "demosga123@gmail.com";//
+		//final String password = "sgauser123";
 		try {
 			Session session = Session.getDefaultInstance(props, new Authenticator() {
 				protected PasswordAuthentication getPasswordAuthentication() {

@@ -350,3 +350,27 @@ org.eclipse.core.runtime.CoreException: Launch configuration NotifySubmissionSer
 2017-10-02 04:38:40,441 [main] INFO  o.e.m2e.actions.ExecutePomAction - Creating new launch configuration
 2017-10-02 04:38:45,234 [Worker-20] INFO  o.e.m.i.launch.MavenLaunchDelegate - /Users/nikithachettiar/Documents/IU_Fall17/ScienceGateway/Airavata/Fork/airavata/NotifySubmission/NotifySubmission
 2017-10-02 04:38:45,234 [Worker-20] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B package
+2017-10-22 18:47:17,517 [Worker-5] INFO  c.g.t.t.d.PublishedGradleVersions - Gradle version information cache is up-to-date. Trying to read.
+2017-10-22 18:48:48,078 [Worker-0] INFO  o.e.m.i.launch.MavenLaunchDelegate - /Users/nikithachettiar/Documents/IU_Fall17/ScienceGateway/Airavata/Fork/airavata/NotifySubmission/NotifySubmission
+2017-10-22 18:48:48,079 [Worker-0] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B clean
+2017-10-22 18:48:56,138 [main] INFO  o.e.m2e.actions.ExecutePomAction - Creating new launch configuration
+2017-10-22 18:49:00,757 [Worker-12] INFO  o.e.m.i.launch.MavenLaunchDelegate - /Users/nikithachettiar/Documents/IU_Fall17/ScienceGateway/Airavata/Fork/airavata/NotifySubmission/NotifySubmission
+2017-10-22 18:49:00,758 [Worker-12] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B package
+2017-10-22 18:50:59,343 [Worker-4] INFO  o.e.m.i.launch.MavenLaunchDelegate - /Users/nikithachettiar/Documents/IU_Fall17/ScienceGateway/Airavata/Fork/airavata/NotifySubmission/NotifySubmission
+2017-10-22 18:50:59,343 [Worker-4] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B clean
+2017-10-22 18:51:08,384 [main] INFO  o.e.m2e.actions.ExecutePomAction - Creating new launch configuration
+2017-10-22 18:51:12,514 [Worker-0] INFO  o.e.m.i.launch.MavenLaunchDelegate - /Users/nikithachettiar/Documents/IU_Fall17/ScienceGateway/Airavata/Fork/airavata/NotifySubmission/NotifySubmission
+2017-10-22 18:51:12,514 [Worker-0] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B package
+2017-10-22 18:55:42,114 [main] INFO  o.e.m2e.actions.ExecutePomAction - Creating new launch configuration
+2017-10-22 18:55:45,565 [Worker-23] INFO  o.e.m.i.launch.MavenLaunchDelegate - /Users/nikithachettiar/Documents/IU_Fall17/ScienceGateway/Airavata/Fork/airavata/NotifySubmission/NotifySubmission
+2017-10-22 18:55:45,565 [Worker-23] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B package
+2017-10-22 19:01:42,187 [Worker-6] INFO  o.e.m.i.launch.MavenLaunchDelegate - /Users/nikithachettiar/Documents/IU_Fall17/ScienceGateway/Airavata/Fork/airavata/NotifySubmission/NotifySubmission
+2017-10-22 19:01:42,187 [Worker-6] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B clean
+2017-10-22 19:01:48,249 [main] INFO  o.e.m2e.actions.ExecutePomAction - Creating new launch configuration
+2017-10-22 19:01:53,095 [Worker-24] INFO  o.e.m.i.launch.MavenLaunchDelegate - /Users/nikithachettiar/Documents/IU_Fall17/ScienceGateway/Airavata/Fork/airavata/NotifySubmission/NotifySubmission
+2017-10-22 19:01:53,095 [Worker-24] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B package
+2017-10-22 19:07:16,760 [Worker-26] INFO  o.e.m.i.launch.MavenLaunchDelegate - /Users/nikithachettiar/Documents/IU_Fall17/ScienceGateway/Airavata/Fork/airavata/NotifySubmission/NotifySubmission
+2017-10-22 19:07:16,760 [Worker-26] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B clean
+2017-10-22 19:07:25,290 [main] INFO  o.e.m2e.actions.ExecutePomAction - Creating new launch configuration
+2017-10-22 19:07:29,985 [Worker-26] INFO  o.e.m.i.launch.MavenLaunchDelegate - /Users/nikithachettiar/Documents/IU_Fall17/ScienceGateway/Airavata/Fork/airavata/NotifySubmission/NotifySubmission
+2017-10-22 19:07:29,985 [Worker-26] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -B package
