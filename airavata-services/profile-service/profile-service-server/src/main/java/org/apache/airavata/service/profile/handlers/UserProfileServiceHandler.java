@@ -195,26 +195,6 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
         }
     }
 
-    @Override
-    public boolean isUserDashboardCustomized(AuthzToken authzToken, String userId) throws UserProfileServiceException, AuthorizationException, TException {
-        return false;
-    }
-
-    @Override
-    public CustomDashboard getCustomizedDashboardAttributes(AuthzToken authzToken, String userId) throws UserProfileServiceException, AuthorizationException, TException {
-        return null;
-    }
-
-    @Override
-    public boolean updateCustomizedDashboardAttributes(AuthzToken authzToken, String userId) throws UserProfileServiceException, AuthorizationException, TException {
-        return false;
-    }
-
-    @Override
-    public boolean deleteCustomizedDashboard(AuthzToken authzToken, String userId) throws UserProfileServiceException, AuthorizationException, TException {
-        return false;
-    }
-
     private IamAdminServices.Client getIamAdminServicesClient() throws UserProfileServiceException {
         try {
             final int serverPort = Integer.parseInt(ServerSettings.getProfileServiceServerPort());
