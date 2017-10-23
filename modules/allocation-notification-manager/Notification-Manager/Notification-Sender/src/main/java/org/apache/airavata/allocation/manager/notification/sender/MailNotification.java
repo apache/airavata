@@ -1,5 +1,6 @@
 package org.apache.airavata.allocation.manager.notification.sender;
 
+import java.io.FileReader;
 import java.util.Date;
 import java.util.Properties;
 import javax.mail.Authenticator;
@@ -16,6 +17,15 @@ public class MailNotification {
 		// currently sends to only one sender, but will change to send to multiple users
 		final String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory";
 		// Get a Properties object
+		Properties login = new Properties();
+		try {
+			FileReader in = new FileReader("login.properties");
+		    login.load(in);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		final String username = login.getProperty("username");
+		final String password = login.getProperty("password");
 		Properties props = System.getProperties();
 		props.setProperty("mail.smtp.host", "smtp.gmail.com");
 		props.setProperty("mail.smtp.socketFactory.class", SSL_FACTORY);
@@ -26,8 +36,8 @@ public class MailNotification {
 		props.put("mail.debug", "true");
 		props.put("mail.store.protocol", "pop3");
 		props.put("mail.transport.protocol", "smtp");
-		final String username = "demosga123@gmail.com";//
-		final String password = "sgauser123";
+	//	final String username = "demosga123@gmail.com";//
+	//	final String password = "sgauser123";
 		try {
 			Session session = Session.getDefaultInstance(props, new Authenticator() {
 				protected PasswordAuthentication getPasswordAuthentication() {
