@@ -16,7 +16,7 @@
 *.ipr
 *.iws
 *.iml
-#*target
+*target
 ## Additional for IntelliJ
 out/
 
@@ -67,7 +67,7 @@ local.properties
 .buildpath
 
 # sbteclipse plugin
-#.target
+.target
 
 # Tern plugin
 .tern-project
