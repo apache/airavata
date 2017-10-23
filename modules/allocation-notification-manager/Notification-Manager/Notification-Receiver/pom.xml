@@ -14,15 +14,16 @@
       <scope>test</scope>
     </dependency>
      <dependency>
- <groupId>com.notification-manager</groupId>
-  <artifactId>Notification-Sender</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <groupId>Notification-Manager</groupId>
+    <artifactId>Notification-Sender</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
- <groupId>com.notification-manager</groupId>
-  <artifactId>Notification-Authenticator</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <groupId>Notification-Manager</groupId>
+    <artifactId>Notificafication-Authenticator</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
     </dependency>
+
     <dependency>
         		<groupId>org.springframework.amqp</groupId>
         		<artifactId>spring-rabbit</artifactId>

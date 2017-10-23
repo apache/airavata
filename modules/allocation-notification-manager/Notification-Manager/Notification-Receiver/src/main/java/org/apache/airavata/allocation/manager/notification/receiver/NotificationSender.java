@@ -28,7 +28,7 @@ public class NotificationSender {
 	          channel.basicPublish("", QUEUE_NAME, null, message.getBytes());
 	     
 	          System.out.println(
-	             " [x] Sent ");
+	             " [x] Sent this");
 	        
 	       
 	        //Close the channel
