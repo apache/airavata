@@ -6,7 +6,6 @@
   <packaging>pom</packaging>
   <name>Notification-Manager</name>
   <modules>
-  	<module>Notification-API</module>
   	<module>Notificafication-Authenticator</module>
   	<module>Notification-Sender</module>
   	<module>Notification-Receiver</module>
