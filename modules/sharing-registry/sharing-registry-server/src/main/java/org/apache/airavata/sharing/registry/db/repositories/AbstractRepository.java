@@ -53,6 +53,13 @@ public abstract class AbstractRepository<T, E, Id> {
     public List<T> create(List<T> tList) throws SharingRegistryException {
         return update(tList);
     }
+    
+    public List<T> create(String query) throws SharingRegistryException {
+       // String query = "INSERT INTO " + dbEntityGenericClass.getSimpleName() + " values("+values+")";
+       execute(entityManager -> {
+            javax.persistence.Query q = entityManager.createQuery(query);
+        });
+    }
 
     public  T update(T t) throws SharingRegistryException {
         Mapper mapper = ObjectMapperSingleton.getInstance();
