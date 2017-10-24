@@ -7,7 +7,7 @@ import org.apache.airavata.sharing.registry.db.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UserAllocationDetailsRepository extends AbstractRepository<UserAllocationDetails, UserAllocationDetailsEntity, String> {
+public class UserAllocationDetailsRepository extends AbstractRepository<UserAllocationDetails, UserAllocationDetailsEntity, UserAllocationDetails> {
     private final static Logger logger = LoggerFactory.getLogger(DomainRepository.class);
 
     public UserAllocationDetailsRepository(){
