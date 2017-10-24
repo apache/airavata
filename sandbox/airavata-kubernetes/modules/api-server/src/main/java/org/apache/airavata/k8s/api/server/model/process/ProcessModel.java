@@ -32,14 +32,14 @@ public class ProcessModel {
     private List<ProcessStatus> processStatuses;
 
     @OneToMany(mappedBy = "parentProcess", cascade = CascadeType.ALL)
-    private List<TaskModel> tasks; // optional
+    private List<TaskModel> tasks;
 
-    private String taskDag; // optional
+    private String taskDag;
 
     @OneToMany
-    private List<ErrorModel> processErrors; // optional
+    private List<ErrorModel> processErrors;
 
-    private String experimentDataDir; // optional
+    private String experimentDataDir;
 
     public long getId() {
         return id;

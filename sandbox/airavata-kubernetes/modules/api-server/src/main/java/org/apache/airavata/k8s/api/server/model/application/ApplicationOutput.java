@@ -12,7 +12,7 @@ import java.util.Map;
  * @since 1.0.0-SNAPSHOT
  */
 @Entity
-@Table(name = "APPLICATION_INPUT")
+@Table(name = "APPLICATION_OUTPUT")
 public class ApplicationOutput {
 
     @Id

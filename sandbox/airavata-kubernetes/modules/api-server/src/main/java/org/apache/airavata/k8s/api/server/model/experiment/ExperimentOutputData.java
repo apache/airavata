@@ -1,6 +1,8 @@
 package org.apache.airavata.k8s.api.server.model.experiment;
 
 import javax.persistence.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * TODO: Class level comments please
@@ -17,8 +19,8 @@ public class ExperimentOutputData {
     private long id;
 
     private String name;
-    private String type;
-    private DataType value;
+    private String value;
+    private DataType type;
 
     public long getId() {
         return id;
@@ -36,20 +38,20 @@ public class ExperimentOutputData {
         this.name = name;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public DataType getValue() {
+    public String getValue() {
         return value;
     }
 
-    public void setValue(DataType value) {
+    public void setValue(String value) {
         this.value = value;
+    }
+
+    public DataType getType() {
+        return type;
+    }
+
+    public void setType(DataType type) {
+        this.type = type;
     }
 
     public static enum DataType {
@@ -62,6 +64,17 @@ public class ExperimentOutputData {
         STDERR(6);
 
         private final int value;
+        private static Map<Integer, DataType> map = new HashMap<>();
+
+        static {
+            for (DataType dataType : DataType.values()) {
+                map.put(dataType.value, dataType);
+            }
+        }
+
+        public static DataType valueOf(int dataType) {
+            return map.get(dataType);
+        }
 
         private DataType(int value) {
             this.value = value;
@@ -69,5 +82,6 @@ public class ExperimentOutputData {
         public int getValue() {
             return value;
         }
+
     }
 }

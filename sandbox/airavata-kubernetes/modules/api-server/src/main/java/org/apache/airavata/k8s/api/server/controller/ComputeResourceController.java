@@ -31,6 +31,6 @@ public class ComputeResourceController {
     @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ComputeResource findComputeResourceById(@PathVariable("id") long id) {
         return this.computeResourceService.findById(id)
-                .orElseThrow(() -> new ServerRuntimeException("Compute resource with id " + id + " not found"));
+                .orElseThrow(() -> new ServerRuntimeException("Compute resource with id " + id + " cab not be found"));
     }
 }

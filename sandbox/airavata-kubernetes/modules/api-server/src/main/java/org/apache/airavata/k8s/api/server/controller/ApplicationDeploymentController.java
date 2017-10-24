@@ -24,13 +24,13 @@ public class ApplicationDeploymentController {
     private ApplicationDeploymentService applicationDeploymentService;
 
     @PostMapping( path = "", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Long createApplicationModule(ApplicationDeploymentResource resource) {
+    public Long createApplicationModule(@RequestBody ApplicationDeploymentResource resource) {
         return applicationDeploymentService.create(resource);
     }
 
     @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApplicationDeploymentResource findAppModuleById(@PathVariable("id") long id) {
         return this.applicationDeploymentService.findById(id)
-                .orElseThrow(() -> new ServerRuntimeException("App deployment with id " + id + " not found"));
+                .orElseThrow(() -> new ServerRuntimeException("App deployment with id " + id + " can not be found"));
     }
 }

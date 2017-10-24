@@ -6,6 +6,7 @@ import org.apache.airavata.k8s.api.server.model.commons.ErrorModel;
 import org.apache.airavata.k8s.api.server.model.process.ProcessModel;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,25 +28,25 @@ public class Experiment {
     private String description;
 
     @ManyToOne
-    private ApplicationInterface applicationInterface; // optional
+    private ApplicationInterface applicationInterface;
 
     @ManyToOne
     private ApplicationDeployment applicationDeployment;
 
     @OneToMany
-    private List<ExperimentInputData> experimentInputs; // optional
+    private List<ExperimentInputData> experimentInputs = new ArrayList<>();
 
     @OneToMany
-    private List<ExperimentOutputData> experimentOutputs; // optional
+    private List<ExperimentOutputData> experimentOutputs = new ArrayList<>();
 
     @OneToMany
-    private List<ExperimentStatus> experimentStatus; // optional
+    private List<ExperimentStatus> experimentStatus = new ArrayList<>();
 
     @OneToMany
-    private List<ErrorModel> errors; // optional
+    private List<ErrorModel> errors = new ArrayList<>();
 
     @OneToMany
-    private List<ProcessModel> processes; // optional
+    private List<ProcessModel> processes = new ArrayList<>();
 
     public long getId() {
         return id;

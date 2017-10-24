@@ -3,11 +3,19 @@ package org.apache.airavata.k8s.api.server.service.util;
 import org.apache.airavata.k8s.api.server.model.application.ApplicationDeployment;
 import org.apache.airavata.k8s.api.server.model.application.ApplicationInterface;
 import org.apache.airavata.k8s.api.server.model.application.ApplicationModule;
-import org.apache.airavata.k8s.api.server.model.application.ComputeResourceModel;
+import org.apache.airavata.k8s.api.server.model.compute.ComputeResourceModel;
 import org.apache.airavata.k8s.api.server.model.experiment.Experiment;
+import org.apache.airavata.k8s.api.server.model.experiment.ExperimentInputData;
+import org.apache.airavata.k8s.api.server.model.experiment.ExperimentOutputData;
+import org.apache.airavata.k8s.api.server.model.process.ProcessModel;
+import org.apache.airavata.k8s.api.server.model.task.TaskModel;
 import org.apache.airavata.k8s.api.server.resources.application.*;
 import org.apache.airavata.k8s.api.server.resources.compute.ComputeResource;
+import org.apache.airavata.k8s.api.server.resources.experiment.ExperimentInputResource;
+import org.apache.airavata.k8s.api.server.resources.experiment.ExperimentOutputResource;
 import org.apache.airavata.k8s.api.server.resources.experiment.ExperimentResource;
+import org.apache.airavata.k8s.api.server.resources.process.ProcessResource;
+import org.apache.airavata.k8s.api.server.resources.task.TaskResource;
 
 import java.util.Optional;
 
@@ -30,8 +38,39 @@ public class ToResourceUtil {
                     .ifPresent(errs -> errs.forEach(err -> resource.getErrorsIds().add(err.getId())));
             Optional.ofNullable(experiment.getExperimentStatus())
                     .ifPresent(sts -> sts.forEach(status -> resource.getExperimentStatusIds().add(status.getId())));
+            Optional.ofNullable(experiment.getExperimentInputs())
+                    .ifPresent(ips -> ips.forEach(ip -> resource.getExperimentInputs().add(toResource(ip).get())));
+            Optional.ofNullable(experiment.getExperimentOutputs())
+                    .ifPresent(ops -> ops.forEach(op -> resource.getExperimentOutputs().add(toResource(op).get())));
             return Optional.of(resource);
 
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public static Optional<ExperimentInputResource> toResource(ExperimentInputData input) {
+        if (input != null) {
+            ExperimentInputResource resource = new ExperimentInputResource();
+            resource.setId(input.getId());
+            resource.setName(input.getName());
+            resource.setValue(input.getValue());
+            resource.setType(input.getType().getValue());
+            resource.setArguments(input.getArguments());
+            return Optional.of(resource);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public static Optional<ExperimentOutputResource> toResource(ExperimentOutputData output) {
+        if (output != null) {
+            ExperimentOutputResource resource = new ExperimentOutputResource();
+            resource.setId(output.getId());
+            resource.setName(output.getName());
+            resource.setValue(output.getValue());
+            resource.setType(output.getType().getValue());
+            return Optional.of(resource);
         } else {
             return Optional.empty();
         }
@@ -110,6 +149,40 @@ public class ToResourceUtil {
             }));
 
             return Optional.of(resource);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public static Optional<TaskResource> toResource(TaskModel taskModel) {
+        if (taskModel != null) {
+            TaskResource resource = new TaskResource();
+            resource.setId(taskModel.getId());
+            resource.setLastUpdateTime(taskModel.getLastUpdateTime());
+            resource.setCreationTime(taskModel.getCreationTime());
+            resource.setParentProcessId(taskModel.getParentProcess().getId());
+            resource.setTaskType(taskModel.getTaskType().getValue());
+            return Optional.of(resource);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public static Optional<ProcessResource> toResource(ProcessModel processModel) {
+        if (processModel != null) {
+            ProcessResource processResource = new ProcessResource();
+            processResource.setId(processModel.getId());
+            processResource.setLastUpdateTime(processModel.getLastUpdateTime());
+            processResource.setExperimentId(processModel.getExperiment().getId());
+            processResource.setTaskDag(processModel.getTaskDag());
+            processResource.setCreationTime(processModel.getCreationTime());
+            Optional.ofNullable(processModel.getProcessStatuses())
+                    .ifPresent(stss -> stss.forEach(sts -> processResource.getProcessStatuses().add(sts.getId())));
+            Optional.ofNullable(processModel.getTasks())
+                    .ifPresent(tasks -> tasks.forEach(task -> processResource.getTasks().add(task.getId())));
+            Optional.ofNullable(processModel.getProcessErrors())
+                    .ifPresent(errs -> errs.forEach(err -> processResource.getProcessErrorIds().add(err.getId())));
+            return Optional.of(processResource);
         } else {
             return Optional.empty();
         }

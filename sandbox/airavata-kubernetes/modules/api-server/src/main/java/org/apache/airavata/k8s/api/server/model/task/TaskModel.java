@@ -6,7 +6,9 @@ import org.apache.airavata.k8s.api.server.model.process.ProcessModel;
 
 import javax.persistence.*;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * TODO: Class level comments please
@@ -22,24 +24,24 @@ public class TaskModel {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    private TaskTypes taskType; // required
+    private TaskTypes taskType;
 
     @ManyToOne
-    private ProcessModel parentProcess; // required
+    private ProcessModel parentProcess;
 
-    private long creationTime; // required
-    private long lastUpdateTime; // required
-
-    @OneToMany
-    private List<TaskStatus> taskStatuses; // required
-
-    private String taskDetail; // optional
+    private long creationTime;
+    private long lastUpdateTime;
 
     @OneToMany
-    private List<ErrorModel> taskErrors; // optional
+    private List<TaskStatus> taskStatuses;
+
+    private String taskDetail;
 
     @OneToMany
-    private List<JobModel> jobs; // optional
+    private List<ErrorModel> taskErrors;
+
+    @OneToMany
+    private List<JobModel> jobs;
 
     public long getId() {
         return id;
@@ -121,10 +123,25 @@ public class TaskModel {
         MONITORING(4),
         OUTPUT_FETCHING(5);
 
+        private static Map<Integer, TaskTypes> map = new HashMap<>();
+
+        static {
+            for (TaskTypes taskType : TaskTypes.values()) {
+                map.put(taskType.value, taskType);
+            }
+        }
         private final int value;
+
+        public static TaskTypes valueOf(int taskType) {
+            return map.get(taskType);
+        }
 
         private TaskTypes(int value) {
             this.value = value;
+        }
+
+        public int getValue() {
+            return value;
         }
     }
 
