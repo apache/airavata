@@ -22,13 +22,13 @@ public class ApplicationModuleController {
     private ApplicationModuleService applicationModuleService;
 
     @PostMapping( path = "", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Long createApplicationModule(ApplicationModuleResource resource) {
+    public Long createApplicationModule(@RequestBody ApplicationModuleResource resource) {
         return applicationModuleService.create(resource);
     }
 
     @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApplicationModuleResource findAppModuleById(@PathVariable("id") long id) {
         return this.applicationModuleService.findById(id)
-                .orElseThrow(() -> new ServerRuntimeException("Compute resource with id " + id + " not found"));
+                .orElseThrow(() -> new ServerRuntimeException("Compute resource with id " + id + " can not be found"));
     }
 }

@@ -15,14 +15,12 @@ public class ExperimentResource {
     private String experimentName;
     private long creationTime;
     private String description;
-
     private long applicationInterfaceId;
-
     private long applicationDeploymentId;
 
-    private List<Long> experimentInputIds = new ArrayList<>();
+    private List<ExperimentInputResource> experimentInputs = new ArrayList<>();
 
-    private List<Long> experimentOutputIds = new ArrayList<>();
+    private List<ExperimentOutputResource> experimentOutputs = new ArrayList<>();
 
     private List<Long> experimentStatusIds = new ArrayList<>();
 
@@ -84,21 +82,21 @@ public class ExperimentResource {
         return this;
     }
 
-    public List<Long> getExperimentInputIds() {
-        return experimentInputIds;
+    public List<ExperimentInputResource> getExperimentInputs() {
+        return experimentInputs;
     }
 
-    public ExperimentResource setExperimentInputIds(List<Long> experimentInputIds) {
-        this.experimentInputIds = experimentInputIds;
+    public ExperimentResource setExperimentInputs(List<ExperimentInputResource> experimentInputs) {
+        this.experimentInputs = experimentInputs;
         return this;
     }
 
-    public List<Long> getExperimentOutputIds() {
-        return experimentOutputIds;
+    public List<ExperimentOutputResource> getExperimentOutputs() {
+        return experimentOutputs;
     }
 
-    public ExperimentResource setExperimentOutputIds(List<Long> experimentOutputIds) {
-        this.experimentOutputIds = experimentOutputIds;
+    public ExperimentResource setExperimentOutputs(List<ExperimentOutputResource> experimentOutputs) {
+        this.experimentOutputs = experimentOutputs;
         return this;
     }
 

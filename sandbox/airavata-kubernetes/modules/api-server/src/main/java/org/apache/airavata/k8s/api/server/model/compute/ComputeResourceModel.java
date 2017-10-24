@@ -1,4 +1,4 @@
-package org.apache.airavata.k8s.api.server.model.application;
+package org.apache.airavata.k8s.api.server.model.compute;
 
 import javax.persistence.*;
 

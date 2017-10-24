@@ -23,9 +23,8 @@ public class ExperimentController {
     private ExperimentService experimentService;
 
     @PostMapping( path = "", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public String createExperiment(@RequestBody Experiment experiment) {
-
-        return "Experiment success ";
+    public long createExperiment(@RequestBody ExperimentResource resource) {
+        return experimentService.create(resource);
     }
 
     @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)

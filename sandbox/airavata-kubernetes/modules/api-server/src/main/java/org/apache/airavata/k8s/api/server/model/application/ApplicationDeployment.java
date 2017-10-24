@@ -1,5 +1,7 @@
 package org.apache.airavata.k8s.api.server.model.application;
 
+import org.apache.airavata.k8s.api.server.model.compute.ComputeResourceModel;
+
 import javax.persistence.*;
 
 /**

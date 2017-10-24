@@ -1,6 +1,6 @@
 package org.apache.airavata.k8s.api.server.repository;
 
-import org.apache.airavata.k8s.api.server.model.compute.ComputeResourceModel;
+import org.apache.airavata.k8s.api.server.model.process.ProcessModel;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
@@ -11,7 +11,6 @@ import java.util.Optional;
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT
  */
-public interface ComputeRepository extends CrudRepository<ComputeResourceModel, Long> {
-
-    public Optional<ComputeResourceModel> findById(long id);
+public interface ProcessRepository extends CrudRepository<ProcessModel, Long> {
+    Optional<ProcessModel> findById(long id);
 }
