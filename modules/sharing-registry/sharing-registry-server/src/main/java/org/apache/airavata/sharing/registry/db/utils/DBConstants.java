@@ -26,7 +26,6 @@ public class DBConstants {
     private final static Logger logger = LoggerFactory.getLogger(DBConstants.class);
 
     public static int SELECT_MAX_ROWS = 1000;
-
     public static class DomainTable {
         public static final String DOMAIN_ID = "domainId";
         public static final String NAME = "name";
