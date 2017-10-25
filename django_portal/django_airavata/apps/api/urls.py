@@ -7,6 +7,8 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 router = routers.SimpleRouter()
 router.register(r'projects', views.ProjectViewSet, base_name='project')
+router.register(r'new/application/module', views.RegisterApplicationModule, base_name='register_app_module')
+router.register(r'experiments', views.ApplicationList, base_name='experiments')
 
 urlpatterns = [
     url(r'^$', views.api_root),

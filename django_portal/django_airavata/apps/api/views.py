@@ -13,7 +13,7 @@ from django.http import JsonResponse, Http404
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
-from apache.airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule,ApplicationDeploymentDescription
+from apache.airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule, ApplicationDeploymentDescription
 from apache.airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDescription
 
 
@@ -132,32 +132,36 @@ class ApplicationList(APIView):
 
 
 class RegisterApplicationModule(APIView):
-    parser_classes = JSONParser
+    parser_classes = (JSONParser,)
 
     def post(self, request, format=None):
         gateway_id = settings.GATEWAY_ID
         app_module = ApplicationModule(request.data['name'], request.data['version'], request.data['description'])
         response = request.airavata_client.registerApplicationModule(request.authz_token, gateway_id, app_module)
-        return response
+        return Response(response)
 
 
 class RegisterApplicationInterface(APIView):
-    parser_classes = JSONParser
+    parser_classes = (JSONParser,)
 
     def post(self, request, format=None):
         gateway_id = settings.GATEWAY_ID
         params = request.data
-        app_interface = ApplicationInterfaceDescription(**params)
-        response = request.airavata_client.registerApplicationInterface(request.authz_token, gateway_id, app_interface)
-        return response
+        app_interface_description_serializer = serializers.ApplicationInterfaceDescriptionSerializer(data=params)
+        app_interface_description_serializer.is_valid(raise_exception=True)
+        app_interface = app_interface_description_serializer.save()
+        response = request.airavata_client.registerApplicationInterface(request.authz_token, gateway_id,
+                                                                        applicationInterface=app_interface)
+        return Response(response)
 
 
 class RegisterApplicationDeployments(APIView):
-    parser_classes = JSONParser
+    parser_classes = (JSONParser,)
 
     def post(self, request, format=None):
         gateway_id = settings.GATEWAY_ID
         params = request.data
-        app_deployment=ApplicationDeploymentDescription(**params)
-        response=request.airavata_client.registerApplicationDeployment(request.authz_token, gateway_id,app_deployment)
-        return response
+        app_deployment = ApplicationDeploymentDescription(**params)
+        response = request.airavata_client.registerApplicationDeployment(request.authz_token, gateway_id,
+                                                                         app_deployment)
+        return Response(response)
