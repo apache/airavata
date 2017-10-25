@@ -27,7 +27,6 @@ import org.apache.airavata.credential.store.cpi.credential_store_cpiConstants;
 import org.apache.airavata.credential.store.credential.CommunityUser;
 import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.credential.CredentialOwnerType;
-import org.apache.airavata.credential.store.credential.impl.password.*;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.credential.store.store.impl.CertificateCredentialWriter;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
@@ -36,7 +35,6 @@ import org.apache.airavata.credential.store.store.impl.util.CredentialStoreInitU
 import org.apache.airavata.credential.store.util.TokenGenerator;
 import org.apache.airavata.credential.store.util.Utility;
 import org.apache.airavata.model.credential.store.*;
-import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -166,7 +164,8 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
         try {
             Credential credential = credentialReader.getCredential(gatewayId, tokenId);
             if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential
-                    !(credential instanceof org.apache.airavata.credential.store.credential.impl.password.PasswordCredential)) {
+                    && !(credential instanceof org.apache.airavata.credential.store.credential.impl.password
+                            .PasswordCredential)) {
                 org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential credential1 = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
                 SSHCredential sshCredential = new SSHCredential();
                 sshCredential.setUsername(credential1.getPortalUserName());
@@ -196,7 +195,8 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
             if(type.equals(SummaryType.SSH)){
                 Credential credential = credentialReader.getCredential(gatewayId, tokenId);
                 if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential
-                        !(credential instanceof org.apache.airavata.credential.store.credential.impl.password.PasswordCredential)) {
+                        && !(credential instanceof org.apache.airavata.credential.store.credential.impl.password
+                        .PasswordCredential)) {
                     org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential credential1 = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
                     CredentialSummary sshCredentialSummary = new CredentialSummary();
                     sshCredentialSummary.setType(SummaryType.SSH);
