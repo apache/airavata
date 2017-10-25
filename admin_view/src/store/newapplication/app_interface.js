@@ -1,6 +1,8 @@
-
 import Vue from 'vue'
+import Utils from '../../utils'
+const mapper={
 
+}
 
 export default{
   namespaced: true,
@@ -113,7 +115,16 @@ export default{
       var ids=Object.getOwnPropertyNames(state.outputFields)
       ids.splice(ids.indexOf('__ob__'),1)
       return ids;
+    },
+    getAppInterface:state=>{
+      var data={
+        applicationInputs:state.inputFields,
+        applicationOutputs:state.outputFields,
+        archiveWorkingDirectory:state.enableArchiveWorkingDirectory,
+        hasOptionalFileInputs:state.enableOutputFileInputs
+      }
     }
+
 
 
   },

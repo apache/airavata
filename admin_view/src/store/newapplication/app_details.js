@@ -7,13 +7,17 @@ const fieldMapper={
   description:'appModuleDescription'
 }
 
-export default{
-  namespaced: true,
-  state:{
+var initialState=function () {
+  return {
     name:'',
     version:'',
     description:''
-  },
+  }
+}
+
+export default{
+  namespaced: true,
+  state:initialState(),
   mutations:{
     addAppDetails:function (state,update) {
       for(var prop in update){
@@ -24,6 +28,9 @@ export default{
     },
     registerAppDetails:function (state) {
       return Utils.post('/api/new/application/module',state)
+    },
+    resetState:state=>{
+      Utils.resetData(state,initialState())
     }
   },
   getters:{
@@ -46,6 +53,9 @@ export default{
     },
     registerAppModule:function (context) {
       context.commit("registerAppDetails")
+    },
+    resetAll:function (context) {
+      context.commit('resetState')
     }
   }
 }

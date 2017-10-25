@@ -15,7 +15,7 @@
         <div class="heading" >Experiment Description</div>
         <textarea  style="height: 80px;" type="text" v-model="description"/>
       </div>
-      <new-application-buttons v-on:save="registerAppModule()"></new-application-buttons>
+      <new-application-buttons v-on:save="registerAppModule()" v-on:cancel="cancelAction()"></new-application-buttons>
     </div>
   </div>
 </template>
@@ -51,8 +51,12 @@
         update[fieldName]=newValue
         this.updateAppDetails(update)
       },
+      cancelAction:function () {
+        this.resetAll()
+        this.$forceUpdate()
+      },
       ...mapGetters(['getAppName','getAppVersion','getAppDescription']),
-      ...mapActions(['updateAppDetails','registerAppModule'])
+      ...mapActions(['updateAppDetails','registerAppModule','resetAll'])
     },
     watch:{
       name:function (newValue) {
