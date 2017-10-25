@@ -24,7 +24,7 @@
 airavata_server: "gw153.iu.xsede.org"
 airavata_port: "8930"
 
-pga_repo: "https://git-wip-us.apache.org/repos/asf/airavata-php-gateway.git"
+pga_repo: "https://github.com/apache/airavata-php-gateway.git"
 # Keep Ultrascan PGA on 0.17 until gw153 gets updated/migrated
 git_branch: "branch-0.17"
 pga_config_template: "{{ inventory_dir }}/files/pga_config_0.17.php.j2"
