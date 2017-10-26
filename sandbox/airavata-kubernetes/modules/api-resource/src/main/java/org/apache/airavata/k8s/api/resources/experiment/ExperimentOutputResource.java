@@ -1,4 +1,4 @@
-package org.apache.airavata.k8s.api.server.resources.experiment;
+package org.apache.airavata.k8s.api.resources.experiment;
 
 /**
  * TODO: Class level comments please
@@ -47,5 +47,15 @@ public class ExperimentOutputResource {
     public ExperimentOutputResource setType(int type) {
         this.type = type;
         return this;
+    }
+
+    public static final class Types {
+        public static final int STRING = 0;
+        public static final int INTEGER = 1;
+        public static final int FLOAT = 2;
+        public static final int URI = 3;
+        public static final int URI_COLLECTION = 4;
+        public static final int STDOUT = 5;
+        public static final int STDERR = 6;
     }
 }

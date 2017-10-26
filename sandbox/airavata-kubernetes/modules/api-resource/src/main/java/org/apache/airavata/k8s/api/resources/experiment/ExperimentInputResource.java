@@ -1,4 +1,4 @@
-package org.apache.airavata.k8s.api.server.resources.application;
+package org.apache.airavata.k8s.api.resources.experiment;
 
 /**
  * TODO: Class level comments please
@@ -6,7 +6,7 @@ package org.apache.airavata.k8s.api.server.resources.application;
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT
  */
-public class ApplicationInputResource {
+public class ExperimentInputResource {
 
     private long id;
     private String name;
@@ -18,7 +18,7 @@ public class ApplicationInputResource {
         return id;
     }
 
-    public ApplicationInputResource setId(long id) {
+    public ExperimentInputResource setId(long id) {
         this.id = id;
         return this;
     }
@@ -27,7 +27,7 @@ public class ApplicationInputResource {
         return name;
     }
 
-    public ApplicationInputResource setName(String name) {
+    public ExperimentInputResource setName(String name) {
         this.name = name;
         return this;
     }
@@ -36,15 +36,16 @@ public class ApplicationInputResource {
         return type;
     }
 
-    public void setType(int type) {
+    public ExperimentInputResource setType(int type) {
         this.type = type;
+        return this;
     }
 
     public String getValue() {
         return value;
     }
 
-    public ApplicationInputResource setValue(String value) {
+    public ExperimentInputResource setValue(String value) {
         this.value = value;
         return this;
     }
@@ -53,8 +54,18 @@ public class ApplicationInputResource {
         return arguments;
     }
 
-    public ApplicationInputResource setArguments(String arguments) {
+    public ExperimentInputResource setArguments(String arguments) {
         this.arguments = arguments;
         return this;
+    }
+
+    public static final class Types {
+        public static final int STRING = 0;
+        public static final int INTEGER = 1;
+        public static final int FLOAT = 2;
+        public static final int URI = 3;
+        public static final int URI_COLLECTION = 4;
+        public static final int STDOUT = 5;
+        public static final int STDERR = 6;
     }
 }

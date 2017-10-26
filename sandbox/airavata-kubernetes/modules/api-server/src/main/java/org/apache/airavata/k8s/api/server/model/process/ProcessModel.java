@@ -5,6 +5,7 @@ import org.apache.airavata.k8s.api.server.model.experiment.Experiment;
 import org.apache.airavata.k8s.api.server.model.task.TaskModel;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,15 +30,15 @@ public class ProcessModel {
     private long lastUpdateTime;
 
     @OneToMany(mappedBy = "processModel", cascade = CascadeType.ALL)
-    private List<ProcessStatus> processStatuses;
+    private List<ProcessStatus> processStatuses = new ArrayList<>();
 
     @OneToMany(mappedBy = "parentProcess", cascade = CascadeType.ALL)
-    private List<TaskModel> tasks;
+    private List<TaskModel> tasks = new ArrayList<>();
 
     private String taskDag;
 
     @OneToMany
-    private List<ErrorModel> processErrors;
+    private List<ErrorModel> processErrors = new ArrayList<>();
 
     private String experimentDataDir;
 

@@ -1,6 +1,4 @@
-package org.apache.airavata.k8s.api.server.resources.application;
-
-import org.apache.airavata.k8s.api.server.model.application.ApplicationModule;
+package org.apache.airavata.k8s.api.resources.application;
 
 import java.util.ArrayList;
 import java.util.List;

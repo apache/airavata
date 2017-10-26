@@ -1,4 +1,6 @@
-package org.apache.airavata.k8s.api.server.resources.process;
+package org.apache.airavata.k8s.api.resources.process;
+
+import org.apache.airavata.k8s.api.resources.task.TaskResource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +18,7 @@ public class ProcessResource {
     private long creationTime;
     private long lastUpdateTime;
     private List<Long> processStatuses = new ArrayList<>();
-    private List<Long> tasks = new ArrayList<>();
+    private List<TaskResource> tasks = new ArrayList<>();
     private List<Long> processErrorIds = new ArrayList<>();
     private String taskDag;
     private String experimentDataDir;
@@ -66,11 +68,11 @@ public class ProcessResource {
         return this;
     }
 
-    public List<Long> getTasks() {
+    public List<TaskResource> getTasks() {
         return tasks;
     }
 
-    public ProcessResource setTasks(List<Long> tasks) {
+    public ProcessResource setTasks(List<TaskResource> tasks) {
         this.tasks = tasks;
         return this;
     }

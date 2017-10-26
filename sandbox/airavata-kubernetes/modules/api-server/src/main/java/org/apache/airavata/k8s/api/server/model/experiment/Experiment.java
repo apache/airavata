@@ -45,94 +45,105 @@ public class Experiment {
     @OneToMany
     private List<ErrorModel> errors = new ArrayList<>();
 
-    @OneToMany
+    @OneToMany(mappedBy = "experiment", cascade = CascadeType.ALL)
     private List<ProcessModel> processes = new ArrayList<>();
 
     public long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public Experiment setId(long id) {
         this.id = id;
+        return this;
     }
 
     public String getExperimentName() {
         return experimentName;
     }
 
-    public void setExperimentName(String experimentName) {
+    public Experiment setExperimentName(String experimentName) {
         this.experimentName = experimentName;
+        return this;
     }
 
     public long getCreationTime() {
         return creationTime;
     }
 
-    public void setCreationTime(long creationTime) {
+    public Experiment setCreationTime(long creationTime) {
         this.creationTime = creationTime;
+        return this;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public Experiment setDescription(String description) {
         this.description = description;
+        return this;
     }
 
     public ApplicationInterface getApplicationInterface() {
         return applicationInterface;
     }
 
-    public void setApplicationInterface(ApplicationInterface applicationInterface) {
+    public Experiment setApplicationInterface(ApplicationInterface applicationInterface) {
         this.applicationInterface = applicationInterface;
-    }
-
-    public List<ExperimentInputData> getExperimentInputs() {
-        return experimentInputs;
-    }
-
-    public void setExperimentInputs(List<ExperimentInputData> experimentInputs) {
-        this.experimentInputs = experimentInputs;
-    }
-
-    public List<ExperimentOutputData> getExperimentOutputs() {
-        return experimentOutputs;
-    }
-
-    public void setExperimentOutputs(List<ExperimentOutputData> experimentOutputs) {
-        this.experimentOutputs = experimentOutputs;
-    }
-
-    public List<ExperimentStatus> getExperimentStatus() {
-        return experimentStatus;
-    }
-
-    public void setExperimentStatus(List<ExperimentStatus> experimentStatus) {
-        this.experimentStatus = experimentStatus;
-    }
-
-    public List<ErrorModel> getErrors() {
-        return errors;
-    }
-
-    public void setErrors(List<ErrorModel> errors) {
-        this.errors = errors;
-    }
-
-    public List<ProcessModel> getProcesses() {
-        return processes;
-    }
-
-    public void setProcesses(List<ProcessModel> processes) {
-        this.processes = processes;
+        return this;
     }
 
     public ApplicationDeployment getApplicationDeployment() {
         return applicationDeployment;
     }
 
-    public void setApplicationDeployment(ApplicationDeployment applicationDeployment) {
+    public Experiment setApplicationDeployment(ApplicationDeployment applicationDeployment) {
         this.applicationDeployment = applicationDeployment;
+        return this;
+    }
+
+    public List<ExperimentInputData> getExperimentInputs() {
+        return experimentInputs;
+    }
+
+    public Experiment setExperimentInputs(List<ExperimentInputData> experimentInputs) {
+        this.experimentInputs = experimentInputs;
+        return this;
+    }
+
+    public List<ExperimentOutputData> getExperimentOutputs() {
+        return experimentOutputs;
+    }
+
+    public Experiment setExperimentOutputs(List<ExperimentOutputData> experimentOutputs) {
+        this.experimentOutputs = experimentOutputs;
+        return this;
+    }
+
+    public List<ExperimentStatus> getExperimentStatus() {
+        return experimentStatus;
+    }
+
+    public Experiment setExperimentStatus(List<ExperimentStatus> experimentStatus) {
+        this.experimentStatus = experimentStatus;
+        return this;
+    }
+
+    public List<ErrorModel> getErrors() {
+        return errors;
+    }
+
+    public Experiment setErrors(List<ErrorModel> errors) {
+        this.errors = errors;
+        return this;
+    }
+
+    public List<ProcessModel> getProcesses() {
+        return processes;
+    }
+
+    public Experiment setProcesses(List<ProcessModel> processes) {
+        this.processes = processes;
+        return this;
     }
 }
