@@ -8,9 +8,7 @@ Apache Airavata, a software framework to executing and managing computational jo
 distributed computing resources including local clusters, supercomputers, national grids, 
 academic and commercial clouds. Airavata builds on general concepts of service oriented computing, 
 distributed messaging, and workflow composition and orchestration. Airavata bundles a server package 
-with an API, client software development Kits and a general purpose GUI XBaya as a application registration, workflow
-construction execution and monitoring. XBaya GUI also provides capabilities to access the workflow 
-produced data.  
+with an API, client software development Kits and a general purpose reference UI implementation - Apache Airavata PHP reference gateway.   
 
 Contact
 ========
