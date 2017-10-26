@@ -1,4 +1,4 @@
-package org.apache.airavata.k8s.api.server.resources.application;
+package org.apache.airavata.k8s.api.resources.application;
 
 /**
  * TODO: Class level comments please

@@ -1,7 +1,7 @@
 package org.apache.airavata.k8s.api.server.controller;
 
 import org.apache.airavata.k8s.api.server.ServerRuntimeException;
-import org.apache.airavata.k8s.api.server.resources.process.ProcessResource;
+import org.apache.airavata.k8s.api.resources.process.ProcessResource;
 import org.apache.airavata.k8s.api.server.service.ProcessService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;

@@ -24,32 +24,36 @@ public class ExperimentStatus {
         return id;
     }
 
-    public void setId(long id) {
+    public ExperimentStatus setId(long id) {
         this.id = id;
+        return this;
     }
 
     public ExperimentState getState() {
         return state;
     }
 
-    public void setState(ExperimentState state) {
+    public ExperimentStatus setState(ExperimentState state) {
         this.state = state;
+        return this;
     }
 
     public long getTimeOfStateChange() {
         return timeOfStateChange;
     }
 
-    public void setTimeOfStateChange(long timeOfStateChange) {
+    public ExperimentStatus setTimeOfStateChange(long timeOfStateChange) {
         this.timeOfStateChange = timeOfStateChange;
+        return this;
     }
 
     public String getReason() {
         return reason;
     }
 
-    public void setReason(String reason) {
+    public ExperimentStatus setReason(String reason) {
         this.reason = reason;
+        return this;
     }
 
     public enum ExperimentState {

@@ -1,8 +1,7 @@
 package org.apache.airavata.k8s.api.server.controller;
 
 import org.apache.airavata.k8s.api.server.ServerRuntimeException;
-import org.apache.airavata.k8s.api.server.model.experiment.Experiment;
-import org.apache.airavata.k8s.api.server.resources.experiment.ExperimentResource;
+import org.apache.airavata.k8s.api.resources.experiment.ExperimentResource;
 import org.apache.airavata.k8s.api.server.service.ExperimentService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -31,5 +30,10 @@ public class ExperimentController {
     public ExperimentResource findExperimentById(@PathVariable("id") long id) {
         return this.experimentService.findById(id)
                 .orElseThrow(() -> new ServerRuntimeException("Experiment with id " + id + " not found"));
+    }
+
+    @GetMapping(path = "{id}/launch", produces = MediaType.APPLICATION_JSON_VALUE)
+    public long launchExperiment(@PathVariable("id") long id) {
+        return this.experimentService.launchExperiment(id);
     }
 }

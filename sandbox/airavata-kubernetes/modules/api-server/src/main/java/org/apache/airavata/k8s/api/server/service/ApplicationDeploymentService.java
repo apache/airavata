@@ -5,8 +5,8 @@ import org.apache.airavata.k8s.api.server.model.application.ApplicationDeploymen
 import org.apache.airavata.k8s.api.server.repository.ApplicationDeploymentRepository;
 import org.apache.airavata.k8s.api.server.repository.ApplicationModuleRepository;
 import org.apache.airavata.k8s.api.server.repository.ComputeRepository;
-import org.apache.airavata.k8s.api.server.resources.application.ApplicationDeploymentResource;
-import org.apache.airavata.k8s.api.server.resources.application.ApplicationModuleResource;
+import org.apache.airavata.k8s.api.resources.application.ApplicationDeploymentResource;
+import org.apache.airavata.k8s.api.resources.application.ApplicationModuleResource;
 import org.apache.airavata.k8s.api.server.service.util.ToResourceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

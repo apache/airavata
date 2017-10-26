@@ -1,6 +1,4 @@
-package org.apache.airavata.k8s.api.server.resources.application;
-
-import org.apache.airavata.k8s.api.server.model.application.ApplicationOutput;
+package org.apache.airavata.k8s.api.resources.application;
 
 /**
  * TODO: Class level comments please

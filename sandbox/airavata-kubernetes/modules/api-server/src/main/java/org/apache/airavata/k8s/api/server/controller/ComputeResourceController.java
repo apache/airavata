@@ -1,9 +1,7 @@
 package org.apache.airavata.k8s.api.server.controller;
 
 import org.apache.airavata.k8s.api.server.ServerRuntimeException;
-import org.apache.airavata.k8s.api.server.model.experiment.Experiment;
-import org.apache.airavata.k8s.api.server.resources.compute.ComputeResource;
-import org.apache.airavata.k8s.api.server.resources.experiment.ExperimentResource;
+import org.apache.airavata.k8s.api.resources.compute.ComputeResource;
 import org.apache.airavata.k8s.api.server.service.ComputeResourceService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;

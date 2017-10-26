@@ -2,7 +2,7 @@ package org.apache.airavata.k8s.api.server.service;
 
 import org.apache.airavata.k8s.api.server.model.compute.ComputeResourceModel;
 import org.apache.airavata.k8s.api.server.repository.ComputeRepository;
-import org.apache.airavata.k8s.api.server.resources.compute.ComputeResource;
+import org.apache.airavata.k8s.api.resources.compute.ComputeResource;
 import org.apache.airavata.k8s.api.server.service.util.ToResourceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

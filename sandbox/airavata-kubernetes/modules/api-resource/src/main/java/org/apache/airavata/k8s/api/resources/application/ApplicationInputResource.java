@@ -1,4 +1,4 @@
-package org.apache.airavata.k8s.api.server.resources.experiment;
+package org.apache.airavata.k8s.api.resources.application;
 
 /**
  * TODO: Class level comments please
@@ -6,7 +6,7 @@ package org.apache.airavata.k8s.api.server.resources.experiment;
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT
  */
-public class ExperimentInputResource {
+public class ApplicationInputResource {
 
     private long id;
     private String name;
@@ -18,7 +18,7 @@ public class ExperimentInputResource {
         return id;
     }
 
-    public ExperimentInputResource setId(long id) {
+    public ApplicationInputResource setId(long id) {
         this.id = id;
         return this;
     }
@@ -27,7 +27,7 @@ public class ExperimentInputResource {
         return name;
     }
 
-    public ExperimentInputResource setName(String name) {
+    public ApplicationInputResource setName(String name) {
         this.name = name;
         return this;
     }
@@ -36,16 +36,15 @@ public class ExperimentInputResource {
         return type;
     }
 
-    public ExperimentInputResource setType(int type) {
+    public void setType(int type) {
         this.type = type;
-        return this;
     }
 
     public String getValue() {
         return value;
     }
 
-    public ExperimentInputResource setValue(String value) {
+    public ApplicationInputResource setValue(String value) {
         this.value = value;
         return this;
     }
@@ -54,7 +53,7 @@ public class ExperimentInputResource {
         return arguments;
     }
 
-    public ExperimentInputResource setArguments(String arguments) {
+    public ApplicationInputResource setArguments(String arguments) {
         this.arguments = arguments;
         return this;
     }

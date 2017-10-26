@@ -1,5 +1,6 @@
-package org.apache.airavata.k8s.api.server.resources.task;
+package org.apache.airavata.k8s.api.resources.task;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,10 +16,12 @@ public class TaskResource {
     private long parentProcessId;
     private long creationTime;
     private long lastUpdateTime;
-    private List<Long> taskStatusIds;
+    private List<Long> taskStatusIds = new ArrayList<>();
     private String taskDetail;
-    private List<Long> taskErrorIds;
+    private List<Long> taskErrorIds = new ArrayList<>();
+    private List<TaskParamResource> taskParams = new ArrayList<>();
     private List<Long> jobIds;
+    private int order;
 
     public long getId() {
         return id;
@@ -99,5 +102,33 @@ public class TaskResource {
     public TaskResource setJobIds(List<Long> jobIds) {
         this.jobIds = jobIds;
         return this;
+    }
+
+    public List<TaskParamResource> getTaskParams() {
+        return taskParams;
+    }
+
+    public TaskResource setTaskParams(List<TaskParamResource> taskParams) {
+        this.taskParams = taskParams;
+        return this;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public TaskResource setOrder(int order) {
+        this.order = order;
+        return this;
+    }
+
+    public static final class TaskTypes {
+        public static int ENV_SETUP = 0;
+        public static int INGRESS_DATA_STAGING = 1;
+        public static int EGRESS_DATA_STAGING = 2;
+        public static int JOB_SUBMISSION = 3;
+        public static int ENV_CLEANUP = 4;
+        public static int MONITORING = 5;
+        public static int OUTPUT_FETCHING = 6;
     }
 }

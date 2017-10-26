@@ -4,10 +4,13 @@ import org.apache.airavata.k8s.api.server.ServerRuntimeException;
 import org.apache.airavata.k8s.api.server.model.experiment.Experiment;
 import org.apache.airavata.k8s.api.server.model.experiment.ExperimentInputData;
 import org.apache.airavata.k8s.api.server.model.experiment.ExperimentOutputData;
+import org.apache.airavata.k8s.api.server.model.experiment.ExperimentStatus;
 import org.apache.airavata.k8s.api.server.repository.*;
-import org.apache.airavata.k8s.api.server.resources.experiment.ExperimentResource;
+import org.apache.airavata.k8s.api.resources.experiment.ExperimentResource;
+import org.apache.airavata.k8s.api.server.service.messaging.MessagingService;
 import org.apache.airavata.k8s.api.server.service.util.ToResourceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,19 +31,29 @@ public class ExperimentService {
     private ApplicationIfaceRepository appIfaceRepository;
     private ExperimentInputDataRepository inputDataRepository;
     private ExperimentOutputDataRepository outputDataRepository;
+    private ExperimentStatusRepository experimentStatusRepository;
+
+    private MessagingService messagingService;
+
+    @Value("${launch.topic.name}")
+    private String launchTopic;
 
     @Autowired
     public ExperimentService(ExperimentRepository experimentRepository,
                              ApplicationDeploymentRepository appDepRepository,
                              ApplicationIfaceRepository appIfaceRepository,
                              ExperimentInputDataRepository inputDataRepository,
-                             ExperimentOutputDataRepository outputDataRepository) {
+                             ExperimentOutputDataRepository outputDataRepository,
+                             ExperimentStatusRepository experimentStatusRepository,
+                             MessagingService messagingService) {
 
         this.experimentRepository = experimentRepository;
         this.appDepRepository = appDepRepository;
         this.appIfaceRepository = appIfaceRepository;
         this.inputDataRepository = inputDataRepository;
         this.outputDataRepository = outputDataRepository;
+        this.experimentStatusRepository = experimentStatusRepository;
+        this.messagingService = messagingService;
     }
 
     public long create(ExperimentResource resource) {
@@ -83,6 +96,25 @@ public class ExperimentService {
     }
 
     public Optional<ExperimentResource> findById(long id) {
-        return ToResourceUtil.toResource(experimentRepository.findById(id).get());
+        return ToResourceUtil.toResource(findEntityById(id).get());
+    }
+
+    public Optional<Experiment> findEntityById(long id) {
+        return this.experimentRepository.findById(id);
+    }
+
+    public long launchExperiment(long id) {
+        Experiment experiment = this.experimentRepository.findById(id).orElseThrow(() -> new ServerRuntimeException("Experiment with id " +
+                id + "can not be found"));
+        // TODO validate status and get a lock
+
+        ExperimentStatus experimentStatus = this.experimentStatusRepository.save(new ExperimentStatus()
+                .setState(ExperimentStatus.ExperimentState.LAUNCHED)
+                .setTimeOfStateChange(System.currentTimeMillis()));
+
+        experiment.getExperimentStatus().add(experimentStatus);
+
+        this.messagingService.send(this.launchTopic, "exp-" + id);
+        return 0;
     }
 }

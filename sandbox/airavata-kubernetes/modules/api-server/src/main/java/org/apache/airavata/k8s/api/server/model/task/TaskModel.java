@@ -6,6 +6,7 @@ import org.apache.airavata.k8s.api.server.model.process.ProcessModel;
 
 import javax.persistence.*;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,17 +32,21 @@ public class TaskModel {
 
     private long creationTime;
     private long lastUpdateTime;
+    private int orderIndex;
 
     @OneToMany
-    private List<TaskStatus> taskStatuses;
+    private List<TaskStatus> taskStatuses = new ArrayList<>();
 
     private String taskDetail;
 
     @OneToMany
-    private List<ErrorModel> taskErrors;
+    private List<ErrorModel> taskErrors = new ArrayList<>();
 
     @OneToMany
-    private List<JobModel> jobs;
+    private List<JobModel> jobs = new ArrayList<>();
+
+    @OneToMany(mappedBy = "taskModel", cascade = CascadeType.ALL)
+    private List<TaskParam> taskParams = new ArrayList<>();
 
     public long getId() {
         return id;
@@ -115,13 +120,32 @@ public class TaskModel {
         this.jobs = jobs;
     }
 
+    public List<TaskParam> getTaskParams() {
+        return taskParams;
+    }
+
+    public TaskModel setTaskParams(List<TaskParam> taskParams) {
+        this.taskParams = taskParams;
+        return this;
+    }
+
+    public int getOrderIndex() {
+        return orderIndex;
+    }
+
+    public TaskModel setOrderIndex(int orderIndex) {
+        this.orderIndex = orderIndex;
+        return this;
+    }
+
     public enum TaskTypes {
         ENV_SETUP(0),
-        DATA_STAGING(1),
-        JOB_SUBMISSION(2),
-        ENV_CLEANUP(3),
-        MONITORING(4),
-        OUTPUT_FETCHING(5);
+        INGRESS_DATA_STAGING(1),
+        EGRESS_DATA_STAGING(2),
+        JOB_SUBMISSION(3),
+        ENV_CLEANUP(4),
+        MONITORING(5),
+        OUTPUT_FETCHING(6);
 
         private static Map<Integer, TaskTypes> map = new HashMap<>();
 

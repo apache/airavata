@@ -1,4 +1,4 @@
-package org.apache.airavata.k8s.api.server.resources.experiment;
+package org.apache.airavata.k8s.api.resources.experiment;
 
 import java.util.ArrayList;
 import java.util.List;
