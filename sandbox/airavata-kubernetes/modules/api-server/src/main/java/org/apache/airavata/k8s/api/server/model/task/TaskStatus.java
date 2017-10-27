@@ -1,6 +1,8 @@
 package org.apache.airavata.k8s.api.server.model.task;
 
 import javax.persistence.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * TODO: Class level comments please
@@ -19,6 +21,9 @@ public class TaskStatus {
     private TaskState state; // required
     private long timeOfStateChange; // optional
     private String reason; // optional
+
+    @ManyToOne
+    private TaskModel taskModel;
 
     public long getId() {
         return id;
@@ -52,17 +57,39 @@ public class TaskStatus {
         this.reason = reason;
     }
 
+    public TaskModel getTaskModel() {
+        return taskModel;
+    }
+
+    public TaskStatus setTaskModel(TaskModel taskModel) {
+        this.taskModel = taskModel;
+        return this;
+    }
+
     public enum TaskState {
         CREATED(0),
-        EXECUTING(1),
-        COMPLETED(2),
-        FAILED(3),
-        CANCELED(4);
+        SCHEDULED(1),
+        EXECUTING(2),
+        COMPLETED(3),
+        FAILED(4),
+        CANCELED(5);
 
         private final int value;
 
         private TaskState(int value) {
             this.value = value;
+        }
+
+        private static Map<Integer, TaskState> map = new HashMap<>();
+
+        static {
+            for (TaskState state : TaskState.values()) {
+                map.put(state.value, state);
+            }
+        }
+
+        public static TaskState valueOf(int taskState) {
+            return map.get(taskState);
         }
 
         /**

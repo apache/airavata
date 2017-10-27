@@ -1,5 +1,7 @@
 package org.apache.airavata.k8s.api.server.model.commons;
 
+import org.apache.airavata.k8s.api.server.model.task.TaskModel;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -21,6 +23,9 @@ public class ErrorModel {
     private String actualErrorMessage;
     private String userFriendlyMessage;
     private boolean transientOrPersistent;
+
+    @ManyToOne
+    private TaskModel taskModel;
 
     @OneToMany
     private List<ErrorModel> rootCauseErrorList;
@@ -71,5 +76,14 @@ public class ErrorModel {
 
     public void setRootCauseErrorList(List<ErrorModel> rootCauseErrorList) {
         this.rootCauseErrorList = rootCauseErrorList;
+    }
+
+    public TaskModel getTaskModel() {
+        return taskModel;
+    }
+
+    public ErrorModel setTaskModel(TaskModel taskModel) {
+        this.taskModel = taskModel;
+        return this;
     }
 }

@@ -34,15 +34,15 @@ public class TaskModel {
     private long lastUpdateTime;
     private int orderIndex;
 
-    @OneToMany
+    @OneToMany(mappedBy = "taskModel", cascade = CascadeType.ALL)
     private List<TaskStatus> taskStatuses = new ArrayList<>();
 
     private String taskDetail;
 
-    @OneToMany
+    @OneToMany(mappedBy = "taskModel", cascade = CascadeType.ALL)
     private List<ErrorModel> taskErrors = new ArrayList<>();
 
-    @OneToMany
+    @OneToMany(mappedBy = "taskModel", cascade = CascadeType.ALL)
     private List<JobModel> jobs = new ArrayList<>();
 
     @OneToMany(mappedBy = "taskModel", cascade = CascadeType.ALL)

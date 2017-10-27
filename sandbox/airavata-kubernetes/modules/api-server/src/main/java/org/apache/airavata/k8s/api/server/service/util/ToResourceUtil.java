@@ -2,6 +2,7 @@ package org.apache.airavata.k8s.api.server.service.util;
 
 import org.apache.airavata.k8s.api.resources.task.TaskParamResource;
 import org.apache.airavata.k8s.api.resources.task.TaskResource;
+import org.apache.airavata.k8s.api.resources.task.TaskStatusResource;
 import org.apache.airavata.k8s.api.server.model.application.ApplicationDeployment;
 import org.apache.airavata.k8s.api.server.model.application.ApplicationInterface;
 import org.apache.airavata.k8s.api.server.model.application.ApplicationModule;
@@ -18,6 +19,7 @@ import org.apache.airavata.k8s.api.resources.experiment.ExperimentOutputResource
 import org.apache.airavata.k8s.api.resources.experiment.ExperimentResource;
 import org.apache.airavata.k8s.api.resources.process.ProcessResource;
 import org.apache.airavata.k8s.api.server.model.task.TaskParam;
+import org.apache.airavata.k8s.api.server.model.task.TaskStatus;
 
 import java.util.Optional;
 
@@ -172,7 +174,26 @@ public class ToResourceUtil {
                     .ifPresent(params ->
                             params.forEach(param -> resource.getTaskParams()
                                     .add(toResource(param).get())));
+
+            Optional.ofNullable(taskModel.getTaskStatuses())
+                    .ifPresent(taskStatuses ->
+                            taskStatuses.forEach(taskStatus -> resource.getTaskStatusIds()
+                                    .add(taskStatus.getId())));
+
             resource.setOrder(taskModel.getOrderIndex());
+            return Optional.of(resource);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public static Optional<TaskStatusResource> toResource(TaskStatus taskStatus) {
+        if (taskStatus != null) {
+            TaskStatusResource resource = new TaskStatusResource();
+            resource.setId(taskStatus.getId());
+            resource.setState(taskStatus.getState().getValue());
+            resource.setTimeOfStateChange(taskStatus.getTimeOfStateChange());
+            resource.setTaskId(taskStatus.getTaskModel().getId());
             return Optional.of(resource);
         } else {
             return Optional.empty();

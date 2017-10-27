@@ -123,12 +123,12 @@ public class TaskResource {
     }
 
     public static final class TaskTypes {
-        public static int ENV_SETUP = 0;
-        public static int INGRESS_DATA_STAGING = 1;
-        public static int EGRESS_DATA_STAGING = 2;
-        public static int JOB_SUBMISSION = 3;
-        public static int ENV_CLEANUP = 4;
-        public static int MONITORING = 5;
-        public static int OUTPUT_FETCHING = 6;
+        public static final int ENV_SETUP = 0;
+        public static final int INGRESS_DATA_STAGING = 1;
+        public static final int EGRESS_DATA_STAGING = 2;
+        public static final int JOB_SUBMISSION = 3;
+        public static final int ENV_CLEANUP = 4;
+        public static final int MONITORING = 5;
+        public static final int OUTPUT_FETCHING = 6;
     }
 }
