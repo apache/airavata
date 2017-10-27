@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * TODO: Class level comments please
@@ -18,6 +20,9 @@ import java.util.Optional;
  */
 @Service
 public class TaskExecutionService {
+
+    private final ExecutorService executorService = Executors.newFixedThreadPool(10);
+
     private final RestTemplate restTemplate;
     private final KafkaSender kafkaSender;
 
@@ -32,11 +37,22 @@ public class TaskExecutionService {
         this.kafkaSender = kafkaSender;
     }
 
-    public void executeTask(long taskId) {
+    public void executeTaskAsync(long taskId) {
+
         System.out.println("Executing task " + taskId + " as egress staging task");
         TaskResource taskResource = this.restTemplate.getForObject("http://" + apiServerUrl + "/task/" + taskId, TaskResource.class);
 
         publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.SCHEDULED);
+
+        this.executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                executeTask(taskResource);
+            }
+        });
+    }
+
+    public void executeTask(TaskResource taskResource) {
 
         Optional<TaskParamResource> sourceParam = taskResource.getTaskParams()
                 .stream()
