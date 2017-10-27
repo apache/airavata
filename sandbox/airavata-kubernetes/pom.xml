@@ -18,6 +18,7 @@
         <module>modules/job-submission-task</module>
         <module>modules/env-cleanup-task</module>
         <module>modules/egress-staging-task</module>
+        <module>modules/event-sink</module>
     </modules>
 
 
