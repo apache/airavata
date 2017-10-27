@@ -3,6 +3,8 @@ package org.apache.airavata.k8s.task.env.setup.service;
 import org.apache.airavata.k8s.api.resources.task.TaskParamResource;
 import org.apache.airavata.k8s.api.resources.task.TaskResource;
 import org.apache.airavata.k8s.api.resources.task.TaskStatusResource;
+import org.apache.airavata.k8s.compute.api.ComputeOperations;
+import org.apache.airavata.k8s.compute.impl.MockComputeOperation;
 import org.apache.airavata.k8s.task.env.setup.messaging.KafkaSender;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -59,18 +61,27 @@ public class TaskExecutionService {
                 .filter(taskParamResource -> "command".equals(taskParamResource.getKey()))
                 .findFirst();
 
-        commandParam.ifPresent(taskParamResource -> System.out.println("Executing command " + taskParamResource.getValue()));
+        Optional<TaskParamResource> computeName = taskResource.getTaskParams()
+                .stream()
+                .filter(taskParamResource -> "compute-name".equals(taskParamResource.getKey()))
+                .findFirst();
 
-        publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.EXECUTING);
+        commandParam.ifPresent(taskParamResource -> {
+            System.out.println("Executing command " + taskParamResource.getValue());
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+            publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.EXECUTING);
 
-        publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.COMPLETED);
+            // TODO fetch this from the catalog
+            ComputeOperations operations = new MockComputeOperation(computeName.get().getValue());
 
+            try {
+                operations.executeCommand(taskParamResource.getValue());
+                publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.COMPLETED);
+
+            } catch (Exception e) {
+                publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.FAILED);
+            }
+        });
     }
 
     public void publishTaskStatus(long processId, long taskId, int status) {

@@ -3,6 +3,8 @@ package org.apache.airavata.k8s.task.job.service;
 import org.apache.airavata.k8s.api.resources.task.TaskParamResource;
 import org.apache.airavata.k8s.api.resources.task.TaskResource;
 import org.apache.airavata.k8s.api.resources.task.TaskStatusResource;
+import org.apache.airavata.k8s.compute.api.ComputeOperations;
+import org.apache.airavata.k8s.compute.impl.MockComputeOperation;
 import org.apache.airavata.k8s.task.job.messaging.KafkaSender;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -52,7 +54,7 @@ public class TaskExecutionService {
         });
     }
 
-    public void executeTask(TaskResource taskResource) {
+    private void executeTask(TaskResource taskResource) {
 
         Optional<TaskParamResource> commandParam = taskResource.getTaskParams()
                 .stream()
@@ -62,20 +64,28 @@ public class TaskExecutionService {
                 .stream()
                 .filter(taskParamResource -> "arguments".equals(taskParamResource.getKey()))
                 .findFirst();
+        Optional<TaskParamResource> computeName = taskResource.getTaskParams()
+                .stream()
+                .filter(taskParamResource -> "compute-name".equals(taskParamResource.getKey()))
+                .findFirst();
 
-        commandParam.ifPresent(taskParamResource -> System.out.println("Executing command " + taskParamResource.getValue()));
-        argumentsParam.ifPresent(taskParamResource -> System.out.println("With arguments " + taskParamResource.getValue()));
+        commandParam.ifPresent(taskParamResource -> {
+            System.out.println("Executing command " + taskParamResource.getValue());
+            argumentsParam.ifPresent(taskArgParamResource -> System.out.println("With arguments " + taskArgParamResource.getValue()));
 
-        publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.EXECUTING);
+            publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.EXECUTING);
+            ComputeOperations operations = new MockComputeOperation(computeName.get().getValue());
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+            try {
+                operations.executeCommand(taskParamResource.getValue() +
+                        (argumentsParam.isPresent() ? "" : argumentsParam.get().getValue()));
+                publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.COMPLETED);
 
-        publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.COMPLETED);
-
+            } catch (Exception e) {
+                e.printStackTrace();
+                publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.FAILED);
+            }
+        });
     }
 
     public void publishTaskStatus(long processId, long taskId, int status) {

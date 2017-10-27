@@ -19,6 +19,7 @@
         <module>modules/env-cleanup-task</module>
         <module>modules/egress-staging-task</module>
         <module>modules/event-sink</module>
+        <module>modules/compute-resource-api</module>
     </modules>
 
 
