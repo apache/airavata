@@ -79,6 +79,7 @@ public class TaskExecutionService {
     }
 
     public void publishTaskStatus(long processId, long taskId, int status) {
-        this.kafkaSender.send(this.taskEventPublishTopic, processId + "," +taskId + "," + status);
+        this.kafkaSender.send(this.taskEventPublishTopic, processId + "-" + taskId,
+                processId + "," + taskId + "," + status);
     }
 }
