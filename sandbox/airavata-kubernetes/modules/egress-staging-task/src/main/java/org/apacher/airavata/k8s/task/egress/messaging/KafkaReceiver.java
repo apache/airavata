@@ -2,6 +2,7 @@ package org.apacher.airavata.k8s.task.egress.messaging;
 
 import org.apacher.airavata.k8s.task.egress.service.TaskExecutionService;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 
 import javax.annotation.Resource;
 
@@ -17,8 +18,9 @@ public class KafkaReceiver {
     private TaskExecutionService taskExecutionService;
 
     @KafkaListener(topics = "${task.read.topic.name}")
-    public void receiveTasks(String payload) {
+    public void receiveTasks(String payload, Acknowledgment ack) {
         System.out.println("received task=" + payload);
-        taskExecutionService.executeTask(Long.parseLong(payload));
+        taskExecutionService.executeTaskAsync(Long.parseLong(payload));
+        ack.acknowledge();
     }
 }
