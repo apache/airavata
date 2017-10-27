@@ -16,9 +16,12 @@ public class JobStatus {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    private JobState jobState; // required
-    private long timeOfStateChange; // optional
-    private String reason; // optional
+    private JobState jobState;
+    private long timeOfStateChange;
+    private String reason;
+    
+    @ManyToOne
+    private JobModel jobModel;
 
     public long getId() {
         return id;
@@ -50,6 +53,15 @@ public class JobStatus {
 
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+    public JobModel getJobModel() {
+        return jobModel;
+    }
+
+    public JobStatus setJobModel(JobModel jobModel) {
+        this.jobModel = jobModel;
+        return this;
     }
 
     public enum JobState {

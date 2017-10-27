@@ -9,9 +9,15 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>modules/api-server</module>
-        <module>modules/orchestrator</module>
         <module>modules/api-resource</module>
+        <module>modules/api-server</module>
+        <module>modules/workflow-generator</module>
+        <module>modules/task-scheduler</module>
+        <module>modules/ingress-staging-task</module>
+        <module>modules/env-setup-task</module>
+        <module>modules/job-submission-task</module>
+        <module>modules/env-cleanup-task</module>
+        <module>modules/egress-staging-task</module>
     </modules>
 
 
