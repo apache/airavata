@@ -14,6 +14,7 @@ import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * TODO: Class level comments please
@@ -28,8 +29,8 @@ public class ReceiverConfig {
     @Value("${kafka.bootstrap-servers}")
     private String bootstrapServers;
 
-    @Value("${gfac.group.name}")
-    private String gfacGroupName;
+    @Value("${scheduler.group.name}")
+    private String schedulerGroupName;
 
     @Bean
     public Map<String, Object> consumerConfigs() {
@@ -39,8 +40,19 @@ public class ReceiverConfig {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         // allows a pool of processes to divide the work of consuming and processing records
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "fd");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, schedulerGroupName);
+        return props;
+    }
 
+    @Bean
+    public Map<String, Object> consumerConfigsForEvents() {
+        Map<String, Object> props = new HashMap<>();
+        // list of host:port pairs used for establishing the initial connections to the Kakfa cluster
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        // create a random group for each consumer in order to read all events form all consumers
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "event-group-" + UUID.randomUUID().toString());
         return props;
     }
 
@@ -50,11 +62,24 @@ public class ReceiverConfig {
     }
 
     @Bean
+    public ConsumerFactory<String, String> consumerFactoryForEvents() {
+        return new DefaultKafkaConsumerFactory<String, String>(consumerConfigsForEvents());
+    }
+
+    @Bean
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, String> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
 
+        return factory;
+    }
+
+    @Bean
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaEventListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, String> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactoryForEvents());
         return factory;
     }
 

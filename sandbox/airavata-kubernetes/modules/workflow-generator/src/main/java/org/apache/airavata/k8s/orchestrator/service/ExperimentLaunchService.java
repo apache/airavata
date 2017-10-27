@@ -2,6 +2,7 @@ package org.apache.airavata.k8s.orchestrator.service;
 
 import org.apache.airavata.k8s.api.resources.application.ApplicationDeploymentResource;
 import org.apache.airavata.k8s.api.resources.application.ApplicationIfaceResource;
+import org.apache.airavata.k8s.api.resources.compute.ComputeResource;
 import org.apache.airavata.k8s.api.resources.experiment.ExperimentInputResource;
 import org.apache.airavata.k8s.api.resources.experiment.ExperimentOutputResource;
 import org.apache.airavata.k8s.api.resources.experiment.ExperimentResource;
@@ -31,8 +32,8 @@ public class ExperimentLaunchService {
     @Value("${api.server.url}")
     private String apiServerUrl;
 
-    @Value("${gfac.topic.name}")
-    private String workerTopic;
+    @Value("${scheduler.topic.name}")
+    private String schedulerTopic;
 
     public ExperimentLaunchService(RestTemplate restTemplate, KafkaSender kafkaSender) {
         this.restTemplate = restTemplate;
@@ -55,24 +56,30 @@ public class ExperimentLaunchService {
                 ApplicationDeploymentResource.class,
                 experimentResource.getApplicationDeploymentId());
 
+        ComputeResource computeResource = this.restTemplate.getForObject(
+                "http://" + this.apiServerUrl + "/compute/{computeId}",
+                ComputeResource.class,
+                deploymentResource.getComputeResourceId());
+
         ProcessResource processResource = new ProcessResource();
         processResource.setCreationTime(System.currentTimeMillis());
         processResource.setExperimentDataDir("/tmp/" + experimentId);
         processResource.setExperimentId(experimentId);
 
-        List<TaskResource> taskDagResources = determineTaskDag(experimentResource, ifaceResource, deploymentResource, processResource);
+        List<TaskResource> taskDagResources = determineTaskDag(experimentResource, ifaceResource, deploymentResource, processResource, computeResource);
         processResource.setTasks(taskDagResources);
 
         Long processId = this.restTemplate.postForObject("http://" + this.apiServerUrl + "/process", processResource, Long.class);
 
         System.out.println("Iface " + ifaceResource.getName() + ", Dep " + deploymentResource.getId());
-        kafkaSender.send(workerTopic, processId.toString());
+        kafkaSender.send(schedulerTopic, processId.toString());
     }
 
-    public List<TaskResource> determineTaskDag(ExperimentResource exRes,
-                                             ApplicationIfaceResource appIfRes,
-                                             ApplicationDeploymentResource appDepRes,
-                                               ProcessResource processResource) {
+    private List<TaskResource> determineTaskDag(ExperimentResource exRes,
+                                               ApplicationIfaceResource appIfRes,
+                                               ApplicationDeploymentResource appDepRes,
+                                               ProcessResource processResource,
+                                               ComputeResource computeResource) {
 
         List<TaskResource> taskDag = new ArrayList<>();
 
@@ -83,7 +90,10 @@ public class ExperimentLaunchService {
             resource.setTaskType(TaskResource.TaskTypes.ENV_SETUP);
             resource.setCreationTime(System.currentTimeMillis());
             resource.setTaskDetail("Pre-job command for experiment " + exRes.getId());
-            resource.setTaskParams(Collections.singletonList(new TaskParamResource().setKey("command").setValue(preJob)));
+            resource.setTaskParams(Arrays.asList(
+                    new TaskParamResource().setKey("command").setValue(preJob),
+                    new TaskParamResource().setKey("compute-id").setValue(computeResource.getId() + ""),
+                    new TaskParamResource().setKey("compute-name").setValue(computeResource.getName() + "")));
             resource.setOrder(dagOrder.incrementAndGet());
             taskDag.add(resource);
         });
@@ -103,7 +113,9 @@ public class ExperimentLaunchService {
                     String localPath = processResource.getExperimentDataDir() + "/inputs/" + expInp.getId();
                     resource.setTaskParams(Arrays.asList(
                             new TaskParamResource().setKey("source").setValue(expInp.getValue()),
-                            new TaskParamResource().setKey("target").setValue(localPath)));
+                            new TaskParamResource().setKey("target").setValue(localPath),
+                            new TaskParamResource().setKey("compute-id").setValue(computeResource.getId() + ""),
+                            new TaskParamResource().setKey("compute-name").setValue(computeResource.getName() + "")));
                     resource.setOrder(dagOrder.incrementAndGet());
 
                     inputArgument.append(" ");
@@ -137,7 +149,9 @@ public class ExperimentLaunchService {
 
             resource.setTaskParams(Arrays.asList(
                     new TaskParamResource().setKey("command").setValue(exPath),
-                    new TaskParamResource().setKey("arguments").setValue(inputArgument.toString())));
+                    new TaskParamResource().setKey("arguments").setValue(inputArgument.toString()),
+                    new TaskParamResource().setKey("compute-id").setValue(computeResource.getId() + ""),
+                    new TaskParamResource().setKey("compute-name").setValue(computeResource.getName() + "")));
             resource.setOrder(dagOrder.incrementAndGet());
             taskDag.add(resource);
         });
@@ -150,7 +164,9 @@ public class ExperimentLaunchService {
                 resource.setTaskDetail("Egress data staging for output " + expOut.getName());
                 resource.setTaskParams(Arrays.asList(
                         new TaskParamResource().setKey("source").setValue(expOut.getValue()),
-                        new TaskParamResource().setKey("target").setValue("/tmp/" + exRes.getId() + "/outputs/" + expOut.getId())));
+                        new TaskParamResource().setKey("target").setValue("/tmp/" + exRes.getId() + "/outputs/" + expOut.getId()),
+                        new TaskParamResource().setKey("compute-id").setValue(computeResource.getId() + ""),
+                        new TaskParamResource().setKey("compute-name").setValue(computeResource.getName() + "")));
                 resource.setOrder(dagOrder.incrementAndGet());
             }
 
@@ -164,7 +180,10 @@ public class ExperimentLaunchService {
             resource.setTaskType(TaskResource.TaskTypes.ENV_CLEANUP);
             resource.setCreationTime(System.currentTimeMillis());
             resource.setTaskDetail("Post-job command for experiment " + exRes.getId());
-            resource.setTaskParams(Collections.singletonList(new TaskParamResource().setKey("command").setValue(postJob)));
+            resource.setTaskParams(Arrays.asList(
+                    new TaskParamResource().setKey("command").setValue(postJob),
+                    new TaskParamResource().setKey("compute-id").setValue(computeResource.getId() + ""),
+                    new TaskParamResource().setKey("compute-name").setValue(computeResource.getName() + "")));
             resource.setOrder(dagOrder.incrementAndGet());
             taskDag.add(resource);
         });

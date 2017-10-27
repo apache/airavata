@@ -16,13 +16,13 @@ public class KafkaReceiver {
     @Resource
     private WorkerService workerService;
 
-    @KafkaListener(topics = "${gfac.topic.name}")
+    @KafkaListener(topics = "${scheduler.topic.name}", containerFactory = "kafkaListenerContainerFactory")
     public void receiveProcesses(String payload) {
         System.out.println("received process=" + payload);
         workerService.launchProcess(Long.parseLong(payload));
     }
 
-    @KafkaListener(topics = "${task.event.topic.name}")
+    @KafkaListener(topics = "${task.event.topic.name}", containerFactory = "kafkaEventListenerContainerFactory")
     public void receiveTaskEvent(String payload) {
         System.out.println("received event=" + payload);
         String[] eventParts = payload.split(",");

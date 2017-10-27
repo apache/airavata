@@ -3,6 +3,8 @@ package org.apache.airavata.k8s.task.ingress.service;
 import org.apache.airavata.k8s.api.resources.task.TaskParamResource;
 import org.apache.airavata.k8s.api.resources.task.TaskResource;
 import org.apache.airavata.k8s.api.resources.task.TaskStatusResource;
+import org.apache.airavata.k8s.compute.api.ComputeOperations;
+import org.apache.airavata.k8s.compute.impl.MockComputeOperation;
 import org.apache.airavata.k8s.task.ingress.messaging.KafkaSender;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -58,24 +60,39 @@ public class TaskExecutionService {
                 .stream()
                 .filter(taskParamResource -> "source".equals(taskParamResource.getKey()))
                 .findFirst();
+
         Optional<TaskParamResource> targetParam = taskResource.getTaskParams()
                 .stream()
                 .filter(taskParamResource -> "target".equals(taskParamResource.getKey()))
                 .findFirst();
 
-        sourceParam.ifPresent(taskParamResource -> System.out.println("Fetching from source " + taskParamResource.getValue()));
-        targetParam.ifPresent(taskParamResource -> System.out.println("Saving to target " + taskParamResource.getValue()));
+        Optional<TaskParamResource> computeName = taskResource.getTaskParams()
+                .stream()
+                .filter(taskParamResource -> "compute-name".equals(taskParamResource.getKey()))
+                .findFirst();
 
-        publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.EXECUTING);
+        if (sourceParam.isPresent()) {
+            if (targetParam.isPresent()) {
+                publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.EXECUTING);
+                ComputeOperations computeOperations = new MockComputeOperation(computeName.get().getValue());
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+                try {
+                    computeOperations.transferDataIn(sourceParam.get().getValue(), targetParam.get().getValue(), "SCP");
+                    publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.COMPLETED);
+
+                } catch (Exception e) {
+
+                    e.printStackTrace();
+                    publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.FAILED);
+                }
+            } else {
+                System.out.println("Source can not be null for task " + taskResource.getId());
+                publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.FAILED);
+            }
+        } else {
+            System.out.println("Source can not be null for task " + taskResource.getId());
+            publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.FAILED);
         }
-
-        publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.COMPLETED);
-
     }
 
     public void publishTaskStatus(long processId, long taskId, int status) {
