@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  labels:
+    name: kafka
+spec:
+  ports:
+    - port: 9092
+      targetPort: 9092
+      protocol: TCP
+      name: kafka
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: api
+---
+
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: kafka
+subsets:
+  - addresses:
+      - ip: 192.168.1.114
+    ports:
+      - port: 9092
+        name: kafka
+      - port: 8080
+        name: api
