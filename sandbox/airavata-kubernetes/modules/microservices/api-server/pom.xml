@@ -96,6 +96,9 @@
                         <configuration>
                             <imageName>${docker.image.prefix}/api-server</imageName>
                             <baseImage>java:openjdk-8-jdk-alpine</baseImage>
+                            <exposes>
+                                <expose>8080</expose>
+                            </exposes>
                             <entryPoint>["java","-jar","/${project.build.finalName}.jar"]</entryPoint>
                             <resources>
                                 <resource>
