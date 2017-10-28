@@ -10,17 +10,20 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>modules/api-resource</module>
-        <module>modules/api-server</module>
-        <module>modules/workflow-generator</module>
-        <module>modules/task-scheduler</module>
-        <module>modules/ingress-staging-task</module>
-        <module>modules/env-setup-task</module>
-        <module>modules/job-submission-task</module>
-        <module>modules/env-cleanup-task</module>
-        <module>modules/egress-staging-task</module>
-        <module>modules/event-sink</module>
         <module>modules/compute-resource-api</module>
+        <module>modules/microservices/api-server</module>
+        <module>modules/microservices/workflow-generator</module>
+        <module>modules/microservices/task-scheduler</module>
+        <module>modules/microservices/event-sink</module>
+        <module>modules/microservices/tasks/ingress-staging-task</module>
+        <module>modules/microservices/tasks/env-setup-task</module>
+        <module>modules/microservices/tasks/job-submission-task</module>
+        <module>modules/microservices/tasks/env-cleanup-task</module>
+        <module>modules/microservices/tasks/egress-staging-task</module>
     </modules>
 
 
+    <properties>
+        <docker.image.prefix>dimuthuupe</docker.image.prefix>
+    </properties>
 </project>
