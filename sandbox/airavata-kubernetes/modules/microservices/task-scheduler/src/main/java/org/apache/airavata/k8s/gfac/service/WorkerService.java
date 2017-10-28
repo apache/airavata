@@ -56,7 +56,7 @@ public class WorkerService {
 
         if (freshProcess) {
             System.out.println("Starting to execute process " + processId);
-            ProcessLifeCycleManager manager = new ProcessLifeCycleManager(taskResources, kafkaSender);
+            ProcessLifeCycleManager manager = new ProcessLifeCycleManager(processId, taskResources, kafkaSender, restTemplate, apiServerUrl);
             manager.init();
             manager.submitTaskToQueue(taskResources.get(0));
             processLifecycleStore.put(processId, manager);

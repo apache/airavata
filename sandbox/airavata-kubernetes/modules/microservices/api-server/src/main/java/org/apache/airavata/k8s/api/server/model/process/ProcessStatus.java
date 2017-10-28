@@ -1,6 +1,8 @@
 package org.apache.airavata.k8s.api.server.model.process;
 
 import javax.persistence.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * TODO: Class level comments please
@@ -18,9 +20,9 @@ public class ProcessStatus {
 
     @ManyToOne
     private ProcessModel processModel;
-    private ProcessState state; // required
-    private long timeOfStateChange; // optional
-    private String reason; // optional
+    private ProcessState state;
+    private long timeOfStateChange;
+    private String reason;
 
     public long getId() {
         return id;
@@ -82,6 +84,22 @@ public class ProcessStatus {
 
         private ProcessState(int value) {
             this.value = value;
+        }
+
+        private static Map<Integer, ProcessState> map = new HashMap<>();
+
+        static {
+            for (ProcessState state : ProcessState.values()) {
+                map.put(state.value, state);
+            }
+        }
+
+        public static ProcessState valueOf(int prcessState) {
+            return map.get(prcessState);
+        }
+
+        public int getValue() {
+            return value;
         }
     }
 }
