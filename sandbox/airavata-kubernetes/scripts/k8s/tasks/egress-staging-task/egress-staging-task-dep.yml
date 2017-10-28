@@ -1,0 +1,21 @@
+apiVersion: apps/v1beta2 # for versions before 1.7.0 use apps/v1beta1
+kind: Deployment
+metadata:
+  name: egress-staging-task
+  labels:
+    app: egress-staging-task
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: egress-staging-task
+  template:
+    metadata:
+      labels:
+        app: egress-staging-task
+    spec:
+      containers:
+      - name: egress-staging-task
+        image: dimuthuupe/egress-staging-task:v1.0
+        ports:
+        - containerPort: 8080

@@ -1,0 +1,21 @@
+apiVersion: apps/v1beta2 # for versions before 1.7.0 use apps/v1beta1
+kind: Deployment
+metadata:
+  name: event-sink
+  labels:
+    app: event-sink
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: event-sink
+  template:
+    metadata:
+      labels:
+        app: event-sink
+    spec:
+      containers:
+      - name: event-sink
+        image: dimuthuupe/event-sink:v1.0
+        ports:
+        - containerPort: 8080

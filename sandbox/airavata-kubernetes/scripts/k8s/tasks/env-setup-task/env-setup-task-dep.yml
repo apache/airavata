@@ -1,0 +1,21 @@
+apiVersion: apps/v1beta2 # for versions before 1.7.0 use apps/v1beta1
+kind: Deployment
+metadata:
+  name: env-setup-task
+  labels:
+    app: env-setup-task
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: env-setup-task
+  template:
+    metadata:
+      labels:
+        app: env-setup-task
+    spec:
+      containers:
+      - name: env-setup-task
+        image: dimuthuupe/env-setup-task:v1.0
+        ports:
+        - containerPort: 8080
