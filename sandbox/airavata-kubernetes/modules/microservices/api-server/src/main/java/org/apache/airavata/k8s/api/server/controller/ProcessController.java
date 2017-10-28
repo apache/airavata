@@ -1,5 +1,6 @@
 package org.apache.airavata.k8s.api.server.controller;
 
+import org.apache.airavata.k8s.api.resources.process.ProcessStatusResource;
 import org.apache.airavata.k8s.api.server.ServerRuntimeException;
 import org.apache.airavata.k8s.api.resources.process.ProcessResource;
 import org.apache.airavata.k8s.api.server.service.ProcessService;
@@ -24,6 +25,11 @@ public class ProcessController {
     @PostMapping( path = "", consumes = MediaType.APPLICATION_JSON_VALUE)
     public long createProcess(@RequestBody ProcessResource resource) {
         return processService.create(resource);
+    }
+
+    @PostMapping( path = "{id}/status", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public long addStatus(@PathVariable("id") long id, @RequestBody ProcessStatusResource resource) {
+        return processService.addProcessStatus(id, resource);
     }
 
     @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
