@@ -202,6 +202,8 @@ public class ToResourceUtil {
             resource.setCreationTime(taskModel.getCreationTime());
             resource.setParentProcessId(taskModel.getParentProcess().getId());
             resource.setTaskType(taskModel.getTaskType().getValue());
+            resource.setTaskTypeStr(taskModel.getTaskType().name());
+            resource.setTaskDetail(taskModel.getTaskDetail());
             Optional.ofNullable(taskModel.getTaskParams())
                     .ifPresent(params ->
                             params.forEach(param -> resource.getTaskParams()
@@ -209,8 +211,8 @@ public class ToResourceUtil {
 
             Optional.ofNullable(taskModel.getTaskStatuses())
                     .ifPresent(taskStatuses ->
-                            taskStatuses.forEach(taskStatus -> resource.getTaskStatusIds()
-                                    .add(taskStatus.getId())));
+                            taskStatuses.forEach(taskStatus -> resource.getTaskStatus()
+                                    .add(toResource(taskStatus).get())));
 
             resource.setOrder(taskModel.getOrderIndex());
             return Optional.of(resource);
@@ -226,6 +228,7 @@ public class ToResourceUtil {
             resource.setState(taskStatus.getState().getValue());
             resource.setTimeOfStateChange(taskStatus.getTimeOfStateChange());
             resource.setTaskId(taskStatus.getTaskModel().getId());
+            resource.setStateStr(taskStatus.getState().name());
             return Optional.of(resource);
         } else {
             return Optional.empty();

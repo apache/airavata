@@ -10,6 +10,7 @@ public class TaskStatusResource {
 
     private long id;
     private int state;
+    private String stateStr;
     private long timeOfStateChange;
     private String reason;
     private long taskId;
@@ -56,6 +57,15 @@ public class TaskStatusResource {
 
     public TaskStatusResource setTaskId(long taskId) {
         this.taskId = taskId;
+        return this;
+    }
+
+    public String getStateStr() {
+        return stateStr;
+    }
+
+    public TaskStatusResource setStateStr(String stateStr) {
+        this.stateStr = stateStr;
         return this;
     }
 

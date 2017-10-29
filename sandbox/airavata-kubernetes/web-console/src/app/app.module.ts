@@ -13,6 +13,7 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {HttpModule} from "@angular/http";
 import {FormsModule} from "@angular/forms";
 import {ExperimentDetailComponent} from "./components/experiment/detail/experiment.detail";
+import {ProcessDetailComponent} from "./components/process/detail/process.detail.component";
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import {ExperimentDetailComponent} from "./components/experiment/detail/experime
     ComputeListComponent,
     DashboardComponent,
     ExperimentListComponent,
-    ExperimentDetailComponent
+    ExperimentDetailComponent,
+    ProcessDetailComponent
   ],
   imports: [
     NgbModule.forRoot(),

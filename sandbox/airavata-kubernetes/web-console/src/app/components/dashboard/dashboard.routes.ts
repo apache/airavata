@@ -6,6 +6,7 @@ import {AppDepListComponent} from "../app-dep/list/app.dep.list.component";
 import {AppModuleListComponent} from "../app-module/list/app.module.list.component";
 import {Routes} from "@angular/router";
 import {ExperimentDetailComponent} from "../experiment/detail/experiment.detail";
+import {ProcessDetailComponent} from "../process/detail/process.detail.component";
 
 /**
  * Created by dimuthu on 10/29/17.
@@ -15,6 +16,10 @@ export const DASHBOARD_ROUTES: Routes = [
   {
     path: 'compute',
     component: ComputeListComponent,
+  },
+  {
+    path: 'process/detail/:id',
+    component: ProcessDetailComponent,
   },
   {
     path: 'experiment/detail/:id',

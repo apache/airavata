@@ -1,4 +1,5 @@
 import {ProcessStatus} from "./process.status.model";
+import {Task} from "../task/task.model";
 /**
  * TODO: Class level comments please
  *
@@ -12,20 +13,8 @@ export class Process {
     creationTime: number;
     lastUpdateTime: number;
     processStatuses: Array<ProcessStatus> = [];
-    tasks: Array<number> = [];
+    tasks: Array<Task> = [];
     processErrorIds: Array<number> = [];
     taskDag: string;
     experimentDataDir: string;
-
-    constructor(id: number, experimentId: number, creationTime: number, lastUpdateTime: number, processStatuses: Array<ProcessStatus>, tasks: Array<number>, processErrorIds: Array<number>, taskDag: string, experimentDataDir: string) {
-      this.id = id;
-      this.experimentId = experimentId;
-      this.creationTime = creationTime;
-      this.lastUpdateTime = lastUpdateTime;
-      this.processStatuses = processStatuses;
-      this.tasks = tasks;
-      this.processErrorIds = processErrorIds;
-      this.taskDag = taskDag;
-      this.experimentDataDir = experimentDataDir;
-    }
 }

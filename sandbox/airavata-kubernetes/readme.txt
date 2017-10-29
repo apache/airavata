@@ -30,3 +30,23 @@ spring_datasource_password=<db password>
 To build docker images for each micoservice
 
 mvn clean install docker:build -DdockerImageTags=v1.0
+
+docker save dimuthuupe/api-server:v1.0 | bzip2 | ssh dimuthu@192.168.1.201 'bunzip2 | docker load'
+docker save dimuthuupe/task-scheduler:v1.0 | bzip2 | ssh dimuthu@192.168.1.201 'bunzip2 | docker load'
+docker save dimuthuupe/workflow-generator:v1.0 | bzip2 | ssh dimuthu@192.168.1.201 'bunzip2 | docker load'
+docker save dimuthuupe/event-sink:v1.0 | bzip2 | ssh dimuthu@192.168.1.201 'bunzip2 | docker load'
+docker save dimuthuupe/job-submission-task:v1.0 | bzip2 | ssh dimuthu@192.168.1.201 'bunzip2 | docker load'
+docker save dimuthuupe/ingress-staging-task:v1.0 | bzip2 | ssh dimuthu@192.168.1.201 'bunzip2 | docker load'
+docker save dimuthuupe/env-setup-task:v1.0 | bzip2 | ssh dimuthu@192.168.1.201 'bunzip2 | docker load'
+docker save dimuthuupe/env-cleanup-task:v1.0 | bzip2 | ssh dimuthu@192.168.1.201 'bunzip2 | docker load'
+docker save dimuthuupe/egress-staging-task:v1.0 | bzip2 | ssh dimuthu@192.168.1.201 'bunzip2 | docker load'
+
+save dimuthuupe/api-server:v1.0 | bzip2 | ssh dimuthu@192.168.1.202 'bunzip2 | docker load'
+docker save dimuthuupe/task-scheduler:v1.0 | bzip2 | ssh dimuthu@192.168.1.202 'bunzip2 | docker load'
+docker save dimuthuupe/workflow-generator:v1.0 | bzip2 | ssh dimuthu@192.168.1.202 'bunzip2 | docker load'
+docker save dimuthuupe/event-sink:v1.0 | bzip2 | ssh dimuthu@192.168.1.202 'bunzip2 | docker load'
+docker save dimuthuupe/job-submission-task:v1.0 | bzip2 | ssh dimuthu@192.168.1.202 'bunzip2 | docker load'
+docker save dimuthuupe/ingress-staging-task:v1.0 | bzip2 | ssh dimuthu@192.168.1.202 'bunzip2 | docker load'
+docker save dimuthuupe/env-setup-task:v1.0 | bzip2 | ssh dimuthu@192.168.1.202 'bunzip2 | docker load'
+docker save dimuthuupe/env-cleanup-task:v1.0 | bzip2 | ssh dimuthu@192.168.1.202 'bunzip2 | docker load'
+docker save dimuthuupe/egress-staging-task:v1.0 | bzip2 | ssh dimuthu@192.168.1.202 'bunzip2 | docker load'

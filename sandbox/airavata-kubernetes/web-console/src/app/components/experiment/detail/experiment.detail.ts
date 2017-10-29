@@ -32,7 +32,7 @@ export class ExperimentDetailComponent {
   }
 
   routeToProcessPage(id: number) {
-    this.router.navigateByUrl("/process/" + id);
+    this.router.navigateByUrl("/process/detail/" + id);
   }
 
   openAsModel(content) {
@@ -50,6 +50,4 @@ export class ExperimentDetailComponent {
     });
     this.modalService.open(content, {size: "lg"}).result.then((result) => {}, (reason) => {});
   }
-
-
 }

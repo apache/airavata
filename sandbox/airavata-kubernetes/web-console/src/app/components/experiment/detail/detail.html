@@ -111,7 +111,7 @@
         <th>{{process.id}}</th>
         <th>{{process.creationTime}}</th>
         <th>{{process.processStatuses.length > 0 ? process.processStatuses[process.processStatuses.length -1].stateStr : "" }}</th>
-        <td><button (click)="routeToProcessPage(experiment.id)">Detail</button></td>
+        <td><button (click)="routeToProcessPage(process.id)">Detail</button></td>
       </tr>
       </tbody>
     </table>
