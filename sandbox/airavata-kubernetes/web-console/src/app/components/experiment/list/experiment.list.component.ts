@@ -11,6 +11,7 @@ import {ApplicationDeployment} from "../../../models/application/application.dep
 import {AppDeploymentService} from "../../../services/deployment.service";
 import {ComputeResource} from "../../../models/compute/compute.resource.model";
 import {ComputeService} from "../../../services/compute.service";
+import {Router} from "@angular/router";
 
 /**
  * Created by dimuthu on 10/29/17.
@@ -34,11 +35,15 @@ export class ExperimentListComponent {
 
   constructor(private modalService: NgbModal, private experimentSerive: ExperimentService,
               private appIfaceService: ApplicationIfaceService, private depService: AppDeploymentService,
-              private computeService: ComputeService) {
+              private computeService: ComputeService, private router: Router) {
     this.getAllExperiments();
     this.getAllAppIfaces();
     this.getAllDeployments();
     this.getAllComputes();
+  }
+
+  routeToDetailPage(id: number) {
+    this.router.navigateByUrl("/experiment/detail/"+id);
   }
 
   openAsModel(content) {

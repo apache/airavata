@@ -17,7 +17,7 @@ public class ProcessResource {
     private long experimentId;
     private long creationTime;
     private long lastUpdateTime;
-    private List<Long> processStatuses = new ArrayList<>();
+    private List<ProcessStatusResource> processStatuses = new ArrayList<>();
     private List<TaskResource> tasks = new ArrayList<>();
     private List<Long> processErrorIds = new ArrayList<>();
     private String taskDag;
@@ -59,11 +59,11 @@ public class ProcessResource {
         return this;
     }
 
-    public List<Long> getProcessStatuses() {
+    public List<ProcessStatusResource> getProcessStatuses() {
         return processStatuses;
     }
 
-    public ProcessResource setProcessStatuses(List<Long> processStatuses) {
+    public ProcessResource setProcessStatuses(List<ProcessStatusResource> processStatuses) {
         this.processStatuses = processStatuses;
         return this;
     }

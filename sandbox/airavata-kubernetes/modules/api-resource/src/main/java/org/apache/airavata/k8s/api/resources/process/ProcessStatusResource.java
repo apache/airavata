@@ -10,6 +10,7 @@ public class ProcessStatusResource {
 
     private long id;
     private int state;
+    private String stateStr;
     private long timeOfStateChange;
     private String reason;
     private long processId;
@@ -56,6 +57,15 @@ public class ProcessStatusResource {
 
     public ProcessStatusResource setProcessId(long processId) {
         this.processId = processId;
+        return this;
+    }
+
+    public String getStateStr() {
+        return stateStr;
+    }
+
+    public ProcessStatusResource setStateStr(String stateStr) {
+        this.stateStr = stateStr;
         return this;
     }
 

@@ -16,13 +16,15 @@ public class ExperimentResource {
     private long creationTime;
     private String description;
     private long applicationInterfaceId;
+    private String applicationInterfaceName;
     private long applicationDeploymentId;
+    private String applicationDeploymentName;
 
     private List<ExperimentInputResource> experimentInputs = new ArrayList<>();
 
     private List<ExperimentOutputResource> experimentOutputs = new ArrayList<>();
 
-    private List<Long> experimentStatusIds = new ArrayList<>();
+    private List<ExperimentStatusResource> experimentStatus = new ArrayList<>();
 
     private List<Long> errorsIds = new ArrayList<>();
 
@@ -100,12 +102,12 @@ public class ExperimentResource {
         return this;
     }
 
-    public List<Long> getExperimentStatusIds() {
-        return experimentStatusIds;
+    public List<ExperimentStatusResource> getExperimentStatus() {
+        return experimentStatus;
     }
 
-    public ExperimentResource setExperimentStatusIds(List<Long> experimentStatusIds) {
-        this.experimentStatusIds = experimentStatusIds;
+    public ExperimentResource setExperimentStatus(List<ExperimentStatusResource> experimentStatus) {
+        this.experimentStatus = experimentStatus;
         return this;
     }
 
@@ -124,6 +126,24 @@ public class ExperimentResource {
 
     public ExperimentResource setProcessIds(List<Long> processIds) {
         this.processIds = processIds;
+        return this;
+    }
+
+    public String getApplicationInterfaceName() {
+        return applicationInterfaceName;
+    }
+
+    public ExperimentResource setApplicationInterfaceName(String applicationInterfaceName) {
+        this.applicationInterfaceName = applicationInterfaceName;
+        return this;
+    }
+
+    public String getApplicationDeploymentName() {
+        return applicationDeploymentName;
+    }
+
+    public ExperimentResource setApplicationDeploymentName(String applicationDeploymentName) {
+        this.applicationDeploymentName = applicationDeploymentName;
         return this;
     }
 }

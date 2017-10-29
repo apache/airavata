@@ -13,6 +13,10 @@ export class ExperimentService {
 
   }
 
+  getExperimentById(id: number) {
+    return this.apiService.get("experiment/" + id).map(res => res.json());
+  }
+
   getAllExperiments() {
     return this.apiService.get("experiment").map(res => res.json());
   }

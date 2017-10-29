@@ -5,6 +5,7 @@ import {AppIfaceListComponent} from "../app-iface/list/app.iface.list.component"
 import {AppDepListComponent} from "../app-dep/list/app.dep.list.component";
 import {AppModuleListComponent} from "../app-module/list/app.module.list.component";
 import {Routes} from "@angular/router";
+import {ExperimentDetailComponent} from "../experiment/detail/experiment.detail";
 
 /**
  * Created by dimuthu on 10/29/17.
@@ -14,6 +15,10 @@ export const DASHBOARD_ROUTES: Routes = [
   {
     path: 'compute',
     component: ComputeListComponent,
+  },
+  {
+    path: 'experiment/detail/:id',
+    component: ExperimentDetailComponent,
   },
   {
     path: 'experiment',
@@ -31,4 +36,4 @@ export const DASHBOARD_ROUTES: Routes = [
     path: 'module',
     component: AppModuleListComponent,
   }
-]
+];

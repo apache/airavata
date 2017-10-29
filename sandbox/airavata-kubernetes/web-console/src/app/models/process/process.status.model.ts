@@ -8,16 +8,8 @@ export class ProcessStatus {
 
     id: number;
     state: number;
+    stateStr: String;
     timeOfStateChange: number;
     reason: string;
     processId: number;
-
-
-    constructor(id: number, state: number, timeOfStateChange: number, reason: string, processId: number) {
-      this.id = id;
-      this.state = state;
-      this.timeOfStateChange = timeOfStateChange;
-      this.reason = reason;
-      this.processId = processId;
-    }
 }

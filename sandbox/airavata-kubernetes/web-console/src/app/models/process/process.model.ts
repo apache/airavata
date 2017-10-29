@@ -1,3 +1,4 @@
+import {ProcessStatus} from "./process.status.model";
 /**
  * TODO: Class level comments please
  *
@@ -10,13 +11,13 @@ export class Process {
     experimentId: number;
     creationTime: number;
     lastUpdateTime: number;
-    processStatuses: Array<number> = [];
+    processStatuses: Array<ProcessStatus> = [];
     tasks: Array<number> = [];
     processErrorIds: Array<number> = [];
     taskDag: string;
     experimentDataDir: string;
 
-    constructor(id: number, experimentId: number, creationTime: number, lastUpdateTime: number, processStatuses: Array<number>, tasks: Array<number>, processErrorIds: Array<number>, taskDag: string, experimentDataDir: string) {
+    constructor(id: number, experimentId: number, creationTime: number, lastUpdateTime: number, processStatuses: Array<ProcessStatus>, tasks: Array<number>, processErrorIds: Array<number>, taskDag: string, experimentDataDir: string) {
       this.id = id;
       this.experimentId = experimentId;
       this.creationTime = creationTime;
