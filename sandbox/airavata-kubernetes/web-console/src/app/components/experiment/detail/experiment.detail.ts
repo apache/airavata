@@ -31,6 +31,17 @@ export class ExperimentDetailComponent {
       .subscribe(data => {this.selectedExperiment = data}, err => {console.log(err)});
   }
 
+  launchExperiment() {
+    this.experimentService.launchExperiment(this.selectedExperiment.id).subscribe(data => {
+      alert("Experiment successfully launched");
+    },
+      err => {
+        console.log(err);
+        alert("Experiment launch failed");
+      }
+    )
+  }
+
   routeToProcessPage(id: number) {
     this.router.navigateByUrl("/process/detail/" + id);
   }
