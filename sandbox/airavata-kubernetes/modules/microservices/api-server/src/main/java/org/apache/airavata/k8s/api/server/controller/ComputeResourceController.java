@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * TODO: Class level comments please
@@ -24,6 +25,11 @@ public class ComputeResourceController {
     @PostMapping( path = "", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Long createComputeResource(@RequestBody ComputeResource resource) {
         return computeResourceService.create(resource);
+    }
+
+    @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<ComputeResource> getAllComputeResources() {
+        return this.computeResourceService.getAll();
     }
 
     @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)

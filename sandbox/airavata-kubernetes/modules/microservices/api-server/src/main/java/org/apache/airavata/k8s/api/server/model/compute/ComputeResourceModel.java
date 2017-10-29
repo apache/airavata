@@ -17,6 +17,11 @@ public class ComputeResourceModel {
     private long id;
 
     private String name;
+    private String host;
+    private String userName;
+    private String password;
+    private String communicationType;
+
 
     public long getId() {
         return id;
@@ -32,5 +37,41 @@ public class ComputeResourceModel {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public ComputeResourceModel setHost(String host) {
+        this.host = host;
+        return this;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public ComputeResourceModel setUserName(String userName) {
+        this.userName = userName;
+        return this;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public ComputeResourceModel setPassword(String password) {
+        this.password = password;
+        return this;
+    }
+
+    public String getCommunicationType() {
+        return communicationType;
+    }
+
+    public ComputeResourceModel setCommunicationType(String communicationType) {
+        this.communicationType = communicationType;
+        return this;
     }
 }

@@ -90,6 +90,10 @@ public class ToResourceUtil {
             ComputeResource resource = new ComputeResource();
             resource.setId(computeResourceModel.getId());
             resource.setName(computeResourceModel.getName());
+            resource.setUserName(computeResourceModel.getUserName());
+            resource.setPassword(computeResourceModel.getPassword());
+            resource.setCommunicationType(computeResourceModel.getCommunicationType());
+            resource.setHost(computeResourceModel.getHost());
             return Optional.of(resource);
 
         } else {
@@ -118,7 +122,8 @@ public class ToResourceUtil {
             resource.setId(applicationDeployment.getId());
             resource.setExecutablePath(applicationDeployment.getExecutablePath());
             resource.setPreJobCommand(applicationDeployment.getPreJobCommand());
-            resource.setPostJobCommand(resource.getPostJobCommand());
+            resource.setPostJobCommand(applicationDeployment.getPostJobCommand());
+            resource.setName(applicationDeployment.getName());
             Optional.ofNullable(applicationDeployment.getApplicationModule())
                     .ifPresent(module -> resource.setApplicationModuleId(module.getId()));
             Optional.ofNullable(applicationDeployment.getComputeResource())

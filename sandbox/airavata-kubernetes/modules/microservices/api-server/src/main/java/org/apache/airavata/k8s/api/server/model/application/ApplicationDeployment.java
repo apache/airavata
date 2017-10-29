@@ -26,6 +26,7 @@ public class ApplicationDeployment {
     @JoinColumn(name = "COMPUTE_RESOURCE_ID")
     private ComputeResourceModel computeResource;
 
+    private String name;
     private String executablePath;
     private String preJobCommand;
     private String postJobCommand;
@@ -76,5 +77,14 @@ public class ApplicationDeployment {
 
     public void setPostJobCommand(String postJobCommand) {
         this.postJobCommand = postJobCommand;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public ApplicationDeployment setName(String name) {
+        this.name = name;
+        return this;
     }
 }
