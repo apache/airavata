@@ -21,11 +21,10 @@ export class Experiment {
     errorsIds: Array<number> = [];
     processIds: Array<number> = [];
 
-
-    constructor(id: number, experimentName: string, creationTime: number, description: string,
-                applicationInterfaceId: number, applicationDeploymentId: number,
-                experimentInputs: Array<ExperimentInput>, experimentOutputs: Array<ExperimentOutput>,
-                experimentStatusIds: Array<number>, errorsIds: Array<number>, processIds: Array<number>) {
+    constructor(id: number = 0, experimentName: string = null, creationTime: number = null,
+                description: string = null, applicationInterfaceId: number = 0, applicationDeploymentId: number = 0,
+                experimentInputs: Array<ExperimentInput> = [], experimentOutputs: Array<ExperimentOutput> = [],
+                experimentStatusIds: Array<number> = [], errorsIds: Array<number> = [], processIds: Array<number> = []) {
 
       this.id = id;
       this.experimentName = experimentName;

@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -116,5 +118,13 @@ public class ExperimentService {
 
         this.messagingService.send(this.launchTopic, "exp-" + id);
         return 0;
+    }
+
+    public List<ExperimentResource> getAll() {
+        List<ExperimentResource> computeList = new ArrayList<>();
+        Optional.ofNullable(experimentRepository.findAll())
+                .ifPresent(computes ->
+                        computes.forEach(compute -> computeList.add(ToResourceUtil.toResource(compute).get())));
+        return computeList;
     }
 }

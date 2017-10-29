@@ -12,7 +12,6 @@ export class ExperimentInput {
     value: string;
     arguments: string;
 
-
     constructor(id: number, name: string, type: number, value: string, args: string) {
       this.id = id;
       this.name = name;

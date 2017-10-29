@@ -12,7 +12,7 @@ export class ApplicationOutput {
     type: number;
     value: string;
 
-    constructor(id: number, name: string, type: number, value: string) {
+    constructor(id: number = 0, name: string = null, type: number = 0, value: string = null) {
       this.id = id;
       this.name = name;
       this.type = type;
