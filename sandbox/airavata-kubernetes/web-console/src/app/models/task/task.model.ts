@@ -1,4 +1,5 @@
 import {TaskParam} from "./task.param.model";
+import {TaskStatus} from "./task.status.model";
 /**
  * TODO: Class level comments please
  *
@@ -9,10 +10,11 @@ export class Task {
 
     id: number;
     taskType: number;
+    taskTypeStr: string;
     parentProcessId: number;
     creationTime: number;
     lastUpdateTime: number;
-    taskStatusIds: Array<number> = [];
+    taskStatus: Array<TaskStatus> = [];
     taskDetail: string;
     taskErrorIds: Array<number> = [];
     taskParams: Array<TaskParam> = [];
@@ -21,7 +23,7 @@ export class Task {
 
 
   constructor(id: number, taskType: number, parentProcessId: number, creationTime: number,
-              lastUpdateTime: number, taskStatusIds: Array<number>, taskDetail: string,
+              lastUpdateTime: number, taskStatus: Array<TaskStatus>, taskDetail: string,
               taskErrorIds: Array<number>, taskParams: Array<TaskParam>, jobIds: Array<number>,
               order: number) {
     this.id = id;
@@ -29,7 +31,7 @@ export class Task {
     this.parentProcessId = parentProcessId;
     this.creationTime = creationTime;
     this.lastUpdateTime = lastUpdateTime;
-    this.taskStatusIds = taskStatusIds;
+    this.taskStatus = taskStatus;
     this.taskDetail = taskDetail;
     this.taskErrorIds = taskErrorIds;
     this.taskParams = taskParams;

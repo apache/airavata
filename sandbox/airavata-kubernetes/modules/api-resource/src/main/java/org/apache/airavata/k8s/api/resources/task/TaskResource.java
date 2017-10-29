@@ -13,10 +13,11 @@ public class TaskResource {
 
     private long id;
     private int taskType;
+    private String taskTypeStr;
     private long parentProcessId;
     private long creationTime;
     private long lastUpdateTime;
-    private List<Long> taskStatusIds = new ArrayList<>();
+    private List<TaskStatusResource> taskStatus = new ArrayList<>();
     private String taskDetail;
     private List<Long> taskErrorIds = new ArrayList<>();
     private List<TaskParamResource> taskParams = new ArrayList<>();
@@ -68,12 +69,12 @@ public class TaskResource {
         return this;
     }
 
-    public List<Long> getTaskStatusIds() {
-        return taskStatusIds;
+    public List<TaskStatusResource> getTaskStatus() {
+        return taskStatus;
     }
 
-    public TaskResource setTaskStatusIds(List<Long> taskStatusIds) {
-        this.taskStatusIds = taskStatusIds;
+    public TaskResource setTaskStatus(List<TaskStatusResource> taskStatus) {
+        this.taskStatus = taskStatus;
         return this;
     }
 
@@ -110,6 +111,15 @@ public class TaskResource {
 
     public TaskResource setTaskParams(List<TaskParamResource> taskParams) {
         this.taskParams = taskParams;
+        return this;
+    }
+
+    public String getTaskTypeStr() {
+        return taskTypeStr;
+    }
+
+    public TaskResource setTaskTypeStr(String taskTypeStr) {
+        this.taskTypeStr = taskTypeStr;
         return this;
     }
 

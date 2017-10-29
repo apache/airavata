@@ -9,6 +9,7 @@ export class TaskStatus {
 
     id: number;
     state: number;
+    stateStr: string;
     timeOfStateChange: number;
     reason: string;
     taskId: number;
