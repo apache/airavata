@@ -9,7 +9,7 @@ import {Observable} from "rxjs";
 @Injectable()
 export class ApiService {
 
-  private baseUrl = "http://localhost:8080/";
+  public baseUrl = "http://localhost:8080/";
 
   constructor(private http:Http) {
   }
