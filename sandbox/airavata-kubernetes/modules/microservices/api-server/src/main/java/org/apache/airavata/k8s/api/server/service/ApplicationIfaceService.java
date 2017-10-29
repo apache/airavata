@@ -13,6 +13,8 @@ import org.apache.airavata.k8s.api.server.service.util.ToResourceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -76,5 +78,13 @@ public class ApplicationIfaceService {
 
     public Optional<ApplicationIfaceResource> findById(long id) {
         return ToResourceUtil.toResource(ifaceRepository.findById(id).get());
+    }
+
+    public List<ApplicationIfaceResource> getAll() {
+        List<ApplicationIfaceResource> computeList = new ArrayList<>();
+        Optional.ofNullable(ifaceRepository.findAll())
+                .ifPresent(computes ->
+                        computes.forEach(compute -> computeList.add(ToResourceUtil.toResource(compute).get())));
+        return computeList;
     }
 }

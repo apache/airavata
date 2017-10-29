@@ -9,6 +9,7 @@ package org.apache.airavata.k8s.api.resources.application;
 public class ApplicationDeploymentResource {
 
     private long id;
+    private String name;
     private long applicationModuleId;
     private long computeResourceId;
     private String executablePath;
@@ -66,6 +67,15 @@ public class ApplicationDeploymentResource {
 
     public ApplicationDeploymentResource setPostJobCommand(String postJobCommand) {
         this.postJobCommand = postJobCommand;
+        return this;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public ApplicationDeploymentResource setName(String name) {
+        this.name = name;
         return this;
     }
 }

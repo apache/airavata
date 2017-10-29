@@ -10,6 +10,8 @@ import org.apache.airavata.k8s.api.server.service.util.ToResourceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -39,6 +41,7 @@ public class ApplicationDeploymentService {
         deployment.setPreJobCommand(resource.getPreJobCommand());
         deployment.setPostJobCommand(resource.getPostJobCommand());
         deployment.setExecutablePath(resource.getExecutablePath());
+        deployment.setName(resource.getName());
         deployment.setComputeResource(computeRepository
                 .findById(resource.getComputeResourceId())
                 .orElseThrow(() -> new ServerRuntimeException("Can not find a compute resource with id " +
@@ -53,5 +56,13 @@ public class ApplicationDeploymentService {
 
     public Optional<ApplicationDeploymentResource> findById(long id) {
         return ToResourceUtil.toResource(applicationDeploymentRepository.findById(id).get());
+    }
+
+    public List<ApplicationDeploymentResource> getAll() {
+        List<ApplicationDeploymentResource> deploymentList = new ArrayList<>();
+        Optional.ofNullable(applicationDeploymentRepository.findAll())
+                .ifPresent(deployments ->
+                        deployments.forEach(dep -> deploymentList.add(ToResourceUtil.toResource(dep).get())));
+        return deploymentList;
     }
 }

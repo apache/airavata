@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * TODO: Class level comments please
@@ -24,6 +25,11 @@ public class ApplicationInterfaceController {
     @PostMapping( path = "", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Long createApplicationModule(@RequestBody ApplicationIfaceResource resource) {
         return ifaceService.create(resource);
+    }
+
+    @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<ApplicationIfaceResource> getAllDepResources() {
+        return this.ifaceService.getAll();
     }
 
     @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
