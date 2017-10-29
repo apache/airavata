@@ -12,6 +12,7 @@ import {routing} from "./app.routing";
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {HttpModule} from "@angular/http";
 import {FormsModule} from "@angular/forms";
+import {ExperimentDetailComponent} from "./components/experiment/detail/experiment.detail";
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import {FormsModule} from "@angular/forms";
     AppModuleListComponent,
     ComputeListComponent,
     DashboardComponent,
-    ExperimentListComponent
+    ExperimentListComponent,
+    ExperimentDetailComponent
   ],
   imports: [
     NgbModule.forRoot(),

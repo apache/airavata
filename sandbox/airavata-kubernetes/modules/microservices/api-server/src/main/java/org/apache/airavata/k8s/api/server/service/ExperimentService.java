@@ -121,10 +121,10 @@ public class ExperimentService {
     }
 
     public List<ExperimentResource> getAll() {
-        List<ExperimentResource> computeList = new ArrayList<>();
+        List<ExperimentResource> experimentList = new ArrayList<>();
         Optional.ofNullable(experimentRepository.findAll())
-                .ifPresent(computes ->
-                        computes.forEach(compute -> computeList.add(ToResourceUtil.toResource(compute).get())));
-        return computeList;
+                .ifPresent(experiments ->
+                        experiments.forEach(experiment -> experimentList.add(ToResourceUtil.toResource(experiment).get())));
+        return experimentList;
     }
 }

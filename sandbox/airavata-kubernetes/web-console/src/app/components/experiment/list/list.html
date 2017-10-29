@@ -101,6 +101,7 @@
     <th scope="col">Id</th>
     <th scope="col">Name</th>
     <th scope="col">Description</th>
+    <th scope="col"></th>
   </tr>
   </thead>
 
@@ -109,6 +110,7 @@
     <th scope="row">{{ experiment.id }}</th>
     <td>{{ experiment.experimentName }}</td>
     <td>{{ experiment.description }}</td>
+    <td><button (click)="routeToDetailPage(experiment.id)">Detail</button></td>
   </tr>
   </tbody>
 
