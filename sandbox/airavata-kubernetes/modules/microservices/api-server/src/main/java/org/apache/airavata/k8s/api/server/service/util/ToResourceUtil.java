@@ -35,7 +35,7 @@ public class ToResourceUtil {
 
         if (experiment != null) {
             ExperimentResource resource = new ExperimentResource();
-            resource.setId(resource.getId());
+            resource.setId(experiment.getId());
             resource.setExperimentName(experiment.getExperimentName());
             resource.setDescription(experiment.getDescription());
             Optional.ofNullable(experiment.getErrors())

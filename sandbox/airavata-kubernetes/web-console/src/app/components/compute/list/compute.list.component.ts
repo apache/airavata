@@ -58,9 +58,7 @@ export class ComputeListComponent {
 
   getAllComputes() {
     this.computeService.getAllComputeResources().subscribe(data => {
-      console.log("All compute data2");
       this.computeResources = data;
-      console.log(this.computeResources);
     }, err => {
       console.log(err);
     })
