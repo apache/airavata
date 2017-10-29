@@ -1,0 +1,69 @@
+
+
+<ng-template #content let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Add compute resource</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form>
+      <div class="form-group">
+        <label for="inputName">Name</label>
+        <input type="text" [(ngModel)]="newComputeResource.name" class="form-control" id="inputName" name="inputName" placeholder="New host">
+      </div>
+      <div class="form-group">
+        <label for="inputHost">Host</label>
+        <input type="text" [(ngModel)]="newComputeResource.host" class="form-control" id="inputHost" name="inputHost" placeholder="192.168.1.112">
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label for="communicationType">Communication Type</label>
+          <select [(ngModel)]="newComputeResource.communicationType" id="communicationType" name="communicationType" class="form-control">
+            <option selected>Mock</option>
+            <option>SSH</option>
+          </select>
+        </div>
+        <div class="form-group col-md-4">
+          <label for="inputUserName">User Name</label>
+          <input type="text" [(ngModel)]="newComputeResource.userName" class="form-control" id="inputUserName" name="inputUserName" placeholder="root">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="inputPassword">Password</label>
+          <input type="password" [(ngModel)]="newComputeResource.password" class="form-control" id="inputPassword" name="inputPassword">
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" class="btn btn-primary" (click)="addNewCompute()">Add</button>
+    <button type="button" class="btn btn-outline-dark" (click)="c('Close click')">Close</button>
+  </div>
+</ng-template>
+
+<h4>Compute Resource</h4>
+
+<button class="btn btn-default-outline" (click)="openAsModel(content)">Add Compute Resource</button>
+
+<table class="table">
+  <thead class="thead-light">
+
+  <tr>
+    <th scope="col">Id</th>
+    <th scope="col">Name</th>
+    <th scope="col">Host</th>
+    <th scope="col">Communication Type</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <tr *ngFor="let compute of this.computeResources">
+    <th scope="row">{{ compute.id }}</th>
+    <td>{{ compute.name }}</td>
+    <td>{{ compute.host }}</td>
+    <td>{{ compute.communicationType }}</td>
+  </tr>
+  </tbody>
+
+</table>
