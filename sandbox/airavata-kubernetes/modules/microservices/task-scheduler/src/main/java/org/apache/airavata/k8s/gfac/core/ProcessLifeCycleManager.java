@@ -57,6 +57,9 @@ public class ProcessLifeCycleManager {
                     }
                 });
                 break;
+            case TaskStatusResource.State.FAILED:
+                updateProcessStatus(ProcessStatusResource.State.FAILED);
+                break;
         }
     }
 

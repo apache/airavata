@@ -24,7 +24,11 @@ public class KafkaReceiver {
         long processId = Long.parseLong(eventParts[0]);
         long taskId = Long.parseLong(eventParts[1]);
         int state = Integer.parseInt(eventParts[2]);
-        eventPersistingService.persistTaskState(processId, taskId, state);
+        String reason = "";
+        if (eventParts.length == 4 ) {
+            reason = eventParts[3];
+        }
+        eventPersistingService.persistTaskState(processId, taskId, state, reason);
         ack.acknowledge();
     }
 }

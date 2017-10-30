@@ -63,7 +63,7 @@ public class ExperimentLaunchService {
 
         ProcessResource processResource = new ProcessResource();
         processResource.setCreationTime(System.currentTimeMillis());
-        processResource.setExperimentDataDir("/tmp/" + experimentId);
+        processResource.setExperimentDataDir("/tmp/experiments/" + experimentId);
         processResource.setExperimentId(experimentId);
 
         List<TaskResource> taskDagResources = determineTaskDag(experimentResource, ifaceResource, deploymentResource, processResource, computeResource);
@@ -85,12 +85,26 @@ public class ExperimentLaunchService {
 
         AtomicInteger dagOrder = new AtomicInteger(0);
 
+        TaskResource dataDirTaskReasource = new TaskResource();
+        dataDirTaskReasource.setTaskType(TaskResource.TaskTypes.ENV_SETUP);
+        dataDirTaskReasource.setCreationTime(System.currentTimeMillis());
+        dataDirTaskReasource.setTaskDetail("Create data dir command for experiment " + exRes.getId());
+        dataDirTaskReasource.setTaskParams(Arrays.asList(
+                new TaskParamResource().setKey("exp-data-dir").setValue(processResource.getExperimentDataDir()),
+                new TaskParamResource().setKey("command").setValue("/bin/mkdir -p {process-data-dir}/inputs && mkdir -p {process-data-dir}/outputs"),
+                new TaskParamResource().setKey("compute-id").setValue(computeResource.getId() + ""),
+                new TaskParamResource().setKey("compute-name").setValue(computeResource.getName() + "")));
+
+        dataDirTaskReasource.setOrder(dagOrder.incrementAndGet());
+        taskDag.add(dataDirTaskReasource);
+
         Optional.ofNullable(appDepRes.getPreJobCommand()).ifPresent(preJob -> {
             TaskResource resource = new TaskResource();
             resource.setTaskType(TaskResource.TaskTypes.ENV_SETUP);
             resource.setCreationTime(System.currentTimeMillis());
             resource.setTaskDetail("Pre-job command for experiment " + exRes.getId());
             resource.setTaskParams(Arrays.asList(
+                    new TaskParamResource().setKey("exp-data-dir").setValue(processResource.getExperimentDataDir()),
                     new TaskParamResource().setKey("command").setValue(preJob),
                     new TaskParamResource().setKey("compute-id").setValue(computeResource.getId() + ""),
                     new TaskParamResource().setKey("compute-name").setValue(computeResource.getName() + "")));
@@ -110,8 +124,9 @@ public class ExperimentLaunchService {
                     resource.setTaskType(TaskResource.TaskTypes.INGRESS_DATA_STAGING);
                     resource.setCreationTime(System.currentTimeMillis());
                     resource.setTaskDetail("Ingress data staging for input " + expInp.getName());
-                    String localPath = processResource.getExperimentDataDir() + "/inputs/" + expInp.getId();
+                    String localPath = "{process-data-dir}/inputs/" + expInp.getId();
                     resource.setTaskParams(Arrays.asList(
+                            new TaskParamResource().setKey("exp-data-dir").setValue(processResource.getExperimentDataDir()),
                             new TaskParamResource().setKey("source").setValue(expInp.getValue()),
                             new TaskParamResource().setKey("target").setValue(localPath),
                             new TaskParamResource().setKey("compute-id").setValue(computeResource.getId() + ""),
@@ -141,6 +156,8 @@ public class ExperimentLaunchService {
 
         }));
 
+        inputArgument.append(" > {process-data-dir}/outputs/stdout.txt 2> {process-data-dir}/outputs/stderr.txt");
+
         Optional.ofNullable(appDepRes.getExecutablePath()).ifPresent(exPath -> {
             TaskResource resource = new TaskResource();
             resource.setTaskType(TaskResource.TaskTypes.JOB_SUBMISSION);
@@ -148,6 +165,7 @@ public class ExperimentLaunchService {
             resource.setTaskDetail("Job submission command for experiment " + exRes.getId());
 
             resource.setTaskParams(Arrays.asList(
+                    new TaskParamResource().setKey("exp-data-dir").setValue(processResource.getExperimentDataDir()),
                     new TaskParamResource().setKey("command").setValue(exPath),
                     new TaskParamResource().setKey("arguments").setValue(inputArgument.toString()),
                     new TaskParamResource().setKey("compute-id").setValue(computeResource.getId() + ""),
@@ -163,7 +181,8 @@ public class ExperimentLaunchService {
                 resource.setCreationTime(System.currentTimeMillis());
                 resource.setTaskDetail("Egress data staging for output " + expOut.getName());
                 resource.setTaskParams(Arrays.asList(
-                        new TaskParamResource().setKey("source").setValue(expOut.getValue()),
+                        new TaskParamResource().setKey("exp-data-dir").setValue(processResource.getExperimentDataDir()),
+                        new TaskParamResource().setKey("source").setValue("{process-data-dir}/" + expOut.getValue()),
                         new TaskParamResource().setKey("target").setValue("/tmp/" + exRes.getId() + "/outputs/" + expOut.getId()),
                         new TaskParamResource().setKey("compute-id").setValue(computeResource.getId() + ""),
                         new TaskParamResource().setKey("compute-name").setValue(computeResource.getName() + "")));
@@ -181,6 +200,7 @@ public class ExperimentLaunchService {
             resource.setCreationTime(System.currentTimeMillis());
             resource.setTaskDetail("Post-job command for experiment " + exRes.getId());
             resource.setTaskParams(Arrays.asList(
+                    new TaskParamResource().setKey("exp-data-dir").setValue(processResource.getExperimentDataDir()),
                     new TaskParamResource().setKey("command").setValue(postJob),
                     new TaskParamResource().setKey("compute-id").setValue(computeResource.getId() + ""),
                     new TaskParamResource().setKey("compute-name").setValue(computeResource.getName() + "")));

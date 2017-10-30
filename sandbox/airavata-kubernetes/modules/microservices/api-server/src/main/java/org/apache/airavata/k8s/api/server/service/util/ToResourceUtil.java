@@ -229,6 +229,7 @@ public class ToResourceUtil {
             resource.setTimeOfStateChange(taskStatus.getTimeOfStateChange());
             resource.setTaskId(taskStatus.getTaskModel().getId());
             resource.setStateStr(taskStatus.getState().name());
+            resource.setReason(taskStatus.getReason());
             return Optional.of(resource);
         } else {
             return Optional.empty();

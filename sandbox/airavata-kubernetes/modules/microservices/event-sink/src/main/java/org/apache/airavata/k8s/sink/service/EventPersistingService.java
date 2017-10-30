@@ -23,12 +23,14 @@ public class EventPersistingService {
         this.restTemplate = restTemplate;
     }
 
-    public void persistTaskState(long processId, long taskId, int state) {
-        System.out.println("Persisting task state event for process " + processId + ", task " + taskId + ", state " + state);
+    public void persistTaskState(long processId, long taskId, int state, String reason) {
+        System.out.println("Persisting task state event for process " + processId + ", task " + taskId + ", state "
+                + state + ", reason " + reason);
         TaskStatusResource statusResource = new TaskStatusResource();
         statusResource.setTaskId(taskId);
         statusResource.setTimeOfStateChange(System.currentTimeMillis());
         statusResource.setState(state);
+        statusResource.setReason(reason);
         this.restTemplate.postForObject("http://" + this.apiServerUrl + "/task/" + taskId + "/status", statusResource,
                 Long.class);
     }
