@@ -16,6 +16,11 @@ spec:
     spec:
       containers:
       - name: api-server
+        env:
+        - name: spring_datasource_username
+          value: airavata-user
+        - name: spring_datasource_password
+          value: password
         image: dimuthuupe/api-server:v1.0
         ports:
         - containerPort: 8080
