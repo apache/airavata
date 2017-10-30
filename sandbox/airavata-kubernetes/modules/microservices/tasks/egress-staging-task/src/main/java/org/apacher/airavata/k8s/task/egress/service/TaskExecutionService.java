@@ -161,18 +161,4 @@ public class TaskExecutionService {
         this.kafkaSender.send(this.taskEventPublishTopic, processId + "-" + taskId,
                 processId + "," + taskId + "," + status + "," + reason);
     }
-
-    public static void main(String args[]) {
-        String file = "/Users/dimuthu/admin.conf";
-        RestTemplate template = new RestTemplate();
-        LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-        map.add("file", new FileSystemResource(file));
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-        HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new    HttpEntity<LinkedMultiValueMap<String, Object>>(
-                map, headers);
-        ResponseEntity<Long> result = template.exchange(
-                "http://localhost:8080/data/upload", HttpMethod.POST, requestEntity, Long.class);
-    }
 }
