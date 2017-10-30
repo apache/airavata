@@ -6,6 +6,7 @@ import {TaskService} from "../../../services/task.service";
 import {Process} from "../../../models/process/process.model";
 import {Task} from "../../../models/task/task.model";
 import {TaskStatus} from "../../../models/task/task.status.model";
+import {DataEntry} from "../../../models/data/data.entry.model";
 
 @Component({
   templateUrl: './detail.html',
@@ -17,6 +18,7 @@ export class ProcessDetailComponent {
   selectedProcess: Process = new Process();
   taskDagFroProcess: Array<Task> = [];
   taskEvents: Array<TaskStatus> = [];
+  outputs: Array<DataEntry> = [];
 
   constructor(private modalService: NgbModal, private activatedRoute: ActivatedRoute,
               private processService: ProcessService, private taskService: TaskService){
@@ -30,5 +32,16 @@ export class ProcessDetailComponent {
 
   openAsModel(content) {
     this.modalService.open(content, {size: "lg"}).result.then((result) => {}, (reason) => {});
+  }
+
+  openOutputModel(content) {
+    this.getOutputsForProcess(this.activatedRoute.snapshot.params["id"]);
+    this.modalService.open(content, {size: "lg"}).result.then((result) => {}, (reason) => {});
+  }
+
+  getOutputsForProcess(processId: number) {
+    this.processService.getAllOutputsForProcess(processId).subscribe(data => {
+      this.outputs = data;
+    }, err => {console.log(err)})
   }
 }

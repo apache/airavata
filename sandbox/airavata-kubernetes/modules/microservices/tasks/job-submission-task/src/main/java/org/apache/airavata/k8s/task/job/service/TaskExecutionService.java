@@ -109,7 +109,7 @@ public class TaskExecutionService {
                     }
 
                     ExecutionResult executionResult = operations.executeCommand(command +
-                            (argumentsParam.isPresent() ? "" : argumentsParam.get().getValue()));
+                            (argumentsParam.isPresent() ? argumentsParam.get().getValue() : ""));
 
                     if (executionResult.getExitStatus() == 0) {
                         publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.COMPLETED);

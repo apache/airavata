@@ -3,6 +3,8 @@ package org.apache.airavata.k8s.compute.impl;
 import org.apache.airavata.k8s.compute.api.ComputeOperations;
 import org.apache.airavata.k8s.compute.api.ExecutionResult;
 
+import java.io.File;
+
 /**
  * TODO: Class level comments please
  *
@@ -21,6 +23,7 @@ public class MockComputeOperation implements ComputeOperations {
     public ExecutionResult executeCommand(String command) throws Exception {
         System.out.println("Executing command " + command + " on host " + this.computeHost);
         ExecutionResult executionResult = new ExecutionResult();
+        executionResult.setExitStatus(0);
         executionResult.setStdOut("Sample standard out");
         executionResult.setStdErr("Simple standard error");
         Thread.sleep(5000);
@@ -38,7 +41,9 @@ public class MockComputeOperation implements ComputeOperations {
     @Override
     public void transferDataOut(String source, String target, String protocol) throws Exception {
         System.out.println("Transferring data out from " + source + " to " + target);
-        Thread.sleep(5000);
+        File f = new File(target);
+        f.getParentFile().mkdirs();
+        f.createNewFile();
         System.out.println("Transferred data out from " + source + " to " + target);
     }
 }

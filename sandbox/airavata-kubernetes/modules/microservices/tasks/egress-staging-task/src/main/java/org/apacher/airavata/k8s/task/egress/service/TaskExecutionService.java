@@ -1,16 +1,22 @@
 package org.apacher.airavata.k8s.task.egress.service;
 
+import org.apache.airavata.k8s.api.resources.compute.ComputeResource;
 import org.apache.airavata.k8s.api.resources.task.TaskParamResource;
 import org.apache.airavata.k8s.api.resources.task.TaskResource;
 import org.apache.airavata.k8s.api.resources.task.TaskStatusResource;
 import org.apache.airavata.k8s.compute.api.ComputeOperations;
 import org.apache.airavata.k8s.compute.impl.MockComputeOperation;
+import org.apache.airavata.k8s.compute.impl.SSHComputeOperations;
 import org.apacher.airavata.k8s.task.egress.messaging.KafkaSender;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -55,48 +61,118 @@ public class TaskExecutionService {
     }
 
     public void executeTask(TaskResource taskResource) {
+        try {
+            Optional<TaskParamResource> sourceParam = taskResource.getTaskParams()
+                    .stream()
+                    .filter(taskParamResource -> "source".equals(taskParamResource.getKey()))
+                    .findFirst();
 
-        Optional<TaskParamResource> sourceParam = taskResource.getTaskParams()
-                .stream()
-                .filter(taskParamResource -> "source".equals(taskParamResource.getKey()))
-                .findFirst();
+            Optional<TaskParamResource> targetParam = taskResource.getTaskParams()
+                    .stream()
+                    .filter(taskParamResource -> "target".equals(taskParamResource.getKey()))
+                    .findFirst();
 
-        Optional<TaskParamResource> targetParam = taskResource.getTaskParams()
-                .stream()
-                .filter(taskParamResource -> "target".equals(taskParamResource.getKey()))
-                .findFirst();
+            Optional<TaskParamResource> computeId = taskResource.getTaskParams()
+                    .stream()
+                    .filter(taskParamResource -> "compute-id".equals(taskParamResource.getKey()))
+                    .findFirst();
 
-        Optional<TaskParamResource> computeName = taskResource.getTaskParams()
-                .stream()
-                .filter(taskParamResource -> "compute-name".equals(taskParamResource.getKey()))
-                .findFirst();
+            Optional<TaskParamResource> experimentDataDir = taskResource.getTaskParams()
+                    .stream()
+                    .filter(taskParamResource -> "exp-data-dir".equals(taskParamResource.getKey()))
+                    .findFirst();
 
-        if (sourceParam.isPresent()) {
-            if (targetParam.isPresent()) {
-                publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.EXECUTING);
-                ComputeOperations computeOperations = new MockComputeOperation(computeName.get().getValue());
+            String processDataDirectory = experimentDataDir
+                    .orElseThrow(() -> new Exception("exp-data-dir param can not be found in the params of task " +
+                            taskResource.getId())).getValue() + "/" + taskResource.getParentProcessId();
 
-                try {
-                    computeOperations.transferDataOut(sourceParam.get().getValue(), targetParam.get().getValue(), "SCP");
-                    publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.COMPLETED);
 
-                } catch (Exception e) {
+            if (sourceParam.isPresent()) {
+                sourceParam.get().setValue(sourceParam.get().getValue().replace("{process-data-dir}", processDataDirectory));
+                if (targetParam.isPresent()) {
+                    publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.EXECUTING);
 
-                    e.printStackTrace();
-                    publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.FAILED);
+                    ComputeResource computeResource = this.restTemplate.getForObject("http://" + this.apiServerUrl
+                            + "/compute/" + Long.parseLong(computeId.get().getValue()), ComputeResource.class);
+
+                    ComputeOperations operations;
+                    if ("SSH".equals(computeResource.getCommunicationType())) {
+                        operations = new SSHComputeOperations(computeResource.getHost(), computeResource.getUserName(), computeResource.getPassword());
+                    } else if ("Mock".equals(computeResource.getCommunicationType())) {
+                        operations = new MockComputeOperation(computeResource.getHost());
+                    } else {
+                        throw new Exception("No compatible communication method {" + computeResource.getCommunicationType() + "} not found for compute resource " + computeResource.getName());
+                    }
+
+                    try {
+
+                        String temporaryFile = "/tmp/" + UUID.randomUUID().toString();
+                        System.out.println("Downloading " + sourceParam.get().getValue() + " to " + temporaryFile +
+                                " from compute resource " + computeResource.getName());
+                        operations.transferDataOut(sourceParam.get().getValue(), temporaryFile, "SCP");
+
+                        RestTemplate template = new RestTemplate();
+                        LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+                        map.add("file", new FileSystemResource(temporaryFile));
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+                        HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity<LinkedMultiValueMap<String, Object>>(
+                                map, headers);
+
+                        System.out.println("Uploading data file with task id " + taskResource.getId()
+                                + " and experiment output id " + targetParam.get().getValue() + " to data store");
+
+                        ResponseEntity<Long> result = template.exchange(
+                                "http://" + apiServerUrl + "/data/" + taskResource.getId()+ "/"
+                                        + targetParam.get().getValue() +"/upload", HttpMethod.POST, requestEntity, Long.class);
+
+                        publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(),
+                                TaskStatusResource.State.COMPLETED);
+
+                    } catch (Exception e) {
+
+                        e.printStackTrace();
+                        publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(),
+                                TaskStatusResource.State.FAILED, e.getMessage());
+                    }
+                } else {
+                    System.out.println("Target can not be null for task " + taskResource.getId());
+                    publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(),
+                            TaskStatusResource.State.FAILED, "Target can not be null for task " + taskResource.getId());
                 }
             } else {
                 System.out.println("Source can not be null for task " + taskResource.getId());
-                publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.FAILED);
+                publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(),
+                        TaskStatusResource.State.FAILED, "Source can not be null for task " + taskResource.getId());
             }
-        } else {
-            System.out.println("Source can not be null for task " + taskResource.getId());
-            publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(), TaskStatusResource.State.FAILED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            publishTaskStatus(taskResource.getParentProcessId(), taskResource.getId(),
+                    TaskStatusResource.State.FAILED, e.getMessage());
         }
     }
 
     public void publishTaskStatus(long processId, long taskId, int status) {
+        publishTaskStatus(processId, taskId, status, "");
+    }
+
+    public void publishTaskStatus(long processId, long taskId, int status, String reason) {
         this.kafkaSender.send(this.taskEventPublishTopic, processId + "-" + taskId,
-                processId + "," + taskId + "," + status);
+                processId + "," + taskId + "," + status + "," + reason);
+    }
+
+    public static void main(String args[]) {
+        String file = "/Users/dimuthu/admin.conf";
+        RestTemplate template = new RestTemplate();
+        LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+        map.add("file", new FileSystemResource(file));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new    HttpEntity<LinkedMultiValueMap<String, Object>>(
+                map, headers);
+        ResponseEntity<Long> result = template.exchange(
+                "http://localhost:8080/data/upload", HttpMethod.POST, requestEntity, Long.class);
     }
 }

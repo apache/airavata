@@ -56,6 +56,7 @@ public class ToResourceUtil {
             resource.setId(experiment.getId());
             resource.setExperimentName(experiment.getExperimentName());
             resource.setDescription(experiment.getDescription());
+            resource.setCreationTime(experiment.getCreationTime());
             Optional.ofNullable(experiment.getErrors())
                     .ifPresent(errs -> errs.forEach(err -> resource.getErrorsIds().add(err.getId())));
             Optional.ofNullable(experiment.getExperimentStatus())

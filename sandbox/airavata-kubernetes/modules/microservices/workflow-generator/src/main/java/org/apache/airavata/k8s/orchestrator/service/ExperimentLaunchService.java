@@ -183,14 +183,41 @@ public class ExperimentLaunchService {
                 resource.setTaskParams(Arrays.asList(
                         new TaskParamResource().setKey("exp-data-dir").setValue(processResource.getExperimentDataDir()),
                         new TaskParamResource().setKey("source").setValue("{process-data-dir}/" + expOut.getValue()),
-                        new TaskParamResource().setKey("target").setValue("/tmp/" + exRes.getId() + "/outputs/" + expOut.getId()),
+                        new TaskParamResource().setKey("target").setValue(expOut.getId() + ""),
                         new TaskParamResource().setKey("compute-id").setValue(computeResource.getId() + ""),
                         new TaskParamResource().setKey("compute-name").setValue(computeResource.getName() + "")));
                 resource.setOrder(dagOrder.incrementAndGet());
+                taskDag.add(resource);
             }
 
             if (expOut.getType() == ExperimentOutputResource.Types.STDOUT) {
-                // TODO
+                TaskResource resource = new TaskResource();
+                resource.setTaskType(TaskResource.TaskTypes.EGRESS_DATA_STAGING);
+                resource.setCreationTime(System.currentTimeMillis());
+                resource.setTaskDetail("Egress data staging for output " + expOut.getName());
+                resource.setTaskParams(Arrays.asList(
+                        new TaskParamResource().setKey("exp-data-dir").setValue(processResource.getExperimentDataDir()),
+                        new TaskParamResource().setKey("source").setValue("{process-data-dir}/outputs/stdout.txt"),
+                        new TaskParamResource().setKey("target").setValue(expOut.getId() + ""),
+                        new TaskParamResource().setKey("compute-id").setValue(computeResource.getId() + ""),
+                        new TaskParamResource().setKey("compute-name").setValue(computeResource.getName() + "")));
+                resource.setOrder(dagOrder.incrementAndGet());
+                taskDag.add(resource);
+            }
+
+            if (expOut.getType() == ExperimentOutputResource.Types.STDERR) {
+                TaskResource resource = new TaskResource();
+                resource.setTaskType(TaskResource.TaskTypes.EGRESS_DATA_STAGING);
+                resource.setCreationTime(System.currentTimeMillis());
+                resource.setTaskDetail("Egress data staging for output " + expOut.getName());
+                resource.setTaskParams(Arrays.asList(
+                        new TaskParamResource().setKey("exp-data-dir").setValue(processResource.getExperimentDataDir()),
+                        new TaskParamResource().setKey("source").setValue("{process-data-dir}/outputs/stderr.txt"),
+                        new TaskParamResource().setKey("target").setValue(expOut.getId() + ""),
+                        new TaskParamResource().setKey("compute-id").setValue(computeResource.getId() + ""),
+                        new TaskParamResource().setKey("compute-name").setValue(computeResource.getName() + "")));
+                resource.setOrder(dagOrder.incrementAndGet());
+                taskDag.add(resource);
             }
         }));
 
