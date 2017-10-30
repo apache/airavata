@@ -10,6 +10,7 @@ public class ExecutionResult {
 
     private String stdOut;
     private String stdErr;
+    private int exitStatus = -1;
 
     public String getStdOut() {
         return stdOut;
@@ -26,6 +27,15 @@ public class ExecutionResult {
 
     public ExecutionResult setStdErr(String stdErr) {
         this.stdErr = stdErr;
+        return this;
+    }
+
+    public int getExitStatus() {
+        return exitStatus;
+    }
+
+    public ExecutionResult setExitStatus(int exitStatus) {
+        this.exitStatus = exitStatus;
         return this;
     }
 }

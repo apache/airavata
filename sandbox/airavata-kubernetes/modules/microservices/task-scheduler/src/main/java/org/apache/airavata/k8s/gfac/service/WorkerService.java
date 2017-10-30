@@ -42,10 +42,9 @@ public class WorkerService {
         List<TaskResource> taskResources = processResource.getTasks();
         boolean freshProcess = true;
         for (TaskResource taskResource : taskResources) {
-            if (taskResource.getTaskStatusIds() != null && taskResource.getTaskStatusIds().size() > 0) {
+            if (taskResource.getTaskStatus() != null && taskResource.getTaskStatus().size() > 0) {
                 // Already partially completed process. This happens when the task scheduler is killed while processing a process
-                long lastStatusId = taskResource.getTaskStatusIds().get(taskResource.getTaskStatusIds().size() - 1);
-                TaskStatusResource statusResource = restTemplate.getForObject("http://" + apiServerUrl + "/task/status/" + lastStatusId, TaskStatusResource.class);
+                TaskStatusResource lastStatusResource = taskResource.getTaskStatus().get(taskResource.getTaskStatus().size() - 1);
                 // TODO continue from last state
                 freshProcess = false;
             } else {
