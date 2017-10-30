@@ -30,6 +30,7 @@
 </table>
 
 <button type="button" id="appStatus" name="appStatus" class="btn" (click)="openAsModel(eventContent)">View All Events</button>
+<button type="button" id="appOut" name="appOut" class="btn" (click)="openOutputModel(outputContent)">View Outputs</button>
 
 <ng-template #eventContent let-c="close" let-d="dismiss">
 
@@ -63,6 +64,39 @@
           <td>{{status.reason}}</td>
         </tr>
       </template>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="c('Close click')">Close</button>
+  </div>
+</ng-template>
+
+<ng-template #outputContent let-c="close" let-d="dismiss">
+
+  <div class="modal-header">
+    <h4 class="modal-title">Outputs</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <table class="table">
+      <thead>
+      <tr>
+        <th scope="col">Output Id</th>
+        <th scope="col">Output Type</th>
+        <th scope="col">Output Name</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let output of this.outputs">
+        <td>{{output.id}}</td>
+        <td>{{output.dataType}}</td>
+        <td>{{output.name}}</td>
+      </tr>
       </tbody>
     </table>
   </div>

@@ -21,4 +21,8 @@ export class ProcessService {
   addProcess(process: Process) {
     return this.apiService.post("process", process);
   }
+
+  getAllOutputsForProcess(processId: number) {
+    return this.apiService.get("data/process/" + processId).map(res => res.json());
+  }
 }

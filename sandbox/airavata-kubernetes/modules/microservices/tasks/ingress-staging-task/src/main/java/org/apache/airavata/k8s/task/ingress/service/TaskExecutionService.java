@@ -7,9 +7,14 @@ import org.apache.airavata.k8s.compute.api.ComputeOperations;
 import org.apache.airavata.k8s.compute.impl.MockComputeOperation;
 import org.apache.airavata.k8s.task.ingress.messaging.KafkaSender;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
