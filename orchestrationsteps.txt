@@ -1,0 +1,14 @@
+To start using your cluster, you need to run (as a regular user):
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  http://kubernetes.io/docs/admin/addons/
+
+You can now join any number of machines by running the following on each node
+as root:
+
+  kubeadm join --token ff02b4.3e4e76cd8e20b797 172.16.122.3:6443 --discovery-token-ca-cert-hash sha256:c3a561a12a85dff62422cd5dfbe3821575cdc8c674be56d3227f97ccf6c5c236
