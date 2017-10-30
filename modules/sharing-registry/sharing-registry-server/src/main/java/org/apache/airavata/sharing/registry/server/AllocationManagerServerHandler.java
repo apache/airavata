@@ -47,9 +47,9 @@ public class AllocationManagerServerHandler implements AllocationRegistryService
 	    
 	    //Implementing createAllocationRequest method 
 	    @Override
-	    public string createAllocationRequest(UserAllocationDetails reqDetails) throws SharingRegistryException, DuplicateEntryException, TException {
+	    public String createAllocationRequest(UserAllocationDetails reqDetails) throws SharingRegistryException, DuplicateEntryException, TException {
 	    	try{
-	            if((new UserAllocationDetailsRepository()).isExists(projectId) != null)
+	            if((new UserAllocationDetailsRepository()).isExists(reqDetails))
 	                throw new SharingRegistryException("There exist project with the id");
 	            (new UserAllocationDetailsRepository()).createAllocation(reqDetails);
 	            return reqDetails.projectId;
@@ -61,20 +61,23 @@ public class AllocationManagerServerHandler implements AllocationRegistryService
 
 	    //Implementing isAllocationRequestExists method to check if the allocation request exists
 	    @Override
-	    public boolean isAllocationRequestExists(String projectId) throws SharingRegistryException, TException {
+	    public boolean isAllocationRequestExists(String projectId) throws TException {
 	        try{
-	            return ((new UserAllocationDetailsRepository()).isExists(projectId) != null);
+	        	UserAllocationDetails alloc = new UserAllocationDetails();
+	        	alloc.setProjectId(projectId);
+	            return ((new UserAllocationDetailsRepository()).isExists(alloc));
 	        }catch (Throwable ex) {
-	            logger.error(ex.getMessage(), ex);
-	            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+ 	            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
 	        }
 	    }
 
 	    //Implementing deleteAllocationRequest method to delete an allocation request
 	    @Override
-	    public boolean deleteAllocationRequest(String projectId) throws SharingRegistryException, TException {
+	    public boolean deleteAllocationRequest(String projectId) throws TException {
 	    	 try{
-	             (new UserAllocationDetailsRepository()).delete(projectId);
+	    		 UserAllocationDetails alloc = new UserAllocationDetails();
+		        	alloc.setProjectId(projectId);
+	             (new UserAllocationDetailsRepository()).delete(alloc);
 	             return true;
 	         }catch (Throwable ex) {
 	             logger.error(ex.getMessage(), ex);
@@ -82,14 +85,16 @@ public class AllocationManagerServerHandler implements AllocationRegistryService
 	         }
 	    }
 
-	    //Implementing getAllocationRequest method to get an allocation request 
-	    @Override
-	    public User getAllocationRequest(String projectId) throws SharingRegistryException, TException {
-	    	try{
-	            return (new UserAllocationDetailsRepository()).get(projectId);
+	    //Implementing getAllocationRequest method to get an allocation request
+		@Override
+		public UserAllocationDetails getAllocationRequest(String projectId) throws TException {
+			try{
+				UserAllocationDetails alloc = new UserAllocationDetails();
+	        	alloc.setProjectId(projectId);
+	            return (new UserAllocationDetailsRepository()).get(alloc);
 	        }catch (Throwable ex) {
 	            logger.error(ex.getMessage(), ex);
 	            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
 	        }
-	    }
+		}
 }
