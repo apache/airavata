@@ -1,0 +1,56 @@
+
+
+<ng-template #content let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Add new App Module</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form>
+      <div class="form-group">
+        <label for="inputName">Name</label>
+        <input type="text" [(ngModel)]="newAppModule.name" class="form-control" id="inputName" name="inputName" placeholder="New Module">
+      </div>
+      <div class="form-group">
+        <label for="version">Version</label>
+        <input type="text" [(ngModel)]="newAppModule.version" class="form-control" id="version" name="version" placeholder="v1.0">
+      </div>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <input type="text" [(ngModel)]="newAppModule.description" class="form-control" id="description" name="description" placeholder="Mew Module">
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" class="btn btn-primary" (click)="addNewAppModule()">Add</button>
+    <button type="button" class="btn btn-outline-dark" (click)="c('Close click')">Close</button>
+  </div>
+</ng-template>
+
+<h4>Application Module</h4>
+
+<button class="btn btn-default-outline" (click)="openAsModel(content)">Add Application Module</button>
+
+<table class="table">
+  <thead class="thead-light">
+
+  <tr>
+    <th scope="col">Id</th>
+    <th scope="col">Name</th>
+    <th scope="col">Version</th>
+    <th scope="col">Description</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <tr *ngFor="let app of this.appModules">
+    <th scope="row">{{ app.id }}</th>
+    <td>{{ app.name }}</td>
+    <td>{{ app.version }}</td>
+    <td>{{ app.description }}</td>
+  </tr>
+  </tbody>
+
+</table>

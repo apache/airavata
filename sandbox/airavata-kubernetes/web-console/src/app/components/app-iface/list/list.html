@@ -1,0 +1,111 @@
+
+<ng-template #content let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Add app interface</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form>
+      <div class="form-group">
+        <label for="inputName">Name</label>
+        <input type="text" [(ngModel)]="newAppIface.name" class="form-control" id="inputName" name="inputName" placeholder="New Interface">
+      </div>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <input type="text" [(ngModel)]="newAppIface.description" class="form-control" id="description" name="description" placeholder="New Interface">
+      </div>
+      <div class="form-group">
+        <label for="appModule">App Module</label>
+        <select [(ngModel)]="newAppIface.applicationModuleId" id="appModule" name="appModule" class="form-control">
+          <option *ngFor="let module of this.appModules" value="{{module.id}}">{{ module.name }}</option>
+        </select>
+      </div>
+
+
+      Inputs
+      <button class="btn" (click)="addNewInput()">Add</button>
+      <hr/>
+      <div *ngFor="let input of newAppIface.inputs; let i = index" class="form-row">
+        <div class="form-group col-md-3">
+          <label for="inputParamName-{{i}}">Name</label>
+          <input type="text" [(ngModel)]="input.name" class="form-control" id="inputParamName-{{i}}" name="inputParamName-{{i}}" placeholder="">
+        </div>
+        <div class="form-group col-md-3">
+          <label for="inputParamType-{{i}}">Type</label>
+          <select [(ngModel)]="input.type" id="inputParamType-{{i}}" name="inputParamType-{{i}}" class="form-control">
+            <option selected value="0">String</option>
+            <option value="1">Integer</option>
+            <option value="2">Float</option>
+            <option value="3">URI</option>
+          </select>
+        </div>
+        <div class="form-group col-md-3">
+          <label for="inputParamValue-{{i}}">Value</label>
+          <input type="text" [(ngModel)]="input.value" class="form-control" id="inputParamValue-{{i}}" name="inputParamValue-{{i}}" placeholder="">
+        </div>
+        <div class="form-group col-md-3">
+          <label for="inputParamArguments-{{i}}">Arguments</label>
+          <input type="text" [(ngModel)]="input.arguments" class="form-control" id="inputParamArguments-{{i}}" name="inputParamArguments-{{i}}" placeholder="">
+        </div>
+      </div>
+
+      Outputs
+      <button class="btn" (click)="addNewOutput()">Add</button>
+      <hr/>
+      <div *ngFor="let output of newAppIface.outputs; let i = index" class="form-row">
+        <div class="form-group col-md-3">
+          <label for="outputParamName-{{i}}">Name</label>
+          <input type="text" [(ngModel)]="output.name" class="form-control" id="outputParamName-{{i}}" name="outputParamName-{{i}}" placeholder="">
+        </div>
+        <div class="form-group col-md-3">
+          <label for="outputParamType-{{i}}">Type</label>
+          <select [(ngModel)]="output.type" id="outputParamType-{{i}}" name="outputParamType-{{i}}" class="form-control">
+            <option selected value="0">String</option>
+            <option value="1">Integer</option>
+            <option value="2">Float</option>
+            <option value="3">URI</option>
+            <option value="5">Std Out</option>
+            <option value="6">Std Err</option>
+          </select>
+        </div>
+        <div class="form-group col-md-3">
+          <label for="outputParamValue-{{i}}">Value</label>
+          <input type="text" [(ngModel)]="output.value" class="form-control" id="outputParamValue-{{i}}" name="outputParamValue-{{i}}" placeholder="">
+        </div>
+      </div>
+
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" class="btn btn-primary" (click)="addNewAppIface()">Add</button>
+    <button type="button" class="btn btn-outline-dark" (click)="c('Close click')">Close</button>
+  </div>
+</ng-template>
+
+<h4>Application Interfaces</h4>
+
+<button class="btn btn-default-outline" (click)="openAsModel(content)">Add App Interface</button>
+
+<table class="table">
+  <thead class="thead-light">
+
+  <tr>
+    <th scope="col">Id</th>
+    <th scope="col">Name</th>
+    <th scope="col">Description</th>
+    <th scope="col">App Module</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <tr *ngFor="let iface of this.appIfaces">
+    <th scope="row">{{ iface.id }}</th>
+    <td>{{ iface.name }}</td>
+    <td>{{ iface.description }}</td>
+    <td>{{ iface.applicationModuleId }}</td>
+  </tr>
+  </tbody>
+
+</table>

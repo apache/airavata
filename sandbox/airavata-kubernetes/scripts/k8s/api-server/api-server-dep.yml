@@ -1,0 +1,26 @@
+apiVersion: apps/v1beta2 # for versions before 1.7.0 use apps/v1beta1
+kind: Deployment
+metadata:
+  name: api-server
+  labels:
+    app: api-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-server
+  template:
+    metadata:
+      labels:
+        app: api-server
+    spec:
+      containers:
+      - name: api-server
+        env:
+        - name: spring_datasource_username
+          value: airavata-user
+        - name: spring_datasource_password
+          value: password
+        image: dimuthuupe/api-server:v1.0
+        ports:
+        - containerPort: 8080
