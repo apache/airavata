@@ -1,52 +1,21 @@
-Create following kafka topics
+This project contains the implementation of the the components that compose the microservice based task execution workflow framework for Airavata
 
-bin/kafka-topics.sh --create --zookeeper localhost:2199 --replication-factor 1 --partitions 1 --topic airavata-launch
+Design document and the user guide to install in a development environment can be found in the project root directory.
 
-bin/kafka-topics.sh --create --zookeeper localhost:2199 --replication-factor 1 --partitions 100 --topic airavata-scheduler
+Implementation of microservices can be found in modules -> mircoservices directory
 
-bin/kafka-topics.sh --create --zookeeper localhost:2199 --replication-factor 1 --partitions 100 --topic airavata-task-ingress-staging
+Implementation of the Web Console can be found in web-console directory
 
-bin/kafka-topics.sh --create --zookeeper localhost:2199 --replication-factor 1 --partitions 100 --topic airavata-task-egress-staging
+To build docker images for each micoservice, goto the module and run
+mvn clean install docker:build -DdockerImageTags=v1.0
 
-bin/kafka-topics.sh --create --zookeeper localhost:2199 --replication-factor 1 --partitions 100 --topic airavata-task-env-setup
-
-bin/kafka-topics.sh --create --zookeeper localhost:2199 --replication-factor 1 --partitions 100 --topic airavata-task-env-cleanup
-
-bin/kafka-topics.sh --create --zookeeper localhost:2199 --replication-factor 1 --partitions 100 --topic airavata-task-job-submission
-
-Create a new database with name "airavata"
+If you are running this for the first time, run mvn clean install at the root of the project
 
 When running in a local machine, add following host entries to /etc/hosts file
-
 127.0.0.1 db.default.svc.cluster.local
 127.0.0.1 kafka.default.svc.cluster.local
 127.0.0.1 api-server.default.svc.cluster.local
 
 When running as docker containers, pass following environment variables to api-server container
-
 spring_datasource_username=<db user>
 spring_datasource_password=<db password>
-
-To build docker images for each micoservice
-
-mvn clean install docker:build -DdockerImageTags=v1.0
-
-docker save dimuthuupe/api-server:v1.0 | bzip2 | ssh dimuthu@192.168.1.201 'bunzip2 | docker load'
-docker save dimuthuupe/task-scheduler:v1.0 | bzip2 | ssh dimuthu@192.168.1.201 'bunzip2 | docker load'
-docker save dimuthuupe/workflow-generator:v1.0 | bzip2 | ssh dimuthu@192.168.1.201 'bunzip2 | docker load'
-docker save dimuthuupe/event-sink:v1.0 | bzip2 | ssh dimuthu@192.168.1.201 'bunzip2 | docker load'
-docker save dimuthuupe/job-submission-task:v1.0 | bzip2 | ssh dimuthu@192.168.1.201 'bunzip2 | docker load'
-docker save dimuthuupe/ingress-staging-task:v1.0 | bzip2 | ssh dimuthu@192.168.1.201 'bunzip2 | docker load'
-docker save dimuthuupe/env-setup-task:v1.0 | bzip2 | ssh dimuthu@192.168.1.201 'bunzip2 | docker load'
-docker save dimuthuupe/env-cleanup-task:v1.0 | bzip2 | ssh dimuthu@192.168.1.201 'bunzip2 | docker load'
-docker save dimuthuupe/egress-staging-task:v1.0 | bzip2 | ssh dimuthu@192.168.1.201 'bunzip2 | docker load'
-
-save dimuthuupe/api-server:v1.0 | bzip2 | ssh dimuthu@192.168.1.202 'bunzip2 | docker load'
-docker save dimuthuupe/task-scheduler:v1.0 | bzip2 | ssh dimuthu@192.168.1.202 'bunzip2 | docker load'
-docker save dimuthuupe/workflow-generator:v1.0 | bzip2 | ssh dimuthu@192.168.1.202 'bunzip2 | docker load'
-docker save dimuthuupe/event-sink:v1.0 | bzip2 | ssh dimuthu@192.168.1.202 'bunzip2 | docker load'
-docker save dimuthuupe/job-submission-task:v1.0 | bzip2 | ssh dimuthu@192.168.1.202 'bunzip2 | docker load'
-docker save dimuthuupe/ingress-staging-task:v1.0 | bzip2 | ssh dimuthu@192.168.1.202 'bunzip2 | docker load'
-docker save dimuthuupe/env-setup-task:v1.0 | bzip2 | ssh dimuthu@192.168.1.202 'bunzip2 | docker load'
-docker save dimuthuupe/env-cleanup-task:v1.0 | bzip2 | ssh dimuthu@192.168.1.202 'bunzip2 | docker load'
-docker save dimuthuupe/egress-staging-task:v1.0 | bzip2 | ssh dimuthu@192.168.1.202 'bunzip2 | docker load'
