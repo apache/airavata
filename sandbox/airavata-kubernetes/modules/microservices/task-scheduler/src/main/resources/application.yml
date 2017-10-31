@@ -1,4 +1,0 @@
-kafka:
-  bootstrap-servers: kafka.default.svc.cluster.local:9092
-  topic:
-    helloworld: helloworld.t
