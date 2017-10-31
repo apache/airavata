@@ -36,11 +36,11 @@ public class NotificationReceiver {
 		        @Override
 		        public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
 		            throws IOException {
-		          String message = new String(body, "UTF-8");
-		         String mail = (new NotificationRequestDetail()).processRequest(message);
+		          String requestID = new String(body, "UTF-8");
+		         String mail = (new NotificationRequestDetail()).processRequest(requestID);
 		         System.out.println("Mail" + mail);
-		          (new MailNotification()).sendMail(message, mail);
-		          System.out.println(" [x] Received this'" + message + "'");
+		          (new MailNotification()).sendMail(requestID, "Accepted", mail);
+		          System.out.println(" [x] Received this'" + requestID + "'");
 		        }
 		       
 		      };
