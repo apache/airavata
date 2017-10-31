@@ -1,4 +1,4 @@
-* Licensed to the Apache Software Foundation (ASF) under one
+/** Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
  * regarding copyright ownership.  The ASF licenses this file
@@ -15,12 +15,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+ 
 package org.apache.airavata.sharing.registry.server;
 		 
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.airavata.sharing.registry.service.cpi;
+import org.apache.airavata.sharing.registry.service.cpi.AllocationRegistryService;
 
 import java.io.File;
 import java.io.FileNotFoundException;
