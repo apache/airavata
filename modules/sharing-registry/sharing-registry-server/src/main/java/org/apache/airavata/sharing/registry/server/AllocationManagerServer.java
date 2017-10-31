@@ -19,6 +19,10 @@
 package org.apache.airavata.sharing.registry.server;
 		 
 
+import org.apache.thrift.server.TServer;
+import org.apache.thrift.server.TSimpleServer;
+import org.apache.thrift.transport.TServerSocket;
+import org.apache.thrift.transport.TServerTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.airavata.sharing.registry.service.cpi.AllocationRegistryService;
@@ -34,7 +38,7 @@ public class AllocationManagerServer {
     	  try {
     	   TServerTransport serverTransport = new TServerSocket(9090);
     	   TServer server = new TSimpleServer(
-    	     new Args(serverTransport).processor(processor));
+    	     new TServer.Args(serverTransport).processor(processor));
 
     	   System.out.println("Starting the simple server...");
     	   server.serve();
