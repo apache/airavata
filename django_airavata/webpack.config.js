@@ -14,7 +14,8 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, './static/common/dist/'),
     publicPath: '/static/common/dist/',
-    filename: '[name].js'
+    filename: '[name].js',
+    libraryTarget: 'commonjs'
   },
   module: {
     rules: [
@@ -59,7 +60,7 @@ module.exports = {
       'vue$': 'vue/dist/vue.esm.js'
     }
   },
-  externals: ['vue'],
+  externals: ['vue', 'django-airavata-api'],
 }
 
 if (process.env.NODE_ENV === 'production') {

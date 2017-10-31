@@ -1,6 +1,6 @@
 {
-  "name": "django-airavata-common",
-  "description": "Common JS code for the Airavata Django Portal",
+  "name": "django-airavata-common-ui",
+  "description": "Common UI code for the Airavata Django Portal",
   "version": "1.0.0",
   "author": "Marcus Christie <machristie@apache.org>",
   "private": true,

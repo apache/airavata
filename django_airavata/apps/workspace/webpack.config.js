@@ -45,7 +45,11 @@ module.exports = {
   performance: {
     hints: false
   },
-  devtool: '#eval-source-map'
+  devtool: '#eval-source-map',
+  plugins: [
+      // Exclude all but the 'en' locale from moment's locales
+      new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /^en$/)
+  ]
 }
 
 if (process.env.NODE_ENV === 'production') {

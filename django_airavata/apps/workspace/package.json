@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "django-airavata-api": "file:../api",
-    "django-airavata-common": "file:../..",
+    "django-airavata-common-ui": "file:../..",
     "moment": "^2.18.1",
     "vue": "^2.3.3"
   },
