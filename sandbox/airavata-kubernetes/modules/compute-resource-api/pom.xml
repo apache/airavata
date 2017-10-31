@@ -12,15 +12,10 @@
 
     <artifactId>compute-resource-api</artifactId>
 
-    <properties>
-        <java.version>1.8</java.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.jcraft</groupId>
             <artifactId>jsch</artifactId>
-            <version>0.1.53</version>
         </dependency>
     </dependencies>
 
