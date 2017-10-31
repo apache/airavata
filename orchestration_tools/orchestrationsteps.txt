@@ -1,3 +1,5 @@
+Your Kubernetes master has initialized successfully!
+
 To start using your cluster, you need to run (as a regular user):
 
   mkdir -p $HOME/.kube
@@ -11,4 +13,4 @@ Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
 You can now join any number of machines by running the following on each node
 as root:
 
-  kubeadm join --token ff02b4.3e4e76cd8e20b797 172.16.122.3:6443 --discovery-token-ca-cert-hash sha256:c3a561a12a85dff62422cd5dfbe3821575cdc8c674be56d3227f97ccf6c5c236
+  kubeadm join --token 3784a5.cfddb31a25fb7770 172.18.157.11:6443 --discovery-token-ca-cert-hash sha256:ddfe3aef56a0f2785692de32e853b4ac38ff9adefd0e96cdafa69bf342e0d0d6
