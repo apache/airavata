@@ -1,0 +1,107 @@
+<h3>Process Metadata</h3>
+<form>
+  <div class="form-group row">
+    <label for="name" class="col-sm-2 col-form-label">Creation Time</label>
+    <div class="col-sm-10">
+      <input type="text" [(ngModel)]="selectedProcess.creationTime" readonly class="form-control-plaintext" id="name" name="name" value="email@example.com">
+    </div>
+  </div>
+</form>
+
+<h3>Task Dag</h3>
+
+<table class="table">
+  <thead>
+  <tr>
+    <th scope="col">Id</th>
+    <th scope="col">Type</th>
+    <th scope="col">Detail</th>
+    <th scope="col">Current Status</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let task of this.taskDagFroProcess">
+    <th>{{task.id}}</th>
+    <th>{{task.taskTypeStr}}</th>
+    <th>{{task.taskDetail}}</th>
+    <th>{{task.taskStatus.length > 0 ? task.taskStatus[task.taskStatus.length -1].stateStr : "NO STATUS"}}</th>
+  </tr>
+  </tbody>
+</table>
+
+<button type="button" id="appStatus" name="appStatus" class="btn" (click)="openAsModel(eventContent)">View All Events</button>
+<button type="button" id="appOut" name="appOut" class="btn" (click)="openOutputModel(outputContent)">View Outputs</button>
+
+<ng-template #eventContent let-c="close" let-d="dismiss">
+
+  <div class="modal-header">
+    <h4 class="modal-title">Task Events</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <table class="table">
+      <thead>
+      <tr>
+        <th scope="col">Task Id</th>
+        <th scope="col">Task Type</th>
+        <th scope="col">Task Detail</th>
+        <th scope="col">Status</th>
+        <th scope="col">Occurred Time</th>
+        <th scope="col">Reason</th>
+      </tr>
+      </thead>
+      <tbody>
+      <template ngFor let-task [ngForOf]="this.taskDagFroProcess">
+        <tr *ngFor="let status of task.taskStatus">
+          <td>{{task.id}}</td>
+          <td>{{task.taskTypeStr}}</td>
+          <td>{{task.taskDetail}}</td>
+          <td>{{status.stateStr}}</td>
+          <td>{{status.timeOfStateChange}}</td>
+          <td>{{status.reason}}</td>
+        </tr>
+      </template>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="c('Close click')">Close</button>
+  </div>
+</ng-template>
+
+<ng-template #outputContent let-c="close" let-d="dismiss">
+
+  <div class="modal-header">
+    <h4 class="modal-title">Outputs</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <table class="table">
+      <thead>
+      <tr>
+        <th scope="col">Output Id</th>
+        <th scope="col">Output Type</th>
+        <th scope="col">Output Name</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let output of this.outputs">
+        <td>{{output.id}}</td>
+        <td>{{output.dataType}}</td>
+        <td>{{output.name}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="c('Close click')">Close</button>
+  </div>
+</ng-template>

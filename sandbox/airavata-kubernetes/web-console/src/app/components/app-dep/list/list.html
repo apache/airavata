@@ -1,0 +1,77 @@
+<ng-template #content let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Add Application Deployment</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <form>
+      <div class="form-group">
+        <label for="inputName">Name</label>
+        <input type="text" [(ngModel)]="newAppDep.name" class="form-control" id="inputName" name="inputName" placeholder="New host">
+      </div>
+      <div class="form-group">
+        <label for="appModule">App Module</label>
+        <select [(ngModel)]="newAppDep.applicationModuleId" id="appModule" name="appModule" class="form-control">
+          <option *ngFor="let module of this.appModules" value="{{module.id}}">{{ module.name }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="computeResource">Compute Resource</label>
+        <select [(ngModel)]="newAppDep.computeResourceId" id="computeResource" name="computeResource" class="form-control">
+          <option *ngFor="let compute of this.computeResources" value="{{compute.id}}">{{ compute.name }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="executablePath">Executable Path</label>
+        <input type="text" [(ngModel)]="newAppDep.executablePath" class="form-control" id="executablePath" name="executablePath" placeholder="/opt/exec">
+      </div>
+      <div class="form-group">
+        <label for="preJobCommand">Pre Job Command</label>
+        <input type="text" [(ngModel)]="newAppDep.preJobCommand" class="form-control" id="preJobCommand" name="preJobCommand" placeholder="/opt/exec">
+      </div>
+      <div class="form-group">
+        <label for="postJobCommand">Post Job Command</label>
+        <input type="text" [(ngModel)]="newAppDep.postJobCommand" class="form-control" id="postJobCommand" name="postJobCommand" placeholder="/opt/exec">
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button type="submit" class="btn btn-primary" (click)="addNewAppDeployment()">Add</button>
+    <button type="button" class="btn btn-outline-dark" (click)="c('Close click')">Close</button>
+  </div>
+</ng-template>
+
+<h4>App Deployment</h4>
+
+<button class="btn btn-default-outline" (click)="openAsModel(content)">Add New Deployment</button>
+
+<table class="table">
+  <thead class="thead-light">
+  <tr>
+    <th scope="col">Id</th>
+    <th scope="col">Name</th>
+    <th scope="col">Compute Resource</th>
+    <th scope="col">App Module</th>
+    <th scope="col">Exec Path</th>
+    <th scope="col">Pre Job</th>
+    <th scope="col">Post Job</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <tr *ngFor="let dep of this.deployments">
+    <th scope="row">{{ dep.id }}</th>
+    <td>{{ dep.name }}</td>
+    <td>{{ dep.computeResourceId }}</td>
+    <td>{{ dep.applicationModuleId }}</td>
+    <td>{{ dep.executablePath }}</td>
+    <td>{{ dep.preJobCommand }}</td>
+    <td>{{ dep.postJobCommand }}</td>
+  </tr>
+  </tbody>
+
+</table>

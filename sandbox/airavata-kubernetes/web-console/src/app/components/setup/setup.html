@@ -1,0 +1,13 @@
+<div class="container-fluid">
+  <div class="row" style="margin-top: 50px">
+    <div class="col-sm-4 col-sm-offset-4">
+        <form>
+          <div class="form-group">
+            <label for="inputName">Enter API Server URL</label>
+            <input type="text" [(ngModel)]="apiServerUrl" class="form-control" id="inputName" name="inputName" placeholder="http://localhost:8080/">
+          </div>
+        </form>
+        <button type="submit" class="btn btn-primary" (click)="setup()">Setup</button>
+    </div>
+  </div>
+</div>

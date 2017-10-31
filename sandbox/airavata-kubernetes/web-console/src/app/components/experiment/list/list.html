@@ -1,0 +1,117 @@
+
+<ng-template #content let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Add Experiment</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form>
+      <div class="form-group">
+        <label for="inputName">Name</label>
+        <input type="text" [(ngModel)]="newExperiment.experimentName" class="form-control" id="inputName" name="inputName" placeholder="New Experiment">
+      </div>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <input type="text" [(ngModel)]="newExperiment.description" class="form-control" id="description" name="description" placeholder="New Experiment">
+      </div>
+      <div class="form-group">
+        <label for="appIface">App Interface</label>
+        <select [(ngModel)]="newExperiment.applicationInterfaceId" id="appIface" name="appIface"
+                (change)="ifaceOnChange($event.target.value)" class="form-control">
+          <option *ngFor="let appIface of this.appIfaces" value="{{appIface.id}}">{{ appIface.name }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="appDep">Compute Host</label>
+        <select [(ngModel)]="newExperiment.applicationDeploymentId" id="appDep" name="appDep" class="form-control">
+          <option *ngFor="let depl of this.selectedAppDeployments" value="{{depl.id}}">
+            {{ getComputeById(depl.computeResourceId).name }}
+          </option>
+        </select>
+      </div>
+
+      Inputs
+      <hr/>
+      <div *ngFor="let input of newExperiment.experimentInputs; let i = index" class="form-row">
+        <div class="form-group col-md-3">
+          <label for="inputParamName-{{i}}">Name</label>
+          <input type="text" [(ngModel)]="input.name" class="form-control" id="inputParamName-{{i}}" name="inputParamName-{{i}}" placeholder="">
+        </div>
+        <div class="form-group col-md-3">
+          <label for="inputParamType-{{i}}">Type</label>
+          <select [(ngModel)]="input.type" id="inputParamType-{{i}}" name="inputParamType-{{i}}" class="form-control">
+            <option selected value="0">String</option>
+            <option value="1">Integer</option>
+            <option value="2">Float</option>
+            <option value="3">URI</option>
+          </select>
+        </div>
+        <div class="form-group col-md-3">
+          <label for="inputParamValue-{{i}}">Value</label>
+          <input type="text" [(ngModel)]="input.value" class="form-control" id="inputParamValue-{{i}}" name="inputParamValue-{{i}}" placeholder="">
+        </div>
+        <div class="form-group col-md-3">
+          <label for="inputParamArguments-{{i}}">Arguments</label>
+          <input type="text" [(ngModel)]="input.arguments" class="form-control" id="inputParamArguments-{{i}}" name="inputParamArguments-{{i}}" placeholder="">
+        </div>
+      </div>
+
+      Outputs
+      <hr/>
+      <div *ngFor="let output of newExperiment.experimentOutputs; let i = index" class="form-row">
+        <div class="form-group col-md-3">
+          <label for="outputParamName-{{i}}">Name</label>
+          <input type="text" [(ngModel)]="output.name" class="form-control" id="outputParamName-{{i}}" name="outputParamName-{{i}}" placeholder="">
+        </div>
+        <div class="form-group col-md-3">
+          <label for="outputParamType-{{i}}">Type</label>
+          <select [(ngModel)]="output.type" id="outputParamType-{{i}}" name="outputParamType-{{i}}" class="form-control">
+            <option selected value="0">String</option>
+            <option value="1">Integer</option>
+            <option value="2">Float</option>
+            <option value="3">URI</option>
+            <option value="5">Std Out</option>
+            <option value="6">Std Err</option>
+          </select>
+        </div>
+        <div class="form-group col-md-3">
+          <label for="outputParamValue-{{i}}">Value</label>
+          <input type="text" [(ngModel)]="output.value" class="form-control" id="outputParamValue-{{i}}" name="outputParamValue-{{i}}" placeholder="">
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button type="submit" class="btn btn-primary" (click)="addNewExperiment()">Add</button>
+    <button type="button" class="btn btn-outline-dark" (click)="c('Close click')">Close</button>
+  </div>
+</ng-template>
+
+<h4>Experiments</h4>
+
+<button class="btn btn-default-outline" (click)="openAsModel(content)">Add Experiment</button>
+
+<table class="table">
+  <thead class="thead-light">
+
+  <tr>
+    <th scope="col">Id</th>
+    <th scope="col">Name</th>
+    <th scope="col">Description</th>
+    <th scope="col"></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <tr *ngFor="let experiment of this.experiments">
+    <th scope="row">{{ experiment.id }}</th>
+    <td>{{ experiment.experimentName }}</td>
+    <td>{{ experiment.description }}</td>
+    <td><button (click)="routeToDetailPage(experiment.id)">Detail</button></td>
+  </tr>
+  </tbody>
+
+</table>

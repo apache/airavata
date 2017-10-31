@@ -1,0 +1,124 @@
+<div class="">
+  <div class="">
+  <form>
+    <div class="form-group row">
+      <label for="name" class="col-sm-2 col-form-label">Name</label>
+      <div class="col-sm-10">
+        <input type="text" [(ngModel)]="selectedExperiment.experimentName" readonly class="form-control-plaintext" id="name" name="name" value="email@example.com">
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="time" class="col-sm-2 col-form-label">Creation Time</label>
+      <div class="col-sm-10">
+        <input type="text" [(ngModel)]="selectedExperiment.creationTime" readonly class="form-control-plaintext" id="time" name="time">
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="description" class="col-sm-2 col-form-label">Description</label>
+      <div class="col-sm-10">
+        <input type="text" [(ngModel)]="selectedExperiment.description" readonly class="form-control-plaintext" id="description" name="description" value="Description">
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="appInterface" class="col-sm-2 col-form-label">Application Interface</label>
+      <div class="col-sm-10">
+        <input type="text" [(ngModel)]="selectedExperiment.applicationInterfaceName" readonly class="form-control-plaintext" id="appInterface" name="appInterface" value="App Interface">
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="appDeployment" class="col-sm-2 col-form-label">Application Deployment</label>
+      <div class="col-sm-10">
+        <input type="text" [(ngModel)]="selectedExperiment.applicationDeploymentName" readonly class="form-control-plaintext" id="appDeployment" name="appDeployment" value="App Deployment">
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="appStatus" class="col-sm-2 col-form-label">Application Status</label>
+      <div class="col-sm-10">
+        <button type="button" id="appStatus" name="appStatus" class="btn" (click)="openAsModel(statusContent)">Status</button>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="appProcess" class="col-sm-2 col-form-label">Application Processes</label>
+      <div class="col-sm-10">
+        <button type="button" id="appProcess" name="appProcess" class="btn" (click)="openProcessesAsModel(processContent)">Processes</button>
+      </div>
+    </div>
+  </form>
+  <button type="button" class="btn" (click)="launchExperiment()">Launch</button>
+  </div>
+</div>
+
+<ng-template #statusContent let-c="close" let-d="dismiss">
+
+  <div class="modal-header">
+    <h4 class="modal-title">Experiment States</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <table class="table">
+      <thead>
+      <tr>
+        <th scope="col">Id</th>
+        <th scope="col">Status</th>
+        <th scope="col">Changed Time</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let status of this.selectedExperiment.experimentStatus">
+        <th>{{status.id}}</th>
+        <th>{{status.stateStr}}</th>
+        <th>{{status.timeOfStateChange}}</th>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="c('Close click')">Close</button>
+  </div>
+</ng-template>
+
+
+<ng-template #processContent let-c="close" let-d="dismiss">
+
+  <div class="modal-header">
+    <h4 class="modal-title">Experiment Processes</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <table class="table">
+      <thead>
+      <tr>
+        <th scope="col">Id</th>
+        <th scope="col">Creation Time</th>
+        <th scope="col">Last State</th>
+        <th scope="col"></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let process of this.processes">
+        <th>{{process.id}}</th>
+        <th>{{process.creationTime}}</th>
+        <th>{{process.processStatuses.length > 0 ? process.processStatuses[process.processStatuses.length -1].stateStr : "" }}</th>
+        <td><button (click)="routeToProcessPage(process.id)">Detail</button></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="c('Close click')">Close</button>
+  </div>
+</ng-template>
