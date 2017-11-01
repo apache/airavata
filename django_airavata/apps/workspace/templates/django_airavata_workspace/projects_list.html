@@ -1,16 +1,17 @@
-{% extends 'base.html' %}
+
+{% extends './base.html' %}
 
 {% load static %}
 
 {% block content %}
 
-<h1>Projects</h1>
+<h1 class="h4 mb-4">Browse Projects</h1>
 
-<div id="app"></div>
+<div id="project-list" data-projects-data="{{ projects_data }}"></div>
 
 {% endblock content %}
 
 {% block scripts %}
 
-<script src="{% static "django_airavata_workspace/build/main.js" %}"></script>
+<script src="{% static "django_airavata_workspace/dist/main.js" %}"></script>
 {% endblock %}

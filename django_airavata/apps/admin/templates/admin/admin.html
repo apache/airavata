@@ -1,11 +1,10 @@
-{% extends "main_base.html" %}
+{% extends "base.html" %}
 {% load static %}
 {% block content %}
     <div id=app></div>
 {% endblock %}
 {% block css %}
 <link rel=stylesheet type=text/css href={% static 'css/app.css' %}>
-<link rel=stylesheet type=text/css href={% static 'css/admin.css' %}>
  {% endblock %}
 {% block scripts %}
     {{ block.super }}

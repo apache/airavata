@@ -1,10 +1,10 @@
 {% load static %}
 <!DOCTYPE html>
 <head>
-    <link rel=stylesheet type=text/css href={% static 'css/main.css' %}>
-    <link rel=stylesheet type=text/css href=https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css>
+    <link rel=stylesheet type=text/css href="{% static 'bootstrap-4.0.0-beta/css/bootstrap.min.css' %}">
     <link rel=stylesheet type=text/css
           href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css>
+    <link rel=stylesheet type=text/css href="{% static 'common/dist/main.css' %}">
     {% block css %}
 
     {% endblock %}
@@ -46,36 +46,21 @@
     {% endif %}
 </header>
 
-{% if user.is_authenticated %}
-    <div class=stage>
-    <nav class=c-nav><a href="#0" class="c-nav__item is-active" data-toggle=tooltip data-placement=right
-                        title=Dashboard><i
-            class="fa fa-dashboard"></i> <span class=sr-only>Dashboard</span> </a><a href=#0 class=c-nav__item
-                                                                                     data-toggle=tooltip
-                                                                                     data-placement=right
-                                                                                     title=Experiments><i
-            class="fa fa-flask"></i> <span class=sr-only>Dashboard</span> </a><a href=#0 class=c-nav__item
-                                                                                 data-toggle=tooltip
-                                                                                 data-placement=right title=Projects><i
-            class="fa fa-folder-open"></i> <span class=sr-only>Dashboard</span> </a><a href=#0 class=c-nav__item
-                                                                                       data-toggle=tooltip
-                                                                                       data-placement=right
-                                                                                       title=Storage><i
-            class="fa fa-floppy-o"></i> <span class=sr-only>Dashboard</span> </a><a href="/admin" class=c-nav__item
-                                                                                    data-toggle=tooltip
-                                                                                    data-placement=right
-                                                                                    title="Admin Dashboard"><i
-            class="fa fa-wrench"></i> <span class=sr-only>Admin Dashboard</span></a></nav>
-{% else %}
-    <div>
-{% endif %}
-{% block content %}
-{% endblock %}
-
+<div class=stage>
+    <nav class=c-nav>
+        {% block nav-items %}
+        {% endblock %}
+    </nav>
+    <main class="main-content">
+        <div class="container-fluid">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
 </div>
 
 {% block scripts %}
     <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
-    <script src="{% static 'bootstrap-3.3.7/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'bootstrap-4.0.0-beta/js/bootstrap.min.js' %}"></script>
 {% endblock %}
 </body>
