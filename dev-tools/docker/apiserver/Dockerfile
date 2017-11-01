@@ -26,5 +26,8 @@ RUN cp $WORK_DIR/airavata/modules/distribution/target/$BUILD_FILE $WORK_DIR && \
 ARG COMPONENT="apiserver"
 ENV COMPONENT $COMPONENT
 
+#Setting Property file
+COPY airavata-server.properties $WORK_DIR/apache-airavata-server-0.17-SNAPSHOT/bin/
+
 #Starting apiserver
-CMD sh $WORK_DIR/apache-airavata-server-0.17-SNAPSHOT/bin/airavata-server-start.sh $COMPONENT
+#CMD sh $WORK_DIR/apache-airavata-server-0.17-SNAPSHOT/bin/airavata-server-start.sh $COMPONENT
