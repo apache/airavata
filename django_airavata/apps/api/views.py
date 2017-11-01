@@ -7,12 +7,16 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from rest_framework.parsers import JSONParser
 from rest_framework.utils.urls import replace_query_param, remove_query_param
 
 from django.conf import settings
 from django.http import JsonResponse, Http404
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+
+from apache.airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule, ApplicationDeploymentDescription
+from apache.airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDescription
 
 from collections import OrderedDict
 import logging
@@ -26,6 +30,7 @@ def api_root(request, format=None):
         'projects': reverse('project-list', request=request, format=format),
         'admin': reverse('api_experiment_list', request=request, format=format)
     })
+
 
 class GenericAPIBackedViewSet(GenericViewSet):
 
@@ -64,6 +69,7 @@ class GenericAPIBackedViewSet(GenericViewSet):
     @property
     def authz_token(self):
         return self.request.authz_token
+
 
 
 class ReadOnlyAPIBackedViewSet(mixins.RetrieveModelMixin,
@@ -207,6 +213,7 @@ class ProjectViewSet(APIBackedViewSet):
         project = serializer.save()
         self.request.airavata_client.updateProject(self.authz_token, project.projectID, project)
 
+
     @detail_route()
     def experiments(self, request, project_id=None):
         experiments = request.airavata_client.getExperimentsInProject(self.authz_token, project_id, -1, 0)
@@ -225,9 +232,45 @@ class ExperimentList(APIView):
 
 
 class ApplicationList(APIView):
-
-    def get(self,request,format=None):
+    def get(self, request, format=None):
         gateway_id = settings.GATEWAY_ID
-        app_modules=request.airavata_client.getAllAppModules(request.authz_token,gateway_id)
-        serializer=serializers.ApplicationModuleSerializer(app_modules,many=True,context={'request':request})
+        app_modules = request.airavata_client.getAllAppModules(request.authz_token, gateway_id)
+        serializer = serializers.ApplicationModuleSerializer(app_modules, many=True, context={'request': request})
         return Response(serializer.data)
+
+
+class RegisterApplicationModule(APIView):
+    parser_classes = (JSONParser,)
+
+    def post(self, request, format=None):
+        gateway_id = settings.GATEWAY_ID
+        app_module = ApplicationModule(request.data['name'], request.data['version'], request.data['description'])
+        response = request.airavata_client.registerApplicationModule(request.authz_token, gateway_id, app_module)
+        return Response(response)
+
+
+class RegisterApplicationInterface(APIView):
+    parser_classes = (JSONParser,)
+
+    def post(self, request, format=None):
+        gateway_id = settings.GATEWAY_ID
+        params = request.data
+        app_interface_description_serializer = serializers.ApplicationInterfaceDescriptionSerializer(data=params)
+        app_interface_description_serializer.is_valid(raise_exception=True)
+        app_interface = app_interface_description_serializer.save()
+        response = request.airavata_client.registerApplicationInterface(request.authz_token, gateway_id,
+                                                                        applicationInterface=app_interface)
+        return Response(response)
+
+
+class RegisterApplicationDeployments(APIView):
+    parser_classes = (JSONParser,)
+
+    def post(self, request, format=None):
+        gateway_id = settings.GATEWAY_ID
+        params = request.data
+        app_deployment = ApplicationDeploymentDescription(**params)
+        response = request.airavata_client.registerApplicationDeployment(request.authz_token, gateway_id,
+                                                                         app_deployment)
+        return Response(response)
+

@@ -3,11 +3,11 @@
     <div class="boolean-selector-heading">{{heading}}</div>
     <div class="boolean-selector">
       <div>
-        <input type="radio" v-model="selectorVal.boolValue" value="true"/>
+        <input type="radio" v-model="boolValue" value="true"/>
         <label>True</label>
       </div>
       <div>
-        <input type="radio" v-model="selectorVal.boolValue" value="false"/>
+        <input type="radio" v-model="boolValue" value="false"/>
         <label>False</label>
       </div>
     </div>
@@ -17,16 +17,20 @@
 
   export default {
     mounted:function(){
-      //console.log('Selctor Value: '+ this.selectorVal.boolValue);
-      this.selectorVal.boolValue=this.selectorVal.boolValue;
+      this.initialized=false
+      this.boolValue=this.def!=null?this.def.toString():null
+    },
+    data:function () {
+      return {
+        'boolValue':null,
+        'initialized':true
+      }
     },
     props:{
-      selectorVal:{
-        type:Object,
+      def:{
+        type:Boolean,
         default:function () {
-          return {
-            'boolValue':'false',
-          };
+          return false;
         }
       },
       heading:{
@@ -34,7 +38,19 @@
       },
       selectorId:{
         type:String,
-        default:'na'
+        default:''
+      }
+    },
+    methods:{
+      triggerValueChangeEvent:function (value,oldValue) {
+        var update=[this.selectorId,(value=='true')]
+        var val=value==null?null:(value=='true')
+        this.$emit('bool_selector',this.selectorId,val)
+      }
+    },
+    watch:{
+      boolValue:function(newValue){
+            this.triggerValueChangeEvent(newValue);
       }
     }
   }

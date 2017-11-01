@@ -1,7 +1,7 @@
 <template>
   <div class="main_section interface-main">
     <div class="input-field-header">
-      Input Fields
+      Output Fields
       <img v-on:click="delete_event_trigger();" src="/static/images/delete.png"/>
     </div>
     <div class="entry">
@@ -26,32 +26,16 @@
       <input v-model="appArg" type="text"/>
     </div>
     <div class="entry boolean-selectors">
-      <boolean-radio-button v-bind:heading="'Standard input'" v-bind:selectorId="standardInput.fieldName"
-                            v-bind:def="getAppInputFieldValue(standardInput)"
+      <boolean-radio-button v-bind:heading="'Data Movement'" v-bind:selectorId="dataMovement.fieldName"
+                            v-bind:def="getAppOutputFieldValue(dataMovement)"
                             v-on:bool_selector="boolValueHandler"></boolean-radio-button>
-      <boolean-radio-button v-bind:heading="'Is read only'" v-bind:selectorId="isReadOnly.fieldName"
-                            v-bind:def="getAppInputFieldValue(isReadOnly)"
-                            v-on:bool_selector="boolValueHandler"></boolean-radio-button>
-    </div>
-    <div class="entry">
-      <div class="heading">User friendly description</div>
-      <textarea style="height: 80px;" type="text" v-model="userFriendlyDescr"/>
-    </div>
-    <div class="entry">
-      <div class="heading">Input order</div>
-      <input v-model="inpOrder" type="text"/>
-    </div>
-    <div class="entry boolean-selectors">
-      <boolean-radio-button v-bind:heading="'Data is staged'" v-bind:selectorId="dataStaged.fieldName"
-                            v-bind:def="getAppInputFieldValue(dataStaged)"
-                            v-on:bool_selector="boolValueHandler"></boolean-radio-button>
-      <boolean-radio-button v-bind:heading="'Required'" v-bind:selectorId="required.fieldName"
-                            v-bind:def="getAppInputFieldValue(required)"
+      <boolean-radio-button v-bind:heading="'Output Required'" v-bind:selectorId="required.fieldName"
+                            v-bind:def="getAppOutputFieldValue(required)"
                             v-on:bool_selector="boolValueHandler"></boolean-radio-button>
     </div>
     <div class="entry boolean-selectors">
       <boolean-radio-button v-bind:heading="'Required on command line'" v-bind:selectorId="requiredOnCmd.fieldName"
-                            v-bind:def="getAppInputFieldValue(requiredOnCmd)"
+                            v-bind:def="getAppOutputFieldValue(requiredOnCmd)"
                             v-on:bool_selector="boolValueHandler"></boolean-radio-button>
     </div>
   </div>
@@ -70,77 +54,59 @@
     created: function () {
       this.syncDataFromStore();
     },
+    props: ['output_id'],
     methods: {
       delete_event_trigger: function () {
-        this.$emit('delete_input_field');
+        this.$emit('delete_output_field');
       },
       boolValueHandler: function (selectorID, value) {
-        if (typeof(value) != "boolean"){
-          throw "event value not boolean: "
-        }
         this.updateStore(selectorID, value)
       },
       syncDataFromStore: function () {
-        var val = this.getAppInputField(this.input_id)
+        var val = this.getAppOutputField(this.output_id)
         this.name = val['name']
         this.value = val['value']
         this.type = val['type']
         this.appArg = val['appArg']
-        this.userFriendlyDescr = val['userFriendlyDescr']
-        this.inpOrder = val['inpOrder']
-
       },
       updateStore: function (fieldName, newValue) {
         var param = {
-          'id': this.input_id,
+          'id': this.output_id,
         };
         var update = {}
         update[fieldName] = newValue
         param['update'] = update
-        this.updateInputFieldValues(param)
+        this.updateOutputField(param)
       },
-      ...mapActions(['updateInputFieldValues'])
+      ...mapActions(['updateOutputField'])
     },
     mounted: function () {
       this.syncDataFromStore()
     },
     data: function () {
       return {
-        'dataStaged': {
-          'id': this.input_id,
-          'fieldName': 'dataStaged'
+        'required': {
+          'id': this.output_id,
+          'fieldName': 'required'
         },
-        'required':
-          {
-            'id': this.input_id,
-            'fieldName': 'required'
-          },
         'requiredOnCmd':
           {
-            'id': this.input_id,
+            'id': this.output_id,
             'fieldName': 'requiredOnCmd'
           },
-        'standardInput':
-          {
-            'id': this.input_id,
-            'fieldName': 'standardInput'
-          },
-        'isReadOnly':
-          {
-            'id': this.input_id,
-            'fieldName': 'isReadOnly'
-          },
+        'dataMovement': {
+          'id': this.output_id,
+          'fieldName': 'dataMovement'
+        },
         name: '',
         value: '',
         type: '',
-        appArg: '',
-        userFriendlyDescr: '',
-        inpOrder: ''
+        appArg: ''
       }
     },
-    props: ['input_id'],
+
     computed: {
-      ...mapGetters(['getAppInputField', 'getAppInputFieldValue'])
+      ...mapGetters(['getAppOutputField','getAppOutputFieldValue'])
     },
     watch: {
       inpOrder: function (newValue) {

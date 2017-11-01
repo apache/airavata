@@ -9,6 +9,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 @login_required
 def experiments_list(request):
     request.active_nav_item = 'experiments'

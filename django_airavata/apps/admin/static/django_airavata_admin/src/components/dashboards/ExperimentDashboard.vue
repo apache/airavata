@@ -29,7 +29,7 @@
 <script>
   import DashboardItem from '../DashboardItem.vue'
   import RecentExperiment from '../RecentExperiment.vue'
-  import {addIndex} from '../../utils.js'
+  import Utils from '../../utils.js'
 
   export default{
     'name':'main-section',
@@ -73,7 +73,7 @@
           }
         ]
       };
-      addIndex(data_returned["experiments"]);
+      Utils.addIndex(data_returned["experiments"]);
       return data_returned;
     },
     mounted:function () {

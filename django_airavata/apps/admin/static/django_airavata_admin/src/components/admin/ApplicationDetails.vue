@@ -5,30 +5,69 @@
       <h4>Application Details</h4>
       <div class="entry">
         <div class="heading">Application Name</div>
-        <input type="text"/>
+        <input type="text" v-model="name"/>
       </div>
       <div class="entry">
         <div class="heading">Application Version</div>
-        <input type="text"/>
+        <input type="text" v-model="version"/>
       </div>
       <div class="entry">
         <div class="heading" >Experiment Description</div>
-        <textarea  style="height: 80px;" type="text"/>
+        <textarea  style="height: 80px;" type="text" v-model="description"/>
       </div>
-      <new-application-buttons></new-application-buttons>
+      <new-application-buttons v-on:save="registerAppModule()" v-on:cancel="cancelAction()"></new-application-buttons>
     </div>
   </div>
 </template>
 <script>
   import NewApplicationButtons from './NewApplicationButtons.vue';
+
+  import { createNamespacedHelpers } from 'vuex'
+
+  const {mapGetters,mapActions} = createNamespacedHelpers('appDetailsTab')
+
   export default{
     components:{
       NewApplicationButtons
     },
+    mounted:function () {
+      this.syncDataFromStore()
+    },
     data:function () {
       return {
-
+          'name':'',
+          'version':'',
+          'description':''
       };
+    },
+    methods:{
+      syncDataFromStore:function () {
+        this.name=this.getAppName()
+        this.version=this.getAppVersion()
+        this.description=this.getAppDescription()
+      },
+      updateStore:function (fieldName,newValue) {
+        var update={}
+        update[fieldName]=newValue
+        this.updateAppDetails(update)
+      },
+      cancelAction:function () {
+        this.resetAll()
+        this.$forceUpdate()
+      },
+      ...mapGetters(['getAppName','getAppVersion','getAppDescription']),
+      ...mapActions(['updateAppDetails','registerAppModule','resetAll'])
+    },
+    watch:{
+      name:function (newValue) {
+        this.updateStore('name',newValue)
+      },
+      version:function (newValue) {
+        this.updateStore('version',newValue)
+      },
+      description:function (newValue) {
+        this.updateStore('description',newValue)
+      }
     }
   }
 

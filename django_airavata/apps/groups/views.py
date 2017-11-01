@@ -2,6 +2,7 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+
 from .forms import CreateForm, AddForm, RemoveForm
 from django.contrib import messages
 from apache.airavata.model.sharing.ttypes import UserGroup
@@ -12,6 +13,7 @@ import uuid
 import logging
 
 logger = logging.getLogger(__name__)
+
 
 @login_required
 def groups_manage(request):

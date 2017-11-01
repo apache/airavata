@@ -17,6 +17,12 @@
 <script>
   import ApplicationDetails from './ApplicationDetails.vue'
   import ApplicationInterface from './ApplicationInterface.vue'
+
+  import { createNamespacedHelpers } from 'vuex'
+
+  const {mapActions} = createNamespacedHelpers('appInterfaceTab')
+
+
   export default {
     components: {
       ApplicationDetails,ApplicationInterface
@@ -30,7 +36,7 @@
         current_active_tab: 0,
         previous_active_tab: -1,
         appInterfaceTabData:{'inputFields':[]}
-      };
+      }
     },
     computed: {
       tabs: function () {
@@ -48,10 +54,16 @@
     },
     watch:{
       '$route' (to, from) {
+        if(!this.tabs.hasOwnProperty(to.name)){
+          this.initialize(false)
+        }
         this.previous_active_tab=from.name
         this.current_active_tab=to.name
 
       }
+    },
+    methods:{
+      ...mapActions(['initialized'])
     }
   }
 </script>

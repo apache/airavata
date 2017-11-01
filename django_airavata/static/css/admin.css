@@ -1,0 +1,29 @@
+.entry{
+  margin-top:20px;
+  display: block;
+}
+
+.entry .heading{
+  font-size:16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.entry input,textarea{
+  width: 100%;
+  border-radius: 2px;
+  border: solid #dddddd 1px;
+  padding: 7px;
+}
+
+.main_section {
+  width: 100%;
+  display: block;
+  margin-top: 50px;
+  margin-bottom:20px;
+}
+
+.new-application-tab-main{
+  width: 65%;
+  margin-bottom:30px;
+}
