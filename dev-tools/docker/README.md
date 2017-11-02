@@ -6,6 +6,10 @@ Build individual dockerfile
 
 ```
 docker build -t airavata/base .
+
+cd middleware
+docker build --build-arg COMPONENT=all -t airavata/all . 
+
 docker build -t airavata/apiserver .
 docker build -t airavata/rabbitmq .
 docker build -t airavata/mariadb .
@@ -14,6 +18,7 @@ docker build -t airavata/zookeeper .
 ### Run
 Run individual images
 ```
+docker run --name all -it --link rabbitmq:rabbitmq airavata/all
 docker run --name apiserver --link rabbitmq:rabbitmq airavata/apiserver 
 docker run --hostname rabbitmq --name rabbitmq -p 15672:15672 -p 5672:5672 -e RABBITMQ_DEFAULT_USER=airavata -e RABBITMQ_DEFAULT_PASS=airavata -d airavata/rabbitmq
 docker run --name mariadb -e MYSQL_ALLOW_EMPTY_PASSWORD=yes -e MYSQL_USER=airavata -e MYSQL_PASSWORD=airavata -p 3306:3306 -d airavata/mariadb
