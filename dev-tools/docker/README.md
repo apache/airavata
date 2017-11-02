@@ -1,6 +1,9 @@
 # Docker
 
-
+### Build and Run all dockerfiles
+```
+docker-compose up
+```
 
 ### Build 
 Build individual dockerfile
