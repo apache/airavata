@@ -274,3 +274,23 @@ class RegisterApplicationDeployments(APIView):
                                                                          app_deployment)
         return Response(response)
 
+class ApplicationInterfaceViewSet(APIBackedViewSet):
+
+    serializer_class = serializers.ApplicationInterfaceDescriptionSerializer
+    lookup_field = 'app_interface_id'
+
+    def get_list(self):
+        return self.request.airavata_client.getAllApplicationInterfaces(self.authz_token, self.gateway_id)
+
+    def get_instance(self, lookup_value):
+        return self.request.airavata_client.getApplicationInterface(self.authz_token, lookup_value)
+
+    def perform_create(self, serializer):
+        application_interface = serializer.save()
+        log.debug("application_interface: {}".format(application_interface))
+        app_interface_id = self.request.airavata_client.registerApplicationInterface(self.authz_token, self.gateway_id, application_interface)
+        application_interface.applicationInterfaceId = app_interface_id
+
+    def perform_update(self, serializer):
+        application_interface = serializer.save()
+        self.request.airavata_client.updateApplicationInterface(self.authz_token, application_interface.applicationInterfaceId, application_interface)

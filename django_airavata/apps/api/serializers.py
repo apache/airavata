@@ -155,16 +155,28 @@ class OutputDataObjectTypeSerializer(serializers.Serializer):
 
 
 class ApplicationInterfaceDescriptionSerializer(serializers.Serializer):
+    applicationInterfaceId = serializers.CharField(required=False)
     applicationName = serializers.CharField(required=False)
     applicationDescription = serializers.CharField(required=False)
     archiveWorkingDirectory = serializers.BooleanField(required=False)
     hasOptionalFileInputs = serializers.BooleanField(required=False)
-    applicationOutputs = serializers.ListField(child=OutputDataObjectTypeSerializer())
-    applicationInputs = serializers.ListField(child=InputDataObjectTypeSerializer())
+    applicationOutputs = OutputDataObjectTypeSerializer(many=True)
+    applicationInputs = InputDataObjectTypeSerializer(many=True)
     applicationModules = serializers.ListField(child=serializers.CharField())
 
     def create(self, validated_data):
-        return ApplicationInterfaceDescription(**validated_data)
+        app_interface = ApplicationInterfaceDescription(**validated_data)
+        app_interface.applicationOutputs = []
+        for app_output in validated_data["applicationOutputs"]:
+            output_serializer = OutputDataObjectTypeSerializer(data=app_output)
+            output_serializer.is_valid(raise_exception=True)
+            app_interface.applicationOutputs.append(output_serializer.create(output_serializer.validated_data))
+        app_interface.applicationInputs = []
+        for app_input in validated_data["applicationInputs"]:
+            input_serializer = InputDataObjectTypeSerializer(data=app_input)
+            input_serializer.is_valid(raise_exception=True)
+            app_interface.applicationInputs.append(input_serializer.create(input_serializer.validated_data))
+        return app_interface
 
     def update(self, instance, validated_data):
         raise Exception("Not implemented")
