@@ -1,10 +1,5 @@
 # Docker
 
-### Build and Run all dockerfiles
-```
-docker-compose up
-```
-
 ### Build 
 Build individual dockerfile
 - Docker base image is used by ApiServer, GFAC and Orch
