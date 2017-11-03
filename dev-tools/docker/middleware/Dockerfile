@@ -12,7 +12,7 @@ ARG BUILD_FILE="apache-airavata-server-0.17-SNAPSHOT-bin.tar.gz"
 
 #Checkout develop branch
 WORKDIR $WORK_DIR
-RUN git clone -b develop https://git-wip-us.apache.org/repos/asf/airavata.git
+RUN git clone -b develop https://github.com/apache/airavata.git
 
 #Building the project using Maven
 RUN cd $WORK_DIR/airavata && \
