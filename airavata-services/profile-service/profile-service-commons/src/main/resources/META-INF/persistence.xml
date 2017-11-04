@@ -24,6 +24,7 @@
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
         <class>org.apache.airavata.service.profile.commons.user.entities.UserProfileEntity</class>
         <class>org.apache.airavata.service.profile.commons.user.entities.NSFDemographicsEntity</class>
+        <class>org.apache.airavata.service.profile.commons.user.entities.CustomizedDashboardEntity</class>
         <class>org.apache.airavata.service.profile.commons.tenant.entities.GatewayEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
