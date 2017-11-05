@@ -49,7 +49,7 @@ docker build --build-arg COMPONENT=all -t airavata/all .
 ```
 docker run --hostname rabbitmq --name rabbitmq -p 15672:15672 -p 5672:5672 -e RABBITMQ_DEFAULT_USER=airavata -e RABBITMQ_DEFAULT_PASS=airavata -d airavata/rabbitmq
 docker run --name mariadb -e MYSQL_ALLOW_EMPTY_PASSWORD=yes -e MYSQL_USER=airavata -e MYSQL_PASSWORD=airavata -p 3306:3306 -d airavata/mariadb
-docker run --name=zookeeper -p 2181:2181 -p 2888:2888 -p 3888:3888 -p 8080:8080  -d airavata/zookeeper
+docker run --name zookeeper -p 2181:2181 -p 2888:2888 -p 3888:3888 -p 8080:8080  -d airavata/zookeeper
 
 docker run --name all -it --link rabbitmq:rabbitmq airavata/all
 ```
