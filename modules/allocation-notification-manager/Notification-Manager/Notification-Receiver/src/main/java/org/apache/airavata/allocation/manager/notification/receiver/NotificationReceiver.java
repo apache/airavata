@@ -39,7 +39,10 @@ public class NotificationReceiver {
 		          String requestID = new String(body, "UTF-8");
 		         String mail = (new NotificationRequestDetail()).processRequest(requestID);
 		         System.out.println("Mail" + mail);
-		          (new MailNotification()).sendMail(requestID, "Accepted", mail);
+		         if( (new MailNotification()).sendMail(requestID, "Accepted", mail))
+		        	 System.out.println("Successfully notified");
+		         else
+		        	 System.out.println("Notification Failed");
 		          System.out.println(" [x] Received the request '" + requestID + "'");
 		        }
 		       

@@ -10,12 +10,9 @@ import org.apache.airavata.allocation.manager.notification.models.EmailCredentia
 public class EmailNotificationConfiguration {
 public static void main(String args[]) {
 	EmailNotificationConfiguration obj = new EmailNotificationConfiguration();
-	//obj.EmailConfigProperties();
+
 }
-//	public EmailCredentials getCredentials() {
-//
-//		return EmailConfigProperties();
-//	}
+
 	public EmailCredentials getCredentials() 
 	{
 		EmailCredentials result = new EmailCredentials();
