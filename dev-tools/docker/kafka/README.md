@@ -24,7 +24,7 @@ kafka.broker.list=172.17.0.3:9092
 kafka.topic.prefix=test_all_logs
 enable.kafka.logging=true
 ```
--- Since kafka depends on zookeeper, if we use custom zookeeper, then we would have to disable the zookeeper in airavata under "Zookeeper" section 
+- Since kafka depends on zookeeper, if we use custom zookeeper, then we would have to disable the zookeeper in airavata under "Zookeeper" section 
 ```
 embedded.zk=false
 zookeeper.server.connection=172.17.0.2:2181
