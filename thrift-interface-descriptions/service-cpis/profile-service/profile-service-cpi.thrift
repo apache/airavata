@@ -25,7 +25,7 @@
  namespace java org.apache.airavata.service.profile
  namespace php Airavata.Service.Profile
  namespace cpp apache.airavata.service.profile
- namespace py apache.airavata.service.profile
+ namespace py airavata.service.profile
 
  /*
   * This file describes the definitions of the Airavata Execution Data Structures. Each of the

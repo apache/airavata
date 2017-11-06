@@ -28,7 +28,7 @@ include "job_model.thrift"
 namespace java org.apache.airavata.model.task
 namespace php Airavata.Model.Task
 namespace cpp apache.airavata.model.task
-namespace py apache.airavata.model.task
+namespace py airavata.model.task
 
 /**
  * TaskTypes: An enumerated list of TaskTypes. Task being generic, the task type will provide the concrete interpretation.

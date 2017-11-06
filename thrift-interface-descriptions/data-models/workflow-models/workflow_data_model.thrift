@@ -21,7 +21,7 @@
 
 namespace java org.apache.airavata.model
 namespace php Airavata.Model
-namespace py apache.airavata.model.workflow
+namespace py airavata.model.workflow
 
 include "../app-catalog-models/application_io_models.thrift"
 include "../../airavata-apis/airavata_commons.thrift"

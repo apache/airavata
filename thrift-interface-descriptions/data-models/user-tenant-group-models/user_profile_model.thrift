@@ -23,7 +23,7 @@
  namespace java org.apache.airavata.model.user
  namespace php Airavata.Model.User
  namespace cpp apache.airavata.model.user
- namespace py apache.airavata.model.user
+ namespace py airavata.model.user
 
 const string USER_PROFILE_VERSION = "1.0"
 

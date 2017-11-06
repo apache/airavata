@@ -23,7 +23,7 @@ include "../../airavata-apis/airavata_commons.thrift"
 namespace java org.apache.airavata.model.workspace
 namespace php Airavata.Model.Workspace
 namespace cpp apache.airavata.model.workspace
-namespace py apache.airavata.model.workspace
+namespace py airavata.model.workspace
 
 /*
  * This file describes the definitions of the Airavata Workspace. The workspace is a container for all user data

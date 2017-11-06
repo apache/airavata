@@ -23,7 +23,7 @@
   namespace java org.apache.airavata.model.job
   namespace php Airavata.Model.Job
   namespace cpp apache.airavata.model.job
-  namespace py apache.airavata.model.job
+  namespace py airavata.model.job
 
 struct JobModel {
     1: required string jobId,

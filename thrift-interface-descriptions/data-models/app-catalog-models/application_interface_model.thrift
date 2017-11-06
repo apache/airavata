@@ -29,7 +29,7 @@ include "../../airavata-apis/airavata_commons.thrift"
 namespace java org.apache.airavata.model.appcatalog.appinterface
 namespace php Airavata.Model.AppCatalog.AppInterface
 namespace cpp apache.airavata.model.appcatalog.appinterface
-namespace py apache.airavata.model.appcatalog.appinterface
+namespace py airavata.model.appcatalog.appinterface
 
 
 /**
