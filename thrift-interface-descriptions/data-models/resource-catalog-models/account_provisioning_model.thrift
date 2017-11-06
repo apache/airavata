@@ -21,7 +21,7 @@
 namespace java org.apache.airavata.model.appcatalog.accountprovisioning
 namespace php Airavata.Model.AppCatalog.AccountProvisioning
 namespace cpp apache.airavata.model.appcatalog.accountprovisioning
-namespace py apache.airavata.model.appcatalog.accountprovisioning
+namespace py airavata.model.appcatalog.accountprovisioning
 
 enum SSHAccountProvisionerConfigParamType {
     STRING,

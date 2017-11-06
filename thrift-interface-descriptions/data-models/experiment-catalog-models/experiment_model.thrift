@@ -27,7 +27,7 @@
  namespace java org.apache.airavata.model.experiment
  namespace php Airavata.Model.Experiment
  namespace cpp apache.airavata.model.experiment
- namespace py apache.airavata.model.experiment
+ namespace py airavata.model.experiment
 
 enum ExperimentType {
     SINGLE_APPLICATION,

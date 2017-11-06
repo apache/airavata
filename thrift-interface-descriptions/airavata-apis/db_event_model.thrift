@@ -21,7 +21,7 @@
 
 namespace java org.apache.airavata.model.dbevent
 namespace php Airavata.Model.Dbevent
-namespace py apache.airavata.model.dbevent
+namespace py airavata.model.dbevent
 
 // type of db-crud operation needed for replication
 enum CrudType {

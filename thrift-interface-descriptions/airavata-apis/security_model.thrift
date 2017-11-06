@@ -21,7 +21,7 @@
 namespace java org.apache.airavata.model.security
 namespace php Airavata.Model.Security
 namespace cpp apache.airavata.model.security
-namespace py apache.airavata.model.security
+namespace py airavata.model.security
 
 /*
  * This file describes the definitions of the security model which encapsulates the information that needs to be passed

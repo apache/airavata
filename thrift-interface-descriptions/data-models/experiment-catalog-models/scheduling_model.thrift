@@ -21,7 +21,7 @@
 namespace java org.apache.airavata.model.scheduling
 namespace php Airavata.Model.Scheduling
 namespace cpp apache.airavata.model.scheduling
-namespace py apache.airavata.model.scheduling
+namespace py airavata.model.scheduling
 
 /**
  * ComputationalResourceSchedulingModel:

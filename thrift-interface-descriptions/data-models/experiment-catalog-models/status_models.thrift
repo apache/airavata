@@ -21,7 +21,7 @@
 namespace java org.apache.airavata.model.status
 namespace php Airavata.Model.Status
 namespace cpp apache.airavata.model.status
-namespace py apache.airavata.model.status
+namespace py airavata.model.status
 
 enum ExperimentState {
     CREATED,

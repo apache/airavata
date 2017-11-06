@@ -27,7 +27,7 @@ include "scheduling_model.thrift"
 namespace java org.apache.airavata.model.process
 namespace php Airavata.Model.Process
 namespace cpp apache.airavata.model.process
-namespace py apache.airavata.model.process
+namespace py airavata.model.process
 
 
 /**

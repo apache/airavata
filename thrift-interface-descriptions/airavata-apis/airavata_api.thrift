@@ -51,7 +51,7 @@ namespace java org.apache.airavata.api
 namespace php Airavata.API
 namespace cpp apache.airavata.api
 namespace perl ApacheAiravataAPI
-namespace py apache.airavata.api
+namespace py airavata.api
 namespace js ApacheAiravataAPI
 
 /**

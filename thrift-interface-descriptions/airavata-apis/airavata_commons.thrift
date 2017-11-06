@@ -21,7 +21,7 @@
 namespace java org.apache.airavata.model.commons
 namespace php Airavata.Model.Commons
 namespace cpp apache.airavata.model.commons
-namespace py apache.airavata.model.commons
+namespace py airavata.model.commons
 
 const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 
