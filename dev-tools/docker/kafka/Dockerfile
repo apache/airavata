@@ -1,10 +1,7 @@
+################################################################
+# Airavata Kafka
 # Builds an image for Apache Kafka from binary distribution.
-#
-# The netflixoss/java base image runs Oracle Java 8 installed atop the
-# ubuntu:trusty (14.04) official image. Docker's official java images are
-# OpenJDK-only currently, and the Kafka project, Confluent, and most other
-# major Java projects test and recommend Oracle Java for production for optimal
-# performance.
+################################################################
 
 FROM netflixoss/java:8
 MAINTAINER Ches Martin <ches@whiskeyandgrits.net>
