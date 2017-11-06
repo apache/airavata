@@ -18,7 +18,7 @@ public class NotifySubmissionServerHandler implements NotifySubmissionService.If
 	//	(new NotifySubmissionServerHandler()).sendMail(requestID, (new NotifySubmissionServerHandler()).getAdminId());
 		String mail = (new NotificationRequestDetail()).processRequest(requestID);
         System.out.println("Mail" + mail);
-         (new MailNotification()).sendMail(requestID, mail);
+         //(new MailNotification()).sendMail(requestID, mail);
 		return "Request processed" + requestID;
 	}
 }

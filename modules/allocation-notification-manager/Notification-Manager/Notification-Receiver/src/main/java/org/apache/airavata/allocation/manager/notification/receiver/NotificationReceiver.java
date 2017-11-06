@@ -40,7 +40,7 @@ public class NotificationReceiver {
 		         String mail = (new NotificationRequestDetail()).processRequest(requestID);
 		         System.out.println("Mail" + mail);
 		          (new MailNotification()).sendMail(requestID, "Accepted", mail);
-		          System.out.println(" [x] Received this'" + requestID + "'");
+		          System.out.println(" [x] Received the request '" + requestID + "'");
 		        }
 		       
 		      };

@@ -1,5 +1,8 @@
 package org.apache.airavata.allocation.manager.notification.receiver;
 import com.rabbitmq.client.AMQP.BasicProperties;
+
+import org.apache.airavata.allocation.manager.notification.sender.EmailNotificationConfiguration;
+
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -7,7 +10,8 @@ import com.rabbitmq.client.ConnectionFactory;
 public class NotificationSender {
 	private final static String QUEUE_NAME = "notify";
 	public static void main(String[] args) {
-		  
+//		EmailNotificationConfiguration obj = new EmailNotificationConfiguration();
+//		obj.EmailConfigProperties();
 	    try {
 	    	   
 	        //Create a connection factory
@@ -27,7 +31,7 @@ public class NotificationSender {
 	          channel.basicPublish("", QUEUE_NAME, null, message.getBytes());
 	     
 	          System.out.println(
-	             " [x] Sent this");
+	             " [x] Sent the request");
 	        
 	       
 	        //Close the channel
