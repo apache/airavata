@@ -15,8 +15,8 @@ from django.http import JsonResponse, Http404
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
-from apache.airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule, ApplicationDeploymentDescription
-from apache.airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDescription
+from airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule, ApplicationDeploymentDescription
+from airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDescription
 
 from collections import OrderedDict
 import logging

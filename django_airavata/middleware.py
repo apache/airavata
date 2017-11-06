@@ -1,6 +1,6 @@
 
-from apache.airavata.api import Airavata
-from apache.airavata.api.sharing import SharingRegistryService
+from airavata.api import Airavata
+from airavata.api.sharing import SharingRegistryService
 
 from thrift import Thrift
 from thrift.transport import TSSLSocket

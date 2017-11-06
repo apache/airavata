@@ -1,5 +1,5 @@
 
-from apache.airavata.model.security.ttypes import AuthzToken
+from airavata.model.security.ttypes import AuthzToken
 
 from django.conf import settings
 

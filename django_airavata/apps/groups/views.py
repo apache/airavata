@@ -5,8 +5,8 @@ from django.shortcuts import render, redirect
 
 from .forms import CreateForm, AddForm, RemoveForm
 from django.contrib import messages
-from apache.airavata.model.sharing.ttypes import UserGroup
-from apache.airavata.model.sharing.ttypes import GroupCardinality
+from airavata.model.sharing.ttypes import UserGroup
+from airavata.model.sharing.ttypes import GroupCardinality
 import datetime
 import uuid
 
