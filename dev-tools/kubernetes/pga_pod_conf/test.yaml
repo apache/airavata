@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: airavata-pga-pod
+spec:
+  containers:
+    - name: airavata-pga-docker
+      image: airavata-pga-docker
+      imagePullPolicy: Never
+      command: [ "echo", "SUCCESS" ]
+      ports:
+      - containerPort: 80
+      volumeMounts:
+      - name: pga-config-php-file
+        mountPath: /var/www/portals/gateway_id/app/config
+      - name: conf-httpd-dir
+        mountPath: /etc/httpd/conf.d
+ 
+  volumes:
+    - name: conf-httpd-dir
+      configMap: 
+  volumes:
+    - name: conf-httpd-dir
+      configMap: 
+        name: default-config
+        items:
+        - key: default.conf
+          path: default.conf
+      configMap:
+         name: pga-vhost-config
+         items:
+         - key: pga-vhost.conf.j2
+           path: pga-vhost.conf
+    - name: pga-config-php-file
+      configMap: 
+        name: pga-config-php
+        items:
+        - key: pga_config.php.j2
+          path: pga_conf.php
+
+
