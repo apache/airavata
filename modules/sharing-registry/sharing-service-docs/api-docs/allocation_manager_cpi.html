@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<link href="style.css" rel="stylesheet" type="text/css"/>
+<title>Thrift module: allocation_manager_cpi</title></head><body>
+<div class="container-fluid">
+<h1>Thrift module: allocation_manager_cpi</h1>
+<table class="table-bordered table-striped table-condensed"><thead><th>Module</th><th>Services</th><th>Data types</th><th>Constants</th></thead>
+<tr>
+<td>allocation_manager_cpi</td><td><a href="#Svc_AllocationRegistryService">AllocationRegistryService</a><br/>
+<ul>
+<li><a href="#Fn_AllocationRegistryService_createAllocationRequest">createAllocationRequest</a></li>
+<li><a href="#Fn_AllocationRegistryService_deleteAllocationRequest">deleteAllocationRequest</a></li>
+<li><a href="#Fn_AllocationRegistryService_getAllocationRequest">getAllocationRequest</a></li>
+<li><a href="#Fn_AllocationRegistryService_isAllocationRequestExists">isAllocationRequestExists</a></li>
+</ul>
+</td>
+<td></td>
+<td></code></td>
+</tr></table>
+<hr/><h2 id="Services">Services</h2>
+<h3 id="Svc_AllocationRegistryService">Service: AllocationRegistryService</h3>
+<div class="definition"><h4 id="Fn_AllocationRegistryService_createAllocationRequest">Function: AllocationRegistryService.createAllocationRequest</h4>
+<pre><code>string</code> createAllocationRequest(<code><a href="allocation_manager_models.html#Struct_UserAllocationDetails">allocation_manager_models.UserAllocationDetails</a></code> allocDetails)
+</pre><p>API method to create new allocation requests</p>
+<br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_isAllocationRequestExists">Function: AllocationRegistryService.isAllocationRequestExists</h4>
+<pre><code>bool</code> isAllocationRequestExists(<code>string</code> projectId)
+</pre><p>API method to check if the allocation request exists</p>
+<br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_deleteAllocationRequest">Function: AllocationRegistryService.deleteAllocationRequest</h4>
+<pre><code>bool</code> deleteAllocationRequest(<code>string</code> projectId)
+</pre><p>API method to delete allocation request</p>
+<br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_getAllocationRequest">Function: AllocationRegistryService.getAllocationRequest</h4>
+<pre><code><a href="allocation_manager_models.html#Struct_UserAllocationDetails">allocation_manager_models.UserAllocationDetails</a></code> getAllocationRequest(<code>string</code> projectId)
+</pre><p>API method to get an allocation Request</p>
+<br/></div></div></body></html>

@@ -26,7 +26,6 @@ public class DBConstants {
     private final static Logger logger = LoggerFactory.getLogger(DBConstants.class);
 
     public static int SELECT_MAX_ROWS = 1000;
-
     public static class DomainTable {
         public static final String DOMAIN_ID = "domainId";
         public static final String NAME = "name";
@@ -102,5 +101,29 @@ public class DBConstants {
         public static final String SHARING_TYPE = "sharingType";
         public static final String CREATED_TIME = "createdTime";
         public static final String UPDATED_TIME = "updatedTime";
+    }
+    
+    //User allocation details table
+    public static class UserAllocationDetailsTable{
+    	 public static final String PROJECT_ID =  "projectId";
+    	 public static final String APPLICATIONS_TO_BE_USED = "applicationsToBeUsed";
+    	 public static final String DISK_USAGE_RANGE_PER_JOB = "diskUsageRangePerJob";
+    	 public static final String EXTERNAL_ALLOCATION_ACCESS_MECHANISMS = "externalAllocationAccessMechanisms";
+    	 public static final String EXTERNAL_ALLOCATION_ACCOUNT_PASSWORD = "externalAllocationAccountPassword";
+    	 public static final String EXTERNAL_ALLOCATION_ACCOUNT_USERNAME = "externalAllocationAccountUsername";
+    	 public static final String EXTERNAL_ALLOCATION_ORGANIZATION_NAME = "externalAllocationOrganizationName";
+    	 public static final String EXTERNAL_ALLOCATION_PROJECT_ID = "externalAllocationProjectId";
+    	 public static final String EXTERNAL_ALLOCATION_RESOURCE_NAME = "externalAllocationResourceName";
+    	 public static final String FIELD_OF_SCIENCE = "fieldOfScience";
+    	 public static final String MAX_MEMORY_PER_CPU = "maxMemoryPerCpu";
+    	 public static final String NUMBER_OF_CPU_PER_JOB = "numberOfCpuPerJob";
+    	 public static final String PRINCIPAL_INVISTIGATOR_EMAIL = "principalInvistigatorEmail";
+    	 public static final String PRINCIPAL_INVISTIGATOR_NAME = "principalInvistigatorName";
+    	 public static final String PROJECT_DESCRIPTION = "projectDescription";
+    	 public static final String PROJECT_REVIEWED_AND_FUNDED_BY = "projectReviewedAndFundedBy";
+    	 public static final String SERVICE_UNITS = "serviceUnits";
+    	 public static final String SPECIFIC_RESOURCE_SELECTION = "specificResourceSelection";
+    	 public static final String TYPE_OF_ALLOCATION = "typeOfAllocation";
+    	 public static final String TYPICAL_SU_PER_JOB = "typicalSuPerJob";
     }
 }

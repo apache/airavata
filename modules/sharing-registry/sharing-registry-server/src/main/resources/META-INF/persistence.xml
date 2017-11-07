@@ -11,5 +11,6 @@
         <class>org.apache.airavata.sharing.registry.db.entities.SharingEntity</class>
         <class>org.apache.airavata.sharing.registry.db.entities.UserEntity</class>
         <class>org.apache.airavata.sharing.registry.db.entities.UserGroupEntity</class>
+        <class>org.apache.airavata.sharing.registry.db.entities.UserAllocationDetailsEntity</class>
     </persistence-unit>
 </persistence>
