@@ -6,20 +6,24 @@
 
 Use the link to install kubenetes using [kubeadm](https://kubernetes.io/docs/setup/independent/install-kubeadm/)
 
+I have 3 slave nodes with 1 master
+
 #### deploy airavata using kubenrnetes
 
-1) `git clone https://github.com/satyamsah/airavata.git`
+1) login into master node
 
-2) `cd airavata`
+2) `git clone https://github.com/satyamsah/airavata.git`
 
-2) `git checkout orchestration`
+3) `cd airavata`
 
-3) `cd dev-tools/orchestration/kubernetes/airavata-setup/`
+4) `git checkout orchestration`
 
-4) `kubectl create -f airavata-mq.yml`
+5) `cd dev-tools/orchestration/kubernetes/airavata-setup/`
 
-5) `kubectl create -f airavata-base.yml`
+6) `kubectl create -f airavata-mq.yml`
 
-5) `kubectl create -f airavata-all-rc.yml`
+7) `kubectl create -f airavata-base.yml`
 
-5) `kubectl create -f airavata-all-svc.yml`
+8) `kubectl create -f airavata-all-rc.yml`
+
+9) `kubectl create -f airavata-all-svc.yml`
