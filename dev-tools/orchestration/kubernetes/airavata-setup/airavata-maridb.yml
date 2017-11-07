@@ -1,0 +1,35 @@
+apiVersion: v1
+
+kind: ReplicationController
+
+metadata:
+
+  name: airavata-mariadb
+
+spec:
+
+  replicas: 1
+
+  selector:
+
+    app: airavata-mariadb
+
+  template:
+
+    metadata:
+
+      labels:
+
+        app: airavata-mariadb
+
+    spec:
+
+      containers:
+
+      - name: hello-ctr
+
+        image: satyamsah/airavata-mariadb
+
+        ports:
+
+        - containerPort: 8080
