@@ -9,7 +9,7 @@
 
 1) `git clone https://github.com/satyamsah/airavata.git`
 
-2) cd airavata
+2) `cd airavata`
 
 2) `git checkout orchestration`
 
