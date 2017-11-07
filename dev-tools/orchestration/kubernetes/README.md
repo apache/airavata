@@ -1,20 +1,24 @@
 ### Goal: Orchestration of Airavata Components:
 
 
-#### Current Status:
-1. Deployed management components of kubernetes in 4 Jetstream vms from scratch.
 
-2. Facing Issues with the dockerized back-end components developed by classmates.So, troubleshooting. Trying orchestrate Middleware by deploying MariaDB, Zookeeper, RabbitMQ in different kubernetes slave nodes 
+#### install kubernetes management plane and make sure kubernetes is running properly
 
 
-#### 10/16/2017
-1.Deployed system components of kubernetes under 4 Jetstream vms which comprises of master and 3 slave nodes.
+#### deploy airavata using kubenrnetes
 
-2.Experimenting with dockerized backend components of airavata which needed to be deployed under different slave nodes in kubernetes setup.
+1) `git clone https://github.com/satyamsah/airavata.git`
 
+2) cd airavata
 
-#### 10/09/2017
-1. Understanding kubernetes
+2) `git checkout orchestration`
 
-2. Deploying sample dockerized apps in kubernetes cluster
+3) `cd dev-tools/orchestration/kubernetes/airavata-setup/`
 
+4) `kubectl create -f airavata-mq.yml`
+
+5) `kubectl create -f airavata-base.yml`
+
+5) `kubectl create -f airavata-all-rc.yml`
+
+5) `kubectl create -f airavata-all-svc.yml`
