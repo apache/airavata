@@ -1,6 +1,6 @@
 ### Goal: Orchestration of Airavata Components:
 
-
+Use the link to install kubenetes using [kubeadm](https://kubernetes.io/docs/setup/independent/install-kubeadm/)
 
 #### install kubernetes management plane and make sure kubernetes is running properly
 
