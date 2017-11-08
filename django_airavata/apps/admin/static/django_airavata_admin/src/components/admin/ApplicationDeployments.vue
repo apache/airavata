@@ -104,9 +104,19 @@
         </div>
       </div>
     </div>
+    <div class="new-application-tab-main">
+      <new-application-buttons></new-application-buttons>
+    </div>
   </div>
 </template>
 <script>
+    import NewApplicationButtons from './NewApplicationButtons.vue';
+
+    export default {
+      components: {
+        NewApplicationButtons
+      }
+    }
 
 </script>
 <style>
