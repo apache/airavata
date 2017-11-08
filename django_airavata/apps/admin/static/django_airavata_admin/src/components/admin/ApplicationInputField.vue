@@ -113,12 +113,12 @@
         'required':
           {
             'id': this.input_id,
-            'fieldName': 'required'
+            'fieldName': 'isRequired'
           },
         'requiredOnCmd':
           {
             'id': this.input_id,
-            'fieldName': 'requiredOnCmd'
+            'fieldName': 'requiredToAddedToCommandLine'
           },
         'standardInput':
           {
@@ -144,10 +144,10 @@
     },
     watch: {
       inpOrder: function (newValue) {
-        this.updateStore('inpOrder', newValue)
+        this.updateStore('inputOrder', newValue)
       },
       userFriendlyDescr: function (newValue) {
-        this.updateStore('userFriendlyDescr', newValue)
+        this.updateStore('userFriendlyDescription', newValue)
       },
       name: function (newValue) {
         this.updateStore('name', newValue)
@@ -160,7 +160,7 @@
         this.updateStore('type', newValue)
       },
       appArg: function (newValue) {
-        this.updateStore('appArg', newValue)
+        this.updateStore('applicationArgument', newValue)
       }
     }
   }

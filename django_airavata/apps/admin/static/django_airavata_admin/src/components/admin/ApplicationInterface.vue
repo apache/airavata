@@ -52,7 +52,7 @@
     mounted:function () {
       if(!this.isInitialized){
         var inpId=this.createAppInterfaceInputField();
-        var outId=this.createAppInterfaceOutputField();
+        var outId=this.A();
         this.initialized(true)
         this.work_dir={'boolValue':this.isEnableArchiveWorkingDirectory}
         this.optional_files={'boolValue':this.isEnableOutputFileInput}

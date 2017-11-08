@@ -87,12 +87,12 @@
       return {
         'required': {
           'id': this.output_id,
-          'fieldName': 'required'
+          'fieldName': 'isRequired'
         },
         'requiredOnCmd':
           {
             'id': this.output_id,
-            'fieldName': 'requiredOnCmd'
+            'fieldName': 'requiredToAddedToCommandLine'
           },
         'dataMovement': {
           'id': this.output_id,
@@ -109,12 +109,6 @@
       ...mapGetters(['getAppOutputField','getAppOutputFieldValue'])
     },
     watch: {
-      inpOrder: function (newValue) {
-        this.updateStore('inpOrder', newValue)
-      },
-      userFriendlyDescr: function (newValue) {
-        this.updateStore('userFriendlyDescr', newValue)
-      },
       name: function (newValue) {
         this.updateStore('name', newValue)
       },
@@ -126,7 +120,7 @@
         this.updateStore('type', newValue)
       },
       appArg: function (newValue) {
-        this.updateStore('appArg', newValue)
+        this.updateStore('applicationArgument', newValue)
       }
     }
   }
