@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABCMeta
 
 from apache.airavata.model.experiment.ttypes import ExperimentModel
 from apache.airavata.model.workspace.ttypes import Project
@@ -13,6 +13,7 @@ from django.conf import settings
 from rest_framework import serializers
 
 import datetime
+import copy
 from urllib.parse import quote
 
 
@@ -154,17 +155,34 @@ class OutputDataObjectTypeSerializer(serializers.Serializer):
         raise Exception("Not implemented")
 
 
-class ApplicationInterfaceDescriptionSerializer(serializers.Serializer):
+class CustomSerializer(serializers.Serializer):
+    def process_list_fields(self, validated_data):
+        fields = self.fields
+        params = copy.deepcopy(validated_data)
+        for field_name, serializer in fields.items():
+            if isinstance(serializer, serializers.ListSerializer):
+                   params[field_name] = serializer.create(params[field_name])
+        return params
+
+
+
+
+
+
+
+
+class ApplicationInterfaceDescriptionSerializer(CustomSerializer):
     applicationName = serializers.CharField(required=False)
     applicationDescription = serializers.CharField(required=False)
     archiveWorkingDirectory = serializers.BooleanField(required=False)
     hasOptionalFileInputs = serializers.BooleanField(required=False)
-    applicationOutputs = serializers.ListField(child=OutputDataObjectTypeSerializer())
-    applicationInputs = serializers.ListField(child=InputDataObjectTypeSerializer())
-    applicationModules = serializers.ListField(child=serializers.CharField())
+    applicationOutputs = serializers.ListSerializer(child=OutputDataObjectTypeSerializer())
+    applicationInputs = serializers.ListSerializer(child=InputDataObjectTypeSerializer())
+    applicationModules = serializers.ListSerializer(child=serializers.CharField())
 
     def create(self, validated_data):
-        return ApplicationInterfaceDescription(**validated_data)
+        params=self.process_list_fields(validated_data)
+        return ApplicationInterfaceDescription(**params)
 
     def update(self, instance, validated_data):
         raise Exception("Not implemented")
