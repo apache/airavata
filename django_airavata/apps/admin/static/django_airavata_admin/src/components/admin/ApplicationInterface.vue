@@ -9,7 +9,7 @@
         <boolean-radio-button v-bind:heading="'Enable Optional File Inputs'" v-bind:selectorVal="optional_files" v-bind:def="isEnableOutputFileInput" v-bind:selectorId="booleanSelectorIDs[1]"  v-on:bool_selector="updateStore"></boolean-radio-button>
       </div>
       <div>
-        <application-input-field class="interface-main" v-for="inp_id in getAppInputFieldsIds" v-bind:key="inp_id" v-bind:input_id="inp_id" v-on:delete_input_field="deleteAppInterfaceInputField(inp_id);"></application-input-field>
+        <application-input-field class="interface-main" v-for="inp_id in getAppInputFieldIds" v-bind:key="inp_id" v-bind:input_id="inp_id" v-on:delete_input_field="deleteAppInterfaceInputField(inp_id);"></application-input-field>
       </div>
       <div class="entry">
         <button class="interface-btn" v-on:click="createAppInterfaceInputField();">Add Application <span>input</span></button>
@@ -21,7 +21,7 @@
         <div class="heading">Output fields</div>
         <button class="interface-btn" v-on:click="createAppInterfaceOutputField()">Add Application <span>output</span></button>
       </div>
-      <new-application-buttons></new-application-buttons>
+      <new-application-buttons v-on:save="saveApplicationInterface"></new-application-buttons>
     </div>
   </div>
 </template>
@@ -44,7 +44,7 @@
         'id':0,
         work_dir:{'boolValue':null},
         optional_files:{'boolValue':null},
-        booleanSelectorIDs:['enableArchiveWorkingDirectory','enableOutputFileInputs']
+        booleanSelectorIDs:['archiveWorkingDirectory','hasOptionalFileInputs']
       };
     },
     props:{
@@ -52,7 +52,7 @@
     mounted:function () {
       if(!this.isInitialized){
         var inpId=this.createAppInterfaceInputField();
-        var outId=this.A();
+        var outId=this.createAppInterfaceOutputField();
         this.initialized(true)
         this.work_dir={'boolValue':this.isEnableArchiveWorkingDirectory}
         this.optional_files={'boolValue':this.isEnableOutputFileInput}
@@ -61,17 +61,17 @@
 
     },
     computed:{
-      ...mapGetters(['getAppInputFieldsIds','getAppOutputFieldIds','isInitialized','isEnableArchiveWorkingDirectory','isEnableOutputFileInput'])
+      ...mapGetters(['getAppInputFieldIds','getAppOutputFieldIds','isInitialized','isEnableArchiveWorkingDirectory','isEnableOutputFileInput'])
     },
     methods:{
       updateStore:function (fieldName,newValue) {
         if(fieldName == this.booleanSelectorIDs[0] ){
-            this.changeEnableArchiveWorkingDirectory(newValue)
+            this.changeArchiveWorkingDirectory(newValue)
         }else if(fieldName == this.booleanSelectorIDs[1]){
           this.changeEnableOutputFileInput(newValue)
         }
       },
-      ...mapActions(['createAppInterfaceInputField','deleteAppInterfaceInputField','createAppInterfaceOutputField','deleteAppInterfaceOutputField','initialized','changeEnableOutputFileInput','changeEnableArchiveWorkingDirectory'])
+      ...mapActions(['saveApplicationInterface','createAppInterfaceInputField','deleteAppInterfaceInputField','createAppInterfaceOutputField','deleteAppInterfaceOutputField','initialized','changeEnableOutputFileInput','changeArchiveWorkingDirectory'])
     }
   };
 </script>
