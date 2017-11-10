@@ -1,14 +1,6 @@
 import Vue from 'vue'
 
 export default {
-  convertKeyValuePairObjectToValueArray:function (obj) {
-    var arr=[]
-    for(var prop in obj){
-      arr.push(obj[prop])
-    }
-    return arr
-  }
-  ,
   resetData:function (obj,initialData) {
     if (initialData instanceof Function){
       initialData=initialData();

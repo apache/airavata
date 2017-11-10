@@ -177,6 +177,7 @@ export default{
       appInterface.applicationName=rootState.appDetailsTab.name
       appInterface.applicationDescription=rootState.appDetailsTab.description
       console.log("Application Interface:",appInterface)
+      return Utils.post('/api/new/application/interface', appInterface)
     }
   }
 }

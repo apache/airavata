@@ -51,8 +51,8 @@ export default {
     updateAppDetails: function (context, update) {
       context.commit('addAppDetails', update)
     },
-    registerAppModule: function (context) {
-      context.commit("registerAppDetails")
+    registerAppModule: function ({commit,state}) {
+      return Utils.post('/api/new/application/module', state)
     },
     resetAll: function (context) {
       context.commit('resetState')

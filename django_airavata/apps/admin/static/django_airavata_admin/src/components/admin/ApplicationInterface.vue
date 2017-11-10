@@ -21,7 +21,7 @@
         <div class="heading">Output fields</div>
         <button class="interface-btn" v-on:click="createAppInterfaceOutputField()">Add Application <span>output</span></button>
       </div>
-      <new-application-buttons v-on:save="saveApplicationInterface"></new-application-buttons>
+      <new-application-buttons v-bind:save="saveApplicationInterface"></new-application-buttons>
     </div>
   </div>
 </template>

@@ -38,6 +38,12 @@
         appInterfaceTabData:{'inputFields':[]}
       }
     },
+    prop:{
+      initialParams:{
+        type:Object,
+        default:null
+      }
+    },
     computed: {
       tabs: function () {
         var tabs_active = {

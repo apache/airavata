@@ -1,9 +1,42 @@
 <template>
   <div class="btns">
+    <label>{{msg}}</label>
     <input class="cancel" type="button" value="Cancel" v-on:click="$emit('cancel')"/>
-    <input class="save" type="button" value="Save" v-on:click="$emit('save')"/>
+    <input class="save" type="button" value="Save" v-on:click="saveFn"/>
   </div>
 </template>
+<script>
+  export default {
+    data:function () {
+      return {msg:""}
+    },
+    props:{
+      save:{
+        type:Function,
+        default:function(){
+
+        }
+      },
+      cancel:{
+        type:Function,
+        default:function(){
+
+        }
+      }
+    },
+    methods:{
+        saveFn:function () {
+          var temp=this.save()
+          console.log("Saving",temp)
+          var med=this
+          setTimeout(function () {
+            console.log("TimedOut")
+            med.msg=""
+          },5000)
+      }
+    }
+  }
+</script>
 <style>
   .btns{
     margin-top:50px;

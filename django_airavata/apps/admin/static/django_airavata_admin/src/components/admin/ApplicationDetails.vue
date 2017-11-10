@@ -15,7 +15,7 @@
         <div class="heading" >Experiment Description</div>
         <textarea  style="height: 80px;" type="text" v-model="description"/>
       </div>
-      <new-application-buttons v-on:save="registerAppModule()" v-on:cancel="cancelAction()"></new-application-buttons>
+      <new-application-buttons v-bind:save="registerAppModule" v-on:cancel="cancelAction()"></new-application-buttons>
     </div>
   </div>
 </template>
