@@ -1,5 +1,6 @@
 var path = require('path')
 var webpack = require('webpack')
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
   entry: './static/django_airavata_workspace/js/entry-project-list.js',
@@ -15,7 +16,8 @@ module.exports = {
         loader: 'vue-loader',
         options: {
           loaders: {
-          }
+          },
+          extractCSS: true
           // other vue-loader options go here
         }
       },
@@ -23,6 +25,13 @@ module.exports = {
         test: /\.js$/,
         loader: 'babel-loader',
         exclude: /node_modules/
+      },
+      {
+          test: /\.css$/,
+          use: ExtractTextPlugin.extract({
+              fallback: "style-loader",
+              use: "css-loader"
+          })
       },
       {
         test: /\.(png|jpg|gif|svg)$/,
@@ -48,7 +57,8 @@ module.exports = {
   devtool: '#eval-source-map',
   plugins: [
       // Exclude all but the 'en' locale from moment's locales
-      new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /^en$/)
+      new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /^en$/),
+      new ExtractTextPlugin("main.css"),
   ]
 }
 

@@ -1,5 +1,11 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
+{% block css %}
+<link rel=stylesheet type=text/css href="{% static 'django_airavata_workspace/dist/main.css' %}">
+{% endblock %}
+
 {% block nav-items %}
 
         <a href="{% url 'django_airavata_workspace:dashboard' %}" class="c-nav__item {% if request.active_nav_item == 'dashboard' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title=Dashboard>

@@ -1,6 +1,7 @@
 
 import Project from '../models/Project'
 import PaginationIterator from '../utils/PaginationIterator'
+import FetchUtils from '../utils/FetchUtils'
 
 class ProjectService {
     list(data = {}) {
@@ -15,8 +16,10 @@ class ProjectService {
         }
     }
 
-    create() {
-        // TODO
+    create(project) {
+        console.log("create", project);
+        return FetchUtils.post('/api/projects/', project.toJSONForCreate())
+            .then(result => new Project(result));
     }
 
     update() {

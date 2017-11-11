@@ -17,6 +17,7 @@ export default {
     }
     return list;
   },
+  // TODO: getCSRFToken, createHeader, post and get moved to django_airavata_api FetchUtils
   getCSRFToken: function () {
     var csrfToken = document.cookie.split(';').map(val => val.trim()).filter(val => val.startsWith("csrftoken" + '=')).map(val => val.split("=")[1]);
     if (csrfToken) {
@@ -95,4 +96,3 @@ export default {
     return ret
   }
 }
-
