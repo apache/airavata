@@ -20,7 +20,13 @@ I have 3 slave nodes with 1 master
 
 5) `cd dev-tools/orchestration/kubernetes/airavata-setup/`
 
-6) `kubectl create -f airavata-mq.yml`
+6) `kubectl create -f  	rmq-rc.yml`
+
+6) `kubectl create -f  	mq-svc.yml`
+
+6) `kubectl create -f  	mariadb-svc.yml`
+
+6) `kubectl create -f  	zookeeper-rc.yml`
 
 7) `kubectl create -f airavata-base.yml`
 
