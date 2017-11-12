@@ -24,7 +24,7 @@ I have 3 slave nodes with 1 master
 
 6) `kubectl create -f  	mq-svc.yml`
 
-6) `kubectl create -f  	mariadb-svc.yml`
+6) `kubectl create -f  	mariadb-rc.yml`
 
 6) `kubectl create -f  	zookeeper-rc.yml`
 
