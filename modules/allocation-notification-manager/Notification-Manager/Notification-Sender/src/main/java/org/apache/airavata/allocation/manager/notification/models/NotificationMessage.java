@@ -3,13 +3,19 @@ package org.apache.airavata.allocation.manager.notification.models ;
 
 public class NotificationMessage {
 	
-	private String notificationMessage;
+	private String subject;
+	private String message;
 	
-	public String getNotificationMessage() {
-		return notificationMessage;
+	public String getSubject() {
+		return subject;
 	}
-
-	public void setNotificationMessage(String notificationMessage) {
-		this.notificationMessage = notificationMessage;
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+	public String getMessage() {
+		return message;
+	}
+	public void setMessage(String message) {
+		this.message = message;
 	}
 }

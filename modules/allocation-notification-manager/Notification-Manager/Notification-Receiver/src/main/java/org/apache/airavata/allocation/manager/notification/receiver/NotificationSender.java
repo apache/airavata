@@ -1,7 +1,4 @@
 package org.apache.airavata.allocation.manager.notification.receiver;
-import com.rabbitmq.client.AMQP.BasicProperties;
-
-import org.apache.airavata.allocation.manager.notification.sender.EmailNotificationConfiguration;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
