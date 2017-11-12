@@ -1,0 +1,21 @@
+apiVersion: v1 
+kind: ReplicationController
+metadata:
+  name: zookeeper-rc
+spec:
+  selector:
+    app: zookeeper
+  replicas: 1 
+  template: 
+    metadata:    
+      labels:
+        app: zookeeper
+    spec:
+      containers:
+      - name: zookeeper
+        image: zookeeper
+        ports: 
+        - containerPort: 2181 
+        - containerPort: 2888
+        - containerPort: 3888
+      restartPolicy: Always

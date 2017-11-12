@@ -1,0 +1,24 @@
+apiVersion: v1 
+kind: ReplicationController
+metadata:
+  name: rmq-rc
+spec:
+  selector:
+    app: rmq
+  replicas: 1 
+  template: 
+    metadata:    
+      labels:
+        app: rmq
+    spec:
+      containers:
+      - name: rmq
+        image: rabbitmq:3-management
+        env:
+        - name: RABBITMQ_DEFAULT_USER
+          value: "rabbitmq"
+        - name: RABBITMQ_DEFAULT_PASS
+          value: "rabbitmq"
+        ports: 
+        - containerPort: 5672
+        - containerPort: 15672
