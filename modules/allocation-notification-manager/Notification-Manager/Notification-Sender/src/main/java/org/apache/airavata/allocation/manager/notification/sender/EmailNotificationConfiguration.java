@@ -23,7 +23,6 @@ public static void main(String args[]) {
 			InputStream input2 = new FileInputStream("./config.properties");
 			prop.load(input2);
 
-			System.out.println("this is property" + prop.getProperty("username"));
 			result.setUserName(prop.getProperty("username"));
 			result.setPassword(prop.getProperty("password"));
 

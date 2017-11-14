@@ -7,8 +7,7 @@ import com.rabbitmq.client.ConnectionFactory;
 public class NotificationSender {
 	private final static String QUEUE_NAME = "notify";
 	public static void main(String[] args) {
-//		EmailNotificationConfiguration obj = new EmailNotificationConfiguration();
-//		obj.EmailConfigProperties();
+
 	    try {
 	    	   
 	        //Create a connection factory
@@ -22,10 +21,10 @@ public class NotificationSender {
 	        //Create the Queue if it does not exist
 	        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
 	        //assuming this is the request id send
-	        String message  = "1001" ;
+	        String project_ID  = "1001" ;
 	        
 	      
-	          channel.basicPublish("", QUEUE_NAME, null, message.getBytes());
+	          channel.basicPublish("", QUEUE_NAME, null, project_ID.getBytes());
 	     
 	          System.out.println(
 	             " [x] Sent the request");

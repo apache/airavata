@@ -7,10 +7,6 @@ import java.util.Properties;
 import org.apache.airavata.allocation.manager.notification.models.NotificationMessage;
 
 public class EmailNotificationMessage {
-	public static void main(String args[]) {
-		System.out.println("this is from function--"+ new EmailNotificationMessage().getEmailMessage("n"));
-	}
-
 	public NotificationMessage getEmailMessage(String status) {
 		NotificationMessage result = new NotificationMessage();
 		Properties prop = new Properties();
@@ -20,10 +16,25 @@ public class EmailNotificationMessage {
 			InputStream input2 = new FileInputStream("./src/main/resources/messages.properties");
 			prop.load(input2);
 
-			System.out.println("this is from messages" + prop.getProperty("subject"));
-			result.setMessage( prop.getProperty("subject"));
-			result.setSubject( prop.getProperty("message"));
-			
+			switch (status) {
+			case "APRROVED":
+				result.setMessage(prop.getProperty("SUBJECT_APPROVED"));
+				result.setSubject(prop.getProperty("MESSAGE_APPROVED"));
+				break;
+			case "REJECTED":
+				result.setMessage(prop.getProperty("SUBJECT_REJECTED"));
+				result.setSubject(prop.getProperty("MESSAGE_REJECTED"));
+				break;
+			case "IN_PROGRESS":
+				result.setMessage(prop.getProperty("SUBJECT_IN_PROCESS"));
+				result.setSubject(prop.getProperty("MESSAGE_IN_PROCESS"));
+				break;
+			case "NEW_REQUEST":
+				result.setMessage(prop.getProperty("SUBJECT_NEW_REQUEST"));
+				result.setSubject(prop.getProperty("MESSAGE_NEW_REQUEST"));
+				break;
+			}
+
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		} finally {
@@ -35,7 +46,7 @@ public class EmailNotificationMessage {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 }
