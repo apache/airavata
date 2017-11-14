@@ -3,12 +3,15 @@ apiVersion: v1
 kind: ReplicationController
 
 metadata:
+  
+    name: airavata-all-rc
+    
+    labels:
 
-  name: airavata-all
-
+      app : airavata-all-sc
 spec:
 
-  replicas: 10
+  replicas: 5
 
   selector:
 
@@ -26,7 +29,7 @@ spec:
 
       containers:
 
-      - name: hello-ctr
+      - name: airavata-all
 
         image: satyamsah/airavata-all
 

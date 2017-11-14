@@ -8,7 +8,7 @@ metadata:
 
   labels:
 
-    app: airavata-all
+    app: airavata-all-svc
 
 spec:
 
