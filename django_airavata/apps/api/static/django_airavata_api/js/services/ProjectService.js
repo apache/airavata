@@ -8,7 +8,7 @@ class ProjectService {
         if (data && data.results) {
             return Promise.resolve(new PaginationIterator(data, Project));
         } else {
-            return fetch('/api/projects', {
+            return fetch('/api/projects/', {
                 credentials: 'include'
             })
             .then(response => response.json())
@@ -17,7 +17,6 @@ class ProjectService {
     }
 
     create(project) {
-        console.log("create", project);
         return FetchUtils.post('/api/projects/', project.toJSONForCreate())
             .then(result => new Project(result));
     }

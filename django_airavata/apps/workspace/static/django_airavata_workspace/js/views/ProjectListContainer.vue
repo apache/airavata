@@ -65,12 +65,14 @@ export default {
             this.projectsPaginator.previous();
         },
         onCreateProject: function(event) {
+            // TODO: handle error, what if project isn't successfully created?
             services.ProjectService.create(this.newProject)
                 .then(result => {
-                    // TODO: reload projectsPaginator and reset newProject
-                    console.log("project created", result)
-                })
-            console.log(JSON.stringify(this.newProject));
+                    this.newProject = new models.Project();
+                    // Reload the list of projects
+                    return services.ProjectService.list()
+                        .then(result => this.projectsPaginator = result);
+                });
         },
     },
     computed: {
