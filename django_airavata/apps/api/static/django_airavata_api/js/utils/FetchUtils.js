@@ -31,7 +31,11 @@ export default {
             if (response.ok) {
                 return Promise.resolve(response.json())
             } else {
-                return Promise.reject(new Error(response.statusText))
+                let error = new Error(response.statusText);
+                return response.json().then(json => {
+                    error.data = json;
+                })
+                .finally(() => Promise.reject(error)):
             }
         })
     },
@@ -49,7 +53,11 @@ export default {
             if (response.ok) {
                 return Promise.resolve(response.json())
             } else {
-                return Promise.reject(new Error(response.statusText))
+                let error = new Error(response.statusText);
+                return response.json().then(json => {
+                    error.data = json;
+                })
+                .finally(() => Promise.reject(error)):
             }
         })
     },
