@@ -35,7 +35,7 @@ export default {
                 return response.json().then(json => {
                     error.data = json;
                 })
-                .finally(() => Promise.reject(error)):
+                .finally(() => Promise.reject(error));
             }
         })
     },
@@ -57,7 +57,7 @@ export default {
                 return response.json().then(json => {
                     error.data = json;
                 })
-                .finally(() => Promise.reject(error)):
+                .finally(() => Promise.reject(error));
             }
         })
     },
