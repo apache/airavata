@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Utils from '../../utils'
+import {utils as apiUtils} from 'django-airavata-api'
 
 const fieldMapper={
   name:'appModuleName',
@@ -27,7 +28,7 @@ export default{
       }
     },
     registerAppDetails:function (state) {
-      return Utils.post('/api/new/application/module',state)
+      return apiUtils.FetchUtils.post('/api/new/application/module',state)
     },
     resetState:state=>{
       Utils.resetData(state,initialState())

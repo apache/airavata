@@ -17,57 +17,6 @@ export default {
     }
     return list;
   },
-  // TODO: getCSRFToken, createHeader, post and get moved to django_airavata_api FetchUtils
-  getCSRFToken: function () {
-    var csrfToken = document.cookie.split(';').map(val => val.trim()).filter(val => val.startsWith("csrftoken" + '=')).map(val => val.split("=")[1]);
-    if (csrfToken) {
-      return csrfToken[0];
-    } else {
-      return null;
-    }
-  },
-  createHeader: function (contentType = "application/json") {
-    var csrfToken = this.getCSRFToken()
-    var headers = new Headers({"Content-Type": contentType,})
-    if (csrfToken != null) {
-      headers.set("X-CSRFToken", csrfToken)
-    }
-    return headers;
-  },
-  post: function (url, body, mediaType = "application/json") {
-    var headers = this.createHeader(mediaType)
-    return fetch(url, {
-      method: 'post',
-      body: JSON.stringify(body),
-      headers: headers,
-      credentials: "same-origin"
-    }).then((response) => {
-      if (response.ok) {
-        return Promise.resolve(response.json())
-      } else {
-        return Promise.reject(new Error(response.statusText))
-      }
-    })
-  },
-  get: function (url, queryParams = "", mediaType = "application/json") {
-    if (queryParams && typeof(queryParams) != "string") {
-      queryParams = Object.keys(queryParams).map(key => encodeURIComponent(key) + "=" + encodeURIComponent(queryParams[key])).join("&")
-    }
-    url=url+"?"+queryParams
-    var headers = this.createHeader(mediaType)
-    return fetch(url, {
-      method: 'get',
-      headers: headers,
-      credentials: "same-origin"
-    }).then((response) => {
-      if (response.ok) {
-        return Promise.resolve(response.json())
-      } else {
-        return Promise.reject(new Error(response.statusText))
-      }
-    })
-
-  },
   mapper: function (data, map) {
     var internalMapper = function (data, map) {
       if (data == null || data == undefined || data instanceof Boolean || data instanceof String) {

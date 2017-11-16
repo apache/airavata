@@ -1,6 +1,5 @@
 
 export default {
-    // TODO: copied from admin, need to integrate
     getCSRFToken: function () {
         var csrfToken = document.cookie.split(';').map(val => val.trim()).filter(val => val.startsWith("csrftoken" + '=')).map(val => val.split("=")[1]);
         if (csrfToken) {
