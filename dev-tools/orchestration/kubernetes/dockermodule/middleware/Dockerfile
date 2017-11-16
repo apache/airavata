@@ -13,7 +13,7 @@ RUN yum install firewalld -y && \
 # Setup the user
 RUN useradd -ms /bin/bash airavata # check group: `cut -d: -f1 /etc/group`
 
-RUN sleep 10
+RUN sleep 40
 
 #Setting WorkDirectory
 ARG WORK_DIR="/home/airavata"

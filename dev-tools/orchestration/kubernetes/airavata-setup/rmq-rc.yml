@@ -16,9 +16,9 @@ spec:
         image: rabbitmq:3-management
         env:
         - name: RABBITMQ_DEFAULT_USER
-          value: "rabbitmq"
+          value: "airavata"
         - name: RABBITMQ_DEFAULT_PASS
-          value: "rabbitmq"
+          value: "airavata"
         ports: 
         - containerPort: 5672
         - containerPort: 15672
