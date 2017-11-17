@@ -4206,11 +4206,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public createDomain_result getResult(I iface, createDomain_args args) throws org.apache.thrift.TException {
         createDomain_result result = new createDomain_result();
         try {
@@ -4234,11 +4229,6 @@ public class SharingRegistryService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -4267,11 +4257,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public isDomainExists_result getResult(I iface, isDomainExists_args args) throws org.apache.thrift.TException {
         isDomainExists_result result = new isDomainExists_result();
         try {
@@ -4294,11 +4279,6 @@ public class SharingRegistryService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -4327,11 +4307,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public getDomain_result getResult(I iface, getDomain_args args) throws org.apache.thrift.TException {
         getDomain_result result = new getDomain_result();
         try {
@@ -4356,11 +4331,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public getDomains_result getResult(I iface, getDomains_args args) throws org.apache.thrift.TException {
         getDomains_result result = new getDomains_result();
         try {
@@ -4382,11 +4352,6 @@ public class SharingRegistryService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -4416,11 +4381,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public updatedUser_result getResult(I iface, updatedUser_args args) throws org.apache.thrift.TException {
         updatedUser_result result = new updatedUser_result();
         try {
@@ -4443,11 +4403,6 @@ public class SharingRegistryService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -4476,11 +4431,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public deleteUser_result getResult(I iface, deleteUser_args args) throws org.apache.thrift.TException {
         deleteUser_result result = new deleteUser_result();
         try {
@@ -4503,11 +4453,6 @@ public class SharingRegistryService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -4535,11 +4480,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public getUsers_result getResult(I iface, getUsers_args args) throws org.apache.thrift.TException {
         getUsers_result result = new getUsers_result();
         try {
@@ -4564,11 +4504,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public createGroup_result getResult(I iface, createGroup_args args) throws org.apache.thrift.TException {
         createGroup_result result = new createGroup_result();
         try {
@@ -4590,11 +4525,6 @@ public class SharingRegistryService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -4623,11 +4553,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public isGroupExists_result getResult(I iface, isGroupExists_args args) throws org.apache.thrift.TException {
         isGroupExists_result result = new isGroupExists_result();
         try {
@@ -4650,11 +4575,6 @@ public class SharingRegistryService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -4683,11 +4603,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public getGroup_result getResult(I iface, getGroup_args args) throws org.apache.thrift.TException {
         getGroup_result result = new getGroup_result();
         try {
@@ -4712,11 +4627,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public getGroups_result getResult(I iface, getGroups_args args) throws org.apache.thrift.TException {
         getGroups_result result = new getGroups_result();
         result.success = iface.getGroups(args.domainId, args.offset, args.limit);
@@ -4734,11 +4644,6 @@ public class SharingRegistryService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -4767,11 +4672,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public removeUsersFromGroup_result getResult(I iface, removeUsersFromGroup_args args) throws org.apache.thrift.TException {
         removeUsersFromGroup_result result = new removeUsersFromGroup_result();
         try {
@@ -4794,11 +4694,6 @@ public class SharingRegistryService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -4827,11 +4722,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public addGroupAdmins_result getResult(I iface, addGroupAdmins_args args) throws org.apache.thrift.TException {
         addGroupAdmins_result result = new addGroupAdmins_result();
         try {
@@ -4854,11 +4744,6 @@ public class SharingRegistryService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -4887,11 +4772,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public hasAdminAccess_result getResult(I iface, hasAdminAccess_args args) throws org.apache.thrift.TException {
         hasAdminAccess_result result = new hasAdminAccess_result();
         try {
@@ -4914,11 +4794,6 @@ public class SharingRegistryService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -4947,11 +4822,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public getGroupMembersOfTypeUser_result getResult(I iface, getGroupMembersOfTypeUser_args args) throws org.apache.thrift.TException {
         getGroupMembersOfTypeUser_result result = new getGroupMembersOfTypeUser_result();
         try {
@@ -4976,11 +4846,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public getGroupMembersOfTypeGroup_result getResult(I iface, getGroupMembersOfTypeGroup_args args) throws org.apache.thrift.TException {
         getGroupMembersOfTypeGroup_result result = new getGroupMembersOfTypeGroup_result();
         try {
@@ -5002,11 +4867,6 @@ public class SharingRegistryService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -5035,11 +4895,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public removeChildGroupFromParentGroup_result getResult(I iface, removeChildGroupFromParentGroup_args args) throws org.apache.thrift.TException {
         removeChildGroupFromParentGroup_result result = new removeChildGroupFromParentGroup_result();
         try {
@@ -5065,11 +4920,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public getAllMemberGroupsForUser_result getResult(I iface, getAllMemberGroupsForUser_args args) throws org.apache.thrift.TException {
         getAllMemberGroupsForUser_result result = new getAllMemberGroupsForUser_result();
         try {
@@ -5091,11 +4941,6 @@ public class SharingRegistryService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -5125,11 +4970,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public updateEntityType_result getResult(I iface, updateEntityType_args args) throws org.apache.thrift.TException {
         updateEntityType_result result = new updateEntityType_result();
         try {
@@ -5152,11 +4992,6 @@ public class SharingRegistryService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -5185,11 +5020,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public deleteEntityType_result getResult(I iface, deleteEntityType_args args) throws org.apache.thrift.TException {
         deleteEntityType_result result = new deleteEntityType_result();
         try {
@@ -5212,11 +5042,6 @@ public class SharingRegistryService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -5244,11 +5069,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public getEntityTypes_result getResult(I iface, getEntityTypes_args args) throws org.apache.thrift.TException {
         getEntityTypes_result result = new getEntityTypes_result();
         try {
@@ -5273,11 +5093,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public createEntity_result getResult(I iface, createEntity_args args) throws org.apache.thrift.TException {
         createEntity_result result = new createEntity_result();
         try {
@@ -5299,11 +5114,6 @@ public class SharingRegistryService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -5332,11 +5142,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public isEntityExists_result getResult(I iface, isEntityExists_args args) throws org.apache.thrift.TException {
         isEntityExists_result result = new isEntityExists_result();
         try {
@@ -5359,11 +5164,6 @@ public class SharingRegistryService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -5392,11 +5192,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public getEntity_result getResult(I iface, getEntity_args args) throws org.apache.thrift.TException {
         getEntity_result result = new getEntity_result();
         try {
@@ -5418,11 +5213,6 @@ public class SharingRegistryService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -5450,11 +5240,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public getListOfSharedUsers_result getResult(I iface, getListOfSharedUsers_args args) throws org.apache.thrift.TException {
         getListOfSharedUsers_result result = new getListOfSharedUsers_result();
         try {
@@ -5479,11 +5264,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public getListOfSharedGroups_result getResult(I iface, getListOfSharedGroups_args args) throws org.apache.thrift.TException {
         getListOfSharedGroups_result result = new getListOfSharedGroups_result();
         try {
@@ -5505,11 +5285,6 @@ public class SharingRegistryService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -5539,11 +5314,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public updatePermissionType_result getResult(I iface, updatePermissionType_args args) throws org.apache.thrift.TException {
         updatePermissionType_result result = new updatePermissionType_result();
         try {
@@ -5566,11 +5336,6 @@ public class SharingRegistryService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -5599,11 +5364,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public deletePermissionType_result getResult(I iface, deletePermissionType_args args) throws org.apache.thrift.TException {
         deletePermissionType_result result = new deletePermissionType_result();
         try {
@@ -5626,11 +5386,6 @@ public class SharingRegistryService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -5658,11 +5413,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public getPermissionTypes_result getResult(I iface, getPermissionTypes_args args) throws org.apache.thrift.TException {
         getPermissionTypes_result result = new getPermissionTypes_result();
         try {
@@ -5684,11 +5434,6 @@ public class SharingRegistryService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -5717,11 +5462,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public revokeEntitySharingFromUsers_result getResult(I iface, revokeEntitySharingFromUsers_args args) throws org.apache.thrift.TException {
         revokeEntitySharingFromUsers_result result = new revokeEntitySharingFromUsers_result();
         try {
@@ -5744,11 +5484,6 @@ public class SharingRegistryService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -5777,11 +5512,6 @@ public class SharingRegistryService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public revokeEntitySharingFromGroups_result getResult(I iface, revokeEntitySharingFromGroups_args args) throws org.apache.thrift.TException {
         revokeEntitySharingFromGroups_result result = new revokeEntitySharingFromGroups_result();
         try {
@@ -5804,11 +5534,6 @@ public class SharingRegistryService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
