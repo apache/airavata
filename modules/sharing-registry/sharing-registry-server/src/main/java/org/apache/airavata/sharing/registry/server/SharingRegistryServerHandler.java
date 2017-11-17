@@ -407,6 +407,31 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     }
 
     @Override
+    public boolean transferOwnership(String domainId, String groupId, String currentOwnerId, String newOwnerId) throws SharingRegistryException, TException {
+        return false;
+    }
+
+    @Override
+    public boolean addGroupAdmins(String domainId, String groupId, List<String> adminIds) throws SharingRegistryException, TException {
+        return false;
+    }
+
+    @Override
+    public boolean removeGroupAdmins(String domainId, String groupId, List<String> adminIds) throws SharingRegistryException, TException {
+        return false;
+    }
+
+    @Override
+    public boolean hasAdminAccess(String domainId, String groupId, String adminId) throws SharingRegistryException, TException {
+        return false;
+    }
+
+    @Override
+    public boolean hasOwnerAccess(String domainId, String groupId, String ownerId) throws SharingRegistryException, TException {
+        return false;
+    }
+
+    @Override
     public List<User> getGroupMembersOfTypeUser(String domainId, String groupId, int offset, int limit) throws SharingRegistryException, TException {
         try{
             //TODO limit offset
