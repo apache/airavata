@@ -13,6 +13,16 @@ export default class Project extends BaseModel {
         this.copyData(data);
     }
 
+    validateForCreate() {
+        console.log("validateForCreate", this.name);
+        if (this.name === null || this.name.trim() === "") {
+            return {
+                name: ["Please provide a name."]
+            }
+        }
+        return null;
+    }
+
     toJSONForCreate() {
         // Remaining fields just get defaulted
         return JSON.stringify(this, ["name", "description"]);

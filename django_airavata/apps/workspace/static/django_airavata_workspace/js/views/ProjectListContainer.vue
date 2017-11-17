@@ -10,16 +10,16 @@
                 <!-- TODO: factor modal out into separate, reusable component -->
                 <b-modal id="modal-new-project" ref="modalNewProject" title="Create New Project" v-on:ok="onCreateProject">
                     <b-form @submit="onCreateProject" novalidate>
-                        <b-form-group label="Project Name" label-for="new-project-name" v-bind:feedback="newProjectFields.name.feedback" v-bind:state="newProjectFields.name.state">
+                        <b-form-group label="Project Name" label-for="new-project-name" v-bind:feedback="newProjectNameFeedback" v-bind:state="newProjectNameState">
                             <b-form-input id="new-project-name"
                                 type="text" v-model="newProject.name" required
                                 placeholder="Project name"
-                                v-bind:state="newProjectFields.name.state"></b-form-input>
+                                v-bind:state="newProjectNameState"></b-form-input>
                         </b-form-group>
                         <b-form-group label="Project Description" label-for="new-project-description">
                             <b-form-textarea id="new-project-description"
                                 type="text" v-model="newProject.description"
-                                placeholder="Project description"
+                                placeholder="(Optional) Project description"
                                 :rows="3"></b-form-textarea>
                         </b-form-group>
                     </b-form>
@@ -98,6 +98,15 @@ export default {
     computed: {
         projects: function() {
             return this.projectsPaginator ? this.projectsPaginator.results : null;
+        },
+        newProjectValidationData: function() {
+            return this.newProject.validateForCreate();
+        },
+        newProjectNameState: function() {
+            return (this.newProjectValidationData && 'name' in this.newProjectValidationData) ? 'invalid' : null;
+        },
+        newProjectNameFeedback: function() {
+            return (this.newProjectValidationData && 'name' in this.newProjectValidationData) ? this.newProjectValidationData.name.join('; ') : null;
         },
     },
     beforeMount: function () {
