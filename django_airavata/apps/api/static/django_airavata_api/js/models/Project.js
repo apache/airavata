@@ -14,7 +14,6 @@ export default class Project extends BaseModel {
     }
 
     validateForCreate() {
-        console.log("validateForCreate", this.name);
         if (this.name === null || this.name.trim() === "") {
             return {
                 name: ["Please provide a name."]

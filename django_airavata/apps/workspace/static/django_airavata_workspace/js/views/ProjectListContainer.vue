@@ -6,10 +6,9 @@
             </div>
             <div id="col-new-project" class="col">
                 <b-btn v-b-modal.modal-new-project variant="primary">New Project <i class="fa fa-plus" aria-hidden="true"></i></b-btn>
-                <!-- TODO: Validate form before creating the project: do form validation or model validation? Do model validation in the model or in the service? -->
                 <!-- TODO: factor modal out into separate, reusable component -->
                 <b-modal id="modal-new-project" ref="modalNewProject" title="Create New Project" v-on:ok="onCreateProject">
-                    <b-form @submit="onCreateProject" novalidate>
+                    <b-form @submit="onCreateProject" @input="onUserInput" novalidate>
                         <b-form-group label="Project Name" label-for="new-project-name" v-bind:feedback="newProjectNameFeedback" v-bind:state="newProjectNameState">
                             <b-form-input id="new-project-name"
                                 type="text" v-model="newProject.name" required
@@ -53,7 +52,8 @@ export default {
         return {
             projectsPaginator: null,
             newProject: new models.Project(),
-            newProjectFields: this.initialNewProjectFieldsState(),
+            newProjectServerValidationData: null,
+            userBeginsInput: false,
         }
     },
     components: {
@@ -73,26 +73,21 @@ export default {
             services.ProjectService.create(this.newProject)
                 .then(result => {
                     this.$refs.modalNewProject.hide();
+                    // Reset state
                     this.newProject = new models.Project();
-                    this.newProjectFields = this.initialNewProjectFieldsState();
+                    this.userBeginsInput = false;
                     // Reload the list of projects
                     return services.ProjectService.list()
                         .then(result => this.projectsPaginator = result);
                 })
                 .catch(error => {
-                    if ('name' in error.data) {
-                        this.newProjectFields.name.state = 'invalid';
-                        this.newProjectFields.name.feedback = error.data.name.join('; ');
-                    }
+                    this.newProjectServerValidationData = error.data;
                 });
         },
-        initialNewProjectFieldsState: function() {
-            return {
-                name: {
-                    valid: null,
-                    feedback: null,
-                },
-            }
+        onUserInput: function(event) {
+            this.userBeginsInput = true;
+            // Clear server side validation data when user starts typing again
+            this.newProjectServerValidationData = null;
         },
     },
     computed: {
@@ -100,13 +95,25 @@ export default {
             return this.projectsPaginator ? this.projectsPaginator.results : null;
         },
         newProjectValidationData: function() {
-            return this.newProject.validateForCreate();
+            return this.userBeginsInput ? this.newProject.validateForCreate() : null;
         },
         newProjectNameState: function() {
-            return (this.newProjectValidationData && 'name' in this.newProjectValidationData) ? 'invalid' : null;
+            if (this.newProjectServerValidationData && 'name' in this.newProjectServerValidationData) {
+                return 'invalid';
+            } else if (this.newProjectValidationData && 'name' in this.newProjectValidationData) {
+                return 'invalid';
+            } else {
+                return null;
+            }
         },
         newProjectNameFeedback: function() {
-            return (this.newProjectValidationData && 'name' in this.newProjectValidationData) ? this.newProjectValidationData.name.join('; ') : null;
+            if (this.newProjectServerValidationData && 'name' in this.newProjectServerValidationData) {
+                return this.newProjectServerValidationData.name.join('; ');
+            } else if (this.newProjectValidationData && 'name' in this.newProjectValidationData) {
+                return this.newProjectValidationData.name.join('; ');
+            } else {
+                return null;
+            }
         },
     },
     beforeMount: function () {
