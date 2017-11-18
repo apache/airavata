@@ -10,18 +10,8 @@ import java.io.Serializable;
 public class OwnerPK implements Serializable{
 
     private final static Logger logger = LoggerFactory.getLogger(OwnerPK.class);
-    private String groupId;
+    private String ownerId;
     private String domainId;
-
-    @Id
-    @Column(name = "GROUP_ID")
-    public String getGroupId() {
-        return groupId;
-    }
-
-    public void setGroupId(String groupId) {
-        this.groupId = groupId;
-    }
 
     @Id
     @Column(name = "DOMAIN_ID")
@@ -33,6 +23,16 @@ public class OwnerPK implements Serializable{
         this.domainId = domainId;
     }
 
+    @Id
+    @Column(name = "OWNER_ID")
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -40,13 +40,13 @@ public class OwnerPK implements Serializable{
 
         OwnerPK ownerPK = (OwnerPK) o;
 
-        if (!getGroupId().equals(ownerPK.getGroupId())) return false;
+        if (!getOwnerId().equals(ownerPK.getOwnerId())) return false;
         return getDomainId().equals(ownerPK.getDomainId());
     }
 
     @Override
     public int hashCode() {
-        int result = getGroupId().hashCode();
+        int result = getOwnerId().hashCode();
         result = 31 * result + getDomainId().hashCode();
         return result;
     }
