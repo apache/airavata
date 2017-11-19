@@ -175,10 +175,9 @@ public class SharingRegistryService {
      * 
      * @param domainId
      * @param groupId
-     * @param currentOwnerId
      * @param newOwnerId
      */
-    public boolean transferOwnership(java.lang.String domainId, java.lang.String groupId, java.lang.String currentOwnerId, java.lang.String newOwnerId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
+    public boolean transferGroupOwnership(java.lang.String domainId, java.lang.String groupId, java.lang.String newOwnerId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException;
 
     /**
      * <p>API method to add Admin for a group</p>
@@ -513,7 +512,7 @@ public class SharingRegistryService {
 
     public void removeUsersFromGroup(java.lang.String domainId, java.util.List<java.lang.String> userIds, java.lang.String groupId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
 
-    public void transferOwnership(java.lang.String domainId, java.lang.String groupId, java.lang.String currentOwnerId, java.lang.String newOwnerId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
+    public void transferGroupOwnership(java.lang.String domainId, java.lang.String groupId, java.lang.String newOwnerId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
 
     public void addGroupAdmins(java.lang.String domainId, java.lang.String groupId, java.util.List<java.lang.String> adminIds, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
 
@@ -1143,33 +1142,32 @@ public class SharingRegistryService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "removeUsersFromGroup failed: unknown result");
     }
 
-    public boolean transferOwnership(java.lang.String domainId, java.lang.String groupId, java.lang.String currentOwnerId, java.lang.String newOwnerId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public boolean transferGroupOwnership(java.lang.String domainId, java.lang.String groupId, java.lang.String newOwnerId) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
     {
-      send_transferOwnership(domainId, groupId, currentOwnerId, newOwnerId);
-      return recv_transferOwnership();
+      send_transferGroupOwnership(domainId, groupId, newOwnerId);
+      return recv_transferGroupOwnership();
     }
 
-    public void send_transferOwnership(java.lang.String domainId, java.lang.String groupId, java.lang.String currentOwnerId, java.lang.String newOwnerId) throws org.apache.thrift.TException
+    public void send_transferGroupOwnership(java.lang.String domainId, java.lang.String groupId, java.lang.String newOwnerId) throws org.apache.thrift.TException
     {
-      transferOwnership_args args = new transferOwnership_args();
+      transferGroupOwnership_args args = new transferGroupOwnership_args();
       args.setDomainId(domainId);
       args.setGroupId(groupId);
-      args.setCurrentOwnerId(currentOwnerId);
       args.setNewOwnerId(newOwnerId);
-      sendBase("transferOwnership", args);
+      sendBase("transferGroupOwnership", args);
     }
 
-    public boolean recv_transferOwnership() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
+    public boolean recv_transferGroupOwnership() throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
     {
-      transferOwnership_result result = new transferOwnership_result();
-      receiveBase(result, "transferOwnership");
+      transferGroupOwnership_result result = new transferGroupOwnership_result();
+      receiveBase(result, "transferGroupOwnership");
       if (result.isSetSuccess()) {
         return result.success;
       }
       if (result.sre != null) {
         throw result.sre;
       }
-      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "transferOwnership failed: unknown result");
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "transferGroupOwnership failed: unknown result");
     }
 
     public boolean addGroupAdmins(java.lang.String domainId, java.lang.String groupId, java.util.List<java.lang.String> adminIds) throws org.apache.airavata.sharing.registry.models.SharingRegistryException, org.apache.thrift.TException
@@ -2822,32 +2820,29 @@ public class SharingRegistryService {
       }
     }
 
-    public void transferOwnership(java.lang.String domainId, java.lang.String groupId, java.lang.String currentOwnerId, java.lang.String newOwnerId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
+    public void transferGroupOwnership(java.lang.String domainId, java.lang.String groupId, java.lang.String newOwnerId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      transferOwnership_call method_call = new transferOwnership_call(domainId, groupId, currentOwnerId, newOwnerId, resultHandler, this, ___protocolFactory, ___transport);
+      transferGroupOwnership_call method_call = new transferGroupOwnership_call(domainId, groupId, newOwnerId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
-    public static class transferOwnership_call extends org.apache.thrift.async.TAsyncMethodCall<java.lang.Boolean> {
+    public static class transferGroupOwnership_call extends org.apache.thrift.async.TAsyncMethodCall<java.lang.Boolean> {
       private java.lang.String domainId;
       private java.lang.String groupId;
-      private java.lang.String currentOwnerId;
       private java.lang.String newOwnerId;
-      public transferOwnership_call(java.lang.String domainId, java.lang.String groupId, java.lang.String currentOwnerId, java.lang.String newOwnerId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public transferGroupOwnership_call(java.lang.String domainId, java.lang.String groupId, java.lang.String newOwnerId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.domainId = domainId;
         this.groupId = groupId;
-        this.currentOwnerId = currentOwnerId;
         this.newOwnerId = newOwnerId;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
-        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("transferOwnership", org.apache.thrift.protocol.TMessageType.CALL, 0));
-        transferOwnership_args args = new transferOwnership_args();
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("transferGroupOwnership", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        transferGroupOwnership_args args = new transferGroupOwnership_args();
         args.setDomainId(domainId);
         args.setGroupId(groupId);
-        args.setCurrentOwnerId(currentOwnerId);
         args.setNewOwnerId(newOwnerId);
         args.write(prot);
         prot.writeMessageEnd();
@@ -2859,7 +2854,7 @@ public class SharingRegistryService {
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        return (new Client(prot)).recv_transferOwnership();
+        return (new Client(prot)).recv_transferGroupOwnership();
       }
     }
 
@@ -4155,7 +4150,7 @@ public class SharingRegistryService {
       processMap.put("getGroups", new getGroups());
       processMap.put("addUsersToGroup", new addUsersToGroup());
       processMap.put("removeUsersFromGroup", new removeUsersFromGroup());
-      processMap.put("transferOwnership", new transferOwnership());
+      processMap.put("transferGroupOwnership", new transferGroupOwnership());
       processMap.put("addGroupAdmins", new addGroupAdmins());
       processMap.put("removeGroupAdmins", new removeGroupAdmins());
       processMap.put("hasAdminAccess", new hasAdminAccess());
@@ -4684,23 +4679,23 @@ public class SharingRegistryService {
       }
     }
 
-    public static class transferOwnership<I extends Iface> extends org.apache.thrift.ProcessFunction<I, transferOwnership_args> {
-      public transferOwnership() {
-        super("transferOwnership");
+    public static class transferGroupOwnership<I extends Iface> extends org.apache.thrift.ProcessFunction<I, transferGroupOwnership_args> {
+      public transferGroupOwnership() {
+        super("transferGroupOwnership");
       }
 
-      public transferOwnership_args getEmptyArgsInstance() {
-        return new transferOwnership_args();
+      public transferGroupOwnership_args getEmptyArgsInstance() {
+        return new transferGroupOwnership_args();
       }
 
       protected boolean isOneway() {
         return false;
       }
 
-      public transferOwnership_result getResult(I iface, transferOwnership_args args) throws org.apache.thrift.TException {
-        transferOwnership_result result = new transferOwnership_result();
+      public transferGroupOwnership_result getResult(I iface, transferGroupOwnership_args args) throws org.apache.thrift.TException {
+        transferGroupOwnership_result result = new transferGroupOwnership_result();
         try {
-          result.success = iface.transferOwnership(args.domainId, args.groupId, args.currentOwnerId, args.newOwnerId);
+          result.success = iface.transferGroupOwnership(args.domainId, args.groupId, args.newOwnerId);
           result.setSuccessIsSet(true);
         } catch (org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
           result.sre = sre;
@@ -5582,7 +5577,7 @@ public class SharingRegistryService {
       processMap.put("getGroups", new getGroups());
       processMap.put("addUsersToGroup", new addUsersToGroup());
       processMap.put("removeUsersFromGroup", new removeUsersFromGroup());
-      processMap.put("transferOwnership", new transferOwnership());
+      processMap.put("transferGroupOwnership", new transferGroupOwnership());
       processMap.put("addGroupAdmins", new addGroupAdmins());
       processMap.put("removeGroupAdmins", new removeGroupAdmins());
       processMap.put("hasAdminAccess", new hasAdminAccess());
@@ -6935,20 +6930,20 @@ public class SharingRegistryService {
       }
     }
 
-    public static class transferOwnership<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, transferOwnership_args, java.lang.Boolean> {
-      public transferOwnership() {
-        super("transferOwnership");
+    public static class transferGroupOwnership<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, transferGroupOwnership_args, java.lang.Boolean> {
+      public transferGroupOwnership() {
+        super("transferGroupOwnership");
       }
 
-      public transferOwnership_args getEmptyArgsInstance() {
-        return new transferOwnership_args();
+      public transferGroupOwnership_args getEmptyArgsInstance() {
+        return new transferGroupOwnership_args();
       }
 
       public org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> getResultHandler(final org.apache.thrift.server.AbstractNonblockingServer.AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
         return new org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean>() { 
           public void onComplete(java.lang.Boolean o) {
-            transferOwnership_result result = new transferOwnership_result();
+            transferGroupOwnership_result result = new transferGroupOwnership_result();
             result.success = o;
             result.setSuccessIsSet(true);
             try {
@@ -6964,7 +6959,7 @@ public class SharingRegistryService {
           public void onError(java.lang.Exception e) {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TSerializable msg;
-            transferOwnership_result result = new transferOwnership_result();
+            transferGroupOwnership_result result = new transferGroupOwnership_result();
             if (e instanceof org.apache.airavata.sharing.registry.models.SharingRegistryException) {
               result.sre = (org.apache.airavata.sharing.registry.models.SharingRegistryException) e;
               result.setSreIsSet(true);
@@ -6996,8 +6991,8 @@ public class SharingRegistryService {
         return false;
       }
 
-      public void start(I iface, transferOwnership_args args, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
-        iface.transferOwnership(args.domainId, args.groupId, args.currentOwnerId, args.newOwnerId,resultHandler);
+      public void start(I iface, transferGroupOwnership_args args, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
+        iface.transferGroupOwnership(args.domainId, args.groupId, args.newOwnerId,resultHandler);
       }
     }
 
@@ -27560,28 +27555,25 @@ public class SharingRegistryService {
     }
   }
 
-  public static class transferOwnership_args implements org.apache.thrift.TBase<transferOwnership_args, transferOwnership_args._Fields>, java.io.Serializable, Cloneable, Comparable<transferOwnership_args>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("transferOwnership_args");
+  public static class transferGroupOwnership_args implements org.apache.thrift.TBase<transferGroupOwnership_args, transferGroupOwnership_args._Fields>, java.io.Serializable, Cloneable, Comparable<transferGroupOwnership_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("transferGroupOwnership_args");
 
     private static final org.apache.thrift.protocol.TField DOMAIN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("domainId", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField GROUP_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("groupId", org.apache.thrift.protocol.TType.STRING, (short)2);
-    private static final org.apache.thrift.protocol.TField CURRENT_OWNER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("currentOwnerId", org.apache.thrift.protocol.TType.STRING, (short)3);
-    private static final org.apache.thrift.protocol.TField NEW_OWNER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("newOwnerId", org.apache.thrift.protocol.TType.STRING, (short)4);
+    private static final org.apache.thrift.protocol.TField NEW_OWNER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("newOwnerId", org.apache.thrift.protocol.TType.STRING, (short)3);
 
-    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new transferOwnership_argsStandardSchemeFactory();
-    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new transferOwnership_argsTupleSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new transferGroupOwnership_argsStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new transferGroupOwnership_argsTupleSchemeFactory();
 
     public java.lang.String domainId; // required
     public java.lang.String groupId; // required
-    public java.lang.String currentOwnerId; // required
     public java.lang.String newOwnerId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       DOMAIN_ID((short)1, "domainId"),
       GROUP_ID((short)2, "groupId"),
-      CURRENT_OWNER_ID((short)3, "currentOwnerId"),
-      NEW_OWNER_ID((short)4, "newOwnerId");
+      NEW_OWNER_ID((short)3, "newOwnerId");
 
       private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -27600,9 +27592,7 @@ public class SharingRegistryService {
             return DOMAIN_ID;
           case 2: // GROUP_ID
             return GROUP_ID;
-          case 3: // CURRENT_OWNER_ID
-            return CURRENT_OWNER_ID;
-          case 4: // NEW_OWNER_ID
+          case 3: // NEW_OWNER_ID
             return NEW_OWNER_ID;
           default:
             return null;
@@ -27651,57 +27641,49 @@ public class SharingRegistryService {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.GROUP_ID, new org.apache.thrift.meta_data.FieldMetaData("groupId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-      tmpMap.put(_Fields.CURRENT_OWNER_ID, new org.apache.thrift.meta_data.FieldMetaData("currentOwnerId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.NEW_OWNER_ID, new org.apache.thrift.meta_data.FieldMetaData("newOwnerId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(transferOwnership_args.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(transferGroupOwnership_args.class, metaDataMap);
     }
 
-    public transferOwnership_args() {
+    public transferGroupOwnership_args() {
     }
 
-    public transferOwnership_args(
+    public transferGroupOwnership_args(
       java.lang.String domainId,
       java.lang.String groupId,
-      java.lang.String currentOwnerId,
       java.lang.String newOwnerId)
     {
       this();
       this.domainId = domainId;
       this.groupId = groupId;
-      this.currentOwnerId = currentOwnerId;
       this.newOwnerId = newOwnerId;
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public transferOwnership_args(transferOwnership_args other) {
+    public transferGroupOwnership_args(transferGroupOwnership_args other) {
       if (other.isSetDomainId()) {
         this.domainId = other.domainId;
       }
       if (other.isSetGroupId()) {
         this.groupId = other.groupId;
       }
-      if (other.isSetCurrentOwnerId()) {
-        this.currentOwnerId = other.currentOwnerId;
-      }
       if (other.isSetNewOwnerId()) {
         this.newOwnerId = other.newOwnerId;
       }
     }
 
-    public transferOwnership_args deepCopy() {
-      return new transferOwnership_args(this);
+    public transferGroupOwnership_args deepCopy() {
+      return new transferGroupOwnership_args(this);
     }
 
     @Override
     public void clear() {
       this.domainId = null;
       this.groupId = null;
-      this.currentOwnerId = null;
       this.newOwnerId = null;
     }
 
@@ -27709,7 +27691,7 @@ public class SharingRegistryService {
       return this.domainId;
     }
 
-    public transferOwnership_args setDomainId(java.lang.String domainId) {
+    public transferGroupOwnership_args setDomainId(java.lang.String domainId) {
       this.domainId = domainId;
       return this;
     }
@@ -27733,7 +27715,7 @@ public class SharingRegistryService {
       return this.groupId;
     }
 
-    public transferOwnership_args setGroupId(java.lang.String groupId) {
+    public transferGroupOwnership_args setGroupId(java.lang.String groupId) {
       this.groupId = groupId;
       return this;
     }
@@ -27753,35 +27735,11 @@ public class SharingRegistryService {
       }
     }
 
-    public java.lang.String getCurrentOwnerId() {
-      return this.currentOwnerId;
-    }
-
-    public transferOwnership_args setCurrentOwnerId(java.lang.String currentOwnerId) {
-      this.currentOwnerId = currentOwnerId;
-      return this;
-    }
-
-    public void unsetCurrentOwnerId() {
-      this.currentOwnerId = null;
-    }
-
-    /** Returns true if field currentOwnerId is set (has been assigned a value) and false otherwise */
-    public boolean isSetCurrentOwnerId() {
-      return this.currentOwnerId != null;
-    }
-
-    public void setCurrentOwnerIdIsSet(boolean value) {
-      if (!value) {
-        this.currentOwnerId = null;
-      }
-    }
-
     public java.lang.String getNewOwnerId() {
       return this.newOwnerId;
     }
 
-    public transferOwnership_args setNewOwnerId(java.lang.String newOwnerId) {
+    public transferGroupOwnership_args setNewOwnerId(java.lang.String newOwnerId) {
       this.newOwnerId = newOwnerId;
       return this;
     }
@@ -27819,14 +27777,6 @@ public class SharingRegistryService {
         }
         break;
 
-      case CURRENT_OWNER_ID:
-        if (value == null) {
-          unsetCurrentOwnerId();
-        } else {
-          setCurrentOwnerId((java.lang.String)value);
-        }
-        break;
-
       case NEW_OWNER_ID:
         if (value == null) {
           unsetNewOwnerId();
@@ -27846,9 +27796,6 @@ public class SharingRegistryService {
       case GROUP_ID:
         return getGroupId();
 
-      case CURRENT_OWNER_ID:
-        return getCurrentOwnerId();
-
       case NEW_OWNER_ID:
         return getNewOwnerId();
 
@@ -27867,8 +27814,6 @@ public class SharingRegistryService {
         return isSetDomainId();
       case GROUP_ID:
         return isSetGroupId();
-      case CURRENT_OWNER_ID:
-        return isSetCurrentOwnerId();
       case NEW_OWNER_ID:
         return isSetNewOwnerId();
       }
@@ -27879,12 +27824,12 @@ public class SharingRegistryService {
     public boolean equals(java.lang.Object that) {
       if (that == null)
         return false;
-      if (that instanceof transferOwnership_args)
-        return this.equals((transferOwnership_args)that);
+      if (that instanceof transferGroupOwnership_args)
+        return this.equals((transferGroupOwnership_args)that);
       return false;
     }
 
-    public boolean equals(transferOwnership_args that) {
+    public boolean equals(transferGroupOwnership_args that) {
       if (that == null)
         return false;
       if (this == that)
@@ -27905,15 +27850,6 @@ public class SharingRegistryService {
         if (!(this_present_groupId && that_present_groupId))
           return false;
         if (!this.groupId.equals(that.groupId))
-          return false;
-      }
-
-      boolean this_present_currentOwnerId = true && this.isSetCurrentOwnerId();
-      boolean that_present_currentOwnerId = true && that.isSetCurrentOwnerId();
-      if (this_present_currentOwnerId || that_present_currentOwnerId) {
-        if (!(this_present_currentOwnerId && that_present_currentOwnerId))
-          return false;
-        if (!this.currentOwnerId.equals(that.currentOwnerId))
           return false;
       }
 
@@ -27941,10 +27877,6 @@ public class SharingRegistryService {
       if (isSetGroupId())
         hashCode = hashCode * 8191 + groupId.hashCode();
 
-      hashCode = hashCode * 8191 + ((isSetCurrentOwnerId()) ? 131071 : 524287);
-      if (isSetCurrentOwnerId())
-        hashCode = hashCode * 8191 + currentOwnerId.hashCode();
-
       hashCode = hashCode * 8191 + ((isSetNewOwnerId()) ? 131071 : 524287);
       if (isSetNewOwnerId())
         hashCode = hashCode * 8191 + newOwnerId.hashCode();
@@ -27953,7 +27885,7 @@ public class SharingRegistryService {
     }
 
     @Override
-    public int compareTo(transferOwnership_args other) {
+    public int compareTo(transferGroupOwnership_args other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -27976,16 +27908,6 @@ public class SharingRegistryService {
       }
       if (isSetGroupId()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.groupId, other.groupId);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      lastComparison = java.lang.Boolean.valueOf(isSetCurrentOwnerId()).compareTo(other.isSetCurrentOwnerId());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetCurrentOwnerId()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.currentOwnerId, other.currentOwnerId);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -28017,7 +27939,7 @@ public class SharingRegistryService {
 
     @Override
     public java.lang.String toString() {
-      java.lang.StringBuilder sb = new java.lang.StringBuilder("transferOwnership_args(");
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("transferGroupOwnership_args(");
       boolean first = true;
 
       sb.append("domainId:");
@@ -28033,14 +27955,6 @@ public class SharingRegistryService {
         sb.append("null");
       } else {
         sb.append(this.groupId);
-      }
-      first = false;
-      if (!first) sb.append(", ");
-      sb.append("currentOwnerId:");
-      if (this.currentOwnerId == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.currentOwnerId);
       }
       first = false;
       if (!first) sb.append(", ");
@@ -28062,9 +27976,6 @@ public class SharingRegistryService {
       }
       if (groupId == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'groupId' was not present! Struct: " + toString());
-      }
-      if (currentOwnerId == null) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'currentOwnerId' was not present! Struct: " + toString());
       }
       if (newOwnerId == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'newOwnerId' was not present! Struct: " + toString());
@@ -28088,15 +27999,15 @@ public class SharingRegistryService {
       }
     }
 
-    private static class transferOwnership_argsStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
-      public transferOwnership_argsStandardScheme getScheme() {
-        return new transferOwnership_argsStandardScheme();
+    private static class transferGroupOwnership_argsStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public transferGroupOwnership_argsStandardScheme getScheme() {
+        return new transferGroupOwnership_argsStandardScheme();
       }
     }
 
-    private static class transferOwnership_argsStandardScheme extends org.apache.thrift.scheme.StandardScheme<transferOwnership_args> {
+    private static class transferGroupOwnership_argsStandardScheme extends org.apache.thrift.scheme.StandardScheme<transferGroupOwnership_args> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, transferOwnership_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, transferGroupOwnership_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -28122,15 +28033,7 @@ public class SharingRegistryService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 3: // CURRENT_OWNER_ID
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.currentOwnerId = iprot.readString();
-                struct.setCurrentOwnerIdIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 4: // NEW_OWNER_ID
+            case 3: // NEW_OWNER_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.newOwnerId = iprot.readString();
                 struct.setNewOwnerIdIsSet(true);
@@ -28149,7 +28052,7 @@ public class SharingRegistryService {
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, transferOwnership_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, transferGroupOwnership_args struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -28163,11 +28066,6 @@ public class SharingRegistryService {
           oprot.writeString(struct.groupId);
           oprot.writeFieldEnd();
         }
-        if (struct.currentOwnerId != null) {
-          oprot.writeFieldBegin(CURRENT_OWNER_ID_FIELD_DESC);
-          oprot.writeString(struct.currentOwnerId);
-          oprot.writeFieldEnd();
-        }
         if (struct.newOwnerId != null) {
           oprot.writeFieldBegin(NEW_OWNER_ID_FIELD_DESC);
           oprot.writeString(struct.newOwnerId);
@@ -28179,32 +28077,29 @@ public class SharingRegistryService {
 
     }
 
-    private static class transferOwnership_argsTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
-      public transferOwnership_argsTupleScheme getScheme() {
-        return new transferOwnership_argsTupleScheme();
+    private static class transferGroupOwnership_argsTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public transferGroupOwnership_argsTupleScheme getScheme() {
+        return new transferGroupOwnership_argsTupleScheme();
       }
     }
 
-    private static class transferOwnership_argsTupleScheme extends org.apache.thrift.scheme.TupleScheme<transferOwnership_args> {
+    private static class transferGroupOwnership_argsTupleScheme extends org.apache.thrift.scheme.TupleScheme<transferGroupOwnership_args> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, transferOwnership_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, transferGroupOwnership_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         oprot.writeString(struct.domainId);
         oprot.writeString(struct.groupId);
-        oprot.writeString(struct.currentOwnerId);
         oprot.writeString(struct.newOwnerId);
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, transferOwnership_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, transferGroupOwnership_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         struct.domainId = iprot.readString();
         struct.setDomainIdIsSet(true);
         struct.groupId = iprot.readString();
         struct.setGroupIdIsSet(true);
-        struct.currentOwnerId = iprot.readString();
-        struct.setCurrentOwnerIdIsSet(true);
         struct.newOwnerId = iprot.readString();
         struct.setNewOwnerIdIsSet(true);
       }
@@ -28215,14 +28110,14 @@ public class SharingRegistryService {
     }
   }
 
-  public static class transferOwnership_result implements org.apache.thrift.TBase<transferOwnership_result, transferOwnership_result._Fields>, java.io.Serializable, Cloneable, Comparable<transferOwnership_result>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("transferOwnership_result");
+  public static class transferGroupOwnership_result implements org.apache.thrift.TBase<transferGroupOwnership_result, transferGroupOwnership_result._Fields>, java.io.Serializable, Cloneable, Comparable<transferGroupOwnership_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("transferGroupOwnership_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)0);
     private static final org.apache.thrift.protocol.TField SRE_FIELD_DESC = new org.apache.thrift.protocol.TField("sre", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
-    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new transferOwnership_resultStandardSchemeFactory();
-    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new transferOwnership_resultTupleSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new transferGroupOwnership_resultStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new transferGroupOwnership_resultTupleSchemeFactory();
 
     public boolean success; // required
     public org.apache.airavata.sharing.registry.models.SharingRegistryException sre; // required
@@ -28299,13 +28194,13 @@ public class SharingRegistryService {
       tmpMap.put(_Fields.SRE, new org.apache.thrift.meta_data.FieldMetaData("sre", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.sharing.registry.models.SharingRegistryException.class)));
       metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(transferOwnership_result.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(transferGroupOwnership_result.class, metaDataMap);
     }
 
-    public transferOwnership_result() {
+    public transferGroupOwnership_result() {
     }
 
-    public transferOwnership_result(
+    public transferGroupOwnership_result(
       boolean success,
       org.apache.airavata.sharing.registry.models.SharingRegistryException sre)
     {
@@ -28318,7 +28213,7 @@ public class SharingRegistryService {
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public transferOwnership_result(transferOwnership_result other) {
+    public transferGroupOwnership_result(transferGroupOwnership_result other) {
       __isset_bitfield = other.__isset_bitfield;
       this.success = other.success;
       if (other.isSetSre()) {
@@ -28326,8 +28221,8 @@ public class SharingRegistryService {
       }
     }
 
-    public transferOwnership_result deepCopy() {
-      return new transferOwnership_result(this);
+    public transferGroupOwnership_result deepCopy() {
+      return new transferGroupOwnership_result(this);
     }
 
     @Override
@@ -28341,7 +28236,7 @@ public class SharingRegistryService {
       return this.success;
     }
 
-    public transferOwnership_result setSuccess(boolean success) {
+    public transferGroupOwnership_result setSuccess(boolean success) {
       this.success = success;
       setSuccessIsSet(true);
       return this;
@@ -28364,7 +28259,7 @@ public class SharingRegistryService {
       return this.sre;
     }
 
-    public transferOwnership_result setSre(org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
+    public transferGroupOwnership_result setSre(org.apache.airavata.sharing.registry.models.SharingRegistryException sre) {
       this.sre = sre;
       return this;
     }
@@ -28436,12 +28331,12 @@ public class SharingRegistryService {
     public boolean equals(java.lang.Object that) {
       if (that == null)
         return false;
-      if (that instanceof transferOwnership_result)
-        return this.equals((transferOwnership_result)that);
+      if (that instanceof transferGroupOwnership_result)
+        return this.equals((transferGroupOwnership_result)that);
       return false;
     }
 
-    public boolean equals(transferOwnership_result that) {
+    public boolean equals(transferGroupOwnership_result that) {
       if (that == null)
         return false;
       if (this == that)
@@ -28482,7 +28377,7 @@ public class SharingRegistryService {
     }
 
     @Override
-    public int compareTo(transferOwnership_result other) {
+    public int compareTo(transferGroupOwnership_result other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -28526,7 +28421,7 @@ public class SharingRegistryService {
 
     @Override
     public java.lang.String toString() {
-      java.lang.StringBuilder sb = new java.lang.StringBuilder("transferOwnership_result(");
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("transferGroupOwnership_result(");
       boolean first = true;
 
       sb.append("success:");
@@ -28567,15 +28462,15 @@ public class SharingRegistryService {
       }
     }
 
-    private static class transferOwnership_resultStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
-      public transferOwnership_resultStandardScheme getScheme() {
-        return new transferOwnership_resultStandardScheme();
+    private static class transferGroupOwnership_resultStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public transferGroupOwnership_resultStandardScheme getScheme() {
+        return new transferGroupOwnership_resultStandardScheme();
       }
     }
 
-    private static class transferOwnership_resultStandardScheme extends org.apache.thrift.scheme.StandardScheme<transferOwnership_result> {
+    private static class transferGroupOwnership_resultStandardScheme extends org.apache.thrift.scheme.StandardScheme<transferGroupOwnership_result> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, transferOwnership_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, transferGroupOwnership_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -28613,7 +28508,7 @@ public class SharingRegistryService {
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, transferOwnership_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, transferGroupOwnership_result struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -28633,16 +28528,16 @@ public class SharingRegistryService {
 
     }
 
-    private static class transferOwnership_resultTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
-      public transferOwnership_resultTupleScheme getScheme() {
-        return new transferOwnership_resultTupleScheme();
+    private static class transferGroupOwnership_resultTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public transferGroupOwnership_resultTupleScheme getScheme() {
+        return new transferGroupOwnership_resultTupleScheme();
       }
     }
 
-    private static class transferOwnership_resultTupleScheme extends org.apache.thrift.scheme.TupleScheme<transferOwnership_result> {
+    private static class transferGroupOwnership_resultTupleScheme extends org.apache.thrift.scheme.TupleScheme<transferGroupOwnership_result> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, transferOwnership_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, transferGroupOwnership_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         java.util.BitSet optionals = new java.util.BitSet();
         if (struct.isSetSuccess()) {
@@ -28661,7 +28556,7 @@ public class SharingRegistryService {
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, transferOwnership_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, transferGroupOwnership_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         java.util.BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
