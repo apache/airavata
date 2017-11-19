@@ -115,7 +115,7 @@ service SharingRegistryService {
     /**
      <p>API method to transfer group ownership</p>
     */
-    bool transferOwnership(1: required string domainId, 2: required string groupId, 3: required string currentOwnerId, 4: required string newOwnerId) throws (1: sharing_models.SharingRegistryException sre);
+    bool transferGroupOwnership(1: required string domainId, 2: required string groupId, 3: required string newOwnerId) throws (1: sharing_models.SharingRegistryException sre);
     /**
     <p>API method to add Admin for a group</p>
     */
