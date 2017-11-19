@@ -6,19 +6,21 @@
                 New Project <i class="fa fa-plus" aria-hidden="true"></i>
             </slot>
         </b-btn>
-        <b-modal id="modal-new-project" ref="modalNewProject" title="Create New Project" v-on:ok="onCreateProject">
+        <b-modal id="modal-new-project" ref="modalNewProject" title="Create New Project"
+                v-on:ok="onCreateProject" v-bind:cancel-disabled="cancelDisabled"
+                v-bind:ok-disabled="okDisabled">
             <b-form @submit="onCreateProject" @input="onUserInput" novalidate>
                 <b-form-group label="Project Name" label-for="new-project-name" v-bind:feedback="newProjectNameFeedback" v-bind:state="newProjectNameState">
                     <b-form-input id="new-project-name"
-                    type="text" v-model="newProject.name" required
-                    placeholder="Project name"
-                    v-bind:state="newProjectNameState"></b-form-input>
+                        type="text" v-model="newProject.name" required
+                        placeholder="Project name"
+                        v-bind:state="newProjectNameState"></b-form-input>
                 </b-form-group>
                 <b-form-group label="Project Description" label-for="new-project-description">
                     <b-form-textarea id="new-project-description"
-                    type="text" v-model="newProject.description"
-                    placeholder="(Optional) Project description"
-                    :rows="3"></b-form-textarea>
+                        type="text" v-model="newProject.description"
+                        placeholder="(Optional) Project description"
+                        :rows="3"></b-form-textarea>
                 </b-form-group>
             </b-form>
         </b-modal>
@@ -36,6 +38,7 @@ export default {
             newProject: new models.Project(),
             newProjectServerValidationData: null,
             userBeginsInput: false,
+            loading: false,
         }
     },
     components: {
@@ -44,6 +47,7 @@ export default {
         onCreateProject: function(event) {
             // Prevent hiding modal, hide it programmatically when project gets created
             event.preventDefault();
+            this.loading = true;
             services.ProjectService.create(this.newProject)
                 .then(result => {
                     this.$refs.modalNewProject.hide();
@@ -54,7 +58,8 @@ export default {
                 })
                 .catch(error => {
                     this.newProjectServerValidationData = error.data;
-                });
+                })
+                .then(() => this.loading = false, () => this.loading = false);
         },
         onUserInput: function(event) {
             this.userBeginsInput = true;
@@ -84,6 +89,15 @@ export default {
                 return null;
             }
         },
+        formIsValid: function() {
+            return this.newProjectNameState == null;
+        },
+        cancelDisabled: function() {
+            return this.loading;
+        },
+        okDisabled: function() {
+            return this.loading || !this.userBeginsInput || !this.formIsValid;
+        }
     },
 }
 </script>
