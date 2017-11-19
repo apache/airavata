@@ -14,7 +14,6 @@ public class OwnerEntity {
     private String domainId;
     private String ownerId;
 
-    @Id
     @Column(name = "GROUP_ID")
     public String getGroupId() {
         return groupId;
@@ -33,6 +32,7 @@ public class OwnerEntity {
     public void setDomainId(String domainId) {
         this.domainId = domainId;
     }
+    @Id
     @Column(name = "OWNER_ID")
     public String getOwnerId() {
         return ownerId;
