@@ -413,22 +413,85 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
 
     @Override
     public boolean addGroupAdmins(String domainId, String groupId, List<String> adminIds) throws SharingRegistryException, TException {
-        return false;
+        try{
+            for (String adminId: adminIds) {
+                AdminPK adminPK = new AdminPK();
+                adminPK.setGroupId(groupId);
+                adminPK.setAdminId(adminId);
+                adminPK.setDomainId(domainId);
+
+                if((new AdminRepository()).get(adminPK) != null)
+                    throw new DuplicateEntryException("User already an admin for the group");
+
+                Admin admin = new Admin();
+                admin.setAdminId(adminId);
+                admin.setDomainId(domainId);
+                admin.setGroupId(groupId);
+                (new AdminRepository()).create(admin);
+            }
+            return true;
+        }
+        catch (Throwable ex) {
+            logger.error(ex.getMessage(), ex);
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+        }
     }
 
     @Override
     public boolean removeGroupAdmins(String domainId, String groupId, List<String> adminIds) throws SharingRegistryException, TException {
-        return false;
+        try {
+            for (String adminId: adminIds) {
+                AdminPK adminPK = new AdminPK();
+                adminPK.setAdminId(adminId);
+                adminPK.setDomainId(domainId);
+                adminPK.setGroupId(groupId);
+                (new AdminRepository()).delete(adminPK);
+            }
+            return true;
+        }
+        catch (Throwable ex) {
+            logger.error(ex.getMessage(), ex);
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+        }
     }
 
     @Override
     public boolean hasAdminAccess(String domainId, String groupId, String adminId) throws SharingRegistryException, TException {
-        return false;
+        try{
+            AdminPK adminPK = new AdminPK();
+            adminPK.setGroupId(groupId);
+            adminPK.setAdminId(adminId);
+            adminPK.setDomainId(domainId);
+
+            if((new AdminRepository()).get(adminPK) != null)
+                return true;
+            return false;
+        }
+        catch (Throwable ex) {
+            logger.error(ex.getMessage(), ex);
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+        }
     }
 
     @Override
     public boolean hasOwnerAccess(String domainId, String groupId, String ownerId) throws SharingRegistryException, TException {
-        return false;
+        try {
+            OwnerPK ownerPK = new OwnerPK();
+            ownerPK.setDomainId(domainId);
+            ownerPK.setOwnerId(ownerId);
+
+            Owner owner = (new OwnerRepository()).get(ownerPK);
+            if (owner != null) {
+                if (owner.groupId.equals(groupId)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        catch (Throwable ex) {
+            logger.error(ex.getMessage(), ex);
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+        }
     }
 
     @Override
