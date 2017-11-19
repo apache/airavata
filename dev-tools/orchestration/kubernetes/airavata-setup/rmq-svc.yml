@@ -12,7 +12,7 @@ metadata:
 
 spec:
 
-  type: NodePort 
+  type: NodePort
 
   ports:
 

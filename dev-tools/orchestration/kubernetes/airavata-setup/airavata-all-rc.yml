@@ -8,10 +8,10 @@ metadata:
     
     labels:
 
-      app : airavata-all-sc
+      app : airavata-all-rc
 spec:
 
-  replicas: 5
+  replicas: 2
 
   selector:
 
