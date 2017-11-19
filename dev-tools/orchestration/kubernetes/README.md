@@ -22,7 +22,7 @@ I have 3 slave nodes with 1 master
 
 6) `kubectl create -f  	rmq-deploy.yml`
 
-7) `kubectl create -f  	mq-svc.yml`
+7) `kubectl create -f  	rmq-svc.yml`
 
 8) `s=$(kubectl describe svc | grep :5672);rabbitmqip="$( cut -d ':' -f 2 <<< "$s" )"; echo "$rabbitmqip"`
 
@@ -40,4 +40,4 @@ I have 3 slave nodes with 1 master
 
 15) `kubectl create -f airavata-all-rc.yml`
 
-16) `kubectl create -f airavata-all-svc.yml`
+16) The airavata-setup should be up
