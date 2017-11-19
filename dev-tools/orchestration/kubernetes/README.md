@@ -28,8 +28,16 @@ I have 3 slave nodes with 1 master
 
 9) `kubectl create -f  	mariadb-deploy.yml`
 
-10) `kubectl create -f  	zookeeper-deploy.yml`
+10) `s=$(kubectl describe deploy | grep :3306);mariadbip="$( cut -d ':' -f 2 <<< "$s" )"; echo "$mariadbip"`
 
-11) `kubectl create -f airavata-all-rc.yml`
+11) `kubectl create -f zookeeper-deploy.yml`
 
-12) `kubectl create -f airavata-all-svc.yml`
+12) `s=$(kubectl describe deploy | grep :3888);zookeeperip="$( cut -d ':' -f 2 <<< "$s" )"; echo "$zookeeperip"`
+
+13)  `cd ../dockermodule/middleware/`
+
+14) edit the file to change the ip addresses/hostname to reposective ip adresses of rmq, mariadb and zookeepeer and save.
+
+15) `kubectl create -f airavata-all-rc.yml`
+
+16) `kubectl create -f airavata-all-svc.yml`
