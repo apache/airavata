@@ -407,8 +407,47 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     }
 
     @Override
-    public boolean transferOwnership(String domainId, String groupId, String currentOwnerId, String newOwnerId) throws SharingRegistryException, TException {
-        return false;
+    public boolean transferGroupOwnership(String domainId, String groupId, String newOwnerId) throws SharingRegistryException, TException {
+        try {
+            if (hasOwnerAccess(domainId, groupId, newOwnerId)) {
+                throw new DuplicateEntryException("User already the current owner of the group");
+            }
+            // remove the new owner as Admin if present
+            if (hasAdminAccess(domainId, groupId, newOwnerId)) {
+                removeGroupAdmins(domainId, groupId, Arrays.asList(newOwnerId));
+            }
+
+            UserGroupPK userGroupPK = new UserGroupPK();
+            userGroupPK.setGroupId(groupId);
+            userGroupPK.setDomainId(domainId);
+            UserGroup userGroup = (new UserGroupRepository()).get(userGroupPK);
+            String currentOwnerId = userGroup.getOwnerId();
+            UserGroup newUserGroup = new UserGroup();
+            newUserGroup.setUpdatedTime(System.currentTimeMillis());
+            newUserGroup.setOwnerId(newOwnerId);
+            newUserGroup.setGroupCardinality(GroupCardinality.MULTI_USER);
+            newUserGroup.setCreatedTime(userGroup.createdTime);
+            newUserGroup = getUpdatedObject(userGroup, newUserGroup);
+
+            (new UserGroupRepository()).update(newUserGroup);
+
+            OwnerPK ownerPK = new OwnerPK();
+            ownerPK.setDomainId(domainId);
+            ownerPK.setOwnerId(currentOwnerId);
+            Owner currentOwner = (new OwnerRepository()).get(ownerPK);
+            Owner newOwner = new Owner();
+            newOwner.setDomainId(domainId);
+            newOwner.setOwnerId(newOwnerId);
+            newOwner.setGroupId(groupId);
+            newOwner = getUpdatedObject(currentOwner, newOwner);
+
+            (new OwnerRepository()).update(newOwner);
+            return true;
+        }
+        catch (Throwable ex) {
+            logger.error(ex.getMessage(), ex);
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+        }
     }
 
     @Override
