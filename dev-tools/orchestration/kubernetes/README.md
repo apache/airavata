@@ -38,6 +38,8 @@ I have 3 slave nodes with 1 master
 
 14) edit the file to change the ip addresses/hostname with respective placeholder ip adresses of rmq, mariadb and zookeepeer and save the file.
 
+15)  `cd ../../airavata-setup/`
+
 15) `kubectl create -f airavata-all-rc.yml`
 
 16) The airavata-setup should be up
