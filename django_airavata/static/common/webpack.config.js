@@ -8,11 +8,11 @@ const extractSass = new ExtractTextPlugin({
 
 module.exports = {
   entry: [
-      './static/common/js/index.js',
-      './static/common/scss/main.scss',
+      './js/index.js',
+      './scss/main.scss',
   ],
   output: {
-    path: path.resolve(__dirname, './static/common/dist/'),
+    path: path.resolve(__dirname, './dist/'),
     publicPath: '/static/common/dist/',
     filename: '[name].js',
     libraryTarget: 'commonjs'

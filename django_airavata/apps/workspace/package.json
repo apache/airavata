@@ -13,7 +13,7 @@
     "bootstrap": "^4.0.0-beta.2",
     "bootstrap-vue": "^1.0.2",
     "django-airavata-api": "file:../api",
-    "django-airavata-common-ui": "file:../..",
+    "django-airavata-common-ui": "file:../../static/common",
     "moment": "^2.18.1",
     "vue": "^2.3.3"
   },
@@ -21,6 +21,7 @@
     "babel-core": "^6.0.0",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.5.1",
+    "clean-webpack-plugin": "^0.1.17",
     "cross-env": "^3.0.0",
     "css-loader": "^0.25.0",
     "extract-text-webpack-plugin": "^3.0.2",

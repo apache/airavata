@@ -4,14 +4,14 @@
   "version": "1.0.0",
   "author": "Marcus Christie <machristie@apache.org>",
   "private": true,
-  "main": "./static/common/dist/main.js",
+  "main": "./dist/main.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --progress --hide-modules",
     "watch": "cross-env NODE_ENV=development webpack --watch",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
-    "django-airavata-api": "file:apps/api",
+    "django-airavata-api": "file:../../apps/api",
     "vue": "^2.3.3"
   },
   "devDependencies": {
