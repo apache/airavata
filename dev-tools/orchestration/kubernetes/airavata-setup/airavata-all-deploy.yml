@@ -8,8 +8,9 @@ metadata:
 spec:
   replicas: 3
   selector:
-    name: airavata-all
-    app: airavata
+    matchLabels:
+      name: airavata-all
+      app: airavata
   template:
     metadata:
       labels:

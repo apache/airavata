@@ -4,8 +4,9 @@ metadata:
   name: mariadb
 spec:
   selector:
-    name: mariadb
-    app: airavata
+    matchLabels:
+      name: mariadb
+      app: airavata
   replicas: 1 
   template: 
     metadata:    

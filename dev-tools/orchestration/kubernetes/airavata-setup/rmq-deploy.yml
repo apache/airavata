@@ -2,20 +2,20 @@ apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
   name: rmq
-  label:
+  labels:
     name: rmq
     app: airavata
 spec:
   selector:
-    name: rmq
-    app: airavata
+    matchLabels:
+      name: rmq
+      app: airavata
   replicas: 1 
   template: 
     metadata:    
       labels:
         name: rmq
         app: airavata
-          
     spec:
       containers:
       - name: rmq

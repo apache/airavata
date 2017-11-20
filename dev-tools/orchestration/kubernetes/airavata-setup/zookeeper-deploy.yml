@@ -4,8 +4,9 @@ metadata:
   name: zookeeper
 spec:
   selector:
-    name: zookeeper
-    app: airavata
+    matchLabels:
+      name: zookeeper
+      app: airavata
   replicas: 1 
   template: 
     metadata:    
