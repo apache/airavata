@@ -3,6 +3,7 @@
 {% load static %}
 
 {% block css %}
+{{ block.super }}
 <link rel=stylesheet type=text/css href="{% static 'django_airavata_workspace/dist/dashboard.css' %}">
 {% endblock %}
 
@@ -13,5 +14,6 @@
 {% endblock content %}
 
 {% block scripts %}
+{{ block.super }}
 <script src="{% static "django_airavata_workspace/dist/dashboard.js" %}"></script>
 {% endblock %}

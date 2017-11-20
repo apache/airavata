@@ -64,6 +64,10 @@ module.exports = {
       new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /^en$/),
       new ExtractTextPlugin("[name].css"),
       new CleanWebpackPlugin(['./static/django_airavata_workspace/dist']),
+      new webpack.optimize.CommonsChunkPlugin({
+          name: 'common',
+      }),
+
   ]
 }
 
