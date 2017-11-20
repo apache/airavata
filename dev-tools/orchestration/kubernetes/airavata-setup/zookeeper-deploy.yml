@@ -1,15 +1,17 @@
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: zookeeper-deploy
+  name: zookeeper
 spec:
   selector:
-    app: zookeeper
+    name: zookeeper
+    app: airavata
   replicas: 1 
   template: 
     metadata:    
       labels:
-        app: zookeeper
+        name: zookeeper
+        app: airavata
     spec:
       containers:
       - name: zookeeper

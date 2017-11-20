@@ -4,11 +4,12 @@ kind: Service
 
 metadata:
 
-  name: rmq-svc
+  name: rmq
 
   labels:
 
-    app: rmq
+    name: rmq
+    app: airavata
 
 spec:
 
@@ -35,4 +36,5 @@ spec:
 
   selector:
 
-    app: rmq
+    name: rmq
+    app: airavata

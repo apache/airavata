@@ -4,32 +4,24 @@ kind: Service
 
 metadata:
 
-  name: maridb-svc
+  name: mariadb
 
   labels:
-
-    app: mariadb
+    name: mariadb
+    app: airavata
 
 spec:
 
-  type: NodePort
-
   ports:
-
+ 
   - port: 3306
 
     name: port-3306
 
-    nodePort: 30008
-
-#  - port: 8080
-
-#    name: port-8080
-
-#    nodePort: 30009
+    protocol: TCP
 
 
   selector:
 
-    app: mariadb
-
+    name: mariadb
+    app: airavata

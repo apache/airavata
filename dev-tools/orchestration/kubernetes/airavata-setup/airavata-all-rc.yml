@@ -4,11 +4,11 @@ kind: ReplicationController
 
 metadata:
   
-    name: airavata-all-rc
+    name: airavata-all
     
     labels:
 
-      app : airavata-all-rc
+      app : airavata-all
 spec:
 
   replicas: 2

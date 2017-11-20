@@ -1,15 +1,17 @@
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: mariadb-deploy
+  name: mariadb
 spec:
   selector:
-    app: mariadb
+    name: mariadb
+    app: airavata
   replicas: 1 
   template: 
     metadata:    
       labels:
-        app: mariadb
+        name: mariadb
+        app: airavata
     spec:
       containers:
       - name: mariadb
@@ -23,4 +25,4 @@ spec:
 #      - name: adminer
 #        image: adminer
 #        ports:
-#        - containerPort: 8080
+#        - containerPort: 8090

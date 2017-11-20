@@ -4,12 +4,12 @@ kind: Service
 
 metadata:
 
-  name: airavata-svc
-
+  name: airavata-all
+  
   labels:
-
-    app: airavata-all-svc
-
+    name: airavata-all
+    app: airavata
+ 
 spec:
 
   type: NodePort
@@ -23,7 +23,7 @@ spec:
     protocol: TCP
 
   selector:
-
-    app: airavata-all
+    name: airavata-all
+    app: airavata
 
 
