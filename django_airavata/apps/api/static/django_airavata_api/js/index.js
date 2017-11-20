@@ -1,20 +1,24 @@
 
+import ApplicationModule from './models/ApplicationModule'
 import Project from './models/Project'
 
+import ApplicationModuleService from './services/ApplicationModuleService'
 import ProjectService from './services/ProjectService'
 
-import PaginationIterator from './utils/PaginationIterator'
 import FetchUtils from './utils/FetchUtils'
+import PaginationIterator from './utils/PaginationIterator'
 
 exports.models = {
-    Project: Project,
+    ApplicationModule,
+    Project,
 }
 
 exports.services = {
-    ProjectService: ProjectService,
+    ApplicationModuleService,
+    ProjectService,
 }
 
 exports.utils = {
-    PaginationIterator: PaginationIterator,
-    FetchUtils: FetchUtils,
+    FetchUtils,
+    PaginationIterator,
 }

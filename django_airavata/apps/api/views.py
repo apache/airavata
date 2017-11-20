@@ -23,15 +23,6 @@ import logging
 
 log = logging.getLogger(__name__)
 
-# Create your views here.
-@api_view(['GET'])
-def api_root(request, format=None):
-    return Response({
-        'projects': reverse('project-list', request=request, format=format),
-        'admin': reverse('api_experiment_list', request=request, format=format)
-    })
-
-
 class GenericAPIBackedViewSet(GenericViewSet):
 
     def get_list(self):

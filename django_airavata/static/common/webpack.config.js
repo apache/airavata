@@ -24,8 +24,9 @@ module.exports = {
         loader: 'vue-loader',
         options: {
           loaders: {
-          }
-          // other vue-loader options go here
+          },
+          // // other vue-loader options go here
+          extractCSS: true
         }
       },
       {
@@ -49,11 +50,11 @@ module.exports = {
                 loader: "sass-loader"
             }]
         })
-      }
+      },
     ]
   },
   plugins: [
-      extractSass
+      extractSass,
   ],
   resolve: {
     alias: {
