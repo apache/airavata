@@ -3,6 +3,10 @@
 
 {% load static %}
 
+{% block css %}
+<link rel=stylesheet type=text/css href="{% static 'django_airavata_workspace/dist/project-list.css' %}">
+{% endblock %}
+
 {% block content %}
 
 <div id="project-list" data-projects-data="{{ projects_data }}"></div>
@@ -11,5 +15,5 @@
 
 {% block scripts %}
 
-<script src="{% static "django_airavata_workspace/dist/main.js" %}"></script>
+<script src="{% static "django_airavata_workspace/dist/project-list.js" %}"></script>
 {% endblock %}

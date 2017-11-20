@@ -1,9 +1,13 @@
 var path = require('path')
 var webpack = require('webpack')
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
-  entry: './static/django_airavata_workspace/js/entry-project-list.js',
+  entry: {
+      'project-list': './static/django_airavata_workspace/js/entry-project-list',
+      'dashboard': './static/django_airavata_workspace/js/entry-dashboard',
+  },
   output: {
     path: path.resolve(__dirname, './static/django_airavata_workspace/dist/'),
     publicPath: '/static/django_airavata_workspace/dist/',
@@ -58,7 +62,8 @@ module.exports = {
   plugins: [
       // Exclude all but the 'en' locale from moment's locales
       new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /^en$/),
-      new ExtractTextPlugin("main.css"),
+      new ExtractTextPlugin("[name].css"),
+      new CleanWebpackPlugin(['./static/django_airavata_workspace/dist']),
   ]
 }
 

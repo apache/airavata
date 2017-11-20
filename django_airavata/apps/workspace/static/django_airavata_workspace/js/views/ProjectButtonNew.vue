@@ -101,9 +101,3 @@ export default {
     },
 }
 </script>
-
-<style>
-/*#modal-new-project {
-    text-align: left;
-}*/
-</style>

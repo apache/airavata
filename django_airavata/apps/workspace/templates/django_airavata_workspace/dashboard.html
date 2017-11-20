@@ -1,8 +1,17 @@
 {% extends './base.html' %}
 
+{% load static %}
+
+{% block css %}
+<link rel=stylesheet type=text/css href="{% static 'django_airavata_workspace/dist/dashboard.css' %}">
+{% endblock %}
 
 {% block content %}
 
-<h1>Dashboard</h1>
+<div id="dashboard"></div>
 
 {% endblock content %}
+
+{% block scripts %}
+<script src="{% static "django_airavata_workspace/dist/dashboard.js" %}"></script>
+{% endblock %}
