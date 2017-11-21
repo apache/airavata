@@ -1,4 +1,21 @@
-{% extends 'base.html' %}
+
+{% extends './base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<div id="groups-manage" data-groups-data="{{ groups_data }}"></div>
+
+{% endblock content %}
+
+{% block scripts %}
+
+<script src="{% static "django_airavata_groups/dist/main.js" %}"></script>
+{% endblock %}
+
+
+<!-- {% extends 'base.html' %}
 
 {% block content %}
 
@@ -97,3 +114,4 @@
 </div>
 
 {% endblock content %}
+ -->
