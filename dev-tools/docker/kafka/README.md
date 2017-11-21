@@ -57,6 +57,7 @@ sh airavata-server-start.sh all
 ```
 
 ### Consume Messages
+- This step is optional if testing kibana
 - Logs stored in the kafka can be view on terminal
 ```
 docker run --rm airavata/kafka kafka-console-consumer.sh \
@@ -72,3 +73,6 @@ docker run -p 5601:5601 -p 9200:9200 -p 5044:5044  -it --name elk airavata/elk
 sudo docker exec -it elk /bin/bash
 /opt/logstash/bin/logstash -f /opt/logstash/airavata/logstash-airavata.conf --path.data /opt/logstash/airavata
 ```
+### Kibana
+- Kibana can be accessed at http://localhost:5601/
+- Logs can be filtered at Visualize page
