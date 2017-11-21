@@ -24,19 +24,19 @@ I have 3 slave nodes with 1 master
 
 7) `kubectl create -f  	rmq-svc.yml`
 
-8) `s=$(kubectl describe svc | grep :5672);rabbitmqip="$( cut -d ':' -f 2 <<< "$s" )"; echo "$rabbitmqip"`
+8) `rabbitmqip=$(kubectl describe svc | grep :5672);rabbitmqip="$( cut -d ':' -f 2 <<< "$s" )"; echo "$rabbitmqip"`
 
 9) `kubectl create -f  	mariadb-deploy.yml`
 
-10) `s=$(kubectl describe deploy | grep :3306);mariadbip="$( cut -d ':' -f 2 <<< "$s" )"; echo "$mariadbip"`
+10) `mariadbip=$(kubectl describe deploy | grep :3306);mariadbip="$( cut -d ':' -f 2 <<< "$s" )"; echo "$mariadbip"`
 
 11) `kubectl create -f zookeeper-deploy.yml`
 
-12) `s=$(kubectl describe deploy | grep :3888);zookeeperip="$( cut -d ':' -f 2 <<< "$s" )"; echo "$zookeeperip"`
+12) `zookeeperip=$(kubectl describe deploy | grep :3888);zookeeperip="$( cut -d ':' -f 2 <<< "$s" )"; echo "$zookeeperip"`
 
 13)  `cd ../dockermodule/middleware/`
 
-14) edit the file to change the ip addresses/hostname with respective placeholder ip adresses of rmq, mariadb and zookeepeer and save the file.
+14) edit the file to change the ip addresses/hostname with respective placeholder ipadresses of rabbitmq, mariadb and zookeepeer and save the file.
 
 15)  `cd ../../airavata-setup/`
 
