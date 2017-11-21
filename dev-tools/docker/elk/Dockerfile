@@ -8,6 +8,6 @@ WORKDIR ${LOGSTASH_HOME}
 
 RUN gosu logstash bin/logstash-plugin install logstash-input-kafka logstash-filter-ruby logstash-filter-json
 
-#ADD logstash-airavata.conf logstash-airavata.conf
-
 RUN mkdir airavata
+
+ADD logstash-airavata.conf ${LOGSTASH_HOME}/airavata/logstash-airavata.conf
