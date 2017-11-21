@@ -62,3 +62,13 @@ sh airavata-server-start.sh all
 docker run --rm airavata/kafka kafka-console-consumer.sh \
 > --topic test_all_logs --from-beginning --zookeeper $ZK_IP:2181
 ```
+### ELK Stack
+- Logs emitted from kafka are consumed by logstash
+```
+cd /airavata/dev-tools/docker/elk/
+docker build -t airavata/elk .
+docker run -p 5601:5601 -p 9200:9200 -p 5044:5044  -it --name elk airavata/elk
+(In new terminal)
+sudo docker exec -it elk /bin/bash
+/opt/logstash/bin/logstash -f /opt/logstash/airavata/logstash-airavata.conf --path.data /opt/logstash/airavata
+```
