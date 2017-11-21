@@ -38,11 +38,8 @@ def groups_manage(request):
             if group.ownerId != username:
                 member.append(group)
 
-        groups_data = dict['owners':owner, 'members':member] 
-        groups_json = JSONRenderer().render(groups_data)
-
         return render(request, 'django_airavata_groups/groups_manage.html', {
-            'groups_data': groups_json
+            'groups_owners_data': owner, 'groups_members_data': member
         })
        
         # return render(request, 'django_airavata_groups/groups_manage.html', {

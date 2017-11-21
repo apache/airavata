@@ -5,7 +5,9 @@
 
 {% block content %}
 
-<div id="groups-manage" data-groups-data="{{ groups_data }}"></div>
+<div ref="groups-owners-manage" id="groups-owners-manage" data-groups-owners-data="{{ groups_owners_data }}"></div>
+
+<div ref="groups-members-manage" id="groups-members-manage" data-groups-members-data="{{ groups_members_data }}"></div>
 
 {% endblock content %}
 
@@ -13,6 +15,7 @@
 
 <script src="{% static "django_airavata_groups/dist/main.js" %}"></script>
 {% endblock %}
+
 
 
 <!-- {% extends 'base.html' %}
