@@ -15,7 +15,7 @@ Vue.use(VueRouter);
 
 
 export function initializeApacheAiravataDashboard(dashboardName) {
-  return new Vue({
+  var vueApp= new Vue({
     el: '#app',
     router,
     store,
@@ -23,6 +23,10 @@ export function initializeApacheAiravataDashboard(dashboardName) {
     components: {ExperimentsDashboard, AdminDashboard}
 
   })
+  Vue.config.devtools = true
+  Vue.config.debug = true
+  Vue.config.silent = false
+  return vueApp
 };
 
 

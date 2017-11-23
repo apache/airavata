@@ -27,6 +27,12 @@ export default {
     }
   },
   actions:{
+    setModule:function ({context,state,rootState},moduleInformation) {
+      rootState.appDetailsTab.name=moduleInformation.name
+      rootState.appDetailsTab.version=moduleInformation.version
+      rootState.appDetailsTab.description=moduleInformation.description
 
+
+    }
   }
 }

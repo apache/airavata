@@ -12,7 +12,8 @@ export default{
     initialized:false,
     archiveWorkingDirectory:null,
     hasOptionalFileInputs:null,
-    missingFields:false
+    missingFields:false,
+    fetch:false
   },
   mutations:{
     createAppInterfaceInputFieldObject(state,id){
@@ -127,56 +128,58 @@ export default{
 
 
   },
-  actions:{
-    createAppInterfaceInputField:function (context,id=null) {
-      if(id == null || !context.state.applicationInputs.hasOwnProperty(id)){
-        id=(context.state.counter++).toString();
-        context.commit('createAppInterfaceInputFieldObject',id);
+  actions: {
+    createAppInterfaceInputField: function (context, id = null) {
+      if (id == null || !context.state.applicationInputs.hasOwnProperty(id)) {
+        id = (context.state.counter++).toString();
+        context.commit('createAppInterfaceInputFieldObject', id);
       }
       return id;
     },
-    createAppInterfaceOutputField:function (context,id=null) {
-      if(id == null || !context.state.applicationInputs.hasOwnProperty(id)){
-        id=(context.state.counter++).toString();
-        context.commit('createAppInterfaceOutputFieldObject',id);
+    createAppInterfaceOutputField: function (context, id = null) {
+      if (id == null || !context.state.applicationInputs.hasOwnProperty(id)) {
+        id = (context.state.counter++).toString();
+        context.commit('createAppInterfaceOutputFieldObject', id);
       }
       return id;
     },
-    deleteAppInterfaceInputField:function (context, id) {
-      context.commit('removeAppInterfaceField',{'fieldType':'applicationInputs','id':id});
+    deleteAppInterfaceInputField: function (context, id) {
+      context.commit('removeAppInterfaceField', {'fieldType': 'applicationInputs', 'id': id});
     },
-    deleteAppInterfaceOutputField:function (context,id) {
-      context.commit('removeAppInterfaceField',{'fieldType':'applicationOutputs','id':id});
+    deleteAppInterfaceOutputField: function (context, id) {
+      context.commit('removeAppInterfaceField', {'fieldType': 'applicationOutputs', 'id': id});
     },
-    updateInputFieldValues:function (context, param) {
-      param['fieldType']='applicationInputs'
-      context.commit('updateAppInterfaceField',param)
+    updateInputFieldValues: function (context, param) {
+      param['fieldType'] = 'applicationInputs'
+      context.commit('updateAppInterfaceField', param)
     },
-    updateOutputField:function (context,param) {
-      param['fieldType']='applicationOutputs'
-      context.commit('updateAppInterfaceField',param)
+    updateOutputField: function (context, param) {
+      param['fieldType'] = 'applicationOutputs'
+      context.commit('updateAppInterfaceField', param)
     },
-    initialized:function (context, initialize) {
-      context.commit('setInitialize',initialize)
+    initialized: function (context, initialize) {
+      context.commit('setInitialize', initialize)
     },
-    changeEnableOutputFileInput:function(context,value){
-      context.commit('setEnableOutputFileInput',value)
+    changeEnableOutputFileInput: function (context, value) {
+      context.commit('setEnableOutputFileInput', value)
     },
-    changeArchiveWorkingDirectory:function (context,value) {
-      context.commit('setArchiveWorkingDirectory',value)
+    changeArchiveWorkingDirectory: function (context, value) {
+      context.commit('setArchiveWorkingDirectory', value)
     },
-    triggerMissingField:function (context,value) {
-      context.commit('setMissingField',value)
+    triggerMissingField: function (context, value) {
+      context.commit('setMissingField', value)
     },
-    saveApplicationInterface:function ({ state, commit, rootState }) {
-      var appInterface={}
-      appInterface.applicationInputs=Utils.convertKeyValuePairObjectToValueArray(state.applicationInputs)
-      appInterface.applicationOutputs=Utils.convertKeyValuePairObjectToValueArray(state.applicationOutputs)
-      appInterface.archiveWorkingDirectory=state.archiveWorkingDirectory
-      appInterface.hasOptionalFileInputs=state.hasOptionalFileInputs
-      appInterface.applicationName=rootState.appDetailsTab.name
-      appInterface.applicationDescription=rootState.appDetailsTab.description
-      console.log("Application Interface:",appInterface)
+    fetch: function ({state, commit, rootState}) {
+    },
+    saveApplicationInterface: function ({state, commit, rootState}) {
+      var appInterface = {}
+      appInterface.applicationInputs = Utils.convertKeyValuePairObjectToValueArray(state.applicationInputs)
+      appInterface.applicationOutputs = Utils.convertKeyValuePairObjectToValueArray(state.applicationOutputs)
+      appInterface.archiveWorkingDirectory = state.archiveWorkingDirectory
+      appInterface.hasOptionalFileInputs = state.hasOptionalFileInputs
+      appInterface.applicationName = rootState.appDetailsTab.name
+      appInterface.applicationDescription = rootState.appDetailsTab.description
+      console.log("Application Interface:", appInterface)
       return Utils.post('/api/new/application/interface', appInterface)
     }
   }

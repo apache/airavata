@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import Utils from '../../utils'
 
 export default {
   namespaced: true,
@@ -16,7 +17,7 @@ export default {
     postJobCommands: [],
     defaultNodeCount: 1,
     defaultCPUCount: 1,
-    defaultQueueName: null
+    defaultQueueName: ''
   },
   mutations: {
     updateAppDeploymentValues: function (state, update) {
@@ -50,6 +51,9 @@ export default {
   actions: {
     updateAppDeployment: function (context, update) {
       context.commit('updateAppDeploymentValues', update)
+    },
+    saveApplicationDeployment:function ({state, commit, rootState}) {
+        Utils.post('/new/application/deployment',state)
     }
   }
 }

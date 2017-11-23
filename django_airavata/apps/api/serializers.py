@@ -4,6 +4,7 @@ from apache.airavata.model.experiment.ttypes import ExperimentModel
 from apache.airavata.model.workspace.ttypes import Project
 from apache.airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule
 from apache.airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDescription
+from apache.airavata.model.appcatalog.appdeployment.ttypes import ApplicationDeploymentDescription,CommandObject,SetEnvPaths
 from apache.airavata.model.application.io.ttypes import InputDataObjectType, OutputDataObjectType
 from apache.airavata.model.experiment.ttypes import ExperimentModel
 from apache.airavata.model.workspace.ttypes import Project
@@ -186,3 +187,61 @@ class ApplicationInterfaceDescriptionSerializer(CustomSerializer):
 
     def update(self, instance, validated_data):
         raise Exception("Not implemented")
+
+
+class CommandObjectSerializer(CustomSerializer):
+    command = serializers.CharField()
+    commandOrder = serializers.IntegerField()
+
+    def create(self, validated_data):
+        return CommandObject(**validated_data)
+
+    def update(self, instance, validated_data):
+        raise Exception("Not implemented")
+
+
+class SetEnvPathsSerializer(CustomSerializer):
+    name=serializers.CharField(required=False)
+    value=serializers.CharField(required=False)
+    envPathOrder=serializers.IntegerField(required=False)
+
+    def create(self, validated_data):
+        return SetEnvPaths(**validated_data)
+
+    def update(self, instance, validated_data):
+        raise Exception("Not implemented")
+
+
+class ApplicationDeploymentDescriptionSerializer(CustomSerializer):
+    appModuleId = serializers.CharField(required=False)
+    computeHostId = serializers.CharField(required=False)
+    executablePath = serializers.CharField(required=False)
+    parallelism = serializers.IntegerField(required=False)
+    appDeploymentDescription = serializers.CharField(required=False)
+    moduleLoadCmds = serializers.ListSerializer(child=CommandObjectSerializer())
+    libPrependPaths = serializers.ListSerializer(child=SetEnvPathsSerializer())
+    libAppendPaths = serializers.ListSerializer(child=SetEnvPathsSerializer())
+    setEnvironment = serializers.ListSerializer(child=SetEnvPathsSerializer())
+    preJobCommands = serializers.ListSerializer(child=CommandObjectSerializer())
+    postJobCommands = serializers.ListSerializer(child=CommandObjectSerializer())
+    defaultQueueName = serializers.CharField(required=False)
+    defaultNodeCount = serializers.IntegerField(required=False)
+    defaultCPUCount = serializers.IntegerField(required=False)
+    defaultWalltime = serializers.IntegerField(required=False)
+    editableByUser = serializers.BooleanField(required=False)
+
+    def create(self, validated_data):
+        params=self.process_list_fields(validated_data)
+        return ApplicationDeploymentDescription(**params)
+
+    def update(self, instance, validated_data):
+        raise Exception("Not Implemented")
+
+
+
+class ComputeResourceDescriptionSerializer(CustomSerializer):
+    hostName=serializers.CharField()
+    hostAliases=serializers.ListField(child=serializers.CharField())
+    ipAddresses=serializers.ListField(child=serializers.CharField())
+    resourceDescription=serializers.CharField()
+    enabled=serializers.BooleanField()

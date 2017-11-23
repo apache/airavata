@@ -9,7 +9,9 @@
       </div>
       <div class="entry">
         <div class="heading">Application compute host</div>
-        <input type="text" v-model="appDeployments.computeHostId"/>
+        <select v-model="appDeployments.computeHostId">
+            <option v-for="computeHost in computeHosts" v-bind:value="computeHost.host_id">{{computeHost.host}}</option>
+          </select>
       </div>
       <div class="entry">
         <div class="heading">Application executable path</div>
@@ -101,20 +103,20 @@
         <div class="entry">
           <div class="heading">Default Queue Name</div>
           <select v-model="appDeployments.defaultQueueName">
-            <option value="cpu">CPU</option>
-            <option value="gpu">GPU</option>
+            <option v-bind:value="queue" v-for="queue in queues">{{queue}}</option>
           </select>
         </div>
       </div>
     </div>
     <div class="new-application-tab-main">
-      <new-application-buttons></new-application-buttons>
+      <new-application-buttons v-bind:save="saveApplicationDeployment"></new-application-buttons>
     </div>
   </div>
 </template>
 <script>
   import {createNamespacedHelpers} from 'vuex'
   import NewApplicationButtons from './NewApplicationButtons.vue';
+  import Utils from '../../utils'
 
   const {mapGetters, mapActions} = createNamespacedHelpers('appDeploymentsTab')
 
@@ -124,12 +126,15 @@
     },
     mounted: function () {
       this.appDeployments = this.getCompleteData
+      this.computeHosts=this.fetchComputeHosts()
     },
     data: function () {
       var appDeployments = this.getCompleteData
-      console.log("Application Deploymnet Data", appDeployments)
+      console.log("Application Deployment Data", appDeployments)
       return {
-        "appDeployments": appDeployments
+        "appDeployments": appDeployments,
+        "computeHosts":[],
+        "queues":[]
       }
     },
     computed: {
@@ -158,11 +163,22 @@
         this.appDeployments = ob
         console.log("Add name value pair",this.appDeployments)
       },
-      ...mapActions(["updateAppDeployment"])
+      fetchComputeHosts:function () {
+        this.computeHosts=[{"host":"Loading...","host_id":""}]
+        var callable=(value)=>this.computeHosts=value
+        Utils.get('/api/compute/resources',{success:callable,failure:(value)=>this.computeHosts=[]})
+      },
+      ...mapActions(["updateAppDeployment","saveApplicationDeployment"])
     },
     watch: {
       '$route'(to, from) {
-        this.updateAppDeployment(this.data)
+        this.updateAppDeployment(this.appDeployments)
+      },
+      "appDeployments.computeHostId":function (value) {
+        if(value){
+          Utils.get("/api/compute/resource/queues",{queryParams:{id:value},success:(value)=>this.queues=value})
+        }
+
       }
     }
   }

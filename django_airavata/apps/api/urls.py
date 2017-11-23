@@ -18,8 +18,14 @@ urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^applications/$', views.ApplicationList.as_view(), name='application_module_list'),
     url(r'^new/application/module$', views.RegisterApplicationModule.as_view(), name='register_application_module'),
-    url(r'^new/application/interface', views.RegisterApplicationInterface.as_view(), name='register_application_interface'),
-    url(r'^new/application/deployment', views.RegisterApplicationDeployments.as_view(), name='register_application_deployments'),
+    url(r'^new/application/interface$', views.RegisterApplicationInterface.as_view(), name='register_application_interface'),
+    url(r'^new/application/deployment$', views.RegisterApplicationDeployments.as_view(), name='register_application_deployments'),
+    url(r'^compute/resources$', views.ComputeResourceList.as_view(), name="compute_resources"),
+    url(r'^compute/resource/details$', views.ComputeResourceDetails.as_view(), name="compute_resource_details"),
+    url(r'^compute/resource/queues', views.ComputeResourcesQueues.as_view(), name="compute_resource_queues"),
+    url(r'^application/interfaces$', views.ApplicationInterfaceList.as_view(), name="app_interfaces"),
+    url(r'^application/interface$', views.FetchApplicationInterface.as_view(), name="app_interface"),
+    url(r'^application/deployment$', views.FetchApplicationDeployment.as_view(), name="app_deployment"),
 ]
 
 

@@ -9,7 +9,8 @@
   margin-bottom: 10px;
 }
 
-input,textarea{
+
+input[type="text"],input[type="number"],textarea,select{
   width: 100%;
   border-radius: 2px;
   border: solid #dddddd 1px;

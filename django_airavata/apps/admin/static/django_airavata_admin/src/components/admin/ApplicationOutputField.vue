@@ -15,10 +15,10 @@
     <div class="entry">
       <div class="heading">Type</div>
       <select v-model="type">
-        <option value="String">String</option>
-        <option value="Integer">Integer</option>
-        <option value="Float">Float</option>
-        <option value="URI">URI</option>
+        <option value="0">String</option>
+        <option value="1">Integer</option>
+        <option value="2">Float</option>
+        <option value="3">URI</option>
       </select>
     </div>
     <div class="entry">
