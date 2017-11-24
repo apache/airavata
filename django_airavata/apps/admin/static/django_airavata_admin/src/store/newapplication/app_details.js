@@ -9,6 +9,7 @@ const fieldMapper = {
 
 var initialState = function () {
   return {
+    appModuleId:null,
     name: '',
     version: '',
     description: ''
@@ -51,11 +52,14 @@ export default {
     updateAppDetails: function (context, update) {
       context.commit('addAppDetails', update)
     },
-    registerAppModule: function ({commit,state},callable=(value)=>console.log("App Details",value)) {
+    registerAppModule: function ({commit,state},callable=(value)=>{
+      state.appModuleId=value
+      console.log("App Details",value)
+    }) {
       return Utils.post('/api/new/application/module', state,callable=callable)
     },
-    resetAll: function (context) {
-      context.commit('resetState')
+    resetState:function ({commit,state,rootState}) {
+      Utils.resetData(state,initialState())
     }
   }
 }

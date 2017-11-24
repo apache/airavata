@@ -118,7 +118,7 @@
   import NewApplicationButtons from './NewApplicationButtons.vue';
   import Utils from '../../utils'
 
-  const {mapGetters, mapActions} = createNamespacedHelpers('appDeploymentsTab')
+  const {mapGetters, mapActions} = createNamespacedHelpers('newApplication/appDeploymentsTab')
 
   export default {
     components: {

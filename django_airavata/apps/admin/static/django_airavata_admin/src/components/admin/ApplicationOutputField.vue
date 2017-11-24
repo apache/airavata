@@ -45,7 +45,7 @@
 
   import {createNamespacedHelpers} from 'vuex'
 
-  const {mapGetters, mapActions} = createNamespacedHelpers('appInterfaceTab')
+  const {mapGetters, mapActions} = createNamespacedHelpers('newApplication/appInterfaceTab')
 
   export default {
     components: {

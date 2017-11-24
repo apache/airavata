@@ -1,20 +1,22 @@
 import Vue from 'vue'
 import Utils from '../../utils'
 
-
-
-export default{
-  namespaced: true,
-  state:{
+var initialState = function () {
+  return {
     applicationInputs:{},
     applicationOutputs:{},
     counter:0,
     initialized:false,
-    archiveWorkingDirectory:null,
-    hasOptionalFileInputs:null,
+    archiveWorkingDirectory:false,
+    hasOptionalFileInputs:false,
     missingFields:false,
     fetch:false
-  },
+  }
+}
+
+export default{
+  namespaced: true,
+  state:initialState(),
   mutations:{
     createAppInterfaceInputFieldObject(state,id){
       Vue.set(state.applicationInputs,id,{
@@ -35,7 +37,7 @@ export default{
     createAppInterfaceOutputFieldObject:function (state, id) {
       Vue.set(state.applicationOutputs,id,{
         input_id: id,
-        name: 'nm',
+        name: '',
         value: '',
         type: '',
         applicationArgument: '',
@@ -171,16 +173,44 @@ export default{
     },
     fetch: function ({state, commit, rootState}) {
     },
-    saveApplicationInterface: function ({state, commit, rootState}) {
+    saveApplicationInterface: function ({state, context, rootState}) {
       var appInterface = {}
       appInterface.applicationInputs = Utils.convertKeyValuePairObjectToValueArray(state.applicationInputs)
       appInterface.applicationOutputs = Utils.convertKeyValuePairObjectToValueArray(state.applicationOutputs)
       appInterface.archiveWorkingDirectory = state.archiveWorkingDirectory
       appInterface.hasOptionalFileInputs = state.hasOptionalFileInputs
-      appInterface.applicationName = rootState.appDetailsTab.name
-      appInterface.applicationDescription = rootState.appDetailsTab.description
+      appInterface.applicationName = rootState.newApplication.appDetailsTab.name
+      appInterface.applicationDescription = rootState.newApplication.appDetailsTab.description
       console.log("Application Interface:", appInterface)
       return Utils.post('/api/new/application/interface', appInterface)
+    },
+    preInitialization:function ({commit, state, rootState}){
+     var success=function (value) {
+       if(value.applicationInputs){
+         var temp={}
+         for(var inp in value.applicationInputs){
+           temp[state.count]=inp
+           state.count++
+         }
+         value.applicationInputs=temp
+       }
+       if(value.applicationOutputs){
+           var temp={}
+         for(var out in value.applicationOutputs){
+           temp[state.count]=out
+           state.count++
+         }
+         value.applicationOutputs=temp
+       }
+       commit("updateAppInterfaceField",value)
+       rootState.newApplication.appInterfaceTabInitialized=false
+     }
+     if(rootState.newApplication.appInterfaceTabInitialized){
+
+     }
+    },
+    resetState:function ({commit,state,rootState}) {
+      Utils.resetData(state,initialState())
     }
   }
 }

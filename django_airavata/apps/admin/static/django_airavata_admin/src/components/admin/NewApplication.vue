@@ -1,6 +1,6 @@
 <template>
   <div class="new_app">
-    <h3>{{initialParams.title}}</h3>
+    <h3>{{getTitle}}</h3>
     <div class="main">
       <div class="tabs">
         <div class="tab" v-bind:class="tabs['details']"><router-link class="link" :to="{name:'details'}"><label class="lbl">Details</label></router-link></div>
@@ -20,8 +20,7 @@
 
   import { createNamespacedHelpers } from 'vuex'
 
-  const {mapActions} = createNamespacedHelpers('appInterfaceTab')
-  const {mapGetters,mapActions2} = createNamespacedHelpers('appDetailsTab')
+  const {mapGetters} = createNamespacedHelpers('newApplication')
 
 
   export default {
@@ -31,9 +30,6 @@
     mounted:function () {
       this.current_active_tab=this.$route.name;
       this.previous_active_tab='';
-      if(this.initialParams.details!=null){
-
-      }
     },
     data: function () {
       return {
@@ -41,15 +37,6 @@
         previous_active_tab: -1,
         appInterfaceTabData:{'inputFields':[]},
 
-      }
-    },
-    props:{
-      initialParams:{
-        type:Object,
-        default:{
-          "title":"Create A New Application",
-          "details":null
-        }
       }
     },
     computed: {
@@ -64,7 +51,8 @@
           tabs_active[this.previous_active_tab] = '';
         }
         return tabs_active;
-      }
+      },
+      ...mapGetters(["getTitle"])
     },
     watch:{
       '$route' (to, from) {
@@ -75,9 +63,6 @@
         this.current_active_tab=to.name
 
       }
-    },
-    methods:{
-      ...mapActions(['initialized'])
     }
   }
 </script>

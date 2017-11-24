@@ -5,7 +5,7 @@ export default {
     if (initialData instanceof Function){
       initialData=initialData();
     }
-    for(var prop in obj){
+    for(var prop in initialData){
       Vue.set(obj,prop,initialData[prop])
       console.log('call',prop)
 

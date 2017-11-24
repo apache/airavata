@@ -24,7 +24,7 @@
 
   import { createNamespacedHelpers } from 'vuex'
 
-  const {mapGetters,mapActions} = createNamespacedHelpers('appDetailsTab')
+  const {mapGetters,mapActions} = createNamespacedHelpers('newApplication/appDetailsTab')
 
   export default{
     components:{

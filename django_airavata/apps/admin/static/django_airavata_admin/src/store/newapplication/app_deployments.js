@@ -1,9 +1,8 @@
 import Vue from 'vue'
 import Utils from '../../utils'
 
-export default {
-  namespaced: true,
-  state: {
+var initialState = function () {
+  return {
     appModuleId: '',
     computeHostId: '',
     executablePath: '',
@@ -18,7 +17,11 @@ export default {
     defaultNodeCount: 1,
     defaultCPUCount: 1,
     defaultQueueName: ''
-  },
+  }
+}
+export default {
+  namespaced: true,
+  state: initialState(),
   mutations: {
     updateAppDeploymentValues: function (state, update) {
       for (var prop in update) {
@@ -52,8 +55,11 @@ export default {
     updateAppDeployment: function (context, update) {
       context.commit('updateAppDeploymentValues', update)
     },
-    saveApplicationDeployment:function ({state, commit, rootState}) {
+    saveApplicationDeployment:function ({commit,state, rootState}) {
         Utils.post('/new/application/deployment',state)
+    },
+    resetState:function ({commit,state,rootState}) {
+      Utils.resetData(state,initialState())
     }
   }
 }
