@@ -19,6 +19,7 @@ from django.views.decorators.csrf import csrf_exempt
 from apache.airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule, ApplicationDeploymentDescription
 from apache.airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDescription
 from apache.airavata.model.appcatalog.computeresource.ttypes import ComputeResourceDescription
+from credential_store_data_models.ttypes import CredentialOwnerType,SummaryType,CredentialSummary
 
 import thrift_django_serializer
 from collections import OrderedDict
@@ -267,7 +268,7 @@ class RegisterApplicationInterface(APIView):
         app_interface_description_serializer.is_valid(raise_exception=True)
         app_interface = app_interface_description_serializer.save()
         response = request.airavata_client.registerApplicationInterface(request.authz_token, gateway_id,
-                                                                        applicationInterface=app_interface)
+                                                                        app_interface)
         return Response(response)
 
 
@@ -354,4 +355,28 @@ class FetchApplicationDeployment(APIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
         #return Response(request.airavata_client.getAppModuleDeployedResources(request.authz_token, request.query_params["id"]))
 
+class FetchSSHPubKeys(APIView):
 
+    def get(self,request,format=None):
+        gateway_id = settings.GATEWAY_ID
+        serializer=thrift_django_serializer.create_serializer(CredentialSummary,instance=request.airavata_client.getAllCredentialSummaryForGateway (request.authz_token,SummaryType.SSH,gateway_id),context={'request': request},many=True)
+        return Response(serializer.data)
+
+class GenerateRegisterSSHKeys(APIView):
+    parser_classes = (JSONParser,)
+    renderer_classes = (JSONRenderer,)
+
+    def post(self, request, format=None):
+        username = request.user.username
+        gateway_id = settings.GATEWAY_ID
+        data=request.data
+        return Response(request.airavata_client.generateAndRegisterSSHKeys (request.authz_token,gateway_id,username,data["description"],CredentialOwnerType.GATEWAY))
+
+
+class DeleteSSHPubKey(APIView):
+    parser_classes = (JSONParser,)
+    renderer_classes = (JSONRenderer,)
+
+    def post(self, request, format=None):
+        gateway_id = settings.GATEWAY_ID
+        return Response(request.airavata_client.deleteSSHPubKey(request.authz_token,request.data['token'],gateway_id))

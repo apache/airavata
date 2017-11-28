@@ -26,6 +26,9 @@ urlpatterns = [
     url(r'^application/interfaces$', views.ApplicationInterfaceList.as_view(), name="app_interfaces"),
     url(r'^application/interface$', views.FetchApplicationInterface.as_view(), name="app_interface"),
     url(r'^application/deployment$', views.FetchApplicationDeployment.as_view(), name="app_deployment"),
+    url(r'^credentials/ssh/keys', views.FetchSSHPubKeys.as_view(), name="ssh_keys"),
+    url(r'^credentials/ssh/key/delete', views.DeleteSSHPubKey.as_view(), name="ssh_key_deletion"),
+    url(r'^credentials/ssh/key/create', views.GenerateRegisterSSHKeys.as_view(), name="ssh_key_creation")
 ]
 
 
