@@ -6,10 +6,10 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "USER_ADMIN", schema = "")
-@IdClass(AdminPK.class)
-public class AdminEntity {
-    private final static Logger logger = LoggerFactory.getLogger(AdminEntity.class);
+@Table(name = "GROUP_ADMIN", schema = "")
+@IdClass(GroupAdminPK.class)
+public class GroupAdminEntity {
+    private final static Logger logger = LoggerFactory.getLogger(GroupAdminEntity.class);
     private String groupId;
     private String domainId;
     private String adminId;
@@ -49,7 +49,7 @@ public class AdminEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        AdminEntity that = (AdminEntity) o;
+        GroupAdminEntity that = (GroupAdminEntity) o;
 
         if (!getGroupId().equals(that.getGroupId())) return false;
         if (!getDomainId().equals(that.getDomainId())) return false;

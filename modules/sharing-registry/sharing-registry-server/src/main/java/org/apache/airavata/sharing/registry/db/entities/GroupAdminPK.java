@@ -7,9 +7,9 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import java.io.Serializable;
 
-public class AdminPK implements Serializable{
+public class GroupAdminPK implements Serializable{
 
-    private final static Logger logger = LoggerFactory.getLogger(AdminPK.class);
+    private final static Logger logger = LoggerFactory.getLogger(GroupAdminPK.class);
     private String groupId;
     private String domainId;
     private String adminId;
@@ -49,11 +49,11 @@ public class AdminPK implements Serializable{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        AdminPK adminPK = (AdminPK) o;
+        GroupAdminPK groupAdminPK = (GroupAdminPK) o;
 
-        if (!getGroupId().equals(adminPK.getGroupId())) return false;
-        if (!getDomainId().equals(adminPK.getDomainId())) return false;
-        return getAdminId().equals(adminPK.getAdminId());
+        if (!getGroupId().equals(groupAdminPK.getGroupId())) return false;
+        if (!getDomainId().equals(groupAdminPK.getDomainId())) return false;
+        return getAdminId().equals(groupAdminPK.getAdminId());
     }
 
     @Override

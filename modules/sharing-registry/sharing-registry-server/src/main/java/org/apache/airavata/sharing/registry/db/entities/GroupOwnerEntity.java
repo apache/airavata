@@ -6,10 +6,10 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "USER_OWNER", schema = "")
-@IdClass(OwnerPK.class)
-public class OwnerEntity {
-    private final static Logger logger = LoggerFactory.getLogger(OwnerEntity.class);
+@Table(name = "GROUP_OWNER", schema = "")
+@IdClass(GroupOwnerPK.class)
+public class GroupOwnerEntity {
+    private final static Logger logger = LoggerFactory.getLogger(GroupOwnerEntity.class);
     private String groupId;
     private String domainId;
     private String ownerId;
@@ -47,7 +47,7 @@ public class OwnerEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        OwnerEntity that = (OwnerEntity) o;
+        GroupOwnerEntity that = (GroupOwnerEntity) o;
 
         if (!getGroupId().equals(that.getGroupId())) return false;
         if (!getDomainId().equals(that.getDomainId())) return false;
