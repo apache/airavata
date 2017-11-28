@@ -16,7 +16,7 @@ I have 3 slave nodes with 1 master
 
 3) `cd airavata`
 
-4) `git checkout orchestration`
+4) `git checkout orch_kube`
 
 5) `cd dev-tools/orchestration/kubernetes/airavata-setup/`
 
