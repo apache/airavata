@@ -31,7 +31,7 @@
         <button class="interface-btn" v-on:click="createAppInterfaceOutputField()">Add Application <span>output</span>
         </button>
       </div>
-      <new-application-buttons v-bind:save="saveApplicationInterface" v-bind:cancel="cancelAction"></new-application-buttons>
+      <new-application-buttons v-bind:save="saveApplicationInterface" v-bind:cancel="cancelAction" v-bind:sectionName="'Application Interface'"></new-application-buttons>
     </div>
   </div>
 </template>

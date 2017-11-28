@@ -72,6 +72,7 @@
   .new_app {
     margin: 45px;
     width: 100%;
+    background-color: white;
   }
 
   .new_app_header{
@@ -103,5 +104,9 @@
 
   .applications{
     margin-top: 50px;
+  }
+
+  .ssh,.generate input{
+      text-align: center;
   }
 </style>
