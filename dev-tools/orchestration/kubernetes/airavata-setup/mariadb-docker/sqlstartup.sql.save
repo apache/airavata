@@ -1,3 +1,0 @@
-CREATE DATABASE IF NOT EXISTS experiment_catalog;
-CREATE USER IF NOT EXISTS 'airavata' identified by 'airavata';
-grant all on experiment_catalog.* to 'airavata'@'%';
