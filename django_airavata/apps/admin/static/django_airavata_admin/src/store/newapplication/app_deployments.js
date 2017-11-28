@@ -55,8 +55,10 @@ export default {
     updateAppDeployment: function (context, update) {
       context.commit('updateAppDeploymentValues', update)
     },
-    saveApplicationDeployment:function ({commit,state, rootState}) {
-        Utils.post('/new/application/deployment',state)
+    saveApplicationDeployment:function ({commit,state, rootState},{success=null,failure=null}={}) {
+      var appDeployment=Object.assign({},state)
+      appDeployment.appModuleId=rootState.newApplication.appDetailsTab.appModuleId
+        Utils.post('/api/new/application/deployment',appDeployment,{success:success,failure:failure})
     },
     resetState:function ({commit,state,rootState}) {
       Utils.resetData(state,initialState())

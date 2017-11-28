@@ -21,7 +21,7 @@ export default{
     createAppInterfaceInputFieldObject(state,id){
       Vue.set(state.applicationInputs,id,{
         input_id: id,
-        name: 'nm',
+        name: '',
         value: '',
         type: '',
         applicationArgument: '',
@@ -173,7 +173,7 @@ export default{
     },
     fetch: function ({state, commit, rootState}) {
     },
-    saveApplicationInterface: function ({state, context, rootState}) {
+    saveApplicationInterface: function ({state, context, rootState},{success = (val) => console.log("App Interface", value), failure = (val) => console.log("Saving failed", value)} = {}) {
       var appInterface = {}
       appInterface.applicationInputs = Utils.convertKeyValuePairObjectToValueArray(state.applicationInputs)
       appInterface.applicationOutputs = Utils.convertKeyValuePairObjectToValueArray(state.applicationOutputs)
@@ -181,35 +181,42 @@ export default{
       appInterface.hasOptionalFileInputs = state.hasOptionalFileInputs
       appInterface.applicationName = rootState.newApplication.appDetailsTab.name
       appInterface.applicationDescription = rootState.newApplication.appDetailsTab.description
+      appInterface.applicationModules=[rootState.newApplication.appDetailsTab.appModuleId]
+      appInterface.applicationName=rootState.newApplication.appDetailsTab.name
+      appInterface.applicationDescription=rootState.newApplication.appDetailsTab.description
       console.log("Application Interface:", appInterface)
-      return Utils.post('/api/new/application/interface', appInterface)
+      return Utils.post('/api/new/application/interface', appInterface,{success:success,failure:failure})
     },
-    preInitialization:function ({commit, state, rootState}){
+    initializeAppInterface:function ({commit, state, rootState},mount){
      var success=function (value) {
        if(value.applicationInputs){
          var temp={}
-         for(var inp in value.applicationInputs){
-           temp[state.count]=inp
+         for(var i=0;i< value.applicationInputs.length;i++){
+           temp[state.count]=value.applicationInputs[i]
            state.count++
          }
          value.applicationInputs=temp
        }
        if(value.applicationOutputs){
            var temp={}
-         for(var out in value.applicationOutputs){
-           temp[state.count]=out
+         for(var i=0; i< value.applicationOutputs.length;i++){
+           temp[state.count]=value.applicationOutputs[i]
            state.count++
          }
          value.applicationOutputs=temp
        }
-       commit("updateAppInterfaceField",value)
+       Utils.resetData(state,value)
        rootState.newApplication.appInterfaceTabInitialized=false
+       mount()
      }
      if(rootState.newApplication.appInterfaceTabInitialized){
-
+        Utils.get('/api/application/interface',{queryParams:{id:rootState.newApplication.appDetailsTab.appModuleId},success:success})
+     }else {
+       mount()
      }
     },
     resetState:function ({commit,state,rootState}) {
+      console.log()
       Utils.resetData(state,initialState())
     }
   }

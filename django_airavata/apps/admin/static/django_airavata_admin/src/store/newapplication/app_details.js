@@ -9,7 +9,7 @@ const fieldMapper = {
 
 var initialState = function () {
   return {
-    appModuleId:null,
+    appModuleId: null,
     name: '',
     version: '',
     description: ''
@@ -52,14 +52,16 @@ export default {
     updateAppDetails: function (context, update) {
       context.commit('addAppDetails', update)
     },
-    registerAppModule: function ({commit,state},callable=(value)=>{
-      state.appModuleId=value
-      console.log("App Details",value)
-    }) {
-      return Utils.post('/api/new/application/module', state,callable=callable)
+    registerAppModule: function ({commit, state}, {success = (val) => console.log("App Details", value), failure = (val) => console.log("Saving failed", value)} = {}) {
+      var succ = (value) => {
+        state.appModuleId = value
+        success(value)
+
+      }
+      return Utils.post('/api/new/application/module', state, {success: succ, failure: failure})
     },
-    resetState:function ({commit,state,rootState}) {
-      Utils.resetData(state,initialState())
+    resetState: function ({commit, state, rootState}) {
+      Utils.resetData(state, initialState())
     }
   }
 }
