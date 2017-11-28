@@ -23,7 +23,7 @@
  namespace java org.apache.airavata.model.group
  namespace php Airavata.Model.Group
  namespace cpp apache.airavata.model.group
- namespace py apache.airavata.model.group
+ namespace py airavata.model.group
 
 
 enum ResourceType {

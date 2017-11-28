@@ -10,6 +10,8 @@
         <class>org.apache.airavata.sharing.registry.db.entities.PermissionTypeEntity</class>
         <class>org.apache.airavata.sharing.registry.db.entities.SharingEntity</class>
         <class>org.apache.airavata.sharing.registry.db.entities.UserEntity</class>
+        <class>org.apache.airavata.sharing.registry.db.entities.GroupAdminEntity</class>
+        <class>org.apache.airavata.sharing.registry.db.entities.GroupOwnerEntity</class>
         <class>org.apache.airavata.sharing.registry.db.entities.UserGroupEntity</class>
     </persistence-unit>
 </persistence>

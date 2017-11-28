@@ -435,10 +435,6 @@ public class ApplicationSettings {
         return getSetting(ServerSettings.IAM_SERVER_URL);
     }
 
-    public static String getGatewayAdminTempPwd() throws ApplicationSettingsException {
-        return getSetting(ServerSettings.NEW_GATEWAY_ADMIN_TEMP_PASSWORD);
-    }
-
     /**
      * @deprecated use {{@link #getSetting(String)}}
      * @return

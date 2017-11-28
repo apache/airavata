@@ -105,6 +105,9 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             // Following two settings allow duplicate email addresses
             newRealmDetails.setLoginWithEmailAllowed(false);
             newRealmDetails.setDuplicateEmailsAllowed(true);
+            // Default access token lifespan to 30 minutes, SSO session idle to 60 minutes
+            newRealmDetails.setAccessTokenLifespan(1800);
+            newRealmDetails.setSsoSessionIdleTimeout(3600);
             RealmRepresentation realmWithRoles = TenantManagementKeycloakImpl.createDefaultRoles(newRealmDetails);
             client.realms().create(realmWithRoles);
             return gatewayDetails;
@@ -154,7 +157,7 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
     }
 
     @Override
-    public boolean createTenantAdminAccount(PasswordCredential isSuperAdminPasswordCreds, Gateway gatewayDetails) throws IamAdminServicesException{
+    public boolean createTenantAdminAccount(PasswordCredential isSuperAdminPasswordCreds, Gateway gatewayDetails, String tenantAdminPassword) throws IamAdminServicesException{
         Keycloak client = null;
         try{
             client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), this.superAdminRealmId, isSuperAdminPasswordCreds);
@@ -165,9 +168,6 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             user.setEmail(gatewayDetails.getGatewayAdminEmail());
             user.setEmailVerified(true);
             user.setEnabled(true);
-            List<String> requiredActionList = new ArrayList<>();
-            requiredActionList.add("UPDATE_PASSWORD");
-            user.setRequiredActions(requiredActionList);
             Response httpResponse = client.realm(gatewayDetails.getGatewayId()).users().create(user);
             logger.info("Tenant Admin account creation exited with code : " + httpResponse.getStatus()+" : " +httpResponse.getStatusInfo());
             if (httpResponse.getStatus() == 201) { //HTTP code for record creation: HTTP 201
@@ -184,8 +184,8 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
 
                 CredentialRepresentation credential = new CredentialRepresentation();
                 credential.setType(CredentialRepresentation.PASSWORD);
-                credential.setValue(ServerSettings.getGatewayAdminTempPwd());
-                credential.setTemporary(true);
+                credential.setValue(tenantAdminPassword);
+                credential.setTemporary(false);
                 retrievedUser.resetPassword(credential);
                 List<ClientRepresentation> realmClients = client.realm(gatewayDetails.getGatewayId()).clients().findAll();
                 String realmManagementClientId=null;
@@ -234,8 +234,6 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             pgaClient.setServiceAccountsEnabled(true);
             pgaClient.setFullScopeAllowed(true);
             pgaClient.setClientAuthenticatorType("client-secret");
-            String[] defaultRoles = {"gateway-user"};
-            pgaClient.setDefaultRoles(defaultRoles);
             List<String> redirectUris = new ArrayList<>();
             if(gatewayDetails.getGatewayURL()!=null){
                 String gatewayURL = gatewayDetails.getGatewayURL();

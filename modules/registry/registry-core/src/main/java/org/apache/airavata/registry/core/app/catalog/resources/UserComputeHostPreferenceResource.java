@@ -49,6 +49,7 @@ public class UserComputeHostPreferenceResource extends AppCatAbstractResource {
     private String reservation;
     private Timestamp reservationStartTime;
     private Timestamp reservationEndTime;
+    private boolean validated = false;
 
     private UserResourceProfileResource userResourceProfileResource;
     private ComputeResourceResource computeHostResource;
@@ -164,6 +165,14 @@ public class UserComputeHostPreferenceResource extends AppCatAbstractResource {
 
     public void setReservationEndTime(Timestamp reservationEndTime) {
         this.reservationEndTime = reservationEndTime;
+    }
+
+    public boolean isValidated() {
+        return validated;
+    }
+
+    public void setValidated(boolean validated) {
+        this.validated = validated;
     }
 
     @Override
@@ -378,6 +387,7 @@ public class UserComputeHostPreferenceResource extends AppCatAbstractResource {
                 existingPreference.setReservation(reservation);
                 existingPreference.setReservationStartTime(reservationStartTime);
                 existingPreference.setReservationEndTime(reservationEndTime);
+                existingPreference.setValidated(validated);
                 em.merge(existingPreference);
             } else {
                 UserComputeResourcePreference resourcePreference = new UserComputeResourcePreference();
@@ -394,6 +404,7 @@ public class UserComputeHostPreferenceResource extends AppCatAbstractResource {
                 resourcePreference.setReservation(reservation);
                 resourcePreference.setReservationStartTime(reservationStartTime);
                 resourcePreference.setReservationEndTime(reservationEndTime);
+                resourcePreference.setValidated(validated);
                 em.persist(resourcePreference);
             }
             em.getTransaction().commit();

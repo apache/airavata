@@ -71,14 +71,21 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
         PasswordCredential isSuperAdminCredentials = getSuperAdminPasswordCredential();
         try {
             keycloakclient.addTenant(isSuperAdminCredentials, gateway);
-            if (!keycloakclient.createTenantAdminAccount(isSuperAdminCredentials, gateway)) {
+
+            // Load the tenant admin password stored in gateway request
+            CredentialStoreService.Client credentialStoreClient = getCredentialStoreServiceClient();
+            // Admin password token should already be stored under requested gateway's gatewayId
+            PasswordCredential tenantAdminPasswordCredential = credentialStoreClient.getPasswordCredential(gateway.getIdentityServerPasswordToken(), gateway.getGatewayId());
+
+            if (!keycloakclient.createTenantAdminAccount(isSuperAdminCredentials, gateway, tenantAdminPasswordCredential.getPassword())) {
                 logger.error("Admin account creation failed !!, please refer error logs for reason");
             }
             Gateway gatewayWithIdAndSecret = keycloakclient.configureClient(isSuperAdminCredentials, gateway);
             return gatewayWithIdAndSecret;
-        } catch (IamAdminServicesException ex) {
+        } catch (TException|ApplicationSettingsException ex) {
             logger.error("Gateway Setup Failed, reason: " + ex.getMessage(), ex);
-            throw ex;
+            IamAdminServicesException iamAdminServicesException = new IamAdminServicesException(ex.getMessage());
+            throw iamAdminServicesException;
         }
     }
 

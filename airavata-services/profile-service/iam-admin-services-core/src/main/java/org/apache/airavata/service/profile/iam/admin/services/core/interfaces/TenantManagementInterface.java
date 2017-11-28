@@ -44,9 +44,10 @@ public interface TenantManagementInterface {
      *
      * @param isSuperAdminPasswordCreds identity server super admin credentials
      * @param gatewayDetails gateway details from workspace catalog
+     * @param gatewayAdminPassword password to use when creating tenant admin account
      * @return Gateway object.
      */
-    boolean createTenantAdminAccount(PasswordCredential isSuperAdminPasswordCreds, Gateway gatewayDetails) throws IamAdminServicesException;
+    boolean createTenantAdminAccount(PasswordCredential isSuperAdminPasswordCreds, Gateway gatewayDetails, String gatewayAdminPassword) throws IamAdminServicesException;
 
     /**
      * Method to configure application client in Identity Server

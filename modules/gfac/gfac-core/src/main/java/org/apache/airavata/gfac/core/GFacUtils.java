@@ -31,6 +31,7 @@ import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.CommandObject;
+import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.application.io.DataType;
@@ -454,9 +455,13 @@ public class GFacUtils {
         groovyMap.add(Script.JOB_NAME, "A" + String.valueOf(generateJobName()));
         groovyMap.add(Script.WORKING_DIR, processContext.getWorkingDir());
 
-        List<String> inputValues = getProcessInputValues(processModel.getProcessInputs());
-        inputValues.addAll(getProcessOutputValues(processModel.getProcessOutputs()));
+        List<String> inputValues = getProcessInputValues(processModel.getProcessInputs(), true);
+        inputValues.addAll(getProcessOutputValues(processModel.getProcessOutputs(), true));
         groovyMap.add(Script.INPUTS, inputValues);
+
+        List<String> inputValuesAll = getProcessInputValues(processModel.getProcessInputs(), false);
+        inputValues.addAll(getProcessOutputValues(processModel.getProcessOutputs(), false));
+        groovyMap.add(Script.INPUTS_ALL, inputValuesAll);
 
         groovyMap.add(Script.USER_NAME, processContext.getJobSubmissionRemoteCluster().getServerInfo().getUserName());
         groovyMap.add(Script.SHELL_NAME, "/bin/bash");
@@ -530,6 +535,16 @@ public class GFacUtils {
         }
 
         ApplicationDeploymentDescription appDepDescription = processContext.getApplicationDeploymentDescription();
+
+        List<SetEnvPaths> exportCommands = appDepDescription.getSetEnvironment();
+        if (exportCommands != null) {
+            List<String> exportCommandList = exportCommands.stream()
+                    .sorted((e1, e2) -> e1.getEnvPathOrder() - e2.getEnvPathOrder())
+                    .map(map -> map.getName() + "=" + map.getValue())
+                    .collect(Collectors.toList());
+            groovyMap.add(Script.EXPORTS, exportCommandList);
+        }
+
         List<CommandObject> moduleCmds = appDepDescription.getModuleLoadCmds();
         if (moduleCmds != null) {
             List<String> modulesCmdCollect = moduleCmds.stream()
@@ -612,7 +627,7 @@ public class GFacUtils {
         }
     }
 
-    private static List<String> getProcessOutputValues(List<OutputDataObjectType> processOutputs) {
+    private static List<String> getProcessOutputValues(List<OutputDataObjectType> processOutputs, boolean commandLineOnly) {
         List<String> inputValues = new ArrayList<>();
         if (processOutputs != null) {
             for (OutputDataObjectType output : processOutputs) {
@@ -620,19 +635,30 @@ public class GFacUtils {
                         && !output.getApplicationArgument().equals("")) {
                     inputValues.add(output.getApplicationArgument());
                 }
-                if (output.getValue() != null && !output.getValue().equals("") && output.isRequiredToAddedToCommandLine()) {
-                    if (output.getType() == DataType.URI) {
-                        String filePath = output.getValue();
-                        filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
-                        inputValues.add(filePath);
+                if(commandLineOnly){
+                    if (output.getValue() != null && !output.getValue().equals("") && output.isRequiredToAddedToCommandLine()) {
+                        if (output.getType() == DataType.URI) {
+                            String filePath = output.getValue();
+                            filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
+                            inputValues.add(filePath);
+                        }
+                    }
+                }else{
+                    if (output.getValue() != null && !output.getValue().equals("")) {
+                        if (output.getType() == DataType.URI) {
+                            String filePath = output.getValue();
+                            filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
+                            inputValues.add(filePath);
+                        }
                     }
                 }
+
             }
         }
         return inputValues;
     }
 
-    private static List<String> getProcessInputValues(List<InputDataObjectType> processInputs) {
+    private static List<String> getProcessInputValues(List<InputDataObjectType> processInputs, boolean commandLineOnly) {
         List<String> inputValues = new ArrayList<String>();
         if (processInputs != null) {
 
@@ -648,7 +674,7 @@ public class GFacUtils {
                 sortedInputSet.add(input);
             }
             for (InputDataObjectType inputDataObjectType : sortedInputSet) {
-                if (!inputDataObjectType.isRequiredToAddedToCommandLine()) {
+                if (commandLineOnly && !inputDataObjectType.isRequiredToAddedToCommandLine()) {
                     continue;
                 }
                 if (inputDataObjectType.getApplicationArgument() != null
@@ -850,7 +876,7 @@ public class GFacUtils {
     public static String getTemplateFileName(ResourceJobManagerType resourceJobManagerType) {
         switch (resourceJobManagerType) {
             case FORK:
-                return "UGE_Groovy.template";
+                return "FORK_Groovy.template";
             case PBS:
                 return "PBS_Groovy.template";
             case SLURM:

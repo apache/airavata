@@ -25,7 +25,7 @@ include "data_movement_models.thrift"
 namespace java org.apache.airavata.model.appcatalog.computeresource
 namespace php Airavata.Model.AppCatalog.ComputeResource
 namespace cpp apache.airavata.model.appcatalog.computeresource
-namespace py apache.airavata.model.appcatalog.computeresource
+namespace py airavata.model.appcatalog.computeresource
 
 
 /**

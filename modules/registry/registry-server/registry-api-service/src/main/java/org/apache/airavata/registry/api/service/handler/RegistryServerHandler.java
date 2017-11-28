@@ -3532,12 +3532,25 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 throw exception;
             }
             experimentCatalog.update(ExperimentCatalogModelType.GATEWAY, updatedGateway, gatewayId);
+
+            // check if gatewayprofile exists and check if the identity server password token equals the admin password token, if not update
+            GatewayResourceProfile existingGwyResourceProfile = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
+            if (existingGwyResourceProfile.getIdentityServerPwdCredToken() == null
+                    || !existingGwyResourceProfile.getIdentityServerPwdCredToken().equals(updatedGateway.getIdentityServerPasswordToken())) {
+                existingGwyResourceProfile.setIdentityServerPwdCredToken(updatedGateway.getIdentityServerPasswordToken());
+                appCatalog.getGatewayProfile().updateGatewayResourceProfile(gatewayId, existingGwyResourceProfile);
+            }
             logger.debug("Airavata update gateway with gateway id : " + gatewayId);
             return true;
         } catch (RegistryException e) {
             logger.error("Error while updating the gateway", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while updating the gateway. More info : " + e.getMessage());
+            throw exception;
+        } catch (AppCatalogException e) {
+            logger.error("Error while updating gateway profile", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while updating gateway profile. More info : " + e.getMessage());
             throw exception;
         }
     }
@@ -3573,6 +3586,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
             // add gatewayresourceprofile in appCatalog
             GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
             gatewayResourceProfile.setGatewayID(gatewayId);
+            gatewayResourceProfile.setIdentityServerTenant(gatewayId);
+            gatewayResourceProfile.setIdentityServerPwdCredToken(gateway.getIdentityServerPasswordToken());
             appCatalog.getGatewayProfile().addGatewayResourceProfile(gatewayResourceProfile);
             logger.debug("Airavata added gateway with gateway id : " + gateway.getGatewayId());
             return gatewayId;

@@ -37,7 +37,7 @@ public class SetupNewGateway {
         TenantManagementKeycloakImpl client = new TenantManagementKeycloakImpl();
         try {
             client.addTenant(superAdminCreds, testGateway);
-            if (!client.createTenantAdminAccount(superAdminCreds, testGateway)) {
+            if (!client.createTenantAdminAccount(superAdminCreds, testGateway, "Test@123")) {
                 logger.error("Admin account creation failed !!, please refer error logs for reason");
             }
             Gateway gatewayWithIdAndSecret = client.configureClient(superAdminCreds, testGateway);
