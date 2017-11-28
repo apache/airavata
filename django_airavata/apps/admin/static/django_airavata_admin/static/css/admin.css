@@ -1,16 +1,15 @@
-.entry{
-  margin-top:20px;
+.entry {
+  margin-top: 20px;
   display: block;
 }
 
-.entry .heading{
-  font-size:16px;
+.entry .heading {
+  font-size: 16px;
   font-weight: bold;
   margin-bottom: 10px;
 }
 
-
-input[type="text"],input[type="number"],textarea,select{
+input[type="text"], input[type="number"], textarea, select {
   width: 100%;
   border-radius: 2px;
   border: solid #dddddd 1px;
@@ -21,10 +20,63 @@ input[type="text"],input[type="number"],textarea,select{
   width: 100%;
   display: block;
   margin-top: 50px;
-  margin-bottom:20px;
+  margin-bottom: 20px;
 }
 
-.new-application-tab-main{
+.new-application-tab-main {
   width: 65%;
-  margin-bottom:30px;
+  margin-bottom: 30px;
+}
+
+.btns {
+  margin-top: 50px;
+  display: inline-block;
+  width: 100%;
+}
+
+.vbtn {
+  margin-left: 20px;
+  text-align: center;
+  border-color: #007BFF;
+  border-style: solid;
+  border-radius: 3px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.vbtn:hover {
+  background-color: #3ca41a;
+  color: #f1fff3;
+  border-color: #3ca41a;
+}
+
+.vbtn-default {
+  background-color: #007BFF;
+  color: white;
+}
+
+.vbtn.vbtn-default:active,.vbtn.vbtn-cancel:active{
+  background-color: #f1fff3;
+  color: #3ca41a;
+  border-color: #3ca41a;
+}
+
+.vbtn-cancel {
+  color: #007BFF;
+  background-color: white;
+}
+
+.interface-main {
+  border: solid 1px #dddddd;
+  border-radius: 4px;
+}
+
+.input-field-header {
+  background-color: #F8F8F8;
+  width: 100%;
+  padding: 15px;
+  border: solid 1px #dddddd;
+  text-align: left;
 }
