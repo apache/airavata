@@ -33,7 +33,7 @@ export default {
     }
     return headers;
   },
-  post: function (url, body, callable=(value)=>console.log("Value",value),mediaType = "application/json") {
+  post: function (url, body, {success=(value)=>console.log("Request Successful",value),failure=(value)=>console.log("Request Failed",value), mediaType = "application/json"}={}) {
     var headers = this.createHeader(mediaType)
     return fetch(url, {
       method: 'post',
@@ -42,9 +42,9 @@ export default {
       credentials: "same-origin"
     }).then((response) => {
       if (response.ok) {
-        return Promise.resolve(response.json()).then(callable)
+        return Promise.resolve(response.json()).then(success)
       } else {
-        return Promise.reject(new Error(response.statusText))
+        return Promise.reject(failure(response.statusText))
       }
     })
   },
