@@ -116,7 +116,7 @@
       </div>
     </div>
     <div class="new-application-tab-main">
-      <new-application-buttons v-bind:save="saveApplicationDeployment" v-bind:cancel="resetState" v-bind:sectionName="'Application Deployment'"></new-application-buttons>
+      <new-application-buttons v-bind:save="saveApplicationDeployment" v-bind:cancel="cancel" v-bind:sectionName="'Application Deployment'"></new-application-buttons>
     </div>
   </div>
 </template>
@@ -168,7 +168,6 @@
         var fieldValues = ob[fieldName]
         fieldValues.push(envPaths)
         this.appDeployments = ob
-        console.log("Add name value pair",this.appDeployments)
       },
       fetchComputeHosts:function () {
         this.computeHosts=[{"host":"Loading...","host_id":""}]
@@ -176,14 +175,22 @@
         Utils.get('/api/compute/resources',{success:callable,failure:(value)=>this.computeHosts=[]})
       },
       saveApplicationDeployment:function ({success=null,failure=null}={}) {
-        this.updateAppDeployment(this.appDeployments)
+        this.syncData()
         this.save({success:success,failure:failure})
+      },
+      cancel:function () {
+        this.resetState()
+        this.appDeployments=this.getCompleteData
+      }
+      ,
+      syncData:function () {
+        this.updateAppDeployment(this.appDeployments)
       },
       ...mapActions(["updateAppDeployment","save","resetState"])
     },
     watch: {
       '$route'(to, from) {
-        this.updateAppDeployment(this.appDeployments)
+        this.syncData()
       },
       "appDeployments.computeHostId":function (value) {
         if(value){
