@@ -67,6 +67,27 @@ struct User {
  9: optional i64 updatedTime
 }
 
+/*
+* Admin user for a group. Admin will have access to add more users or remove users from the group
+*
+**/
+struct GroupAdmin {
+ 1: optional string groupId,
+ 2: optional string domainId,
+ 3: optional string adminId
+}
+
+/*
+* The Owner who creates the group initially. Ownership can be transferable to a different user.
+* Only owners are allowed to delete the groups.
+*
+**/
+struct GroupOwner {
+ 1: optional string groupId,
+ 2: optional string domainId,
+ 3: optional string ownerId
+}
+
 /**
 * <p>This is an system internal enum used to define single user groups and multi users groups. Every user is also
 * considered as a group in it's own right for implementation ease</p>
