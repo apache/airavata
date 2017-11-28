@@ -15,7 +15,7 @@
         <div class="heading" >Experiment Description</div>
         <textarea  style="height: 80px;" type="text" v-model="description"/>
       </div>
-      <new-application-buttons v-bind:save="registerAppModule" v-on:cancel="cancelAction()"></new-application-buttons>
+      <new-application-buttons v-bind:save="registerAppModule" v-bind:cancel="cancelAction"></new-application-buttons>
     </div>
   </div>
 </template>
@@ -31,7 +31,7 @@
       NewApplicationButtons
     },
     mounted:function () {
-      this.syncDataFromStore()
+      this.mount()
     },
     data:function () {
       return {
@@ -41,7 +41,7 @@
       };
     },
     methods:{
-      syncDataFromStore:function () {
+      mount:function () {
         this.name=this.getAppName()
         this.version=this.getAppVersion()
         this.description=this.getAppDescription()
@@ -52,11 +52,11 @@
         this.updateAppDetails(update)
       },
       cancelAction:function () {
-        this.resetAll()
-        this.$forceUpdate()
+        this.resetState()
+        this.mount()
       },
       ...mapGetters(['getAppName','getAppVersion','getAppDescription']),
-      ...mapActions(['updateAppDetails','registerAppModule','resetAll'])
+      ...mapActions(['updateAppDetails','registerAppModule','resetState'])
     },
     watch:{
       name:function (newValue) {

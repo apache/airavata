@@ -167,13 +167,7 @@
 </script>
 
 <style>
-  .input-field-header {
-    background-color: #F8F8F8;
-    width: 100%;
-    padding: 15px;
-    border: solid 1px #dddddd;
-    text-align: left;
-  }
+
 
   .input-field-header img {
     float: right;
@@ -198,9 +192,6 @@
     height: 30px;
   }
 
-  .interface-main {
-    border: solid 1px #dddddd;
-    border-radius: 4px;
-  }
+
 
 </style>

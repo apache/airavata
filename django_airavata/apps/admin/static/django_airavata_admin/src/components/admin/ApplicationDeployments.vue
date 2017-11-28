@@ -10,8 +10,8 @@
       <div class="entry">
         <div class="heading">Application compute host</div>
         <select v-model="appDeployments.computeHostId">
-            <option v-for="computeHost in computeHosts" v-bind:value="computeHost.host_id">{{computeHost.host}}</option>
-          </select>
+          <option v-for="computeHost in computeHosts" v-bind:value="computeHost.host_id">{{computeHost.host}}</option>
+        </select>
       </div>
       <div class="entry">
         <div class="heading">Application executable path</div>
@@ -20,6 +20,14 @@
       <div class="entry">
         <div class="heading">Application Parallelism type</div>
         <input type="text" v-model="appDeployments.parallelism"/>
+        <select v-model="appDeployments.parallelism">
+          <option value="0">SERIAL</option>
+          <option value="1">MPI</option>
+          <option value="2">OPENMP</option>
+          <option value="3">OPENMP MPI</option>
+          <option value="4">CCM</option>
+          <option value="5">CRAY MPI</option>
+        </select>
       </div>
       <div class="entry">
         <div class="heading">Application deployment description</div>
@@ -109,7 +117,7 @@
       </div>
     </div>
     <div class="new-application-tab-main">
-      <new-application-buttons v-bind:save="saveApplicationDeployment"></new-application-buttons>
+      <new-application-buttons v-bind:save="saveApplicationDeployment" v-bind:cancel="resetState"></new-application-buttons>
     </div>
   </div>
 </template>
@@ -168,7 +176,7 @@
         var callable=(value)=>this.computeHosts=value
         Utils.get('/api/compute/resources',{success:callable,failure:(value)=>this.computeHosts=[]})
       },
-      ...mapActions(["updateAppDeployment","saveApplicationDeployment"])
+      ...mapActions(["updateAppDeployment","saveApplicationDeployment","resetState"])
     },
     watch: {
       '$route'(to, from) {
