@@ -407,6 +407,133 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     }
 
     @Override
+    public boolean transferGroupOwnership(String domainId, String groupId, String newOwnerId) throws SharingRegistryException, TException {
+        try {
+            if (hasOwnerAccess(domainId, groupId, newOwnerId)) {
+                throw new DuplicateEntryException("User already the current owner of the group");
+            }
+            // remove the new owner as Admin if present
+            if (hasAdminAccess(domainId, groupId, newOwnerId)) {
+                removeGroupAdmins(domainId, groupId, Arrays.asList(newOwnerId));
+            }
+
+            UserGroupPK userGroupPK = new UserGroupPK();
+            userGroupPK.setGroupId(groupId);
+            userGroupPK.setDomainId(domainId);
+            UserGroup userGroup = (new UserGroupRepository()).get(userGroupPK);
+            String currentOwnerId = userGroup.getOwnerId();
+            UserGroup newUserGroup = new UserGroup();
+            newUserGroup.setUpdatedTime(System.currentTimeMillis());
+            newUserGroup.setOwnerId(newOwnerId);
+            newUserGroup.setGroupCardinality(GroupCardinality.MULTI_USER);
+            newUserGroup.setCreatedTime(userGroup.createdTime);
+            newUserGroup = getUpdatedObject(userGroup, newUserGroup);
+
+            (new UserGroupRepository()).update(newUserGroup);
+
+            GroupOwnerPK groupOwnerPK = new GroupOwnerPK();
+            groupOwnerPK.setDomainId(domainId);
+            groupOwnerPK.setOwnerId(currentOwnerId);
+            GroupOwner currentOwner = (new GroupOwnerRepository()).get(groupOwnerPK);
+            GroupOwner newOwner = new GroupOwner();
+            newOwner.setDomainId(domainId);
+            newOwner.setOwnerId(newOwnerId);
+            newOwner.setGroupId(groupId);
+            newOwner = getUpdatedObject(currentOwner, newOwner);
+
+            (new GroupOwnerRepository()).update(newOwner);
+            return true;
+        }
+        catch (Throwable ex) {
+            logger.error(ex.getMessage(), ex);
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+        }
+    }
+
+    @Override
+    public boolean addGroupAdmins(String domainId, String groupId, List<String> adminIds) throws SharingRegistryException, TException {
+        try{
+            for (String adminId: adminIds) {
+                GroupAdminPK groupAdminPK = new GroupAdminPK();
+                groupAdminPK.setGroupId(groupId);
+                groupAdminPK.setAdminId(adminId);
+                groupAdminPK.setDomainId(domainId);
+
+                if((new GroupAdminRepository()).get(groupAdminPK) != null)
+                    throw new DuplicateEntryException("User already an admin for the group");
+
+                GroupAdmin admin = new GroupAdmin();
+                admin.setAdminId(adminId);
+                admin.setDomainId(domainId);
+                admin.setGroupId(groupId);
+                (new GroupAdminRepository()).create(admin);
+            }
+            return true;
+        }
+        catch (Throwable ex) {
+            logger.error(ex.getMessage(), ex);
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+        }
+    }
+
+    @Override
+    public boolean removeGroupAdmins(String domainId, String groupId, List<String> adminIds) throws SharingRegistryException, TException {
+        try {
+            for (String adminId: adminIds) {
+                GroupAdminPK groupAdminPK = new GroupAdminPK();
+                groupAdminPK.setAdminId(adminId);
+                groupAdminPK.setDomainId(domainId);
+                groupAdminPK.setGroupId(groupId);
+                (new GroupAdminRepository()).delete(groupAdminPK);
+            }
+            return true;
+        }
+        catch (Throwable ex) {
+            logger.error(ex.getMessage(), ex);
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+        }
+    }
+
+    @Override
+    public boolean hasAdminAccess(String domainId, String groupId, String adminId) throws SharingRegistryException, TException {
+        try{
+            GroupAdminPK groupAdminPK = new GroupAdminPK();
+            groupAdminPK.setGroupId(groupId);
+            groupAdminPK.setAdminId(adminId);
+            groupAdminPK.setDomainId(domainId);
+
+            if((new GroupAdminRepository()).get(groupAdminPK) != null)
+                return true;
+            return false;
+        }
+        catch (Throwable ex) {
+            logger.error(ex.getMessage(), ex);
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+        }
+    }
+
+    @Override
+    public boolean hasOwnerAccess(String domainId, String groupId, String ownerId) throws SharingRegistryException, TException {
+        try {
+            GroupOwnerPK groupOwnerPK = new GroupOwnerPK();
+            groupOwnerPK.setDomainId(domainId);
+            groupOwnerPK.setOwnerId(ownerId);
+
+            GroupOwner owner = (new GroupOwnerRepository()).get(groupOwnerPK);
+            if (owner != null) {
+                if (owner.groupId.equals(groupId)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        catch (Throwable ex) {
+            logger.error(ex.getMessage(), ex);
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+        }
+    }
+
+    @Override
     public List<User> getGroupMembersOfTypeUser(String domainId, String groupId, int offset, int limit) throws SharingRegistryException, TException {
         try{
             //TODO limit offset
