@@ -71,7 +71,7 @@ struct User {
 * Admin user for a group. Admin will have access to add more users or remove users from the group
 *
 **/
-struct Admin {
+struct GroupAdmin {
  1: optional string groupId,
  2: optional string domainId,
  3: optional string adminId
@@ -82,7 +82,7 @@ struct Admin {
 * Only owners are allowed to delete the groups.
 *
 **/
-struct Owner {
+struct GroupOwner {
  1: optional string groupId,
  2: optional string domainId,
  3: optional string ownerId

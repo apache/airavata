@@ -431,17 +431,17 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
 
             (new UserGroupRepository()).update(newUserGroup);
 
-            OwnerPK ownerPK = new OwnerPK();
-            ownerPK.setDomainId(domainId);
-            ownerPK.setOwnerId(currentOwnerId);
-            Owner currentOwner = (new OwnerRepository()).get(ownerPK);
-            Owner newOwner = new Owner();
+            GroupOwnerPK groupOwnerPK = new GroupOwnerPK();
+            groupOwnerPK.setDomainId(domainId);
+            groupOwnerPK.setOwnerId(currentOwnerId);
+            GroupOwner currentOwner = (new GroupOwnerRepository()).get(groupOwnerPK);
+            GroupOwner newOwner = new GroupOwner();
             newOwner.setDomainId(domainId);
             newOwner.setOwnerId(newOwnerId);
             newOwner.setGroupId(groupId);
             newOwner = getUpdatedObject(currentOwner, newOwner);
 
-            (new OwnerRepository()).update(newOwner);
+            (new GroupOwnerRepository()).update(newOwner);
             return true;
         }
         catch (Throwable ex) {
@@ -454,19 +454,19 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     public boolean addGroupAdmins(String domainId, String groupId, List<String> adminIds) throws SharingRegistryException, TException {
         try{
             for (String adminId: adminIds) {
-                AdminPK adminPK = new AdminPK();
-                adminPK.setGroupId(groupId);
-                adminPK.setAdminId(adminId);
-                adminPK.setDomainId(domainId);
+                GroupAdminPK groupAdminPK = new GroupAdminPK();
+                groupAdminPK.setGroupId(groupId);
+                groupAdminPK.setAdminId(adminId);
+                groupAdminPK.setDomainId(domainId);
 
-                if((new AdminRepository()).get(adminPK) != null)
+                if((new GroupAdminRepository()).get(groupAdminPK) != null)
                     throw new DuplicateEntryException("User already an admin for the group");
 
-                Admin admin = new Admin();
+                GroupAdmin admin = new GroupAdmin();
                 admin.setAdminId(adminId);
                 admin.setDomainId(domainId);
                 admin.setGroupId(groupId);
-                (new AdminRepository()).create(admin);
+                (new GroupAdminRepository()).create(admin);
             }
             return true;
         }
@@ -480,11 +480,11 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     public boolean removeGroupAdmins(String domainId, String groupId, List<String> adminIds) throws SharingRegistryException, TException {
         try {
             for (String adminId: adminIds) {
-                AdminPK adminPK = new AdminPK();
-                adminPK.setAdminId(adminId);
-                adminPK.setDomainId(domainId);
-                adminPK.setGroupId(groupId);
-                (new AdminRepository()).delete(adminPK);
+                GroupAdminPK groupAdminPK = new GroupAdminPK();
+                groupAdminPK.setAdminId(adminId);
+                groupAdminPK.setDomainId(domainId);
+                groupAdminPK.setGroupId(groupId);
+                (new GroupAdminRepository()).delete(groupAdminPK);
             }
             return true;
         }
@@ -497,12 +497,12 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     @Override
     public boolean hasAdminAccess(String domainId, String groupId, String adminId) throws SharingRegistryException, TException {
         try{
-            AdminPK adminPK = new AdminPK();
-            adminPK.setGroupId(groupId);
-            adminPK.setAdminId(adminId);
-            adminPK.setDomainId(domainId);
+            GroupAdminPK groupAdminPK = new GroupAdminPK();
+            groupAdminPK.setGroupId(groupId);
+            groupAdminPK.setAdminId(adminId);
+            groupAdminPK.setDomainId(domainId);
 
-            if((new AdminRepository()).get(adminPK) != null)
+            if((new GroupAdminRepository()).get(groupAdminPK) != null)
                 return true;
             return false;
         }
@@ -515,11 +515,11 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     @Override
     public boolean hasOwnerAccess(String domainId, String groupId, String ownerId) throws SharingRegistryException, TException {
         try {
-            OwnerPK ownerPK = new OwnerPK();
-            ownerPK.setDomainId(domainId);
-            ownerPK.setOwnerId(ownerId);
+            GroupOwnerPK groupOwnerPK = new GroupOwnerPK();
+            groupOwnerPK.setDomainId(domainId);
+            groupOwnerPK.setOwnerId(ownerId);
 
-            Owner owner = (new OwnerRepository()).get(ownerPK);
+            GroupOwner owner = (new GroupOwnerRepository()).get(groupOwnerPK);
             if (owner != null) {
                 if (owner.groupId.equals(groupId)) {
                     return true;

@@ -7,9 +7,9 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import java.io.Serializable;
 
-public class OwnerPK implements Serializable{
+public class GroupOwnerPK implements Serializable{
 
-    private final static Logger logger = LoggerFactory.getLogger(OwnerPK.class);
+    private final static Logger logger = LoggerFactory.getLogger(GroupOwnerPK.class);
     private String ownerId;
     private String domainId;
 
@@ -38,10 +38,10 @@ public class OwnerPK implements Serializable{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        OwnerPK ownerPK = (OwnerPK) o;
+        GroupOwnerPK groupOwnerPK = (GroupOwnerPK) o;
 
-        if (!getOwnerId().equals(ownerPK.getOwnerId())) return false;
-        return getDomainId().equals(ownerPK.getDomainId());
+        if (!getOwnerId().equals(groupOwnerPK.getOwnerId())) return false;
+        return getDomainId().equals(groupOwnerPK.getDomainId());
     }
 
     @Override
