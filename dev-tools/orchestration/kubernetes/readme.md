@@ -20,26 +20,20 @@ I have 3 slave nodes with 1 master
 
 5) `cd dev-tools/orchestration/kubernetes/airavata-setup/`
 
-6) `kubectl create -f  	rmq-deploy.yml`
+6) `kubectl create -f rmq-deploy.yml`
 
-7) `kubectl create -f  	rmq-svc.yml`
+7) `kubectl create -f rmq-svc.yml`
 
-8) `rabbitmqip=$(kubectl describe svc | grep :5672);rabbitmqip="$( cut -d ':' -f 2 <<< "$s" )"; echo "$rabbitmqip"`
+9) `kubectl create -f mariadb-deploy.yml`
 
-9) `kubectl create -f  	mariadb-deploy.yml`
+8) `kubectl create -f mariadb-svc.yml`
 
-10) `mariadbip=$(kubectl describe deploy | grep :3306);mariadbip="$( cut -d ':' -f 2 <<< "$s" )"; echo "$mariadbip"`
+11) `kubectl create -f mariadb-deploy.yml`
 
-11) `kubectl create -f zookeeper-deploy.yml`
+12) `kubectl create -f zookeeper-svc.yml`
 
-12) `zookeeperip=$(kubectl describe deploy | grep :3888);zookeeperip="$( cut -d ':' -f 2 <<< "$s" )"; echo "$zookeeperip"`
+15) `kubectl create -f airavata-all-deploy.yml`
 
-13)  `cd ../dockermodule/middleware/`
-
-14) edit the file to change the ip addresses/hostname with respective placeholder ipadresses of rabbitmq, mariadb and zookeepeer and save the file.
-
-15)  `cd ../../airavata-setup/`
-
-15) `kubectl create -f airavata-all-rc.yml`
+15) `kubectl create -f airavata-all-svc.yml`
 
 16) The airavata-setup should be up
