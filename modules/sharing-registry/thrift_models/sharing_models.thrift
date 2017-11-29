@@ -19,8 +19,6 @@
  */
 
  namespace java org.apache.airavata.sharing.registry.models
- namespace php Airavata.Model.Sharing
- namespace py airavata.model.sharing
 
 const string DO_NOT_SET_AT_CLIENTS_ID = "DO_NOT_SET_AT_CLIENTS_ID"
 
@@ -67,27 +65,6 @@ struct User {
  9: optional i64 updatedTime
 }
 
-/*
-* Admin user for a group. Admin will have access to add more users or remove users from the group
-*
-**/
-struct GroupAdmin {
- 1: optional string groupId,
- 2: optional string domainId,
- 3: optional string adminId
-}
-
-/*
-* The Owner who creates the group initially. Ownership can be transferable to a different user.
-* Only owners are allowed to delete the groups.
-*
-**/
-struct GroupOwner {
- 1: optional string groupId,
- 2: optional string domainId,
- 3: optional string ownerId
-}
-
 /**
 * <p>This is an system internal enum used to define single user groups and multi users groups. Every user is also
 * considered as a group in it's own right for implementation ease</p>
@@ -103,6 +80,14 @@ enum GroupCardinality {
 enum GroupType {
     DOMAIN_LEVEL_GROUP,
     USER_LEVEL_GROUP
+}
+
+/**
+* <p>Group Visibility can be either private or public.</p>
+**/
+enum GroupVisibility {
+    PRIVATE,
+    PUBLIC
 }
 
 /**
@@ -126,7 +111,8 @@ struct UserGroup {
  6: optional GroupType groupType,
  7: optional GroupCardinality groupCardinality,
  8: optional i64 createdTime,
- 9: optional i64 updatedTime
+ 9: optional i64 updatedTime,
+ 10: optional GroupVisibility groupVisibility
 }
 
 /**
