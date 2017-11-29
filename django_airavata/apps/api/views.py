@@ -125,6 +125,8 @@ class APIResultPagination(pagination.LimitOffsetPagination):
     have a known count, so it isn't always possible to know how many pages there
     are.
     """
+    default_limit = 10
+
     def paginate_queryset(self, queryset, request, view=None):
         assert isinstance(queryset, APIResultIterator), "queryset is not an APIResultIterator: {}".format(queryset)
         self.limit = self.get_limit(request)
@@ -222,14 +224,26 @@ class ExperimentList(APIView):
         return Response(serializer.data)
 
 
-class ApplicationList(APIView):
-    def get(self, request, format=None):
-        gateway_id = settings.GATEWAY_ID
-        app_modules = request.airavata_client.getAllAppModules(request.authz_token, gateway_id)
-        serializer = serializers.ApplicationModuleSerializer(app_modules, many=True, context={'request': request})
-        return Response(serializer.data)
+class ApplicationModuleViewSet(APIBackedViewSet):
+    serializer_class = serializers.ApplicationModuleSerializer
+
+    def get_list(self):
+        return self.request.airavata_client.getAllAppModules(self.authz_token, self.gateway_id)
+
+    def get_instance(self, lookup_value):
+        return self.request.airavata_client.getApplicationModule(self.authz_token, lookup_value)
+
+    def perform_create(self, serializer):
+        app_module = serializer.save()
+        app_module_id = self.request.airavata_client.registerApplicationModule(self.authz_token, self.gateway_id, app_module)
+        app_module.appModuleId = app_module_id
+
+    def perform_update(self, serializer):
+        app_module = serializer.save()
+        self.request.airavata_client.updateApplicationModule(self.authz_token, app_module.appModuleId, app_module)
 
 
+# TODO convert to APIBackedViewSet
 class RegisterApplicationModule(APIView):
     parser_classes = (JSONParser,)
 
@@ -240,6 +254,7 @@ class RegisterApplicationModule(APIView):
         return Response(response)
 
 
+# TODO use ApplicationInterfaceViewSet instead
 class RegisterApplicationInterface(APIView):
     parser_classes = (JSONParser,)
 
@@ -254,6 +269,7 @@ class RegisterApplicationInterface(APIView):
         return Response(response)
 
 
+# TODO convert to APIBackedViewSet
 class RegisterApplicationDeployments(APIView):
     parser_classes = (JSONParser,)
 
