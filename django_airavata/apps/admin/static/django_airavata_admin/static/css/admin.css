@@ -15,6 +15,9 @@ input[type="text"], input[type="number"], textarea, select {
   border: solid #dddddd 1px;
   padding: 7px;
 }
+button,input[type="button"] {
+  outline: none;
+}
 
 .main_section {
   width: 100%;
@@ -80,3 +83,23 @@ input[type="text"], input[type="number"], textarea, select {
   border: solid 1px #dddddd;
   text-align: left;
 }
+.vmain{
+  z-index: 1;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition-property: opacity;
+  transition-duration: .25s;
+}
+
+.fade-enter-active {
+  transition-delay: .25s;
+}
+
+.fade-enter, .fade-leave-active {
+  opacity: 0
+}
+
+
+
+
