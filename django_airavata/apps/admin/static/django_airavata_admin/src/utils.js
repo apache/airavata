@@ -1,4 +1,6 @@
 import Vue from 'vue'
+import Store from './store/store'
+
 
 export default {
   resetData:function (obj,initialData) {
@@ -35,12 +37,14 @@ export default {
   },
   post: function (url, body, {success=(value)=>console.log("Request Successful",value),failure=(value)=>console.log("Request Failed",value), mediaType = "application/json"}={}) {
     var headers = this.createHeader(mediaType)
+    Store.dispatch('loading/loadingStarted')
     return fetch(url, {
       method: 'post',
       body: JSON.stringify(body),
       headers: headers,
       credentials: "same-origin"
     }).then((response) => {
+      Store.dispatch('loading/loadingCompleted')
       if (response.ok) {
         return Promise.resolve(response.json()).then(success)
       } else {
@@ -52,6 +56,7 @@ export default {
     if(queryParams&& typeof(queryParams) != "string"){
       url=url+"?"+Object.keys(queryParams).map(paramName => encodeURIComponent(paramName)+"="+encodeURIComponent(queryParams[paramName])).join("&")
     }
+    Store.dispatch('loading/loadingStarted')
 
     var headers = this.createHeader(mediaType)
     return fetch(url, {
@@ -59,6 +64,7 @@ export default {
       headers: headers,
       credentials: "same-origin"
     }).then((response) => {
+      Store.dispatch('loading/loadingCompleted')
       if (response.ok) {
         return Promise.resolve(response.json()).then(success)
       } else {
