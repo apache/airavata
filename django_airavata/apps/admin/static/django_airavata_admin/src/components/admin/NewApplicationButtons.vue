@@ -69,6 +69,7 @@
   .msg-success{
     background-color: #3ca41a;
     color: #f1fff3;
+    transition-timing-function: ea  ;
   }
 
   .msg-failure{

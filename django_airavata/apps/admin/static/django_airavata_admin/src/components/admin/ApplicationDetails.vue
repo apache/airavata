@@ -21,14 +21,14 @@
 </template>
 <script>
   import NewApplicationButtons from './NewApplicationButtons.vue';
-
+  import Loading from '../Loading.vue'
   import { createNamespacedHelpers } from 'vuex'
 
   const {mapGetters,mapActions} = createNamespacedHelpers('newApplication/appDetailsTab')
 
   export default{
     components:{
-      NewApplicationButtons
+      NewApplicationButtons,Loading
     },
     mounted:function () {
       this.mount()

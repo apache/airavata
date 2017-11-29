@@ -1,7 +1,6 @@
 <template>
 
   <div class="main_section">
-
     <div class="new-application-tab-main">
       <h4>Application Interface</h4>
       <div class="entry boolean-selectors">
@@ -40,6 +39,7 @@
   import BooleanRadioButton from './BooleanRadioButton.vue';
   import NewApplicationButtons from './NewApplicationButtons.vue';
   import ApplicationOutputField from './ApplicationOutputField.vue'
+  import Loading from '../Loading.vue'
 
   import {createNamespacedHelpers} from 'vuex'
   import Vue  from 'vue'
@@ -48,7 +48,7 @@
 
   export default {
     components: {
-      ApplicationInputField, BooleanRadioButton, NewApplicationButtons, ApplicationOutputField
+      ApplicationInputField, BooleanRadioButton, NewApplicationButtons, ApplicationOutputField,Loading
     },
     data: function () {
       return {

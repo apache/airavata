@@ -1,6 +1,6 @@
 <template>
   <div class="main_section">
-
+    <loading></loading>
     <div class="new-application-tab-main">
       <h4>Application Deployments</h4>
       <div class="entry">
@@ -123,13 +123,15 @@
 <script>
   import {createNamespacedHelpers} from 'vuex'
   import NewApplicationButtons from './NewApplicationButtons.vue';
+  import Loading from '../Loading.vue'
+
   import Utils from '../../utils'
 
   const {mapGetters, mapActions} = createNamespacedHelpers('newApplication/appDeploymentsTab')
 
   export default {
     components: {
-      NewApplicationButtons
+      NewApplicationButtons,Loading
     },
     mounted: function () {
       this.appDeployments = this.getCompleteData

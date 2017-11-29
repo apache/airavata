@@ -8,7 +8,7 @@
         <div class="tab" v-bind:class="tabs['deployments']"><router-link class="link" :to="{name:'deployments'}"><label class="lbl">Deployments</label></router-link></div>
         <div class="tab" style="width: 100%"></div>
       </div>
-      <transition mode="out-in">
+      <transition name="fade">
         <router-view :key="$route.path"></router-view>
       </transition>
     </div>
@@ -116,7 +116,6 @@
     display: flex;
     width: 100%;
   }
-
 
 
 

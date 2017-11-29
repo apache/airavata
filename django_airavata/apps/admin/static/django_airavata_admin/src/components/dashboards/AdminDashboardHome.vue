@@ -8,18 +8,20 @@
       <h6 style="color: #666666;">APPLICATIONS</h6>
       <div class="container-fluid">
         <div class="row">
-        <DashboardItem
-          v-for="item in applications" v-bind:dashboard_item="item" v-bind:key="item.title" v-on:edit="clickHandler(item)">
-        </DashboardItem>
-          </div>
+            <DashboardItem
+              v-for="item in applications" v-bind:dashboard_item="item" v-bind:key="item.title"
+              v-on:edit="clickHandler(item)">
+            </DashboardItem>
+        </div>
       </div>
-
     </div>
   </div>
 </template>
 <script>
   import DashboardItem from '../DashboardItem.vue'
   import NewApplication from '../admin/NewApplication.vue'
+  import Loading from '../Loading.vue'
+
   import Utils from '../../utils'
   import {mapActions} from 'vuex'
 
@@ -31,7 +33,7 @@
       };
     },
     components:{
-      DashboardItem,NewApplication
+      DashboardItem,NewApplication,Loading
     },
     mounted:function () {
       this.fetchApplications();
