@@ -1,8 +1,13 @@
 <template>
   <div class="main_section">
-    <loading></loading>
     <div class="new-application-tab-main">
       <h4>Application Deployments</h4>
+      <div class="entry" v-if="appDeployments.appDeployments.length!=0">
+        <div class="heading">Select an Application Deployment to Edit</div>
+        <select v-model="appDeploymentIndex">
+          <option v-for="(appDeployment,index) in appDeployments.appDeployments" v-bind:value="index">{{appDeployment.appDeploymentId}}</option>
+        </select>
+      </div>
       <div class="entry">
         <div class="heading">Application module</div>
         <input type="text" v-model="appDeployments.appModuleId"/>
@@ -134,8 +139,10 @@
       NewApplicationButtons,Loading
     },
     mounted: function () {
-      this.appDeployments = this.getCompleteData
-      this.computeHosts=this.fetchComputeHosts()
+      this.initializeAppDeployment(()=>{
+        this.appDeployments = this.getCompleteData
+        this.computeHosts=this.fetchComputeHosts()
+      })
     },
     data: function () {
       var appDeployments = this.getCompleteData
@@ -143,7 +150,8 @@
       return {
         "appDeployments": appDeployments,
         "computeHosts":[],
-        "queues":[]
+        "queues":[],
+        "appDeploymentIndex":null
       }
     },
     computed: {
@@ -188,7 +196,7 @@
       syncData:function () {
         this.updateAppDeployment(this.appDeployments)
       },
-      ...mapActions(["updateAppDeployment","save","resetState"])
+      ...mapActions(["updateAppDeployment","save","resetState","initializeAppDeployment"])
     },
     watch: {
       '$route'(to, from) {
@@ -198,7 +206,14 @@
         if(value){
           Utils.get("/api/compute/resource/queues",{queryParams:{id:value},success:(value)=>this.queues=value})
         }
-
+      },
+      "getCompleteData": function (value) {
+        this.appDeployments=value
+      },
+      "appDeploymentIndex":function (value) {
+        var temp=this.appDeployments.appDeployments[value]
+        temp.appDeployments=this.appDeployments.appDeployments
+        this.appDeployments=temp
       }
     }
   }

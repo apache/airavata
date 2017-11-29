@@ -186,12 +186,4 @@
   .entry.boolean-selectors div {
     margin-right: 60px;
   }
-
-  .entry select {
-    width: 100%;
-    height: 30px;
-  }
-
-
-
 </style>

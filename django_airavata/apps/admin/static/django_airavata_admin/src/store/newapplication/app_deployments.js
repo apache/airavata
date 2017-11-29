@@ -3,6 +3,7 @@ import Utils from '../../utils'
 
 var initialState = function () {
   return {
+    appDeployments:[],
     appModuleId: '',
     computeHostId: '',
     executablePath: '',
@@ -57,11 +58,24 @@ export default {
     },
     save:function ({commit,state, rootState},{success=null,failure=null}={}) {
       var appDeployment=Object.assign({},state)
+      delete appDeployment.appDeployments
       appDeployment.appModuleId=rootState.newApplication.appDetailsTab.appModuleId
         Utils.post('/api/new/application/deployment',appDeployment,{success:success,failure:failure})
     },
     resetState:function ({commit,state,rootState}) {
       Utils.resetData(state,initialState())
+    },
+    initializeAppDeployment:function ({commit, state, rootState},mount){
+      var success=function (value) {
+        rootState.newApplication.appDeploymentsTabInitialized=false
+        state.appDeployments=value
+        mount()
+      }
+      if(rootState.newApplication.appDeploymentsTabInitialized){
+        Utils.get('/api/application/deployment',{queryParams:{id:rootState.newApplication.appDetailsTab.appModuleId},success:success})
+      }else {
+        mount()
+      }
     }
   }
 }

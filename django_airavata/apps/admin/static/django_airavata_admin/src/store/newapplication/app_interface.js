@@ -7,8 +7,8 @@ var initialState = function () {
     applicationOutputs:{},
     counter:0,
     initialized:false,
-    archiveWorkingDirectory:false,
-    hasOptionalFileInputs:false,
+    archiveWorkingDirectory:null,
+    hasOptionalFileInputs:null,
     missingFields:false,
     fetch:false
   }
@@ -27,11 +27,11 @@ export default{
         applicationArgument: '',
         userFriendlyDescription:'',
         inputOrder:'',
-        dataStaged: null,
+        dataStaged: false,
         isRequired: false,
         requiredToAddedToCommandLine: false,
-        isReadOnly:true,
-        standardInput:true
+        isReadOnly:false,
+        standardInput:false
       });
     },
     createAppInterfaceOutputFieldObject:function (state, id) {
@@ -43,7 +43,7 @@ export default{
         applicationArgument: '',
         isRequired: false,
         requiredToAddedToCommandLine: false,
-        dataMovement:true,
+        dataMovement:false,
       });
     },
     updateAppInterfaceField:function (state, param) {

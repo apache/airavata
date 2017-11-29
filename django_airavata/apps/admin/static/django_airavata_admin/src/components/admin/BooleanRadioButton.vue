@@ -43,14 +43,24 @@
     },
     methods:{
       triggerValueChangeEvent:function (value,oldValue) {
-        var update=[this.selectorId,(value=='true')]
-        var val=value==null?null:(value=='true')
-        this.$emit('bool_selector',this.selectorId,val)
+        if (this.initialized) {
+          var val = value == null ? null : (value == 'true')
+          this.$emit('bool_selector', this.selectorId, val)
+        } else {
+          this.initialized = true
+        }
+
       }
     },
     watch:{
       boolValue:function(newValue){
-            this.triggerValueChangeEvent(newValue);
+          this.triggerValueChangeEvent(newValue);
+      },
+      def:function (newValue) {
+        this.initialized=false
+        if(this.boolValue!=newValue){
+          this.boolValue=newValue
+        }
       }
     }
   }

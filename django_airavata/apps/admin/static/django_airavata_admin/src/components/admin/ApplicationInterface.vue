@@ -30,7 +30,8 @@
         <button class="interface-btn" v-on:click="createAppInterfaceOutputField()">Add Application <span>output</span>
         </button>
       </div>
-      <new-application-buttons v-bind:save="saveApplicationInterface" v-bind:cancel="cancelAction" v-bind:sectionName="'Application Interface'"></new-application-buttons>
+      <new-application-buttons v-bind:save="saveApplicationInterface" v-bind:cancel="cancelAction"
+                               v-bind:sectionName="'Application Interface'"></new-application-buttons>
     </div>
   </div>
 </template>
@@ -42,13 +43,13 @@
   import Loading from '../Loading.vue'
 
   import {createNamespacedHelpers} from 'vuex'
-  import Vue  from 'vue'
+  import Vue from 'vue'
 
   const {mapGetters, mapActions} = createNamespacedHelpers('newApplication/appInterfaceTab')
 
   export default {
     components: {
-      ApplicationInputField, BooleanRadioButton, NewApplicationButtons, ApplicationOutputField,Loading
+      ApplicationInputField, BooleanRadioButton, NewApplicationButtons, ApplicationOutputField, Loading
     },
     data: function () {
       return {
@@ -61,34 +62,34 @@
     props: {},
     mounted: function () {
       this.initializeAppInterface(this.mount)
-  }
-  ,
-  computed:{
-  ...
-    mapGetters(['getAppInputFieldIds', 'getAppOutputFieldIds', 'isInitialized', 'isEnableArchiveWorkingDirectory', 'isEnableOutputFileInput'])
-  }
-  ,
-  methods:{
-      cancelAction:function () {
+    }
+    ,
+    computed: {
+      ...
+        mapGetters(['getAppInputFieldIds', 'getAppOutputFieldIds', 'isInitialized', 'isEnableArchiveWorkingDirectory', 'isEnableOutputFileInput'])
+    }
+    ,
+    methods: {
+      cancelAction: function () {
         this.resetState()
         console.log("Cancel called")
         this.mount()
       },
-    updateStore:function (fieldName, newValue) {
-      if (fieldName == this.booleanSelectorIDs[0]) {
-        this.changeArchiveWorkingDirectory(newValue)
-      } else if (fieldName == this.booleanSelectorIDs[1]) {
-        this.changeEnableOutputFileInput(newValue)
+      updateStore: function (fieldName, newValue) {
+        if (fieldName == this.booleanSelectorIDs[0]) {
+          this.changeArchiveWorkingDirectory(newValue)
+        } else if (fieldName == this.booleanSelectorIDs[1]) {
+          this.changeEnableOutputFileInput(newValue)
+        }
       }
-    }
-  ,
-    mount:function () {
-        Vue.set(this,'work_dir',{'boolValue': this.isEnableArchiveWorkingDirectory})
+      ,
+      mount: function () {
+        Vue.set(this, 'work_dir', {'boolValue': this.isEnableArchiveWorkingDirectory})
         this.optional_files = {'boolValue': this.isEnableOutputFileInput}
-    },
-  ...
-    mapActions(['saveApplicationInterface', 'createAppInterfaceInputField', 'deleteAppInterfaceInputField', 'createAppInterfaceOutputField', 'deleteAppInterfaceOutputField', 'initializeAppInterface', 'changeEnableOutputFileInput', 'changeArchiveWorkingDirectory','resetState'])
-  }
+      },
+      ...
+        mapActions(['saveApplicationInterface', 'createAppInterfaceInputField', 'deleteAppInterfaceInputField', 'createAppInterfaceOutputField', 'deleteAppInterfaceOutputField', 'initializeAppInterface', 'changeEnableOutputFileInput', 'changeArchiveWorkingDirectory', 'resetState'])
+    }
   }
   ;
 </script>

@@ -153,10 +153,6 @@
     margin-right: 60px;
   }
 
-  .entry select {
-    width: 100%;
-    height: 30px;
-  }
 
   .interface-main {
     border: solid 1px #dddddd;
