@@ -14,6 +14,7 @@ input[type="text"], input[type="number"], textarea, select {
   border-radius: 2px;
   border: solid #dddddd 1px;
   padding: 7px;
+  height:40px;
 }
 button,input[type="button"] {
   outline: none;
