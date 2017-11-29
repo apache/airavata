@@ -26,7 +26,7 @@
 namespace java org.apache.airavata.model.parallelism
 namespace php Airavata.Model.AppCatalog.Parallelism
 namespace cpp apache.airavata.model.appcatalog.parallelism
-namespace py apache.airavata.model.appcatalog.parallelism
+namespace py airavata.model.appcatalog.parallelism
 
 /**
  * Enumeration of application parallelism supported by Airavata

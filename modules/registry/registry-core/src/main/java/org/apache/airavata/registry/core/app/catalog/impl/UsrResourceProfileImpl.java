@@ -83,6 +83,7 @@ public class UsrResourceProfileImpl implements UsrResourceProfile {
                     if (preference.getReservationEndTime() > 0) {
                         resource.setReservationEndTime(AiravataUtils.getTime(preference.getReservationEndTime()));
                     }
+                    resource.setValidated(preference.isValidated());
                     resource.save();
                 }
             }
@@ -142,6 +143,7 @@ public class UsrResourceProfileImpl implements UsrResourceProfile {
                     if (preference.getReservationEndTime() > 0) {
                         resource.setReservationEndTime(AiravataUtils.getTime(preference.getReservationEndTime()));
                     }
+                    resource.setValidated(preference.isValidated());
                     resource.save();
                 }
             }
