@@ -1,0 +1,13 @@
+The following is an idea being proposed for the micro service layer of Allocation Manager Feature -- 
+
+The Allocation Manager Feature can constitute of a 
+- Gateway
+- Micro services
+- Database 
+
+The total functionality can be broken down to multiple independent micro services as follows:
+1. Handling user submission (User)
+2. Handling the reviewal process (Reviewer)
+3. Handling admin functionalities (Admin).
+
+These micro services will be a link between the  API Gateway and database.
