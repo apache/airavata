@@ -346,13 +346,12 @@ class FetchApplicationDeployment(APIView):
 
     def get(self,request,format=None):
         gateway_id = settings.GATEWAY_ID
-        for app_deployment in request.airavata_client.getAllApplicationDeployments(
-                request.authz_token, gateway_id):
-            if request.query_params["id"] == app_deployment.appModuleId:
-                return Response(thrift_django_serializer.create_serializer(ApplicationDeploymentDescription,
-                                                                           instance=app_deployment,
-                                                                           context={'request': request}).data)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        app_deployments=[app_deployment for app_deployment in  request.airavata_client.getAllApplicationDeployments(
+                request.authz_token, gateway_id) if request.query_params["id"] == app_deployment.appModuleId]
+        serializer=thrift_django_serializer.create_serializer(ApplicationDeploymentDescription,
+                                                   instance=app_deployments,
+                                                   context={'request': request},many=True)
+        return Response(serializer.data)
         #return Response(request.airavata_client.getAppModuleDeployedResources(request.authz_token, request.query_params["id"]))
 
 class FetchSSHPubKeys(APIView):
