@@ -193,7 +193,7 @@ export default{
          var temp={}
          for(var i=0;i< value.applicationInputs.length;i++){
            temp[state.counter]=value.applicationInputs[i]
-           temp[state.counter].input_id=state.count
+           temp[state.counter].input_id=state.counter
            state.counter=state.counter+1
          }
          value.applicationInputs=temp
