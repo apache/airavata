@@ -192,16 +192,18 @@ export default{
        if(value.applicationInputs){
          var temp={}
          for(var i=0;i< value.applicationInputs.length;i++){
-           temp[state.count]=value.applicationInputs[i]
-           state.count++
+           temp[state.counter]=value.applicationInputs[i]
+           temp[state.counter].input_id=state.count
+           state.counter=state.counter+1
          }
          value.applicationInputs=temp
        }
        if(value.applicationOutputs){
            var temp={}
          for(var i=0; i< value.applicationOutputs.length;i++){
-           temp[state.count]=value.applicationOutputs[i]
-           state.count++
+           temp[state.counter]=value.applicationOutputs[i]
+           temp[state.counter].input_id=state.counter
+           state.counter=state.counter+1
          }
          value.applicationOutputs=temp
        }
