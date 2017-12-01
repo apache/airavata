@@ -12,6 +12,7 @@
 <td>sharing_cpi</td><td><a href="#Svc_SharingRegistryService">SharingRegistryService</a><br/>
 <ul>
 <li><a href="#Fn_SharingRegistryService_addChildGroupsToParentGroup">addChildGroupsToParentGroup</a></li>
+<li><a href="#Fn_SharingRegistryService_addGroupAdmins">addGroupAdmins</a></li>
 <li><a href="#Fn_SharingRegistryService_addUsersToGroup">addUsersToGroup</a></li>
 <li><a href="#Fn_SharingRegistryService_createDomain">createDomain</a></li>
 <li><a href="#Fn_SharingRegistryService_createEntity">createEntity</a></li>
@@ -41,6 +42,8 @@
 <li><a href="#Fn_SharingRegistryService_getPermissionTypes">getPermissionTypes</a></li>
 <li><a href="#Fn_SharingRegistryService_getUser">getUser</a></li>
 <li><a href="#Fn_SharingRegistryService_getUsers">getUsers</a></li>
+<li><a href="#Fn_SharingRegistryService_hasAdminAccess">hasAdminAccess</a></li>
+<li><a href="#Fn_SharingRegistryService_hasOwnerAccess">hasOwnerAccess</a></li>
 <li><a href="#Fn_SharingRegistryService_isDomainExists">isDomainExists</a></li>
 <li><a href="#Fn_SharingRegistryService_isEntityExists">isEntityExists</a></li>
 <li><a href="#Fn_SharingRegistryService_isEntityTypeExists">isEntityTypeExists</a></li>
@@ -48,12 +51,14 @@
 <li><a href="#Fn_SharingRegistryService_isPermissionExists">isPermissionExists</a></li>
 <li><a href="#Fn_SharingRegistryService_isUserExists">isUserExists</a></li>
 <li><a href="#Fn_SharingRegistryService_removeChildGroupFromParentGroup">removeChildGroupFromParentGroup</a></li>
+<li><a href="#Fn_SharingRegistryService_removeGroupAdmins">removeGroupAdmins</a></li>
 <li><a href="#Fn_SharingRegistryService_removeUsersFromGroup">removeUsersFromGroup</a></li>
 <li><a href="#Fn_SharingRegistryService_revokeEntitySharingFromGroups">revokeEntitySharingFromGroups</a></li>
 <li><a href="#Fn_SharingRegistryService_revokeEntitySharingFromUsers">revokeEntitySharingFromUsers</a></li>
 <li><a href="#Fn_SharingRegistryService_searchEntities">searchEntities</a></li>
 <li><a href="#Fn_SharingRegistryService_shareEntityWithGroups">shareEntityWithGroups</a></li>
 <li><a href="#Fn_SharingRegistryService_shareEntityWithUsers">shareEntityWithUsers</a></li>
+<li><a href="#Fn_SharingRegistryService_transferGroupOwnership">transferGroupOwnership</a></li>
 <li><a href="#Fn_SharingRegistryService_updateDomain">updateDomain</a></li>
 <li><a href="#Fn_SharingRegistryService_updateEntity">updateEntity</a></li>
 <li><a href="#Fn_SharingRegistryService_updateEntityType">updateEntityType</a></li>
@@ -165,6 +170,36 @@
                           <code>string</code> groupId)
     throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
 </pre><p>API method to remove users from a group</p>
+<br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_transferGroupOwnership">Function: SharingRegistryService.transferGroupOwnership</h4>
+<pre><code>bool</code> transferGroupOwnership(<code>string</code> domainId,
+                            <code>string</code> groupId,
+                            <code>string</code> newOwnerId)
+    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
+</pre><p>API method to transfer group ownership</p>
+<br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_addGroupAdmins">Function: SharingRegistryService.addGroupAdmins</h4>
+<pre><code>bool</code> addGroupAdmins(<code>string</code> domainId,
+                    <code>string</code> groupId,
+                    <code>list&lt;<code>string</code>&gt;</code> adminIds)
+    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
+</pre><p>API method to add Admin for a group</p>
+<br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_removeGroupAdmins">Function: SharingRegistryService.removeGroupAdmins</h4>
+<pre><code>bool</code> removeGroupAdmins(<code>string</code> domainId,
+                       <code>string</code> groupId,
+                       <code>list&lt;<code>string</code>&gt;</code> adminIds)
+    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
+</pre><p>API method to remove Admin for a group</p>
+<br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_hasAdminAccess">Function: SharingRegistryService.hasAdminAccess</h4>
+<pre><code>bool</code> hasAdminAccess(<code>string</code> domainId,
+                    <code>string</code> groupId,
+                    <code>string</code> adminId)
+    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
+</pre><p>API method to check whether the user has Admin access for the group</p>
+<br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_hasOwnerAccess">Function: SharingRegistryService.hasOwnerAccess</h4>
+<pre><code>bool</code> hasOwnerAccess(<code>string</code> domainId,
+                    <code>string</code> groupId,
+                    <code>string</code> ownerId)
+    throws <code><a href="sharing_models.html#Struct_SharingRegistryException">sharing_models.SharingRegistryException</a></code>
+</pre><p>API method to check whether the user has Admin access for the group</p>
 <br/></div><div class="definition"><h4 id="Fn_SharingRegistryService_getGroupMembersOfTypeUser">Function: SharingRegistryService.getGroupMembersOfTypeUser</h4>
 <pre><code>list&lt;<code><a href="sharing_models.html#Struct_User">sharing_models.User</a></code>&gt;</code> getGroupMembersOfTypeUser(<code>string</code> domainId,
                                                     <code>string</code> groupId,
