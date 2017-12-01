@@ -1,13 +1,14 @@
 
 import Project from '../models/Project'
 import PaginationIterator from '../utils/PaginationIterator'
+import FetchUtils from '../utils/FetchUtils'
 
 class ProjectService {
     list(data = {}) {
         if (data && data.results) {
             return Promise.resolve(new PaginationIterator(data, Project));
         } else {
-            return fetch('/api/projects', {
+            return fetch('/api/projects/', {
                 credentials: 'include'
             })
             .then(response => response.json())
@@ -15,8 +16,9 @@ class ProjectService {
         }
     }
 
-    create() {
-        // TODO
+    create(project) {
+        return FetchUtils.post('/api/projects/', project.toJSONForCreate())
+            .then(result => new Project(result));
     }
 
     update() {

@@ -1,3 +1,4 @@
+
 from . import serializers
 
 from rest_framework import status, mixins, pagination
@@ -16,9 +17,9 @@ from django.http import JsonResponse, Http404
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
-from apache.airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule, ApplicationDeploymentDescription
-from apache.airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDescription
-from apache.airavata.model.appcatalog.computeresource.ttypes import ComputeResourceDescription
+from airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule, ApplicationDeploymentDescription
+from airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDescription
+from airavata.model.appcatalog.computeresource.ttypes import ComputeResourceDescription
 from credential_store_data_models.ttypes import CredentialOwnerType,SummaryType,CredentialSummary
 
 import thrift_django_serializer
@@ -27,17 +28,8 @@ import logging
 
 log = logging.getLogger(__name__)
 
-
-# Create your views here.
-@api_view(['GET'])
-def api_root(request, format=None):
-    return Response({
-        'projects': reverse('project-list', request=request, format=format),
-        'admin': reverse('api_experiment_list', request=request, format=format)
-    })
-
-
 class GenericAPIBackedViewSet(GenericViewSet):
+
     def get_list(self):
         """
         Subclasses must implement.
@@ -75,6 +67,7 @@ class GenericAPIBackedViewSet(GenericViewSet):
         return self.request.authz_token
 
 
+
 class ReadOnlyAPIBackedViewSet(mixins.RetrieveModelMixin,
                                mixins.ListModelMixin,
                                GenericAPIBackedViewSet):
@@ -107,7 +100,6 @@ class APIBackedViewSet(mixins.CreateModelMixin,
     """
     pass
 
-
 class APIResultIterator(object):
     """
     Iterable container over API results which allow limit/offset style slicing.
@@ -132,13 +124,13 @@ class APIResultIterator(object):
         else:
             return self.get_results(1, key)
 
-
 class APIResultPagination(pagination.LimitOffsetPagination):
     """
     Based on DRF's LimitOffsetPagination; Airavata API pagination results don't
     have a known count, so it isn't always possible to know how many pages there
     are.
     """
+    default_limit = 10
 
     def paginate_queryset(self, queryset, request, view=None):
         assert isinstance(queryset, APIResultIterator), "queryset is not an APIResultIterator: {}".format(queryset)
@@ -193,8 +185,8 @@ class APIResultPagination(pagination.LimitOffsetPagination):
         else:
             return self.request.build_absolute_uri()
 
-
 class ProjectViewSet(APIBackedViewSet):
+
     serializer_class = serializers.ProjectSerializer
     lookup_field = 'project_id'
     pagination_class = APIResultPagination
@@ -202,12 +194,9 @@ class ProjectViewSet(APIBackedViewSet):
 
     def get_list(self):
         view = self
-
         class ProjectResultIterator(APIResultIterator):
             def get_results(self, limit=-1, offset=0):
-                return view.request.airavata_client.getUserProjects(view.authz_token, view.gateway_id, view.username,
-                                                                    limit, offset)
-
+                return view.request.airavata_client.getUserProjects(view.authz_token, view.gateway_id, view.username, limit, offset)
         return ProjectResultIterator()
 
     def get_instance(self, lookup_value):
@@ -222,12 +211,12 @@ class ProjectViewSet(APIBackedViewSet):
         project = serializer.save()
         self.request.airavata_client.updateProject(self.authz_token, project.projectID, project)
 
+
     @detail_route()
     def experiments(self, request, project_id=None):
         experiments = request.airavata_client.getExperimentsInProject(self.authz_token, project_id, -1, 0)
         serializer = serializers.ExperimentSerializer(experiments, many=True, context={'request': request})
         return Response(serializer.data)
-
 
 # TODO: convert to ViewSet
 class ExperimentList(APIView):
@@ -240,14 +229,26 @@ class ExperimentList(APIView):
         return Response(serializer.data)
 
 
-class ApplicationList(APIView):
-    def get(self, request, format=None):
-        gateway_id = settings.GATEWAY_ID
-        app_modules = request.airavata_client.getAllAppModules(request.authz_token, gateway_id)
-        serializer = serializers.ApplicationModuleSerializer(app_modules, many=True, context={'request': request})
-        return Response(serializer.data)
+class ApplicationModuleViewSet(APIBackedViewSet):
+    serializer_class = serializers.ApplicationModuleSerializer
+
+    def get_list(self):
+        return self.request.airavata_client.getAllAppModules(self.authz_token, self.gateway_id)
+
+    def get_instance(self, lookup_value):
+        return self.request.airavata_client.getApplicationModule(self.authz_token, lookup_value)
+
+    def perform_create(self, serializer):
+        app_module = serializer.save()
+        app_module_id = self.request.airavata_client.registerApplicationModule(self.authz_token, self.gateway_id, app_module)
+        app_module.appModuleId = app_module_id
+
+    def perform_update(self, serializer):
+        app_module = serializer.save()
+        self.request.airavata_client.updateApplicationModule(self.authz_token, app_module.appModuleId, app_module)
 
 
+# TODO convert to APIBackedViewSet
 class RegisterApplicationModule(APIView):
     parser_classes = (JSONParser,)
 
@@ -258,33 +259,53 @@ class RegisterApplicationModule(APIView):
         return Response(response)
 
 
+# TODO use ApplicationInterfaceViewSet instead
 class RegisterApplicationInterface(APIView):
     parser_classes = (JSONParser,)
 
     def post(self, request, format=None):
         gateway_id = settings.GATEWAY_ID
         params = request.data
-        app_interface_description_serializer = thrift_django_serializer.create_serializer(ApplicationInterfaceDescription,data=params)
+        app_interface_description_serializer = serializers.ApplicationInterfaceDescriptionSerializer(data=params)
         app_interface_description_serializer.is_valid(raise_exception=True)
         app_interface = app_interface_description_serializer.save()
         response = request.airavata_client.registerApplicationInterface(request.authz_token, gateway_id,
-                                                                        app_interface)
+                                                                        applicationInterface=app_interface)
         return Response(response)
 
 
+# TODO convert to APIBackedViewSet
 class RegisterApplicationDeployments(APIView):
     parser_classes = (JSONParser,)
 
     def post(self, request, format=None):
         gateway_id = settings.GATEWAY_ID
         params = request.data
-        app_deployment_serializer = serializers.ApplicationDeploymentDescriptionSerializer(data=params)
-        app_deployment_serializer.is_valid(raise_exception=True)
-        app_deployment = app_deployment_serializer.save()
+        app_deployment = ApplicationDeploymentDescription(**params)
         response = request.airavata_client.registerApplicationDeployment(request.authz_token, gateway_id,
                                                                          app_deployment)
         return Response(response)
 
+class ApplicationInterfaceViewSet(APIBackedViewSet):
+
+    serializer_class = serializers.ApplicationInterfaceDescriptionSerializer
+    lookup_field = 'app_interface_id'
+
+    def get_list(self):
+        return self.request.airavata_client.getAllApplicationInterfaces(self.authz_token, self.gateway_id)
+
+    def get_instance(self, lookup_value):
+        return self.request.airavata_client.getApplicationInterface(self.authz_token, lookup_value)
+
+    def perform_create(self, serializer):
+        application_interface = serializer.save()
+        log.debug("application_interface: {}".format(application_interface))
+        app_interface_id = self.request.airavata_client.registerApplicationInterface(self.authz_token, self.gateway_id, application_interface)
+        application_interface.applicationInterfaceId = app_interface_id
+
+    def perform_update(self, serializer):
+        application_interface = serializer.save()
+        self.request.airavata_client.updateApplicationInterface(self.authz_token, application_interface.applicationInterfaceId, application_interface)
 
 class ComputeResourceList(APIView):
     renderer_classes = (JSONRenderer,)

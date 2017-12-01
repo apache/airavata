@@ -1,10 +1,9 @@
-from abc import ABCMeta
+from abc import ABC
 
 from apache.airavata.model.experiment.ttypes import ExperimentModel
 from apache.airavata.model.workspace.ttypes import Project
-from apache.airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule
+from apache.airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule, ApplicationDeploymentDescription,CommandObject,SetEnvPaths
 from apache.airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDescription
-from apache.airavata.model.appcatalog.appdeployment.ttypes import ApplicationDeploymentDescription,CommandObject,SetEnvPaths
 from apache.airavata.model.application.io.ttypes import InputDataObjectType, OutputDataObjectType
 from apache.airavata.model.experiment.ttypes import ExperimentModel
 from apache.airavata.model.workspace.ttypes import Project
@@ -31,13 +30,27 @@ class FullyEncodedHyperlinkedIdentityField(serializers.HyperlinkedIdentityField)
 
 
 class UTCPosixTimestampDateTimeField(serializers.DateTimeField):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.default = self.current_time_ms
+        self.initial = self.initial_value
+        self.required = False
+
     def to_representation(self, obj):
-        dt = datetime.datetime.utcfromtimestamp(obj/1000)
+        # Create datetime instance from milliseconds that is aware of timezon
+        dt = datetime.datetime.fromtimestamp(obj/1000, datetime.timezone.utc)
         return super().to_representation(dt)
 
     def to_internal_value(self, data):
         dt = super().to_internal_value(data)
         return int(dt.timestamp() * 1000)
+
+    def initial_value(self):
+        return self.to_representation(self.current_time_ms())
+
+    def current_time_ms(self):
+        return int(datetime.datetime.utcnow().timestamp() * 1000)
 
 
 class GetGatewayUsername(object):
@@ -67,9 +80,9 @@ class GatewayIdDefaultField(serializers.CharField):
 
 class ProjectSerializer(serializers.Serializer):
     url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-detail', lookup_field='projectID', lookup_url_kwarg='project_id')
-    projectID = serializers.CharField(read_only=True)
+    projectID = serializers.CharField(default=Project.thrift_spec[1][4])
     name = serializers.CharField(required=True)
-    description = serializers.CharField(required=False)
+    description = serializers.CharField(allow_null=True)
     owner = GatewayUsernameDefaultField()
     gatewayId = GatewayIdDefaultField()
     experiments = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-experiments', lookup_field='projectID', lookup_url_kwarg='project_id')

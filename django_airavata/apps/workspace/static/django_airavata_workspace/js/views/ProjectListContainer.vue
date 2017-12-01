@@ -1,17 +1,32 @@
 <template>
-    <div class="card">
-        <div class="card-body">
-            <project-list v-bind:projects="projects"></project-list>
-            <pager v-bind:paginator="projectsPaginator"
-                v-on:next="nextProjects" v-on:previous="previousProjects"></pager>
+    <div>
+        <div class="row">
+            <div class="col">
+                <h1 class="h4 mb-4">Browse Projects</h1>
+            </div>
+            <div id="col-new-project" class="col">
+                <project-button-new @new-project="onNewProject"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <project-list v-bind:projects="projects"></project-list>
+                        <pager v-bind:paginator="projectsPaginator"
+                        v-on:next="nextProjects" v-on:previous="previousProjects"></pager>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
+import ProjectButtonNew from './ProjectButtonNew.vue'
 import ProjectList from './ProjectList.vue'
 
-import { services } from 'django-airavata-api'
+import { models, services } from 'django-airavata-api'
 import { components as comps } from 'django-airavata-common-ui'
 
 export default {
@@ -24,7 +39,8 @@ export default {
     },
     components: {
         'project-list': ProjectList,
-        'pager': comps.Pager
+        'project-button-new': ProjectButtonNew,
+        'pager': comps.Pager,
     },
     methods: {
         nextProjects: function(event) {
@@ -32,6 +48,10 @@ export default {
         },
         previousProjects: function(event) {
             this.projectsPaginator.previous();
+        },
+        onNewProject: function(project) {
+            services.ProjectService.list()
+                .then(result => this.projectsPaginator = result);
         },
     },
     computed: {
@@ -47,4 +67,10 @@ export default {
 </script>
 
 <style>
+#col-new-project {
+    text-align: right;
+}
+#modal-new-project {
+    text-align: left;
+}
 </style>

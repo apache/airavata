@@ -1,8 +1,13 @@
 var path = require('path')
 var webpack = require('webpack')
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
-  entry: './static/django_airavata_workspace/js/entry-project-list.js',
+  entry: {
+      'project-list': './static/django_airavata_workspace/js/entry-project-list',
+      'dashboard': './static/django_airavata_workspace/js/entry-dashboard',
+  },
   output: {
     path: path.resolve(__dirname, './static/django_airavata_workspace/dist/'),
     publicPath: '/static/django_airavata_workspace/dist/',
@@ -15,7 +20,8 @@ module.exports = {
         loader: 'vue-loader',
         options: {
           loaders: {
-          }
+          },
+          extractCSS: true
           // other vue-loader options go here
         }
       },
@@ -23,6 +29,13 @@ module.exports = {
         test: /\.js$/,
         loader: 'babel-loader',
         exclude: /node_modules/
+      },
+      {
+          test: /\.css$/,
+          use: ExtractTextPlugin.extract({
+              fallback: "style-loader",
+              use: "css-loader"
+          })
       },
       {
         test: /\.(png|jpg|gif|svg)$/,
@@ -48,7 +61,13 @@ module.exports = {
   devtool: '#eval-source-map',
   plugins: [
       // Exclude all but the 'en' locale from moment's locales
-      new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /^en$/)
+      new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /^en$/),
+      new ExtractTextPlugin("[name].css"),
+      new CleanWebpackPlugin(['./static/django_airavata_workspace/dist']),
+      new webpack.optimize.CommonsChunkPlugin({
+          name: 'common',
+      }),
+
   ]
 }
 
