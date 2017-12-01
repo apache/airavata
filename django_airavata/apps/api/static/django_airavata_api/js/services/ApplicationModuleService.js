@@ -20,8 +20,9 @@ class ApplicationModuleService {
         // TODO
     }
 
-    get() {
-        // TODO
+    get(appModuleId) {
+        return FetchUtils.get('/api/applications/' + encodeURIComponent(appModuleId))
+            .then(json => new ApplicationModule(json))
     }
 }
 

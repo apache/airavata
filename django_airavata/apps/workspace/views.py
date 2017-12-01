@@ -36,4 +36,6 @@ def projects_list(request):
 def create_experiment(request, app_module_id):
     request.active_nav_item = 'dashboard'
 
-    return render(request, 'django_airavata_workspace/create_experiment.html')
+    return render(request, 'django_airavata_workspace/create_experiment.html', {
+        'app_module_id': app_module_id
+    })

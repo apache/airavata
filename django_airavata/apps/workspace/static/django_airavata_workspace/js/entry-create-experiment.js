@@ -10,10 +10,17 @@ Vue.use(BootstrapVue);
 
 new Vue({
   el: '#create-experiment',
-  template: '<create-experiment-container></create-experiment-container>',
+  template: '<create-experiment-container v-bind:appModuleId="appModuleId"></create-experiment-container>',
   data: {
+      appModuleId: null,
   },
   components: {
       CreateExperimentContainer,
+  },
+  beforeMount: function () {
+      if (this.$el.dataset.appModuleId) {
+          this.appModuleId = this.$el.dataset.appModuleId;
+      }
   }
+
 })

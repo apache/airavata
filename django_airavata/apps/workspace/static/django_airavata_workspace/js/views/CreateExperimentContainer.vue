@@ -7,8 +7,13 @@
 import {models, services} from 'django-airavata-api'
 import ExperimentEditor from './ExperimentEditor.vue'
 
+import moment from 'moment';
+
 export default {
     name: 'create-experiment-container',
+    props: [
+        'app-module-id',
+    ],
     data () {
         return {
             'experiment': new models.Experiment(),
@@ -21,8 +26,12 @@ export default {
     },
     computed: {
     },
-    beforeMount: function () {
-        this.experiment.experimentName = 'XX Exp Name';
+    mounted: function () {
+        // TODO: integrate loading spinner
+        services.ApplicationModuleService.get(this.appModuleId)
+            .then(appModule => {
+                this.experiment.experimentName = appModule.appModuleName + ' ' + moment().format('lll');
+            });
     }
 }
 </script>
