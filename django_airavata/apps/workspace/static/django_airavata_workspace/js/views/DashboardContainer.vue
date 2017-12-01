@@ -6,7 +6,8 @@
             </div>
         </div>
         <div class="row">
-            <application-card v-for="item in applicationModules" v-bind:appModule="item" v-bind:key="item.appModuleId">
+            <application-card v-for="item in applicationModules" v-bind:appModule="item"
+                v-bind:key="item.appModuleId" @app-selected="handleAppSelected">
             </application-card>
         </div>
 
@@ -27,6 +28,11 @@ export default {
     },
     components: {
         'application-card': comps.ApplicationCard,
+    },
+    methods: {
+        handleAppSelected: function(appModule) {
+            window.location.pathname = "/workspace/applications/" + encodeURIComponent(appModule.appModuleId) + "/create_experiment";
+        },
     },
     beforeMount: function () {
         services.ApplicationModuleService.list()

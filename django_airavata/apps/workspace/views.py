@@ -1,11 +1,12 @@
 
-from django_airavata.apps.api.views import ProjectViewSet
+import logging
+
 from rest_framework.renderers import JSONRenderer
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
-import logging
+from django_airavata.apps.api.views import ProjectViewSet
 
 logger = logging.getLogger(__name__)
 
@@ -30,3 +31,9 @@ def projects_list(request):
     return render(request, 'django_airavata_workspace/projects_list.html', {
         'projects_data': projects_json
     })
+
+@login_required
+def create_experiment(request, app_module_id):
+    request.active_nav_item = 'dashboard'
+
+    return render(request, 'django_airavata_workspace/create_experiment.html')

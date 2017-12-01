@@ -1,5 +1,6 @@
 
 import ApplicationModule from './models/ApplicationModule'
+import Experiment from './models/Experiment'
 import Project from './models/Project'
 
 import ApplicationModuleService from './services/ApplicationModuleService'
@@ -10,6 +11,7 @@ import PaginationIterator from './utils/PaginationIterator'
 
 exports.models = {
     ApplicationModule,
+    Experiment,
     Project,
 }
 
