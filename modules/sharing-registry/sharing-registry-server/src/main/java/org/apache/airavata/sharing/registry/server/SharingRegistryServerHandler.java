@@ -421,7 +421,6 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             userGroupPK.setGroupId(groupId);
             userGroupPK.setDomainId(domainId);
             UserGroup userGroup = (new UserGroupRepository()).get(userGroupPK);
-            String currentOwnerId = userGroup.getOwnerId();
             UserGroup newUserGroup = new UserGroup();
             newUserGroup.setUpdatedTime(System.currentTimeMillis());
             newUserGroup.setOwnerId(newOwnerId);
@@ -431,17 +430,6 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
 
             (new UserGroupRepository()).update(newUserGroup);
 
-            GroupOwnerPK groupOwnerPK = new GroupOwnerPK();
-            groupOwnerPK.setDomainId(domainId);
-            groupOwnerPK.setOwnerId(currentOwnerId);
-            GroupOwner currentOwner = (new GroupOwnerRepository()).get(groupOwnerPK);
-            GroupOwner newOwner = new GroupOwner();
-            newOwner.setDomainId(domainId);
-            newOwner.setOwnerId(newOwnerId);
-            newOwner.setGroupId(groupId);
-            newOwner = getUpdatedObject(currentOwner, newOwner);
-
-            (new GroupOwnerRepository()).update(newOwner);
             return true;
         }
         catch (Throwable ex) {
@@ -515,16 +503,13 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     @Override
     public boolean hasOwnerAccess(String domainId, String groupId, String ownerId) throws SharingRegistryException, TException {
         try {
-            GroupOwnerPK groupOwnerPK = new GroupOwnerPK();
-            groupOwnerPK.setDomainId(domainId);
-            groupOwnerPK.setOwnerId(ownerId);
+            UserGroupPK userGroupPK = new UserGroupPK();
+            userGroupPK.setGroupId(groupId);
+            userGroupPK.setDomainId(domainId);
+            UserGroup getGroup = (new UserGroupRepository()).get(userGroupPK);
 
-            GroupOwner owner = (new GroupOwnerRepository()).get(groupOwnerPK);
-            if (owner != null) {
-                if (owner.groupId.equals(groupId)) {
-                    return true;
-                }
-            }
+            if(getGroup.ownerId.equals(ownerId))
+                return true;
             return false;
         }
         catch (Throwable ex) {
