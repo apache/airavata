@@ -774,7 +774,8 @@ service RegistryService {
              *    Returns the list of all Application Module Objects.
              *
             */
-            list<application_deployment_model.ApplicationModule> getAllAppModules (1: required string gatewayId)
+            list<application_deployment_model.ApplicationModule> getAllAppModules (1: required string gatewayId
+                    2: required list<string> accessibleAppIds)
                   throws (1: registry_api_errors.RegistryServiceException rse)
 
             /**
