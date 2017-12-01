@@ -58,6 +58,7 @@ import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.api.registry_apiConstants;
 import org.apache.airavata.registry.core.app.catalog.resources.*;
+import org.apache.airavata.registry.core.app.catalog.util.AppCatalogJPAUtils;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
@@ -920,14 +921,14 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns the list of all application Deployment Objects.
      */
     @Override
-    public List<ApplicationDeploymentDescription> getAllApplicationDeployments(String gatewayId) throws RegistryServiceException, TException {
+    public List<ApplicationDeploymentDescription> getAllApplicationDeployments(String gatewayId, List<String> accessibleAppIds) throws RegistryServiceException, TException {
         if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
         }
         try {
             appCatalog = RegistryFactory.getAppCatalog();
-            List<ApplicationDeploymentDescription> deployements = appCatalog.getApplicationDeployment().getAllApplicationDeployements(gatewayId);
+            List<ApplicationDeploymentDescription> deployements = appCatalog.getApplicationDeployment().getAllApplicationDeployements(gatewayId, accessibleAppIds);
             logger.debug("Airavata retrieved application deployments for gateway id : " + gatewayId);
             return deployements;
         } catch (AppCatalogException e) {

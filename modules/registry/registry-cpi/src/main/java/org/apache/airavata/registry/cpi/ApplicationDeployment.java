@@ -53,7 +53,7 @@ public interface ApplicationDeployment {
      */
     List<ApplicationDeploymentDescription> getApplicationDeployements (Map<String, String> filters) throws AppCatalogException;
 
-    List<ApplicationDeploymentDescription> getAllApplicationDeployements (String gatewayId) throws AppCatalogException;
+    List<ApplicationDeploymentDescription> getAllApplicationDeployements (String gatewayId, List<String> accessibleIds) throws AppCatalogException;
 
     List<String> getAllApplicationDeployementIds () throws AppCatalogException;
 
