@@ -19,6 +19,8 @@
  */
 
  namespace java org.apache.airavata.sharing.registry.models
+ namespace php Airavata.Model.Sharing
+ namespace py airavata.model.sharing
 
 const string DO_NOT_SET_AT_CLIENTS_ID = "DO_NOT_SET_AT_CLIENTS_ID"
 
