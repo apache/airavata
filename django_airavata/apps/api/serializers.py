@@ -1,13 +1,13 @@
 from abc import ABC
 
-from apache.airavata.model.experiment.ttypes import ExperimentModel
-from apache.airavata.model.workspace.ttypes import Project
-from apache.airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule, ApplicationDeploymentDescription,CommandObject,SetEnvPaths
-from apache.airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDescription
-from apache.airavata.model.application.io.ttypes import InputDataObjectType, OutputDataObjectType
-from apache.airavata.model.experiment.ttypes import ExperimentModel
-from apache.airavata.model.workspace.ttypes import Project
-from apache.airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule
+from airavata.model.experiment.ttypes import ExperimentModel
+from airavata.model.workspace.ttypes import Project
+from airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule, ApplicationDeploymentDescription,CommandObject,SetEnvPaths
+from airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDescription
+from airavata.model.application.io.ttypes import InputDataObjectType, OutputDataObjectType
+from airavata.model.experiment.ttypes import ExperimentModel
+from airavata.model.workspace.ttypes import Project
+from airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule
 from django.conf import settings
 
 from rest_framework import serializers

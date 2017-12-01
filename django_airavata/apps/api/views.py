@@ -20,7 +20,7 @@ from django.views.decorators.csrf import csrf_exempt
 from airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule, ApplicationDeploymentDescription
 from airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDescription
 from airavata.model.appcatalog.computeresource.ttypes import ComputeResourceDescription
-from credential_store_data_models.ttypes import CredentialOwnerType,SummaryType,CredentialSummary
+from airavata.model.credential.store.ttypes import CredentialOwnerType,SummaryType,CredentialSummary
 
 import thrift_django_serializer
 from collections import OrderedDict
