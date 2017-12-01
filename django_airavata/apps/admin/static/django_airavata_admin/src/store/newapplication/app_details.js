@@ -48,15 +48,20 @@ export default{
       return state;
     }
   },
-  actions:{
-    updateAppDetails:function (context,update) {
-      context.commit('addAppDetails',update)
+  actions: {
+    updateAppDetails: function (context, update) {
+      context.commit('addAppDetails', update)
     },
-    registerAppModule:function (context) {
-      context.commit("registerAppDetails")
+    registerAppModule: function ({commit, state}, {success = (val) => console.log("App Details", value), failure = (val) => console.log("Saving failed", value)} = {}) {
+      var succ = (value) => {
+        state.appModuleId = value
+        success(value)
+
+      }
+      return Utils.post('/api/new/application/module', state, {success: succ, failure: failure})
     },
-    resetAll:function (context) {
-      context.commit('resetState')
+    resetState: function ({commit, state, rootState}) {
+      Utils.resetData(state, initialState())
     }
   }
 }

@@ -15,10 +15,10 @@
     <div class="entry">
       <div class="heading">Type</div>
       <select v-model="type">
-        <option value="String">String</option>
-        <option value="Integer">Integer</option>
-        <option value="Float">Float</option>
-        <option value="URI">URI</option>
+        <option value="0">String</option>
+        <option value="1">Integer</option>
+        <option value="2">Float</option>
+        <option value="3">URI</option>
       </select>
     </div>
     <div class="entry">
@@ -45,7 +45,7 @@
 
   import {createNamespacedHelpers} from 'vuex'
 
-  const {mapGetters, mapActions} = createNamespacedHelpers('appInterfaceTab')
+  const {mapGetters, mapActions} = createNamespacedHelpers('newApplication/appInterfaceTab')
 
   export default {
     components: {
@@ -87,12 +87,12 @@
       return {
         'required': {
           'id': this.output_id,
-          'fieldName': 'required'
+          'fieldName': 'isRequired'
         },
         'requiredOnCmd':
           {
             'id': this.output_id,
-            'fieldName': 'requiredOnCmd'
+            'fieldName': 'requiredToAddedToCommandLine'
           },
         'dataMovement': {
           'id': this.output_id,
@@ -109,12 +109,6 @@
       ...mapGetters(['getAppOutputField','getAppOutputFieldValue'])
     },
     watch: {
-      inpOrder: function (newValue) {
-        this.updateStore('inpOrder', newValue)
-      },
-      userFriendlyDescr: function (newValue) {
-        this.updateStore('userFriendlyDescr', newValue)
-      },
       name: function (newValue) {
         this.updateStore('name', newValue)
       },
@@ -126,7 +120,7 @@
         this.updateStore('type', newValue)
       },
       appArg: function (newValue) {
-        this.updateStore('appArg', newValue)
+        this.updateStore('applicationArgument', newValue)
       }
     }
   }
@@ -159,10 +153,6 @@
     margin-right: 60px;
   }
 
-  .entry select {
-    width: 100%;
-    height: 30px;
-  }
 
   .interface-main {
     border: solid 1px #dddddd;

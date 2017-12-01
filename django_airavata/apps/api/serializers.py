@@ -1,18 +1,19 @@
 from abc import ABC
 
-from airavata.model.experiment.ttypes import ExperimentModel
-from airavata.model.workspace.ttypes import Project
-from airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule
-from airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDescription
-from airavata.model.application.io.ttypes import InputDataObjectType, OutputDataObjectType
-from airavata.model.experiment.ttypes import ExperimentModel
-from airavata.model.workspace.ttypes import Project
-from airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule
+from apache.airavata.model.experiment.ttypes import ExperimentModel
+from apache.airavata.model.workspace.ttypes import Project
+from apache.airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule, ApplicationDeploymentDescription,CommandObject,SetEnvPaths
+from apache.airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDescription
+from apache.airavata.model.application.io.ttypes import InputDataObjectType, OutputDataObjectType
+from apache.airavata.model.experiment.ttypes import ExperimentModel
+from apache.airavata.model.workspace.ttypes import Project
+from apache.airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule
 from django.conf import settings
 
 from rest_framework import serializers
 
 import datetime
+import copy
 from urllib.parse import quote
 
 
@@ -168,29 +169,92 @@ class OutputDataObjectTypeSerializer(serializers.Serializer):
         raise Exception("Not implemented")
 
 
-class ApplicationInterfaceDescriptionSerializer(serializers.Serializer):
-    applicationInterfaceId = serializers.CharField(required=False)
+class CustomSerializer(serializers.Serializer):
+    def process_list_fields(self, validated_data):
+        fields = self.fields
+        params = copy.deepcopy(validated_data)
+        for field_name, serializer in fields.items():
+            if isinstance(serializer, serializers.ListSerializer):
+                   params[field_name] = serializer.create(params[field_name])
+        return params
+
+
+
+
+
+
+
+
+class ApplicationInterfaceDescriptionSerializer(CustomSerializer):
     applicationName = serializers.CharField(required=False)
     applicationDescription = serializers.CharField(required=False)
     archiveWorkingDirectory = serializers.BooleanField(required=False)
     hasOptionalFileInputs = serializers.BooleanField(required=False)
-    applicationOutputs = OutputDataObjectTypeSerializer(many=True)
-    applicationInputs = InputDataObjectTypeSerializer(many=True)
-    applicationModules = serializers.ListField(child=serializers.CharField())
+    applicationOutputs = serializers.ListSerializer(child=OutputDataObjectTypeSerializer())
+    applicationInputs = serializers.ListSerializer(child=InputDataObjectTypeSerializer())
+    applicationModules = serializers.ListSerializer(child=serializers.CharField())
 
     def create(self, validated_data):
-        app_interface = ApplicationInterfaceDescription(**validated_data)
-        app_interface.applicationOutputs = []
-        for app_output in validated_data["applicationOutputs"]:
-            output_serializer = OutputDataObjectTypeSerializer(data=app_output)
-            output_serializer.is_valid(raise_exception=True)
-            app_interface.applicationOutputs.append(output_serializer.create(output_serializer.validated_data))
-        app_interface.applicationInputs = []
-        for app_input in validated_data["applicationInputs"]:
-            input_serializer = InputDataObjectTypeSerializer(data=app_input)
-            input_serializer.is_valid(raise_exception=True)
-            app_interface.applicationInputs.append(input_serializer.create(input_serializer.validated_data))
-        return app_interface
+        params=self.process_list_fields(validated_data)
+        return ApplicationInterfaceDescription(**params)
 
     def update(self, instance, validated_data):
         raise Exception("Not implemented")
+
+
+class CommandObjectSerializer(CustomSerializer):
+    command = serializers.CharField()
+    commandOrder = serializers.IntegerField()
+
+    def create(self, validated_data):
+        return CommandObject(**validated_data)
+
+    def update(self, instance, validated_data):
+        raise Exception("Not implemented")
+
+
+class SetEnvPathsSerializer(CustomSerializer):
+    name=serializers.CharField(required=False)
+    value=serializers.CharField(required=False)
+    envPathOrder=serializers.IntegerField(required=False)
+
+    def create(self, validated_data):
+        return SetEnvPaths(**validated_data)
+
+    def update(self, instance, validated_data):
+        raise Exception("Not implemented")
+
+
+class ApplicationDeploymentDescriptionSerializer(CustomSerializer):
+    appModuleId = serializers.CharField(required=False)
+    computeHostId = serializers.CharField(required=False)
+    executablePath = serializers.CharField(required=False)
+    parallelism = serializers.IntegerField(required=False)
+    appDeploymentDescription = serializers.CharField(required=False)
+    moduleLoadCmds = serializers.ListSerializer(child=CommandObjectSerializer())
+    libPrependPaths = serializers.ListSerializer(child=SetEnvPathsSerializer())
+    libAppendPaths = serializers.ListSerializer(child=SetEnvPathsSerializer())
+    setEnvironment = serializers.ListSerializer(child=SetEnvPathsSerializer())
+    preJobCommands = serializers.ListSerializer(child=CommandObjectSerializer())
+    postJobCommands = serializers.ListSerializer(child=CommandObjectSerializer())
+    defaultQueueName = serializers.CharField(required=False)
+    defaultNodeCount = serializers.IntegerField(required=False)
+    defaultCPUCount = serializers.IntegerField(required=False)
+    defaultWalltime = serializers.IntegerField(required=False)
+    editableByUser = serializers.BooleanField(required=False)
+
+    def create(self, validated_data):
+        params=self.process_list_fields(validated_data)
+        return ApplicationDeploymentDescription(**params)
+
+    def update(self, instance, validated_data):
+        raise Exception("Not Implemented")
+
+
+
+class ComputeResourceDescriptionSerializer(CustomSerializer):
+    hostName=serializers.CharField()
+    hostAliases=serializers.ListField(child=serializers.CharField())
+    ipAddresses=serializers.ListField(child=serializers.CharField())
+    resourceDescription=serializers.CharField()
+    enabled=serializers.BooleanField()

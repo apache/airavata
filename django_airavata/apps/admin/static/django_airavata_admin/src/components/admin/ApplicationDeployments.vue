@@ -1,80 +1,222 @@
 <template>
-
   <div class="main_section">
-
     <div class="new-application-tab-main">
       <h4>Application Deployments</h4>
+      <div class="entry" v-if="appDeployments.appDeployments.length!=0">
+        <div class="heading">Select an Application Deployment to Edit</div>
+        <select v-model="appDeploymentIndex">
+          <option v-for="(appDeployment,index) in appDeployments.appDeployments" v-bind:value="index">{{appDeployment.appDeploymentId}}</option>
+        </select>
+      </div>
       <div class="entry">
         <div class="heading">Application module</div>
-        <input type="text"/>
+        <input type="text" v-model="appDeployments.appModuleId"/>
       </div>
       <div class="entry">
         <div class="heading">Application compute host</div>
-        <input type="text"/>
+        <select v-model="appDeployments.computeHostId">
+          <option v-for="computeHost in computeHosts" v-bind:value="computeHost.host_id">{{computeHost.host}}</option>
+        </select>
       </div>
       <div class="entry">
         <div class="heading">Application executable path</div>
-        <input type="text"/>
+        <input type="text" v-model="appDeployments.executablePath"/>
       </div>
       <div class="entry">
         <div class="heading">Application Parallelism type</div>
-        <input type="text"/>
+        <select v-model="appDeployments.parallelism">
+          <option value="0">SERIAL</option>
+          <option value="1">MPI</option>
+          <option value="2">OPENMP</option>
+          <option value="3">OPENMP MPI</option>
+          <option value="4">CCM</option>
+          <option value="5">CRAY MPI</option>
+        </select>
       </div>
       <div class="entry">
         <div class="heading">Application deployment description</div>
-        <textarea style="height: 80px;" type="text"/>
+        <textarea style="height: 80px;" type="text" v-model="appDeployments.appDeploymentDescription"/>
       </div>
     </div>
     <div class="new-application-tab-main">
       <h4>Module load commands</h4>
       <div class="entry">
         <div class="heading">Module load commands</div>
-        <input type="text"/>
+        <div class="entry" v-for="mdlCMD in appDeployments.moduleLoadCmds">
+          <input type="text" v-model="mdlCMD.command"/>
+        </div>
       </div>
       <div class="deployment-entry">
-        <input type="button" class="deployment btn" value="Add command"/>
+        <input type="button" class="deployment btn" value="Add command" v-on:click="addCommand('moduleLoadCmds')"/>
       </div>
     </div>
 
     <div class="new-application-tab-main">
       <div class="deployment-entry">
         <h4>Library Prepend Paths</h4>
-        <input type="button" class="deployment btn" value="Add path"/>
+        <div class="name_value" v-for="pth in appDeployments.libPrependPaths">
+          <input type="text" placeholder="Name" v-model="pth.name"/>
+          <input type="text" placeholder="Value" v-model="pth.value"/>
+        </div>
+        <input type="button" class="deployment btn" value="Add path" v-on:click="addEnvPaths('libPrependPaths')"/>
       </div>
     </div>
     <div class="new-application-tab-main">
       <div class="deployment-entry">
         <h4>Library Append Paths</h4>
-        <input type="button" class="deployment btn" value="Add path"/>
+        <div class="name_value" v-for="pth in appDeployments.libAppendPaths">
+          <input type="text" placeholder="Name" v-model="pth.name"/>
+          <input type="text" placeholder="Value" v-model="pth.value"/>
+        </div>
+        <input type="button" class="deployment btn" value="Add path" v-on:click="addEnvPaths('libAppendPaths')"/>
       </div>
     </div>
     <div class="new-application-tab-main">
       <div class="deployment-entry">
         <h4>Environments</h4>
-        <input type="button" class="deployment btn" value="Add environment"/>
+        <div class="name_value" v-for="env in appDeployments.setEnvironment">
+          <input type="text" placeholder="Name" v-model="env.name"/>
+          <input type="text" placeholder="Value" v-model="env.value"/>
+        </div>
+        <input type="button" class="deployment btn" value="Add environment" v-on:click="addEnvPaths('setEnvironment')"/>
       </div>
     </div>
     <div class="new-application-tab-main">
       <div class="deployment-entry">
         <h4>Pre Job Commands</h4>
-        <input type="button" class="deployment btn" value="Add command"/>
+        <div class="entry" v-for="cmd in appDeployments.preJobCommands">
+          <input type="text" v-model="cmd.command"/>
+        </div>
+        <input type="button" class="deployment btn" value="Add Pre Job command"
+               v-on:click="addCommand('preJobCommands')"/>
       </div>
     </div>
     <div class="new-application-tab-main">
       <div class="deployment-entry">
         <h4>Post Job Commands</h4>
-        <input type="button" class="deployment btn" value="Add command"/>
+        <div class="entry" v-for="cmd in appDeployments.postJobCommands">
+          <input type="text" v-model="cmd.command"/>
+        </div>
+        <input type="button" class="deployment btn" value="Add Post Job command"
+               v-on:click="addCommand('postJobCommands')"/>
       </div>
     </div>
     <div class="new-application-tab-main">
       <div class="deployment-entry">
         <h4>Defaults</h4>
-        <input type="button" class="deployment btn" value="Add command"/>
+        <div class="entry">
+          <div class="heading">Default Node Count</div>
+          <input type="number" value="1" min="0" v-model="appDeployments.defaultNodeCount"/>
+        </div>
+        <div class="entry">
+          <div class="heading">Default CPU Count</div>
+          <input type="number" value="1" min="0" v-model="appDeployments.defaultCPUCount"/>
+        </div>
+        <div class="entry">
+          <div class="heading">Default Queue Name</div>
+          <select v-model="appDeployments.defaultQueueName">
+            <option v-bind:value="queue" v-for="queue in queues">{{queue}}</option>
+          </select>
+        </div>
       </div>
+    </div>
+    <div class="new-application-tab-main">
+      <new-application-buttons v-bind:save="saveApplicationDeployment" v-bind:cancel="cancel" v-bind:sectionName="'Application Deployment'"></new-application-buttons>
     </div>
   </div>
 </template>
 <script>
+  import {createNamespacedHelpers} from 'vuex'
+  import NewApplicationButtons from './NewApplicationButtons.vue';
+  import Loading from '../Loading.vue'
+
+  import Utils from '../../utils'
+
+  const {mapGetters, mapActions} = createNamespacedHelpers('newApplication/appDeploymentsTab')
+
+  export default {
+    components: {
+      NewApplicationButtons,Loading
+    },
+    mounted: function () {
+      this.initializeAppDeployment(()=>{
+        this.appDeployments = this.getCompleteData
+        this.computeHosts=this.fetchComputeHosts()
+      })
+    },
+    data: function () {
+      var appDeployments = this.getCompleteData
+      console.log("Application Deployment Data", appDeployments)
+      return {
+        "appDeployments": appDeployments,
+        "computeHosts":[],
+        "queues":[],
+        "appDeploymentIndex":null
+      }
+    },
+    computed: {
+      ...mapGetters(["getCompleteData", "getAppModule", "getAppComputeHost", "getAppExecutablePath", "getAppParallelismType", "getAppDeploymentDescription", "getModuleLoadCmds",
+        "getLibPrependPaths", "getLibAppendPaths", "getSetEnvironment", "getPreJobCommands", "getPostJobCommands", "getDefaultNodeCount", "getDefaultCPUCount", "getDefaultQueueName"
+      ])
+    },
+    methods: {
+      addCommand: function (fieldName) {
+        var cmd = {
+          "command": ""
+        }
+        var ob = Object.assign({}, this.appDeployments)
+        var fieldValues = ob[fieldName]
+        fieldValues.push(cmd)
+        this.appDeployments = ob
+      },
+      addEnvPaths: function (fieldName) {
+        var envPaths = {
+          "name": "",
+          "value": ""
+        }
+        var ob = Object.assign({}, this.appDeployments)
+        var fieldValues = ob[fieldName]
+        fieldValues.push(envPaths)
+        this.appDeployments = ob
+      },
+      fetchComputeHosts:function () {
+        this.computeHosts=[{"host":"Loading...","host_id":""}]
+        var callable=(value)=>this.computeHosts=value
+        Utils.get('/api/compute/resources',{success:callable,failure:(value)=>this.computeHosts=[]})
+      },
+      saveApplicationDeployment:function ({success=null,failure=null}={}) {
+        this.syncData()
+        this.save({success:success,failure:failure})
+      },
+      cancel:function () {
+        this.resetState()
+        this.appDeployments=this.getCompleteData
+      }
+      ,
+      syncData:function () {
+        this.updateAppDeployment(this.appDeployments)
+      },
+      ...mapActions(["updateAppDeployment","save","resetState","initializeAppDeployment"])
+    },
+    watch: {
+      '$route'(to, from) {
+        this.syncData()
+      },
+      "appDeployments.computeHostId":function (value) {
+        if(value){
+          Utils.get("/api/compute/resource/queues",{queryParams:{id:value},success:(value)=>this.queues=value})
+        }
+      },
+      "getCompleteData": function (value) {
+        this.appDeployments=value
+      },
+      "appDeploymentIndex":function (value) {
+        var temp=this.appDeployments.appDeployments[value]
+        temp.appDeployments=this.appDeployments.appDeployments
+        this.appDeployments=temp
+      }
+    }
+  }
 
 </script>
 <style>
@@ -108,6 +250,23 @@
   .deployment-entry {
     display: inline-block;
     margin-top: 15px;
+    width: 100%;
+  }
+
+  .name_value {
+    display: inline-flex;
+    width: 100%;
+    margin-bottom: 5px;
+  }
+
+  .name_value input {
+    width: 50%;
+    display: inline-flex;
+    margin-right: 5px;
+  }
+
+  .deployment-entry .entry {
+    margin-bottom: 5px;
   }
 </style>
 

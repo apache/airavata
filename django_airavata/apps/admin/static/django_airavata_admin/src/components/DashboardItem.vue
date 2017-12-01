@@ -1,7 +1,7 @@
 <template>
-    <div class="col-md-6 col-xl-4">
+    <div class="col-md-6 col-xl-4 dashboard_item">
         <div class="card">
-            <a href="#0" class="card-link text-dark" v-bind:style="'min-height:'+ height+'px;'">
+            <a class="card-link text-dark" v-bind:style="'min-height:'+ height+'px;'" v-on:click="$emit('edit')">
                 <div class="card-body"  >
                     <h2 class="card-title h5">{{dashboard_item.appModuleName}}</h2>
                     <span class="badge badge-primary mr-1" v-for="tag in dashboard_item.tags">{{tag}}</span>
@@ -24,3 +24,8 @@
         }
     }
 </script>
+<style>
+  .dashboard_item:hover{
+    cursor: pointer;
+  }
+</style>

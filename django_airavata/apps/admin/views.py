@@ -6,5 +6,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 @login_required
-def experiments(request):
+def admin_home(request):
     return render(request, 'admin/admin.html')
+
+@login_required
+def credential_store(request):
+    return render(request, 'admin/credential_store.html')

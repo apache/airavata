@@ -15,10 +15,10 @@
     <div class="entry">
       <div class="heading">Type</div>
       <select v-model="type">
-        <option value="String">String</option>
-        <option value="Integer">Integer</option>
-        <option value="Float">Float</option>
-        <option value="URI">URI</option>
+        <option value="0">String</option>
+        <option value="1">Integer</option>
+        <option value="2">Float</option>
+        <option value="3">URI</option>
       </select>
     </div>
     <div class="entry">
@@ -61,7 +61,7 @@
 
   import {createNamespacedHelpers} from 'vuex'
 
-  const {mapGetters, mapActions} = createNamespacedHelpers('appInterfaceTab')
+  const {mapGetters, mapActions} = createNamespacedHelpers('newApplication/appInterfaceTab')
 
   export default {
     components: {
@@ -113,12 +113,12 @@
         'required':
           {
             'id': this.input_id,
-            'fieldName': 'required'
+            'fieldName': 'isRequired'
           },
         'requiredOnCmd':
           {
             'id': this.input_id,
-            'fieldName': 'requiredOnCmd'
+            'fieldName': 'requiredToAddedToCommandLine'
           },
         'standardInput':
           {
@@ -144,10 +144,10 @@
     },
     watch: {
       inpOrder: function (newValue) {
-        this.updateStore('inpOrder', newValue)
+        this.updateStore('inputOrder', newValue)
       },
       userFriendlyDescr: function (newValue) {
-        this.updateStore('userFriendlyDescr', newValue)
+        this.updateStore('userFriendlyDescription', newValue)
       },
       name: function (newValue) {
         this.updateStore('name', newValue)
@@ -160,20 +160,14 @@
         this.updateStore('type', newValue)
       },
       appArg: function (newValue) {
-        this.updateStore('appArg', newValue)
+        this.updateStore('applicationArgument', newValue)
       }
     }
   }
 </script>
 
 <style>
-  .input-field-header {
-    background-color: #F8F8F8;
-    width: 100%;
-    padding: 15px;
-    border: solid 1px #dddddd;
-    text-align: left;
-  }
+
 
   .input-field-header img {
     float: right;
@@ -192,15 +186,4 @@
   .entry.boolean-selectors div {
     margin-right: 60px;
   }
-
-  .entry select {
-    width: 100%;
-    height: 30px;
-  }
-
-  .interface-main {
-    border: solid 1px #dddddd;
-    border-radius: 4px;
-  }
-
 </style>

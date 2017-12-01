@@ -1,42 +1,80 @@
 <template>
   <div class="btns">
-    <input class="cancel" type="button" value="Cancel" v-on:click="$emit('cancel')"/>
-    <input class="save" type="button" value="Save" v-on:click="$emit('save')"/>
+    <transition name="fade"><label v-if="msg" class="msg" v-bind:class="status">{{msg}}</label></transition>
+    <input class="vbtn vbtn-cancel" type="button" value="Cancel" v-on:click="cancel"/>
+    <input class="vbtn vbtn-default" type="button" value="Save" v-on:click="saveFn"/>
   </div>
 </template>
+<script>
+  export default {
+    data: function () {
+      return {msg: null}
+    },
+    props: {
+      save: {
+        type: Function,
+        default: function () {
+          console.warn("SAVE Function has not been set")
+        }
+      },
+      cancel: {
+        type: Function,
+        default: function () {
+          console.warn("CANCEL Function has not been set")
+        }
+      },
+      sectionName:{
+        type:String,
+        default:""
+      }
+    },
+    methods: {
+      saveFn: function () {
+        this.save({
+          success: (value) => {
+            console.log("Save Value",value)
+            this.msg = "Saved "+this.sectionName+" Successfully"
+            this.status="msg-success"
+            var tempThis=this
+            setTimeout(function () {
+              console.log("TimedOut")
+              tempThis.msg = null
+            }, 5000)
+          },
+          failure: (response) => {
+            console.log("Failure Value",response)
+            this.msg = this.msg = "Saving "+this.sectionName+" Failed"
+            this.status="msg-failure"
+            var tempThis=this
+            setTimeout(function () {
+              console.log("TimedOut")
+              tempThis.msg = null
+            }, 5000)
+          }
+        })
+      }
+    }
+  }
+</script>
 <style>
-  .btns{
-    margin-top:50px;
-    display: inline-block;
-    width: 100%;
-  }
-
-  .btns input{
+  .btns input {
     float: right;
-    margin-left: 20px;
-    text-align: center;
-    border-color: #007BFF;
-    border-style: solid;
-    border-radius: 3px;
-    padding-top: 5px;
-    padding-bottom:5px;
-    padding-left:15px;
-    padding-right: 15px;
   }
-
-  .btns input:hover{
+  .msg{
+    width: 60%;
+    height: 30px;
+    text-align: center;
+    border-radius: 5px;
+  }
+  .msg-success{
     background-color: #3ca41a;
     color: #f1fff3;
+    transition-timing-function: ea  ;
   }
 
-  .save{
-    background-color: #007BFF;
+  .msg-failure{
+    background-color: #ff0b03;
     color: white;
   }
-
-  .cancel{
-    color:  #007BFF;
-    background-color: white;
-  }
-
 </style>
+

@@ -1,6 +1,6 @@
 <template>
   <div class="new_app">
-    <h3>Create A New Application</h3>
+    <h3>{{getTitle}}</h3>
     <div class="main">
       <div class="tabs">
         <div class="tab" v-bind:class="tabs['details']"><router-link class="link" :to="{name:'details'}"><label class="lbl">Details</label></router-link></div>
@@ -8,7 +8,7 @@
         <div class="tab" v-bind:class="tabs['deployments']"><router-link class="link" :to="{name:'deployments'}"><label class="lbl">Deployments</label></router-link></div>
         <div class="tab" style="width: 100%"></div>
       </div>
-      <transition mode="out-in">
+      <transition name="fade">
         <router-view :key="$route.path"></router-view>
       </transition>
     </div>
@@ -20,7 +20,7 @@
 
   import { createNamespacedHelpers } from 'vuex'
 
-  const {mapActions} = createNamespacedHelpers('appInterfaceTab')
+  const {mapGetters} = createNamespacedHelpers('newApplication')
 
 
   export default {
@@ -35,7 +35,8 @@
       return {
         current_active_tab: 0,
         previous_active_tab: -1,
-        appInterfaceTabData:{'inputFields':[]}
+        appInterfaceTabData:{'inputFields':[]},
+
       }
     },
     computed: {
@@ -50,7 +51,8 @@
           tabs_active[this.previous_active_tab] = '';
         }
         return tabs_active;
-      }
+      },
+      ...mapGetters(["getTitle"])
     },
     watch:{
       '$route' (to, from) {
@@ -61,9 +63,6 @@
         this.current_active_tab=to.name
 
       }
-    },
-    methods:{
-      ...mapActions(['initialized'])
     }
   }
 </script>
@@ -117,7 +116,6 @@
     display: flex;
     width: 100%;
   }
-
 
 
 

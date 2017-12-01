@@ -15,23 +15,23 @@
         <div class="heading" >Experiment Description</div>
         <textarea  style="height: 80px;" type="text" v-model="description"/>
       </div>
-      <new-application-buttons v-on:save="registerAppModule()" v-on:cancel="cancelAction()"></new-application-buttons>
+      <new-application-buttons v-bind:save="registerAppModule" v-bind:cancel="cancelAction" v-bind:sectionName="'Application Details'"></new-application-buttons>
     </div>
   </div>
 </template>
 <script>
   import NewApplicationButtons from './NewApplicationButtons.vue';
-
+  import Loading from '../Loading.vue'
   import { createNamespacedHelpers } from 'vuex'
 
-  const {mapGetters,mapActions} = createNamespacedHelpers('appDetailsTab')
+  const {mapGetters,mapActions} = createNamespacedHelpers('newApplication/appDetailsTab')
 
   export default{
     components:{
-      NewApplicationButtons
+      NewApplicationButtons,Loading
     },
     mounted:function () {
-      this.syncDataFromStore()
+      this.mount()
     },
     data:function () {
       return {
@@ -41,7 +41,7 @@
       };
     },
     methods:{
-      syncDataFromStore:function () {
+      mount:function () {
         this.name=this.getAppName()
         this.version=this.getAppVersion()
         this.description=this.getAppDescription()
@@ -52,11 +52,11 @@
         this.updateAppDetails(update)
       },
       cancelAction:function () {
-        this.resetAll()
-        this.$forceUpdate()
+        this.resetState()
+        this.mount()
       },
       ...mapGetters(['getAppName','getAppVersion','getAppDescription']),
-      ...mapActions(['updateAppDetails','registerAppModule','resetAll'])
+      ...mapActions(['updateAppDetails','registerAppModule','resetState'])
     },
     watch:{
       name:function (newValue) {

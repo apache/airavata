@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    <div id=app></div>
+{% endblock %}
+{% block css %}
+<link rel=stylesheet type=text/css href={% static 'django_airavata_admin/dist/static/css/app.css' %}>
+    <link rel=stylesheet type=text/css href={% static 'css/admin.css' %}>
+ {% endblock %}
+{% block scripts %}
+    {{ block.super }}
+    <script type=text/javascript src="{% static 'django_airavata_admin/dist/static/js/manifest.js' %}"></script>
+    <script type=text/javascript src="{% static 'django_airavata_admin/dist/static/js/app.js' %}"></script>
+    <script>
+        if(AiravataApp){
+            AiravataApp.initializeApacheAiravataDashboard(window.airavataDashboardName);
+        }
+    </script>
+{% endblock %}

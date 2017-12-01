@@ -10,12 +10,18 @@ export default {
   state:{
     appInterfaceTabInitialized:false,
     appDetailsTabInitialized:false,
-    appDeploymentsTabInitialized:false
+    appDeploymentsTabInitialized:false,
+    title:null
   },
   modules:{
     appInterfaceTab,
     appDetailsTab,
     appDeploymentsTab
+  },
+  getters:{
+    getTitle:function (state) {
+      return state.title
+    }
   },
   mutations:{
     setInitialization:function (state,update) {
@@ -27,6 +33,20 @@ export default {
     }
   },
   actions:{
+    setModule:function ({commit,state,rootState},moduleInformation) {
+      rootState.newApplication.appDetailsTab.name=moduleInformation.appModuleName
+      rootState.newApplication.appDetailsTab.version=moduleInformation.appModuleVersion
+      rootState.newApplication.appDetailsTab.description=moduleInformation.appModuleDescription
+      rootState.newApplication.appDetailsTab.appModuleId=moduleInformation.appModuleId
+      state.appInterfaceTabInitialized=true
+      state.appDeploymentsTabInitialized=true
 
+    },
+    setTitle:function ({context,state,rootState},title) {
+      state.title=title
+    },
+    resetStates:function () {
+
+    }
   }
 }

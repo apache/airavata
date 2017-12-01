@@ -8,7 +8,9 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.parsers import JSONParser
+from rest_framework.renderers import JSONRenderer
 from rest_framework.utils.urls import replace_query_param, remove_query_param
+from rest_framework import status
 
 from django.conf import settings
 from django.http import JsonResponse, Http404
@@ -17,7 +19,10 @@ from django.views.decorators.csrf import csrf_exempt
 
 from airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule, ApplicationDeploymentDescription
 from airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDescription
+from airavata.model.appcatalog.computeresource.ttypes import ComputeResourceDescription
+from credential_store_data_models.ttypes import CredentialOwnerType,SummaryType,CredentialSummary
 
+import thrift_django_serializer
 from collections import OrderedDict
 import logging
 
@@ -301,3 +306,97 @@ class ApplicationInterfaceViewSet(APIBackedViewSet):
     def perform_update(self, serializer):
         application_interface = serializer.save()
         self.request.airavata_client.updateApplicationInterface(self.authz_token, application_interface.applicationInterfaceId, application_interface)
+
+class ComputeResourceList(APIView):
+    renderer_classes = (JSONRenderer,)
+
+    def get(self, request, format=None):
+        gateway_id = settings.GATEWAY_ID
+        cr = request.airavata_client.getAllComputeResourceNames(request.authz_token)
+
+        return Response([{'host_id': host_id, 'host': host} for host_id, host in cr.items()])
+
+
+class ComputeResourceDetails(APIView):
+    renderer_classes = (JSONRenderer,)
+
+    def get(self, request, format=None):
+        details = request.airavata_client.getComputeResource(request.authz_token, request.query_params["id"])
+        serializer = thrift_django_serializer.create_serializer(ComputeResourceDescription, instance=details,
+                                                                context={'request': request})
+        print(details)
+        return Response(serializer.data)
+
+
+class ComputeResourcesQueues(APIView):
+    renderer_classes = (JSONRenderer,)
+
+    def get(self, request, format=None):
+        details = request.airavata_client.getComputeResource(request.authz_token, request.query_params["id"])
+        serializer = thrift_django_serializer.create_serializer(ComputeResourceDescription, instance=details,
+                                                                context={'request': request})
+        data = serializer.data
+        return Response([queue["queueName"] for queue in data["batchQueues"]])
+
+
+class ApplicationInterfaceList(APIView):
+    def get(self, request, format=None):
+        gateway_id = settings.GATEWAY_ID
+        serializer = thrift_django_serializer.create_serializer(ApplicationInterfaceDescription,
+                                                                instance=request.airavata_client.getAllApplicationInterfaces(
+                                                                    request.authz_token, gateway_id),
+                                                                context={'request': request},many=True)
+        return Response(serializer.data)
+
+class FetchApplicationInterface(APIView):
+
+
+    def get(self,request,format=None):
+        gateway_id = settings.GATEWAY_ID
+        for app_interface in request.airavata_client.getAllApplicationInterfaces(
+                                                                    request.authz_token, gateway_id):
+            app_modules=app_interface.applicationModules
+            if request.query_params["id"] in app_modules:
+                return Response(thrift_django_serializer.create_serializer(ApplicationInterfaceDescription,
+                                                                instance=app_interface,
+                                                                context={'request': request}).data)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class FetchApplicationDeployment(APIView):
+
+    def get(self,request,format=None):
+        gateway_id = settings.GATEWAY_ID
+        app_deployments=[app_deployment for app_deployment in  request.airavata_client.getAllApplicationDeployments(
+                request.authz_token, gateway_id) if request.query_params["id"] == app_deployment.appModuleId]
+        serializer=thrift_django_serializer.create_serializer(ApplicationDeploymentDescription,
+                                                   instance=app_deployments,
+                                                   context={'request': request},many=True)
+        return Response(serializer.data)
+        #return Response(request.airavata_client.getAppModuleDeployedResources(request.authz_token, request.query_params["id"]))
+
+class FetchSSHPubKeys(APIView):
+
+    def get(self,request,format=None):
+        gateway_id = settings.GATEWAY_ID
+        serializer=thrift_django_serializer.create_serializer(CredentialSummary,instance=request.airavata_client.getAllCredentialSummaryForGateway (request.authz_token,SummaryType.SSH,gateway_id),context={'request': request},many=True)
+        return Response(serializer.data)
+
+class GenerateRegisterSSHKeys(APIView):
+    parser_classes = (JSONParser,)
+    renderer_classes = (JSONRenderer,)
+
+    def post(self, request, format=None):
+        username = request.user.username
+        gateway_id = settings.GATEWAY_ID
+        data=request.data
+        return Response(request.airavata_client.generateAndRegisterSSHKeys (request.authz_token,gateway_id,username,data["description"],CredentialOwnerType.GATEWAY))
+
+
+class DeleteSSHPubKey(APIView):
+    parser_classes = (JSONParser,)
+    renderer_classes = (JSONRenderer,)
+
+    def post(self, request, format=None):
+        gateway_id = settings.GATEWAY_ID
+        return Response(request.airavata_client.deleteSSHPubKey(request.authz_token,request.data['token'],gateway_id))

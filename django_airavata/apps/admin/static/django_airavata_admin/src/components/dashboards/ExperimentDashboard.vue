@@ -84,19 +84,13 @@
         this.view_all = !this.view_all;
       },
       fetchApplications:function () {
-        var convert=function (applications) {
-
-        };
-        this.$http.get('/api/applications').then(response => {
-          this.applications=response.body;
-        }, response => {
+        Utils.get('/api/applications',{success:(value)=>this.applications=value,failure:value => {
           this.applications=[{
             "appModuleId": "",
             "appModuleName": "No Applications Found",
             "appModuleDescription": "",
             "appModuleVersion": ""
-          }]
-        });
+          }]}})
       }
 
     }
