@@ -21,7 +21,7 @@
 namespace java org.apache.airavata.model.appcatalog.userresourceprofile
 namespace php Airavata.Model.AppCatalog.UserResourceProfile
 namespace cpp apache.airavata.model.appcatalog.userresourceprofile
-namespace py apache.airavata.model.appcatalog.userresourceprofile
+namespace py airavata.model.appcatalog.userresourceprofile
 
 include "compute_resource_model.thrift"
 include "data_movement_models.thrift"

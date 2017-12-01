@@ -111,6 +111,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
   private static final org.apache.thrift.protocol.TField GPG_KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("gpgKey", org.apache.thrift.protocol.TType.STRING, (short)23);
   private static final org.apache.thrift.protocol.TField TIME_ZONE_FIELD_DESC = new org.apache.thrift.protocol.TField("timeZone", org.apache.thrift.protocol.TType.STRING, (short)24);
   private static final org.apache.thrift.protocol.TField NSF_DEMOGRAPHICS_FIELD_DESC = new org.apache.thrift.protocol.TField("nsfDemographics", org.apache.thrift.protocol.TType.STRUCT, (short)25);
+  private static final org.apache.thrift.protocol.TField CUSTOM_DASHBOARD_FIELD_DESC = new org.apache.thrift.protocol.TField("customDashboard", org.apache.thrift.protocol.TType.STRUCT, (short)26);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new UserProfileStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new UserProfileTupleSchemeFactory();
@@ -140,6 +141,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
   private java.lang.String gpgKey; // optional
   private java.lang.String timeZone; // optional
   private NSFDemographics nsfDemographics; // optional
+  private CustomDashboard customDashboard; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -171,7 +173,8 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
     LABELED_URI((short)22, "labeledURI"),
     GPG_KEY((short)23, "gpgKey"),
     TIME_ZONE((short)24, "timeZone"),
-    NSF_DEMOGRAPHICS((short)25, "nsfDemographics");
+    NSF_DEMOGRAPHICS((short)25, "nsfDemographics"),
+    CUSTOM_DASHBOARD((short)26, "customDashboard");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -236,6 +239,8 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
           return TIME_ZONE;
         case 25: // NSF_DEMOGRAPHICS
           return NSF_DEMOGRAPHICS;
+        case 26: // CUSTOM_DASHBOARD
+          return CUSTOM_DASHBOARD;
         default:
           return null;
       }
@@ -280,7 +285,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
   private static final int __LASTACCESSTIME_ISSET_ID = 1;
   private static final int __VALIDUNTIL_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.MIDDLE_NAME,_Fields.NAME_PREFIX,_Fields.NAME_SUFFIX,_Fields.ORCID_ID,_Fields.PHONES,_Fields.COUNTRY,_Fields.NATIONALITY,_Fields.HOME_ORGANIZATION,_Fields.ORGINATION_AFFILIATION,_Fields.COMMENTS,_Fields.LABELED_URI,_Fields.GPG_KEY,_Fields.TIME_ZONE,_Fields.NSF_DEMOGRAPHICS};
+  private static final _Fields optionals[] = {_Fields.MIDDLE_NAME,_Fields.NAME_PREFIX,_Fields.NAME_SUFFIX,_Fields.ORCID_ID,_Fields.PHONES,_Fields.COUNTRY,_Fields.NATIONALITY,_Fields.HOME_ORGANIZATION,_Fields.ORGINATION_AFFILIATION,_Fields.COMMENTS,_Fields.LABELED_URI,_Fields.GPG_KEY,_Fields.TIME_ZONE,_Fields.NSF_DEMOGRAPHICS,_Fields.CUSTOM_DASHBOARD};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -338,6 +343,8 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.NSF_DEMOGRAPHICS, new org.apache.thrift.meta_data.FieldMetaData("nsfDemographics", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, NSFDemographics.class)));
+    tmpMap.put(_Fields.CUSTOM_DASHBOARD, new org.apache.thrift.meta_data.FieldMetaData("customDashboard", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, CustomDashboard.class)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(UserProfile.class, metaDataMap);
   }
@@ -457,6 +464,9 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
     if (other.isSetNsfDemographics()) {
       this.nsfDemographics = new NSFDemographics(other.nsfDemographics);
     }
+    if (other.isSetCustomDashboard()) {
+      this.customDashboard = new CustomDashboard(other.customDashboard);
+    }
   }
 
   public UserProfile deepCopy() {
@@ -495,6 +505,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
     this.gpgKey = null;
     this.timeZone = null;
     this.nsfDemographics = null;
+    this.customDashboard = null;
   }
 
   public java.lang.String getUserModelVersion() {
@@ -1137,6 +1148,29 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
     }
   }
 
+  public CustomDashboard getCustomDashboard() {
+    return this.customDashboard;
+  }
+
+  public void setCustomDashboard(CustomDashboard customDashboard) {
+    this.customDashboard = customDashboard;
+  }
+
+  public void unsetCustomDashboard() {
+    this.customDashboard = null;
+  }
+
+  /** Returns true if field customDashboard is set (has been assigned a value) and false otherwise */
+  public boolean isSetCustomDashboard() {
+    return this.customDashboard != null;
+  }
+
+  public void setCustomDashboardIsSet(boolean value) {
+    if (!value) {
+      this.customDashboard = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case USER_MODEL_VERSION:
@@ -1339,6 +1373,14 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
       }
       break;
 
+    case CUSTOM_DASHBOARD:
+      if (value == null) {
+        unsetCustomDashboard();
+      } else {
+        setCustomDashboard((CustomDashboard)value);
+      }
+      break;
+
     }
   }
 
@@ -1419,6 +1461,9 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
     case NSF_DEMOGRAPHICS:
       return getNsfDemographics();
 
+    case CUSTOM_DASHBOARD:
+      return getCustomDashboard();
+
     }
     throw new java.lang.IllegalStateException();
   }
@@ -1480,6 +1525,8 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
       return isSetTimeZone();
     case NSF_DEMOGRAPHICS:
       return isSetNsfDemographics();
+    case CUSTOM_DASHBOARD:
+      return isSetCustomDashboard();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -1724,6 +1771,15 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
         return false;
     }
 
+    boolean this_present_customDashboard = true && this.isSetCustomDashboard();
+    boolean that_present_customDashboard = true && that.isSetCustomDashboard();
+    if (this_present_customDashboard || that_present_customDashboard) {
+      if (!(this_present_customDashboard && that_present_customDashboard))
+        return false;
+      if (!this.customDashboard.equals(that.customDashboard))
+        return false;
+    }
+
     return true;
   }
 
@@ -1824,6 +1880,10 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
     hashCode = hashCode * 8191 + ((isSetNsfDemographics()) ? 131071 : 524287);
     if (isSetNsfDemographics())
       hashCode = hashCode * 8191 + nsfDemographics.hashCode();
+
+    hashCode = hashCode * 8191 + ((isSetCustomDashboard()) ? 131071 : 524287);
+    if (isSetCustomDashboard())
+      hashCode = hashCode * 8191 + customDashboard.hashCode();
 
     return hashCode;
   }
@@ -2086,6 +2146,16 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
         return lastComparison;
       }
     }
+    lastComparison = java.lang.Boolean.valueOf(isSetCustomDashboard()).compareTo(other.isSetCustomDashboard());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetCustomDashboard()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.customDashboard, other.customDashboard);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -2321,6 +2391,16 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
       }
       first = false;
     }
+    if (isSetCustomDashboard()) {
+      if (!first) sb.append(", ");
+      sb.append("customDashboard:");
+      if (this.customDashboard == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.customDashboard);
+      }
+      first = false;
+    }
     sb.append(")");
     return sb.toString();
   }
@@ -2374,6 +2454,9 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
     // check for sub-struct validity
     if (nsfDemographics != null) {
       nsfDemographics.validate();
+    }
+    if (customDashboard != null) {
+      customDashboard.validate();
     }
   }
 
@@ -2654,6 +2737,15 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 26: // CUSTOM_DASHBOARD
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+              struct.customDashboard = new CustomDashboard();
+              struct.customDashboard.read(iprot);
+              struct.setCustomDashboardIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -2842,6 +2934,13 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
           oprot.writeFieldEnd();
         }
       }
+      if (struct.customDashboard != null) {
+        if (struct.isSetCustomDashboard()) {
+          oprot.writeFieldBegin(CUSTOM_DASHBOARD_FIELD_DESC);
+          struct.customDashboard.write(oprot);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -2919,7 +3018,10 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
       if (struct.isSetNsfDemographics()) {
         optionals.set(13);
       }
-      oprot.writeBitSet(optionals, 14);
+      if (struct.isSetCustomDashboard()) {
+        optionals.set(14);
+      }
+      oprot.writeBitSet(optionals, 15);
       if (struct.isSetMiddleName()) {
         oprot.writeString(struct.middleName);
       }
@@ -2980,6 +3082,9 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
       if (struct.isSetNsfDemographics()) {
         struct.nsfDemographics.write(oprot);
       }
+      if (struct.isSetCustomDashboard()) {
+        struct.customDashboard.write(oprot);
+      }
     }
 
     @Override
@@ -3016,7 +3121,7 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
       struct.setValidUntilIsSet(true);
       struct.State = org.apache.airavata.model.user.Status.findByValue(iprot.readI32());
       struct.setStateIsSet(true);
-      java.util.BitSet incoming = iprot.readBitSet(14);
+      java.util.BitSet incoming = iprot.readBitSet(15);
       if (incoming.get(0)) {
         struct.middleName = iprot.readString();
         struct.setMiddleNameIsSet(true);
@@ -3100,6 +3205,11 @@ public class UserProfile implements org.apache.thrift.TBase<UserProfile, UserPro
         struct.nsfDemographics = new NSFDemographics();
         struct.nsfDemographics.read(iprot);
         struct.setNsfDemographicsIsSet(true);
+      }
+      if (incoming.get(14)) {
+        struct.customDashboard = new CustomDashboard();
+        struct.customDashboard.read(iprot);
+        struct.setCustomDashboardIsSet(true);
       }
     }
   }

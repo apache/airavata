@@ -20,7 +20,7 @@
 
 namespace java org.apache.airavata.sharing.registry.service.cpi
 namespace php Airavata.API.Sharing
-namespace py apache.airavata.api.sharing
+namespace py airavata.api.sharing
 
 include "./sharing_models.thrift"
 
@@ -112,6 +112,26 @@ service SharingRegistryService {
      <p>API method to remove users from a group</p>
     */
     bool removeUsersFromGroup(1: required string domainId, 2: required list<string> userIds, 3: required string groupId) throws (1: sharing_models.SharingRegistryException sre);
+    /**
+     <p>API method to transfer group ownership</p>
+    */
+    bool transferGroupOwnership(1: required string domainId, 2: required string groupId, 3: required string newOwnerId) throws (1: sharing_models.SharingRegistryException sre);
+    /**
+    <p>API method to add Admin for a group</p>
+    */
+    bool addGroupAdmins(1: required string domainId, 2: required string groupId, 3: required list<string> adminIds) throws (1: sharing_models.SharingRegistryException sre);
+    /**
+    <p>API method to remove Admin for a group</p>
+    */
+    bool removeGroupAdmins(1: required string domainId, 2: required string groupId, 3: required list<string> adminIds) throws (1: sharing_models.SharingRegistryException sre);
+    /**
+    <p>API method to check whether the user has Admin access for the group</p>
+    */
+    bool hasAdminAccess(1: required string domainId, 2: required string groupId, 3: required string adminId) throws (1: sharing_models.SharingRegistryException sre);
+    /**
+    <p>API method to check whether the user has Admin access for the group</p>
+    */
+    bool hasOwnerAccess(1: required string domainId, 2: required string groupId, 3: required string ownerId) throws (1: sharing_models.SharingRegistryException sre);
     /**
      <p>API method to get list of child users in a group. Only the direct members will be returned.</p>
     */
