@@ -23,7 +23,7 @@ include "../../airavata-apis/airavata_commons.thrift"
 namespace java org.apache.airavata.model.tenant
 namespace php Airavata.Model.Tenant
 namespace cpp apache.airavata.model.tenant
-namespace py apache.airavata.model.tenant
+namespace py airavata.model.tenant
 
 enum TenantApprovalStatus {
     REQUESTED,

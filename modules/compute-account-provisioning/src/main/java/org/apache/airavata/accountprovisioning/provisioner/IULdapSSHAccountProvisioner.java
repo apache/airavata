@@ -84,6 +84,7 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner  {
     @Override
     public String installSSHKey(String userId, String sshPublicKey) throws InvalidUsernameException {
         String username = getUsername(userId);
+        String finalSSHPublicKey = sshPublicKey.trim();
         boolean success = withLdapConnection(ldapConnection -> {
             try {
                 String dn = "uid=" + username + "," + ldapBaseDN;
@@ -101,11 +102,12 @@ public class IULdapSSHAccountProvisioner implements SSHAccountProvisioner  {
                 if (!hasLdapPublicKey) {
 
                     modifyRequest.addModification(new DefaultAttribute("objectclass", LDAP_PUBLIC_KEY_OBJECT_CLASS), ModificationOperation.ADD_ATTRIBUTE);
-                    modifyRequest.addModification(new DefaultAttribute(SSH_PUBLIC_KEY_ATTRIBUTE_NAME, sshPublicKey), ModificationOperation.ADD_ATTRIBUTE);
+                    modifyRequest.addModification(new DefaultAttribute(SSH_PUBLIC_KEY_ATTRIBUTE_NAME, finalSSHPublicKey),
+                            ModificationOperation.ADD_ATTRIBUTE);
                 } else {
 
                     String oldSshPublicKey = entry.get(SSH_PUBLIC_KEY_ATTRIBUTE_NAME).getString();
-                    if (!oldSshPublicKey.equals(sshPublicKey)) {
+                    if (!oldSshPublicKey.equals(finalSSHPublicKey)) {
                         // Disallow overwriting the SSH key
                         throw new RuntimeException("User [" + username + "] already has an SSH public key in LDAP for ["
                                 + ldapBaseDN + "] and overwriting it isn't allowed.");
