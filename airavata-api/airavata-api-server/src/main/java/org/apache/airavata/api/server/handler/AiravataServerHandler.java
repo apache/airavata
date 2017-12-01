@@ -171,6 +171,13 @@ public class AiravataServerHandler implements Airavata.Iface {
                 entityType.setDescription("File entity type");
                 client.createEntityType(entityType);
 
+                entityType = new EntityType();
+                entityType.setEntityTypeId(domain.domainId+":APPLICATION");
+                entityType.setDomainId(domain.domainId);
+                entityType.setName("APPLICATION");
+                entityType.setDescription("Application entity type");
+                client.createEntityType(entityType);
+
                 //Creating Permission Types for each domain
                 PermissionType permissionType = new PermissionType();
                 permissionType.setPermissionTypeId(domain.domainId + ":READ");
@@ -264,6 +271,13 @@ public class AiravataServerHandler implements Airavata.Iface {
             entityType.setDomainId(domain.domainId);
             entityType.setName("FILE");
             entityType.setDescription("File entity type");
+            sharingClient.createEntityType(entityType);
+
+            entityType = new EntityType();
+            entityType.setEntityTypeId(domain.domainId+":APPLICATION");
+            entityType.setDomainId(domain.domainId);
+            entityType.setName("APPLICATION");
+            entityType.setDescription("Application entity type");
             sharingClient.createEntityType(entityType);
 
             //Creating Permission Types for each domain
@@ -1750,6 +1764,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             throws TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
+            // TODO Check if user has access to App Deployment
             ExperimentModel experiment = regClient.getExperiment(airavataExperimentId);
             if (experiment == null) {
                 logger.error(airavataExperimentId, "Error while launching experiment, experiment {} doesn't exist.", airavataExperimentId);
@@ -2238,9 +2253,23 @@ public class AiravataServerHandler implements Airavata.Iface {
     public List<ApplicationDeploymentDescription> getAllApplicationDeployments(AuthzToken authzToken, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
+        String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
-            List<ApplicationDeploymentDescription> result = regClient.getAllApplicationDeployments(gatewayId);
+            List<String> accessibleAppIds = new ArrayList<>();
+            if (ServerSettings.isEnableSharing()) {
+                List<SearchCriteria> sharingFilters = new ArrayList<>();
+                SearchCriteria searchCriteria = new SearchCriteria();
+                searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+                searchCriteria.setSearchCondition(SearchCondition.EQUAL);
+                searchCriteria.setValue(gatewayId + ":APPLICATION");
+                sharingFilters.add(searchCriteria);
+                sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                        userName + "@" + gatewayId, sharingFilters, 0, -1).forEach(a -> accessibleAppIds.add(a.entityId));
+            }
+            List<ApplicationDeploymentDescription> result = regClient.getAllApplicationDeployments(gatewayId, accessibleAppIds);
             registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
             return result;
         } catch (Exception e) {
             logger.error("Error while retrieving application deployments...", e);
@@ -2248,6 +2277,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving application deployments. More info : " + e.getMessage());
             registryClientPool.returnBrokenResource(regClient);
+            sharingClientPool.returnBrokenResource(sharingClient);
             throw exception;
         }
     }
