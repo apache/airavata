@@ -1768,7 +1768,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             ExperimentModel experiment = regClient.getExperiment(airavataExperimentId);
             String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
             String entityId = experiment.getExecutionId();
-            if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId, entityId,gatewayId + ":WRITE")) {
+            if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId, entityId,gatewayId + ":READ")) {
                 logger.error(airavataExperimentId, "User does not have access to application module {}.", entityId);
                 throw new AuthorizationException("User does not have permission to access this resource");
             }
