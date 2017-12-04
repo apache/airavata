@@ -44,10 +44,22 @@
              - "2181:2181"
 
     - name: Build Kafka
-      become: yes
+      # become: yes
       docker_image:
         name: airavata/kafka
         path: "{{ kafka_dir }}"
+      # command: docker build -t airavata/kafka {{ kafka_dir }}
+
+    - name: Build ELK Stack
+      # become: yes
+      docker_image: 
+        name: airavata/elk
+        path: "{{ elk_dir }}"
+      # command: docker build -t airavata/kafka {{ elk_dir }}
+
+    - name: Set Config for ELK Stack
+      become: yes
+      command: sudo sysctl -w vm.max_map_count=262144
 
     - name: Run Kafka
       become: yes
@@ -56,16 +68,6 @@
         image: airavata/kafka
         links:
           - zookeeper:zookeeper
-
-    - name: Build ELK Stack
-      become: yes
-      docker_image: 
-        name: airavata/elk
-        path: "{{ elk_dir }}"
-
-    - name: Set Config for ELK Stack
-      become: yes
-      command: sysctl -w vm.max_map_count=262144
 
     - name: Run ELK Stack
       become: yes
