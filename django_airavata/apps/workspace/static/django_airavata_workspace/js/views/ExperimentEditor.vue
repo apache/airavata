@@ -2,7 +2,10 @@
     <div>
         <div class="row">
             <div class="col">
-                <h1 class="h4 mb-4">Create a New Experiment</h1>
+                <h1 class="h4 mb-4">
+                    <div v-if="appModule" class="application-name text-muted text-uppercase"><i class="fa fa-code" aria-hidden="true"></i> {{ appModule.appModuleName }}</div>
+                    <slot name="title">Experiment Editor</slot>
+                </h1>
             </div>
         </div>
         <div class="row">
@@ -26,10 +29,16 @@
 <script>
 export default {
     name: 'edit-experiment',
-    props: ['experiment'],
+    props: ['experiment', 'appModule'],
     data () {
         return {
         }
     },
 }
 </script>
+
+<style>
+.application-name {
+    font-size: 12px;
+}
+</style>

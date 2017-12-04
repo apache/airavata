@@ -1,5 +1,7 @@
 <template>
-    <experiment-editor :experiment="experiment"></experiment-editor>
+    <experiment-editor :experiment="experiment" :app-module="appModule">
+        <span slot="title">Create a New Experiment</span>
+    </experiment-editor>
 </template>
 
 <script>
@@ -17,6 +19,7 @@ export default {
     data () {
         return {
             'experiment': new models.Experiment(),
+            'appModule': null,
         }
     },
     components: {
@@ -30,7 +33,8 @@ export default {
         // TODO: integrate loading spinner
         services.ApplicationModuleService.get(this.appModuleId)
             .then(appModule => {
-                this.experiment.experimentName = appModule.appModuleName + ' ' + moment().format('lll');
+                this.experiment.experimentName = appModule.appModuleName + ' on ' + moment().format('lll');
+                this.appModule = appModule;
             });
     }
 }
