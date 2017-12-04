@@ -10,10 +10,14 @@
     kafka_dir: /home/{{ user }}/airavata/dev-tools/docker/kafka
     elk_dir: /home/{{ user }}/airavata/dev-tools/docker/elk
   become: true
-  become_user: jeffravi
+  # become_user: jeffravi
   become_method: sudo
   gather_facts: true
   tasks:
+    - name: Add to Docker group
+      user: name={{ user }} group={{ group }}
+      become: yes
+
     - name: Install Packages
       yum: name={{ item }} state=latest update_cache=yes
       with_items: 
@@ -60,6 +64,7 @@
     - name: Set Config for ELK Stack
       become: yes
       command: sudo sysctl -w vm.max_map_count=262144
+      ignore_errors: yes
 
     - name: Run Kafka
       become: yes
