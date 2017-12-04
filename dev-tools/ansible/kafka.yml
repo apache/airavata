@@ -1,0 +1,59 @@
+---
+- name: Setup Kafka
+  hosts: test-servers
+  vars:
+    user: jeffravi
+    group: jeffravi
+    homedir: 
+    repo: https://github.com/jeffreypeter/airavata.git
+    work_dir: /home/{{ user }}/airavata
+    kafka_dir: /home/{{ user }}/airavata/dev-tools/docker/kafka
+    elk_dir: /home/{{ user }}/airavata/dev-tools/docker/elk
+  become: true
+  become_user: jeffravi
+  become_method: sudo
+  gather_facts: true
+  tasks:
+    - name: Install Packages
+      yum: name={{ item }} state=latest update_cache=yes
+      with_items: 
+        - git
+        - python-setuptools
+        - docker-ce
+        # - python-docker
+
+    - name: Create Work directory
+      file: path="{{ work_dir }}" state=directory owner="{{user}}" group="{{group}}"
+      become: yes
+
+    - name: Git clone airavta
+      git:
+       repo: "{{ repo }}"
+       dest: "{{ work_dir }}"
+       version: "kafka"
+       update: yes
+       force: yes
+    
+    - name: Run local zookeeper
+      become: yes
+      register: test
+      docker_container:
+        name: zookeeper
+        image: jplock/zookeeper
+        pull: true
+        ports:
+             - "2181:2181"
+
+    - name: Build Kafka
+      become: yes
+      docker_image:
+        name: airavata/kafka
+        path: "{{ kafka_dir }}"
+
+    - name: Run Kafka
+      become: yes
+      docker_container:
+        name: kafka
+        image: airavata/kafka
+        links:
+          - zookeeper:zookeeper
