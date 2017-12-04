@@ -29,7 +29,7 @@ user_home: "/home/{{ user }}"
 # deployment related variables
 deployment_dir: "{{ user_home }}/develop-deployment"
 airavata_source_dir: "{{ user_home }}/develop-source"
-airavata_repo: "https://git-wip-us.apache.org/repos/asf/airavata.git"
+airavata_repo: "https://github.com/apache/airavata.git"
 airavata_dist: "apache-airavata-server-0.17-SNAPSHOT"
 airavata_dist_name: "{{ airavata_dist }}-bin.tar.gz"
 old_airavata_dist: "apache-airavata-server-0.17-SNAPSHOT"
