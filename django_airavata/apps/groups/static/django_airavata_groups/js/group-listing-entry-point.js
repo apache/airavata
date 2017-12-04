@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import BootstrapVue from 'bootstrap-vue'
-import ProjectListContainer from './groups_components/GroupsManageContainer.vue'
+import GroupsManageContainer from './groups_components/GroupsManageContainer.vue'
 // This is imported globally on the website so no need to include it again in this view
 // import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -8,20 +8,17 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 Vue.use(BootstrapVue);
 
 new Vue({
-  template: '<groups-manage></groups-manage>',
+  el: "#groups-owners-manage",
+  template: '<groups-manage-container></groups-manage-container>',
   data: {
-      groupsOwnersData: null
-      groupsMembersData: null
+      groupsOwnersData: null,
   },
-  // components: {
-  //     ProjectListContainer
-  // },
+  components: {
+      GroupsManageContainer
+  },
   beforeMount: function () {
-      if (this.$refs['groups-owners-manage'].dataset.groupsOwnersData) {
+      if (this.$el.dataset.groupsOwnersData) {
           this.groupsOwnersData = JSON.parse(this.$el.dataset.groupsOwnersData);
-      }
-      if (this.$refs['groups-members-manage'].dataset.groupsMembersData) {
-          this.groupsMembersData = JSON.parse(this.$el.dataset.groupsMembersData);
       }
   }
 })
