@@ -86,7 +86,7 @@ public interface ApplicationInterface {
      */
     List<ApplicationModule> getApplicationModules(Map<String, String> filters) throws AppCatalogException;
 
-    List<ApplicationModule> getAllApplicationModules(String gatewayId) throws AppCatalogException;
+    List<ApplicationModule> getAllApplicationModules(String gatewayId, List<String> accessibleAppIds) throws AppCatalogException;
 
     /**
      * This method will return a list of application interfaces according to given search criteria
