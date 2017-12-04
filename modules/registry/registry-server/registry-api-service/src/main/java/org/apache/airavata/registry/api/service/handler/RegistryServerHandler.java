@@ -829,14 +829,14 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns the list of all Application Module Objects.
      */
     @Override
-    public List<ApplicationModule> getAllAppModules(String gatewayId) throws RegistryServiceException, TException {
+    public List<ApplicationModule> getAllAppModules(String gatewayId, List<String> accessibleAppIds) throws RegistryServiceException, TException {
         if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
         }
         try {
             appCatalog = RegistryFactory.getAppCatalog();
-            List<ApplicationModule> moduleList = appCatalog.getApplicationInterface().getAllApplicationModules(gatewayId);
+            List<ApplicationModule> moduleList = appCatalog.getApplicationInterface().getAllApplicationModules(gatewayId, accessibleAppIds);
             logger.debug("Airavata retrieved modules for gateway id : " + gatewayId);
             return moduleList;
         } catch (AppCatalogException e) {
