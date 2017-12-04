@@ -16,6 +16,14 @@ class ProjectService {
         }
     }
 
+    listAll() {
+        return fetch('/api/projects/list_all/', {
+            credentials: 'include'
+        })
+        .then(response => response.json())
+        .then(json => json.map(project => new Project(project)));
+    }
+
     create(project) {
         return FetchUtils.post('/api/projects/', project.toJSONForCreate())
             .then(result => new Project(result));

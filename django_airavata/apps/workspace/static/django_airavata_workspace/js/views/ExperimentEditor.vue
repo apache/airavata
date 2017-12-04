@@ -18,6 +18,14 @@
                                 type="text" v-model="experiment.experimentName" required
                                 placeholder="Experiment name"></b-form-input>
                             </b-form-group>
+                            <b-form-group label="Project" label-for="project">
+                                <b-form-select id="project"
+                                v-model="experiment.projectId" :options="projectOptions" required>
+                                <template slot="first">
+                                    <option :value="null" disabled>Select a Project</option>
+                                </template>
+                            </b-form-select>
+                            </b-form-group>
                         </b-form>
                     </div>
                 </div>
@@ -27,13 +35,28 @@
 </template>
 
 <script>
+import {models, services} from 'django-airavata-api'
+
 export default {
     name: 'edit-experiment',
     props: ['experiment', 'appModule'],
     data () {
         return {
+            'projects': [],
         }
     },
+    mounted: function () {
+        services.ProjectService.listAll()
+            .then(projects => this.projects = projects);
+    },
+    computed: {
+        projectOptions: function() {
+            return this.projects.map(project => ({
+                value: project.projectID,
+                text: project.name,
+            }));
+        }
+    }
 }
 </script>
 

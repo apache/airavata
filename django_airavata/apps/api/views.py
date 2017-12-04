@@ -2,7 +2,9 @@
 from . import serializers
 
 from rest_framework import status, mixins, pagination
-from rest_framework.decorators import api_view, detail_route
+from rest_framework.decorators import api_view
+from rest_framework.decorators import detail_route
+from rest_framework.decorators import list_route
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
@@ -211,6 +213,11 @@ class ProjectViewSet(APIBackedViewSet):
         project = serializer.save()
         self.request.airavata_client.updateProject(self.authz_token, project.projectID, project)
 
+    @list_route()
+    def list_all(self, request):
+        projects = self.request.airavata_client.getUserProjects(self.authz_token, self.gateway_id, self.username, -1, 0)
+        serializer = serializers.ProjectSerializer(projects, many=True, context={'request': request})
+        return Response(serializer.data)
 
     @detail_route()
     def experiments(self, request, project_id=None):
