@@ -20,7 +20,6 @@
         - git
         - python-setuptools
         - docker-ce
-        # - python-docker
 
     - name: Create Work directory
       file: path="{{ work_dir }}" state=directory owner="{{user}}" group="{{group}}"
@@ -57,3 +56,33 @@
         image: airavata/kafka
         links:
           - zookeeper:zookeeper
+
+    - name: Build ELK Stack
+      become: yes
+      docker_image: 
+        name: airavata/elk
+        path: "{{ elk_dir }}"
+
+    - name: Set Config for ELK Stack
+      become: yes
+      command: sysctl -w vm.max_map_count=262144
+
+    - name: Run ELK Stack
+      become: yes
+      docker_container:
+        name: elk
+        image: airavata/elk
+        ports:
+          - "5601:5601"
+          - "9200:9200"
+          - "5044:5044"
+
+    - name: Create topic
+      become: yes
+      command: docker run --rm airavata/kafka kafka-topics.sh --create --topic test_all_logs --replication-factor 1 --partitions 1 --zookeeper 172.17.0.2:2181
+
+    - name: Start Custom Logstash
+      become: yes
+      command: docker exec -d elk /bin/bash -c '/opt/logstash/bin/logstash -f /opt/logstash/airavata/logstash-airavata.conf --path.data /opt/logstash/airavata'
+
+
