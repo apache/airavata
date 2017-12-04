@@ -64,7 +64,6 @@
     - name: Set Config for ELK Stack
       become: yes
       command: sudo sysctl -w vm.max_map_count=262144
-      ignore_errors: yes
 
     - name: Run Kafka
       become: yes
@@ -87,6 +86,7 @@
     - name: Create topic
       become: yes
       command: docker run --rm airavata/kafka kafka-topics.sh --create --topic test_all_logs --replication-factor 1 --partitions 1 --zookeeper 172.17.0.2:2181
+      ignore_errors: yes
 
     - name: Start Custom Logstash
       become: yes
