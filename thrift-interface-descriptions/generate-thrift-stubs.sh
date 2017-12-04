@@ -134,7 +134,6 @@ add_license_header() {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 EOF
         mv ${f}-with-license ${f}
         done
