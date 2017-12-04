@@ -1,28 +1,38 @@
 <template>
-    <div>
-
-        <b-button :size="lg" :variant="success">
-                Create New Group <i class="fa fa-plus-circle" aria-hidden="true"></i>
-            </b-button>
-            <br><br>
-
-        <groups-owned></groups-owned>
-
-        <groups-member></groups-member>
-    </div>
+    <h1>Groups you are part of:</h1>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Options</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        </tbody>
+    </table>
+    <h1>Groups you own:</h1>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Options</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        </tbody>
+    </table>
 </template>
 
 <script>
 
-import GroupsOwned from './GroupsOwned.vue';
-import GroupsMember from './GroupsMember.vue';
-
 export default {
-    name: 'groups-manage-container',
-
-    components: {
-        GroupsOwned,
-        GroupsMember
+    name: 'groups-manage',
+    props: [],
+    data: function () {
+        return {
+        }
     }
 }
 </script>

@@ -39,7 +39,7 @@ def groups_manage(request):
                 member.append(group)
 
         return render(request, 'django_airavata_groups/groups_manage.html', {
-            'groups_owners_data': owner
+            'groups_owners_data': owner, 'groups_members_data': member
         })
        
         # return render(request, 'django_airavata_groups/groups_manage.html', {

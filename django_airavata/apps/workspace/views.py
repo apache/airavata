@@ -10,6 +10,7 @@ from django_airavata.apps.api.views import ProjectViewSet
 
 logger = logging.getLogger(__name__)
 
+
 @login_required
 def experiments_list(request):
     request.active_nav_item = 'experiments'

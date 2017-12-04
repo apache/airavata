@@ -3,9 +3,7 @@ var webpack = require('webpack')
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
-  entry: {
-    'group-list': './static/django_airavata_groups/js/group-listing-entry-point.js',
-  },
+  entry: './static/django_airavata_groups/js/group-listing-entry-point.js',
   output: {
     path: path.resolve(__dirname, './static/django_airavata_groups/dist/'),
     publicPath: '/static/django_airavata_groups/dist/',
