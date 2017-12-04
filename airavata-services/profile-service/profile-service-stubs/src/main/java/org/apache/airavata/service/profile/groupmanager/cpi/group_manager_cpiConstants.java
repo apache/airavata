@@ -25,8 +25,8 @@ package org.apache.airavata.service.profile.groupmanager.cpi;
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked", "unused"})
 public class group_manager_cpiConstants {
 
-  public static final java.lang.String USER_PROFILE_CPI_VERSION = "0.17";
+  public static final java.lang.String GROUP_MANAGER_CPI_VERSION = "0.17";
 
-  public static final java.lang.String USER_PROFILE_CPI_NAME = "GroupManagerService";
+  public static final java.lang.String GROUP_MANAGER_CPI_NAME = "GroupManagerService";
 
 }
