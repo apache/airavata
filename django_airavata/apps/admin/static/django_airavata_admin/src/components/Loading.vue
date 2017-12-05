@@ -1,14 +1,10 @@
 <template>
-  <div v-if="display">
-    <div class="loading-main">
-    </div>
-    <div class="loading">
-      <div class="sk-folding-cube">
-        <div class="sk-cube1 sk-cube"></div>
-        <div class="sk-cube2 sk-cube"></div>
-        <div class="sk-cube4 sk-cube"></div>
-        <div class="sk-cube3 sk-cube"></div>
-      </div>
+  <div v-if="display" class="loading">
+    <div class="sk-folding-cube" :style="{ color: color }">
+      <div class="sk-cube1 sk-cube"></div>
+      <div class="sk-cube2 sk-cube"></div>
+      <div class="sk-cube4 sk-cube"></div>
+      <div class="sk-cube3 sk-cube"></div>
     </div>
   </div>
 </template>
@@ -18,6 +14,11 @@
 
   const {mapGetters} = createNamespacedHelpers('loading')
   export default {
+    props: {
+      color: {
+        default: "#007BFF",
+      }
+    },
     computed: {
       ...mapGetters(['display'])
     }
@@ -28,19 +29,11 @@
   .loading {
     position: absolute;
     z-index: 999;
-    height: 2em;
-    width: 2em;
-    overflow: visible;
-    margin: auto;
-    top: 50%;
-    left: 40%;
-  }
-
-  .loading-main {
-    position: sticky;
-    z-index: 10;
-    height: 100%;
-    width: 100%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.5);
   }
 
   /* Spinner css https://github.com/tobiasahlin/SpinKit*/
@@ -51,6 +44,7 @@
     position: relative;
     -webkit-transform: rotateZ(45deg);
     transform: rotateZ(45deg);
+    top: calc(50% - 40px);
   }
 
   .sk-folding-cube .sk-cube {
@@ -70,7 +64,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #007BFF;
+    background-color: currentColor;
     -webkit-animation: sk-foldCubeAngle 2.4s infinite linear both;
     animation: sk-foldCubeAngle 2.4s infinite linear both;
     -webkit-transform-origin: 100% 100%;
