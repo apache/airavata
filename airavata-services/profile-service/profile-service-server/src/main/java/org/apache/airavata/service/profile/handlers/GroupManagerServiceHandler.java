@@ -159,10 +159,10 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
 
     @Override
     @SecurityCheck
-    public boolean transferGroupOwnership(AuthzToken authzToken, String domainId, String groupId, String newOwnerId) throws GroupManagerServiceException, AuthorizationException, TException {
+    public boolean transferGroupOwnership(AuthzToken authzToken, String groupId, String newOwnerId) throws GroupManagerServiceException, AuthorizationException, TException {
        try{
            SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
-           return sharingClient.transferGroupOwnership(domainId, groupId, newOwnerId);
+           return sharingClient.transferGroupOwnership(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, newOwnerId);
        }
        catch (Exception e) {
            String msg = "Error Transferring Group Ownership";
@@ -176,10 +176,10 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
 
     @Override
     @SecurityCheck
-    public boolean addGroupAdmins(AuthzToken authzToken, String domainId, String groupId, List<String> adminIds) throws GroupManagerServiceException, AuthorizationException, TException {
+    public boolean addGroupAdmins(AuthzToken authzToken, String groupId, List<String> adminIds) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
             SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
-            return sharingClient.addGroupAdmins(domainId, groupId, adminIds);
+            return sharingClient.addGroupAdmins(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, adminIds);
         }
         catch (Exception e) {
             String msg = "Error Adding Admins to Group. Group ID: " + groupId;
@@ -191,10 +191,10 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     }
 
     @Override
-    public boolean removeGroupAdmins(AuthzToken authzToken, String domainId, String groupId, List<String> adminIds) throws GroupManagerServiceException, AuthorizationException, TException {
+    public boolean removeGroupAdmins(AuthzToken authzToken, String groupId, List<String> adminIds) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
             SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
-            return sharingClient.removeGroupAdmins(domainId, groupId, adminIds);
+            return sharingClient.removeGroupAdmins(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, adminIds);
         }
         catch (Exception e) {
             String msg = "Error Removing Admins from the Group. Group ID: " + groupId;
@@ -206,10 +206,10 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     }
 
     @Override
-    public boolean hasAdminAccess(AuthzToken authzToken, String domainId, String groupId, String adminId) throws GroupManagerServiceException, AuthorizationException, TException {
+    public boolean hasAdminAccess(AuthzToken authzToken, String groupId, String adminId) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
             SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
-            return sharingClient.hasAdminAccess(domainId, groupId, adminId);
+            return sharingClient.hasAdminAccess(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, adminId);
         }
         catch (Exception e) {
             String msg = "Error Checking Admin Access for the Group. Group ID: " + groupId + " Admin ID: " + adminId;
@@ -221,10 +221,10 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     }
 
     @Override
-    public boolean hasOwnerAccess(AuthzToken authzToken, String domainId, String groupId, String ownerId) throws GroupManagerServiceException, AuthorizationException, TException {
+    public boolean hasOwnerAccess(AuthzToken authzToken, String groupId, String ownerId) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
             SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
-            return sharingClient.hasOwnerAccess(domainId, groupId, ownerId);
+            return sharingClient.hasOwnerAccess(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, ownerId);
         }
         catch (Exception e) {
             String msg = "Error Checking Owner Access for the Group. Group ID: " + groupId + " Owner ID: " + ownerId;

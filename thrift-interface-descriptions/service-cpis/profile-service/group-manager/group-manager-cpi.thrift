@@ -56,23 +56,23 @@ service GroupManagerService {
                        throws (1: group_manager_cpi_errors.GroupManagerServiceException gse,
                                2: airavata_errors.AuthorizationException ae);
 
-    bool transferGroupOwnership(1: required security_model.AuthzToken authzToken, 2: required string domainId, 3: required string groupId, 4: required string newOwnerId)
+    bool transferGroupOwnership(1: required security_model.AuthzToken authzToken, 2: required string groupId, 3: required string newOwnerId)
                     throws (1: group_manager_cpi_errors.GroupManagerServiceException gse,
                             2: airavata_errors.AuthorizationException ae);
 
-    bool addGroupAdmins(1: required security_model.AuthzToken authzToken, 2: required string domainId, 3: required string groupId, 4: required list<string> adminIds)
+    bool addGroupAdmins(1: required security_model.AuthzToken authzToken, 2: required string groupId, 3: required list<string> adminIds)
                     throws (1: group_manager_cpi_errors.GroupManagerServiceException gse,
                             2: airavata_errors.AuthorizationException ae);
 
-    bool removeGroupAdmins(1: required security_model.AuthzToken authzToken, 2: required string domainId, 3: required string groupId, 4: required list<string> adminIds)
+    bool removeGroupAdmins(1: required security_model.AuthzToken authzToken, 2: required string groupId, 3: required list<string> adminIds)
                     throws (1: group_manager_cpi_errors.GroupManagerServiceException gse,
                             2: airavata_errors.AuthorizationException ae);
 
-    bool hasAdminAccess(1: required security_model.AuthzToken authzToken, 2: required string domainId, 3: required string groupId, 4: required string adminId)
+    bool hasAdminAccess(1: required security_model.AuthzToken authzToken, 2: required string groupId, 3: required string adminId)
                     throws (1: group_manager_cpi_errors.GroupManagerServiceException gse,
                             2: airavata_errors.AuthorizationException ae);
 
-    bool hasOwnerAccess(1: required security_model.AuthzToken authzToken, 2: required string domainId, 3: required string groupId, 4: required string ownerId)
+    bool hasOwnerAccess(1: required security_model.AuthzToken authzToken, 2: required string groupId, 3: required string ownerId)
                     throws (1: group_manager_cpi_errors.GroupManagerServiceException gse,
                             2: airavata_errors.AuthorizationException ae);
 
