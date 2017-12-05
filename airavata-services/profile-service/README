@@ -68,7 +68,6 @@ List<UserProfile> getAllUserProfilesInGateway(AuthzToken authzToken, String gate
 
 boolean doesUserExist(AuthzToken authzToken, String userId, String gatewayId)
 
-//TODO Add group related methods
 
 
 ## profile-service-stubs
