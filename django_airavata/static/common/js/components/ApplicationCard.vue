@@ -15,7 +15,7 @@
 
 <script>
 export default {
-    name: 'dashboard-item',
+    name: 'application-card',
     props: ['appModule'],
     data:function () {
         return {
