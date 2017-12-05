@@ -191,6 +191,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     }
 
     @Override
+    @SecurityCheck
     public boolean removeGroupAdmins(AuthzToken authzToken, String groupId, List<String> adminIds) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
             SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
@@ -206,6 +207,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     }
 
     @Override
+    @SecurityCheck
     public boolean hasAdminAccess(AuthzToken authzToken, String groupId, String adminId) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
             SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
@@ -221,6 +223,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     }
 
     @Override
+    @SecurityCheck
     public boolean hasOwnerAccess(AuthzToken authzToken, String groupId, String ownerId) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
             SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
