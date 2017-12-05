@@ -825,11 +825,6 @@ public class GroupManagerService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public createGroup_result getResult(I iface, createGroup_args args) throws org.apache.thrift.TException {
         createGroup_result result = new createGroup_result();
         try {
@@ -853,11 +848,6 @@ public class GroupManagerService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -888,11 +878,6 @@ public class GroupManagerService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public deleteGroup_result getResult(I iface, deleteGroup_args args) throws org.apache.thrift.TException {
         deleteGroup_result result = new deleteGroup_result();
         try {
@@ -917,11 +902,6 @@ public class GroupManagerService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -951,11 +931,6 @@ public class GroupManagerService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public getAllGroupsUserBelongs_result getResult(I iface, getAllGroupsUserBelongs_args args) throws org.apache.thrift.TException {
         getAllGroupsUserBelongs_result result = new getAllGroupsUserBelongs_result();
         try {
@@ -979,11 +954,6 @@ public class GroupManagerService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -1014,11 +984,6 @@ public class GroupManagerService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public addGroupAdmins_result getResult(I iface, addGroupAdmins_args args) throws org.apache.thrift.TException {
         addGroupAdmins_result result = new addGroupAdmins_result();
         try {
@@ -1043,11 +1008,6 @@ public class GroupManagerService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
@@ -1078,11 +1038,6 @@ public class GroupManagerService {
         return false;
       }
 
-      @Override
-      protected boolean handleRuntimeExceptions() {
-        return false;
-      }
-
       public hasAdminAccess_result getResult(I iface, hasAdminAccess_args args) throws org.apache.thrift.TException {
         hasAdminAccess_result result = new hasAdminAccess_result();
         try {
@@ -1107,11 +1062,6 @@ public class GroupManagerService {
       }
 
       protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean handleRuntimeExceptions() {
         return false;
       }
 
