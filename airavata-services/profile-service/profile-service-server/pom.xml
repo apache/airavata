@@ -56,8 +56,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-api-server</artifactId>
-            <version>${project.version}</version>
+            <artifactId>airavata-sharing-registry-stubs</artifactId>
+            <version>0.17-SNAPSHOT</version>
         </dependency>
     </dependencies>
     

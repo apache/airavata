@@ -1,6 +1,5 @@
 package org.apache.airavata.service.profile.handlers;
 
-import org.apache.airavata.api.server.util.ThriftClientPool;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.error.AuthorizationException;
@@ -8,6 +7,7 @@ import org.apache.airavata.model.group.GroupModel;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.service.profile.groupmanager.cpi.GroupManagerService;
 import org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException;
+import org.apache.airavata.service.profile.utils.ThriftClientPool;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
 import org.apache.airavata.sharing.registry.models.GroupType;
 import org.apache.airavata.sharing.registry.models.UserGroup;
