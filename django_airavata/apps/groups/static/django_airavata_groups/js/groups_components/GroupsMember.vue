@@ -1,5 +1,5 @@
 <template>
-    <b-card title="Groups you are a member of:">
+    <b-card title="Groups you are a member of:">  
         <p class="card-text">
             <b-table striped hover :items="items" :fields="fields"></b-table>
         </p>
@@ -25,13 +25,15 @@ let items = [{ Name: 'group1', Options: '<a href="#"><i class="fa fa-times-circl
 
 export default {
     name: 'groups-member',
+    props: ['groupsForMembers'],
     data () {
         return {
             items: items,
             fields: fields,
             currentPage: 1,
             totalRows: items.length,
-            perPage: 10
+            perPage: 10,
+            test: this.groupsForMembers
         }
     }
 }

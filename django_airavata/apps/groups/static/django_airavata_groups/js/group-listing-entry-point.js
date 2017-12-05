@@ -9,16 +9,20 @@ Vue.use(BootstrapVue);
 
 new Vue({
   el: "#groups-owners-manage",
-  template: '<groups-manage-container></groups-manage-container>',
+  template: '<groups-manage-container v-bind:groupsDataOwners="groupsOwnersData" v-bind:groupsDataMembers="groupsMembersData"></groups-manage-container>',
   data: {
       groupsOwnersData: null,
+      groupsMembersData: null,
   },
   components: {
       GroupsManageContainer
   },
   beforeMount: function () {
       if (this.$el.dataset.groupsOwnersData) {
-          this.groupsOwnersData = JSON.parse(this.$el.dataset.groupsOwnersData);
+          this.groupsOwnersData = this.$el.dataset.groupsOwnersData;
+      }
+      if(this.$el.dataset.groupsMembersData) {
+          this.groupsMembersData = this.$el.dataset.groupsMembersData;
       }
   }
 })

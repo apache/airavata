@@ -1,14 +1,14 @@
 <template>
     <div>
 
-        <b-button :size="lg" :variant="success">
+        <b-button :size="size" :variant="variant">
                 Create New Group <i class="fa fa-plus-circle" aria-hidden="true"></i>
             </b-button>
             <br><br>
 
-        <groups-owned></groups-owned>
+        <groups-owned v-bind:groupsForOwners="groupsOwners"></groups-owned>
 
-        <groups-member></groups-member>
+        <groups-member v-bind:groupsForMembers="groupsMembers"></groups-member>
     </div>
 </template>
 
@@ -19,10 +19,25 @@ import GroupsMember from './GroupsMember.vue';
 
 export default {
     name: 'groups-manage-container',
-
+    props: ['groupsDataOwners', 'groupsDataMembers'],
     components: {
         GroupsOwned,
-        GroupsMember
+        GroupsMember,
+    },
+    data () {
+        return {
+            size: "lg",
+            variant: "success"
+        }
+    },
+    computed: {
+        groupsOwners: function() {
+            return this.groupsDataOwners;
+        },
+        groupsMembers: function() {
+            return this.groupsDataMembers;
+        }
     }
+
 }
 </script>

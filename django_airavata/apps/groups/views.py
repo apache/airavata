@@ -36,15 +36,12 @@ def groups_manage(request):
         member = []
         for group in member_list:
             if group.ownerId != username:
-                member.append(group)
+                member.append(group)  
 
         return render(request, 'django_airavata_groups/groups_manage.html', {
-            'groups_owners_data': owner
+            'groups_owners_data': owner, 'groups_members_data': member
         })
-       
-        # return render(request, 'django_airavata_groups/groups_manage.html', {
-        #     'owner': owner, 'member': member
-        # })
+
     except:
         logger.exception("Failed to load the Manage Groups page")
         return redirect('/')
