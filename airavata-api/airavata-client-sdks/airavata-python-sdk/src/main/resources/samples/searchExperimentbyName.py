@@ -45,10 +45,13 @@ def clone_experiment(airavataClient,authz_token,expID,expName):
     cloneExpId = airavataClient.cloneExperiment(authz_token,expID,expName)
     return cloneExpId 
 
+def search_experiment_by_name(airavataClient,authz_token,gatewayID,username,expName)
+    expSummaryList = airavataClient.searchExperimentsByName(authz_token,gatewayID,username,expName,-1,0)
+    return expSummaryList        
+
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description ="Get experiment using experimentID")
-    parser.add_argument('expID',type=string, help= "ExperimentID of experiment to get details about")
-    
+    parser = argparse.ArgumentParser(description ="Clone experiment using experimentID")
+    parser.add_argument('expName',type=string, help= "Experiment name of new experiment")
     args = parser.parse_args()
     print args
 
@@ -69,9 +72,9 @@ if __name__ == '__main__':
     airavataClient = get_airavata_client(transport)
 
     expId = args.expID
-    
+    expName = args.expName
 
-    expObj = get_experiment(airavataClient,authz_token,expId) 
-    print 'Cloned experiment Id', newExpId
+    expSummaryList = search_experiment_by_name(airavataClient,authz_token,gatewayID,username,expName) 
+    print 'List of experiment with given name', expSummaryList
 
     transport.close()
