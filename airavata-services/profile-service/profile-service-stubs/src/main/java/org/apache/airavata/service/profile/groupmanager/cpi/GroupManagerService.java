@@ -38,15 +38,15 @@ public class GroupManagerService {
 
     public java.util.List<org.apache.airavata.model.group.GroupModel> getAllGroupsUserBelongs(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String userName) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
-    public boolean transferGroupOwnership(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.lang.String newOwnerId) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
+    public boolean transferGroupOwnership(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.lang.String newOwnerId) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
-    public boolean addGroupAdmins(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.util.List<java.lang.String> adminIds) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
+    public boolean addGroupAdmins(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.util.List<java.lang.String> adminIds) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
-    public boolean removeGroupAdmins(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.util.List<java.lang.String> adminIds) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
+    public boolean removeGroupAdmins(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.util.List<java.lang.String> adminIds) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
-    public boolean hasAdminAccess(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.lang.String adminId) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
+    public boolean hasAdminAccess(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.lang.String adminId) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
-    public boolean hasOwnerAccess(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.lang.String ownerId) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
+    public boolean hasOwnerAccess(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.lang.String ownerId) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
   }
 
@@ -62,15 +62,15 @@ public class GroupManagerService {
 
     public void getAllGroupsUserBelongs(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String userName, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.model.group.GroupModel>> resultHandler) throws org.apache.thrift.TException;
 
-    public void transferGroupOwnership(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.lang.String newOwnerId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
+    public void transferGroupOwnership(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.lang.String newOwnerId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
 
-    public void addGroupAdmins(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.util.List<java.lang.String> adminIds, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
+    public void addGroupAdmins(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.util.List<java.lang.String> adminIds, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
 
-    public void removeGroupAdmins(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.util.List<java.lang.String> adminIds, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
+    public void removeGroupAdmins(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.util.List<java.lang.String> adminIds, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
 
-    public void hasAdminAccess(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.lang.String adminId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
+    public void hasAdminAccess(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.lang.String adminId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
 
-    public void hasOwnerAccess(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.lang.String ownerId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
+    public void hasOwnerAccess(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.lang.String ownerId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -245,17 +245,16 @@ public class GroupManagerService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getAllGroupsUserBelongs failed: unknown result");
     }
 
-    public boolean transferGroupOwnership(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.lang.String newOwnerId) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
+    public boolean transferGroupOwnership(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.lang.String newOwnerId) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
-      send_transferGroupOwnership(authzToken, domainId, groupId, newOwnerId);
+      send_transferGroupOwnership(authzToken, groupId, newOwnerId);
       return recv_transferGroupOwnership();
     }
 
-    public void send_transferGroupOwnership(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.lang.String newOwnerId) throws org.apache.thrift.TException
+    public void send_transferGroupOwnership(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.lang.String newOwnerId) throws org.apache.thrift.TException
     {
       transferGroupOwnership_args args = new transferGroupOwnership_args();
       args.setAuthzToken(authzToken);
-      args.setDomainId(domainId);
       args.setGroupId(groupId);
       args.setNewOwnerId(newOwnerId);
       sendBase("transferGroupOwnership", args);
@@ -277,17 +276,16 @@ public class GroupManagerService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "transferGroupOwnership failed: unknown result");
     }
 
-    public boolean addGroupAdmins(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.util.List<java.lang.String> adminIds) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
+    public boolean addGroupAdmins(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.util.List<java.lang.String> adminIds) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
-      send_addGroupAdmins(authzToken, domainId, groupId, adminIds);
+      send_addGroupAdmins(authzToken, groupId, adminIds);
       return recv_addGroupAdmins();
     }
 
-    public void send_addGroupAdmins(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.util.List<java.lang.String> adminIds) throws org.apache.thrift.TException
+    public void send_addGroupAdmins(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.util.List<java.lang.String> adminIds) throws org.apache.thrift.TException
     {
       addGroupAdmins_args args = new addGroupAdmins_args();
       args.setAuthzToken(authzToken);
-      args.setDomainId(domainId);
       args.setGroupId(groupId);
       args.setAdminIds(adminIds);
       sendBase("addGroupAdmins", args);
@@ -309,17 +307,16 @@ public class GroupManagerService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "addGroupAdmins failed: unknown result");
     }
 
-    public boolean removeGroupAdmins(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.util.List<java.lang.String> adminIds) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
+    public boolean removeGroupAdmins(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.util.List<java.lang.String> adminIds) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
-      send_removeGroupAdmins(authzToken, domainId, groupId, adminIds);
+      send_removeGroupAdmins(authzToken, groupId, adminIds);
       return recv_removeGroupAdmins();
     }
 
-    public void send_removeGroupAdmins(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.util.List<java.lang.String> adminIds) throws org.apache.thrift.TException
+    public void send_removeGroupAdmins(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.util.List<java.lang.String> adminIds) throws org.apache.thrift.TException
     {
       removeGroupAdmins_args args = new removeGroupAdmins_args();
       args.setAuthzToken(authzToken);
-      args.setDomainId(domainId);
       args.setGroupId(groupId);
       args.setAdminIds(adminIds);
       sendBase("removeGroupAdmins", args);
@@ -341,17 +338,16 @@ public class GroupManagerService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "removeGroupAdmins failed: unknown result");
     }
 
-    public boolean hasAdminAccess(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.lang.String adminId) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
+    public boolean hasAdminAccess(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.lang.String adminId) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
-      send_hasAdminAccess(authzToken, domainId, groupId, adminId);
+      send_hasAdminAccess(authzToken, groupId, adminId);
       return recv_hasAdminAccess();
     }
 
-    public void send_hasAdminAccess(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.lang.String adminId) throws org.apache.thrift.TException
+    public void send_hasAdminAccess(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.lang.String adminId) throws org.apache.thrift.TException
     {
       hasAdminAccess_args args = new hasAdminAccess_args();
       args.setAuthzToken(authzToken);
-      args.setDomainId(domainId);
       args.setGroupId(groupId);
       args.setAdminId(adminId);
       sendBase("hasAdminAccess", args);
@@ -373,17 +369,16 @@ public class GroupManagerService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "hasAdminAccess failed: unknown result");
     }
 
-    public boolean hasOwnerAccess(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.lang.String ownerId) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
+    public boolean hasOwnerAccess(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.lang.String ownerId) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
     {
-      send_hasOwnerAccess(authzToken, domainId, groupId, ownerId);
+      send_hasOwnerAccess(authzToken, groupId, ownerId);
       return recv_hasOwnerAccess();
     }
 
-    public void send_hasOwnerAccess(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.lang.String ownerId) throws org.apache.thrift.TException
+    public void send_hasOwnerAccess(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.lang.String ownerId) throws org.apache.thrift.TException
     {
       hasOwnerAccess_args args = new hasOwnerAccess_args();
       args.setAuthzToken(authzToken);
-      args.setDomainId(domainId);
       args.setGroupId(groupId);
       args.setOwnerId(ownerId);
       sendBase("hasOwnerAccess", args);
@@ -601,22 +596,20 @@ public class GroupManagerService {
       }
     }
 
-    public void transferGroupOwnership(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.lang.String newOwnerId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
+    public void transferGroupOwnership(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.lang.String newOwnerId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      transferGroupOwnership_call method_call = new transferGroupOwnership_call(authzToken, domainId, groupId, newOwnerId, resultHandler, this, ___protocolFactory, ___transport);
+      transferGroupOwnership_call method_call = new transferGroupOwnership_call(authzToken, groupId, newOwnerId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class transferGroupOwnership_call extends org.apache.thrift.async.TAsyncMethodCall<java.lang.Boolean> {
       private org.apache.airavata.model.security.AuthzToken authzToken;
-      private java.lang.String domainId;
       private java.lang.String groupId;
       private java.lang.String newOwnerId;
-      public transferGroupOwnership_call(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.lang.String newOwnerId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public transferGroupOwnership_call(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.lang.String newOwnerId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.authzToken = authzToken;
-        this.domainId = domainId;
         this.groupId = groupId;
         this.newOwnerId = newOwnerId;
       }
@@ -625,7 +618,6 @@ public class GroupManagerService {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("transferGroupOwnership", org.apache.thrift.protocol.TMessageType.CALL, 0));
         transferGroupOwnership_args args = new transferGroupOwnership_args();
         args.setAuthzToken(authzToken);
-        args.setDomainId(domainId);
         args.setGroupId(groupId);
         args.setNewOwnerId(newOwnerId);
         args.write(prot);
@@ -642,22 +634,20 @@ public class GroupManagerService {
       }
     }
 
-    public void addGroupAdmins(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.util.List<java.lang.String> adminIds, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
+    public void addGroupAdmins(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.util.List<java.lang.String> adminIds, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      addGroupAdmins_call method_call = new addGroupAdmins_call(authzToken, domainId, groupId, adminIds, resultHandler, this, ___protocolFactory, ___transport);
+      addGroupAdmins_call method_call = new addGroupAdmins_call(authzToken, groupId, adminIds, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class addGroupAdmins_call extends org.apache.thrift.async.TAsyncMethodCall<java.lang.Boolean> {
       private org.apache.airavata.model.security.AuthzToken authzToken;
-      private java.lang.String domainId;
       private java.lang.String groupId;
       private java.util.List<java.lang.String> adminIds;
-      public addGroupAdmins_call(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.util.List<java.lang.String> adminIds, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public addGroupAdmins_call(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.util.List<java.lang.String> adminIds, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.authzToken = authzToken;
-        this.domainId = domainId;
         this.groupId = groupId;
         this.adminIds = adminIds;
       }
@@ -666,7 +656,6 @@ public class GroupManagerService {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("addGroupAdmins", org.apache.thrift.protocol.TMessageType.CALL, 0));
         addGroupAdmins_args args = new addGroupAdmins_args();
         args.setAuthzToken(authzToken);
-        args.setDomainId(domainId);
         args.setGroupId(groupId);
         args.setAdminIds(adminIds);
         args.write(prot);
@@ -683,22 +672,20 @@ public class GroupManagerService {
       }
     }
 
-    public void removeGroupAdmins(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.util.List<java.lang.String> adminIds, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
+    public void removeGroupAdmins(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.util.List<java.lang.String> adminIds, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      removeGroupAdmins_call method_call = new removeGroupAdmins_call(authzToken, domainId, groupId, adminIds, resultHandler, this, ___protocolFactory, ___transport);
+      removeGroupAdmins_call method_call = new removeGroupAdmins_call(authzToken, groupId, adminIds, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class removeGroupAdmins_call extends org.apache.thrift.async.TAsyncMethodCall<java.lang.Boolean> {
       private org.apache.airavata.model.security.AuthzToken authzToken;
-      private java.lang.String domainId;
       private java.lang.String groupId;
       private java.util.List<java.lang.String> adminIds;
-      public removeGroupAdmins_call(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.util.List<java.lang.String> adminIds, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public removeGroupAdmins_call(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.util.List<java.lang.String> adminIds, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.authzToken = authzToken;
-        this.domainId = domainId;
         this.groupId = groupId;
         this.adminIds = adminIds;
       }
@@ -707,7 +694,6 @@ public class GroupManagerService {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("removeGroupAdmins", org.apache.thrift.protocol.TMessageType.CALL, 0));
         removeGroupAdmins_args args = new removeGroupAdmins_args();
         args.setAuthzToken(authzToken);
-        args.setDomainId(domainId);
         args.setGroupId(groupId);
         args.setAdminIds(adminIds);
         args.write(prot);
@@ -724,22 +710,20 @@ public class GroupManagerService {
       }
     }
 
-    public void hasAdminAccess(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.lang.String adminId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
+    public void hasAdminAccess(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.lang.String adminId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      hasAdminAccess_call method_call = new hasAdminAccess_call(authzToken, domainId, groupId, adminId, resultHandler, this, ___protocolFactory, ___transport);
+      hasAdminAccess_call method_call = new hasAdminAccess_call(authzToken, groupId, adminId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class hasAdminAccess_call extends org.apache.thrift.async.TAsyncMethodCall<java.lang.Boolean> {
       private org.apache.airavata.model.security.AuthzToken authzToken;
-      private java.lang.String domainId;
       private java.lang.String groupId;
       private java.lang.String adminId;
-      public hasAdminAccess_call(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.lang.String adminId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public hasAdminAccess_call(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.lang.String adminId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.authzToken = authzToken;
-        this.domainId = domainId;
         this.groupId = groupId;
         this.adminId = adminId;
       }
@@ -748,7 +732,6 @@ public class GroupManagerService {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("hasAdminAccess", org.apache.thrift.protocol.TMessageType.CALL, 0));
         hasAdminAccess_args args = new hasAdminAccess_args();
         args.setAuthzToken(authzToken);
-        args.setDomainId(domainId);
         args.setGroupId(groupId);
         args.setAdminId(adminId);
         args.write(prot);
@@ -765,22 +748,20 @@ public class GroupManagerService {
       }
     }
 
-    public void hasOwnerAccess(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.lang.String ownerId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
+    public void hasOwnerAccess(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.lang.String ownerId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      hasOwnerAccess_call method_call = new hasOwnerAccess_call(authzToken, domainId, groupId, ownerId, resultHandler, this, ___protocolFactory, ___transport);
+      hasOwnerAccess_call method_call = new hasOwnerAccess_call(authzToken, groupId, ownerId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class hasOwnerAccess_call extends org.apache.thrift.async.TAsyncMethodCall<java.lang.Boolean> {
       private org.apache.airavata.model.security.AuthzToken authzToken;
-      private java.lang.String domainId;
       private java.lang.String groupId;
       private java.lang.String ownerId;
-      public hasOwnerAccess_call(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String domainId, java.lang.String groupId, java.lang.String ownerId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public hasOwnerAccess_call(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.lang.String ownerId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.authzToken = authzToken;
-        this.domainId = domainId;
         this.groupId = groupId;
         this.ownerId = ownerId;
       }
@@ -789,7 +770,6 @@ public class GroupManagerService {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("hasOwnerAccess", org.apache.thrift.protocol.TMessageType.CALL, 0));
         hasOwnerAccess_args args = new hasOwnerAccess_args();
         args.setAuthzToken(authzToken);
-        args.setDomainId(domainId);
         args.setGroupId(groupId);
         args.setOwnerId(ownerId);
         args.write(prot);
@@ -1010,7 +990,7 @@ public class GroupManagerService {
       public transferGroupOwnership_result getResult(I iface, transferGroupOwnership_args args) throws org.apache.thrift.TException {
         transferGroupOwnership_result result = new transferGroupOwnership_result();
         try {
-          result.success = iface.transferGroupOwnership(args.authzToken, args.domainId, args.groupId, args.newOwnerId);
+          result.success = iface.transferGroupOwnership(args.authzToken, args.groupId, args.newOwnerId);
           result.setSuccessIsSet(true);
         } catch (org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException gse) {
           result.gse = gse;
@@ -1042,7 +1022,7 @@ public class GroupManagerService {
       public addGroupAdmins_result getResult(I iface, addGroupAdmins_args args) throws org.apache.thrift.TException {
         addGroupAdmins_result result = new addGroupAdmins_result();
         try {
-          result.success = iface.addGroupAdmins(args.authzToken, args.domainId, args.groupId, args.adminIds);
+          result.success = iface.addGroupAdmins(args.authzToken, args.groupId, args.adminIds);
           result.setSuccessIsSet(true);
         } catch (org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException gse) {
           result.gse = gse;
@@ -1074,7 +1054,7 @@ public class GroupManagerService {
       public removeGroupAdmins_result getResult(I iface, removeGroupAdmins_args args) throws org.apache.thrift.TException {
         removeGroupAdmins_result result = new removeGroupAdmins_result();
         try {
-          result.success = iface.removeGroupAdmins(args.authzToken, args.domainId, args.groupId, args.adminIds);
+          result.success = iface.removeGroupAdmins(args.authzToken, args.groupId, args.adminIds);
           result.setSuccessIsSet(true);
         } catch (org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException gse) {
           result.gse = gse;
@@ -1106,7 +1086,7 @@ public class GroupManagerService {
       public hasAdminAccess_result getResult(I iface, hasAdminAccess_args args) throws org.apache.thrift.TException {
         hasAdminAccess_result result = new hasAdminAccess_result();
         try {
-          result.success = iface.hasAdminAccess(args.authzToken, args.domainId, args.groupId, args.adminId);
+          result.success = iface.hasAdminAccess(args.authzToken, args.groupId, args.adminId);
           result.setSuccessIsSet(true);
         } catch (org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException gse) {
           result.gse = gse;
@@ -1138,7 +1118,7 @@ public class GroupManagerService {
       public hasOwnerAccess_result getResult(I iface, hasOwnerAccess_args args) throws org.apache.thrift.TException {
         hasOwnerAccess_result result = new hasOwnerAccess_result();
         try {
-          result.success = iface.hasOwnerAccess(args.authzToken, args.domainId, args.groupId, args.ownerId);
+          result.success = iface.hasOwnerAccess(args.authzToken, args.groupId, args.ownerId);
           result.setSuccessIsSet(true);
         } catch (org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException gse) {
           result.gse = gse;
@@ -1588,7 +1568,7 @@ public class GroupManagerService {
       }
 
       public void start(I iface, transferGroupOwnership_args args, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
-        iface.transferGroupOwnership(args.authzToken, args.domainId, args.groupId, args.newOwnerId,resultHandler);
+        iface.transferGroupOwnership(args.authzToken, args.groupId, args.newOwnerId,resultHandler);
       }
     }
 
@@ -1658,7 +1638,7 @@ public class GroupManagerService {
       }
 
       public void start(I iface, addGroupAdmins_args args, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
-        iface.addGroupAdmins(args.authzToken, args.domainId, args.groupId, args.adminIds,resultHandler);
+        iface.addGroupAdmins(args.authzToken, args.groupId, args.adminIds,resultHandler);
       }
     }
 
@@ -1728,7 +1708,7 @@ public class GroupManagerService {
       }
 
       public void start(I iface, removeGroupAdmins_args args, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
-        iface.removeGroupAdmins(args.authzToken, args.domainId, args.groupId, args.adminIds,resultHandler);
+        iface.removeGroupAdmins(args.authzToken, args.groupId, args.adminIds,resultHandler);
       }
     }
 
@@ -1798,7 +1778,7 @@ public class GroupManagerService {
       }
 
       public void start(I iface, hasAdminAccess_args args, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
-        iface.hasAdminAccess(args.authzToken, args.domainId, args.groupId, args.adminId,resultHandler);
+        iface.hasAdminAccess(args.authzToken, args.groupId, args.adminId,resultHandler);
       }
     }
 
@@ -1868,7 +1848,7 @@ public class GroupManagerService {
       }
 
       public void start(I iface, hasOwnerAccess_args args, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
-        iface.hasOwnerAccess(args.authzToken, args.domainId, args.groupId, args.ownerId,resultHandler);
+        iface.hasOwnerAccess(args.authzToken, args.groupId, args.ownerId,resultHandler);
       }
     }
 
@@ -7213,24 +7193,21 @@ public class GroupManagerService {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("transferGroupOwnership_args");
 
     private static final org.apache.thrift.protocol.TField AUTHZ_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("authzToken", org.apache.thrift.protocol.TType.STRUCT, (short)1);
-    private static final org.apache.thrift.protocol.TField DOMAIN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("domainId", org.apache.thrift.protocol.TType.STRING, (short)2);
-    private static final org.apache.thrift.protocol.TField GROUP_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("groupId", org.apache.thrift.protocol.TType.STRING, (short)3);
-    private static final org.apache.thrift.protocol.TField NEW_OWNER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("newOwnerId", org.apache.thrift.protocol.TType.STRING, (short)4);
+    private static final org.apache.thrift.protocol.TField GROUP_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("groupId", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField NEW_OWNER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("newOwnerId", org.apache.thrift.protocol.TType.STRING, (short)3);
 
     private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new transferGroupOwnership_argsStandardSchemeFactory();
     private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new transferGroupOwnership_argsTupleSchemeFactory();
 
     public org.apache.airavata.model.security.AuthzToken authzToken; // required
-    public java.lang.String domainId; // required
     public java.lang.String groupId; // required
     public java.lang.String newOwnerId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       AUTHZ_TOKEN((short)1, "authzToken"),
-      DOMAIN_ID((short)2, "domainId"),
-      GROUP_ID((short)3, "groupId"),
-      NEW_OWNER_ID((short)4, "newOwnerId");
+      GROUP_ID((short)2, "groupId"),
+      NEW_OWNER_ID((short)3, "newOwnerId");
 
       private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -7247,11 +7224,9 @@ public class GroupManagerService {
         switch(fieldId) {
           case 1: // AUTHZ_TOKEN
             return AUTHZ_TOKEN;
-          case 2: // DOMAIN_ID
-            return DOMAIN_ID;
-          case 3: // GROUP_ID
+          case 2: // GROUP_ID
             return GROUP_ID;
-          case 4: // NEW_OWNER_ID
+          case 3: // NEW_OWNER_ID
             return NEW_OWNER_ID;
           default:
             return null;
@@ -7298,8 +7273,6 @@ public class GroupManagerService {
       java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.AUTHZ_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("authzToken", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.security.AuthzToken.class)));
-      tmpMap.put(_Fields.DOMAIN_ID, new org.apache.thrift.meta_data.FieldMetaData("domainId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.GROUP_ID, new org.apache.thrift.meta_data.FieldMetaData("groupId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.NEW_OWNER_ID, new org.apache.thrift.meta_data.FieldMetaData("newOwnerId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -7313,13 +7286,11 @@ public class GroupManagerService {
 
     public transferGroupOwnership_args(
       org.apache.airavata.model.security.AuthzToken authzToken,
-      java.lang.String domainId,
       java.lang.String groupId,
       java.lang.String newOwnerId)
     {
       this();
       this.authzToken = authzToken;
-      this.domainId = domainId;
       this.groupId = groupId;
       this.newOwnerId = newOwnerId;
     }
@@ -7330,9 +7301,6 @@ public class GroupManagerService {
     public transferGroupOwnership_args(transferGroupOwnership_args other) {
       if (other.isSetAuthzToken()) {
         this.authzToken = new org.apache.airavata.model.security.AuthzToken(other.authzToken);
-      }
-      if (other.isSetDomainId()) {
-        this.domainId = other.domainId;
       }
       if (other.isSetGroupId()) {
         this.groupId = other.groupId;
@@ -7349,7 +7317,6 @@ public class GroupManagerService {
     @Override
     public void clear() {
       this.authzToken = null;
-      this.domainId = null;
       this.groupId = null;
       this.newOwnerId = null;
     }
@@ -7375,30 +7342,6 @@ public class GroupManagerService {
     public void setAuthzTokenIsSet(boolean value) {
       if (!value) {
         this.authzToken = null;
-      }
-    }
-
-    public java.lang.String getDomainId() {
-      return this.domainId;
-    }
-
-    public transferGroupOwnership_args setDomainId(java.lang.String domainId) {
-      this.domainId = domainId;
-      return this;
-    }
-
-    public void unsetDomainId() {
-      this.domainId = null;
-    }
-
-    /** Returns true if field domainId is set (has been assigned a value) and false otherwise */
-    public boolean isSetDomainId() {
-      return this.domainId != null;
-    }
-
-    public void setDomainIdIsSet(boolean value) {
-      if (!value) {
-        this.domainId = null;
       }
     }
 
@@ -7460,14 +7403,6 @@ public class GroupManagerService {
         }
         break;
 
-      case DOMAIN_ID:
-        if (value == null) {
-          unsetDomainId();
-        } else {
-          setDomainId((java.lang.String)value);
-        }
-        break;
-
       case GROUP_ID:
         if (value == null) {
           unsetGroupId();
@@ -7492,9 +7427,6 @@ public class GroupManagerService {
       case AUTHZ_TOKEN:
         return getAuthzToken();
 
-      case DOMAIN_ID:
-        return getDomainId();
-
       case GROUP_ID:
         return getGroupId();
 
@@ -7514,8 +7446,6 @@ public class GroupManagerService {
       switch (field) {
       case AUTHZ_TOKEN:
         return isSetAuthzToken();
-      case DOMAIN_ID:
-        return isSetDomainId();
       case GROUP_ID:
         return isSetGroupId();
       case NEW_OWNER_ID:
@@ -7548,15 +7478,6 @@ public class GroupManagerService {
           return false;
       }
 
-      boolean this_present_domainId = true && this.isSetDomainId();
-      boolean that_present_domainId = true && that.isSetDomainId();
-      if (this_present_domainId || that_present_domainId) {
-        if (!(this_present_domainId && that_present_domainId))
-          return false;
-        if (!this.domainId.equals(that.domainId))
-          return false;
-      }
-
       boolean this_present_groupId = true && this.isSetGroupId();
       boolean that_present_groupId = true && that.isSetGroupId();
       if (this_present_groupId || that_present_groupId) {
@@ -7586,10 +7507,6 @@ public class GroupManagerService {
       if (isSetAuthzToken())
         hashCode = hashCode * 8191 + authzToken.hashCode();
 
-      hashCode = hashCode * 8191 + ((isSetDomainId()) ? 131071 : 524287);
-      if (isSetDomainId())
-        hashCode = hashCode * 8191 + domainId.hashCode();
-
       hashCode = hashCode * 8191 + ((isSetGroupId()) ? 131071 : 524287);
       if (isSetGroupId())
         hashCode = hashCode * 8191 + groupId.hashCode();
@@ -7615,16 +7532,6 @@ public class GroupManagerService {
       }
       if (isSetAuthzToken()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authzToken, other.authzToken);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      lastComparison = java.lang.Boolean.valueOf(isSetDomainId()).compareTo(other.isSetDomainId());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetDomainId()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.domainId, other.domainId);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -7677,14 +7584,6 @@ public class GroupManagerService {
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("domainId:");
-      if (this.domainId == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.domainId);
-      }
-      first = false;
-      if (!first) sb.append(", ");
       sb.append("groupId:");
       if (this.groupId == null) {
         sb.append("null");
@@ -7708,9 +7607,6 @@ public class GroupManagerService {
       // check for required fields
       if (authzToken == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'authzToken' was not present! Struct: " + toString());
-      }
-      if (domainId == null) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'domainId' was not present! Struct: " + toString());
       }
       if (groupId == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'groupId' was not present! Struct: " + toString());
@@ -7767,15 +7663,7 @@ public class GroupManagerService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 2: // DOMAIN_ID
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.domainId = iprot.readString();
-                struct.setDomainIdIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 3: // GROUP_ID
+            case 2: // GROUP_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.groupId = iprot.readString();
                 struct.setGroupIdIsSet(true);
@@ -7783,7 +7671,7 @@ public class GroupManagerService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 4: // NEW_OWNER_ID
+            case 3: // NEW_OWNER_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.newOwnerId = iprot.readString();
                 struct.setNewOwnerIdIsSet(true);
@@ -7809,11 +7697,6 @@ public class GroupManagerService {
         if (struct.authzToken != null) {
           oprot.writeFieldBegin(AUTHZ_TOKEN_FIELD_DESC);
           struct.authzToken.write(oprot);
-          oprot.writeFieldEnd();
-        }
-        if (struct.domainId != null) {
-          oprot.writeFieldBegin(DOMAIN_ID_FIELD_DESC);
-          oprot.writeString(struct.domainId);
           oprot.writeFieldEnd();
         }
         if (struct.groupId != null) {
@@ -7844,7 +7727,6 @@ public class GroupManagerService {
       public void write(org.apache.thrift.protocol.TProtocol prot, transferGroupOwnership_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         struct.authzToken.write(oprot);
-        oprot.writeString(struct.domainId);
         oprot.writeString(struct.groupId);
         oprot.writeString(struct.newOwnerId);
       }
@@ -7855,8 +7737,6 @@ public class GroupManagerService {
         struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
         struct.authzToken.read(iprot);
         struct.setAuthzTokenIsSet(true);
-        struct.domainId = iprot.readString();
-        struct.setDomainIdIsSet(true);
         struct.groupId = iprot.readString();
         struct.setGroupIdIsSet(true);
         struct.newOwnerId = iprot.readString();
@@ -8445,24 +8325,21 @@ public class GroupManagerService {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("addGroupAdmins_args");
 
     private static final org.apache.thrift.protocol.TField AUTHZ_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("authzToken", org.apache.thrift.protocol.TType.STRUCT, (short)1);
-    private static final org.apache.thrift.protocol.TField DOMAIN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("domainId", org.apache.thrift.protocol.TType.STRING, (short)2);
-    private static final org.apache.thrift.protocol.TField GROUP_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("groupId", org.apache.thrift.protocol.TType.STRING, (short)3);
-    private static final org.apache.thrift.protocol.TField ADMIN_IDS_FIELD_DESC = new org.apache.thrift.protocol.TField("adminIds", org.apache.thrift.protocol.TType.LIST, (short)4);
+    private static final org.apache.thrift.protocol.TField GROUP_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("groupId", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField ADMIN_IDS_FIELD_DESC = new org.apache.thrift.protocol.TField("adminIds", org.apache.thrift.protocol.TType.LIST, (short)3);
 
     private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new addGroupAdmins_argsStandardSchemeFactory();
     private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new addGroupAdmins_argsTupleSchemeFactory();
 
     public org.apache.airavata.model.security.AuthzToken authzToken; // required
-    public java.lang.String domainId; // required
     public java.lang.String groupId; // required
     public java.util.List<java.lang.String> adminIds; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       AUTHZ_TOKEN((short)1, "authzToken"),
-      DOMAIN_ID((short)2, "domainId"),
-      GROUP_ID((short)3, "groupId"),
-      ADMIN_IDS((short)4, "adminIds");
+      GROUP_ID((short)2, "groupId"),
+      ADMIN_IDS((short)3, "adminIds");
 
       private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -8479,11 +8356,9 @@ public class GroupManagerService {
         switch(fieldId) {
           case 1: // AUTHZ_TOKEN
             return AUTHZ_TOKEN;
-          case 2: // DOMAIN_ID
-            return DOMAIN_ID;
-          case 3: // GROUP_ID
+          case 2: // GROUP_ID
             return GROUP_ID;
-          case 4: // ADMIN_IDS
+          case 3: // ADMIN_IDS
             return ADMIN_IDS;
           default:
             return null;
@@ -8530,8 +8405,6 @@ public class GroupManagerService {
       java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.AUTHZ_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("authzToken", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.security.AuthzToken.class)));
-      tmpMap.put(_Fields.DOMAIN_ID, new org.apache.thrift.meta_data.FieldMetaData("domainId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.GROUP_ID, new org.apache.thrift.meta_data.FieldMetaData("groupId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.ADMIN_IDS, new org.apache.thrift.meta_data.FieldMetaData("adminIds", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -8546,13 +8419,11 @@ public class GroupManagerService {
 
     public addGroupAdmins_args(
       org.apache.airavata.model.security.AuthzToken authzToken,
-      java.lang.String domainId,
       java.lang.String groupId,
       java.util.List<java.lang.String> adminIds)
     {
       this();
       this.authzToken = authzToken;
-      this.domainId = domainId;
       this.groupId = groupId;
       this.adminIds = adminIds;
     }
@@ -8563,9 +8434,6 @@ public class GroupManagerService {
     public addGroupAdmins_args(addGroupAdmins_args other) {
       if (other.isSetAuthzToken()) {
         this.authzToken = new org.apache.airavata.model.security.AuthzToken(other.authzToken);
-      }
-      if (other.isSetDomainId()) {
-        this.domainId = other.domainId;
       }
       if (other.isSetGroupId()) {
         this.groupId = other.groupId;
@@ -8583,7 +8451,6 @@ public class GroupManagerService {
     @Override
     public void clear() {
       this.authzToken = null;
-      this.domainId = null;
       this.groupId = null;
       this.adminIds = null;
     }
@@ -8609,30 +8476,6 @@ public class GroupManagerService {
     public void setAuthzTokenIsSet(boolean value) {
       if (!value) {
         this.authzToken = null;
-      }
-    }
-
-    public java.lang.String getDomainId() {
-      return this.domainId;
-    }
-
-    public addGroupAdmins_args setDomainId(java.lang.String domainId) {
-      this.domainId = domainId;
-      return this;
-    }
-
-    public void unsetDomainId() {
-      this.domainId = null;
-    }
-
-    /** Returns true if field domainId is set (has been assigned a value) and false otherwise */
-    public boolean isSetDomainId() {
-      return this.domainId != null;
-    }
-
-    public void setDomainIdIsSet(boolean value) {
-      if (!value) {
-        this.domainId = null;
       }
     }
 
@@ -8709,14 +8552,6 @@ public class GroupManagerService {
         }
         break;
 
-      case DOMAIN_ID:
-        if (value == null) {
-          unsetDomainId();
-        } else {
-          setDomainId((java.lang.String)value);
-        }
-        break;
-
       case GROUP_ID:
         if (value == null) {
           unsetGroupId();
@@ -8741,9 +8576,6 @@ public class GroupManagerService {
       case AUTHZ_TOKEN:
         return getAuthzToken();
 
-      case DOMAIN_ID:
-        return getDomainId();
-
       case GROUP_ID:
         return getGroupId();
 
@@ -8763,8 +8595,6 @@ public class GroupManagerService {
       switch (field) {
       case AUTHZ_TOKEN:
         return isSetAuthzToken();
-      case DOMAIN_ID:
-        return isSetDomainId();
       case GROUP_ID:
         return isSetGroupId();
       case ADMIN_IDS:
@@ -8797,15 +8627,6 @@ public class GroupManagerService {
           return false;
       }
 
-      boolean this_present_domainId = true && this.isSetDomainId();
-      boolean that_present_domainId = true && that.isSetDomainId();
-      if (this_present_domainId || that_present_domainId) {
-        if (!(this_present_domainId && that_present_domainId))
-          return false;
-        if (!this.domainId.equals(that.domainId))
-          return false;
-      }
-
       boolean this_present_groupId = true && this.isSetGroupId();
       boolean that_present_groupId = true && that.isSetGroupId();
       if (this_present_groupId || that_present_groupId) {
@@ -8835,10 +8656,6 @@ public class GroupManagerService {
       if (isSetAuthzToken())
         hashCode = hashCode * 8191 + authzToken.hashCode();
 
-      hashCode = hashCode * 8191 + ((isSetDomainId()) ? 131071 : 524287);
-      if (isSetDomainId())
-        hashCode = hashCode * 8191 + domainId.hashCode();
-
       hashCode = hashCode * 8191 + ((isSetGroupId()) ? 131071 : 524287);
       if (isSetGroupId())
         hashCode = hashCode * 8191 + groupId.hashCode();
@@ -8864,16 +8681,6 @@ public class GroupManagerService {
       }
       if (isSetAuthzToken()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authzToken, other.authzToken);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      lastComparison = java.lang.Boolean.valueOf(isSetDomainId()).compareTo(other.isSetDomainId());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetDomainId()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.domainId, other.domainId);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -8926,14 +8733,6 @@ public class GroupManagerService {
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("domainId:");
-      if (this.domainId == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.domainId);
-      }
-      first = false;
-      if (!first) sb.append(", ");
       sb.append("groupId:");
       if (this.groupId == null) {
         sb.append("null");
@@ -8957,9 +8756,6 @@ public class GroupManagerService {
       // check for required fields
       if (authzToken == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'authzToken' was not present! Struct: " + toString());
-      }
-      if (domainId == null) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'domainId' was not present! Struct: " + toString());
       }
       if (groupId == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'groupId' was not present! Struct: " + toString());
@@ -9016,15 +8812,7 @@ public class GroupManagerService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 2: // DOMAIN_ID
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.domainId = iprot.readString();
-                struct.setDomainIdIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 3: // GROUP_ID
+            case 2: // GROUP_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.groupId = iprot.readString();
                 struct.setGroupIdIsSet(true);
@@ -9032,7 +8820,7 @@ public class GroupManagerService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 4: // ADMIN_IDS
+            case 3: // ADMIN_IDS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
                   org.apache.thrift.protocol.TList _list8 = iprot.readListBegin();
@@ -9070,11 +8858,6 @@ public class GroupManagerService {
           struct.authzToken.write(oprot);
           oprot.writeFieldEnd();
         }
-        if (struct.domainId != null) {
-          oprot.writeFieldBegin(DOMAIN_ID_FIELD_DESC);
-          oprot.writeString(struct.domainId);
-          oprot.writeFieldEnd();
-        }
         if (struct.groupId != null) {
           oprot.writeFieldBegin(GROUP_ID_FIELD_DESC);
           oprot.writeString(struct.groupId);
@@ -9110,7 +8893,6 @@ public class GroupManagerService {
       public void write(org.apache.thrift.protocol.TProtocol prot, addGroupAdmins_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         struct.authzToken.write(oprot);
-        oprot.writeString(struct.domainId);
         oprot.writeString(struct.groupId);
         {
           oprot.writeI32(struct.adminIds.size());
@@ -9127,8 +8909,6 @@ public class GroupManagerService {
         struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
         struct.authzToken.read(iprot);
         struct.setAuthzTokenIsSet(true);
-        struct.domainId = iprot.readString();
-        struct.setDomainIdIsSet(true);
         struct.groupId = iprot.readString();
         struct.setGroupIdIsSet(true);
         {
@@ -9726,24 +9506,21 @@ public class GroupManagerService {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("removeGroupAdmins_args");
 
     private static final org.apache.thrift.protocol.TField AUTHZ_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("authzToken", org.apache.thrift.protocol.TType.STRUCT, (short)1);
-    private static final org.apache.thrift.protocol.TField DOMAIN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("domainId", org.apache.thrift.protocol.TType.STRING, (short)2);
-    private static final org.apache.thrift.protocol.TField GROUP_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("groupId", org.apache.thrift.protocol.TType.STRING, (short)3);
-    private static final org.apache.thrift.protocol.TField ADMIN_IDS_FIELD_DESC = new org.apache.thrift.protocol.TField("adminIds", org.apache.thrift.protocol.TType.LIST, (short)4);
+    private static final org.apache.thrift.protocol.TField GROUP_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("groupId", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField ADMIN_IDS_FIELD_DESC = new org.apache.thrift.protocol.TField("adminIds", org.apache.thrift.protocol.TType.LIST, (short)3);
 
     private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new removeGroupAdmins_argsStandardSchemeFactory();
     private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new removeGroupAdmins_argsTupleSchemeFactory();
 
     public org.apache.airavata.model.security.AuthzToken authzToken; // required
-    public java.lang.String domainId; // required
     public java.lang.String groupId; // required
     public java.util.List<java.lang.String> adminIds; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       AUTHZ_TOKEN((short)1, "authzToken"),
-      DOMAIN_ID((short)2, "domainId"),
-      GROUP_ID((short)3, "groupId"),
-      ADMIN_IDS((short)4, "adminIds");
+      GROUP_ID((short)2, "groupId"),
+      ADMIN_IDS((short)3, "adminIds");
 
       private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -9760,11 +9537,9 @@ public class GroupManagerService {
         switch(fieldId) {
           case 1: // AUTHZ_TOKEN
             return AUTHZ_TOKEN;
-          case 2: // DOMAIN_ID
-            return DOMAIN_ID;
-          case 3: // GROUP_ID
+          case 2: // GROUP_ID
             return GROUP_ID;
-          case 4: // ADMIN_IDS
+          case 3: // ADMIN_IDS
             return ADMIN_IDS;
           default:
             return null;
@@ -9811,8 +9586,6 @@ public class GroupManagerService {
       java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.AUTHZ_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("authzToken", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.security.AuthzToken.class)));
-      tmpMap.put(_Fields.DOMAIN_ID, new org.apache.thrift.meta_data.FieldMetaData("domainId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.GROUP_ID, new org.apache.thrift.meta_data.FieldMetaData("groupId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.ADMIN_IDS, new org.apache.thrift.meta_data.FieldMetaData("adminIds", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -9827,13 +9600,11 @@ public class GroupManagerService {
 
     public removeGroupAdmins_args(
       org.apache.airavata.model.security.AuthzToken authzToken,
-      java.lang.String domainId,
       java.lang.String groupId,
       java.util.List<java.lang.String> adminIds)
     {
       this();
       this.authzToken = authzToken;
-      this.domainId = domainId;
       this.groupId = groupId;
       this.adminIds = adminIds;
     }
@@ -9844,9 +9615,6 @@ public class GroupManagerService {
     public removeGroupAdmins_args(removeGroupAdmins_args other) {
       if (other.isSetAuthzToken()) {
         this.authzToken = new org.apache.airavata.model.security.AuthzToken(other.authzToken);
-      }
-      if (other.isSetDomainId()) {
-        this.domainId = other.domainId;
       }
       if (other.isSetGroupId()) {
         this.groupId = other.groupId;
@@ -9864,7 +9632,6 @@ public class GroupManagerService {
     @Override
     public void clear() {
       this.authzToken = null;
-      this.domainId = null;
       this.groupId = null;
       this.adminIds = null;
     }
@@ -9890,30 +9657,6 @@ public class GroupManagerService {
     public void setAuthzTokenIsSet(boolean value) {
       if (!value) {
         this.authzToken = null;
-      }
-    }
-
-    public java.lang.String getDomainId() {
-      return this.domainId;
-    }
-
-    public removeGroupAdmins_args setDomainId(java.lang.String domainId) {
-      this.domainId = domainId;
-      return this;
-    }
-
-    public void unsetDomainId() {
-      this.domainId = null;
-    }
-
-    /** Returns true if field domainId is set (has been assigned a value) and false otherwise */
-    public boolean isSetDomainId() {
-      return this.domainId != null;
-    }
-
-    public void setDomainIdIsSet(boolean value) {
-      if (!value) {
-        this.domainId = null;
       }
     }
 
@@ -9990,14 +9733,6 @@ public class GroupManagerService {
         }
         break;
 
-      case DOMAIN_ID:
-        if (value == null) {
-          unsetDomainId();
-        } else {
-          setDomainId((java.lang.String)value);
-        }
-        break;
-
       case GROUP_ID:
         if (value == null) {
           unsetGroupId();
@@ -10022,9 +9757,6 @@ public class GroupManagerService {
       case AUTHZ_TOKEN:
         return getAuthzToken();
 
-      case DOMAIN_ID:
-        return getDomainId();
-
       case GROUP_ID:
         return getGroupId();
 
@@ -10044,8 +9776,6 @@ public class GroupManagerService {
       switch (field) {
       case AUTHZ_TOKEN:
         return isSetAuthzToken();
-      case DOMAIN_ID:
-        return isSetDomainId();
       case GROUP_ID:
         return isSetGroupId();
       case ADMIN_IDS:
@@ -10078,15 +9808,6 @@ public class GroupManagerService {
           return false;
       }
 
-      boolean this_present_domainId = true && this.isSetDomainId();
-      boolean that_present_domainId = true && that.isSetDomainId();
-      if (this_present_domainId || that_present_domainId) {
-        if (!(this_present_domainId && that_present_domainId))
-          return false;
-        if (!this.domainId.equals(that.domainId))
-          return false;
-      }
-
       boolean this_present_groupId = true && this.isSetGroupId();
       boolean that_present_groupId = true && that.isSetGroupId();
       if (this_present_groupId || that_present_groupId) {
@@ -10116,10 +9837,6 @@ public class GroupManagerService {
       if (isSetAuthzToken())
         hashCode = hashCode * 8191 + authzToken.hashCode();
 
-      hashCode = hashCode * 8191 + ((isSetDomainId()) ? 131071 : 524287);
-      if (isSetDomainId())
-        hashCode = hashCode * 8191 + domainId.hashCode();
-
       hashCode = hashCode * 8191 + ((isSetGroupId()) ? 131071 : 524287);
       if (isSetGroupId())
         hashCode = hashCode * 8191 + groupId.hashCode();
@@ -10145,16 +9862,6 @@ public class GroupManagerService {
       }
       if (isSetAuthzToken()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authzToken, other.authzToken);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      lastComparison = java.lang.Boolean.valueOf(isSetDomainId()).compareTo(other.isSetDomainId());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetDomainId()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.domainId, other.domainId);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -10207,14 +9914,6 @@ public class GroupManagerService {
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("domainId:");
-      if (this.domainId == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.domainId);
-      }
-      first = false;
-      if (!first) sb.append(", ");
       sb.append("groupId:");
       if (this.groupId == null) {
         sb.append("null");
@@ -10238,9 +9937,6 @@ public class GroupManagerService {
       // check for required fields
       if (authzToken == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'authzToken' was not present! Struct: " + toString());
-      }
-      if (domainId == null) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'domainId' was not present! Struct: " + toString());
       }
       if (groupId == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'groupId' was not present! Struct: " + toString());
@@ -10297,15 +9993,7 @@ public class GroupManagerService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 2: // DOMAIN_ID
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.domainId = iprot.readString();
-                struct.setDomainIdIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 3: // GROUP_ID
+            case 2: // GROUP_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.groupId = iprot.readString();
                 struct.setGroupIdIsSet(true);
@@ -10313,7 +10001,7 @@ public class GroupManagerService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 4: // ADMIN_IDS
+            case 3: // ADMIN_IDS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
                   org.apache.thrift.protocol.TList _list16 = iprot.readListBegin();
@@ -10351,11 +10039,6 @@ public class GroupManagerService {
           struct.authzToken.write(oprot);
           oprot.writeFieldEnd();
         }
-        if (struct.domainId != null) {
-          oprot.writeFieldBegin(DOMAIN_ID_FIELD_DESC);
-          oprot.writeString(struct.domainId);
-          oprot.writeFieldEnd();
-        }
         if (struct.groupId != null) {
           oprot.writeFieldBegin(GROUP_ID_FIELD_DESC);
           oprot.writeString(struct.groupId);
@@ -10391,7 +10074,6 @@ public class GroupManagerService {
       public void write(org.apache.thrift.protocol.TProtocol prot, removeGroupAdmins_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         struct.authzToken.write(oprot);
-        oprot.writeString(struct.domainId);
         oprot.writeString(struct.groupId);
         {
           oprot.writeI32(struct.adminIds.size());
@@ -10408,8 +10090,6 @@ public class GroupManagerService {
         struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
         struct.authzToken.read(iprot);
         struct.setAuthzTokenIsSet(true);
-        struct.domainId = iprot.readString();
-        struct.setDomainIdIsSet(true);
         struct.groupId = iprot.readString();
         struct.setGroupIdIsSet(true);
         {
@@ -11007,24 +10687,21 @@ public class GroupManagerService {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("hasAdminAccess_args");
 
     private static final org.apache.thrift.protocol.TField AUTHZ_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("authzToken", org.apache.thrift.protocol.TType.STRUCT, (short)1);
-    private static final org.apache.thrift.protocol.TField DOMAIN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("domainId", org.apache.thrift.protocol.TType.STRING, (short)2);
-    private static final org.apache.thrift.protocol.TField GROUP_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("groupId", org.apache.thrift.protocol.TType.STRING, (short)3);
-    private static final org.apache.thrift.protocol.TField ADMIN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("adminId", org.apache.thrift.protocol.TType.STRING, (short)4);
+    private static final org.apache.thrift.protocol.TField GROUP_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("groupId", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField ADMIN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("adminId", org.apache.thrift.protocol.TType.STRING, (short)3);
 
     private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new hasAdminAccess_argsStandardSchemeFactory();
     private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new hasAdminAccess_argsTupleSchemeFactory();
 
     public org.apache.airavata.model.security.AuthzToken authzToken; // required
-    public java.lang.String domainId; // required
     public java.lang.String groupId; // required
     public java.lang.String adminId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       AUTHZ_TOKEN((short)1, "authzToken"),
-      DOMAIN_ID((short)2, "domainId"),
-      GROUP_ID((short)3, "groupId"),
-      ADMIN_ID((short)4, "adminId");
+      GROUP_ID((short)2, "groupId"),
+      ADMIN_ID((short)3, "adminId");
 
       private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -11041,11 +10718,9 @@ public class GroupManagerService {
         switch(fieldId) {
           case 1: // AUTHZ_TOKEN
             return AUTHZ_TOKEN;
-          case 2: // DOMAIN_ID
-            return DOMAIN_ID;
-          case 3: // GROUP_ID
+          case 2: // GROUP_ID
             return GROUP_ID;
-          case 4: // ADMIN_ID
+          case 3: // ADMIN_ID
             return ADMIN_ID;
           default:
             return null;
@@ -11092,8 +10767,6 @@ public class GroupManagerService {
       java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.AUTHZ_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("authzToken", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.security.AuthzToken.class)));
-      tmpMap.put(_Fields.DOMAIN_ID, new org.apache.thrift.meta_data.FieldMetaData("domainId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.GROUP_ID, new org.apache.thrift.meta_data.FieldMetaData("groupId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.ADMIN_ID, new org.apache.thrift.meta_data.FieldMetaData("adminId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -11107,13 +10780,11 @@ public class GroupManagerService {
 
     public hasAdminAccess_args(
       org.apache.airavata.model.security.AuthzToken authzToken,
-      java.lang.String domainId,
       java.lang.String groupId,
       java.lang.String adminId)
     {
       this();
       this.authzToken = authzToken;
-      this.domainId = domainId;
       this.groupId = groupId;
       this.adminId = adminId;
     }
@@ -11124,9 +10795,6 @@ public class GroupManagerService {
     public hasAdminAccess_args(hasAdminAccess_args other) {
       if (other.isSetAuthzToken()) {
         this.authzToken = new org.apache.airavata.model.security.AuthzToken(other.authzToken);
-      }
-      if (other.isSetDomainId()) {
-        this.domainId = other.domainId;
       }
       if (other.isSetGroupId()) {
         this.groupId = other.groupId;
@@ -11143,7 +10811,6 @@ public class GroupManagerService {
     @Override
     public void clear() {
       this.authzToken = null;
-      this.domainId = null;
       this.groupId = null;
       this.adminId = null;
     }
@@ -11169,30 +10836,6 @@ public class GroupManagerService {
     public void setAuthzTokenIsSet(boolean value) {
       if (!value) {
         this.authzToken = null;
-      }
-    }
-
-    public java.lang.String getDomainId() {
-      return this.domainId;
-    }
-
-    public hasAdminAccess_args setDomainId(java.lang.String domainId) {
-      this.domainId = domainId;
-      return this;
-    }
-
-    public void unsetDomainId() {
-      this.domainId = null;
-    }
-
-    /** Returns true if field domainId is set (has been assigned a value) and false otherwise */
-    public boolean isSetDomainId() {
-      return this.domainId != null;
-    }
-
-    public void setDomainIdIsSet(boolean value) {
-      if (!value) {
-        this.domainId = null;
       }
     }
 
@@ -11254,14 +10897,6 @@ public class GroupManagerService {
         }
         break;
 
-      case DOMAIN_ID:
-        if (value == null) {
-          unsetDomainId();
-        } else {
-          setDomainId((java.lang.String)value);
-        }
-        break;
-
       case GROUP_ID:
         if (value == null) {
           unsetGroupId();
@@ -11286,9 +10921,6 @@ public class GroupManagerService {
       case AUTHZ_TOKEN:
         return getAuthzToken();
 
-      case DOMAIN_ID:
-        return getDomainId();
-
       case GROUP_ID:
         return getGroupId();
 
@@ -11308,8 +10940,6 @@ public class GroupManagerService {
       switch (field) {
       case AUTHZ_TOKEN:
         return isSetAuthzToken();
-      case DOMAIN_ID:
-        return isSetDomainId();
       case GROUP_ID:
         return isSetGroupId();
       case ADMIN_ID:
@@ -11342,15 +10972,6 @@ public class GroupManagerService {
           return false;
       }
 
-      boolean this_present_domainId = true && this.isSetDomainId();
-      boolean that_present_domainId = true && that.isSetDomainId();
-      if (this_present_domainId || that_present_domainId) {
-        if (!(this_present_domainId && that_present_domainId))
-          return false;
-        if (!this.domainId.equals(that.domainId))
-          return false;
-      }
-
       boolean this_present_groupId = true && this.isSetGroupId();
       boolean that_present_groupId = true && that.isSetGroupId();
       if (this_present_groupId || that_present_groupId) {
@@ -11380,10 +11001,6 @@ public class GroupManagerService {
       if (isSetAuthzToken())
         hashCode = hashCode * 8191 + authzToken.hashCode();
 
-      hashCode = hashCode * 8191 + ((isSetDomainId()) ? 131071 : 524287);
-      if (isSetDomainId())
-        hashCode = hashCode * 8191 + domainId.hashCode();
-
       hashCode = hashCode * 8191 + ((isSetGroupId()) ? 131071 : 524287);
       if (isSetGroupId())
         hashCode = hashCode * 8191 + groupId.hashCode();
@@ -11409,16 +11026,6 @@ public class GroupManagerService {
       }
       if (isSetAuthzToken()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authzToken, other.authzToken);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      lastComparison = java.lang.Boolean.valueOf(isSetDomainId()).compareTo(other.isSetDomainId());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetDomainId()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.domainId, other.domainId);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -11471,14 +11078,6 @@ public class GroupManagerService {
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("domainId:");
-      if (this.domainId == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.domainId);
-      }
-      first = false;
-      if (!first) sb.append(", ");
       sb.append("groupId:");
       if (this.groupId == null) {
         sb.append("null");
@@ -11502,9 +11101,6 @@ public class GroupManagerService {
       // check for required fields
       if (authzToken == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'authzToken' was not present! Struct: " + toString());
-      }
-      if (domainId == null) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'domainId' was not present! Struct: " + toString());
       }
       if (groupId == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'groupId' was not present! Struct: " + toString());
@@ -11561,15 +11157,7 @@ public class GroupManagerService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 2: // DOMAIN_ID
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.domainId = iprot.readString();
-                struct.setDomainIdIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 3: // GROUP_ID
+            case 2: // GROUP_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.groupId = iprot.readString();
                 struct.setGroupIdIsSet(true);
@@ -11577,7 +11165,7 @@ public class GroupManagerService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 4: // ADMIN_ID
+            case 3: // ADMIN_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.adminId = iprot.readString();
                 struct.setAdminIdIsSet(true);
@@ -11603,11 +11191,6 @@ public class GroupManagerService {
         if (struct.authzToken != null) {
           oprot.writeFieldBegin(AUTHZ_TOKEN_FIELD_DESC);
           struct.authzToken.write(oprot);
-          oprot.writeFieldEnd();
-        }
-        if (struct.domainId != null) {
-          oprot.writeFieldBegin(DOMAIN_ID_FIELD_DESC);
-          oprot.writeString(struct.domainId);
           oprot.writeFieldEnd();
         }
         if (struct.groupId != null) {
@@ -11638,7 +11221,6 @@ public class GroupManagerService {
       public void write(org.apache.thrift.protocol.TProtocol prot, hasAdminAccess_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         struct.authzToken.write(oprot);
-        oprot.writeString(struct.domainId);
         oprot.writeString(struct.groupId);
         oprot.writeString(struct.adminId);
       }
@@ -11649,8 +11231,6 @@ public class GroupManagerService {
         struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
         struct.authzToken.read(iprot);
         struct.setAuthzTokenIsSet(true);
-        struct.domainId = iprot.readString();
-        struct.setDomainIdIsSet(true);
         struct.groupId = iprot.readString();
         struct.setGroupIdIsSet(true);
         struct.adminId = iprot.readString();
@@ -12239,24 +11819,21 @@ public class GroupManagerService {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("hasOwnerAccess_args");
 
     private static final org.apache.thrift.protocol.TField AUTHZ_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("authzToken", org.apache.thrift.protocol.TType.STRUCT, (short)1);
-    private static final org.apache.thrift.protocol.TField DOMAIN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("domainId", org.apache.thrift.protocol.TType.STRING, (short)2);
-    private static final org.apache.thrift.protocol.TField GROUP_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("groupId", org.apache.thrift.protocol.TType.STRING, (short)3);
-    private static final org.apache.thrift.protocol.TField OWNER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("ownerId", org.apache.thrift.protocol.TType.STRING, (short)4);
+    private static final org.apache.thrift.protocol.TField GROUP_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("groupId", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField OWNER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("ownerId", org.apache.thrift.protocol.TType.STRING, (short)3);
 
     private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new hasOwnerAccess_argsStandardSchemeFactory();
     private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new hasOwnerAccess_argsTupleSchemeFactory();
 
     public org.apache.airavata.model.security.AuthzToken authzToken; // required
-    public java.lang.String domainId; // required
     public java.lang.String groupId; // required
     public java.lang.String ownerId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       AUTHZ_TOKEN((short)1, "authzToken"),
-      DOMAIN_ID((short)2, "domainId"),
-      GROUP_ID((short)3, "groupId"),
-      OWNER_ID((short)4, "ownerId");
+      GROUP_ID((short)2, "groupId"),
+      OWNER_ID((short)3, "ownerId");
 
       private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -12273,11 +11850,9 @@ public class GroupManagerService {
         switch(fieldId) {
           case 1: // AUTHZ_TOKEN
             return AUTHZ_TOKEN;
-          case 2: // DOMAIN_ID
-            return DOMAIN_ID;
-          case 3: // GROUP_ID
+          case 2: // GROUP_ID
             return GROUP_ID;
-          case 4: // OWNER_ID
+          case 3: // OWNER_ID
             return OWNER_ID;
           default:
             return null;
@@ -12324,8 +11899,6 @@ public class GroupManagerService {
       java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.AUTHZ_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("authzToken", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.security.AuthzToken.class)));
-      tmpMap.put(_Fields.DOMAIN_ID, new org.apache.thrift.meta_data.FieldMetaData("domainId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.GROUP_ID, new org.apache.thrift.meta_data.FieldMetaData("groupId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.OWNER_ID, new org.apache.thrift.meta_data.FieldMetaData("ownerId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -12339,13 +11912,11 @@ public class GroupManagerService {
 
     public hasOwnerAccess_args(
       org.apache.airavata.model.security.AuthzToken authzToken,
-      java.lang.String domainId,
       java.lang.String groupId,
       java.lang.String ownerId)
     {
       this();
       this.authzToken = authzToken;
-      this.domainId = domainId;
       this.groupId = groupId;
       this.ownerId = ownerId;
     }
@@ -12356,9 +11927,6 @@ public class GroupManagerService {
     public hasOwnerAccess_args(hasOwnerAccess_args other) {
       if (other.isSetAuthzToken()) {
         this.authzToken = new org.apache.airavata.model.security.AuthzToken(other.authzToken);
-      }
-      if (other.isSetDomainId()) {
-        this.domainId = other.domainId;
       }
       if (other.isSetGroupId()) {
         this.groupId = other.groupId;
@@ -12375,7 +11943,6 @@ public class GroupManagerService {
     @Override
     public void clear() {
       this.authzToken = null;
-      this.domainId = null;
       this.groupId = null;
       this.ownerId = null;
     }
@@ -12401,30 +11968,6 @@ public class GroupManagerService {
     public void setAuthzTokenIsSet(boolean value) {
       if (!value) {
         this.authzToken = null;
-      }
-    }
-
-    public java.lang.String getDomainId() {
-      return this.domainId;
-    }
-
-    public hasOwnerAccess_args setDomainId(java.lang.String domainId) {
-      this.domainId = domainId;
-      return this;
-    }
-
-    public void unsetDomainId() {
-      this.domainId = null;
-    }
-
-    /** Returns true if field domainId is set (has been assigned a value) and false otherwise */
-    public boolean isSetDomainId() {
-      return this.domainId != null;
-    }
-
-    public void setDomainIdIsSet(boolean value) {
-      if (!value) {
-        this.domainId = null;
       }
     }
 
@@ -12486,14 +12029,6 @@ public class GroupManagerService {
         }
         break;
 
-      case DOMAIN_ID:
-        if (value == null) {
-          unsetDomainId();
-        } else {
-          setDomainId((java.lang.String)value);
-        }
-        break;
-
       case GROUP_ID:
         if (value == null) {
           unsetGroupId();
@@ -12518,9 +12053,6 @@ public class GroupManagerService {
       case AUTHZ_TOKEN:
         return getAuthzToken();
 
-      case DOMAIN_ID:
-        return getDomainId();
-
       case GROUP_ID:
         return getGroupId();
 
@@ -12540,8 +12072,6 @@ public class GroupManagerService {
       switch (field) {
       case AUTHZ_TOKEN:
         return isSetAuthzToken();
-      case DOMAIN_ID:
-        return isSetDomainId();
       case GROUP_ID:
         return isSetGroupId();
       case OWNER_ID:
@@ -12574,15 +12104,6 @@ public class GroupManagerService {
           return false;
       }
 
-      boolean this_present_domainId = true && this.isSetDomainId();
-      boolean that_present_domainId = true && that.isSetDomainId();
-      if (this_present_domainId || that_present_domainId) {
-        if (!(this_present_domainId && that_present_domainId))
-          return false;
-        if (!this.domainId.equals(that.domainId))
-          return false;
-      }
-
       boolean this_present_groupId = true && this.isSetGroupId();
       boolean that_present_groupId = true && that.isSetGroupId();
       if (this_present_groupId || that_present_groupId) {
@@ -12612,10 +12133,6 @@ public class GroupManagerService {
       if (isSetAuthzToken())
         hashCode = hashCode * 8191 + authzToken.hashCode();
 
-      hashCode = hashCode * 8191 + ((isSetDomainId()) ? 131071 : 524287);
-      if (isSetDomainId())
-        hashCode = hashCode * 8191 + domainId.hashCode();
-
       hashCode = hashCode * 8191 + ((isSetGroupId()) ? 131071 : 524287);
       if (isSetGroupId())
         hashCode = hashCode * 8191 + groupId.hashCode();
@@ -12641,16 +12158,6 @@ public class GroupManagerService {
       }
       if (isSetAuthzToken()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authzToken, other.authzToken);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      lastComparison = java.lang.Boolean.valueOf(isSetDomainId()).compareTo(other.isSetDomainId());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetDomainId()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.domainId, other.domainId);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -12703,14 +12210,6 @@ public class GroupManagerService {
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("domainId:");
-      if (this.domainId == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.domainId);
-      }
-      first = false;
-      if (!first) sb.append(", ");
       sb.append("groupId:");
       if (this.groupId == null) {
         sb.append("null");
@@ -12734,9 +12233,6 @@ public class GroupManagerService {
       // check for required fields
       if (authzToken == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'authzToken' was not present! Struct: " + toString());
-      }
-      if (domainId == null) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'domainId' was not present! Struct: " + toString());
       }
       if (groupId == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'groupId' was not present! Struct: " + toString());
@@ -12793,15 +12289,7 @@ public class GroupManagerService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 2: // DOMAIN_ID
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.domainId = iprot.readString();
-                struct.setDomainIdIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 3: // GROUP_ID
+            case 2: // GROUP_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.groupId = iprot.readString();
                 struct.setGroupIdIsSet(true);
@@ -12809,7 +12297,7 @@ public class GroupManagerService {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 4: // OWNER_ID
+            case 3: // OWNER_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.ownerId = iprot.readString();
                 struct.setOwnerIdIsSet(true);
@@ -12835,11 +12323,6 @@ public class GroupManagerService {
         if (struct.authzToken != null) {
           oprot.writeFieldBegin(AUTHZ_TOKEN_FIELD_DESC);
           struct.authzToken.write(oprot);
-          oprot.writeFieldEnd();
-        }
-        if (struct.domainId != null) {
-          oprot.writeFieldBegin(DOMAIN_ID_FIELD_DESC);
-          oprot.writeString(struct.domainId);
           oprot.writeFieldEnd();
         }
         if (struct.groupId != null) {
@@ -12870,7 +12353,6 @@ public class GroupManagerService {
       public void write(org.apache.thrift.protocol.TProtocol prot, hasOwnerAccess_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
         struct.authzToken.write(oprot);
-        oprot.writeString(struct.domainId);
         oprot.writeString(struct.groupId);
         oprot.writeString(struct.ownerId);
       }
@@ -12881,8 +12363,6 @@ public class GroupManagerService {
         struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
         struct.authzToken.read(iprot);
         struct.setAuthzTokenIsSet(true);
-        struct.domainId = iprot.readString();
-        struct.setDomainIdIsSet(true);
         struct.groupId = iprot.readString();
         struct.setGroupIdIsSet(true);
         struct.ownerId = iprot.readString();
