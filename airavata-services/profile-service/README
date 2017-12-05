@@ -69,7 +69,6 @@ List<UserProfile> getAllUserProfilesInGateway(AuthzToken authzToken, String gate
 boolean doesUserExist(AuthzToken authzToken, String userId, String gatewayId)
 
 
-
 ## profile-service-stubs
 
 The generated thrift stubs are copied in this folder. It conatins the thrift generated client code 
