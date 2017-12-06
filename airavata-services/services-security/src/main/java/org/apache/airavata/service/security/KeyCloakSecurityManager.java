@@ -65,6 +65,9 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
             "|/airavata/generateAndRegisterSSHKeys|/airavata/getAllCredentialSummaryForUsersInGateway" +
             "|/airavata/deleteSSHPubKey";
     private final static String SHARING_RESOURCE_METHODS = "/airavata/shareResourceWithUsers|/airavata/revokeSharingOfResourceFromUsers|/airavata/getAllAccessibleUsers";
+    private final static String SSH_ACCOUNT_PROVISIONER_METHODS =
+            "/airavata/getSSHAccountProvisioners|/airavata/doesUserHaveSSHAccount|/airavata" +
+                    "/setupUserComputeResourcePreferencesForSSH";
 
     public KeyCloakSecurityManager() throws AiravataSecurityException {
         rolePermissionConfig.put("admin", "/airavata/.*");
@@ -94,7 +97,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                 "|/airavata/getParentDataProduct|/airavata/getChildDataProducts|/airavata/getAllAccessibleUsers" +
                 "|/airavata/getExperimentByAdmin|/airavata/cloneExperimentByAdmin" +
                 "|" + USER_RESOURCE_PROFILE_USER_METHODS + "|/airavata/getAllUserResourceProfiles" +
-                "|" + SHARING_RESOURCE_METHODS + "|/airavata/getGateway");
+                "|" + SHARING_RESOURCE_METHODS + "|/airavata/getGateway|" + SSH_ACCOUNT_PROVISIONER_METHODS);
         rolePermissionConfig.put("gateway-user", "/airavata/getAPIVersion|/airavata/getNotification|/airavata/getAllNotifications|" +
                 "/airavata/createProject|/airavata/updateProject|/airavata/getProject|/airavata/deleteProject|/airavata/getUserProjects|" +
                 "/airavata/searchProjectsByProjectName|/airavata/searchProjectsByProjectDesc|/airavata/searchExperimentsByName|" +
@@ -110,7 +113,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                 "/airavata/getWorkflow|/airavata/getWorkflowTemplateId|/airavata/isWorkflowExistWithName|/airavata/registerDataProduct|" +
                 "/airavata/getDataProduct|/airavata/registerReplicaLocation|/airavata/getParentDataProduct|/airavata/getChildDataProducts|" +
                 "/airavata/getAllAccessibleUsers|/airavata/getAllApplicationDeployments|" + USER_RESOURCE_PROFILE_USER_METHODS + "|" +
-                SHARING_RESOURCE_METHODS);
+                SHARING_RESOURCE_METHODS + "|" + SSH_ACCOUNT_PROVISIONER_METHODS);
 
         initializeSecurityInfra();
     }

@@ -20,15 +20,9 @@
 package org.apache.airavata.registry.core.app.catalog.model;
 
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 @Entity
 @Table(name = "COMPUTE_RESOURCE_PREFERENCE")
@@ -66,6 +60,10 @@ public class ComputeResourcePreference {
     private Timestamp reservationStartTime;
     @Column(name = "RESERVATION_END_TIME")
     private Timestamp reservationEndTime;
+    @Column(name = "SSH_ACCOUNT_PROVISIONER")
+    private String sshAccountProvisioner;
+    @Column(name = "SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO")
+    private String sshAccountProvisionerAdditionalInfo;
 
 
     @ManyToOne(cascade= CascadeType.MERGE)
@@ -75,6 +73,9 @@ public class ComputeResourcePreference {
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "GATEWAY_ID")
     private GatewayProfile gatewayProfile;
+
+    @OneToMany(mappedBy = "computeResourcePreference", cascade = CascadeType.ALL, orphanRemoval = true)
+    Collection<SSHAccountProvisionerConfiguration> sshAccountProvisionerConfigurations;
 
 
     public String getGatewayId() {
@@ -211,5 +212,29 @@ public class ComputeResourcePreference {
 
     public void setReservationEndTime(Timestamp reservationEndTime) {
         this.reservationEndTime = reservationEndTime;
+    }
+
+    public String getSshAccountProvisioner() {
+        return sshAccountProvisioner;
+    }
+
+    public void setSshAccountProvisioner(String sshAccountProvisioner) {
+        this.sshAccountProvisioner = sshAccountProvisioner;
+    }
+
+    public Collection<SSHAccountProvisionerConfiguration> getSshAccountProvisionerConfigurations() {
+        return sshAccountProvisionerConfigurations;
+    }
+
+    public void setSshAccountProvisionerConfigurations(Collection<SSHAccountProvisionerConfiguration> sshAccountProvisionerConfigurations) {
+        this.sshAccountProvisionerConfigurations = sshAccountProvisionerConfigurations;
+    }
+
+    public String getSshAccountProvisionerAdditionalInfo() {
+        return sshAccountProvisionerAdditionalInfo;
+    }
+
+    public void setSshAccountProvisionerAdditionalInfo(String sshAccountProvisionerAdditionalInfo) {
+        this.sshAccountProvisionerAdditionalInfo = sshAccountProvisionerAdditionalInfo;
     }
 }

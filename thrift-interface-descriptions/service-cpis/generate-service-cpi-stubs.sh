@@ -39,9 +39,11 @@ then
 	exit 0
 fi
 
-REQUIRED_THRIFT_VERSION='0.9.3'
+REQUIRED_THRIFT_VERSION='0.10.0'
 THRIFT_DOCKER_IMAGE='thrift'
 THRIFT_NATIVE="false"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PARENT_DIR=`dirname "$SCRIPT_DIR"`
 
 setup() {
     if [[ $THRIFT_NATIVE == "true" ]]; then
@@ -50,10 +52,10 @@ setup() {
         else
           THRIFT_EXEC=/usr/local/bin/thrift
         fi
-        BASEDIR=""
+        BASEDIR="$PARENT_DIR"
     else
-        THRIFT_EXEC="docker run --rm -v $PWD/..:/data $THRIFT_DOCKER_IMAGE:$REQUIRED_THRIFT_VERSION thrift"
-        BASEDIR="/data/service-cpis/"
+        THRIFT_EXEC="docker run --rm -v $PARENT_DIR:/data $THRIFT_DOCKER_IMAGE:$REQUIRED_THRIFT_VERSION thrift"
+        BASEDIR="/data"
     fi
 
     VERSION=$($THRIFT_EXEC -version 2>/dev/null | grep -F "${REQUIRED_THRIFT_VERSION}" |  wc -l)
@@ -64,15 +66,15 @@ setup() {
     fi
 
     # Global Constants used across the script
-    BASE_TARGET_DIR='target'
+    BASE_TARGET_DIR="$SCRIPT_DIR/target"
 
-    PROFILE_SERVICE_THRIFT_FILE="${BASEDIR}profile-service/profile-service-cpi.thrift"
+    PROFILE_SERVICE_THRIFT_FILE="${BASEDIR}/service-cpis/profile-service/profile-service-cpi.thrift"
     PROFILE_SERVICE_SRC_DIR='../../airavata-services/profile-service/profile-service-stubs/src/main/java'
 
     # Initialize the thrift arguments.
     #  Since most of the Airavata API and Data Models have includes, use recursive option by default.
     #  Generate all the files in target directory
-    THRIFT_ARGS="-r -o ${BASEDIR}${BASE_TARGET_DIR}"
+    THRIFT_ARGS="-r -o ${BASEDIR}/service-cpis/target"
     # Ensure the required target directories exists, if not create.
     mkdir -p ${BASE_TARGET_DIR}
 }

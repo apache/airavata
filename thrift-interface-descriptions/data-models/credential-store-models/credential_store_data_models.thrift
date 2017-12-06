@@ -21,6 +21,7 @@
 
 namespace java org.apache.airavata.model.credential.store
 namespace php Airavata.Model.Credential.Store
+namespace py airavata.model.credential.store
 
 const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 
