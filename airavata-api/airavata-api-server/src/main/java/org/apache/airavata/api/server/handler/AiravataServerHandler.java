@@ -1767,9 +1767,11 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             ExperimentModel experiment = regClient.getExperiment(airavataExperimentId);
             String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-            String entityId = experiment.getExecutionId();
-            if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId, entityId,gatewayId + ":READ")) {
-                logger.error(airavataExperimentId, "User does not have access to application module {}.", entityId);
+            String appInterfaceId = experiment.getExecutionId();
+            ApplicationInterfaceDescription applicationInterfaceDescription = regClient.getApplicationInterface(appInterfaceId);
+            List<String> entityIds = applicationInterfaceDescription.getApplicationModules();
+            if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId, entityIds.get(0),gatewayId + ":READ")) {
+                logger.error(airavataExperimentId, "User does not have access to application module {}.", entityIds.get(0));
                 throw new AuthorizationException("User does not have permission to access this resource");
             }
             if (experiment == null) {
@@ -1785,6 +1787,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while instantiate the registry instance. More info : " + e1.getMessage());
             registryClientPool.returnBrokenResource(regClient);
+            sharingClientPool.returnBrokenResource(sharingClient);
             throw exception;
         }
     }
@@ -2128,6 +2131,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving all application modules. More info : " + e.getMessage());
             registryClientPool.returnBrokenResource(regClient);
+            sharingClientPool.returnBrokenResource(sharingClient);
             throw exception;
         }
     }
