@@ -19,7 +19,7 @@
  */
 package org.apache.airavata.sharing.registry;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
@@ -138,6 +138,22 @@ public class SharingRegistryServerHandlerTest {
         Assert.assertTrue(sharingRegistryServerHandler.getGroupMembersOfTypeGroup(domainId, groupId1, 0, 10).size() == 1);
         Assert.assertTrue(sharingRegistryServerHandler.getGroupMembersOfTypeUser(domainId, groupId2, 0, 10).size() == 2);
 
+        // Group roles tests
+
+        // user has owner access
+        Assert.assertTrue(sharingRegistryServerHandler.hasOwnerAccess(domainId, groupId1, userId1));
+
+        // user has admin access
+        Assert.assertTrue(sharingRegistryServerHandler.addGroupAdmins(domainId, groupId1, Arrays.asList(userId2)));
+        Assert.assertTrue(sharingRegistryServerHandler.hasAdminAccess(domainId, groupId1, userId2));
+        Assert.assertTrue(sharingRegistryServerHandler.removeGroupAdmins(domainId, groupId1, Arrays.asList(userId2)));
+        Assert.assertFalse(sharingRegistryServerHandler.hasAdminAccess(domainId, groupId1, userId2));
+
+        // transfer group ownership
+        Assert.assertTrue(sharingRegistryServerHandler.transferGroupOwnership(domainId, groupId1, userId2));
+        Assert.assertTrue(sharingRegistryServerHandler.hasOwnerAccess(domainId, groupId1, userId2));
+        Assert.assertTrue(sharingRegistryServerHandler.transferGroupOwnership(domainId, groupId1, userId1));
+        Assert.assertFalse(sharingRegistryServerHandler.hasOwnerAccess(domainId, groupId1, userId2));
 
         //Creating permission types
         PermissionType permissionType1 = new PermissionType();
