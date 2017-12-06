@@ -1,74 +1,90 @@
-#!/usr/bin/env python
-
-#
-# Licensed to the Apache Software Foundation (ASF) under one
-# or more contributor license agreements. See the NOTICE file
-# distributed with this work for additional information
-# regarding copyright ownership. The ASF licenses this file
-# to you under the Apache License, Version 2.0 (the
-# "License"); you may not use this file except in compliance
-# with the License. You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing,
-# software distributed under the License is distributed on an
-# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-# KIND, either express or implied. See the License for the
-# specific language governing permissions and limitations
-# under the License.
-#
-
-import sys, ConfigParser
+import sys
 
 sys.path.append('../lib')
 
 from apache.airavata.api import Airavata
 from apache.airavata.api.ttypes import *
-from apache.airavata.model.workspace.experiment.ttypes import *
+
+from apache.airavata.model.workspace.ttypes import *
+from apache.airavata.model.security.ttypes import AuthzToken
+from apache.airavata.model.experiment.ttypes import *
+from apache.airavata.model.appcatalog.appdeployment.ttypes import *
+from apache.airavata.model.appcatalog.appinterface.ttypes import *
+from apache.airavata.model.application.io.ttypes import *
+
+import argparse
+import configparser
 
 from thrift import Thrift
+from thrift.transport import TSSLSocket
 from thrift.transport import TSocket
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 
-try:
-    # Read Airavata Client properties
-    airavataConfig = ConfigParser.RawConfigParser()
-    airavataConfig.read('../conf/airavata-client.properties')
+#Sample App id =Echo_cd90cd5f-2286-404d-b46d-8948755ea451
+#
 
+def get_transport(hostname, port):
     # Create a socket to the Airavata Server
-    transport = TSocket.TSocket(airavataConfig.get('AiravataServer', 'host'), airavataConfig.get('AiravataServer', 'port'))
+    # TODO: validate server certificate
+    transport = TSSLSocket.TSSLSocket(hostname, port, validate=False)
 
     # Use Buffered Protocol to speedup over raw sockets
     transport = TTransport.TBufferedTransport(transport)
+    return transport
 
+def get_airavata_client(transport):
     # Airavata currently uses Binary Protocol
     protocol = TBinaryProtocol.TBinaryProtocol(transport)
 
     # Create a Airavata client to use the protocol encoder
     airavataClient = Airavata.Client(protocol)
+    return airavataClient
 
-    # Connect to Airavata Server
+def get_authz_token(token,username,gatewayID):
+    return AuthzToken(accessToken=token, claimsMap={'gatewayID': gatewayID, 'userName': username})  
+
+def create_experiment(airavataClient,authz_token,gatewayID,experimentObj):
+    newExpId = airavataClient.createExperiment(authz_token,gatewayID,experimentObj) 
+    return newExpId
+     
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description ="Create new experiment ")
+    parser.add_argument('appID',type=str, help= "Application Id associated with experiment")
+    parser.add_argument('projID',type=str, help= "Project Id associated with experiment")
+    args = parser.parse_args()
+    print args
+
+    config = configparser.RawConfigParser()
+    config.read('../conf/airavata-client.properties')
+    token = config.get('GatewayProperties', 'cred_token_id')
+
+    username= config.get('AiravataServer', 'username')
+    gatewayID = config.get('GatewayProperties', 'gateway_id')
+    authz_token = get_authz_token(token,username,gatewayID)
+    #print(authz_token)
+
+    hostname = config.get('AiravataServer', 'host')
+    port = config.get('AiravataServer', 'port')
+
+    transport = get_transport(hostname, 9930)
     transport.open()
+    airavataClient = get_airavata_client(transport)
 
-    #Create a experiment
-    experiment = Experiment()
-    experiment.userName = "smarru"
-    experiment.name = "cli-test-experiment"
-    experiment.description = "experiment to test python cli"
-    experiment.applicationId = "Echo_b22f2303-a574-43ef-a6f2-ab8e64e2d0a2"
-    #experiment.experimentInputs
+    experimentObj = ExperimentModel()
+    experimentObj.userName = username
+    experimentObj.experimentName = "cli-test-experiment"
+    experimentObj.description = "experiment to test python cli"
+    
+    experimentObj.projectId = args.projID
+    experimentObj.experimentType = ExperimentType.SINGLE_APPLICATION
+    experimentObj.gatewayId = gatewayID
+
+    newExpId = create_experiment(airavataClient,authz_token,gatewayID,experimentObj)
+    
 
 
+    print 'Newly created experiment Id', newExpId
 
-    print 'Created Experiment with Id:', airavataClient.createExperiment("sdsc", experiment)
-
-    print 'Airavata Server Version is:', airavataClient.getAPIVersion()
-
-    # Close Connection to Airavata Server
     transport.close()
-
-except Thrift.TException, tx:
-    print '%s' % (tx.message)
-

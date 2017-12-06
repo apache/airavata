@@ -41,17 +41,14 @@ def get_airavata_client(transport):
 def get_authz_token(token,username,gatewayID):
     return AuthzToken(accessToken=token, claimsMap={'gatewayID': gatewayID, 'userName': username})  
 
-def clone_experiment(airavataClient,authz_token,expID,expName):
-    cloneExpId = airavataClient.cloneExperiment(authz_token,expID,expName)
-    return cloneExpId 
-
-def search_experiment_by_name(airavataClient,authz_token,gatewayID,username,expName)
-    expSummaryList = airavataClient.searchExperimentsByName(authz_token,gatewayID,username,expName,-1,0)
-    return expSummaryList        
+def launch_experiment(airavataClient,authz_token,expID,gatewayID):
+    airavataClient.launchExperiment(authz_token,expID,gatewayID)
+    print 'launch success!!' 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description ="Clone experiment using experimentID")
-    parser.add_argument('expName',type=string, help= "Experiment name of new experiment")
+    parser = argparse.ArgumentParser(description ="Launch experiment using experimentID")
+    parser.add_argument('expID',type=str, help= "ExperimentID of experiment to launch")
+    
     args = parser.parse_args()
     print args
 
@@ -61,7 +58,7 @@ if __name__ == '__main__':
 
     username= config.get('AiravataServer', 'username')
     gatewayID = config.get('GatewayProperties', 'gateway_id')
-    authz_token = get_authz_token(token,username)
+    authz_token = get_authz_token(token,username,gatewayID)
     #print(authz_token)
 
     hostname = config.get('AiravataServer', 'host')
@@ -72,9 +69,9 @@ if __name__ == '__main__':
     airavataClient = get_airavata_client(transport)
 
     expId = args.expID
-    expName = args.expName
+    
 
-    expSummaryList = search_experiment_by_name(airavataClient,authz_token,gatewayID,username,expName) 
-    print 'List of experiment with given name', expSummaryList
+    success= launch_experiment(airavataClient,authz_token,expId,gatewayID) 
+    
 
     transport.close()

@@ -50,7 +50,7 @@ def get_experiments_in_projects(airavataClient,authz_token,projId):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description ="Get all experiment in a project")
-    parser.add_argument('projectID',type=string, help= "projectID of experiment to clone")
+    parser.add_argument('projectID',type=str, help= "projectID of experiment to clone")
     
     args = parser.parse_args()
     print args

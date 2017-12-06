@@ -41,13 +41,13 @@ def get_airavata_client(transport):
 def get_authz_token(token,username,gatewayID):
     return AuthzToken(accessToken=token, claimsMap={'gatewayID': gatewayID, 'userName': username})  
 
-def clone_experiment(airavataClient,authz_token,expID,expName):
-    cloneExpId = airavataClient.cloneExperiment(authz_token,expID,expName)
-    return cloneExpId 
+def get_experiment(airavataClient,authz_token,expID):
+    ExpId = airavataClient.getExperiment(authz_token,expID)
+    return ExpId 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description ="Get experiment using experimentID")
-    parser.add_argument('expID',type=string, help= "ExperimentID of experiment to get details about")
+    parser.add_argument('expID',type=str, help= "ExperimentID of experiment to get details about")
     
     args = parser.parse_args()
     print args
@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
     username= config.get('AiravataServer', 'username')
     gatewayID = config.get('GatewayProperties', 'gateway_id')
-    authz_token = get_authz_token(token,username)
+    authz_token = get_authz_token(token,username,gatewayID)
     #print(authz_token)
 
     hostname = config.get('AiravataServer', 'host')
@@ -72,6 +72,6 @@ if __name__ == '__main__':
     
 
     expObj = get_experiment(airavataClient,authz_token,expId) 
-    print 'Cloned experiment Id', newExpId
+    print 'Experiment found:', expObj
 
     transport.close()
