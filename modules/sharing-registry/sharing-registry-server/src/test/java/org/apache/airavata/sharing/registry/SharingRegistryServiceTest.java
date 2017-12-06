@@ -179,6 +179,21 @@ public class SharingRegistryServiceTest {
 
         sharingServiceClient.addChildGroupsToParentGroup(domainId, Arrays.asList("test-group-2"), "test-group-1");
 
+        //Group roles
+        Assert.assertTrue(sharingServiceClient.hasOwnerAccess(domainId, "test-group-1", "test-user-1"));
+
+        // user has admin access
+        Assert.assertTrue(sharingServiceClient.addGroupAdmins(domainId, "test-group-1", Arrays.asList("test-user-2")));
+        Assert.assertTrue(sharingServiceClient.hasAdminAccess(domainId, "test-group-1", "test-user-2"));
+        Assert.assertTrue(sharingServiceClient.removeGroupAdmins(domainId, "test-group-1", Arrays.asList("test-user-2")));
+        Assert.assertFalse(sharingServiceClient.hasAdminAccess(domainId, "test-group-1", "test-user-2"));
+
+        // transfer group ownership
+        Assert.assertTrue(sharingServiceClient.transferGroupOwnership(domainId, "test-group-1", "test-user-2"));
+        Assert.assertTrue(sharingServiceClient.hasOwnerAccess(domainId, "test-group-1", "test-user-2"));
+        Assert.assertTrue(sharingServiceClient.transferGroupOwnership(domainId, "test-group-1", "test-user-1"));
+        Assert.assertFalse(sharingServiceClient.hasOwnerAccess(domainId, "test-group-1", "test-user-2"));
+
         PermissionType permissionType1 = new PermissionType();
         //required
         permissionType1.setPermissionTypeId("READ");
