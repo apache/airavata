@@ -769,6 +769,8 @@ service RegistryService {
              *
              * @param gatewayId
              *    ID of the gateway which need to list all available application deployment documentation.
+             * @param accessibleAppIds
+             *    Application IDs which are accessible to the current user.
              *
              * @return list
              *    Returns the list of all Application Module Objects.
@@ -870,8 +872,8 @@ service RegistryService {
              * @param gatewayId
              *    ID of the gateway which need to list all available application deployment documentation.
              *
-             * @param userName
-             *       Username of the user requesting the search function.
+             * @param accessibleAppIds
+             *    Application IDs which are accessible to the current user.
              *
              * @return list<applicationDeployment.
              *    Returns the list of all application Deployment Objects.

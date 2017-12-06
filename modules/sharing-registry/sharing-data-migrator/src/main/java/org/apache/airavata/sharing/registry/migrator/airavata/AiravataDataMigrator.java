@@ -200,7 +200,6 @@ public class AiravataDataMigrator {
                 entity.setDomainId(rs.getString("GATEWAY_ID"));
                 entity.setEntityTypeId(rs.getString("GATEWAY_ID") + ":APPLICATION");
                 entity.setOwnerId(rs.getString("USER_NAME") + "@" + rs.getString("GATEWAY_ID"));
-                entity.setParentEntityId(rs.getString("PROJECT_ID"));
                 entity.setName(rs.getString("APPLICATION_NAME"));
                 entity.setDescription(rs.getString("DESCRIPTION"));
                 if(entity.getDescription() == null)
