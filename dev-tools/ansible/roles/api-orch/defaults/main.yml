@@ -20,6 +20,7 @@
 
 api_orch_server_names: "api-orch"
 api_orch_log_dir: "{{ api_orch_dir }}/{{ airavata_dist }}/logs"
+api_orch_log_total_size_cap: "1GB"
 
 iam_server_url: "https://iam.scigap.org/auth"
 iam_server_super_admin_username: "admin"

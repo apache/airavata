@@ -130,7 +130,7 @@ if ${IS_DAEMON_MODE} ; then
 	echo "Starting airavata server/s in daemon mode..."
 	echo "Redirecting output to $LOG_FILE"
 	nohup java ${JAVA_OPTS} -classpath "${AIRAVATA_CLASSPATH}" \
-    org.apache.airavata.server.ServerMain ${AIRAVATA_COMMAND} $* >> $LOG_FILE 2>&1 &
+    org.apache.airavata.server.ServerMain ${AIRAVATA_COMMAND} $* > $LOG_FILE 2>&1 &
 else
 	java ${JAVA_OPTS} -classpath "${AIRAVATA_CLASSPATH}" \
     org.apache.airavata.server.ServerMain ${AIRAVATA_COMMAND} $*
