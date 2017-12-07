@@ -20,12 +20,13 @@
                             </b-form-group>
                             <b-form-group label="Project" label-for="project">
                                 <b-form-select id="project"
-                                v-model="experiment.projectId" :options="projectOptions" required>
-                                <template slot="first">
-                                    <option :value="null" disabled>Select a Project</option>
-                                </template>
-                            </b-form-select>
+                                    v-model="experiment.projectId" :options="projectOptions" required>
+                                    <template slot="first">
+                                        <option :value="null" disabled>Select a Project</option>
+                                    </template>
+                                </b-form-select>
                             </b-form-group>
+                            <div v-if="appInterface">App Interface name: {{ appInterface.applicationName }}</div>
                         </b-form>
                     </div>
                 </div>
@@ -39,7 +40,7 @@ import {models, services} from 'django-airavata-api'
 
 export default {
     name: 'edit-experiment',
-    props: ['experiment', 'appModule'],
+    props: ['experiment', 'appModule', 'appInterface'],
     data () {
         return {
             'projects': [],

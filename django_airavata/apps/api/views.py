@@ -238,6 +238,7 @@ class ExperimentList(APIView):
 
 class ApplicationModuleViewSet(APIBackedViewSet):
     serializer_class = serializers.ApplicationModuleSerializer
+    lookup_field = 'app_module_id'
 
     def get_list(self):
         return self.request.airavata_client.getAllAppModules(self.authz_token, self.gateway_id)
@@ -253,6 +254,26 @@ class ApplicationModuleViewSet(APIBackedViewSet):
     def perform_update(self, serializer):
         app_module = serializer.save()
         self.request.airavata_client.updateApplicationModule(self.authz_token, app_module.appModuleId, app_module)
+
+    @detail_route()
+    def application_interface(self, request, app_module_id):
+        all_app_interfaces = request.airavata_client.getAllApplicationInterfaces(self.authz_token, self.gateway_id)
+        app_interfaces = []
+        for app_interface in all_app_interfaces:
+            if not app_interface.applicationModules:
+                continue
+            if app_module_id in app_interface.applicationModules:
+                app_interfaces.append(app_interface)
+        if len(app_interfaces) == 1:
+            serializer = thrift_django_serializer.create_serializer(
+                ApplicationInterfaceDescription, instance=app_interfaces[0], context={'request': request})
+            return Response(serializer.data)
+        elif len(app_interfaces) > 1:
+            return Response({'error': 'More than one application interface found for module id {}'.format(app_module_id)},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            return Response({'error': 'No application interface found for module id {}'.format(app_module_id)},
+                            status=status.HTTP_404_NOT_FOUND)
 
 
 # TODO convert to APIBackedViewSet

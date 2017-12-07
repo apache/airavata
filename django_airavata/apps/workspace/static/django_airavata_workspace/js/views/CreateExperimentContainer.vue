@@ -1,5 +1,5 @@
 <template>
-    <experiment-editor :experiment="experiment" :app-module="appModule">
+    <experiment-editor :experiment="experiment" :app-module="appModule" :app-interface="appInterface">
         <span slot="title">Create a New Experiment</span>
     </experiment-editor>
 </template>
@@ -20,6 +20,7 @@ export default {
         return {
             'experiment': new models.Experiment(),
             'appModule': null,
+            'appInterface': null,
         }
     },
     components: {
@@ -35,6 +36,11 @@ export default {
             .then(appModule => {
                 this.experiment.experimentName = appModule.appModuleName + ' on ' + moment().format('lll');
                 this.appModule = appModule;
+            });
+        services.ApplicationInterfaceService.getForAppModuleId(this.appModuleId)
+            .then(appInterface => {
+                this.appInterface = appInterface
+                console.log(JSON.stringify(appInterface));
             });
     }
 }
