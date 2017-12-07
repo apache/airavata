@@ -99,6 +99,9 @@ resources:
       - slurm@lnet28.stampede.tacc.utexas.edu # stampede2
       - Slurm service account <slurm@chpc.utah.edu> # Utah Ember
       - SLURM workload manager <slurm@jetstream.chemcompute.org> # JS Mark Cluster
+      - Slurm <slurm@br003.pvt.bridges.psc.edu>
+      - slurm@jetstream-cloud.org
+      - slurm@slurm-example.novalocal
 
   - jobManagerType: UGE
     commandOutputParser: org.apache.airavata.gfac.impl.job.UGEOutputParser
@@ -107,6 +110,7 @@ resources:
       - ls4.tacc.utexas.edu # contain Lonestar
       - root <root@local> # USD HPC Cluster
       - root <littledog@siu.edu> # SIU Little Dog
+      - sge@bigdog.research.siu.edu # SIU Big Dog
       - root <root@legacy.usd.edu> # USD HPC Cluster
 
 
