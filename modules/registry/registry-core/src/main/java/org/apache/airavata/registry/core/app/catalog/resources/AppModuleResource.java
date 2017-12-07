@@ -44,6 +44,11 @@ public class AppModuleResource extends AppCatAbstractResource {
     private Timestamp createdTime;
     private Timestamp updatedTime;
     private String gatewayId;
+    private List<String> accessibleAppIds;
+
+    public List<String> getAccessibleAppIds() { return accessibleAppIds; }
+
+    public void setAccessibleAppIds(List<String> accessibleAppIds) { this.accessibleAppIds = accessibleAppIds; }
 
     public String getGatewayId() {
         return gatewayId;
@@ -227,6 +232,7 @@ public class AppModuleResource extends AppCatAbstractResource {
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APPLICATION_MODULE);
             generator.setParameter(ApplicationModuleConstants.GATEWAY_ID, gatewayId);
+            generator.setParameter(ApplicationModuleConstants.ACCESSIBLE_APP_IDS, accessibleAppIds);
             Query q = generator.selectQuery(em);
             List<?> results = q.getResultList();
             for (Object result : results) {
