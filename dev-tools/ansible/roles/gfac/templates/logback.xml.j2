@@ -37,6 +37,8 @@
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>{{ gfac_log_dir }}/airavata.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <!-- maxHistory is needed in order for totalSizeCap to be applied -->
+            <maxHistory>{{ gfac_log_max_history }}</maxHistory>
             <totalSizeCap>{{ gfac_log_total_size_cap }}</totalSizeCap>
         </rollingPolicy>
     </appender>
