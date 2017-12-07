@@ -25,7 +25,7 @@ class ProjectService {
     }
 
     create(project) {
-        return FetchUtils.post('/api/projects/', project.toJSONForCreate())
+        return FetchUtils.post('/api/projects/', JSON.stringify(project))
             .then(result => new Project(result));
     }
 

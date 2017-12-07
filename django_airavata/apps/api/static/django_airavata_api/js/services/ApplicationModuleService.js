@@ -21,7 +21,7 @@ class ApplicationModuleService {
     }
 
     get(appModuleId) {
-        return FetchUtils.get('/api/applications/' + encodeURIComponent(appModuleId))
+        return FetchUtils.get('/api/applications/' + encodeURIComponent(appModuleId) + '/')
             .then(json => new ApplicationModule(json))
     }
 }

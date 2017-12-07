@@ -1,4 +1,3 @@
-from abc import ABC
 
 from airavata.model.experiment.ttypes import ExperimentModel
 from airavata.model.workspace.ttypes import Project
@@ -15,6 +14,10 @@ from rest_framework import serializers
 import datetime
 import copy
 from urllib.parse import quote
+import logging
+
+
+log = logging.getLogger(__name__)
 
 
 class FullyEncodedHyperlinkedIdentityField(serializers.HyperlinkedIdentityField):
@@ -80,13 +83,13 @@ class GatewayIdDefaultField(serializers.CharField):
 
 class ProjectSerializer(serializers.Serializer):
     url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-detail', lookup_field='projectID', lookup_url_kwarg='project_id')
-    projectID = serializers.CharField(default=Project.thrift_spec[1][4])
+    projectID = serializers.CharField(default=Project.thrift_spec[1][4], read_only=True)
     name = serializers.CharField(required=True)
     description = serializers.CharField(allow_null=True)
     owner = GatewayUsernameDefaultField()
     gatewayId = GatewayIdDefaultField()
     experiments = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-experiments', lookup_field='projectID', lookup_url_kwarg='project_id')
-    creationTime = UTCPosixTimestampDateTimeField()
+    creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
 
     def create(self, validated_data):
         return Project(**validated_data)
