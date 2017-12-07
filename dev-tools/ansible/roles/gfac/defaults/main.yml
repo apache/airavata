@@ -19,5 +19,6 @@
 #
 
 gfac_log_dir: "{{ gfac_dir }}/{{ airavata_dist }}/logs"
+gfac_log_max_history: 30
 gfac_log_total_size_cap: "1GB"
 mariadb_connector_jar_url: "https://downloads.mariadb.com/Connectors/java/connector-java-2.0.2/mariadb-java-client-2.0.2.jar"
