@@ -41,13 +41,13 @@ def get_airavata_client(transport):
 def get_authz_token(token,username,gatewayID):
     return AuthzToken(accessToken=token, claimsMap={'gatewayID': gatewayID, 'userName': username})  
 
-def create_project(airavataClient,authz_token,gatewayID,projectObj):
-    airavataClient.createProject(authz_token,gatewayID,projectObj)
-    print 'Project created'
+def isUserExist(airavataClient,authz_token,gatewayID,username):
+    result = airavataClient.isUserExist(authz_token,gatewayID,username)
+    return result
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description ="Create project")
-    parser.add_argument('projName',type=str, help= "Name of the new project")
+    parser = argparse.ArgumentParser(description ="Verify if user exists within Airavata ")
+    parser.add_argument('user_name',type=str, help= "Username")
     
     args = parser.parse_args()
     print args
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     username= config.get('AiravataServer', 'username')
     gatewayID = config.get('GatewayProperties', 'gateway_id')
     authz_token = get_authz_token(token,username,gatewayID)
-    print 'gateway id:',gatewayID
+    #print(authz_token)
 
     hostname = config.get('AiravataServer', 'host')
     port = config.get('AiravataServer', 'port')
@@ -68,13 +68,11 @@ if __name__ == '__main__':
     transport.open()
     airavataClient = get_airavata_client(transport)
 
-    projectObj = Project()
-    projectObj.owner = username
-    projectObj.name = args.projName
-    projectObj.gatewayId = gatewayID
-    
+    compResId = args.compResId
 
-    create_project(airavataClient,authz_token,gatewayID,projectObj) 
+    user_name = args.user_name
+    userExist = isUserExist(airavataClient,authz_token,user_name)
+    print 'User exist result: ', userExist
     
 
     transport.close()
