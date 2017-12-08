@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mariadb
+spec:
+  selector:
+    matchLabels:
+      name: mariadb
+      app: airavata-pga
+  replicas: 1 
+  template: 
+    metadata:    
+      labels:
+        name: mariadb
+        app: airavata-pga
+    spec:
+      containers:
+      - name: mariadb
+        image: maria
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "root"
+        ports: 
+        - containerPort: 3306
+

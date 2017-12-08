@@ -1,0 +1,43 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: airavata-pga-dep
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: airavata-pga-pod
+    spec:
+      hostNetwork: true
+      containers:
+      - name: airavata-pga-docker-cont
+        image: airavata-pga
+        ports:
+         - containerPort: 80
+        imagePullPolicy: Never
+        volumeMounts:
+         - name: pga-config-php-file
+           mountPath: /var/www/portals/gateway_id/app/config
+         - name: conf-httpd-dir
+           mountPath: /etc/httpd/conf.d
+ 
+      volumes:
+      - name: conf-httpd-dir
+        configMap: 
+         name: default-config
+         items:
+         - key: default.conf
+           path: default.conf
+        configMap:
+         name: pga-vhost-config
+         items:
+         - key: pga-vhost.conf.j2
+           path: pga-vhost.conf
+      - name: pga-config-php-file
+        configMap: 
+         name: pga-config-php
+         items:
+         - key: pga_config.php.j2
+           path: pga_conf.php
+

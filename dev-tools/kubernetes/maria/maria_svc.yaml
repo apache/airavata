@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb
+  labels:
+    name: mariadb
+    app: airavata-pga
+spec:
+  ports:
+  - port: 3306
+    name: port-3306
+    protocol: TCP
+  selector:
+    name: mariadb
+    app: airavata-pga
+

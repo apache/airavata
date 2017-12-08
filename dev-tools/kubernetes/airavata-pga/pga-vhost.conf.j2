@@ -1,0 +1,10 @@
+<VirtualHost *:80>
+    ServerName 127.0.0.1
+    DocumentRoot /var/www/portals/gateway_id/public
+    <Directory "/var/www/portals/gateway_id/public">
+       AllowOverride All
+    </Directory>
+    ErrorLog /var/log/httpd/gateway_id.error.log
+    CustomLog /var/log/httpd/gateway_id.requests.log combined
+
+</VirtualHost>
