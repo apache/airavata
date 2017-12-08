@@ -42,7 +42,7 @@ vim airavata-server.properties
 ```
 isRunningOnAws=false
 kafka.broker.list=172.17.0.3:9092
-kafka.topic.prefix=test_all_logs
+kafka.topic.prefix=test
 enable.kafka.logging=true
 ```
 - Since kafka depends on zookeeper, if we use custom zookeeper, then we would have to disable the zookeeper in airavata under "Zookeeper" section 
