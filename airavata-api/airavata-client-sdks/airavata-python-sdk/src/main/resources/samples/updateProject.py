@@ -41,12 +41,18 @@ def get_airavata_client(transport):
 def get_authz_token(token,username,gatewayID):
     return AuthzToken(accessToken=token, claimsMap={'gatewayID': gatewayID, 'userName': username})  
 
-def get_all_compute_resource_names(airavataClient,authz_token):
-    computeNameList = airavataClient. getAllComputeResourceNames(authz_token)
-    return computeNameList
+def update_project(airavataClient,authz_token,projId,updatedProjectObj):
+    airavataClient.updateProject(authz_token,projId,updatedProjectObj)
+    print 'Project updated'
 
 if __name__ == '__main__':
-   
+    parser = argparse.ArgumentParser(description ="Update Project")
+    parser.add_argument('projId',type=str, help= "Id of the project to update")
+    parser.add_argument('projName',type=str, help= "New name of the project to update")
+    parser.add_argument('projOwner',type=str, help= "New owner of the project to update")
+    args = parser.parse_args()
+    print args
+
     config = configparser.RawConfigParser()
     config.read('../conf/airavata-client.properties')
     token = config.get('GatewayProperties', 'cred_token_id')
@@ -54,7 +60,7 @@ if __name__ == '__main__':
     username= config.get('AiravataServer', 'username')
     gatewayID = config.get('GatewayProperties', 'gateway_id')
     authz_token = get_authz_token(token,username,gatewayID)
-    #print(authz_token)
+    print 'gateway id:',gatewayID
 
     hostname = config.get('AiravataServer', 'host')
     port = config.get('AiravataServer', 'port')
@@ -63,10 +69,12 @@ if __name__ == '__main__':
     transport.open()
     airavataClient = get_airavata_client(transport)
 
-
-    computeNameList = get_all_compute_resource_names(airavataClient,authz_token)
-
+    projId = args.projId
+    updatedProjectObj = Project()
+    updatedProjectObj.owner = args.projOwner
+    updatedProjectObj.name = args.projName
+    updatedProjectObj.gatewayId = gatewayID
+    update_project(airavataClient,authz_token,projId,updatedProjectObj) 
     
-    print 'All Compute Resource Names : ', computeNameList
 
     transport.close()

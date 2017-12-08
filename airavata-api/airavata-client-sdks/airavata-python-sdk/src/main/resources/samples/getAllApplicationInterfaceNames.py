@@ -41,9 +41,9 @@ def get_airavata_client(transport):
 def get_authz_token(token,username,gatewayID):
     return AuthzToken(accessToken=token, claimsMap={'gatewayID': gatewayID, 'userName': username})  
 
-def get_all_compute_resource_names(airavataClient,authz_token):
-    computeNameList = airavataClient. getAllComputeResourceNames(authz_token)
-    return computeNameList
+def get_all_application_interface_names(airavataClient,authz_token,gatewayID):
+    appInterfaceNameList = airavataClient.getAllApplicationInterfaceNames(authz_token,gatewayID)
+    return appInterfaceNameList
 
 if __name__ == '__main__':
    
@@ -64,9 +64,9 @@ if __name__ == '__main__':
     airavataClient = get_airavata_client(transport)
 
 
-    computeNameList = get_all_compute_resource_names(airavataClient,authz_token)
+    appInterfaceNameList  = get_all_application_interface_names(airavataClient,authz_token,gatewayID)
 
     
-    print 'All Compute Resource Names : ', computeNameList
+    print 'Application interface Names : ', appInterfaceNameList 
 
     transport.close()

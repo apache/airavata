@@ -41,20 +41,22 @@ def get_airavata_client(transport):
 def get_authz_token(token,username,gatewayID):
     return AuthzToken(accessToken=token, claimsMap={'gatewayID': gatewayID, 'userName': username})  
 
-def get_all_compute_resource_names(airavataClient,authz_token):
-    computeNameList = airavataClient. getAllComputeResourceNames(authz_token)
-    return computeNameList
+def delete_compute_resource(airavataClient,authz_token,computeResourceId):
+    result = airavataClient.deleteComputeResource(authz_token,computeResourceId)
+    return result
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description =" Delete compute resource")
+    parser.add_argument('computeresID',type=str, help= "ID of compute resource")
+    args = parser.parse_args()
    
     config = configparser.RawConfigParser()
     config.read('../conf/airavata-client.properties')
     token = config.get('GatewayProperties', 'cred_token_id')
-
     username= config.get('AiravataServer', 'username')
     gatewayID = config.get('GatewayProperties', 'gateway_id')
     authz_token = get_authz_token(token,username,gatewayID)
-    #print(authz_token)
+   
 
     hostname = config.get('AiravataServer', 'host')
     port = config.get('AiravataServer', 'port')
@@ -62,11 +64,9 @@ if __name__ == '__main__':
     transport = get_transport(hostname, 9930)
     transport.open()
     airavataClient = get_airavata_client(transport)
+   
+    computeResourceId = args.computeresID 
+    result = get_application_output(airavataClient,authz_token,computeResourceId)
 
-
-    computeNameList = get_all_compute_resource_names(airavataClient,authz_token)
-
-    
-    print 'All Compute Resource Names : ', computeNameList
-
+    print 'Compute Resource deleted, result : ', result
     transport.close()

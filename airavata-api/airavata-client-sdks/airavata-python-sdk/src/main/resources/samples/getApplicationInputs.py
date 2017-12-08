@@ -41,20 +41,22 @@ def get_airavata_client(transport):
 def get_authz_token(token,username,gatewayID):
     return AuthzToken(accessToken=token, claimsMap={'gatewayID': gatewayID, 'userName': username})  
 
-def get_all_compute_resource_names(airavataClient,authz_token):
-    computeNameList = airavataClient. getAllComputeResourceNames(authz_token)
-    return computeNameList
+def get_application_inputs(airavataClient,authz_token,appInterfaceId):
+    InputDataObjList = airavataClient.getApplicationInputs(authz_token,appInterfaceId)
+    return InputDataObjList
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description =" Fetch the list of Application Inputs.")
+    parser.add_argument('appInterfaceId',type=str, help= "Application interface ID")
+    args = parser.parse_args()
    
     config = configparser.RawConfigParser()
     config.read('../conf/airavata-client.properties')
     token = config.get('GatewayProperties', 'cred_token_id')
-
     username= config.get('AiravataServer', 'username')
     gatewayID = config.get('GatewayProperties', 'gateway_id')
     authz_token = get_authz_token(token,username,gatewayID)
-    #print(authz_token)
+   
 
     hostname = config.get('AiravataServer', 'host')
     port = config.get('AiravataServer', 'port')
@@ -63,10 +65,9 @@ if __name__ == '__main__':
     transport.open()
     airavataClient = get_airavata_client(transport)
 
+    appInterfaceId = args.appInterfaceId
 
-    computeNameList = get_all_compute_resource_names(airavataClient,authz_token)
+    InputDataObjList = get_application_inputs(airavataClient,authz_token,appInterfaceId)
 
-    
-    print 'All Compute Resource Names : ', computeNameList
-
+    print 'Application Input data details : ', InputDataObjList
     transport.close()

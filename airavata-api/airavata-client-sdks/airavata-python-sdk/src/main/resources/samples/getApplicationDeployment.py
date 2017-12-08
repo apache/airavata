@@ -41,20 +41,22 @@ def get_airavata_client(transport):
 def get_authz_token(token,username,gatewayID):
     return AuthzToken(accessToken=token, claimsMap={'gatewayID': gatewayID, 'userName': username})  
 
-def get_all_compute_resource_names(airavataClient,authz_token):
-    computeNameList = airavataClient. getAllComputeResourceNames(authz_token)
-    return computeNameList
+def get_application_deployment(airavataClient,authz_token,appDeployId):
+    appDeployObj = airavataClient.getApplicationDeployment(authz_token,appDeployId)
+    return appDeployObj
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description ="Get a particular application deployment details")
+    parser.add_argument('appDeployId',type=str, help= "Application deploy ID")
+    args = parser.parse_args()
    
     config = configparser.RawConfigParser()
     config.read('../conf/airavata-client.properties')
     token = config.get('GatewayProperties', 'cred_token_id')
-
     username= config.get('AiravataServer', 'username')
     gatewayID = config.get('GatewayProperties', 'gateway_id')
     authz_token = get_authz_token(token,username,gatewayID)
-    #print(authz_token)
+   
 
     hostname = config.get('AiravataServer', 'host')
     port = config.get('AiravataServer', 'port')
@@ -63,10 +65,9 @@ if __name__ == '__main__':
     transport.open()
     airavataClient = get_airavata_client(transport)
 
+    appModuleId = args.appModuleId
 
-    computeNameList = get_all_compute_resource_names(airavataClient,authz_token)
+    appDeployObj = get_application_deployment(airavataClient,authz_token,appDeployId)
 
-    
-    print 'All Compute Resource Names : ', computeNameList
-
+    print 'Application Deployment details : ', appDeployObj
     transport.close()

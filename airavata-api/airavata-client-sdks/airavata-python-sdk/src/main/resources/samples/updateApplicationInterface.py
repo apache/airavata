@@ -41,12 +41,18 @@ def get_airavata_client(transport):
 def get_authz_token(token,username,gatewayID):
     return AuthzToken(accessToken=token, claimsMap={'gatewayID': gatewayID, 'userName': username})  
 
-def get_all_compute_resource_names(airavataClient,authz_token):
-    computeNameList = airavataClient. getAllComputeResourceNames(authz_token)
-    return computeNameList
+def update_application_interface(airavataClient,authz_token,appID,appInterfaceObj):
+    result = airavataClient.updateApplicationInterface(authz_token,appID,appInterfaceObj)
+    return result
 
 if __name__ == '__main__':
-   
+    parser = argparse.ArgumentParser(description ="Update application interface")
+    parser.add_argument('appId',type=str, help= "Application Id")
+    parser.add_argument('appName',type=str, help= "Application Name")
+    parser.add_argument('appDesc',type=str, help= "Application Desc")
+    args = parser.parse_args()
+    print args
+
     config = configparser.RawConfigParser()
     config.read('../conf/airavata-client.properties')
     token = config.get('GatewayProperties', 'cred_token_id')
@@ -63,10 +69,14 @@ if __name__ == '__main__':
     transport.open()
     airavataClient = get_airavata_client(transport)
 
+    appInterfaceId = args.appId
+    updatedAppInterfaceObj = ApplicationInterfaceDescription()
+    updatedAppInterfaceObj.applicationName = args.appName
+    updatedAppInterfaceObj.applicationDescription = args.appDesc
 
-    computeNameList = get_all_compute_resource_names(airavataClient,authz_token)
+    appInterfaceId = update_application_interface(airavataClient,authz_token,appInterfaceId,updatedAppInterfaceObj)
 
     
-    print 'All Compute Resource Names : ', computeNameList
+    print 'Application interface updated, result: ', appInterfaceId
 
     transport.close()
