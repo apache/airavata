@@ -76,7 +76,10 @@ docker run --rm airavata/kafka kafka-console-consumer.sh --topic test_all_logs -
 cd /airavata/dev-tools/docker/elk/
 docker build -t airavata/elk .
 docker run -p 5601:5601 -p 9200:9200 -p 5044:5044  -it --name elk airavata/elk
-(In new terminal)
+```
+
+### Filtering based on keys
+```
 sudo docker exec -it elk /bin/bash
 /opt/logstash/bin/logstash -f /opt/logstash/airavata/logstash-airavata.conf --path.data /opt/logstash/airavata
 ```
