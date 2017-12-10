@@ -1,8 +1,5 @@
 added elk stack capability:
 
-# Kafka
-Used [ches/kafka](https://github.com/ches/docker-kafka) the base.
-
 ## Setup
 - Build dockerfile
 ```
@@ -10,8 +7,8 @@ docker build -t airavata/kafka .
 ```
 - Execute the below statements
 ```
-docker run -d -p 2181:2181 --name zookeeper jplock/zookeeper
-docker run -d --name kafka --link zookeeper:zookeeper airavata/kafka
+docker run -d -p 2181:2181 --name zookeeper --hostaname zookeeper
+docker run -d --name kafka -p 9092:9092 --link zookeeper airavata/kafka
 ZK_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' zookeeper)
 KAFKA_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' kafka)
 echo $ZK_IP, $KAFKA_IP
@@ -21,9 +18,12 @@ echo $ZK_IP, $KAFKA_IP
 ### Create Topic
 - (Optional) If the topic is already created then this step can be skipped
 ```
-docker run --rm airavata/kafka \
-> kafka-topics.sh --create --topic test_all_logs --replication-factor 1 --partitions 1 --zookeeper $ZK_IP:2181
+docker run --rm airavata/kafka kafka-topics.sh --create --topic test_all_logs --replication-factor 1 --partitions 1 --zookeeper $ZK_IP:2181
+
+docker run --rm airavata/kafka kafka-topics.sh --list --zookeeper $ZK_IP:2181
 ```
+
+
 
 ## Testing 
 ### Build Start Airavata Server
@@ -40,17 +40,17 @@ tar xvzf airavata/modules/distribution/target/apache-airavata-server-0.17-SNAPSH
 cd airavata/modules/distribution/target/apache-airavata-server-0.17-SNAPSHOT/bin
 vim airavata-server.properties
 ```
-- Changes are required in airavata-server.properties under "Kafka Logging related configuration"
+- Changes are required in airavata-server.properties under "Kafka Logging related configuration". Change it to actual ZK_IP
 ```
 isRunningOnAws=false
-kafka.broker.list=172.17.0.3:9092
+kafka.broker.list=<ZK_IP>:9092 # change it to actual  ZK_IP
 kafka.topic.prefix=test
 enable.kafka.logging=true
 ```
-- Since kafka depends on zookeeper, if we use custom zookeeper, then we would have to disable the zookeeper in airavata under "Zookeeper" section 
+- Since kafka depends on zookeeper, if we use custom zookeeper, then we would have to disable the zookeeper in airavata under "Zookeeper" section . Change it to actual  KAFKA_IP
 ```
 embedded.zk=false
-zookeeper.server.connection=172.17.0.2:2181
+zookeeper.server.connection=<KAFKA_IP>:2181 # change it to actual  KAFKA_IP
 zookeeper.timeout=30000
 ```
 ### Run Airavata server
