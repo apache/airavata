@@ -64,9 +64,8 @@ zookeeper.timeout=30000
 sh airavata-server-start.sh all
 ```
 
-### Consume Messages
-- This step is optional if testing kibana
-- Logs stored in the kafka can be view on terminal
+### Consume Messages(optional)
+- Logs stored in the kafka can be view on terminal by the consumer
 ```
 docker run --rm airavata/kafka kafka-console-consumer.sh --topic test_all_logs --from-beginning --zookeeper $ZK_IP:2181
 ```
@@ -78,7 +77,7 @@ docker build -t airavata/elk .
 docker run -p 5601:5601 -p 9200:9200 -p 5044:5044  -it --name elk airavata/elk
 ```
 
-### Filtering based on keys
+### Parsing the logs and Filtering based on keys
 ```
 sudo docker exec -it elk /bin/bash
 /opt/logstash/bin/logstash -f /opt/logstash/airavata/logstash-airavata.conf --path.data /opt/logstash/airavata
