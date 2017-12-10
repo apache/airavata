@@ -4,7 +4,7 @@ git clone https://github.com/satyamsah/airavata/tree/elk_stack
 
 git checkout elk_stak
 
-cd airavta/dev-tools/elk_stack
+cd airavata/dev-tools/elk_stack
 ```
 ## Setup
 - Build dockerfile
