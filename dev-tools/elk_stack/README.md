@@ -68,8 +68,7 @@ sh airavata-server-start.sh all
 - This step is optional if testing kibana
 - Logs stored in the kafka can be view on terminal
 ```
-docker run --rm airavata/kafka kafka-console-consumer.sh \
-> --topic test_all_logs --from-beginning --zookeeper $ZK_IP:2181
+docker run --rm airavata/kafka kafka-console-consumer.sh --topic test_all_logs --from-beginning --zookeeper $ZK_IP:2181
 ```
 ### ELK Stack
 - Logs emitted from kafka are consumed by logstash
