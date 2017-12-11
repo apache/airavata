@@ -13,8 +13,8 @@ docker build -t airavata/kafka .
 ```
 - Execute the below statements
 ```
-docker run -d -p 2181:2181 --name zookeeper --hostaname zookeeper
-docker run -d --name kafka -p 9092:9092 --link zookeeper airavata/kafka
+docker run -p 2181:2181 --name zookeeper --hostaname zookeeper
+docker run --name kafka -p 9092:9092 --link zookeeper airavata/kafka
 ZK_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' zookeeper)
 KAFKA_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' kafka)
 echo $ZK_IP, $KAFKA_IP
