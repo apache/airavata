@@ -53,6 +53,7 @@ gateway_id: "ultrascan"
 experiment_data_dir: "{{ user_data_dir }}/ultrascan-new"
 gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
 gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCloIIv+f8p/YbCyn0i1tOdwGW0mi/KdZCO8X0e7pPLhL7UZmrjKPCBWqlH92EKr6RnCENx5YCmmRm7DOqm1RuuER//2bxd5w+VmURAmuM1MdVpMocT6z9a51F9YEbfQfTLzES6fXyeRqq7aMljqYWovdM6uSFuIahvaTOwU0G/VrW0NBc411K0Kl1fWxpbPVy+ZCJJzCyP7JBV6sZMFFhT1/VQwsp1/0bBZwTPvaVwPcfibp65t99k4oxhGFVBhxBQ9KCki1uMr0sXJqB3udbBW26CFL9NHFttEuPjXRU+wQBkdsTfGzpbpjQZ7isCDDLWMMKiHXqwqU+6tH1biGUX"
+data_sharing_enabled: "false"
 
 ## Portal related variables
 super_admin_portal: "false"

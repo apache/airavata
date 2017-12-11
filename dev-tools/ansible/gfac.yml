@@ -19,8 +19,16 @@
 #
 
 ---
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/scigap"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/seagrid"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/testdrive"
-- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/TestApplication"
+
+- hosts: gfac
+  tags: gfac, airavata
+  roles:
+    - env_setup
+    - java
+    - role: common
+      become: yes
+      become_user: "{{user}}"
+    - role: gfac
+      become: yes
+      become_user: "{{user}}"
 ...

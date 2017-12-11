@@ -87,4 +87,5 @@ portal_email_password: "airavata12"
 portal_theme: "base"
 portal_theme_repo: ""
 portal_title: "Airavata PHP Gateway"
+pga_google_analytics_id: ""
 ...
