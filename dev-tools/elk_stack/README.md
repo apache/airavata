@@ -5,6 +5,8 @@ git clone https://github.com/satyamsah/airavata/tree/elk_stack
 git checkout elk_stak
 
 cd airavata/dev-tools/elk_stack
+
+cd kafka
 ```
 ## Setup
 - Build dockerfile
@@ -72,7 +74,7 @@ docker run --rm airavata/kafka kafka-console-consumer.sh --topic test_all_logs -
 ### ELK Stack
 - Logs emitted from kafka are consumed by logstash
 ```
-cd /airavata/dev-tools/docker/elk/
+cd airavata/dev-tools/elk_stack/elk
 docker build -t airavata/elk .
 docker run -p 5601:5601 -p 9200:9200 -p 5044:5044  -it --name elk airavata/elk
 ```
