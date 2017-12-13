@@ -11,14 +11,16 @@ cd kafka
 ## Setup
 - Build dockerfile
 ```
-docker build -t airavata/kafka .
+
 ```
 - Execute the below statements
 ```
-docker run -p 2181:2181 --name zookeeper --hostaname zookeeper
-docker run --name kafka -p 9092:9092 -e KAFKA_ADVERTISED_HOST_NAME="172.17.0.3"--link zookeeper airavata/kafka
+docker run -p 2181:2181 --name zookeeper --hostname zookeeper zookeeper
+docker run -d --name kafka --link zookeeper:zookeeper -e KAFKA_ADVERTISED_HOST_NAME=<current IP address of the docker host" ches/kafka
+
 ZK_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' zookeeper)
 KAFKA_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' kafka)
+
 echo $ZK_IP, $KAFKA_IP
 
 ```
@@ -61,16 +63,13 @@ embedded.zk=false
 zookeeper.server.connection=<KAFKA_IP>:2181 # change it to actual  KAFKA_IP
 zookeeper.timeout=30000
 ```
-### Run Airavata server
+### Consume Messages(optional)
+- Logs stored in the kafka can be view on differnt terminal by the consumer
+
 ```
-sh airavata-server-start.sh all
+docker run --rm ches/kafka kafka-console-consumer.sh --topic test_all_logs --from-beginning --zookeeper $ZK_IP:2181
 ```
 
-### Consume Messages(optional)
-- Logs stored in the kafka can be view on terminal by the consumer
-```
-docker run --rm airavata/kafka kafka-console-consumer.sh --topic test_all_logs --from-beginning --zookeeper $ZK_IP:2181
-```
 ### ELK Stack
 - Logs emitted from kafka are consumed by logstash
 ```
@@ -78,12 +77,18 @@ cd airavata/dev-tools/elk_stack/elk
 docker build -t airavata/elk .
 docker run -p 5601:5601 -p 9200:9200 -p 5044:5044  -it --name elk airavata/elk
 ```
-
 ### Parsing the logs and Filtering based on keys
 ```
 sudo docker exec -it elk /bin/bash
 /opt/logstash/bin/logstash -f /opt/logstash/airavata/logstash-airavata.conf --path.data /opt/logstash/airavata
 ```
+
+### Run Airavata server
+```
+sh airavata-server-start.sh all
+```
+
+
 ### Kibana
 - Kibana can be accessed at http://localhost:5601/
 - Logs can be filtered at Visualize page
