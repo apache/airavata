@@ -11,7 +11,7 @@ cd airavata/dev-tools/elk_stack
 - Execute the below statements
 ```
 docker run -p 2181:2181 --name zookeeper --hostname zookeeper zookeeper
-docker run -d --name kafka --link zookeeper:zookeeper -e KAFKA_ADVERTISED_HOST_NAME=<current IP address of the docker host> -p 9092:9092 ches/kafka
+docker run --name kafka --link zookeeper:zookeeper -e KAFKA_ADVERTISED_HOST_NAME=<current IP address of the docker host> -p 9092:9092 ches/kafka
 
 ZK_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' zookeeper)
 KAFKA_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' kafka)
