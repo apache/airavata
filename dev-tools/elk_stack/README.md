@@ -84,10 +84,11 @@ Edit the file and give the ip address of Kafka and change the ip address of KAFK
 ```
 sudo nano logstash-airavata.conf
 ```
-build the image and run the elk container:
+build the image and run the elk container. If exception happens please run the below mentioned systemctl command:
 
 ```
 docker build -t airavata/elk .
+sysctl -w vm.max_map_count=262144
 docker run -p 5601:5601 -p 9200:9200 -p 5044:5044  -it --name elk airavata/elk
 ```
 ### Parsing the logs and Filtering based on keys
