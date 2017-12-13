@@ -23,9 +23,9 @@ echo $ZK_IP, $KAFKA_IP
 ### Create Topic
 - (Optional) If the topic is already created then this step can be skipped
 ```
-docker run --rm airavata/kafka kafka-topics.sh --create --topic test_all_logs --replication-factor 1 --partitions 1 --zookeeper $ZK_IP:2181
+docker run --rm ches/kafka kafka-topics.sh --create --topic test_all_logs --replication-factor 1 --partitions 1 --zookeeper $ZK_IP:2181
 
-docker run --rm airavata/kafka kafka-topics.sh --list --zookeeper $ZK_IP:2181
+docker run --rm ches/kafka kafka-topics.sh --list --zookeeper $ZK_IP:2181
 ```
 
 
