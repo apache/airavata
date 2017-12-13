@@ -1,5 +1,5 @@
 import BaseModel from './BaseModel';
-import ComputationalResourceSchedulingModel from './ComputationResourceSchedulingModel'
+import ComputationalResourceSchedulingModel from './ComputationalResourceSchedulingModel'
 
 const FIELDS = [
     'airavataAutoSchedule',
@@ -8,6 +8,7 @@ const FIELDS = [
     {
         name: 'computationalResourceScheduling',
         type: ComputationalResourceSchedulingModel,
+        default: BaseModel.defaultNewInstance(ComputationalResourceSchedulingModel),
     },
     'throttleResources',
     'userDN',

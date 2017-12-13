@@ -182,13 +182,9 @@ class CustomSerializer(serializers.Serializer):
         return params
 
 
-
-
-
-
-
-
 class ApplicationInterfaceDescriptionSerializer(CustomSerializer):
+    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-interface-detail', lookup_field='applicationInterfaceId', lookup_url_kwarg='app_interface_id')
+    applicationInterfaceId = serializers.CharField(read_only=True)
     applicationName = serializers.CharField(required=False)
     applicationDescription = serializers.CharField(required=False)
     archiveWorkingDirectory = serializers.BooleanField(required=False)

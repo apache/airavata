@@ -52,6 +52,19 @@
                                     :placeholder="experimentInput.userFriendlyDescription"></b-form-input>
                             </b-form-group>
                         </b-form>
+                        <h2 class="h5 mb-3">
+                            Resource Selection
+                        </h2>
+                        <b-form novalidate>
+                            <b-form-group label="Compute Resource" label-for="compute-resource">
+                                <b-form-select id="compute-resource"
+                                    v-model="experiment.userConfigurationData.computationalResourceScheduling.resourceHostId" :options="computeResourceOptions" required>
+                                    <template slot="first">
+                                        <option :value="null" disabled>Select a Compute Resource</option>
+                                    </template>
+                                </b-form-select>
+                            </b-form-group>
+                        </b-form>
                     </div>
                 </div>
             </div>
@@ -64,10 +77,11 @@ import {models, services} from 'django-airavata-api'
 
 export default {
     name: 'edit-experiment',
-    props: ['experiment', 'appModule'],
+    props: ['experiment', 'appModule', 'appInterface'],
     data () {
         return {
             'projects': [],
+            'computeResources': {},
         }
     },
     mounted: function () {
@@ -80,6 +94,27 @@ export default {
                 value: project.projectID,
                 text: project.name,
             }));
+        },
+        computeResourceOptions: function() {
+            const computeResourceOptions = [];
+            for (let computeResourceId in this.computeResources) {
+                if (this.computeResources.hasOwnProperty(computeResourceId)) {
+                    computeResourceOptions.push({
+                        value: computeResourceId,
+                        text: this.computeResources[computeResourceId],
+                    })
+                }
+            }
+            computeResourceOptions.sort((a, b) => a.text.localeCompare(b.text));
+            return computeResourceOptions;
+        }
+    },
+    watch: {
+        appInterface: function() {
+            if (this.appInterface) {
+                services.ApplicationInterfaceService.getComputeResources(this.appInterface.applicationInterfaceId)
+                    .then(computeResources => this.computeResources = computeResources);
+            }
         }
     }
 }

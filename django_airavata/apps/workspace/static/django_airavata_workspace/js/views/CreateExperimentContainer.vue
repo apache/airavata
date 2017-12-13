@@ -1,5 +1,5 @@
 <template>
-    <experiment-editor :experiment="experiment" :app-module="appModule">
+    <experiment-editor :experiment="experiment" :app-module="appModule" :app-interface="appInterface">
         <span slot="title">Create a New Experiment</span>
     </experiment-editor>
 </template>
@@ -20,6 +20,7 @@ export default {
         return {
             'experiment': new models.Experiment(),
             'appModule': null,
+            'appInterface': null,
         }
     },
     components: {
@@ -39,6 +40,7 @@ export default {
         services.ApplicationInterfaceService.getForAppModuleId(this.appModuleId)
             .then(appInterface => {
                 this.experiment.experimentInputs = appInterface.getOrderedApplicationInputs().map(input => input.clone());
+                this.appInterface = appInterface;
             });
     }
 }

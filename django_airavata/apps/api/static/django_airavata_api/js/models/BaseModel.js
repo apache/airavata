@@ -20,7 +20,7 @@ export default class BaseModel {
                 let fieldName = fieldDefinition.name;
                 let fieldType = fieldDefinition.type;
                 let fieldIsList = typeof fieldDefinition.list !== 'undefined' ? fieldDefinition.list : false;
-                let fieldDefault = typeof fieldDefinition.default !== 'undefined' ? fieldDefinition.default : null;
+                let fieldDefault = typeof fieldDefinition.default !== 'undefined' ? this.getDefaultValue(fieldDefinition.default) : null;
                 let fieldValue = data[fieldName];
                 if (fieldIsList) {
                     this[fieldName] = fieldValue ? fieldValue.map(item => this.convertField(fieldType, item, fieldDefault)) : fieldDefault;
@@ -52,6 +52,18 @@ export default class BaseModel {
 
     convertModelField(modelClass, fieldValue, fieldDefault) {
         return typeof fieldValue !== 'undefined' ? new modelClass(fieldValue) : fieldDefault;
+    }
+
+    getDefaultValue(fieldDefault) {
+        if (typeof fieldDefault === 'function') {
+            return fieldDefault();
+        } else {
+            return fieldDefault;
+        }
+    }
+
+    static defaultNewInstance(classRef) {
+        return () => new classRef();
     }
 
     /**

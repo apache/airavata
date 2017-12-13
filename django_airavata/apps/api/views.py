@@ -336,6 +336,11 @@ class ApplicationInterfaceViewSet(APIBackedViewSet):
         application_interface = serializer.save()
         self.request.airavata_client.updateApplicationInterface(self.authz_token, application_interface.applicationInterfaceId, application_interface)
 
+    @detail_route()
+    def compute_resources(self, request, app_interface_id):
+        compute_resources = request.airavata_client.getAvailableAppInterfaceComputeResources(self.authz_token, app_interface_id)
+        return Response(compute_resources)
+
 class ComputeResourceList(APIView):
     renderer_classes = (JSONRenderer,)
 

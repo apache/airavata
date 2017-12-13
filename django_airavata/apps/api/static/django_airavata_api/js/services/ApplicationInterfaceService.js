@@ -23,6 +23,10 @@ class ApplicationIterfaceService {
         return FetchUtils.get('/api/applications/' + encodeURIComponent(appModuleId) + '/application_interface/')
             .then(json => new ApplicationInterfaceDefinition(json))
     }
+
+    getComputeResources(appInterfaceId) {
+        return FetchUtils.get('/api/application-interfaces/' + encodeURIComponent(appInterfaceId) + '/compute_resources');
+    }
 }
 
 // Export as a singleton

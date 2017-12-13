@@ -27,6 +27,7 @@ const FIELDS = [
     {
         name: 'userConfigurationData',
         type: UserConfigurationData,
+        default: BaseModel.defaultNewInstance(UserConfigurationData),
     },
     {
         name: 'experimentInputs',
