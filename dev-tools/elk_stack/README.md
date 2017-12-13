@@ -9,7 +9,6 @@ cd airavata/dev-tools/elk_stack
 cd kafka
 ```
 
-```
 - Execute the below statements
 ```
 docker run -p 2181:2181 --name zookeeper --hostname zookeeper zookeeper
