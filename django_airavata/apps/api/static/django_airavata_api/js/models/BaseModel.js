@@ -1,5 +1,4 @@
 
-// TODO: document
 export default class BaseModel {
 
     /**

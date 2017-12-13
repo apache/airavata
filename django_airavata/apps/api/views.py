@@ -269,6 +269,7 @@ class ApplicationModuleViewSet(APIBackedViewSet):
                 ApplicationInterfaceDescription, instance=app_interfaces[0], context={'request': request})
             return Response(serializer.data)
         elif len(app_interfaces) > 1:
+            log.error("More than one application interface found for module {}: {}".format(app_module_id, app_interfaces))
             return Response({'error': 'More than one application interface found for module id {}'.format(app_module_id)},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:

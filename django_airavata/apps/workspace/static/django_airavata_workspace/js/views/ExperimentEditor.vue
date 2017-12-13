@@ -26,7 +26,31 @@
                                     </template>
                                 </b-form-select>
                             </b-form-group>
-                            <div v-if="appInterface">App Interface name: {{ appInterface.applicationName }}</div>
+                        </b-form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h1 class="h4 mb-4">
+                    Application Configuration
+                </h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="h5 mb-3">
+                            Application Inputs
+                        </h2>
+                        <b-form novalidate>
+                            <b-form-group v-for="experimentInput in experiment.experimentInputs"
+                                    :label="experimentInput.name" :label-for="experimentInput.name" :key="experimentInput.name">
+                                <b-form-input :id="experimentInput.name" type="text" v-model="experimentInput.value" required
+                                    :placeholder="experimentInput.userFriendlyDescription"></b-form-input>
+                            </b-form-group>
                         </b-form>
                     </div>
                 </div>
@@ -40,7 +64,7 @@ import {models, services} from 'django-airavata-api'
 
 export default {
     name: 'edit-experiment',
-    props: ['experiment', 'appModule', 'appInterface'],
+    props: ['experiment', 'appModule'],
     data () {
         return {
             'projects': [],
