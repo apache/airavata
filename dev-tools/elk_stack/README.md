@@ -1,6 +1,6 @@
 added elk stack capability:
 ```
-git clone https://github.com/satyamsah/airavata/tree/elk_stack
+git clone https://github.com/satyamsah/airavata
 
 git checkout elk_stak
 
