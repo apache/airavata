@@ -329,6 +329,8 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             UserResource userResource = client.realm(tenantId).users().get(userResourceList.get(0).getId());
             UserRepresentation profile = userResource.toRepresentation();
             profile.setEnabled(true);
+            // We require that a user verify their email before enabling the account
+            profile.setEmailVerified(true);
             userResource.update(profile);
             return true;
         } catch (ApplicationSettingsException ex) {
