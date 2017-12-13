@@ -6,7 +6,6 @@ git checkout elk_stak
 
 cd airavata/dev-tools/elk_stack
 
-cd kafka
 ```
 
 - Execute the below statements
@@ -31,10 +30,11 @@ docker run --rm airavata/kafka kafka-topics.sh --list --zookeeper $ZK_IP:2181
 
 
 
-## Testing 
+## Airavata Testing (Skip these steps if you are using external airavata)
 ### Build Start Airavata Server
 - In Root Folder of airavata project
 ```
+cd ~/airavata
 mvn clean install -Dmaven.test.skip=true
 ```
 - Extract the build
@@ -44,7 +44,7 @@ tar xvzf airavata/modules/distribution/target/apache-airavata-server-0.17-SNAPSH
 ### Update Config
 ```
 cd airavata/modules/distribution/target/apache-airavata-server-0.17-SNAPSHOT/bin
-vim airavata-server.properties
+sudo nano  airavata-server.properties
 ```
 - Changes are required in airavata-server.properties under "Kafka Logging related configuration". Change it to actual ZK_IP
 ```
@@ -64,6 +64,7 @@ zookeeper.timeout=30000
 ```
 sh airavata-server-start.sh all
 ```
+##  Airavata Testing Ends
 
 ### Consume Messages(optional for testing purpose)
 - Logs stored in the kafka can be view on differnt terminal by the consumer
