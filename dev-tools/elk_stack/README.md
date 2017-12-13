@@ -8,9 +8,6 @@ cd airavata/dev-tools/elk_stack
 
 cd kafka
 ```
-## Setup
-- Build dockerfile
-```
 
 ```
 - Execute the below statements
