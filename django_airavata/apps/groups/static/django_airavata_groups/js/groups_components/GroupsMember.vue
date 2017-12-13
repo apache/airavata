@@ -1,5 +1,5 @@
 <template>
-    <b-card title="Groups you are a member of:">  
+    <b-card title="Groups you are a member of:">
         <p class="card-text">
             <b-table striped hover :items="items" :fields="fields"></b-table>
         </p>
@@ -17,10 +17,10 @@ let fields = { 'Name': {
   label: 'Privileges',
 }};
 
-let items = [{ Name: 'group1', Options: '<a href="#"><i class="fa fa-times-circle fa-lg" aria-hidden="true"></i></a>' },
-  { Name: 'group2', Options: '<a href=""><i class="fa fa-times-circle fa-lg" aria-hidden="true"></i></a>' },
-  { Name: 'group3', Options: '<a href="#"><i class="fa fa-times-circle fa-lg" aria-hidden="true"></i></a>'},
-  { Name: 'group4', Options: '<a href="#"><i class="fa fa-times-circle fa-lg" aria-hidden="true"></i></a>'}
+let items = [{ Name: 'group1', Options: '<a href="#"><i class="fa fa-times-circle fa-lg" aria-hidden="true"></i>&nbsp;Leave</a>' },
+  { Name: 'group2', Options: '<a href="#"><i class="fa fa-times-circle fa-lg" aria-hidden="true"></i>&nbsp;Leave</a>' },
+  { Name: 'group3', Options: '<a href="#"><i class="fa fa-times-circle fa-lg" aria-hidden="true"></i>&nbsp;Leave</a>' },
+  { Name: 'group4', Options: '<a href="#"><i class="fa fa-times-circle fa-lg" aria-hidden="true"></i>&nbsp;Leave</a>' }
   ];
 
 export default {

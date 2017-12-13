@@ -19,10 +19,11 @@ new Vue({
   },
   beforeMount: function () {
       if (this.$el.dataset.groupsOwnersData) {
-          this.groupsOwnersData = this.$el.dataset.groupsOwnersData;
+          this.groupsOwnersData = JSON.parse(this.$el.dataset.groupsOwnersData);
+          console.log(this.groupsOwnersData);
       }
       if(this.$el.dataset.groupsMembersData) {
-          this.groupsMembersData = this.$el.dataset.groupsMembersData;
+          this.groupsMembersData = JSON.parse(this.$el.dataset.groupsMembersData);
       }
   }
 })

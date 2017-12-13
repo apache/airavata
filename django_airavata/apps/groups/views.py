@@ -32,11 +32,21 @@ def groups_manage(request):
             if group.ownerId == username:
                 owner.append(group)
 
+        null = None
+        owner = {'limit':10,'next':null,'offset':0,'previous':null, 'results': [{'name':'exes','owner':'lasjdf','groupID':1,'description':'alksdfj','gatewayId':'seagrid'},{'name':'exes','owner':'lasjdf','groupID':2,'description':'alksdfj','gatewayId':'seagrid'},
+{'name':'exes','owner':'lasjdf','groupID':3,'description':'alksdfj','gatewayId':'seagrid'},]}
+        owner = JSONRenderer().render(owner)
+
         member_list = request.sharing_client.getAllMemberGroupsForUser(gateway_id, username)
         member = []
         for group in member_list:
             if group.ownerId != username:
-                member.append(group)  
+                member.append(group)
+
+        null = None
+        member = {'limit':10,'next':null,'offset':0,'previous':null, 'results': [{'name':'exes','owner':'lasjdf','groupID':4,'description':'alksdfj','gatewayId':'seagrid'},{'name':'exes','owner':'lasjdf','groupID':5,'description':'alksdfj','gatewayId':'seagrid'},
+{'name':'exes','owner':'lasjdf','groupID':6,'description':'alksdfj','gatewayId':'seagrid'},]}
+        member = JSONRenderer().render(member)
 
         return render(request, 'django_airavata_groups/groups_manage.html', {
             'groups_owners_data': owner, 'groups_members_data': member

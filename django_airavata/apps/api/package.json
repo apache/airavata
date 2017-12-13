@@ -5,9 +5,14 @@
   "author": "Marcus Christie <machristie@apache.org>",
   "private": true,
   "main": "./static/django_airavata_api/dist/index.js",
+<<<<<<< HEAD
   "scripts": {
     "build": "babel static/django_airavata_api/js -d static/django_airavata_api/dist",
     "watch": "babel static/django_airavata_api/js --watch -d static/django_airavata_api/dist"
+=======
+  "scripts": {	
+    "build": "babel static/django_airavata_api/js -d static/django_airavata_api/dist"
+>>>>>>> Added Models, Services for GroupMembers and GroupOwners
   },
   "dependencies": {},
   "devDependencies": {
