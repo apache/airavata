@@ -12,7 +12,7 @@ cd kafka
 - Execute the below statements
 ```
 docker run -p 2181:2181 --name zookeeper --hostname zookeeper zookeeper
-docker run -d --name kafka --link zookeeper:zookeeper -e KAFKA_ADVERTISED_HOST_NAME=<current IP address of the docker host" ches/kafka
+docker run -d --name kafka --link zookeeper:zookeeper -e KAFKA_ADVERTISED_HOST_NAME=<current IP address of the docker host> -p 9092:9092 ches/kafka
 
 ZK_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' zookeeper)
 KAFKA_IP=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' kafka)
@@ -59,7 +59,13 @@ embedded.zk=false
 zookeeper.server.connection=<KAFKA_IP>:2181 # change it to actual  KAFKA_IP
 zookeeper.timeout=30000
 ```
-### Consume Messages(optional)
+
+### Run Airavata server
+```
+sh airavata-server-start.sh all
+```
+
+### Consume Messages(optional for testing purpose)
 - Logs stored in the kafka can be view on differnt terminal by the consumer
 
 ```
@@ -79,10 +85,6 @@ sudo docker exec -it elk /bin/bash
 /opt/logstash/bin/logstash -f /opt/logstash/airavata/logstash-airavata.conf --path.data /opt/logstash/airavata
 ```
 
-### Run Airavata server
-```
-sh airavata-server-start.sh all
-```
 
 
 ### Kibana
