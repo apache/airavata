@@ -67,8 +67,6 @@ import java.util.Map;
 public class SCPDataStageTask implements Task {
     private static final Logger log = LoggerFactory.getLogger(SCPDataStageTask.class);
     private static final int DEFAULT_SSH_PORT = 22;
-    private String hostName;
-    private String inputPath;
 
     @Override
     public void init(Map<String, String> propertyMap) throws TaskException {
@@ -124,12 +122,13 @@ public class SCPDataStageTask implements Task {
             StorageResourceDescription storageResource = processContext.getStorageResource();
 //            StoragePreference storagePreference = taskContext.getParentProcessContext().getStoragePreference();
 
+            String hostName = null;
             if (storageResource != null) {
                 hostName = storageResource.getHostName();
             } else {
                 throw new GFacException("Storage Resource is null");
             }
-            inputPath  = processContext.getStorageFileSystemRootLocation();
+            String inputPath  = processContext.getStorageFileSystemRootLocation();
             inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
 
             // use rsync instead of scp if source and destination host and user name is same.
