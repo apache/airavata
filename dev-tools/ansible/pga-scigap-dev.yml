@@ -22,5 +22,5 @@
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/scigap"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/seagrid"
 - include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/testdrive"
-
+- include: pga-single-vhost.yml vars_dir="{{ inventory_dir }}/pga_config/TestApplication"
 ...
