@@ -5,12 +5,16 @@ import Experiment from './models/Experiment'
 import InputDataObjectType from './models/InputDataObjectType'
 import OutputDataTypeObject from './models/OutputDataTypeObject'
 import Project from './models/Project'
+import GroupMember from './models/GroupMember'
+import GroupOwner from './models/GroupOwner'
 
 import ApplicationDeploymentService from './services/ApplicationDeploymentService'
 import ApplicationInterfaceService from './services/ApplicationInterfaceService'
 import ApplicationModuleService from './services/ApplicationModuleService'
 import ExperimentService from './services/ExperimentService'
 import ProjectService from './services/ProjectService'
+import GroupMemberService from './services/GroupMemberService'
+import GroupOwnerService from './services/GroupOwnerService'
 
 import FetchUtils from './utils/FetchUtils'
 import PaginationIterator from './utils/PaginationIterator'
@@ -22,6 +26,8 @@ exports.models = {
     InputDataObjectType,
     OutputDataTypeObject,
     Project,
+    GroupMember,
+    GroupOwner,
 }
 
 exports.services = {
@@ -30,6 +36,8 @@ exports.services = {
     ApplicationModuleService,
     ExperimentService,
     ProjectService,
+    GroupMemberService,
+    GroupOwnerService,
 }
 
 exports.utils = {

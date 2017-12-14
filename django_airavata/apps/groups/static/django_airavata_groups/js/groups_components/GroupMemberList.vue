@@ -3,11 +3,13 @@
         <thead>
             <tr>
                 <th>Name</th>
+                <th>Owner</th>
+                <th>Description</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            <group-list-item v-bind:group="group" v-for="group in groupsForMembers" v-bind:key="group.groupID">
+            <group-list-item v-bind:group="group" v-bind:type="member" v-for="group in groupsForMembers" v-bind:key="group.groupID">
             </group-list-item>
         </tbody>
     </table>
@@ -21,6 +23,7 @@ export default {
     props: ['groupsForMembers'],
     data: function () {
         return {
+          member:"member",
         }
     },
     components: {

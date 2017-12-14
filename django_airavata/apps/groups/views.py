@@ -33,8 +33,8 @@ def groups_manage(request):
                 owner.append(group)
 
         null = None
-        owner = {'limit':10,'next':null,'offset':0,'previous':null, 'results': [{'name':'exes','owner':'lasjdf','groupID':1,'description':'alksdfj','gatewayId':'seagrid'},{'name':'exes','owner':'lasjdf','groupID':2,'description':'alksdfj','gatewayId':'seagrid'},
-{'name':'exes','owner':'lasjdf','groupID':3,'description':'alksdfj','gatewayId':'seagrid'},]}
+        owner = {'limit':10,'next':null,'offset':0,'previous':null, 'results': [{'name':'owned1','owner':'stephenpaul2727','groupID':1,'description':'desc1','gatewayId':'seagrid'},{'name':'owned2','owner':'stephenpaul2727','groupID':2,'description':'desc2','gatewayId':'seagrid'},
+{'name':'owned3','owner':'stephenpaul2727','groupID':3,'description':'desc3','gatewayId':'seagrid'},]}
         owner = JSONRenderer().render(owner)
 
         member_list = request.sharing_client.getAllMemberGroupsForUser(gateway_id, username)
@@ -44,8 +44,8 @@ def groups_manage(request):
                 member.append(group)
 
         null = None
-        member = {'limit':10,'next':null,'offset':0,'previous':null, 'results': [{'name':'exes','owner':'lasjdf','groupID':4,'description':'alksdfj','gatewayId':'seagrid'},{'name':'exes','owner':'lasjdf','groupID':5,'description':'alksdfj','gatewayId':'seagrid'},
-{'name':'exes','owner':'lasjdf','groupID':6,'description':'alksdfj','gatewayId':'seagrid'},]}
+        member = {'limit':10,'next':null,'offset':0,'previous':null, 'results': [{'name':'member1','owner':'somebody1','groupID':4,'description':'asdfd','gatewayId':'seagrid'},{'name':'member2','owner':'somebodyinsane','groupID':5,'description':'descmydesc','gatewayId':'seagrid'},
+{'name':'member3','owner':'somebodyunknown','groupID':6,'description':'dunno','gatewayId':'seagrid'},]}
         member = JSONRenderer().render(member)
 
         return render(request, 'django_airavata_groups/groups_manage.html', {

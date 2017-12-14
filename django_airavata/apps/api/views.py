@@ -187,6 +187,33 @@ class APIResultPagination(pagination.LimitOffsetPagination):
         else:
             return self.request.build_absolute_uri()
 
+class GroupViewSet(APIBackedViewSet):
+
+    serializer_class = serializers.GroupSerializer
+    lookup_field = 'group_id'
+    pagination_class = APIResultPagination
+    pagination_viewname = 'django_airavata_api:groups-owners-manage'
+
+    def get_list(self):
+        view = self
+        class GroupMemberResultIterator(APIResultIterator):
+            def get_results(self, limit=-1, offset=0):
+                return view.request.airavata_client.getAllGroupsUserBelongs(view.authz_token, view.username)
+        return GroupMemberResultIterator()
+
+    def get_instance(self, lookup_value):
+        return self.request.airavata_client.getGroup(view.authz_token, view.gateway_id, lookup_value)
+
+    def perform_create(self, serializer):
+        group = serializer.save()
+        group_id = self.request.airavata_client.createGroup(view.authz_token, group)
+        group.groupID = group_id
+
+    def perform_update(self, serializer):
+        group = serializer.save()
+        self.request.airavata_client.updateGroup(view.authz_token, group)
+
+
 class ProjectViewSet(APIBackedViewSet):
 
     serializer_class = serializers.ProjectSerializer

@@ -3,11 +3,13 @@
         <thead>
             <tr>
                 <th>Name</th>
+                <th>Owner</th>
+                <th>Description</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            <group-list-item v-bind:project="group" v-for="group in groupsForOwners" v-bind:key="group.groupID">
+            <group-list-item v-bind:group="group" v-bind:type="owner" v-for="group in groupsForOwners" v-bind:key="group.groupID">
             </group-list-item>
         </tbody>
     </table>
@@ -21,6 +23,7 @@ export default {
     props: ['groupsForOwners'],
     data: function () {
         return {
+          owner:"owner",
         }
     },
     components: {

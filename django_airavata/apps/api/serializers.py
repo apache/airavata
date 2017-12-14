@@ -6,6 +6,7 @@ from airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDe
 from airavata.model.application.io.ttypes import InputDataObjectType, OutputDataObjectType
 from airavata.model.experiment.ttypes import ExperimentModel
 from airavata.model.workspace.ttypes import Project
+from airavata.model.group.ttypes import GroupModel
 from airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule
 from airavata.model.appcatalog.computeresource.ttypes import BatchQueue
 from . import thrift_utils
@@ -68,6 +69,15 @@ class GetGatewayUsername(object):
         self.field = field
 
 
+class GetGatewayUserId(object):
+
+    def __call__(self):
+        return self.field.context['request'].user.id
+
+    def set_context(self, field):
+        self.field = field
+
+
 class GatewayUsernameDefaultField(serializers.CharField):
 
     def __init__(self, *args, **kwargs):
@@ -76,12 +86,37 @@ class GatewayUsernameDefaultField(serializers.CharField):
         self.default = GetGatewayUsername()
 
 
+class GatewayUserIdDefaultField(serializers.CharField):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.read_only = True
+        self.default = GetGatewayUserId()
+
+
 class GatewayIdDefaultField(serializers.CharField):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.read_only = True
         self.default = settings.GATEWAY_ID
+
+
+class GroupSerializer(serializers.Serializer):
+    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:group-list', lookup_field='groupID', lookup_url_kwarg='group_id')
+    groupID = serializers.CharField(default=GroupModel.thrift_spec[1][4])
+    name = serializers.CharField(required=True)
+    description = serializers.CharField(allow_null=True)
+    ownerID = GatewayUserIdDefaultField()
+    members = serializers.CharField(default=GroupModel.thrift_spec[5][4])
+
+    def create(self, validated_data):
+        return GroupModel(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.description = validated_data.get('description', instance.description)
+        return instance
 
 
 class ProjectSerializer(serializers.Serializer):

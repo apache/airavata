@@ -2,9 +2,9 @@
     <div>
         <div class="row">
             <div class="col">
-                <h1 class="h4 mb-4">Manage Groups</h1>
+                <h1 class="h4 mb-4">Groups you own:</h1>
             </div>
-            <div id="col-new-group" class="col">
+            <div id="col-new-group" class="col-sm-2">
                 <group-button-new @new-group="onNewGroup"/>
             </div>
         </div>

@@ -3,11 +3,11 @@ import BaseModel from './BaseModel';
 export default class GroupOwner extends BaseModel {
     constructor(data = {}) {
         super(data);
-        this.groupID = null;
+        this.id = null;
         this.name = null;
+        this.ownerId = null;
         this.description = null;
-        this.owner = null;
-        this.gatewayId = null;
+        this.members = null;
         // TODO: convert to Date object here instead of doing this in views
         this.copyData(data);
     }
@@ -23,10 +23,10 @@ export default class GroupOwner extends BaseModel {
 
     toJSONForCreate() {
         // Remaining fields just get defaulted
-        return JSON.stringify(this, ["name", "description"]);
+        return JSON.stringify(this, ["name", "description", "members"]);
     }
 
     toJSONForUpdate() {
-        return JSON.stringify(this, ["groupID", "name", "description"]);
+        return JSON.stringify(this, ["id", "name", "description", "members"]);
     }
 }

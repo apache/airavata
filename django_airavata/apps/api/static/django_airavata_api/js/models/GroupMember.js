@@ -3,10 +3,10 @@ import BaseModel from './BaseModel';
 export default class GroupMember extends BaseModel {
     constructor(data = {}) {
         super(data);
-        this.groupID = null;
+        this.id = null;
         this.name = null;
+        this.ownerId = null;
         this.description = null;
-        this.owner = null;
         this.gatewayId = null;
         // TODO: convert to Date object here instead of doing this in views
         this.copyData(data);
