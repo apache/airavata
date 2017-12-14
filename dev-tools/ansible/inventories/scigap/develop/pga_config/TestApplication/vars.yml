@@ -1,0 +1,66 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+pga_repo: "https://github.com/apache/airavata-php-gateway.git"
+git_branch: "develop"
+user: "pga"
+group: "pga"
+doc_root_dir: "/var/www/portals/dev-testapplication"
+vhost_servername: "dev.apptestdrive.airavata.org"
+vhost_ssl: false
+# TODO: have Ansible manage these files as well
+#ssl_certificate_file: "/etc/pki/tls/certs/dev_seagrid_org_cert.cer"
+#ssl_certificate_chain_file: "/etc/pki/tls/certs/dev_seagrid_org_interm.cer"
+#ssl_certificate_key_file: "/etc/pki/tls/private/dev-seagrid.key"
+
+## Keycloak related variables
+tenant_domain: "shubhamtestbed"
+admin_username: "admin"
+admin_password: "{{ vault_admin_password }}"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+oidc_discovery_url: "https://iamdev.scigap.org/auth/realms/shubhamtestbed/.well-known/openid-configuration"
+
+auth_options:
+  - name: "AppTestdrive"
+    oauth_grant_type: "password"
+#  - name: "CILogon"
+ #   oauth_grant_type: "authorization_code"
+ #   oauth_authorize_url_extra_params: "kc_idp_hint=oidc"
+ #   logo: "/assets/cilogon-logo-24x24-b.png"
+oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
+
+gateway_id: "shubhamtestbed"
+# relative to document root dir
+experiment_data_dir: "{{ user_data_dir }}/dev-testapplication"
+# TODO: Fix the data store resource id
+gateway_data_store_resource_id: "pgadev.scigap.org_7ddf28fd-d503-4ff8-bbc5-3279a7c3b99e"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC5zXsxFjgBsHUOXUq0h//HDNej5K+rMDFfJSei1puphVKGhQBj9QMN2jNW3y0SUoF3nAKJFjmZ8nKlIN7TeQuqeAB+Cg0N2XR7I+jjyr15XpIgUwH7zuaGokq3qDnqv1YhafZWsSCi4rHPoqI2I0BgKK24hya61v5kVy5TLicbwIf1TPg7GlfL+wxnMAmLZlUHjhHspup98GbuB6Yg+SuwATJV1HHDa+YFy8Hxaknb5d2iwZqzN9BaktHJn+8o8d0YDGS12bvctMcrGHZ77zrCp3K1wxjPL0ERjK7W5N+CuN/yer+7a5TtIt9SXSnMwph2WeUb9aVkVL63qS46x1nN"
+
+## Portal related variables
+super_admin_portal: "false"
+admin_emails: "['sgrc-iu-group@iu.edu','shukumar@umail.iu.edu']"
+portal_email_username: "pga.airavata@gmail.com"
+portal_email_password: "{{ vault_portal_email_password }}"
+portal_theme: "base"
+#portal_theme_repo: "https://github.com/SciGaP/seagrid-website-theme.git"
+portal_title: "Application Testdrive Portal"
+...

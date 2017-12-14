@@ -21,6 +21,7 @@
  include "profile-user/profile-user-cpi.thrift"
  include "profile-tenant/profile-tenant-cpi.thrift"
  include "iam-admin-services/iam-admin-services-cpi.thrift"
+ include "group-manager/group-manager-cpi.thrift"
 
  namespace java org.apache.airavata.service.profile
  namespace php Airavata.Service.Profile

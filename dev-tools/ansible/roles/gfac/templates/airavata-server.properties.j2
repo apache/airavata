@@ -92,7 +92,7 @@ replicacatalog.validationQuery=SELECT 1 from CONFIGURATION
 #workflowcatalog.jdbc.url=jdbc:derby://localhost:1527/workflow_catalog;create=true;user=airavata;password=airavata
 # MariaDB database configuration
 workflowcatalog.jdbc.driver=org.mariadb.jdbc.Driver
-workflowcatalog.jdbc.url=jdbc:mariadb://{{ db_server }}:3306/{{ replica_catalog }}
+workflowcatalog.jdbc.url=jdbc:mariadb://{{ db_server }}:3306/{{ workflow_catalog }}
 workflowcatalog.jdbc.user={{ db_user }}
 workflowcatalog.jdbc.password={{ db_password }}
 workflowcatalog.validationQuery=SELECT 1 from CONFIGURATION
