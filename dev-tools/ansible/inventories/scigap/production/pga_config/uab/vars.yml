@@ -1,0 +1,65 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+pga_repo: "https://github.com/apache/airavata-php-gateway.git"
+git_branch: "master"
+user: "pga"
+group: "pga"
+doc_root_dir: "/var/www/portals/alabama-birmingham"
+vhost_servername: "torana.rc.uab.edu"
+vhost_ssl: true
+# TODO: have Ansible manage these files as well
+ssl_certificate_file: "/etc/letsencrypt/live/torana.rc.uab.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/torana.rc.uab.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/torana.rc.uab.edu/privkey.pem"
+
+## Keycloak related variables
+tenant_domain: "{{ gateway_id }}"
+admin_username: "admin"
+admin_password: "{{ vault_admin_password }}"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
+
+auth_options:
+  - name: "The University of Alabama at Birmingham Science Gateway"
+    oauth_grant_type: "password"
+  - name: "CILogon"
+    oauth_grant_type: "authorization_code"
+    oauth_authorize_url_extra_params: "kc_idp_hint=cilogon"
+    logo: "/assets/cilogon-logo-24x24-b.png"
+oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
+
+gateway_id: "alabama-birmingham"
+# relative to document root dir
+experiment_data_dir: "{{ user_data_dir }}/alabama-birmingham"
+gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDA5artIAZPYC9GmFvb7HpvwbHpYoSXN0xJkHWoz8joWWBA3wW2De2Q72Rk5CYElpOLbrjJCsFK3YxiCQYYRl5R4VFadw0agGIxn0PssCR5sIUDpEe4ezQmEx3rA3RUEvA3uZ6SjzjuwqQtEKMvARP4mCwEC/vR0eLWe1/ZDLF71w7zVZAmt+K/Z/Dnas/NTE7yV9XadD2TctFWmBwMNQSEfSsDfW39cabwEghanoUMGTYT9f4EL6x4zOzdbcHl1aF5QlGHf91hQCwfxH6FSZYmu+HhcKshbOI/I0u+UDKV+CX/1SxUZNpwpJ3ESR4ke7jdgP+GTwwl4bBSTn738m9t"
+
+## Portal related variables
+super_admin_portal: "false"
+admin_emails: "['sgrc-iu-group@iu.edu','tanthony@uab.edu']"
+portal_email_username: "pga.airavata@gmail.com"
+portal_email_password: "{{ vault_portal_email_password }}"
+#portal_theme: "gsu-gateway-theme"
+#portal_theme_repo: "https://github.com/SciGaP/gsu-gateway-theme"
+portal_title: "University of Alabama at Birmingham Science Gateway"
+...

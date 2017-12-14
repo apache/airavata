@@ -20,14 +20,20 @@
 */
 package org.apache.airavata.service.profile.handlers;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.DBEventManagerConstants;
 import org.apache.airavata.common.utils.DBEventService;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.dbevent.CrudType;
 import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.model.user.CustomDashboard;
 import org.apache.airavata.model.user.UserProfile;
+import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
 import org.apache.airavata.service.profile.commons.user.entities.UserProfileEntity;
+import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
+import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 import org.apache.airavata.service.profile.user.core.repositories.UserProfileRepository;
 import org.apache.airavata.service.profile.user.cpi.UserProfileService;
 import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
@@ -54,7 +60,10 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
     @SecurityCheck
     public String addUserProfile(AuthzToken authzToken, UserProfile userProfile) throws UserProfileServiceException, AuthorizationException, TException {
         try{
-            userProfile = userProfileRepository.create(userProfile);
+            // Lowercase user id and internal id
+            userProfile.setUserId(userProfile.getUserId().toLowerCase());
+            userProfile.setAiravataInternalUserId(userProfile.getUserId() + "@" + userProfile.getGatewayId());
+            userProfile = userProfileRepository.updateUserProfile(userProfile, getIAMUserProfileUpdater(authzToken, userProfile));
             if (null != userProfile) {
                 logger.info("Added UserProfile with userId: " + userProfile.getUserId());
                 // replicate userProfile at end-places
@@ -79,7 +88,11 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
     @SecurityCheck
     public boolean updateUserProfile(AuthzToken authzToken, UserProfile userProfile) throws UserProfileServiceException, AuthorizationException, TException {
         try {
-            if(userProfileRepository.update(userProfile) != null) {
+            // After updating the user profile in the database but before committing the transaction, the
+            // following will update the user profile in the IAM service also. If the update in the IAM service
+            // fails then the transaction will be rolled back.
+            Runnable iamUserProfileUpdater = getIAMUserProfileUpdater(authzToken, userProfile);
+            if(userProfileRepository.updateUserProfile(userProfile, iamUserProfileUpdater) != null) {
                 logger.info("Updated UserProfile with userId: " + userProfile.getUserId());
                 // replicate userProfile at end-places
                 ProfileServiceUtils.getDbEventPublisher().publish(
@@ -95,6 +108,17 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
             exception.setMessage("Error while Updating user profile. More info : " + e.getMessage());
             throw exception;
         }
+    }
+
+    private Runnable getIAMUserProfileUpdater(AuthzToken authzToken, UserProfile userProfile) throws UserProfileServiceException {
+        IamAdminServices.Client iamAdminServicesClient = getIamAdminServicesClient();
+        return () -> {
+            try {
+                iamAdminServicesClient.updateUserProfile(authzToken, userProfile);
+            } catch (TException e) {
+                throw new RuntimeException("Failed to update user profile in IAM service", e);
+            }
+        };
     }
 
     @Override
@@ -168,6 +192,18 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
             UserProfileServiceException exception = new UserProfileServiceException();
             exception.setMessage("Error while finding user profile. More info : " + e.getMessage());
             throw exception;
+        }
+    }
+
+    private IamAdminServices.Client getIamAdminServicesClient() throws UserProfileServiceException {
+        try {
+            final int serverPort = Integer.parseInt(ServerSettings.getProfileServiceServerPort());
+            final String serverHost = ServerSettings.getProfileServiceServerHost();
+            return ProfileServiceClientFactory.createIamAdminServiceClient(serverHost, serverPort);
+        } catch (IamAdminServicesException|ApplicationSettingsException e) {
+            logger.error("Failed to create IAM Admin Services client", e);
+            UserProfileServiceException ex = new UserProfileServiceException("Failed to create IAM Admin Services client");
+            throw ex;
         }
     }
 }

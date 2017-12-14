@@ -78,6 +78,14 @@ public class AiravataDataMigrator {
                 if (!sharingRegistryServerHandler.isEntityTypeExists(entityType.domainId, entityType.entityTypeId))
                     sharingRegistryServerHandler.createEntityType(entityType);
 
+                entityType = new EntityType();
+                entityType.setEntityTypeId(domain.domainId+":APPLICATION");
+                entityType.setDomainId(domain.domainId);
+                entityType.setName("APPLICATION");
+                entityType.setDescription("Application entity type");
+                if (!sharingRegistryServerHandler.isEntityTypeExists(entityType.domainId, entityType.entityTypeId))
+                    sharingRegistryServerHandler.createEntityType(entityType);
+
                 //Creating Permission Types for each domain
                 PermissionType permissionType = new PermissionType();
                 permissionType.setPermissionTypeId(domain.domainId+":READ");
@@ -173,6 +181,33 @@ public class AiravataDataMigrator {
                 metadata.put("EMAIL_ADDRESSES", rs.getString("EMAIL_ADDRESSES"));
                 metadata.put("GATEWAY_INSTANCE_ID", rs.getString("GATEWAY_INSTANCE_ID"));
                 metadata.put("ARCHIVE", rs.getString("ARCHIVE"));
+
+                if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
+                    sharingRegistryServerHandler.createEntity(entity);
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
+        }
+
+        //Creating application entries
+        query = "SELECT * FROM APPLICATION";
+        statement = expCatConnection.createStatement();
+        rs = statement.executeQuery(query);
+        while(rs.next()){
+            try {
+                Entity entity = new Entity();
+                entity.setEntityId(rs.getString("APPLICATION_ID"));
+                entity.setDomainId(rs.getString("GATEWAY_ID"));
+                entity.setEntityTypeId(rs.getString("GATEWAY_ID") + ":APPLICATION");
+                entity.setOwnerId(rs.getString("USER_NAME") + "@" + rs.getString("GATEWAY_ID"));
+                entity.setName(rs.getString("APPLICATION_NAME"));
+                entity.setDescription(rs.getString("DESCRIPTION"));
+                if(entity.getDescription() == null)
+                    entity.setFullText(entity.getName());
+                else
+                    entity.setFullText(entity.getName() + " " + entity.getDescription());
+                Map<String, String> metadata = new HashMap<>();
+                metadata.put("CREATION_TIME", rs.getDate("CREATION_TIME").toString());
 
                 if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
                     sharingRegistryServerHandler.createEntity(entity);

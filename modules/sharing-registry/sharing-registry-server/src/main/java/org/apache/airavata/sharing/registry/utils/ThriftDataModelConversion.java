@@ -1,10 +1,8 @@
 package org.apache.airavata.sharing.registry.utils;
 
 import org.apache.airavata.model.user.UserProfile;
-import org.apache.airavata.sharing.registry.db.entities.UserPK;
 import org.apache.airavata.sharing.registry.models.User;
 
-import java.util.Date;
 
 /**
  * Created by Ajinkya on 3/29/17.

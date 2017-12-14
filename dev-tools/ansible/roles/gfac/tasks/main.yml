@@ -72,12 +72,11 @@
 - name: create logs directory
   file: path="{{ gfac_log_dir }}" state=directory owner={{ user }} group={{ group }}
 
-- name: Copy Mysql jar to lib
-  copy: src="{{ mysql_connector_jar }}"
-        dest="{{ gfac_dir }}/{{ airavata_dist }}/lib/{{ mysql_connector_jar }}"
-        owner={{ user }}
-        group={{ group }}
-
+- name: Copy MariaDB connector jar to lib
+  get_url: url="{{ mariadb_connector_jar_url }}"
+          dest="{{ gfac_dir }}/{{ airavata_dist }}/lib/"
+          owner={{ user }}
+          group={{ group }}
 
 - name: Open firwall ports
   firewalld: port="{{ gfac_port }}/tcp" zone=public permanent=true state=enabled immediate=yes

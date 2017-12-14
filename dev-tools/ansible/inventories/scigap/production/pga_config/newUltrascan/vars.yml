@@ -1,0 +1,73 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+
+# NOTE Ultrascan is pointed to gw153
+airavata_server: "gw153.iu.xsede.org"
+airavata_port: "8930"
+
+pga_repo: "https://github.com/apache/airavata-php-gateway.git"
+# Keep Ultrascan PGA on 0.17 until gw153 gets updated/migrated
+git_branch: "branch-0.17"
+pga_config_template: "{{ inventory_dir }}/files/pga_config_0.17.php.j2"
+auth_verify_peer: "false"
+user: "pga"
+group: "pga"
+doc_root_dir: "/var/www/portals/{{ gateway_id }}"
+vhost_servername: "dev.ultrascan.scigap.org"
+vhost_ssl: false
+# TODO: have Ansible manage these files as well
+#ssl_certificate_file: "/etc/pki/tls/certs/ultrascan_scigap_org_cert.cer"
+#ssl_certificate_chain_file: "/etc/pki/tls/certs/ultrascan_scigap_org_interm.cer"
+#ssl_certificate_key_file: "/etc/pki/tls/private/ultrascan.scigap.key"
+
+## Keycloak related variables
+tenant_domain: "prod.ultrascan"
+admin_username: "uslimsadmin"
+admin_password: "{{ vault_admin_password }}"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
+
+auth_options:
+  - name: "Ultrascan"
+    oauth_grant_type: "password"
+oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
+
+# With Keycloak, we have to have static role names
+#user_role_name: "airavata-user"
+
+gateway_id: "Ultrascan_Production"
+# relative to document root dir
+experiment_data_dir: "{{ user_data_dir }}/ultrascan"
+gateway_data_store_resource_id: "gf4.ucs.indiana.edu_5ef8ddd3-2a2a-48ca-9c5f-becce690c6c1"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCHxpxod4TZ9Iy0TyqEK1uyKEeq41QRUlD9sHZmuF3aeXpbnleOW1F8NQrpUuzCrcT+xb8Owam8rCB3xe73ZWzf4BJBjt8MJ481kGgufZzzIAuTHcewEzjoabTrg+3b8eQsq9uWyJc96/SEzKlryOkyZL6MptCE8kbcquD/Jo6ADMpAAS9rDmSaWg5dPbITrF2o2r1cHKeHkri45b6+ih63Mf/pYhbHTPsheaQu3Kyk1YmdP25pgzD65SMZSeZan8St4mPDdGMOwfvjIkhvoyPXoyaCqTwnQ3bfwlL/xmbxtGWPax73pgitlhtKynRRWgse8uc6rIQxzXsKkAHbB/R3"
+
+data_sharing_enabled: "false"
+
+## Portal related variables
+super_admin_portal: "true"
+admin_emails: "['sgrc-iu-group@iu.edu']"
+portal_email_username: "pga.airavata@gmail.com"
+portal_email_password: "{{ vault_portal_email_password }}"
+portal_theme: "base"
+portal_title: "Ultrascan SciGaP Dashboard"
+...

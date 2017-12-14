@@ -31,12 +31,22 @@ ssl_certificate_file: "/etc/letsencrypt/live/scigw.oii.org/cert.pem"
 ssl_certificate_chain_file: "/etc/letsencrypt/live/scigw.oii.org/fullchain.pem"
 ssl_certificate_key_file: "/etc/letsencrypt/live/scigw.oii.org/privkey.pem"
 
-## WSO2 IS related variables
-tenant_domain: "prod.oii"
+## Keycloak related variables
+tenant_domain: "{{ gateway_id }}"
 admin_username: "admin"
 admin_password: "{{ vault_admin_password }}"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
+oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
+
+auth_options:
+  - name: "OII Science Gateway"
+    oauth_grant_type: "password"
+  - name: "CILogon"
+    oauth_grant_type: "authorization_code"
+    oauth_authorize_url_extra_params: "kc_idp_hint=cilogon"
+    logo: "/assets/cilogon-logo-24x24-b.png"
+oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 
 gateway_id: "oiitandy"
 # relative to document root dir

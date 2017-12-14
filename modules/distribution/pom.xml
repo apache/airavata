@@ -481,6 +481,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>db-event-manager</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <url>http://airavata.apache.org/</url>

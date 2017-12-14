@@ -24,19 +24,29 @@ git_branch: "master"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/nanoconfinement"
-vhost_servername: "nanoconfinement.jadhaolab.indiana.edu"
+vhost_servername: "nanoconfinement.sciencegateways.iu.edu"
 vhost_ssl: True
 # TODO: have Ansible manage these files as well
-ssl_certificate_file: "/etc/letsencrypt/live/nanoconfinement.jadhaolab.indiana.edu/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/nanoconfinement.jadhaolab.indiana.edu/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/nanoconfinement.jadhaolab.indiana.edu/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/nanoconfinement.sciencegateways.iu.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/nanoconfinement.sciencegateways.iu.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/nanoconfinement.sciencegateways.iu.edu/privkey.pem"
 
-## WSO2 IS related variables
-tenant_domain: "airavata.nanoconfinement"
+## Keycloak related variables
+tenant_domain: "{{ gateway_id }}"
 admin_username: "admin"
 admin_password: "{{ vault_admin_password }}"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
+oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
+
+auth_options:
+  - name: "Nano Confinement"
+    oauth_grant_type: "password"
+  - name: "CILogon"
+    oauth_grant_type: "authorization_code"
+    oauth_authorize_url_extra_params: "kc_idp_hint=cilogon"
+    logo: "/assets/cilogon-logo-24x24-b.png"
+oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 
 gateway_id: "nanoconfinement"
 # relative to document root dir
@@ -50,6 +60,6 @@ admin_emails: "['smarru@iu.edu','sgg@iu.edu','vjadhao@iu.edu']"
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
 portal_theme: "nanoconfinement-gateway-theme"
-portal_theme_repo: "https://github.com/SciGaP/nanoconfinement-gateway-theme.git"
+portal_theme_repo: "https://github.com/softmaterialslab/nanoconfinement-gateway-theme.git"
 portal_title: "Nano Confinement Science Gateway"
 ...

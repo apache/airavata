@@ -323,11 +323,12 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
     }
 
     @Override
-    public List<ApplicationModule> getAllApplicationModules(String gatewayId) throws AppCatalogException {
+    public List<ApplicationModule> getAllApplicationModules(String gatewayId, List<String> accessibleAppIds) throws AppCatalogException {
         List<ApplicationModule> applicationModules = new ArrayList<ApplicationModule>();
         try {
             AppModuleResource resource = new AppModuleResource();
             resource.setGatewayId(gatewayId);
+            resource.setAccessibleAppIds(accessibleAppIds);
             List<AppCatalogResource> resources = resource.getAll();
             if (resources != null && !resources.isEmpty()){
                 applicationModules = AppCatalogThriftConversion.getAppModules(resources);

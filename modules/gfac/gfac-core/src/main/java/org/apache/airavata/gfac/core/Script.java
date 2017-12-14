@@ -60,6 +60,7 @@ public enum Script {
     JOB_SUBMITTER_COMMAND("jobSubmitterCommand"),
     EXECUTABLE_PATH("executablePath"),
     INPUTS("inputs"),
+    INPUTS_ALL("inputsAll"),
     POST_JOB_COMMANDS("postJobCommands"),
     USED_MEM("usedMem"),
     PROCESS_PER_NODE("processPerNode"),
@@ -70,6 +71,7 @@ public enum Script {
     GATEWAY_ID("gatewayId"),
     GATEWAY_USER_NAME("gatewayUserName"),
     APPLICATION_NAME("applicationName"),
+    QUEUE_SPECIFIC_MACROS("queueSpecificMacros")
     ;
 
     String name;

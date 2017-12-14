@@ -21,6 +21,7 @@
 package org.apache.airavata.db.event.manager;
 
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.db.event.manager.messaging.DBEventManagerMessagingFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -28,9 +29,14 @@ import org.apache.log4j.Logger;
 /**
  * Created by Ajinkya on 3/29/17.
  */
-public class DBEventManagerRunner {
+public class DBEventManagerRunner implements IServer {
 
     private static final Logger log = LogManager.getLogger(DBEventManagerRunner.class);
+
+    private static final String SERVER_NAME = "DB Event Manager";
+    private static final String SERVER_VERSION = "1.0";
+
+    private ServerStatus status;
 
     /**
      * Start required messaging utilities
@@ -75,4 +81,63 @@ public class DBEventManagerRunner {
         }
     }
 
+    @Override
+    public String getName() {
+        return SERVER_NAME;
+    }
+
+    @Override
+    public String getVersion() {
+        return SERVER_VERSION;
+    }
+
+    @Override
+    public void start() throws Exception {
+
+        try {
+            Runnable runner = new Runnable() {
+                @Override
+                public void run() {
+                    DBEventManagerRunner dBEventManagerRunner = new DBEventManagerRunner();
+                    dBEventManagerRunner.startDBEventManagerRunner();
+                }
+            };
+
+            // start the worker thread
+            log.info("Starting the DB Event Manager runner.");
+            new Thread(runner).start();
+            setStatus(ServerStatus.STARTED);
+        } catch (Exception ex) {
+            log.error("Something went wrong with the DB Event Manager runner. Error: " + ex, ex);
+            setStatus(ServerStatus.FAILED);
+        }
+    }
+
+    @Override
+    public void stop() throws Exception {
+
+        // TODO: implement stopping the DBEventManager
+    }
+
+    @Override
+    public void restart() throws Exception {
+
+        stop();
+        start();
+    }
+
+    @Override
+    public void configure() throws Exception {
+
+    }
+
+    @Override
+    public ServerStatus getStatus() throws Exception {
+        return status;
+    }
+
+    private void setStatus(ServerStatus stat){
+        status=stat;
+        status.updateTime();
+    }
 }

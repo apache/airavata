@@ -29,6 +29,7 @@ include "../../../data-models/experiment-catalog-models/workspace_model.thrift"
 include "profile_tenant_cpi_errors.thrift"
 
 namespace java org.apache.airavata.service.profile.tenant.cpi
+namespace php Airavata.Service.Profile.Tenant.CPI
 
 const string TENANT_PROFILE_CPI_VERSION = "0.17"
 const string TENANT_PROFILE_CPI_NAME = "TenantProfileService"
@@ -39,6 +40,9 @@ service TenantProfileService {
                        throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tpe,
                                2: airavata_errors.AuthorizationException ae)
 
+    /**
+     * Return the airavataInternalGatewayId assigned to given gateway.
+     */
     string addGateway (1: required security_model.AuthzToken authzToken,
                        2: required workspace_model.Gateway gateway)
                     throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tpe,
@@ -50,12 +54,13 @@ service TenantProfileService {
                              2: airavata_errors.AuthorizationException ae)
 
     workspace_model.Gateway getGateway (1: required security_model.AuthzToken authzToken,
-                                        2: required string gatewayId)
+                                        2: required string airavataInternalGatewayId)
                                      throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tpe,
                                              2: airavata_errors.AuthorizationException ae)
 
     bool deleteGateway (1: required security_model.AuthzToken authzToken,
-                        2: required string gatewayId)
+                        2: required string airavataInternalGatewayId,
+                        3: required string gatewayId)
                      throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tpe,
                              2: airavata_errors.AuthorizationException ae)
 
@@ -67,4 +72,9 @@ service TenantProfileService {
                          2: required string gatewayId)
                       throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tpe,
                               2: airavata_errors.AuthorizationException ae)
+
+    list<workspace_model.Gateway> getAllGatewaysForUser (1: required security_model.AuthzToken authzToken,
+                                                         2: required string requesterUsername)
+                                               throws (1: profile_tenant_cpi_errors.TenantProfileServiceException tpe,
+                                                       2: airavata_errors.AuthorizationException ae)
 }

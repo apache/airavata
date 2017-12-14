@@ -36,6 +36,7 @@ include "../data-models/experiment-catalog-models/scheduling_model.thrift"
 include "../data-models/app-catalog-models/application_io_models.thrift"
 include "../data-models/app-catalog-models/application_deployment_model.thrift"
 include "../data-models/app-catalog-models/application_interface_model.thrift"
+include "../data-models/resource-catalog-models/account_provisioning_model.thrift"
 include "../data-models/resource-catalog-models/compute_resource_model.thrift"
 include "../data-models/resource-catalog-models/storage_resource_model.thrift"
 include "../data-models/resource-catalog-models/gateway_resource_profile_model.thrift"
@@ -50,7 +51,7 @@ namespace java org.apache.airavata.api
 namespace php Airavata.API
 namespace cpp apache.airavata.api
 namespace perl ApacheAiravataAPI
-namespace py apache.airavata.api
+namespace py airavata.api
 namespace js ApacheAiravataAPI
 
 /**
@@ -2949,8 +2950,34 @@ service Airavata {
               3: airavata_errors.AiravataSystemException ase,
               4: airavata_errors.AuthorizationException ae)
 
+  list<account_provisioning_model.SSHAccountProvisioner> getSSHAccountProvisioners(1: required security_model.AuthzToken authzToken)
+    	throws (1: airavata_errors.InvalidRequestException ire,
+              2: airavata_errors.AiravataClientException ace,
+              3: airavata_errors.AiravataSystemException ase,
+              4: airavata_errors.AuthorizationException ae)
 
+  /**
+   * Check if user has an SSH account on the given compute resource. This
+   * method will only work if the compute resource has an SSHAccountProvisioner configured for it.
+   */
+  bool doesUserHaveSSHAccount(1: required security_model.AuthzToken authzToken, 2: required string computeResourceId, 3: required string userId)
+    	throws (1: airavata_errors.InvalidRequestException ire,
+              2: airavata_errors.AiravataClientException ace,
+              3: airavata_errors.AiravataSystemException ase,
+              4: airavata_errors.AuthorizationException ae)
 
+  /**
+   * Setup and return a UserComputeResourcePreference object for this user to SSH into the given compute resource with
+   * the given SSH credential. This method will only work if the compute resource has an SSHAccountProvisioner
+   * configured for it. The returned UserComputeResourcePreference object is not saved; it is up to the client to
+   * call addUserComputeResourcePreference to persist it.
+   */
+  user_resource_profile_model.UserComputeResourcePreference setupUserComputeResourcePreferencesForSSH(1: required security_model.AuthzToken authzToken,
+            2: required string computeResourceId, 3: required string userId, 4: required string airavataCredStoreToken)
+    	throws (1: airavata_errors.InvalidRequestException ire,
+              2: airavata_errors.AiravataClientException ace,
+              3: airavata_errors.AiravataSystemException ase,
+              4: airavata_errors.AuthorizationException ae)
 
   /*
    * User Resource Profile
@@ -3435,74 +3462,6 @@ service Airavata {
                                                  2: airavata_errors.AiravataClientException ace,
                                                  3: airavata_errors.AiravataSystemException ase,
                                                  4: airavata_errors.AuthorizationException ae)
-
-bool createGroup(1: required security_model.AuthzToken authzToken, 2: required group_manager_model.GroupModel groupModel)
-                throws (1: airavata_errors.InvalidRequestException ire,
-                                                  2: airavata_errors.AiravataClientException ace,
-                                                  3: airavata_errors.AiravataSystemException ase,
-                                                  4: airavata_errors.AuthorizationException ae)
-
- bool updateGroup(1: required security_model.AuthzToken authzToken, 2: required group_manager_model.GroupModel groupModel)
-                 throws (1: airavata_errors.InvalidRequestException ire,
-                                                   2: airavata_errors.AiravataClientException ace,
-                                                   3: airavata_errors.AiravataSystemException ase,
-                                                   4: airavata_errors.AuthorizationException ae)
-
- bool deleteGroup(1: required security_model.AuthzToken authzToken, 2: required string groupId, 3: required string ownerId, 4: required string gatewayId)
-                 throws (1: airavata_errors.InvalidRequestException ire,
-                                                    2: airavata_errors.AiravataClientException ace,
-                                                    3: airavata_errors.AiravataSystemException ase,
-                                                    4: airavata_errors.AuthorizationException ae)
-
- group_manager_model.GroupModel getGroup(1: required security_model.AuthzToken authzToken, 2: required string groupId)
-                  throws (1: airavata_errors.InvalidRequestException ire,
-                                                     2: airavata_errors.AiravataClientException ace,
-                                                     3: airavata_errors.AiravataSystemException ase,
-                                                     4: airavata_errors.AuthorizationException ae)
-
- list<group_manager_model.GroupModel> getAllGroupsUserBelongs(1: required security_model.AuthzToken authzToken, 2: required string userName, 3: required string gatewayId)
-                   throws (1: airavata_errors.InvalidRequestException ire,
-                                                      2: airavata_errors.AiravataClientException ace,
-                                                      3: airavata_errors.AiravataSystemException ase,
-                                                      4: airavata_errors.AuthorizationException ae)
-    /*
-     * User Profile Service methods
-     */
-    string addUserProfile (1: required security_model.AuthzToken authzToken, 2: required user_profile_model.UserProfile userProfile)
-                throws (1: airavata_errors.InvalidRequestException ire,
-                        2: airavata_errors.AiravataClientException ace,
-                        3: airavata_errors.AiravataSystemException ase,
-                        4: airavata_errors.AuthorizationException ae)
-
-    bool updateUserProfile (1: required security_model.AuthzToken authzToken, 2: required user_profile_model.UserProfile userProfile)
-                throws (1: airavata_errors.InvalidRequestException ire,
-                        2: airavata_errors.AiravataClientException ace,
-                        3: airavata_errors.AiravataSystemException ase,
-                        4: airavata_errors.AuthorizationException ae)
-
-    user_profile_model.UserProfile getUserProfileById(1: required security_model.AuthzToken authzToken, 2: required string userId, 3: required string gatewayId)
-                throws (1: airavata_errors.InvalidRequestException ire,
-                        2: airavata_errors.AiravataClientException ace,
-                        3: airavata_errors.AiravataSystemException ase,
-                        4: airavata_errors.AuthorizationException ae)
-
-    bool deleteUserProfile(1: required security_model.AuthzToken authzToken, 2: required string userId)
-                throws (1: airavata_errors.InvalidRequestException ire,
-                        2: airavata_errors.AiravataClientException ace,
-                        3: airavata_errors.AiravataSystemException ase,
-                        4: airavata_errors.AuthorizationException ae)
-
-    list<user_profile_model.UserProfile> getAllUserProfilesInGateway (1: required security_model.AuthzToken authzToken, 2: required string gatewayId, 3: required i32 offset, 4: required i32 limit)
-                throws (1: airavata_errors.InvalidRequestException ire,
-                        2: airavata_errors.AiravataClientException ace,
-                        3: airavata_errors.AiravataSystemException ase,
-                        4: airavata_errors.AuthorizationException ae)
-
-    bool doesUserProfileExist(1: required security_model.AuthzToken authzToken, 2: required string userId, 3: required string gatewayId)
-                throws (1: airavata_errors.InvalidRequestException ire,
-                        2: airavata_errors.AiravataClientException ace,
-                        3: airavata_errors.AiravataSystemException ase,
-                        4: airavata_errors.AuthorizationException ae)
  //
  //End of API
  }

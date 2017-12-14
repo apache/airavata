@@ -138,7 +138,9 @@ public class ServerSettings extends ApplicationSettings {
 
     // Iam Server Constants
     public static final String IAM_SERVER_URL = "iam.server.url";
-    public static final String NEW_GATEWAY_ADMIN_TEMP_PASSWORD="new.gateway.admin.temp.password";
+    public static final String IAM_SERVER_SUPER_ADMIN_USERNAME = "iam.server.super.admin.username";
+    public static final String IAM_SERVER_SUPER_ADMIN_PASSWORD = "iam.server.super.admin.password";
+
 
     /* Caching */
     private static final String SESSION_CACHE_ACCESS_TIME_OUT = "ssh.session.cache.access.timeout";
@@ -344,6 +346,13 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(ServerSettings.IAM_SERVER_URL);
     }
 
+    public static String getIamServerSuperAdminUsername() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.IAM_SERVER_SUPER_ADMIN_USERNAME);
+    }
+
+    public static String getIamServerSuperAdminPassword() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.IAM_SERVER_SUPER_ADMIN_PASSWORD);
+    }
 
     public static String getAuthorizationPoliyName() throws ApplicationSettingsException {
         return getSetting(Constants.AUTHORIZATION_POLICY_NAME);
@@ -399,6 +408,10 @@ public class ServerSettings extends ApplicationSettings {
 
     public static boolean isTLSEnabled() throws ApplicationSettingsException {
         return Boolean.valueOf(getSetting(Constants.IS_TLS_ENABLED));
+    }
+
+    public static boolean isSharingTLSEnabled() throws ApplicationSettingsException {
+        return Boolean.valueOf(getSetting(Constants.IS_SHARING_TLS_ENABLED));
     }
 
     public static int getTLSServerPort() throws ApplicationSettingsException {

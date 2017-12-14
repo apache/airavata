@@ -1,0 +1,11 @@
+---
+
+- hosts: database
+  tags: mysql , airavata
+  roles:
+    - env_setup
+    - role: database
+      become: yes
+      become_user: "{{user}}"
+
+...

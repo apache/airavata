@@ -31,12 +31,22 @@ ssl_certificate_file: "/etc/pki/tls/certs/phasta_scigap_org_cert.cer"
 ssl_certificate_chain_file: "/etc/pki/tls/certs/phasta_scigap_org_interm.cer"
 ssl_certificate_key_file: "/etc/pki/tls/private/phasta.scigap.key"
 
-## WSO2 IS related variables
-tenant_domain: "product.phasta"
+## Keycloak related variables
+tenant_domain: "{{ gateway_id }}"
 admin_username: "phasta_admin"
 admin_password: "{{ vault_admin_password }}"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
+oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
+
+auth_options:
+  - name: "PHASTA"
+    oauth_grant_type: "password"
+  - name: "CILogon"
+    oauth_grant_type: "authorization_code"
+    oauth_authorize_url_extra_params: "kc_idp_hint=cilogon"
+    logo: "/assets/cilogon-logo-24x24-b.png"
+oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 
 gateway_id: "phasta"
 # relative to document root dir
@@ -46,7 +56,7 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCIvxQc
 
 ## Portal related variables
 super_admin_portal: "false"
-admin_emails: "['eroma.abeysinghe@gmail.com','supun.nakandala@gmail.com','sgg@iu.edu']"
+admin_emails: "['smithc11@rpi.edu','sgrc-iu-group@iu.edu']"
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
 portal_theme: "phasta"

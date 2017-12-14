@@ -19,12 +19,14 @@
  */
 package org.apache.airavata.sharing.registry;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
-import org.apache.thrift.transport.TSocket;
+import org.apache.thrift.transport.TSSLTransportFactory;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
@@ -32,19 +34,34 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class CipresTest {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, TException, ApplicationSettingsException {
         System.out.println("Hello World!");
         //should use the correct host name and port here
         String serverHost = "wb-airavata.scigap.org";
 
         int serverPort = 7878;
         TTransport transport = null;
-
+        TProtocol protocol = null;
         try {
-            transport = new TSocket(serverHost, serverPort);
-            transport.open();
-            TProtocol protocol = new TBinaryProtocol(transport);
-            SharingRegistryService.Client sharingServiceClient = new SharingRegistryService.Client(protocol);
+
+            SharingRegistryService.Client sharingServiceClient;
+
+            //Non Secure Client
+//            transport = new TSocket(serverHost, serverPort);
+//            transport.open();
+//            protocol = new TBinaryProtocol(transport);
+//            sharingServiceClient= new SharingRegistryService.Client(protocol);
+
+            //TLS enabled client
+            TSSLTransportFactory.TSSLTransportParameters params =
+                    new TSSLTransportFactory.TSSLTransportParameters();
+            params.setKeyStore(ServerSettings.getKeyStorePath(), ServerSettings.getKeyStorePassword());
+            params.setTrustStore(ServerSettings.getTrustStorePath(), ServerSettings.getTrustStorePassword());
+            transport = TSSLTransportFactory.getClientSocket(serverHost, serverPort, 10000, params);
+            protocol = new TBinaryProtocol(transport);
+            sharingServiceClient = new SharingRegistryService.Client(protocol);
+
+
             try {
                 sharingServiceClient.deleteDomain("test-domain");
             } catch (SharingRegistryException sre1) {

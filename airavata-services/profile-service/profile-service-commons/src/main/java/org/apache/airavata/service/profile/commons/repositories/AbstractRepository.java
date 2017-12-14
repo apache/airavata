@@ -103,4 +103,22 @@ public abstract class AbstractRepository<T, E, Id> {
         resultSet.stream().forEach(rs -> resultList.add(mapper.map(rs, thriftGenericClass)));
         return resultList;
     }
+
+    public List<T> select(String query, Map<String, Object> queryParams) {
+        List resultSet = (List) JPAUtils.execute(entityManager -> {
+            Query jpaQuery = entityManager.createQuery(query);
+
+            for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
+
+                jpaQuery.setParameter(entry.getKey(), entry.getValue());
+            }
+
+            return jpaQuery.getResultList();
+
+        });
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        List<T> resultList = new ArrayList<>();
+        resultSet.stream().forEach(rs -> resultList.add(mapper.map(rs, thriftGenericClass)));
+        return resultList;
+    }
 }

@@ -21,13 +21,14 @@
 package org.apache.airavata.service.profile.tenant.core.repositories;
 
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.service.profile.commons.repositories.AbstractRepository;
 import org.apache.airavata.service.profile.commons.tenant.entities.GatewayEntity;
 import org.apache.airavata.service.profile.commons.utils.QueryConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,12 +44,12 @@ public class TenantProfileRepository extends AbstractRepository<Gateway, Gateway
         super(thriftGenericClass, dbEntityGenericClass);
     }
 
-    public Gateway getGateway (String gatewayId) throws Exception {
+    public Gateway getGateway (String airavataInternalGatewayId) throws Exception {
         Gateway gateway = null;
         try {
             Map<String, Object> queryParam = new HashMap<String, Object>();
-            queryParam.put(Gateway._Fields.GATEWAY_ID.getFieldName(), gatewayId);
-            List<Gateway> gatewayList = select(QueryConstants.FIND_GATEWAY_BY_ID, 1, 0, queryParam);
+            queryParam.put(Gateway._Fields.AIRAVATA_INTERNAL_GATEWAY_ID.getFieldName(), airavataInternalGatewayId);
+            List<Gateway> gatewayList = select(QueryConstants.FIND_GATEWAY_BY_INTERNAL_ID, 1, 0, queryParam);
             if (!gatewayList.isEmpty()) {
                 gateway = gatewayList.get(0);
             }
@@ -67,5 +68,38 @@ public class TenantProfileRepository extends AbstractRepository<Gateway, Gateway
             logger.error("Error while getting all the gateways, reason: ", e);
             throw e;
         }
+    }
+
+    public List<Gateway> getAllGatewaysForUser (String requesterUsername) throws Exception {
+        try {
+            Map<String, Object> queryParam = new HashMap<String, Object>();
+            queryParam.put(Gateway._Fields.REQUESTER_USERNAME.getFieldName(), requesterUsername);
+            List<Gateway> gatewayList = select(QueryConstants.GET_USER_GATEWAYS, queryParam);
+            return gatewayList;
+        } catch (Exception e){
+            logger.error("Error while getting the user's gateways, reason: ", e);
+            throw e;
+        }
+    }
+
+    public Gateway getDuplicateGateway(String gatewayId, String gatewayName, String gatewayURL) throws Exception {
+
+        Gateway gateway = null;
+        try {
+            Map<String, Object> queryParams = new HashMap<String, Object>();
+            queryParams.put(Gateway._Fields.GATEWAY_ID.getFieldName(), gatewayId);
+            queryParams.put(Gateway._Fields.GATEWAY_NAME.getFieldName(), gatewayName);
+            queryParams.put(Gateway._Fields.GATEWAY_URL.getFieldName(), gatewayURL);
+            // Only considered APPROVED or CREATED or DEPLOYED gateways when looking for duplicates
+            queryParams.put(Gateway._Fields.GATEWAY_APPROVAL_STATUS.getFieldName(), Arrays.asList(GatewayApprovalStatus.APPROVED.name(), GatewayApprovalStatus.CREATED.name(), GatewayApprovalStatus.DEPLOYED.name()));
+            List<Gateway> gatewayList = select(QueryConstants.FIND_DUPLICATE_GATEWAY, 1, 0, queryParams);
+            if (!gatewayList.isEmpty()) {
+                gateway = gatewayList.get(0);
+            }
+        } catch (Exception ex) {
+            logger.error("Error while searching for duplicate gateway, reason: " + ex.getMessage(), ex);
+            throw ex;
+        }
+        return gateway;
     }
 }

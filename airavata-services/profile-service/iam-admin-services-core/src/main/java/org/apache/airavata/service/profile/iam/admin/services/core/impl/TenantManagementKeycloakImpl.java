@@ -24,6 +24,7 @@ package org.apache.airavata.service.profile.iam.admin.services.core.impl;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.credential.store.PasswordCredential;
+import org.apache.airavata.model.user.Status;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.service.profile.iam.admin.services.core.interfaces.TenantManagementInterface;
@@ -32,6 +33,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.admin.client.resource.RoleResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.*;
 import org.slf4j.Logger;
@@ -49,7 +51,8 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
 
     private final static Logger logger = LoggerFactory.getLogger(TenantManagementKeycloakImpl.class);
 
-    // TODO: close Keycloak client once done with it?
+    private String superAdminRealmId = "master";
+
     private static Keycloak getClient(String adminUrl, String realm, PasswordCredential AdminPasswordCreds) {
 
         ResteasyClient resteasyClient = new ResteasyClientBuilder()
@@ -61,21 +64,6 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                 .realm(realm)
                 .username(AdminPasswordCreds.getLoginUserName())
                 .password(AdminPasswordCreds.getPassword())
-                .clientId("admin-cli")
-                .resteasyClient(resteasyClient)
-                .build();
-    }
-
-    private static Keycloak getClient(String adminUrl, String realm, String authToken) {
-
-        ResteasyClient resteasyClient = new ResteasyClientBuilder()
-                    .connectionPoolSize(10)
-                    .trustStore(loadKeyStore())
-                    .build();
-        return KeycloakBuilder.builder()
-                .serverUrl(adminUrl)
-                .realm(realm)
-                .authorization(authToken)
                 .clientId("admin-cli")
                 .resteasyClient(resteasyClient)
                 .build();
@@ -104,15 +92,22 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
 
     @Override
     public Gateway addTenant(PasswordCredential isSuperAdminPasswordCreds, Gateway gatewayDetails) throws IamAdminServicesException {
+        Keycloak client = null;
         try {
             // get client
-            Keycloak client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), "master", isSuperAdminPasswordCreds);
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), this.superAdminRealmId, isSuperAdminPasswordCreds);
             // create realm
             RealmRepresentation newRealmDetails = new RealmRepresentation();
             newRealmDetails.setEnabled(true);
             newRealmDetails.setId(gatewayDetails.getGatewayId());
             newRealmDetails.setDisplayName(gatewayDetails.getGatewayName());
             newRealmDetails.setRealm(gatewayDetails.getGatewayId());
+            // Following two settings allow duplicate email addresses
+            newRealmDetails.setLoginWithEmailAllowed(false);
+            newRealmDetails.setDuplicateEmailsAllowed(true);
+            // Default access token lifespan to 30 minutes, SSO session idle to 60 minutes
+            newRealmDetails.setAccessTokenLifespan(1800);
+            newRealmDetails.setSsoSessionIdleTimeout(3600);
             RealmRepresentation realmWithRoles = TenantManagementKeycloakImpl.createDefaultRoles(newRealmDetails);
             client.realms().create(realmWithRoles);
             return gatewayDetails;
@@ -126,6 +121,10 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             IamAdminServicesException exception = new IamAdminServicesException();
             exception.setMessage("Error creating Realm in Keycloak Server, reason: " + ex.getMessage());
             throw exception;
+        } finally {
+            if (client != null) {
+                client.close();
+            }
         }
     }
 
@@ -147,6 +146,10 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
         pendingUserRole.setName("user-pending");
         pendingUserRole.setDescription("role for newly registered PGA users");
         defaultRoles.add(pendingUserRole);
+        RoleRepresentation gatewayProviderRole = new RoleRepresentation();
+        gatewayProviderRole.setName("gateway-provider");
+        gatewayProviderRole.setDescription("role for gateway providers in the super-admin PGA");
+        defaultRoles.add(gatewayProviderRole);
         RolesRepresentation rolesRepresentation = new RolesRepresentation();
         rolesRepresentation.setRealm(defaultRoles);
         realmDetails.setRoles(rolesRepresentation);
@@ -154,18 +157,17 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
     }
 
     @Override
-    public boolean createTenantAdminAccount(PasswordCredential isSuperAdminPasswordCreds, Gateway gatewayDetails) throws IamAdminServicesException{
+    public boolean createTenantAdminAccount(PasswordCredential isSuperAdminPasswordCreds, Gateway gatewayDetails, String tenantAdminPassword) throws IamAdminServicesException{
+        Keycloak client = null;
         try{
-            Keycloak client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), "master", isSuperAdminPasswordCreds);
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), this.superAdminRealmId, isSuperAdminPasswordCreds);
             UserRepresentation user = new UserRepresentation();
             user.setUsername(gatewayDetails.getIdentityServerUserName());
             user.setFirstName(gatewayDetails.getGatewayAdminFirstName());
             user.setLastName(gatewayDetails.getGatewayAdminLastName());
             user.setEmail(gatewayDetails.getGatewayAdminEmail());
+            user.setEmailVerified(true);
             user.setEnabled(true);
-            List<String> requiredActionList = new ArrayList<>();
-            requiredActionList.add("UPDATE_PASSWORD");
-            user.setRequiredActions(requiredActionList);
             Response httpResponse = client.realm(gatewayDetails.getGatewayId()).users().create(user);
             logger.info("Tenant Admin account creation exited with code : " + httpResponse.getStatus()+" : " +httpResponse.getStatusInfo());
             if (httpResponse.getStatus() == 201) { //HTTP code for record creation: HTTP 201
@@ -175,10 +177,15 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
                         user.getEmail(),
                         0, 1);
                 UserResource retrievedUser = client.realm(gatewayDetails.getGatewayId()).users().get(retrieveCreatedUserList.get(0).getId());
+
+                // Add user to the "admin" role
+                RoleResource adminRoleResource = client.realm(gatewayDetails.getGatewayId()).roles().get("admin");
+                retrievedUser.roles().realmLevel().add(Arrays.asList(adminRoleResource.toRepresentation()));
+
                 CredentialRepresentation credential = new CredentialRepresentation();
                 credential.setType(CredentialRepresentation.PASSWORD);
-                credential.setValue(ServerSettings.getGatewayAdminTempPwd());
-                credential.setTemporary(true);
+                credential.setValue(tenantAdminPassword);
+                credential.setTemporary(false);
                 retrievedUser.resetPassword(credential);
                 List<ClientRepresentation> realmClients = client.realm(gatewayDetails.getGatewayId()).clients().findAll();
                 String realmManagementClientId=null;
@@ -204,13 +211,18 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             IamAdminServicesException exception = new IamAdminServicesException();
             exception.setMessage("Error creating Realm Admin Account in keycloak server, reason: " + ex.getMessage());
             throw exception;
+        } finally {
+            if (client != null) {
+                client.close();
+            }
         }
     }
 
     @Override
     public Gateway configureClient(PasswordCredential isSuperAdminPasswordCreds, Gateway gatewayDetails) throws IamAdminServicesException{
+        Keycloak client = null;
         try{
-            Keycloak client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), "master", isSuperAdminPasswordCreds);
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), this.superAdminRealmId, isSuperAdminPasswordCreds);
             ClientRepresentation pgaClient = new ClientRepresentation();
             pgaClient.setName("pga");
             pgaClient.setClientId("pga");
@@ -222,22 +234,23 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             pgaClient.setServiceAccountsEnabled(true);
             pgaClient.setFullScopeAllowed(true);
             pgaClient.setClientAuthenticatorType("client-secret");
-            String[] defaultRoles = {"gateway-user"};
-            pgaClient.setDefaultRoles(defaultRoles);
             List<String> redirectUris = new ArrayList<>();
             if(gatewayDetails.getGatewayURL()!=null){
-                if(gatewayDetails.getGatewayURL().endsWith("/")){
-                    redirectUris.add(gatewayDetails.getGatewayURL() + "callback-url");
-                } else {
-                    redirectUris.add(gatewayDetails.getGatewayURL() + "/callback-url");
+                String gatewayURL = gatewayDetails.getGatewayURL();
+                // Remove trailing slash from gatewayURL
+                if(gatewayURL.endsWith("/")) {
+                    gatewayURL = gatewayURL.substring(0, gatewayURL.length() - 1);
                 }
+                // Add redirect URL after login
+                redirectUris.add(gatewayURL + "/callback-url");
+                // Add redirect URL after logout
+                redirectUris.add(gatewayURL);
             } else {
                 logger.error("Request for Realm Client Creation failed, callback URL not present");
                 IamAdminServicesException ex = new IamAdminServicesException();
-                ex.setMessage("Gateway Url field in GatewayProfile cannot be empty, Relam Client creation failed");
+                ex.setMessage("Gateway Url field in GatewayProfile cannot be empty, Realm Client creation failed");
                 throw ex;
             }
-            redirectUris.add("http://accord.scigap.org/callback-url");
             pgaClient.setRedirectUris(redirectUris);
             pgaClient.setPublicClient(false);
             Response httpResponse = client.realms().realm(gatewayDetails.getGatewayId()).clients().create(pgaClient);
@@ -258,29 +271,32 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             IamAdminServicesException exception = new IamAdminServicesException();
             exception.setMessage("Error getting values from property file, reason " + ex.getMessage());
             throw exception;
+        } finally {
+            if (client != null) {
+                client.close();
+            }
         }
     }
 
     @Override
-    public boolean createUser(PasswordCredential realmAdminCreds, UserProfile userProfile, String newPassword) throws IamAdminServicesException{
+    public boolean createUser(PasswordCredential realmAdminCreds, String tenantId, String username, String emailAddress, String firstName, String lastName, String newPassword) throws IamAdminServicesException{
+        Keycloak client = null;
         try{
-            Keycloak client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), userProfile.getGatewayId(), realmAdminCreds);
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, realmAdminCreds);
             UserRepresentation user = new UserRepresentation();
-            user.setUsername(userProfile.getUserId());
-            user.setFirstName(userProfile.getFirstName());
-            user.setLastName(userProfile.getLastName());
-            // Always takes the first value
-            List<String> emails = userProfile.getEmails();
-            user.setEmail(emails.get(0));
+            user.setUsername(username);
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setEmail(emailAddress);
             user.setEnabled(false);
-            Response httpResponse = client.realm(userProfile.getGatewayId()).users().create(user);
+            Response httpResponse = client.realm(tenantId).users().create(user);
             if (httpResponse.getStatus() == 201) { //HTTP code for record creation: HTTP 201
-                List<UserRepresentation> retrieveCreatedUserList = client.realm(userProfile.getGatewayId()).users().search(user.getUsername(),
+                List<UserRepresentation> retrieveCreatedUserList = client.realm(tenantId).users().search(user.getUsername(),
                         user.getFirstName(),
                         user.getLastName(),
                         user.getEmail(),
                         0, 1);
-                UserResource retrievedUser = client.realm(userProfile.getGatewayId()).users().get(retrieveCreatedUserList.get(0).getId());
+                UserResource retrievedUser = client.realm(tenantId).users().get(retrieveCreatedUserList.get(0).getId());
                 CredentialRepresentation credential = new CredentialRepresentation();
                 credential.setType(CredentialRepresentation.PASSWORD);
                 credential.setValue(newPassword);
@@ -296,19 +312,25 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             IamAdminServicesException exception = new IamAdminServicesException();
             exception.setMessage("Error getting values from property file, reason " + ex.getMessage());
             throw exception;
+        } finally {
+            if (client != null) {
+                client.close();
+            }
         }
         return false;
     }
 
     @Override
-    public boolean enableUserAccount(PasswordCredential realmAdminAccount, UserProfile userDetails) throws IamAdminServicesException{
+    public boolean enableUserAccount(PasswordCredential realmAdminCreds, String tenantId, String username) throws IamAdminServicesException{
+        Keycloak client = null;
         try{
-            Keycloak client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), userDetails.getGatewayId(), realmAdminAccount);
-            List<String> emails = userDetails.getEmails();
-            List<UserRepresentation> userResourceList = client.realm(userDetails.getGatewayId()).users().search(userDetails.getUserId(),0,1);
-            UserResource userResource = client.realm(userDetails.getGatewayId()).users().get(userResourceList.get(0).getId());
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, realmAdminCreds);
+            List<UserRepresentation> userResourceList = client.realm(tenantId).users().search(username,0,1);
+            UserResource userResource = client.realm(tenantId).users().get(userResourceList.get(0).getId());
             UserRepresentation profile = userResource.toRepresentation();
             profile.setEnabled(true);
+            // We require that a user verify their email before enabling the account
+            profile.setEmailVerified(true);
             userResource.update(profile);
             return true;
         } catch (ApplicationSettingsException ex) {
@@ -316,12 +338,18 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             IamAdminServicesException exception = new IamAdminServicesException();
             exception.setMessage("Error getting values from property file, reason " + ex.getMessage());
             throw exception;
+        } finally {
+            if (client != null) {
+                client.close();
+            }
         }
     }
 
-    public boolean resetUserPassword(String authToken, String tenantId, String username, String newPassword) throws IamAdminServicesException{
+    @Override
+    public boolean resetUserPassword(PasswordCredential realmAdminCreds, String tenantId, String username, String newPassword) throws IamAdminServicesException{
+        Keycloak client = null;
         try{
-            Keycloak client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, authToken);
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, realmAdminCreds);
             List<UserRepresentation> retrieveUserList = client.realm(tenantId).users().search(username,
                     null,
                     null,
@@ -354,13 +382,19 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             IamAdminServicesException exception = new IamAdminServicesException();
             exception.setMessage("Error resetting user password in keycloak server, reason: " + ex.getMessage());
             throw exception;
+        } finally {
+            if (client != null) {
+                client.close();
+            }
         }
     }
 
-    public List<UserProfile> findUser(PasswordCredential realmAdminCreds, String gatewayID, String email, String userName) throws IamAdminServicesException{
+    @Override
+    public List<UserProfile> findUser(PasswordCredential realmAdminCreds, String tenantId, String email, String userName) throws IamAdminServicesException{
+        Keycloak client = null;
         try{
-            Keycloak client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), gatewayID, realmAdminCreds);
-            List<UserRepresentation> retrieveUserList = client.realm(gatewayID).users().search(userName,
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, realmAdminCreds);
+            List<UserRepresentation> retrieveUserList = client.realm(tenantId).users().search(userName,
                     null,
                     null,
                     email,
@@ -391,6 +425,185 @@ public class TenantManagementKeycloakImpl implements TenantManagementInterface {
             IamAdminServicesException exception = new IamAdminServicesException();
             exception.setMessage("Error finding user in keycloak server, reason: " + ex.getMessage());
             throw exception;
+        } finally {
+            if (client != null) {
+                client.close();
+            }
         }
+    }
+
+    @Override
+    public void updateUserProfile(PasswordCredential realmAdminCreds, String tenantId, String username, UserProfile userDetails) throws IamAdminServicesException {
+
+        Keycloak client = null;
+        try{
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, realmAdminCreds);
+            List<UserRepresentation> retrieveUserList = client.realm(tenantId).users().search(username,
+                    null,
+                    null,
+                    null,
+                    0, 1);
+            if(!retrieveUserList.isEmpty())
+            {
+                UserRepresentation userRepresentation = retrieveUserList.get(0);
+                userRepresentation.setFirstName(userDetails.getFirstName());
+                userRepresentation.setLastName(userDetails.getLastName());
+                userRepresentation.setEmail(userDetails.getEmails().get(0));
+                UserResource userResource = client.realm(tenantId).users().get(userRepresentation.getId());
+                userResource.update(userRepresentation);
+            }else{
+                throw new IamAdminServicesException("User [" + username + "] wasn't found in Keycloak!");
+            }
+        } catch (ApplicationSettingsException ex) {
+            logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
+            IamAdminServicesException exception = new IamAdminServicesException();
+            exception.setMessage("Error getting values from property file, reason " + ex.getMessage());
+            throw exception;
+        } catch (Exception ex){
+            logger.error("Error updating user profile in keycloak server, reason: " + ex.getMessage(), ex);
+            IamAdminServicesException exception = new IamAdminServicesException();
+            exception.setMessage("Error updating user profile in keycloak server, reason: " + ex.getMessage());
+            throw exception;
+        } finally {
+            if (client != null) {
+                client.close();
+            }
+        }
+    }
+
+    @Override
+    public boolean addRoleToUser(PasswordCredential realmAdminCreds, String tenantId, String username, String roleName) throws IamAdminServicesException {
+
+        Keycloak client = null;
+        try{
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, realmAdminCreds);
+            List<UserRepresentation> retrieveCreatedUserList = client.realm(tenantId).users().search(username,
+                    null,
+                    null,
+                    null,
+                    0, 1);
+            UserResource retrievedUser = client.realm(tenantId).users().get(retrieveCreatedUserList.get(0).getId());
+
+            // Add user to the role
+            RoleResource roleResource = client.realm(tenantId).roles().get(roleName);
+            retrievedUser.roles().realmLevel().add(Arrays.asList(roleResource.toRepresentation()));
+            return true;
+        } catch (ApplicationSettingsException ex) {
+            logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
+            IamAdminServicesException exception = new IamAdminServicesException();
+            exception.setMessage("Error getting values from property file, reason " + ex.getMessage());
+            throw exception;
+        } finally {
+            if (client != null) {
+                client.close();
+            }
+        }
+    }
+
+    @Override
+    public boolean removeRoleFromUser(PasswordCredential realmAdminCreds, String tenantId, String username, String roleName) throws IamAdminServicesException {
+
+        Keycloak client = null;
+        try{
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, realmAdminCreds);
+            List<UserRepresentation> retrieveCreatedUserList = client.realm(tenantId).users().search(username,
+                    null,
+                    null,
+                    null,
+                    0, 1);
+            UserResource retrievedUser = client.realm(tenantId).users().get(retrieveCreatedUserList.get(0).getId());
+
+            // Remove role from user
+            RoleResource roleResource = client.realm(tenantId).roles().get(roleName);
+            retrievedUser.roles().realmLevel().remove(Arrays.asList(roleResource.toRepresentation()));
+            return true;
+        } catch (ApplicationSettingsException ex) {
+            logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
+            IamAdminServicesException exception = new IamAdminServicesException();
+            exception.setMessage("Error getting values from property file, reason " + ex.getMessage());
+            throw exception;
+        } finally {
+            if (client != null) {
+                client.close();
+            }
+        }
+    }
+
+    @Override
+    public List<UserProfile> getUsersWithRole(PasswordCredential realmAdminCreds, String tenantId, String roleName) throws IamAdminServicesException {
+        Keycloak client = null;
+        try{
+            client = TenantManagementKeycloakImpl.getClient(ServerSettings.getIamServerUrl(), tenantId, realmAdminCreds);
+            // FIXME: this only searches through the most recent 100 users for the given role (assuming there are no more than 10,000 users in the gateway)
+            int totalUserCount = client.realm(tenantId).users().count();
+            logger.debug("getUsersWithRole: totalUserCount=" + totalUserCount);
+            // Load all users in batches
+            List<UserRepresentation> allUsers = new ArrayList<>();
+            int userBatchSize = 100;
+            for (int start = 0; start < totalUserCount; start=start+userBatchSize) {
+
+                logger.debug("getUsersWithRole: fetching " + userBatchSize + " users...");
+                allUsers.addAll(client.realm(tenantId).users().search(null,
+                        null,
+                        null,
+                        null,
+                        start, userBatchSize));
+            }
+            logger.debug("getUsersWithRole: all users count=" + allUsers.size());
+            allUsers.sort((a, b) -> a.getCreatedTimestamp() - b.getCreatedTimestamp() > 0 ? -1 : 1);
+            // The 100 most recently created users
+            List<UserRepresentation> mostRecentUsers = allUsers.subList(0, Math.min(allUsers.size(), 100));
+            logger.debug("getUsersWithRole: most recent users count=" + mostRecentUsers.size());
+
+            List<UserProfile> usersWithRole = new ArrayList<>();
+            for (UserRepresentation user: mostRecentUsers) {
+                UserResource userResource = client.realm(tenantId).users().get(user.getId());
+
+                List<RoleRepresentation> roleRepresentations = userResource.roles().realmLevel().listAll();
+                for (RoleRepresentation roleRepresentation : roleRepresentations){
+                    if (roleRepresentation.getName().equals(roleName)) {
+                        usersWithRole.add(convertUserRepresentationToUserProfile(user, tenantId));
+                        break;
+                    }
+                }
+            }
+            logger.debug("getUsersWithRole: most recent users with role count=" + usersWithRole.size());
+            return usersWithRole;
+        } catch (ApplicationSettingsException ex) {
+            logger.error("Error getting values from property file, reason: " + ex.getMessage(), ex);
+            IamAdminServicesException exception = new IamAdminServicesException();
+            exception.setMessage("Error getting values from property file, reason " + ex.getMessage());
+            throw exception;
+        } finally {
+            if (client != null) {
+                logger.debug("getUsersWithRole: closing client...");
+                client.close();
+                logger.debug("getUsersWithRole: client closed");
+            }
+        }
+    }
+
+    private UserProfile convertUserRepresentationToUserProfile(UserRepresentation userRepresentation, String tenantId) {
+
+        UserProfile profile = new UserProfile();
+        profile.setAiravataInternalUserId(userRepresentation.getUsername() + "@" + tenantId);
+        profile.setGatewayId(tenantId);
+        profile.setUserId(userRepresentation.getUsername());
+        profile.setFirstName(userRepresentation.getFirstName());
+        profile.setLastName(userRepresentation.getLastName());
+        profile.setEmails(Arrays.asList(new String[]{userRepresentation.getEmail()}));
+
+        // Just default these. UserProfile isn't a great data model for this data since it isn't actually the Airavata UserProfile
+        profile.setLastAccessTime(0);
+        profile.setCreationTime(0);
+        profile.setValidUntil(0);
+        // Use state field to indicate whether user has been enabled in Keycloak
+        if (userRepresentation.isEnabled()) {
+            profile.setState(Status.CONFIRMED);
+        } else {
+            profile.setState(Status.PENDING_CONFIRMATION);
+        }
+
+        return profile;
     }
 }

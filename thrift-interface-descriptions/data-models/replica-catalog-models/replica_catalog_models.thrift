@@ -20,7 +20,7 @@
   namespace java org.apache.airavata.model.data.replica
   namespace php Airavata.Model.Data.Replica
   namespace cpp apache.airavata.model.data.replica
-  namespace py apache.airavata.model.data.replica
+  namespace py airavata.model.data.replica
 
 enum ReplicaLocationCategory {
     GATEWAY_DATA_STORE,

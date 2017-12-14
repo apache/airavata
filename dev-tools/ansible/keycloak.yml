@@ -1,0 +1,9 @@
+---
+- hosts: keycloak
+  tags: keycloak
+  roles:
+    - env_setup
+    - java
+    - keycloak
+
+...

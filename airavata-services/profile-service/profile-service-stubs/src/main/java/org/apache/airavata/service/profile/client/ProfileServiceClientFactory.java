@@ -20,6 +20,12 @@
  */
 package org.apache.airavata.service.profile.client;
 
+import org.apache.airavata.service.profile.groupmanager.cpi.GroupManagerService;
+import org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException;
+import org.apache.airavata.service.profile.groupmanager.cpi.group_manager_cpiConstants;
+import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
+import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
+import org.apache.airavata.service.profile.iam.admin.services.cpi.iam_admin_services_cpiConstants;
 import org.apache.airavata.service.profile.tenant.cpi.TenantProfileService;
 import org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException;
 import org.apache.airavata.service.profile.tenant.cpi.profile_tenant_cpiConstants;
@@ -58,6 +64,30 @@ public class ProfileServiceClientFactory {
             return new TenantProfileService.Client(multiplexedProtocol);
         } catch (TTransportException e) {
             throw new TenantProfileServiceException(e.getMessage());
+        }
+    }
+
+    public static IamAdminServices.Client createIamAdminServiceClient(String serverHost, int serverPort) throws IamAdminServicesException {
+        try {
+            TTransport transport = new TSocket(serverHost, serverPort);
+            transport.open();
+            TProtocol protocol = new TBinaryProtocol(transport);
+            TMultiplexedProtocol multiplexedProtocol = new TMultiplexedProtocol(protocol, iam_admin_services_cpiConstants.IAM_ADMIN_SERVICES_CPI_NAME);
+            return new IamAdminServices.Client(multiplexedProtocol);
+        } catch (TTransportException e) {
+            throw new IamAdminServicesException(e.getMessage());
+        }
+    }
+
+    public static GroupManagerService.Client createGroupManagerServiceClient(String serverHost, int serverPort)  throws GroupManagerServiceException {
+        try {
+            TTransport transport = new TSocket(serverHost, serverPort);
+            transport.open();
+            TProtocol protocol = new TBinaryProtocol(transport);
+            TMultiplexedProtocol multiplexedProtocol = new TMultiplexedProtocol(protocol, group_manager_cpiConstants.GROUP_MANAGER_CPI_NAME);
+            return new GroupManagerService.Client(multiplexedProtocol);
+        } catch (TTransportException e) {
+            throw new GroupManagerServiceException(e.getMessage());
         }
     }
 }

@@ -131,6 +131,9 @@
               host_all=yes
               priv=*.*:ALL,GRANT state=present
 
+- include: keycloak.yml
+  when: "'keycloak' in groups"
+
 - name: open firewall port {{ db_server_port }}
   firewalld: port="{{ db_server_port }}/tcp"
              zone=public permanent=true state=enabled immediate=yes

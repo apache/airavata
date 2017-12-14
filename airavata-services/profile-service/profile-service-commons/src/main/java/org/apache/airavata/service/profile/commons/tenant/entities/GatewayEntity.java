@@ -25,11 +25,13 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.UUID;
 
 @Entity
 @Table(name = "GATEWAY")
 public class GatewayEntity {
     private final static Logger logger = LoggerFactory.getLogger(GatewayEntity.class);
+    private String airavataInternalGatewayId;
     private String gatewayId;
     private String gatewayName;
     private String domain;
@@ -40,17 +42,31 @@ public class GatewayEntity {
     private String gatewayPublicAbstract;
     private String reviewProposalDescription;
     private String gatewayAdminFirstName;
-    private String getGatewayAdminLastName;
+    private String gatewayAdminLastName;
     private String gatewayAdminEmail;
     private String identityServerUserName;
     private String identityServerPasswordToken;
     private String declinedReason;
     private String oauthClientId;
-    private String getOauthClientSecret;
+    private String oauthClientSecret;
     private long requestCreationTime;
     private String requesterUsername;
 
+    // set random value for internalGatewayId
+    public GatewayEntity() {
+        this.airavataInternalGatewayId = UUID.randomUUID().toString();
+    }
+
     @Id
+    @Column(name = "AIRAVATA_INTERNAL_GATEWAY_ID")
+    public String getAiravataInternalGatewayId() {
+        return airavataInternalGatewayId;
+    }
+
+    public void setAiravataInternalGatewayId(String airavataInternalGatewayId) {
+        this.airavataInternalGatewayId = airavataInternalGatewayId;
+    }
+
     @Column(name = "GATEWAY_ID")
     public String getGatewayId() {
         return gatewayId;
@@ -142,12 +158,12 @@ public class GatewayEntity {
     }
 
     @Column(name = "GATEWAY_ADMIN_LAST_NAME")
-    public String getGetGatewayAdminLastName() {
-        return getGatewayAdminLastName;
+    public String getGatewayAdminLastName() {
+        return gatewayAdminLastName;
     }
 
-    public void setGetGatewayAdminLastName(String getGatewayAdminLastName) {
-        this.getGatewayAdminLastName = getGatewayAdminLastName;
+    public void setGatewayAdminLastName(String gatewayAdminLastName) {
+        this.gatewayAdminLastName = gatewayAdminLastName;
     }
 
     @Column(name = "GATEWAY_ADMIN_EMAIL")
@@ -214,12 +230,12 @@ public class GatewayEntity {
     }
 
     @Column(name = "OAUTH_CLIENT_SECRET")
-    public String getGetOauthClientSecret() {
-        return getOauthClientSecret;
+    public String getOauthClientSecret() {
+        return oauthClientSecret;
     }
 
-    public void setGetOauthClientSecret(String oauthClientSecret) {
-        this.getOauthClientSecret = oauthClientSecret;
+    public void setOauthClientSecret(String oauthClientSecret) {
+        this.oauthClientSecret = oauthClientSecret;
     }
 
     @PrePersist
@@ -228,9 +244,25 @@ public class GatewayEntity {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof GatewayEntity)) {
+            return false;
+        }
+        GatewayEntity gwy = (GatewayEntity) obj;
+        return getAiravataInternalGatewayId().equals(gwy.getAiravataInternalGatewayId());
+    }
+
+    @Override
     public String toString() {
         return "GatewayEntity{" +
-                "gatewayId='" + gatewayId + '\'' +
+                "airavataInternalGatewayId='" + airavataInternalGatewayId + '\'' +
+                ", gatewayId='" + gatewayId + '\'' +
                 ", gatewayName='" + gatewayName + '\'' +
                 ", domain='" + domain + '\'' +
                 ", emailAddress='" + emailAddress + '\'' +
@@ -240,13 +272,13 @@ public class GatewayEntity {
                 ", gatewayPublicAbstract='" + gatewayPublicAbstract + '\'' +
                 ", reviewProposalDescription='" + reviewProposalDescription + '\'' +
                 ", gatewayAdminFirstName='" + gatewayAdminFirstName + '\'' +
-                ", getGatewayAdminLastName='" + getGatewayAdminLastName + '\'' +
+                ", gatewayAdminLastName='" + gatewayAdminLastName + '\'' +
                 ", gatewayAdminEmail='" + gatewayAdminEmail + '\'' +
                 ", identityServerUserName='" + identityServerUserName + '\'' +
                 ", identityServerPasswordToken='" + identityServerPasswordToken + '\'' +
                 ", declinedReason='" + declinedReason + '\'' +
                 ", oauthClientId='" + oauthClientId + '\'' +
-                ", getOauthClientSecret='" + getOauthClientSecret + '\'' +
+                ", oauthClientSecret='" + oauthClientSecret + '\'' +
                 ", requestCreationTime=" + requestCreationTime +
                 ", requesterUsername='" + requesterUsername + '\'' +
                 '}';

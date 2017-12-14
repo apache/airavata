@@ -323,6 +323,7 @@ public class SSHUtils {
             while (true) {
                 int c = checkAck(sin);
                 if (c != 'C') {
+                	log.info("checkAck for Input Stream file: " + sourceFile + " is not valid. Hence skipping reading the file.");
                     break;
                 }
 

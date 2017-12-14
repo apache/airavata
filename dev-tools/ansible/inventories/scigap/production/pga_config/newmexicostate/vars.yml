@@ -1,0 +1,65 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+pga_repo: "https://github.com/apache/airavata-php-gateway.git"
+git_branch: "master"
+user: "pga"
+group: "pga"
+doc_root_dir: "/var/www/portals/new-mexico-state"
+vhost_servername: "sciencegateway.nmsu.edu"
+vhost_ssl: True
+# TODO: have Ansible manage these files as well
+ssl_certificate_file: "/etc/letsencrypt/live/sciencegateway.nmsu.edu/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/sciencegateway.nmsu.edu/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/sciencegateway.nmsu.edu/privkey.pem"
+
+## Keycloak related variables
+tenant_domain: "{{ gateway_id }}"
+admin_username: "admin"
+admin_password: "{{ vault_admin_password }}"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
+
+auth_options:
+  - name: "New Mexico State Science Gateway"
+    oauth_grant_type: "password"
+  - name: "Your Institution Login"
+    oauth_grant_type: "authorization_code"
+    oauth_authorize_url_extra_params: "kc_idp_hint=cilogon"
+    logo: "/assets/cilogon-logo-24x24-b.png"
+oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
+
+gateway_id: "new-mexico-state"
+# relative to document root dir
+experiment_data_dir: "{{ user_data_dir }}/new-mexico-state"
+gateway_data_store_resource_id: "gf4.ucs.indiana.edu_61552681-96f0-462a-a36c-a62a010bffc6"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCRYbUBGqEqUkcsAkQPetJDTTIWGGFbB7DBzvSQUT26SqHpRZQR3J4lCvzmH8/T3KoQC4uxnph5RpiemMeoQIxIJ8hH9Pod3Z0xK2qu6b/jDrbX+UbepkBl8Xc8aE6UWAX4C6rnn1X4ktqLp9GDE2G9CN4+pZxDanK5h7+68qsiz/rpzUEHVDPzo1A5YRPE2cFgOp4s207zE/GaXH2A/+vucdbTmoy2hND3uYkaaMe4ygMlakDDlkMTl5dlgaHuoqVu0pOSnsUimpxV87LpXqWaD1d6G+IVW1CNjKtVBvz/z4aFMLWhqWLYZlLpsoGi4ZqXf3u0A4ajL+6uXgiGuIRX"
+
+## Portal related variables
+super_admin_portal: "false"
+admin_emails: "['sgg@iu.edu', 'dugasdvt@ad.nmsu.edu']"
+portal_email_username: "pga.airavata@gmail.com"
+portal_email_password: "{{ vault_portal_email_password }}"
+#portal_theme: "gsu-gateway-theme"
+#portal_theme_repo: "https://github.com/SciGaP/gsu-gateway-theme"
+portal_title: "New Mexico State Science Gateway"
+...

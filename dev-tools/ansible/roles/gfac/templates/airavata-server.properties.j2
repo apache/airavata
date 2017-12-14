@@ -32,9 +32,9 @@
 #for derby [AiravataJPARegistry]
 #registry.jdbc.driver=org.apache.derby.jdbc.ClientDriver
 #registry.jdbc.url=jdbc:derby://localhost:1527/experiment_catalog;create=true;user=airavata;password=airavata
-# MySql database configuration
-registry.jdbc.driver=com.mysql.jdbc.Driver
-registry.jdbc.url=jdbc:mysql://{{ db_server }}:{{ db_server_port }}/{{ exp_catalog }}
+# MariaDB database configuration
+registry.jdbc.driver=org.mariadb.jdbc.Driver
+registry.jdbc.url=jdbc:mariadb://{{ db_server }}:{{ db_server_port }}/{{ exp_catalog }}
 registry.jdbc.user={{ db_user }}
 registry.jdbc.password={{ db_password }}
 #FIXME: Probably the following property should be removed.
@@ -64,9 +64,9 @@ cluster.status.monitoring.repeat.time=18000
 #for derby [AiravataJPARegistry]
 #appcatalog.jdbc.driver=org.apache.derby.jdbc.ClientDriver
 #appcatalog.jdbc.url=jdbc:derby://localhost:1527/app_catalog;create=true;user=airavata;password=airavata
-# MySql database configuration
-appcatalog.jdbc.driver=com.mysql.jdbc.Driver
-appcatalog.jdbc.url=jdbc:mysql://{{ db_server }}:3306/{{ app_catalog }}
+# MariaDB database configuration
+appcatalog.jdbc.driver=org.mariadb.jdbc.Driver
+appcatalog.jdbc.url=jdbc:mariadb://{{ db_server }}:3306/{{ app_catalog }}
 appcatalog.jdbc.user={{ db_user }}
 appcatalog.jdbc.password={{ db_password }}
 appcatalog.validationQuery=SELECT 1 from CONFIGURATION
@@ -77,9 +77,9 @@ appcatalog.validationQuery=SELECT 1 from CONFIGURATION
 #for derby [AiravataJPARegistry]
 #replicacatalog.jdbc.driver=org.apache.derby.jdbc.ClientDriver
 #replicacatalog.jdbc.url=jdbc:derby://localhost:1527/replica_catalog;create=true;user=airavata;password=airavata
-# MySql database configuration
-replicacatalog.jdbc.driver=com.mysql.jdbc.Driver
-replicacatalog.jdbc.url=jdbc:mysql://{{ db_server }}:3306/{{ replica_catalog }}
+# MariaDB database configuration
+replicacatalog.jdbc.driver=org.mariadb.jdbc.Driver
+replicacatalog.jdbc.url=jdbc:mariadb://{{ db_server }}:3306/{{ replica_catalog }}
 replicacatalog.jdbc.user={{ db_user }}
 replicacatalog.jdbc.password={{ db_password }}
 replicacatalog.validationQuery=SELECT 1 from CONFIGURATION
@@ -90,9 +90,9 @@ replicacatalog.validationQuery=SELECT 1 from CONFIGURATION
 #for derby [AiravataJPARegistry]
 #workflowcatalog.jdbc.driver=org.apache.derby.jdbc.ClientDriver
 #workflowcatalog.jdbc.url=jdbc:derby://localhost:1527/workflow_catalog;create=true;user=airavata;password=airavata
-# MySql database configuration
-workflowcatalog.jdbc.driver=com.mysql.jdbc.Driver
-workflowcatalog.jdbc.url=jdbc:mysql://{{ db_server }}:3306/{{ replica_catalog }}
+# MariaDB database configuration
+workflowcatalog.jdbc.driver=org.mariadb.jdbc.Driver
+workflowcatalog.jdbc.url=jdbc:mariadb://{{ db_server }}:3306/{{ workflow_catalog }}
 workflowcatalog.jdbc.user={{ db_user }}
 workflowcatalog.jdbc.password={{ db_password }}
 workflowcatalog.validationQuery=SELECT 1 from CONFIGURATION
@@ -103,9 +103,9 @@ workflowcatalog.validationQuery=SELECT 1 from CONFIGURATION
 #for derby [AiravataJPARegistry]
 #sharingcatalog.jdbc.driver=org.apache.derby.jdbc.ClientDriver
 #sharingcatalog.jdbc.url=jdbc:derby://localhost:1527/sharing_catalog;create=true;user=airavata;password=airavata
-# MySql database configuration
-sharingcatalog.jdbc.driver=com.mysql.jdbc.Driver
-sharingcatalog.jdbc.url=jdbc:mysql://{{ db_server }}:3306/{{ sharing_catalog }}
+# MariaDB database configuration
+sharingcatalog.jdbc.driver=org.mariadb.jdbc.Driver
+sharingcatalog.jdbc.url=jdbc:mariadb://{{ db_server }}:3306/{{ sharing_catalog }}
 sharingcatalog.jdbc.user={{ db_user }}
 sharingcatalog.jdbc.password={{ db_password }}
 sharingcatalog.validationQuery=SELECT 1 from CONFIGURATION
@@ -199,10 +199,10 @@ job.notification.flags=abe
 credential.store.keystore.url={{ keystores_location }}/{{ cred_keystore_src_path | basename }}
 credential.store.keystore.alias={{ cred_keystore_alias }}
 credential.store.keystore.password={{ cred_keystore_passwd }}
-credential.store.jdbc.url=jdbc:mysql://{{ db_server }}:3306/{{ credential_store }}
+credential.store.jdbc.url=jdbc:mariadb://{{ db_server }}:3306/{{ credential_store }}
 credential.store.jdbc.user={{ db_user }}
 credential.store.jdbc.password={{ db_password }}
-credential.store.jdbc.driver=com.mysql.jdbc.Driver
+credential.store.jdbc.driver=org.mariadb.jdbc.Driver
 credential.store.server.host={{ cred_store_server_host }}
 credential.store.server.port={{ cred_store_port }}
 credentialstore=org.apache.airavata.credential.store.server.CredentialStoreServer
@@ -295,3 +295,8 @@ trust.store.password=airavata
 authz.cache.enabled=true
 authz.cache.manager.class=org.apache.airavata.service.security.authzcache.DefaultAuthzCacheManager
 in.memory.cache.size=1000
+
+###########################################################################
+# DB Event Manager Runner
+###########################################################################
+db_event_manager=org.apache.airavata.db.event.manager.DBEventManagerRunner

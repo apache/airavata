@@ -40,13 +40,15 @@
             <fileMode>755</fileMode>
         </fileSet>
 
-        <!-- ********************** copy airavata-server.properties ********************** -->
+        <!-- ********************** copy airavata-server.properties and key stores ********************** -->
         <fileSet>
             <directory>../../configuration/server/src/main/resources/</directory>
             <outputDirectory>bin</outputDirectory>
             <includes>
                 <include>airavata-server.properties</include>
                 <include>log4j.properties</include>
+                <include>airavata.jks</include>
+                <include>client_truststore.jks</include>
             </includes>
         </fileSet>
 

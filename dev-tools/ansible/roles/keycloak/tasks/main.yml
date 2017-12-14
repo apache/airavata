@@ -7,6 +7,8 @@
               owner="{{ user }}"
               group="{{ group }}"
               creates="{{user_home}}/{{ keycloak_install_dir }}/bin/standalone.sh"
+  become: true
+  become_user: "{{ user }}"
   tags:
        - always
 
@@ -17,6 +19,8 @@
     path: "{{user_home}}/{{ keycloak_install_dir }}/modules/system/layers/keycloak/org/mysql/main"
     state: directory
     mode: 0755
+  become: true
+  become_user: "{{ user }}"
   tags:
        - always
 
@@ -27,11 +31,15 @@
       owner="{{ user }}"
       group="{{ group }}"
       creates="{{user_home}}/{keycloak_db_connector_name}}/{{keycloak_db_connector_name}}-bin.jar"
+  become: true
+  become_user: "{{ user }}"
   tags:
        - always
 
 - name: move jdbc connector to keycloak module
   command: mv {{user_home}}/{{keycloak_db_connector_name}}/{{keycloak_db_connector_name}}-bin.jar {{user_home}}/{{ keycloak_install_dir }}/modules/system/layers/keycloak/org/mysql/main/
+  become: true
+  become_user: "{{ user }}"
   tags:
        - always
 
@@ -42,6 +50,8 @@
     owner="{{ user }}"
     group="{{ group }}"
     mode="u=rw,g=r,o=r"
+  become: true
+  become_user: "{{ user }}"
   tags:
        - always
 
@@ -57,6 +67,8 @@
     owner="{{ user }}"
     group="{{ group }}"
     mode="u=rw,g=r,o=r"
+  become: true
+  become_user: "{{ user }}"
   tags:
        - hacluster
 
@@ -68,6 +80,8 @@
     owner="{{ user }}"
     group="{{ group }}"
     mode="u=rw,g=r,o=r"
+  become: true
+  become_user: "{{ user }}"
   tags:
        - standalone
 
@@ -75,11 +89,13 @@
 
 - name: copy ssl certificate files to remote
   copy:
-    src: /Users/anujbhan/github/AiravataDev/keycloak-deployment/airavata/dev-tools/ansible/roles/keycloak/files/{{keycloak_ssl_keystore_file_name}}
+    src: "{{keycloak_ssl_keystore_file}}"
     dest: "{{ user_home }}/{{ keycloak_install_dir }}/standalone/configuration/{{keycloak_ssl_keystore_file_name}}"
     owner: "{{ user }}"
     group: "{{ group }}"
     mode: 0644
+  become: true
+  become_user: "{{ user }}"
   tags:
         - standalone
 # </------------------------------ Server Configuration ends ---------------------------->
@@ -126,35 +142,15 @@
 
 - name: Add master realm admin account
   command: "{{user_home}}/{{ keycloak_install_dir }}/bin/add-user-keycloak.sh -r master -u {{ keycloak_master_account_username }} -p {{ keycloak_master_account_password }}"
+  args:
+    creates: "{{user_home}}/{{ keycloak_install_dir }}/standalone/configuration/keycloak-add-user.json"
   become: yes
   become_user: root
   tags:
        - always
 
 
-# <--------------------------install firewall & open keycloak Identity server firewall port------------------------------>
-- name: Install Firewalld (RedHat)
-  yum: name=firewalld state=latest update_cache=yes
-  become: yes
-  become_user: root
-  when: ansible_os_family == "RedHat"
-  tags:
-         - always
-
-- name: Install Firewalld (Debian)
-  apt: name=firewalld state=latest update_cache=yes
-  become: yes
-  become_user: root
-  when: ansible_os_family == "Debian"
-  tags:
-         - always
-
-- name: Start firewalld service
-  service: name=firewalld state=started
-  become: yes
-  tags:
-         - always
-
+# <--------------------------open keycloak Identity server firewall port------------------------------>
 - name: open firewall port {{ keycloak_server_port }}
   firewalld: port="{{ keycloak_server_port }}/tcp"
              zone=public permanent=true state=enabled immediate=yes
@@ -171,8 +167,17 @@
   tags:
        - always
 
+# FIXME: restarting Keycloak server doesn't work
+- name: stop Keycloak server
+  service: name=keycloak state=stopped
+  ignore_errors: yes
+  become: yes
+  become_user: root
+  tags:
+       - always
+
 - name: start Keycloak server
-  service: name=keycloak state=restarted
+  service: name=keycloak state=started
   become: yes
   become_user: root
   tags:

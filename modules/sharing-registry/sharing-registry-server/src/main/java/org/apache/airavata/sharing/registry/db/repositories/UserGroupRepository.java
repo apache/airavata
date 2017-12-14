@@ -29,7 +29,9 @@ import org.apache.airavata.sharing.registry.models.UserGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class UserGroupRepository extends AbstractRepository<UserGroup, UserGroupEntity, UserGroupPK> {
     private final static Logger logger = LoggerFactory.getLogger(UserGroupRepository.class);
@@ -38,18 +40,22 @@ public class UserGroupRepository extends AbstractRepository<UserGroup, UserGroup
         super(UserGroup.class, UserGroupEntity.class);
     }
 
-    //TODO Replace with prepared statements
     public List<UserGroup> getAccessibleGroups(String domainId, String entityId, String permissionTypeId) throws SharingRegistryException {
         String query = "SELECT DISTINCT g from " + UserGroupEntity.class.getSimpleName() + " g, " + SharingEntity.class.getSimpleName() + " s";
         query += " WHERE ";
         query += "g." + DBConstants.UserGroupTable.GROUP_ID + " = s." + DBConstants.SharingTable.GROUP_ID + " AND ";
         query += "g." + DBConstants.UserGroupTable.DOMAIN_ID + " = s." + DBConstants.SharingTable.DOMAIN_ID + " AND ";
-        query += "g." + DBConstants.UserGroupTable.DOMAIN_ID + " = '" + domainId + "' AND ";
-        query += "s." + DBConstants.SharingTable.ENTITY_ID + " = '" + entityId + "' AND ";
-        query += "s." + DBConstants.SharingTable.PERMISSION_TYPE_ID + " = '" + permissionTypeId + "' AND ";
-        query += "g." + DBConstants.UserGroupTable.GROUP_CARDINALITY + " = '" + GroupCardinality.MULTI_USER.toString() + "'";
+        query += "g." + DBConstants.UserGroupTable.DOMAIN_ID + " = :" + DBConstants.UserGroupTable.DOMAIN_ID + " AND ";
+        query += "s." + DBConstants.SharingTable.ENTITY_ID + " = :" + DBConstants.SharingTable.ENTITY_ID + " AND ";
+        query += "s." + DBConstants.SharingTable.PERMISSION_TYPE_ID + " = :" + DBConstants.SharingTable.PERMISSION_TYPE_ID + " AND ";
+        query += "g." + DBConstants.UserGroupTable.GROUP_CARDINALITY + " = :" + DBConstants.UserGroupTable.GROUP_CARDINALITY;
         query += " ORDER BY s.createdTime DESC";
-        return select(query, 0, -1);
+        Map<String,Object> queryParameters = new HashMap<>();
+        queryParameters.put(DBConstants.UserGroupTable.DOMAIN_ID, domainId);
+        queryParameters.put(DBConstants.SharingTable.ENTITY_ID, entityId);
+        queryParameters.put(DBConstants.SharingTable.PERMISSION_TYPE_ID, permissionTypeId);
+        queryParameters.put(DBConstants.UserGroupTable.GROUP_CARDINALITY, GroupCardinality.MULTI_USER.toString());
+        return select(query, queryParameters, 0, -1);
     }
 
 
@@ -59,10 +65,15 @@ public class UserGroupRepository extends AbstractRepository<UserGroup, UserGroup
         query += " WHERE ";
         query += "g." + DBConstants.UserGroupTable.GROUP_ID + " = s." + DBConstants.SharingTable.GROUP_ID + " AND ";
         query += "g." + DBConstants.UserGroupTable.DOMAIN_ID + " = s." + DBConstants.SharingTable.DOMAIN_ID + " AND ";
-        query += "g." + DBConstants.UserGroupTable.DOMAIN_ID + " = '" + domainId + "' AND ";
-        query += "s." + DBConstants.SharingTable.ENTITY_ID + " = '" + entityId + "' AND ";
-        query += "s." + DBConstants.SharingTable.PERMISSION_TYPE_ID + " <> '" + (new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId) + "'";
+        query += "g." + DBConstants.UserGroupTable.DOMAIN_ID + " = :" + DBConstants.UserGroupTable.DOMAIN_ID + " AND ";
+        query += "s." + DBConstants.SharingTable.ENTITY_ID + " = :" + DBConstants.SharingTable.ENTITY_ID + " AND ";
+        query += "s." + DBConstants.SharingTable.PERMISSION_TYPE_ID + " <> :" + DBConstants.SharingTable.PERMISSION_TYPE_ID;
         query += " ORDER BY s.createdTime DESC";
-        return select(query, 0, -1).size() != 0;
+        Map<String,Object> queryParameters = new HashMap<>();
+        queryParameters.put(DBConstants.UserGroupTable.DOMAIN_ID, domainId);
+        queryParameters.put(DBConstants.SharingTable.ENTITY_ID, entityId);
+        String ownerPermissionTypeIdForDomain = (new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId);
+        queryParameters.put(DBConstants.SharingTable.PERMISSION_TYPE_ID, ownerPermissionTypeIdForDomain);
+        return select(query, queryParameters, 0, -1).size() != 0;
     }
 }

@@ -27,6 +27,7 @@
       copy=no
       owner="{{ user }}"
       group="{{ group }}"
+  become: yes
 
 - name: open zookeeper port
   firewalld: port=2181/tcp zone=public permanent=true state=enabled immediate=yes
@@ -36,10 +37,12 @@
   template: src=zoo.cfg.j2 dest="{{ zookeeper_dir }}/conf/zoo.cfg" owner="{{ user }}" group="{{ group }}" mode="u=rw,g=r,o=r"
   notify:
     - restart zookeeper
+  become: yes
 
 - name: Check if systemd exists
   stat: path=/usr/lib/systemd/system/
   register: systemd_check
+  become: yes
 
 - name: Systemd script.
   template: src=zookeeper.service.j2 dest=/usr/lib/systemd/system/zookeeper.service
