@@ -57,12 +57,6 @@ public class ServerSettings extends ApplicationSettings {
     // Credential Store constants
     public static final String CREDENTIAL_SERVER_HOST = "credential.store.server.host";
     public static final String CREDENTIAL_SERVER_PORT = "credential.store.server.port";
-
-    //User Profile onstants
-
-//    public static final String USER_PROFILE_SERVER_HOST = "user.profile.server.host";
-//    public static final String USER_PROFILE_SERVER_PORT = "user.profile.server.port";
-
     // Zookeeper + curator constants
     public static final String EMBEDDED_ZK = "embedded.zk";
     public static final String ZOOKEEPER_SERVER_CONNECTION = "zookeeper.server.connection";
