@@ -44,38 +44,56 @@ service IamAdminServices {
 
 
     workspace_model.Gateway setUpGateway (1: required security_model.AuthzToken authzToken,
-                       2: required workspace_model.Gateway gateway
-                       3: required credential_store_data_models.PasswordCredential isSuperAdminCredentials)
+                       2: required workspace_model.Gateway gateway)
                     throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
                             2: airavata_errors.AuthorizationException ae)
 
     bool registerUser(1: required security_model.AuthzToken authzToken,
-                        2: required user_profile_model.UserProfile userDetails
-                        3: required credential_store_data_models.PasswordCredential isRealmAdminCredentials
-                        4: required string newPassword)
+                        2: required string username,
+                        3: required string emailAddress,
+                        4: required string firstName,
+                        5: required string lastName,
+                        6: required string newPassword)
                         throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
                                                     2: airavata_errors.AuthorizationException ae)
 
     bool enableUser(1: required security_model.AuthzToken authzToken,
-                            2: required user_profile_model.UserProfile userDetails
-                            3: required credential_store_data_models.PasswordCredential isRealmAdminCredentials)
+                        2: required string username)
                             throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
                                                         2: airavata_errors.AuthorizationException ae)
 
     bool resetUserPassword(1: required security_model.AuthzToken authzToken,
-                            2: required string tenantId,
-                            3: required string username,
-                            4: required string newPassword)
+                            2: required string username,
+                            3: required string newPassword)
                             throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
                                                         2: airavata_errors.AuthorizationException ae)
 
     /*userId can be null*/
     list<user_profile_model.UserProfile> findUsers(1: required security_model.AuthzToken authzToken,
-                                2: required string gatewayID,
-                                3: required string email,
-                                4: required string userId,
-                                5: required credential_store_data_models.PasswordCredential isRealmAdminCredentials)
+                                2: required string email,
+                                3: required string userId)
                                 throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
                                                             2: airavata_errors.AuthorizationException ae)
 
+    void updateUserProfile(1: required security_model.AuthzToken authzToken,
+                           2: required user_profile_model.UserProfile userDetails)
+        throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
+                2: airavata_errors.AuthorizationException ae)
+
+    bool addRoleToUser(1: required security_model.AuthzToken authzToken,
+                        2: required string username,
+                        3: required string roleName)
+        throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
+                2: airavata_errors.AuthorizationException ae)
+
+    bool removeRoleFromUser(1: required security_model.AuthzToken authzToken,
+                        2: required string username,
+                        3: required string roleName)
+        throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
+                2: airavata_errors.AuthorizationException ae)
+
+    list<user_profile_model.UserProfile> getUsersWithRole(1: required security_model.AuthzToken authzToken,
+                                2: required string roleName)
+                                throws (1: iam_admin_services_cpi_errors.IamAdminServicesException Idse,
+                                                            2: airavata_errors.AuthorizationException ae)
 }

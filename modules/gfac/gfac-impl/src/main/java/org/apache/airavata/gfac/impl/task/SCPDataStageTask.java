@@ -30,7 +30,6 @@ import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.cluster.CommandInfo;
 import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
-import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.Task;
@@ -45,6 +44,9 @@ import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.model.task.TaskTypes;
+import org.apache.airavata.registry.cpi.ExpCatChildDataType;
+import org.apache.airavata.registry.cpi.ExperimentCatalog;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +57,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -64,8 +67,6 @@ import java.util.Map;
 public class SCPDataStageTask implements Task {
     private static final Logger log = LoggerFactory.getLogger(SCPDataStageTask.class);
     private static final int DEFAULT_SSH_PORT = 22;
-    private String hostName;
-    private String inputPath;
 
     @Override
     public void init(Map<String, String> propertyMap) throws TaskException {
@@ -121,12 +122,13 @@ public class SCPDataStageTask implements Task {
             StorageResourceDescription storageResource = processContext.getStorageResource();
 //            StoragePreference storagePreference = taskContext.getParentProcessContext().getStoragePreference();
 
+            String hostName = null;
             if (storageResource != null) {
                 hostName = storageResource.getHostName();
             } else {
                 throw new GFacException("Storage Resource is null");
             }
-            inputPath  = processContext.getStorageFileSystemRootLocation();
+            String inputPath  = processContext.getStorageFileSystemRootLocation();
             inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
 
             // use rsync instead of scp if source and destination host and user name is same.
@@ -134,9 +136,10 @@ public class SCPDataStageTask implements Task {
             String fileName = sourceURI.getPath().substring(sourceURI.getPath().lastIndexOf(File.separator) + 1,
                     sourceURI.getPath().length());
 
-            authenticationInfo = Factory.getComputerResourceSSHKeyAuthentication(processContext);
-            ServerInfo serverInfo = processContext.getComputeResourceServerInfo();
-            Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
+            Session remoteSession = Factory.getSSHSession(Factory.getComputerResourceSSHKeyAuthentication(processContext),
+                    processContext.getComputeResourceServerInfo());
+            Session storageSession = Factory.getSSHSession(Factory.getStorageSSHKeyAuthentication(processContext),
+                    processContext.getStorageResourceServerInfo());
 
             URI destinationURI = null;
             if (subTaskModel.getDestination().startsWith("dummy")) {
@@ -157,30 +160,61 @@ public class SCPDataStageTask implements Task {
             status = new TaskStatus(TaskState.COMPLETED);
 
             //Wildcard for file name. Has to find the correct name.
-            if(fileName.startsWith("*.")){
+            if(fileName.contains("*")){
                 String destParentPath = (new File(destinationURI.getPath())).getParentFile().getPath();
                 String sourceParentPath = (new File(sourceURI.getPath())).getParentFile().getPath();
-                String temp = taskContext.getParentProcessContext().getDataMovementRemoteCluster()
-                        .getFileNameFromExtension(fileName.substring(2), sourceParentPath, sshSession);
-                if(temp != null && temp != ""){
-                    fileName = temp;
+                List<String> fileNames = taskContext.getParentProcessContext().getDataMovementRemoteCluster()
+                        .getFileNameFromExtension(fileName, sourceParentPath, remoteSession);
+
+                ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+
+                String experimentId = processContext.getExperimentId();
+
+                String processId = processContext.getProcessId();
+
+                OutputDataObjectType processOutput = taskContext.getProcessOutput();
+
+                for(int i=0; i<fileNames.size(); i++){
+                    String temp = fileNames.get(i);
+                    if(temp != null && temp != ""){
+                        fileName = temp;
+                    }
+                    if(destParentPath.endsWith(File.separator)){
+                        destinationURI = new URI(destParentPath + fileName);
+                    }else{
+                        destinationURI = new URI(destParentPath + File.separator + fileName);
+                    }
+
+                    //Wildcard support is only enabled for output data staging
+                    if (processState == ProcessState.OUTPUT_DATA_STAGING) {
+                        processOutput.setName(fileName);
+
+                        experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_OUTPUT, Arrays.asList(processOutput), experimentId);
+                        experimentCatalog.add(ExpCatChildDataType.PROCESS_OUTPUT, Arrays.asList(processOutput), processId);
+
+                        taskContext.setProcessOutput(processOutput);
+
+                        makeDir(taskContext, destinationURI);
+                        // TODO - save updated subtask model with new destination
+                        outputDataStaging(taskContext, remoteSession, sourceURI, storageSession, destinationURI);
+                        status.setReason("Successfully staged output data");
+                    }
                 }
-                if(destParentPath.endsWith(File.separator)){
-                    destinationURI = new URI(destParentPath + fileName);
+                if (processState == ProcessState.OUTPUT_DATA_STAGING) {
+                    status.setReason("Successfully staged output data");
                 }else{
-                    destinationURI = new URI(destParentPath + File.separator + fileName);
+                    status.setReason("Wildcard support is only enabled for output data staging");
                 }
-
-            }
-
-            if (processState == ProcessState.INPUT_DATA_STAGING) {
-                    inputDataStaging(taskContext, sshSession, sourceURI, destinationURI);
-                status.setReason("Successfully staged input data");
-            } else if (processState == ProcessState.OUTPUT_DATA_STAGING) {
-                makeDir(taskContext, destinationURI);
-                // TODO - save updated subtask model with new destination
-                outputDataStaging(taskContext, sshSession, sourceURI, destinationURI);
-                status.setReason("Successfully staged output data");
+            }else {
+                if (processState == ProcessState.INPUT_DATA_STAGING) {
+                    inputDataStaging(taskContext, storageSession, sourceURI, remoteSession, destinationURI);
+                    status.setReason("Successfully staged input data");
+                } else if (processState == ProcessState.OUTPUT_DATA_STAGING) {
+                    makeDir(taskContext, destinationURI);
+                    // TODO - save updated subtask model with new destination
+                    outputDataStaging(taskContext, remoteSession, sourceURI, storageSession, destinationURI);
+                    status.setReason("Successfully staged output data");
+                }
             }
         } catch (TException e) {
             String msg = "Couldn't create subTask model thrift model";
@@ -238,7 +272,7 @@ public class SCPDataStageTask implements Task {
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
-        } catch (GFacException e) {
+        } catch (RegistryException | GFacException e) {
             String msg = "Data staging failed";
             log.error(msg, e);
             status.setState(TaskState.FAILED);
@@ -258,27 +292,31 @@ public class SCPDataStageTask implements Task {
         taskContext.getParentProcessContext().getDataMovementRemoteCluster().execute(commandInfo);
     }
 
-    private void inputDataStaging(TaskContext taskContext, Session sshSession, URI sourceURI, URI
+    private void inputDataStaging(TaskContext taskContext, Session srcSession, URI sourceURI,  Session destSession, URI
             destinationURI) throws GFacException, IOException, JSchException {
         /**
          * scp third party file transfer 'to' compute resource.
          */
-        taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(),
-                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.FROM, false);
+        taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(), srcSession,
+                destinationURI.getPath(), destSession, RemoteCluster.DIRECTION.FROM, false);
     }
 
-    private void outputDataStaging(TaskContext taskContext, Session sshSession, URI sourceURI, URI destinationURI)
+    private void outputDataStaging(TaskContext taskContext, Session srcSession, URI sourceURI,  Session destSession, URI destinationURI)
             throws AiravataException, IOException, JSchException, GFacException {
 
         /**
          * scp third party file transfer 'from' comute resource.
          */
-        taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(),
-                destinationURI.getPath(), sshSession, RemoteCluster.DIRECTION.TO, true);
-        // update output locations
-        GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.toString());
-        GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.toString());
-
+        //Wildcard file path has not been resolved and cannot be handled. Hence ignoring
+        if(!destinationURI.toString().contains("*")){
+            taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(), srcSession,
+                    destinationURI.getPath(), destSession, RemoteCluster.DIRECTION.TO, true);
+            // update output locations
+            GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.toString());
+            GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.toString());
+        }else{
+            log.warn("Destination file path contains unresolved wildcards. Path: " + destinationURI.toString());
+        }
     }
 
     private void makeDir(TaskContext taskContext, URI pathURI) throws GFacException {

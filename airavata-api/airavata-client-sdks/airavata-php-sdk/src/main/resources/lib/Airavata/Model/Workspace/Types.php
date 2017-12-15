@@ -25,6 +25,7 @@ final class GatewayApprovalStatus {
   const CANCELLED = 4;
   const DENIED = 5;
   const CREATED = 6;
+  const DEPLOYED = 7;
   static public $__names = array(
     0 => 'REQUESTED',
     1 => 'APPROVED',
@@ -33,6 +34,7 @@ final class GatewayApprovalStatus {
     4 => 'CANCELLED',
     5 => 'DENIED',
     6 => 'CREATED',
+    7 => 'DEPLOYED',
   );
 }
 
@@ -629,6 +631,10 @@ class Gateway {
   /**
    * @var string
    */
+  public $airavataInternalGatewayId = null;
+  /**
+   * @var string
+   */
   public $gatewayId = null;
   /**
    * @var int
@@ -707,84 +713,91 @@ class Gateway {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
-          'var' => 'gatewayId',
+          'var' => 'airavataInternalGatewayId',
           'type' => TType::STRING,
           ),
         2 => array(
+          'var' => 'gatewayId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
           'var' => 'gatewayApprovalStatus',
           'type' => TType::I32,
           ),
-        3 => array(
+        4 => array(
           'var' => 'gatewayName',
           'type' => TType::STRING,
           ),
-        4 => array(
+        5 => array(
           'var' => 'domain',
           'type' => TType::STRING,
           ),
-        5 => array(
+        6 => array(
           'var' => 'emailAddress',
           'type' => TType::STRING,
           ),
-        6 => array(
+        7 => array(
           'var' => 'gatewayAcronym',
           'type' => TType::STRING,
           ),
-        7 => array(
+        8 => array(
           'var' => 'gatewayURL',
           'type' => TType::STRING,
           ),
-        8 => array(
+        9 => array(
           'var' => 'gatewayPublicAbstract',
           'type' => TType::STRING,
           ),
-        9 => array(
+        10 => array(
           'var' => 'reviewProposalDescription',
           'type' => TType::STRING,
           ),
-        10 => array(
+        11 => array(
           'var' => 'gatewayAdminFirstName',
           'type' => TType::STRING,
           ),
-        11 => array(
+        12 => array(
           'var' => 'gatewayAdminLastName',
           'type' => TType::STRING,
           ),
-        12 => array(
+        13 => array(
           'var' => 'gatewayAdminEmail',
           'type' => TType::STRING,
           ),
-        13 => array(
+        14 => array(
           'var' => 'identityServerUserName',
           'type' => TType::STRING,
           ),
-        14 => array(
+        15 => array(
           'var' => 'identityServerPasswordToken',
           'type' => TType::STRING,
           ),
-        15 => array(
+        16 => array(
           'var' => 'declinedReason',
           'type' => TType::STRING,
           ),
-        16 => array(
+        17 => array(
           'var' => 'oauthClientId',
           'type' => TType::STRING,
           ),
-        17 => array(
+        18 => array(
           'var' => 'oauthClientSecret',
           'type' => TType::STRING,
           ),
-        18 => array(
+        19 => array(
           'var' => 'requestCreationTime',
           'type' => TType::I64,
           ),
-        19 => array(
+        20 => array(
           'var' => 'requesterUsername',
           'type' => TType::STRING,
           ),
         );
     }
     if (is_array($vals)) {
+      if (isset($vals['airavataInternalGatewayId'])) {
+        $this->airavataInternalGatewayId = $vals['airavataInternalGatewayId'];
+      }
       if (isset($vals['gatewayId'])) {
         $this->gatewayId = $vals['gatewayId'];
       }
@@ -866,131 +879,138 @@ class Gateway {
       {
         case 1:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->gatewayId);
+            $xfer += $input->readString($this->airavataInternalGatewayId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
           if ($ftype == TType::I32) {
             $xfer += $input->readI32($this->gatewayApprovalStatus);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 3:
+        case 4:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->gatewayName);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 4:
+        case 5:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->domain);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 5:
+        case 6:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->emailAddress);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 6:
+        case 7:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->gatewayAcronym);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 7:
+        case 8:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->gatewayURL);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 8:
+        case 9:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->gatewayPublicAbstract);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 9:
+        case 10:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->reviewProposalDescription);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 10:
+        case 11:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->gatewayAdminFirstName);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 11:
+        case 12:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->gatewayAdminLastName);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 12:
+        case 13:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->gatewayAdminEmail);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 13:
+        case 14:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->identityServerUserName);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 14:
+        case 15:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->identityServerPasswordToken);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 15:
+        case 16:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->declinedReason);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 16:
+        case 17:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->oauthClientId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 17:
+        case 18:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->oauthClientSecret);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 18:
+        case 19:
           if ($ftype == TType::I64) {
             $xfer += $input->readI64($this->requestCreationTime);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 19:
+        case 20:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->requesterUsername);
           } else {
@@ -1010,98 +1030,103 @@ class Gateway {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Gateway');
+    if ($this->airavataInternalGatewayId !== null) {
+      $xfer += $output->writeFieldBegin('airavataInternalGatewayId', TType::STRING, 1);
+      $xfer += $output->writeString($this->airavataInternalGatewayId);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->gatewayId !== null) {
-      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 1);
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 2);
       $xfer += $output->writeString($this->gatewayId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->gatewayApprovalStatus !== null) {
-      $xfer += $output->writeFieldBegin('gatewayApprovalStatus', TType::I32, 2);
+      $xfer += $output->writeFieldBegin('gatewayApprovalStatus', TType::I32, 3);
       $xfer += $output->writeI32($this->gatewayApprovalStatus);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->gatewayName !== null) {
-      $xfer += $output->writeFieldBegin('gatewayName', TType::STRING, 3);
+      $xfer += $output->writeFieldBegin('gatewayName', TType::STRING, 4);
       $xfer += $output->writeString($this->gatewayName);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->domain !== null) {
-      $xfer += $output->writeFieldBegin('domain', TType::STRING, 4);
+      $xfer += $output->writeFieldBegin('domain', TType::STRING, 5);
       $xfer += $output->writeString($this->domain);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->emailAddress !== null) {
-      $xfer += $output->writeFieldBegin('emailAddress', TType::STRING, 5);
+      $xfer += $output->writeFieldBegin('emailAddress', TType::STRING, 6);
       $xfer += $output->writeString($this->emailAddress);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->gatewayAcronym !== null) {
-      $xfer += $output->writeFieldBegin('gatewayAcronym', TType::STRING, 6);
+      $xfer += $output->writeFieldBegin('gatewayAcronym', TType::STRING, 7);
       $xfer += $output->writeString($this->gatewayAcronym);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->gatewayURL !== null) {
-      $xfer += $output->writeFieldBegin('gatewayURL', TType::STRING, 7);
+      $xfer += $output->writeFieldBegin('gatewayURL', TType::STRING, 8);
       $xfer += $output->writeString($this->gatewayURL);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->gatewayPublicAbstract !== null) {
-      $xfer += $output->writeFieldBegin('gatewayPublicAbstract', TType::STRING, 8);
+      $xfer += $output->writeFieldBegin('gatewayPublicAbstract', TType::STRING, 9);
       $xfer += $output->writeString($this->gatewayPublicAbstract);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->reviewProposalDescription !== null) {
-      $xfer += $output->writeFieldBegin('reviewProposalDescription', TType::STRING, 9);
+      $xfer += $output->writeFieldBegin('reviewProposalDescription', TType::STRING, 10);
       $xfer += $output->writeString($this->reviewProposalDescription);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->gatewayAdminFirstName !== null) {
-      $xfer += $output->writeFieldBegin('gatewayAdminFirstName', TType::STRING, 10);
+      $xfer += $output->writeFieldBegin('gatewayAdminFirstName', TType::STRING, 11);
       $xfer += $output->writeString($this->gatewayAdminFirstName);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->gatewayAdminLastName !== null) {
-      $xfer += $output->writeFieldBegin('gatewayAdminLastName', TType::STRING, 11);
+      $xfer += $output->writeFieldBegin('gatewayAdminLastName', TType::STRING, 12);
       $xfer += $output->writeString($this->gatewayAdminLastName);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->gatewayAdminEmail !== null) {
-      $xfer += $output->writeFieldBegin('gatewayAdminEmail', TType::STRING, 12);
+      $xfer += $output->writeFieldBegin('gatewayAdminEmail', TType::STRING, 13);
       $xfer += $output->writeString($this->gatewayAdminEmail);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->identityServerUserName !== null) {
-      $xfer += $output->writeFieldBegin('identityServerUserName', TType::STRING, 13);
+      $xfer += $output->writeFieldBegin('identityServerUserName', TType::STRING, 14);
       $xfer += $output->writeString($this->identityServerUserName);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->identityServerPasswordToken !== null) {
-      $xfer += $output->writeFieldBegin('identityServerPasswordToken', TType::STRING, 14);
+      $xfer += $output->writeFieldBegin('identityServerPasswordToken', TType::STRING, 15);
       $xfer += $output->writeString($this->identityServerPasswordToken);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->declinedReason !== null) {
-      $xfer += $output->writeFieldBegin('declinedReason', TType::STRING, 15);
+      $xfer += $output->writeFieldBegin('declinedReason', TType::STRING, 16);
       $xfer += $output->writeString($this->declinedReason);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->oauthClientId !== null) {
-      $xfer += $output->writeFieldBegin('oauthClientId', TType::STRING, 16);
+      $xfer += $output->writeFieldBegin('oauthClientId', TType::STRING, 17);
       $xfer += $output->writeString($this->oauthClientId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->oauthClientSecret !== null) {
-      $xfer += $output->writeFieldBegin('oauthClientSecret', TType::STRING, 17);
+      $xfer += $output->writeFieldBegin('oauthClientSecret', TType::STRING, 18);
       $xfer += $output->writeString($this->oauthClientSecret);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->requestCreationTime !== null) {
-      $xfer += $output->writeFieldBegin('requestCreationTime', TType::I64, 18);
+      $xfer += $output->writeFieldBegin('requestCreationTime', TType::I64, 19);
       $xfer += $output->writeI64($this->requestCreationTime);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->requesterUsername !== null) {
-      $xfer += $output->writeFieldBegin('requesterUsername', TType::STRING, 19);
+      $xfer += $output->writeFieldBegin('requesterUsername', TType::STRING, 20);
       $xfer += $output->writeString($this->requesterUsername);
       $xfer += $output->writeFieldEnd();
     }

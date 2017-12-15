@@ -68,7 +68,15 @@ public class AppCatalogJPAUtils {
             properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=31536000,  autoReconnect=true");
             factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
         }
+        // clear cache at entitymangerfactory level
+        if (factory.getCache() != null) {
+            factory.getCache().evictAll();
+        }
         appCatEntityManager = factory.createEntityManager();
+        // clear the entitymanager cache
+        if (appCatEntityManager != null) {
+            appCatEntityManager.clear();
+        }
         return appCatEntityManager;
     }
 

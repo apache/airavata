@@ -69,16 +69,12 @@ import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.QueueStatusModel;
-import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
-import org.apache.airavata.service.profile.user.cpi.UserProfileService;
-import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
 import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
 import org.apache.airavata.sharing.registry.models.*;
@@ -88,7 +84,6 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.MessageFormat;
 import java.util.*;
 
 public class AiravataServerHandler implements Airavata.Iface {
@@ -4700,9 +4695,21 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public boolean createGroup(AuthzToken authzToken, GroupModel groupModel) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public String createGroup(AuthzToken authzToken, GroupModel groupModel) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
-            throw new UnsupportedOperationException("Method not supported yet");
+            //TODO Validations for authorization
+            SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
+
+            UserGroup sharingUserGroup = new UserGroup();
+            sharingUserGroup.setGroupId(UUID.randomUUID().toString());
+            sharingUserGroup.setName(groupModel.getName());
+            sharingUserGroup.setDescription(groupModel.getDescription());
+            sharingUserGroup.setGroupType(GroupType.USER_LEVEL_GROUP);
+            sharingUserGroup.setDomainId(authzToken.getClaimsMap().get(Constants.GATEWAY_ID));
+
+            String groupId = sharingClient.createGroup(sharingUserGroup);
+            sharingClient.addUsersToGroup(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupModel.getMembers(), groupId);
+            return groupId;
         } catch (Exception e) {
             String msg = "Error Creating Group" ;
             logger.error(msg, e);
@@ -4717,7 +4724,19 @@ public class AiravataServerHandler implements Airavata.Iface {
     public boolean updateGroup(AuthzToken authzToken, GroupModel groupModel) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
-            throw new UnsupportedOperationException("Method not supported yet");
+            //TODO Validations for authorization
+            SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
+
+            UserGroup sharingUserGroup = new UserGroup();
+            sharingUserGroup.setGroupId(groupModel.getId());
+            sharingUserGroup.setName(groupModel.getName());
+            sharingUserGroup.setDescription(groupModel.getDescription());
+            sharingUserGroup.setGroupType(GroupType.USER_LEVEL_GROUP);
+            sharingUserGroup.setDomainId(authzToken.getClaimsMap().get(Constants.GATEWAY_ID));
+
+            //adding and removal of users should be handle separately
+            sharingClient.updateGroup(sharingUserGroup);
+            return true;
         } catch (Exception e) {
             String msg = "Error Updating Group" ;
             logger.error(msg, e);
@@ -4729,10 +4748,14 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public boolean deleteGroup(AuthzToken authzToken, String groupId, String ownerId, String gatewayId) throws
+    public boolean deleteGroup(AuthzToken authzToken, String groupId, String ownerId) throws
             InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
-            throw new UnsupportedOperationException("Method not supported yet");
+            //TODO Validations for authorization
+            SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
+
+            sharingClient.deleteGroup(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId);
+            return true;
         } catch (Exception e) {
             String msg = "Error Deleting Group. Group ID: " + groupId ;
             logger.error(msg, e);
@@ -4747,7 +4770,20 @@ public class AiravataServerHandler implements Airavata.Iface {
     public GroupModel getGroup(AuthzToken authzToken, String groupId) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
-            throw new UnsupportedOperationException("Method not supported yet");
+            SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
+            UserGroup userGroup = sharingClient.getGroup(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId);
+
+            GroupModel groupModel = new GroupModel();
+            groupModel.setId(userGroup.getGroupId());
+            groupModel.setName(userGroup.getName());
+            groupModel.setDescription(userGroup.getDescription());
+            groupModel.setOwnerId(userGroup.getOwnerId());
+
+            sharingClient.getGroupMembersOfTypeUser(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, 0, -1).stream().forEach(user->
+                    groupModel.addToMembers(user.getUserId())
+            );
+
+            return groupModel;
         } catch (Exception e) {
             String msg = "Error Retreiving Group. Group ID: " + groupId ;
             logger.error(msg, e);
@@ -4759,125 +4795,12 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public List<GroupModel> getAllGroupsUserBelongs(AuthzToken authzToken, String userName, String gatewayId)
+    public List<GroupModel> getAllGroupsUserBelongs(AuthzToken authzToken, String userName)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             throw new UnsupportedOperationException("Method not supported yet");
         } catch (Exception e) {
             String msg = "Error Retreiving All Groups for User. User ID: " + userName ;
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    public String addUserProfile(AuthzToken authzToken, UserProfile userProfile)
-            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-
-        // check that username and gatewayId match authzToken
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-        if( !userProfile.getUserId().equals(userId) || !userProfile.getGatewayId().equals(gatewayId) ){
-            throw new AuthorizationException("User isn't authorized to add user profile for this user and/or gateway");
-        }
-        try {
-            return getUserProfileServiceClient().addUserProfile(authzToken, userProfile);
-        } catch (Exception e) {
-            String msg = "Error adding user profile";
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    public boolean updateUserProfile(AuthzToken authzToken, UserProfile userProfile)
-            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-
-        // check that username and gatewayId match authzToken
-        String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-        String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-        if( !userProfile.getUserId().equals(userId) || !userProfile.getGatewayId().equals(gatewayId) ){
-            throw new AuthorizationException("User isn't authorized to update user profile for this user and/or gateway");
-        }
-        try {
-            return getUserProfileServiceClient().updateUserProfile(authzToken, userProfile);
-        } catch (Exception e) {
-            String msg = "Error updating user profile";
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    public UserProfile getUserProfileById(AuthzToken authzToken, String userId, String gatewayId)
-            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-
-        try {
-            return getUserProfileServiceClient().getUserProfileById(authzToken, userId, gatewayId);
-        } catch (Exception e) {
-            String msg = MessageFormat.format("Error getting user profile for [{0}] in [{1}]", userId, gatewayId);
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    // FIXME: deleting user profile should require the gatewayId as well!
-    public boolean deleteUserProfile(AuthzToken authzToken, String userId)
-            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-
-        // check that userId match authzToken
-        if( !authzToken.getClaimsMap().get(Constants.USER_NAME).equals(userId) ){
-            throw new AuthorizationException("User isn't authorized to delete user profile for this user");
-        }
-        try {
-            return getUserProfileServiceClient().deleteUserProfile(authzToken, userId, null);
-        } catch (Exception e) {
-            String msg = "Error deleting user profile";
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    public List<UserProfile> getAllUserProfilesInGateway(AuthzToken authzToken, String gatewayId, int offset, int limit)
-            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-
-        try {
-            return getUserProfileServiceClient().getAllUserProfilesInGateway(authzToken, gatewayId, offset, limit);
-        } catch (Exception e) {
-            String msg = MessageFormat.format("Error getting all user profiles for [{0}] with offset={1} and limit={2}", gatewayId, offset, limit);
-            logger.error(msg, e);
-            AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage(msg + " More info : " + e.getMessage());
-            throw exception;
-        }
-    }
-
-    @Override
-    @SecurityCheck
-    public boolean doesUserProfileExist(AuthzToken authzToken, String userName, String gatewayId)
-            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
-
-        try {
-            return getUserProfileServiceClient().doesUserExist(authzToken, userName, gatewayId);
-        } catch (Exception e) {
-            String msg = MessageFormat.format("Error checking if user profile exists for [{0}] in [{1}]", userName, gatewayId);
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(msg + " More info : " + e.getMessage());
@@ -4926,16 +4849,6 @@ public class AiravataServerHandler implements Airavata.Iface {
             return SharingRegistryServiceClientFactory.createSharingRegistryClient(serverHost, serverPort);
         } catch (SharingRegistryException e) {
             throw new TException("Unable to create sharing registry client...", e);
-        }
-    }
-
-    private UserProfileService.Client getUserProfileServiceClient() throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getProfileServiceServerPort());
-        final String serverHost = ServerSettings.getProfileServiceServerHost();
-        try {
-            return ProfileServiceClientFactory.createUserProfileServiceClient(serverHost, serverPort);
-        } catch (UserProfileServiceException e) {
-            throw new TException("Unable to create user profile service client...", e);
         }
     }
 }

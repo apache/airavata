@@ -515,13 +515,19 @@ public class WorkerResource extends AbstractExpCatResource {
         List<org.apache.airavata.registry.core.experiment.catalog.resources.ProjectResource> result = new ArrayList<org.apache.airavata.registry.core.experiment.catalog.resources.ProjectResource>();
         EntityManager em = null;
         try {
+            Map<String, Object> queryParameters = new HashMap<>();
             String query = "SELECT DISTINCT p from Project p WHERE ";
 
             // FIXME There is a performance bottleneck for using IN clause. Try using temporary tables ?
             if (accessibleIds != null && accessibleIds.size() > 0) {
                 query += " p.projectId IN (";
-                for (String id : accessibleIds)
-                    query += ("'" + id + "'" + ",");
+                int accessibleIdIndex = 0;
+                for (String id : accessibleIds) {
+                    String paramName = "accessibleId" + accessibleIdIndex;
+                    query += (":" + paramName + ",");
+                    queryParameters.put(paramName, id);
+                    accessibleIdIndex++;
+                }
                 query = query.substring(0, query.length() - 1) + ") AND ";
             }else if(ServerSettings.isEnableSharing() && (accessibleIds==null || accessibleIds.size()==0)){
                 return new ArrayList<>();
@@ -531,14 +537,17 @@ public class WorkerResource extends AbstractExpCatResource {
                 for (String field : filters.keySet()) {
                     String filterVal = filters.get(field);
                     if (field.equals(ProjectConstants.USERNAME)) {
-                        query += "p." + field + "= '" + filterVal + "' AND ";
+                        query += "p." + field + "= :" + field + " AND ";
+                        queryParameters.put(field, filterVal);
                     } else if (field.equals(ProjectConstants.GATEWAY_ID)) {
-                        query += "p." + field + "= '" + filterVal + "' AND ";
+                        query += "p." + field + "= :" + field + " AND ";
+                        queryParameters.put(field, filterVal);
                     } else {
                         if (filterVal.contains("*")) {
                             filterVal = filterVal.replaceAll("\\*", "");
                         }
-                        query += "p." + field + " LIKE '%" + filterVal + "%' AND ";
+                        query += "p." + field + " LIKE :" + field + " AND ";
+                        queryParameters.put(field, "%" + filterVal + "%");
                     }
                 }
             }
@@ -561,6 +570,10 @@ public class WorkerResource extends AbstractExpCatResource {
             } else {
                 q = em.createQuery(query);
             }
+            for (String parameterName : queryParameters.keySet()) {
+                q.setParameter(parameterName, queryParameters.get(parameterName));
+            }
+
 
             List resultList = q.getResultList();
             for (Object o : resultList) {
@@ -607,14 +620,20 @@ public class WorkerResource extends AbstractExpCatResource {
         List<ExperimentSummaryResource> result = new ArrayList();
         EntityManager em = null;
         try {
+            Map<String, Object> queryParameters = new HashMap<>();
             String query = "SELECT e FROM ExperimentSummary e " +
                     "WHERE ";
 
             // FIXME There is a performance bottleneck for using IN clause. Try using temporary tables ?
             if (accessibleIds != null && accessibleIds.size() > 0) {
                 query += " e.experimentId IN (";
-                for (String id : accessibleIds)
-                    query += ("'" + id + "'" + ",");
+                int accessibleIdIndex = 0;
+                for (String id : accessibleIds) {
+                    String paramName = "accessibleId" + accessibleIdIndex;
+                    query += (":" + paramName + ",");
+                    queryParameters.put(paramName, id);
+                    accessibleIdIndex++;
+                }
                 query = query.substring(0, query.length() - 1) + ") AND ";
             }else if(ServerSettings.isEnableSharing() && (accessibleIds==null || accessibleIds.size()==0)){
                 return new ArrayList<>();
@@ -626,7 +645,9 @@ public class WorkerResource extends AbstractExpCatResource {
             }
 
             if (toTime != null && fromTime != null && toTime.after(fromTime)) {
-                query += "e.creationTime > '" + fromTime + "' " + "AND e.creationTime <'" + toTime + "' AND ";
+                query += "e.creationTime > :fromTime AND e.creationTime < :toTime AND ";
+                queryParameters.put("fromTime", fromTime);
+                queryParameters.put("toTime", toTime);
             }
 
             filters.remove(ExperimentStatusConstants.STATE);
@@ -634,16 +655,20 @@ public class WorkerResource extends AbstractExpCatResource {
                 for (String field : filters.keySet()) {
                     String filterVal = filters.get(field);
                     if (field.equals(ExperimentConstants.USER_NAME)) {
-                        query += "e." + field + "= '" + filterVal + "' AND ";
+                        query += "e." + field + "= :username AND ";
+                        queryParameters.put("username", filterVal);
                     } else if (field.equals(ExperimentConstants.GATEWAY_ID)) {
-                        query += "e." + field + "= '" + filterVal + "' AND ";
+                        query += "e." + field + "= :gateway_id AND ";
+                        queryParameters.put("gateway_id", filterVal);
                     } else if (field.equals(ExperimentConstants.PROJECT_ID)) {
-                        query += "e." + field + "= '" + filterVal + "' AND ";
+                        query += "e." + field + "= :project_id AND ";
+                        queryParameters.put("project_id", filterVal);
                     } else {
                         if (filterVal.contains("*")) {
                             filterVal = filterVal.replaceAll("\\*", "");
                         }
-                        query += "e." + field + " LIKE '%" + filterVal + "%' AND ";
+                        query += "e." + field + " LIKE :" + field + " AND ";
+                        queryParameters.put(field, "%" + filterVal + "%");
                     }
                 }
             }
@@ -665,6 +690,9 @@ public class WorkerResource extends AbstractExpCatResource {
                 q = em.createQuery(query).setFirstResult(offset).setMaxResults(limit);
             } else {
                 q = em.createQuery(query);
+            }
+            for (String parameterName : queryParameters.keySet()) {
+                q.setParameter(parameterName, queryParameters.get(parameterName));
             }
 
             List resultList = q.getResultList();

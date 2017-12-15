@@ -45,9 +45,9 @@
     <inceptionYear>2011</inceptionYear>
 
     <scm>
-        <connection>scm:git:https://git-wip-us.apache.org/repos/asf/airavata.git</connection>
-        <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/airavata.git</developerConnection>
-        <url>https://git-wip-us.apache.org/repos/asf?p=airavata.git</url>
+        <connection>scm:git:https://github.com/apache/airavata.git</connection>
+        <developerConnection>scm:git:https://github.com/apache/airavata.git</developerConnection>
+        <url>https://github.com/apache/airavata</url>
         <tag>HEAD</tag>
     </scm>
 
@@ -687,6 +687,7 @@
                 <module>modules/cluster-monitoring</module>
                 <module>modules/user-profile-migration</module>
                 <module>airavata-services</module>
+                <module>modules/db-event-manager</module>
                 <module>modules/registry-refactoring</module>
                 <!-- Deprecated Modules-->
                 <!--<module>modules/integration-tests</module>-->

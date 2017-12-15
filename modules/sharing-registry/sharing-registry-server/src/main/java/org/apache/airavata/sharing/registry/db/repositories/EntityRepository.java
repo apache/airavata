@@ -53,7 +53,7 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
             groupIdString += groupId + "','";
         groupIdString = groupIdString.substring(0, groupIdString.length()-2);
 
-        String query = "SELECT E.* FROM ENTITY AS E INNER JOIN SHARING AS S ON (E.ENTITY_ID=S.ENTITY_ID AND E.DOMAIN_ID=S.DOMAIN_ID) WHERE " +
+        String query = "SELECT ENTITY.* FROM ENTITY WHERE ENTITY.ENTITY_ID IN (SELECT DISTINCT E.ENTITY_ID FROM ENTITY AS E INNER JOIN SHARING AS S ON (E.ENTITY_ID=S.ENTITY_ID AND E.DOMAIN_ID=S.DOMAIN_ID) WHERE " +
                 "E.DOMAIN_ID = '" + domainId + "' AND " + "S.GROUP_ID IN(" + groupIdString + ") AND ";
 
         for(SearchCriteria searchCriteria : filters){
@@ -130,6 +130,8 @@ public class EntityRepository extends AbstractRepository<Entity, EntityEntity, E
         }
 
         query = query.substring(0, query.length() - 5);
+        query += ") ORDER BY ENTITY.CREATED_TIME DESC";
+
         final String nativeQuery = query;
         int newLimit = limit < 0 ? DBConstants.SELECT_MAX_ROWS: limit;
 

@@ -26,6 +26,7 @@ class TenantApprovalStatus:
   CANCELLED = 4
   DENIED = 5
   CREATED = 6
+  DEPLOYED = 7
 
   _VALUES_TO_NAMES = {
     0: "REQUESTED",
@@ -35,6 +36,7 @@ class TenantApprovalStatus:
     4: "CANCELLED",
     5: "DENIED",
     6: "CREATED",
+    7: "DEPLOYED",
   }
 
   _NAMES_TO_VALUES = {
@@ -45,8 +47,226 @@ class TenantApprovalStatus:
     "CANCELLED": 4,
     "DENIED": 5,
     "CREATED": 6,
+    "DEPLOYED": 7,
   }
 
+
+class TenantPreferences:
+  """
+  Attributes:
+   - tenantAdminFirstName
+   - tenantAdminLastName
+   - tenantAdminEmail
+  """
+
+  thrift_spec = (
+    None, # 0
+    None, # 1
+    None, # 2
+    None, # 3
+    None, # 4
+    None, # 5
+    None, # 6
+    None, # 7
+    None, # 8
+    None, # 9
+    (10, TType.STRING, 'tenantAdminFirstName', None, None, ), # 10
+    (11, TType.STRING, 'tenantAdminLastName', None, None, ), # 11
+    (12, TType.STRING, 'tenantAdminEmail', None, None, ), # 12
+  )
+
+  def __init__(self, tenantAdminFirstName=None, tenantAdminLastName=None, tenantAdminEmail=None,):
+    self.tenantAdminFirstName = tenantAdminFirstName
+    self.tenantAdminLastName = tenantAdminLastName
+    self.tenantAdminEmail = tenantAdminEmail
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 10:
+        if ftype == TType.STRING:
+          self.tenantAdminFirstName = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 11:
+        if ftype == TType.STRING:
+          self.tenantAdminLastName = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 12:
+        if ftype == TType.STRING:
+          self.tenantAdminEmail = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('TenantPreferences')
+    if self.tenantAdminFirstName is not None:
+      oprot.writeFieldBegin('tenantAdminFirstName', TType.STRING, 10)
+      oprot.writeString(self.tenantAdminFirstName)
+      oprot.writeFieldEnd()
+    if self.tenantAdminLastName is not None:
+      oprot.writeFieldBegin('tenantAdminLastName', TType.STRING, 11)
+      oprot.writeString(self.tenantAdminLastName)
+      oprot.writeFieldEnd()
+    if self.tenantAdminEmail is not None:
+      oprot.writeFieldBegin('tenantAdminEmail', TType.STRING, 12)
+      oprot.writeString(self.tenantAdminEmail)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.tenantAdminFirstName)
+    value = (value * 31) ^ hash(self.tenantAdminLastName)
+    value = (value * 31) ^ hash(self.tenantAdminEmail)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class TenantConfig:
+  """
+  Attributes:
+   - oauthClientId
+   - oauthClientSecret
+   - identityServerUserName
+   - identityServerPasswordToken
+  """
+
+  thrift_spec = (
+    None, # 0
+    None, # 1
+    None, # 2
+    None, # 3
+    None, # 4
+    None, # 5
+    None, # 6
+    None, # 7
+    None, # 8
+    None, # 9
+    None, # 10
+    None, # 11
+    None, # 12
+    (13, TType.STRING, 'identityServerUserName', None, None, ), # 13
+    (14, TType.STRING, 'identityServerPasswordToken', None, None, ), # 14
+    None, # 15
+    (16, TType.STRING, 'oauthClientId', None, None, ), # 16
+    (17, TType.STRING, 'oauthClientSecret', None, None, ), # 17
+  )
+
+  def __init__(self, oauthClientId=None, oauthClientSecret=None, identityServerUserName=None, identityServerPasswordToken=None,):
+    self.oauthClientId = oauthClientId
+    self.oauthClientSecret = oauthClientSecret
+    self.identityServerUserName = identityServerUserName
+    self.identityServerPasswordToken = identityServerPasswordToken
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 16:
+        if ftype == TType.STRING:
+          self.oauthClientId = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 17:
+        if ftype == TType.STRING:
+          self.oauthClientSecret = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 13:
+        if ftype == TType.STRING:
+          self.identityServerUserName = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      elif fid == 14:
+        if ftype == TType.STRING:
+          self.identityServerPasswordToken = iprot.readString()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('TenantConfig')
+    if self.identityServerUserName is not None:
+      oprot.writeFieldBegin('identityServerUserName', TType.STRING, 13)
+      oprot.writeString(self.identityServerUserName)
+      oprot.writeFieldEnd()
+    if self.identityServerPasswordToken is not None:
+      oprot.writeFieldBegin('identityServerPasswordToken', TType.STRING, 14)
+      oprot.writeString(self.identityServerPasswordToken)
+      oprot.writeFieldEnd()
+    if self.oauthClientId is not None:
+      oprot.writeFieldBegin('oauthClientId', TType.STRING, 16)
+      oprot.writeString(self.oauthClientId)
+      oprot.writeFieldEnd()
+    if self.oauthClientSecret is not None:
+      oprot.writeFieldBegin('oauthClientSecret', TType.STRING, 17)
+      oprot.writeString(self.oauthClientSecret)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.oauthClientId)
+    value = (value * 31) ^ hash(self.oauthClientSecret)
+    value = (value * 31) ^ hash(self.identityServerUserName)
+    value = (value * 31) ^ hash(self.identityServerPasswordToken)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
 
 class Tenant:
   """
@@ -60,14 +280,7 @@ class Tenant:
    - tenantURL
    - tenantPublicAbstract
    - reviewProposalDescription
-   - tenantAdminFirstName
-   - tenantAdminLastName
-   - tenantAdminEmail
-   - identityServerUserName
-   - identityServerPasswordToken
    - declinedReason
-   - oauthClientId
-   - oauthClientSecret
    - requestCreationTime
    - requesterUsername
   """
@@ -83,19 +296,19 @@ class Tenant:
     (7, TType.STRING, 'tenantURL', None, None, ), # 7
     (8, TType.STRING, 'tenantPublicAbstract', None, None, ), # 8
     (9, TType.STRING, 'reviewProposalDescription', None, None, ), # 9
-    (10, TType.STRING, 'tenantAdminFirstName', None, None, ), # 10
-    (11, TType.STRING, 'tenantAdminLastName', None, None, ), # 11
-    (12, TType.STRING, 'tenantAdminEmail', None, None, ), # 12
-    (13, TType.STRING, 'identityServerUserName', None, None, ), # 13
-    (14, TType.STRING, 'identityServerPasswordToken', None, None, ), # 14
+    None, # 10
+    None, # 11
+    None, # 12
+    None, # 13
+    None, # 14
     (15, TType.STRING, 'declinedReason', None, None, ), # 15
-    (16, TType.STRING, 'oauthClientId', None, None, ), # 16
-    (17, TType.STRING, 'oauthClientSecret', None, None, ), # 17
+    None, # 16
+    None, # 17
     (18, TType.I64, 'requestCreationTime', None, None, ), # 18
     (19, TType.STRING, 'requesterUsername', None, None, ), # 19
   )
 
-  def __init__(self, tenantId=None, tenantApprovalStatus=None, tenantName=None, domain=None, emailAddress=None, tenantAcronym=None, tenantURL=None, tenantPublicAbstract=None, reviewProposalDescription=None, tenantAdminFirstName=None, tenantAdminLastName=None, tenantAdminEmail=None, identityServerUserName=None, identityServerPasswordToken=None, declinedReason=None, oauthClientId=None, oauthClientSecret=None, requestCreationTime=None, requesterUsername=None,):
+  def __init__(self, tenantId=None, tenantApprovalStatus=None, tenantName=None, domain=None, emailAddress=None, tenantAcronym=None, tenantURL=None, tenantPublicAbstract=None, reviewProposalDescription=None, declinedReason=None, requestCreationTime=None, requesterUsername=None,):
     self.tenantId = tenantId
     self.tenantApprovalStatus = tenantApprovalStatus
     self.tenantName = tenantName
@@ -105,14 +318,7 @@ class Tenant:
     self.tenantURL = tenantURL
     self.tenantPublicAbstract = tenantPublicAbstract
     self.reviewProposalDescription = reviewProposalDescription
-    self.tenantAdminFirstName = tenantAdminFirstName
-    self.tenantAdminLastName = tenantAdminLastName
-    self.tenantAdminEmail = tenantAdminEmail
-    self.identityServerUserName = identityServerUserName
-    self.identityServerPasswordToken = identityServerPasswordToken
     self.declinedReason = declinedReason
-    self.oauthClientId = oauthClientId
-    self.oauthClientSecret = oauthClientSecret
     self.requestCreationTime = requestCreationTime
     self.requesterUsername = requesterUsername
 
@@ -170,44 +376,9 @@ class Tenant:
           self.reviewProposalDescription = iprot.readString()
         else:
           iprot.skip(ftype)
-      elif fid == 10:
-        if ftype == TType.STRING:
-          self.tenantAdminFirstName = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 11:
-        if ftype == TType.STRING:
-          self.tenantAdminLastName = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 12:
-        if ftype == TType.STRING:
-          self.tenantAdminEmail = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 13:
-        if ftype == TType.STRING:
-          self.identityServerUserName = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 14:
-        if ftype == TType.STRING:
-          self.identityServerPasswordToken = iprot.readString()
-        else:
-          iprot.skip(ftype)
       elif fid == 15:
         if ftype == TType.STRING:
           self.declinedReason = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 16:
-        if ftype == TType.STRING:
-          self.oauthClientId = iprot.readString()
-        else:
-          iprot.skip(ftype)
-      elif fid == 17:
-        if ftype == TType.STRING:
-          self.oauthClientSecret = iprot.readString()
         else:
           iprot.skip(ftype)
       elif fid == 18:
@@ -266,37 +437,9 @@ class Tenant:
       oprot.writeFieldBegin('reviewProposalDescription', TType.STRING, 9)
       oprot.writeString(self.reviewProposalDescription)
       oprot.writeFieldEnd()
-    if self.tenantAdminFirstName is not None:
-      oprot.writeFieldBegin('tenantAdminFirstName', TType.STRING, 10)
-      oprot.writeString(self.tenantAdminFirstName)
-      oprot.writeFieldEnd()
-    if self.tenantAdminLastName is not None:
-      oprot.writeFieldBegin('tenantAdminLastName', TType.STRING, 11)
-      oprot.writeString(self.tenantAdminLastName)
-      oprot.writeFieldEnd()
-    if self.tenantAdminEmail is not None:
-      oprot.writeFieldBegin('tenantAdminEmail', TType.STRING, 12)
-      oprot.writeString(self.tenantAdminEmail)
-      oprot.writeFieldEnd()
-    if self.identityServerUserName is not None:
-      oprot.writeFieldBegin('identityServerUserName', TType.STRING, 13)
-      oprot.writeString(self.identityServerUserName)
-      oprot.writeFieldEnd()
-    if self.identityServerPasswordToken is not None:
-      oprot.writeFieldBegin('identityServerPasswordToken', TType.STRING, 14)
-      oprot.writeString(self.identityServerPasswordToken)
-      oprot.writeFieldEnd()
     if self.declinedReason is not None:
       oprot.writeFieldBegin('declinedReason', TType.STRING, 15)
       oprot.writeString(self.declinedReason)
-      oprot.writeFieldEnd()
-    if self.oauthClientId is not None:
-      oprot.writeFieldBegin('oauthClientId', TType.STRING, 16)
-      oprot.writeString(self.oauthClientId)
-      oprot.writeFieldEnd()
-    if self.oauthClientSecret is not None:
-      oprot.writeFieldBegin('oauthClientSecret', TType.STRING, 17)
-      oprot.writeString(self.oauthClientSecret)
       oprot.writeFieldEnd()
     if self.requestCreationTime is not None:
       oprot.writeFieldBegin('requestCreationTime', TType.I64, 18)
@@ -328,14 +471,7 @@ class Tenant:
     value = (value * 31) ^ hash(self.tenantURL)
     value = (value * 31) ^ hash(self.tenantPublicAbstract)
     value = (value * 31) ^ hash(self.reviewProposalDescription)
-    value = (value * 31) ^ hash(self.tenantAdminFirstName)
-    value = (value * 31) ^ hash(self.tenantAdminLastName)
-    value = (value * 31) ^ hash(self.tenantAdminEmail)
-    value = (value * 31) ^ hash(self.identityServerUserName)
-    value = (value * 31) ^ hash(self.identityServerPasswordToken)
     value = (value * 31) ^ hash(self.declinedReason)
-    value = (value * 31) ^ hash(self.oauthClientId)
-    value = (value * 31) ^ hash(self.oauthClientSecret)
     value = (value * 31) ^ hash(self.requestCreationTime)
     value = (value * 31) ^ hash(self.requesterUsername)
     return value

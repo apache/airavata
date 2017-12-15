@@ -35,7 +35,8 @@ public enum TenantApprovalStatus implements org.apache.thrift.TEnum {
   DEACTIVATED(3),
   CANCELLED(4),
   DENIED(5),
-  CREATED(6);
+  CREATED(6),
+  DEPLOYED(7);
 
   private final int value;
 
@@ -70,6 +71,8 @@ public enum TenantApprovalStatus implements org.apache.thrift.TEnum {
         return DENIED;
       case 6:
         return CREATED;
+      case 7:
+        return DEPLOYED;
       default:
         return null;
     }

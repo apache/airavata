@@ -45,7 +45,8 @@ struct GatewayApprovalStatus {
     DEACTIVATED = 3,
     CANCELLED = 4,
     DENIED = 5,
-    CREATED = 6
+    CREATED = 6,
+    DEPLOYED = 7
   };
 };
 
@@ -299,7 +300,8 @@ inline std::ostream& operator<<(std::ostream& out, const User& obj)
 }
 
 typedef struct _Gateway__isset {
-  _Gateway__isset() : gatewayName(false), domain(false), emailAddress(false), gatewayAcronym(false), gatewayURL(false), gatewayPublicAbstract(false), reviewProposalDescription(false), gatewayAdminFirstName(false), gatewayAdminLastName(false), gatewayAdminEmail(false), identityServerUserName(false), identityServerPasswordToken(false), declinedReason(false), oauthClientId(false), oauthClientSecret(false), requestCreationTime(false), requesterUsername(false) {}
+  _Gateway__isset() : airavataInternalGatewayId(false), gatewayName(false), domain(false), emailAddress(false), gatewayAcronym(false), gatewayURL(false), gatewayPublicAbstract(false), reviewProposalDescription(false), gatewayAdminFirstName(false), gatewayAdminLastName(false), gatewayAdminEmail(false), identityServerUserName(false), identityServerPasswordToken(false), declinedReason(false), oauthClientId(false), oauthClientSecret(false), requestCreationTime(false), requesterUsername(false) {}
+  bool airavataInternalGatewayId :1;
   bool gatewayName :1;
   bool domain :1;
   bool emailAddress :1;
@@ -324,10 +326,11 @@ class Gateway {
 
   Gateway(const Gateway&);
   Gateway& operator=(const Gateway&);
-  Gateway() : gatewayId(), gatewayApprovalStatus((GatewayApprovalStatus::type)0), gatewayName(), domain(), emailAddress(), gatewayAcronym(), gatewayURL(), gatewayPublicAbstract(), reviewProposalDescription(), gatewayAdminFirstName(), gatewayAdminLastName(), gatewayAdminEmail(), identityServerUserName(), identityServerPasswordToken(), declinedReason(), oauthClientId(), oauthClientSecret(), requestCreationTime(0), requesterUsername() {
+  Gateway() : airavataInternalGatewayId(), gatewayId(), gatewayApprovalStatus((GatewayApprovalStatus::type)0), gatewayName(), domain(), emailAddress(), gatewayAcronym(), gatewayURL(), gatewayPublicAbstract(), reviewProposalDescription(), gatewayAdminFirstName(), gatewayAdminLastName(), gatewayAdminEmail(), identityServerUserName(), identityServerPasswordToken(), declinedReason(), oauthClientId(), oauthClientSecret(), requestCreationTime(0), requesterUsername() {
   }
 
   virtual ~Gateway() throw();
+  std::string airavataInternalGatewayId;
   std::string gatewayId;
   GatewayApprovalStatus::type gatewayApprovalStatus;
   std::string gatewayName;
@@ -349,6 +352,8 @@ class Gateway {
   std::string requesterUsername;
 
   _Gateway__isset __isset;
+
+  void __set_airavataInternalGatewayId(const std::string& val);
 
   void __set_gatewayId(const std::string& val);
 
@@ -390,6 +395,10 @@ class Gateway {
 
   bool operator == (const Gateway & rhs) const
   {
+    if (__isset.airavataInternalGatewayId != rhs.__isset.airavataInternalGatewayId)
+      return false;
+    else if (__isset.airavataInternalGatewayId && !(airavataInternalGatewayId == rhs.airavataInternalGatewayId))
+      return false;
     if (!(gatewayId == rhs.gatewayId))
       return false;
     if (!(gatewayApprovalStatus == rhs.gatewayApprovalStatus))

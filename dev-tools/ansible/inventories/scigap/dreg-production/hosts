@@ -2,19 +2,19 @@
 # inventory file : scigap production deployment
 
 [zookeeper]
-gf5.ucs.indiana.edu
+scigap02.sciencegateways.iu.edu
 
 [rabbitmq]
-gf5.ucs.indiana.edu
+scigap02.sciencegateways.iu.edu
 
 [database]
-gf3.ucs.indiana.edu
+scigap01.sciencegateways.iu.edu
 
 [api-orch]
-gf5.ucs.indiana.edu
+scigap02.sciencegateways.iu.edu
 
 [gfac]
-gf6.ucs.indiana.edu
+scigap03.sciencegateways.iu.edu
 
 [pga]
 # Hosted on Jetstream

@@ -34,42 +34,51 @@ public class GroupMembershipRepository extends AbstractRepository<GroupMembershi
         super(GroupMembership.class, GroupMembershipEntity.class);
     }
 
-    //TODO Replace with prepared statements
     public List<User> getAllChildUsers(String domainId, String groupId) throws SharingRegistryException {
         String queryString = "SELECT DISTINCT U FROM " + UserEntity.class.getSimpleName() + " U, " + GroupMembershipEntity.class.getSimpleName()
                 + " GM WHERE GM." + DBConstants.GroupMembershipTable.CHILD_ID + " = U." + DBConstants.UserTable.USER_ID + " AND " +
                 "GM." + DBConstants.GroupMembershipTable.DOMAIN_ID + " = U." + DBConstants.UserTable.DOMAIN_ID + " AND " +
-                "GM." + DBConstants.GroupMembershipTable.DOMAIN_ID + "='" + domainId + "' AND "+
-                "GM." + DBConstants.GroupMembershipTable.PARENT_ID + "='" + groupId + "' AND GM." + DBConstants.GroupMembershipTable.CHILD_TYPE
-                + "='" + GroupChildType.USER.toString() + "'";
+                "GM." + DBConstants.GroupMembershipTable.DOMAIN_ID + "=:" + DBConstants.GroupMembershipTable.DOMAIN_ID + " AND "+
+                "GM." + DBConstants.GroupMembershipTable.PARENT_ID + "=:" + DBConstants.GroupMembershipTable.PARENT_ID + " AND GM." + DBConstants.GroupMembershipTable.CHILD_TYPE
+                + "=:" + DBConstants.GroupMembershipTable.CHILD_TYPE;
+        Map<String,Object> queryParameters = new HashMap<>();
+        queryParameters.put(DBConstants.GroupMembershipTable.DOMAIN_ID, domainId);
+        queryParameters.put(DBConstants.GroupMembershipTable.PARENT_ID, groupId);
+        queryParameters.put(DBConstants.GroupMembershipTable.CHILD_TYPE, GroupChildType.USER.toString());
         UserRepository userRepository = new UserRepository();
-        List<User> users = userRepository.select(queryString, 0, -1);
+        List<User> users = userRepository.select(queryString, queryParameters, 0, -1);
         return users;
     }
 
-    //TODO Replace with prepared statements
     public List<UserGroup> getAllChildGroups(String domainId, String groupId) throws SharingRegistryException {
         String queryString = "SELECT DISTINCT G FROM " + UserGroupEntity.class.getSimpleName() + " G, " + GroupMembershipEntity.class.getSimpleName()
                 + " GM WHERE GM." + DBConstants.GroupMembershipTable.CHILD_ID + " = G." + DBConstants.UserGroupTable.GROUP_ID + " AND " +
                 "GM." + DBConstants.GroupMembershipTable.DOMAIN_ID + " = G." + DBConstants.UserGroupTable.DOMAIN_ID + " AND " +
-                "GM." + DBConstants.GroupMembershipTable.DOMAIN_ID+"='"+domainId + "' AND "+
-                "GM." + DBConstants.GroupMembershipTable.PARENT_ID+"='"+groupId + "' AND GM." + DBConstants.GroupMembershipTable.CHILD_TYPE
-                + "='" + GroupChildType.GROUP.toString() + "'";
+                "GM." + DBConstants.GroupMembershipTable.DOMAIN_ID+"=:"+DBConstants.GroupMembershipTable.DOMAIN_ID + " AND "+
+                "GM." + DBConstants.GroupMembershipTable.PARENT_ID+"=:"+DBConstants.GroupMembershipTable.PARENT_ID + " AND GM." + DBConstants.GroupMembershipTable.CHILD_TYPE
+                + "=:" + DBConstants.GroupMembershipTable.CHILD_TYPE;
+        Map<String,Object> queryParameters = new HashMap<>();
+        queryParameters.put(DBConstants.GroupMembershipTable.DOMAIN_ID, domainId);
+        queryParameters.put(DBConstants.GroupMembershipTable.PARENT_ID, groupId);
+        queryParameters.put(DBConstants.GroupMembershipTable.CHILD_TYPE, GroupChildType.GROUP.toString());
         UserGroupRepository userGroupRepository = new UserGroupRepository();
-        List<UserGroup> groups = userGroupRepository.select(queryString, 0, -1);
+        List<UserGroup> groups = userGroupRepository.select(queryString, queryParameters,0, -1);
         return groups;
     }
 
-    //TODO Replace with prepared statements
     public List<UserGroup> getAllMemberGroupsForUser(String domainId, String userId) throws SharingRegistryException {
         String queryString = "SELECT DISTINCT G FROM " + UserGroupEntity.class.getSimpleName() + " G, " + GroupMembershipEntity.class.getSimpleName()
                 + " GM WHERE GM." + DBConstants.GroupMembershipTable.PARENT_ID + " = G." + DBConstants.UserGroupTable.GROUP_ID + " AND " +
                 "GM." + DBConstants.GroupMembershipTable.DOMAIN_ID + " = G." + DBConstants.UserGroupTable.DOMAIN_ID + " AND " +
-                "GM." + DBConstants.GroupMembershipTable.DOMAIN_ID+"='"+domainId + "' AND "+
-                "GM." + DBConstants.GroupMembershipTable.CHILD_ID+"='"+userId + "' AND GM." + DBConstants.GroupMembershipTable.CHILD_TYPE
-                + "='" + GroupChildType.USER.toString() + "'";
+                "GM." + DBConstants.GroupMembershipTable.DOMAIN_ID+"=:"+DBConstants.GroupMembershipTable.DOMAIN_ID + " AND "+
+                "GM." + DBConstants.GroupMembershipTable.CHILD_ID+"=:"+DBConstants.GroupMembershipTable.CHILD_ID + " AND GM." + DBConstants.GroupMembershipTable.CHILD_TYPE
+                + "=:" + DBConstants.GroupMembershipTable.CHILD_TYPE;
+        Map<String,Object> queryParameters = new HashMap<>();
+        queryParameters.put(DBConstants.GroupMembershipTable.DOMAIN_ID, domainId);
+        queryParameters.put(DBConstants.GroupMembershipTable.CHILD_ID, userId);
+        queryParameters.put(DBConstants.GroupMembershipTable.CHILD_TYPE, GroupChildType.USER.toString());
         UserGroupRepository userGroupRepository = new UserGroupRepository();
-        List<UserGroup> groups = userGroupRepository.select(queryString, 0, -1);
+        List<UserGroup> groups = userGroupRepository.select(queryString, queryParameters, 0, -1);
         return groups;
     }
 

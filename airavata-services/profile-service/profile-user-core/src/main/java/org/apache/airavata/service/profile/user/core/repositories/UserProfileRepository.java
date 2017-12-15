@@ -23,12 +23,13 @@ package org.apache.airavata.service.profile.user.core.repositories;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.service.profile.commons.repositories.AbstractRepository;
 import org.apache.airavata.service.profile.commons.user.entities.UserProfileEntity;
+import org.apache.airavata.service.profile.commons.utils.JPAUtils;
+import org.apache.airavata.service.profile.commons.utils.ObjectMapperSingleton;
 import org.apache.airavata.service.profile.commons.utils.QueryConstants;
 import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +69,32 @@ public class UserProfileRepository extends AbstractRepository<UserProfile, UserP
         List<UserProfile> resultList = select(QueryConstants.FIND_ALL_USER_PROFILES_BY_GATEWAY_ID, limit, offset, queryParam);
 
         return  resultList;
+    }
+
+    @Override
+    public UserProfile create(UserProfile userProfile) {
+        throw new UnsupportedOperationException("Please use createUserProfile instead");
+    }
+
+    @Override
+    public UserProfile update(UserProfile userProfile) {
+        throw new UnsupportedOperationException("Please use updateUserProfile instead");
+    }
+
+    public UserProfile createUserProfile(UserProfile userProfile, Runnable postUpdateAction) {
+        return updateUserProfile(userProfile, postUpdateAction);
+    }
+
+    public UserProfile updateUserProfile(UserProfile userProfile, Runnable postUpdateAction) {
+
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        UserProfileEntity entity = mapper.map(userProfile, UserProfileEntity.class);
+        UserProfileEntity persistedCopy = JPAUtils.execute(entityManager -> {
+            UserProfileEntity result = entityManager.merge(entity);
+            postUpdateAction.run();
+            return result;
+        });
+        return mapper.map(persistedCopy, UserProfile.class);
     }
 
 //    public static void main(String args[]) {

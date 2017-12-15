@@ -360,16 +360,8 @@ public class ApplicationSettings {
         return getSetting("credential.store.server.host");
     }
 
-    public static String getUserProfileServerHost() throws ApplicationSettingsException {
-        return getSetting(ServerSettings.USER_PROFILE_SERVER_HOST);
-    }
-
     public static String getCredentialStoreServerPort() throws ApplicationSettingsException {
         return getSetting("credential.store.server.port");
-    }
-
-    public static String getUserProfileServerPort() throws ApplicationSettingsException {
-        return getSetting(ServerSettings.USER_PROFILE_SERVER_PORT);
     }
     public static String getCredentialStoreNotifierEnabled() throws ApplicationSettingsException {
         return getSetting("notifier.enabled");
@@ -423,13 +415,13 @@ public class ApplicationSettings {
         return getSetting("cluster.status.monitoring.enable").equalsIgnoreCase("true");
     }
 
-//    public static String getUserProfileServerHost() throws ApplicationSettingsException {
-//        return getSetting(ServerSettings.USER_PROFILE_SERVER_HOST);
-//    }
-//
-//    public static String getUserProfileServerPort() throws ApplicationSettingsException {
-//        return getSetting(ServerSettings.USER_PROFILE_SERVER_PORT);
-//    }
+    public static String getUserProfileServerHost() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.USER_PROFILE_SERVER_HOST);
+    }
+
+    public static String getUserProfileServerPort() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.USER_PROFILE_SERVER_PORT);
+    }
 
     public static String getProfileServiceServerHost() throws ApplicationSettingsException {
         return getSetting(ServerSettings.PROFILE_SERVICE_SERVER_HOST);
@@ -441,10 +433,6 @@ public class ApplicationSettings {
 
     public static String getIamServerUrl() throws ApplicationSettingsException {
         return getSetting(ServerSettings.IAM_SERVER_URL);
-    }
-
-    public static String getGatewayAdminTempPwd() throws ApplicationSettingsException {
-        return getSetting(ServerSettings.NEW_GATEWAY_ADMIN_TEMP_PASSWORD);
     }
 
     /**

@@ -26,6 +26,7 @@ import org.apache.airavata.sharing.registry.db.utils.DBConstants;
 import org.apache.airavata.sharing.registry.db.utils.JPAUtils;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +51,6 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     @Override
     public String createDomain(Domain domain) throws SharingRegistryException, DuplicateEntryException, TException {
         try{
-            domain.setDomainId(domain.name);
             if((new DomainRepository()).get(domain.domainId) != null)
                 throw new DuplicateEntryException("There exist domain with given domain id");
 
@@ -69,9 +69,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             (new PermissionTypeRepository()).create(permissionType);
 
             return domain.domainId;
-        }catch (SharingRegistryException ex){
+        }catch (Throwable ex){
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -84,9 +84,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             domain = getUpdatedObject(oldDomain, domain);
             (new DomainRepository()).update(domain);
             return true;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -99,9 +99,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     public boolean isDomainExists(String domainId) throws SharingRegistryException, TException {
         try{
             return (new DomainRepository()).isExists(domainId);
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -110,9 +110,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
         try{
             (new DomainRepository()).delete(domainId);
             return true;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -120,9 +120,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     public Domain getDomain(String domainId) throws SharingRegistryException, TException {
         try{
             return (new DomainRepository()).get(domainId);
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -130,9 +130,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     public List<Domain> getDomains(int offset, int limit) throws TException {
         try{
             return (new DomainRepository()).select(new HashMap<>(), offset, limit);
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -164,9 +164,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             (new UserGroupRepository()).create(userGroup);
 
             return user.userId;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -190,9 +190,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             userGroup.setDescription("user " + user.userName + " group");
             updateGroup(userGroup);
             return true;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -208,9 +208,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             userPK.setDomainId(domainId);
             userPK.setUserId(userId);
             return (new UserRepository()).isExists(userPK);
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -227,9 +227,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             userGroupPK.setDomainId(domainId);
             (new UserGroupRepository()).delete(userGroupPK);
             return true;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -240,9 +240,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             userPK.setUserId(userId);
             userPK.setDomainId(domainId);
             return (new UserRepository()).get(userPK);
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -252,9 +252,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             HashMap<String, String> filters = new HashMap<>();
             filters.put(DBConstants.UserTable.DOMAIN_ID, domain);
             return (new UserRepository()).select(filters, offset, limit);
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -278,9 +278,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
 
             addUsersToGroup(group.domainId, Arrays.asList(group.ownerId), group.groupId);
             return group.groupId;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -302,9 +302,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
 
             (new UserGroupRepository()).update(group);
             return true;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -323,9 +323,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             userGroupPK.setDomainId(domainId);
             userGroupPK.setGroupId(groupId);
             return (new UserGroupRepository()).isExists(userGroupPK);
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -337,9 +337,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             userGroupPK.setDomainId(domainId);
             (new UserGroupRepository()).delete(userGroupPK);
             return true;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -350,9 +350,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             userGroupPK.setGroupId(groupId);
             userGroupPK.setDomainId(domainId);
             return (new UserGroupRepository()).get(userGroupPK);
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -362,9 +362,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             HashMap<String, String> filters = new HashMap<>();
             filters.put(DBConstants.UserTable.DOMAIN_ID, domain);
             return (new UserGroupRepository()).select(filters, offset, limit);
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -382,9 +382,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
                 (new GroupMembershipRepository()).create(groupMembership);
             }
             return true;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -399,9 +399,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
                 (new GroupMembershipRepository()).delete(groupMembershipPK);
             }
             return true;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -411,9 +411,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             //TODO limit offset
             List<User> groupMemberUsers = (new GroupMembershipRepository()).getAllChildUsers(domainId, groupId);
             return groupMemberUsers;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -423,9 +423,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             //TODO limit offset
             List<UserGroup> groupMemberGroups = (new GroupMembershipRepository()).getAllChildGroups(domainId, groupId);
             return groupMemberGroups;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -444,9 +444,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
                 (new GroupMembershipRepository()).create(groupMembership);
             }
             return true;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -459,9 +459,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             groupMembershipPK.setDomainId(domainId);
             (new GroupMembershipRepository()).delete(groupMembershipPK);
             return true;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -470,9 +470,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
         try{
             GroupMembershipRepository groupMembershipRepository = new GroupMembershipRepository();
             return groupMembershipRepository.getAllMemberGroupsForUser(domainId, userId);
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -493,9 +493,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             entityType.setUpdatedTime(System.currentTimeMillis());
             (new EntityTypeRepository()).create(entityType);
             return entityType.entityTypeId;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -511,9 +511,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             entityType = getUpdatedObject(oldEntityType, entityType);
             (new EntityTypeRepository()).update(entityType);
             return true;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -529,9 +529,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             entityTypePK.setDomainId(domainId);
             entityTypePK.setEntityTypeId(entityTypeId);
             return (new EntityTypeRepository()).isExists(entityTypePK);
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -543,9 +543,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             entityTypePK.setEntityTypeId(entityTypeId);
             (new EntityTypeRepository()).delete(entityTypePK);
             return true;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -556,9 +556,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             entityTypePK.setDomainId(domainId);
             entityTypePK.setEntityTypeId(entityTypeId);
             return (new EntityTypeRepository()).get(entityTypePK);
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -567,10 +567,10 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
         try{
             HashMap<String, String> filters = new HashMap<>();
             filters.put(DBConstants.EntityTypeTable.DOMAIN_ID, domain);
-            return (new EntityTypeRepository()).select(domain, offset, limit);
-        }catch (SharingRegistryException ex) {
+            return (new EntityTypeRepository()).select(filters, offset, limit);
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -590,9 +590,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             permissionType.setUpdatedTime(System.currentTimeMillis());
             (new PermissionTypeRepository()).create(permissionType);
             return permissionType.permissionTypeId;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -607,9 +607,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             permissionType = getUpdatedObject(oldPermissionType, permissionType);
             (new PermissionTypeRepository()).update(permissionType);
             return true;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -625,9 +625,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             permissionTypePK.setDomainId(domainId);
             permissionTypePK.setPermissionTypeId(permissionId);
             return (new PermissionTypeRepository()).isExists(permissionTypePK);
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -639,9 +639,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             permissionTypePK.setPermissionTypeId(permissionTypeId);
             (new PermissionTypeRepository()).delete(permissionTypePK);
             return true;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -652,9 +652,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             permissionTypePK.setDomainId(domainId);
             permissionTypePK.setPermissionTypeId(permissionTypeId);
             return (new PermissionTypeRepository()).get(permissionTypePK);
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -664,9 +664,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             HashMap<String, String> filters = new HashMap<>();
             filters.put(DBConstants.PermissionTypeTable.DOMAIN_ID, domain);
             return (new PermissionTypeRepository()).select(filters, offset, limit);
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -735,9 +735,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             }
 
             return entity.entityId;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -755,9 +755,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             entity.setSharedCount((new SharingRepository()).getSharedCount(entity.domainId, entity.entityId));
             (new EntityRepository()).update(entity);
             return true;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -773,9 +773,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             entityPK.setDomainId(domainId);
             entityPK.setEntityId(entityId);
             return (new EntityRepository()).isExists(entityPK);
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -788,9 +788,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             entityPK.setEntityId(entityId);
             (new EntityRepository()).delete(entityPK);
             return true;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -801,9 +801,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             entityPK.setDomainId(domainId);
             entityPK.setEntityId(entityId);
             return (new EntityRepository()).get(entityPK);
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -815,9 +815,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             groupIds.add(userId);
             (new GroupMembershipRepository()).getAllParentMembershipsForChild(domainId, userId).stream().forEach(gm -> groupIds.add(gm.parentId));
             return (new EntityRepository()).searchEntities(domainId, groupIds, filters, offset, limit);
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -825,9 +825,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     public List<User> getListOfSharedUsers(String domainId, String entityId, String permissionTypeId) throws SharingRegistryException, TException {
         try{
             return (new UserRepository()).getAccessibleUsers(domainId, entityId, permissionTypeId);
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -835,9 +835,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     public List<UserGroup> getListOfSharedGroups(String domainId, String entityId, String permissionTypeId) throws SharingRegistryException, TException {
         try{
             return (new UserGroupRepository()).getAccessibleGroups(domainId, entityId, permissionTypeId);
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -856,9 +856,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     public boolean shareEntityWithUsers(String domainId, String entityId, List<String> userList, String permissionTypeId, boolean cascadePermission) throws SharingRegistryException, TException {
         try{
             return shareEntity(domainId, entityId, userList, permissionTypeId, cascadePermission);
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -866,9 +866,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     public boolean shareEntityWithGroups(String domainId, String entityId, List<String> groupList, String permissionTypeId, boolean cascadePermission) throws SharingRegistryException, TException {
         try{
             return shareEntity(domainId, entityId, groupList, permissionTypeId, cascadePermission);
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -931,9 +931,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             entity.setSharedCount((new SharingRepository()).getSharedCount(domainId, entityId));
             (new EntityRepository()).update(entity);
             return true;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -944,9 +944,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
                 throw new SharingRegistryException(OWNER_PERMISSION_NAME + " permission cannot be assigned or removed");
             }
             return revokeEntitySharing(domainId, entityId, userList, permissionTypeId);
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -958,9 +958,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
                 throw new SharingRegistryException(OWNER_PERMISSION_NAME + " permission cannot be assigned or removed");
             }
             return revokeEntitySharing(domainId, entityId, groupList, permissionTypeId);
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -974,9 +974,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             groupIds.add(userId);
             return (new SharingRepository()).hasAccess(domainId, entityId, groupIds, Arrays.asList(permissionTypeId,
                     (new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId)));
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
 
@@ -1022,9 +1022,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             entity.setSharedCount((new SharingRepository()).getSharedCount(domainId, entityId));
             (new EntityRepository()).update(entity);
             return true;
-        }catch (SharingRegistryException ex) {
+        }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
-            throw ex;
+            throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
 
     }

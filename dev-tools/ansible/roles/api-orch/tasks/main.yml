@@ -50,6 +50,7 @@
     cred_store_server_host: "{{ ansible_default_ipv4.address }}"
     registry_host: "{{ ansible_default_ipv4.address }}"
     sharing_registry_host: "{{ ansible_default_ipv4.address }}"
+    profile_service_host: "{{ ansible_default_ipv4.address }}"
 
 
 - name: Copy Airavata server properties file
@@ -76,11 +77,11 @@
 - name: create logs directory
   file: path="{{ api_orch_log_dir }}" state=directory owner={{ user }} group={{ group }}
 
-- name: Copy Mysql jar to lib
-  copy: src={{ mysql_connector_jar }}
-        dest="{{ api_orch_dir }}/{{ airavata_dist }}/lib/{{ mysql_connector_jar }}"
-        owner={{ user }}
-        group={{ group }}
+- name: Copy MariaDB connector jar to lib
+  get_url: url="{{ mariadb_connector_jar_url }}"
+          dest="{{ api_orch_dir }}/{{ airavata_dist }}/lib/"
+          owner={{ user }}
+          group={{ group }}
 
 - name: Open firwall ports
   firewalld: port={{ item }} zone=public permanent=true state=enabled immediate=yes
@@ -90,6 +91,7 @@
     - "{{ orchestrator_port }}/tcp"
     - "{{ cred_store_port }}/tcp"
     - "{{ registry_port }}/tcp"
+    - "{{ profile_service_port }}/tcp"
   become_user: root
 
 - name: stop api-orch

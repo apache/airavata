@@ -55,6 +55,16 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
 
     private HashMap<String, String> rolePermissionConfig = new HashMap<>();
 
+    // Methods that users user to manage their user resource profile
+    private final static String USER_RESOURCE_PROFILE_USER_METHODS = "/airavata/registerUserResourceProfile|/airavata/getUserResourceProfile" +
+            "|/airavata/updateUserResourceProfile|/airavata/deleteUserResourceProfile|/airavata/addUserComputeResourcePreference" +
+            "|/airavata/addUserStoragePreference|/airavata/getUserComputeResourcePreference|/airavata/getUserStoragePreference" +
+            "|/airavata/getAllUserComputeResourcePreferences|/airavata/getAllUserStoragePreferences" +
+            "|/airavata/updateUserComputeResourcePreference|/airavata/updateUserStoragePreference" +
+            "|/airavata/deleteUserComputeResourcePreference|/airavata/deleteUserStoragePreference" +
+            "|/airavata/generateAndRegisterSSHKeys|/airavata/getAllCredentialSummaryForUsersInGateway" +
+            "|/airavata/deleteSSHPubKey";
+    private final static String SHARING_RESOURCE_METHODS = "/airavata/shareResourceWithUsers|/airavata/revokeSharingOfResourceFromUsers|/airavata/getAllAccessibleUsers";
 
     public KeyCloakSecurityManager() throws AiravataSecurityException {
         rolePermissionConfig.put("admin", "/airavata/.*");
@@ -81,7 +91,10 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                 "|/airavata/getApplicationInputs|/airavata/getApplicationOutputs|/airavata/getAvailableAppInterfaceComputeResources" +
                 "|/airavata/getComputeResource|/airavata/getAllComputeResourceNames|/airavata/getWorkflow|/airavata/getWorkflowTemplateId" +
                 "|/airavata/isWorkflowExistWithName|/airavata/registerDataProduct|/airavata/getDataProduct|/airavata/registerReplicaLocation" +
-                "|/airavata/getParentDataProduct|/airavata/getChildDataProducts");
+                "|/airavata/getParentDataProduct|/airavata/getChildDataProducts|/airavata/getAllAccessibleUsers" +
+                "|/airavata/getExperimentByAdmin|/airavata/cloneExperimentByAdmin" +
+                "|" + USER_RESOURCE_PROFILE_USER_METHODS + "|/airavata/getAllUserResourceProfiles" +
+                "|" + SHARING_RESOURCE_METHODS + "|/airavata/getGateway");
         rolePermissionConfig.put("gateway-user", "/airavata/getAPIVersion|/airavata/getNotification|/airavata/getAllNotifications|" +
                 "/airavata/createProject|/airavata/updateProject|/airavata/getProject|/airavata/deleteProject|/airavata/getUserProjects|" +
                 "/airavata/searchProjectsByProjectName|/airavata/searchProjectsByProjectDesc|/airavata/searchExperimentsByName|" +
@@ -95,7 +108,9 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                 "/airavata/getAllApplicationInterfaces|/airavata/getApplicationInputs|/airavata/getApplicationOutputs|" +
                 "/airavata/getAvailableAppInterfaceComputeResources|/airavata/getComputeResource|/airavata/getAllComputeResourceNames|" +
                 "/airavata/getWorkflow|/airavata/getWorkflowTemplateId|/airavata/isWorkflowExistWithName|/airavata/registerDataProduct|" +
-                "/airavata/getDataProduct|/airavata/registerReplicaLocation|/airavata/getParentDataProduct|/airavata/getChildDataProducts");
+                "/airavata/getDataProduct|/airavata/registerReplicaLocation|/airavata/getParentDataProduct|/airavata/getChildDataProducts|" +
+                "/airavata/getAllAccessibleUsers|/airavata/getAllApplicationDeployments|" + USER_RESOURCE_PROFILE_USER_METHODS + "|" +
+                SHARING_RESOURCE_METHODS);
 
         initializeSecurityInfra();
     }

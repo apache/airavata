@@ -21,7 +21,11 @@
 api_orch_server_names: "api-orch"
 api_orch_log_dir: "{{ api_orch_dir }}/{{ airavata_dist }}/logs"
 
-remote_idp_service_url: "https://iam.scigap.org/auth"
+iam_server_url: "https://iam.scigap.org/auth"
+iam_server_super_admin_username: "admin"
+#iam_server_super_admin_password: "changeme"
 
 profile_service_host: "localhost"
 profile_service_port: 8962
+
+mariadb_connector_jar_url: "https://downloads.mariadb.com/Connectors/java/connector-java-2.0.2/mariadb-java-client-2.0.2.jar"

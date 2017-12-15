@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SharingRepository extends AbstractRepository<Sharing, SharingEntity, SharingPK> {
     private final static Logger logger = LoggerFactory.getLogger(SharingRepository.class);
@@ -48,46 +49,49 @@ public class SharingRepository extends AbstractRepository<Sharing, SharingEntity
         return select(filters, 0, -1);
     }
 
-    //TODO Replace with prepared statements
     public List<Sharing> getCascadingPermissionsForEntity(String domainId, String entityId) throws SharingRegistryException {
         String query = "SELECT DISTINCT p from " + SharingEntity.class.getSimpleName() + " as p";
         query += " WHERE ";
-        query += "p." + DBConstants.SharingTable.DOMAIN_ID + " = '" + domainId + "' AND ";
-        query += "p." + DBConstants.SharingTable.ENTITY_ID + " = '" + entityId + "' AND ";
+        query += "p." + DBConstants.SharingTable.DOMAIN_ID + " = :" + DBConstants.SharingTable.DOMAIN_ID + " AND ";
+        query += "p." + DBConstants.SharingTable.ENTITY_ID + " = :" + DBConstants.SharingTable.ENTITY_ID + " AND ";
         query += "p." + DBConstants.SharingTable.SHARING_TYPE + " IN('" + SharingType.DIRECT_CASCADING.toString()
                 + "', '" + SharingType.INDIRECT_CASCADING + "') ";
         query += " ORDER BY p.createdTime DESC";
-        return select(query, 0, -1);
+        Map<String,Object> queryParameters = new HashMap<>();
+        queryParameters.put(DBConstants.SharingTable.DOMAIN_ID, domainId);
+        queryParameters.put(DBConstants.SharingTable.ENTITY_ID, entityId);
+        return select(query, queryParameters, 0, -1);
     }
 
-    //TODO Replace with prepared statements
     public boolean hasAccess(String domainId, String entityId, List<String> groupIds, List<String> permissionTypeIds) throws SharingRegistryException {
+        Map<String,Object> queryParameters = new HashMap<>();
         String query = "SELECT p from " + SharingEntity.class.getSimpleName() + " as p";
         query += " WHERE ";
-        query += "p." + DBConstants.SharingTable.DOMAIN_ID + " = '" + domainId + "' AND ";
-        query += "p." + DBConstants.SharingTable.ENTITY_ID + " = '" + entityId + "' AND ";
-        String permissionTypeIdString = "'";
-        for(String permissionId : permissionTypeIds)
-            permissionTypeIdString += permissionId + "','";
-        permissionTypeIdString = permissionTypeIdString.substring(0, permissionTypeIdString.length()-2);
-        query += "p." + DBConstants.SharingTable.PERMISSION_TYPE_ID + " IN(" + permissionTypeIdString + ") AND ";
-        String groupIdString = "'";
-        for(String groupId : groupIds)
-            groupIdString += groupId + "','";
-        groupIdString = groupIdString.substring(0, groupIdString.length()-2);
-        query += "p." + DBConstants.SharingTable.GROUP_ID + " IN(" + groupIdString + ") ";
+        query += "p." + DBConstants.SharingTable.DOMAIN_ID + " = :" + DBConstants.SharingTable.DOMAIN_ID + " AND ";
+        query += "p." + DBConstants.SharingTable.ENTITY_ID + " = :" + DBConstants.SharingTable.ENTITY_ID + " AND ";
+        queryParameters.put(DBConstants.SharingTable.DOMAIN_ID, domainId);
+        queryParameters.put(DBConstants.SharingTable.ENTITY_ID, entityId);
+        query += "p." + DBConstants.SharingTable.PERMISSION_TYPE_ID + " IN :" + DBConstants.SharingTable.PERMISSION_TYPE_ID + " AND ";
+        queryParameters.put(DBConstants.SharingTable.PERMISSION_TYPE_ID, permissionTypeIds);
+        query += "p." + DBConstants.SharingTable.GROUP_ID + " IN :" + DBConstants.SharingTable.GROUP_ID + " ";
+        queryParameters.put(DBConstants.SharingTable.GROUP_ID, groupIds);
         query += " ORDER BY p.createdTime DESC";
-        return select(query, 0, -1).size() > 0;
+        return select(query, queryParameters, 0, -1).size() > 0;
     }
 
     public int getSharedCount(String domainId, String entityId) throws SharingRegistryException {
+        Map<String,Object> queryParameters = new HashMap<>();
         String query = "SELECT p from " + SharingEntity.class.getSimpleName() + " as p";
         query += " WHERE ";
-        query += "p." + DBConstants.SharingTable.DOMAIN_ID + " = '" + domainId + "' AND ";
-        query += "p." + DBConstants.SharingTable.ENTITY_ID + " = '" + entityId + "' AND ";
+        query += "p." + DBConstants.SharingTable.DOMAIN_ID + " = :" + DBConstants.SharingTable.DOMAIN_ID + " AND ";
+        queryParameters.put(DBConstants.SharingTable.DOMAIN_ID, domainId);
+        query += "p." + DBConstants.SharingTable.ENTITY_ID + " = :" + DBConstants.SharingTable.ENTITY_ID + " AND ";
+        queryParameters.put(DBConstants.SharingTable.ENTITY_ID, entityId);
         String permissionTypeIdString = (new PermissionTypeRepository()).getOwnerPermissionTypeIdForDomain(domainId);
-        query += "p." + DBConstants.SharingTable.PERMISSION_TYPE_ID + " <> '" + permissionTypeIdString + "' AND ";
-        query += "p." + DBConstants.SharingTable.SHARING_TYPE + " <> '" + SharingType.INDIRECT_CASCADING + "'";
-        return select(query, 0, -1).size();
+        query += "p." + DBConstants.SharingTable.PERMISSION_TYPE_ID + " <> :" + DBConstants.SharingTable.PERMISSION_TYPE_ID + " AND ";
+        queryParameters.put(DBConstants.SharingTable.PERMISSION_TYPE_ID, permissionTypeIdString);
+        query += "p." + DBConstants.SharingTable.SHARING_TYPE + " <> :" + DBConstants.SharingTable.SHARING_TYPE;
+        queryParameters.put(DBConstants.SharingTable.SHARING_TYPE, SharingType.INDIRECT_CASCADING.toString());
+        return select(query, queryParameters, 0, -1).size();
     }
 }

@@ -57,12 +57,6 @@ public class ServerSettings extends ApplicationSettings {
     // Credential Store constants
     public static final String CREDENTIAL_SERVER_HOST = "credential.store.server.host";
     public static final String CREDENTIAL_SERVER_PORT = "credential.store.server.port";
-
-    //User Profile onstants
-
-//    public static final String USER_PROFILE_SERVER_HOST = "user.profile.server.host";
-//    public static final String USER_PROFILE_SERVER_PORT = "user.profile.server.port";
-
     // Zookeeper + curator constants
     public static final String EMBEDDED_ZK = "embedded.zk";
     public static final String ZOOKEEPER_SERVER_CONNECTION = "zookeeper.server.connection";
@@ -138,7 +132,9 @@ public class ServerSettings extends ApplicationSettings {
 
     // Iam Server Constants
     public static final String IAM_SERVER_URL = "iam.server.url";
-    public static final String NEW_GATEWAY_ADMIN_TEMP_PASSWORD="new.gateway.admin.temp.password";
+    public static final String IAM_SERVER_SUPER_ADMIN_USERNAME = "iam.server.super.admin.username";
+    public static final String IAM_SERVER_SUPER_ADMIN_PASSWORD = "iam.server.super.admin.password";
+
 
     /* Caching */
     private static final String SESSION_CACHE_ACCESS_TIME_OUT = "ssh.session.cache.access.timeout";
@@ -344,6 +340,13 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(ServerSettings.IAM_SERVER_URL);
     }
 
+    public static String getIamServerSuperAdminUsername() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.IAM_SERVER_SUPER_ADMIN_USERNAME);
+    }
+
+    public static String getIamServerSuperAdminPassword() throws ApplicationSettingsException {
+        return getSetting(ServerSettings.IAM_SERVER_SUPER_ADMIN_PASSWORD);
+    }
 
     public static String getAuthorizationPoliyName() throws ApplicationSettingsException {
         return getSetting(Constants.AUTHORIZATION_POLICY_NAME);

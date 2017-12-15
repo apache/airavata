@@ -70,6 +70,7 @@ public enum Script {
     GATEWAY_ID("gatewayId"),
     GATEWAY_USER_NAME("gatewayUserName"),
     APPLICATION_NAME("applicationName"),
+    QUEUE_SPECIFIC_MACROS("queueSpecificMacros")
     ;
 
     String name;

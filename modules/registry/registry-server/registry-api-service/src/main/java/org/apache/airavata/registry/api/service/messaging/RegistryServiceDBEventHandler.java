@@ -91,7 +91,12 @@ public class RegistryServiceDBEventHandler implements MessageHandler {
                             }
                             case UPDATE: {
                                 logger.info("Replicating updateGateway in Registry.");
-                                registryClient.updateGateway(gateway.getGatewayId(), gateway);
+                                if (!registryClient.isGatewayExist(gateway.getGatewayId())) {
+                                    logger.info("Gateway doesn't exist so adding instead of updating.");
+                                    registryClient.addGateway(gateway);
+                                } else {
+                                    registryClient.updateGateway(gateway.getGatewayId(), gateway);
+                                }
                                 logger.info("updateGateway Replication Success!");
                                 break;
                             }

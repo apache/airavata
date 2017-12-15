@@ -38,7 +38,7 @@
         group={{ group }}
 
 - name: git checkout from airavata github
-  git: repo=https://git-wip-us.apache.org/repos/asf/airavata.git
+  git: repo=https://github.com/apache/airavata.git
        dest="{{ airavata_source_dir }}"
        version="{{ git_branch }}"
   register: checkout

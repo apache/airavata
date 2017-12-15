@@ -31,7 +31,6 @@ import org.apache.airavata.gfac.core.cluster.CommandInfo;
 import org.apache.airavata.gfac.core.cluster.CommandOutput;
 import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
-import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.Task;
@@ -103,11 +102,13 @@ public class ArchiveTask implements Task {
             inputPath = processContext.getStorageFileSystemRootLocation();
             inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
 
-            authenticationInfo = Factory.getStorageSSHKeyAuthentication(taskContext.getParentProcessContext());
             status = new TaskStatus(TaskState.COMPLETED);
 
-            ServerInfo serverInfo = processContext.getStorageResourceServerInfo();
-            Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
+            Session srcSession = Factory.getSSHSession(Factory.getComputerResourceSSHKeyAuthentication(processContext),
+                    processContext.getComputeResourceServerInfo());
+            Session destSession =  Factory.getSSHSession(Factory.getStorageSSHKeyAuthentication(processContext),
+                    processContext.getStorageResourceServerInfo());
+
             URI sourceURI = new URI(subTaskModel.getSource());
             URI destinationURI = null;
             String workingDirName = null, path = null;
@@ -128,8 +129,9 @@ public class ArchiveTask implements Task {
             remoteCluster.execute(commandInfo);
             destinationURI = TaskUtils.getDestinationURI(taskContext, hostName, inputPath, archiveTar);
             remoteCluster.scpThirdParty(resourceAbsTarFilePath ,
+                    srcSession,
                     destinationURI.getPath() ,
-                    sshSession,
+                    destSession,
                     RemoteCluster.DIRECTION.FROM,
                     true);
 
@@ -144,7 +146,7 @@ public class ArchiveTask implements Task {
             commandInfo = new RawCommandInfo("cd " + destParent + " && mkdir " + storageArchiveDir +
                     " && tar -xvf " + archiveTar + " -C " + storageArchiveDir + " && rm " + archiveTar +
                     " && chmod 755 -R " + storageArchiveDir + "/*");
-            executeCommand(sshSession, commandInfo, new StandardOutReader());
+            executeCommand(destSession, commandInfo, new StandardOutReader());
         } catch (CredentialStoreException e) {
             String msg = "Storage authentication issue, make sure you are passing valid credential token";
             log.error(msg, e);

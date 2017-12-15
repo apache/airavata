@@ -28,7 +28,6 @@ import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.model.dbevent.DBEventMessage;
 import org.apache.airavata.model.dbevent.DBEventMessageContext;
-import org.apache.airavata.model.dbevent.EntityType;
 import org.apache.airavata.model.error.DuplicateEntryException;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
@@ -127,6 +126,12 @@ public class SharingServiceDBEventHandler implements MessageHandler {
                         switch (dBEventMessageContext.getPublisher().getPublisherContext().getCrudType()){
 
                             case CREATE:
+                            case UPDATE:
+
+                                // Only create the domain is it doesn't already exist
+                                if (sharingRegistryClient.isDomainExists(gateway.getGatewayId())){
+                                    break;
+                                }
                                 /*
                                 Following set of DB operations should happen in a transaction
                                 As these are thrift calls we cannot enforce this restriction

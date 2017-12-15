@@ -32,7 +32,21 @@ enum TenantApprovalStatus {
     DEACTIVATED,
     CANCELLED,
     DENIED,
-    CREATED
+    CREATED,
+    DEPLOYED
+}
+
+struct TenantPreferences {
+    10: optional string tenantAdminFirstName,
+    11: optional string tenantAdminLastName,
+    12: optional string tenantAdminEmail,
+}
+
+struct TenantConfig {
+    16: optional string oauthClientId,
+    17: optional string oauthClientSecret,
+        13: optional string identityServerUserName,
+        14: optional string identityServerPasswordToken,
 }
 
 struct Tenant {
@@ -45,14 +59,7 @@ struct Tenant {
     7: optional string tenantURL,
     8: optional string tenantPublicAbstract,
     9: optional string reviewProposalDescription,
-    10: optional string tenantAdminFirstName,
-    11: optional string tenantAdminLastName,
-    12: optional string tenantAdminEmail,
-    13: optional string identityServerUserName,
-    14: optional string identityServerPasswordToken,
     15: optional string declinedReason,
-    16: optional string oauthClientId,
-    17: optional string oauthClientSecret,
     18: optional i64 requestCreationTime,
     19: optional string requesterUsername
 }

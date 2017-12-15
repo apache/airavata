@@ -20,6 +20,9 @@
  */
 package org.apache.airavata.service.profile.client;
 
+import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServices;
+import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
+import org.apache.airavata.service.profile.iam.admin.services.cpi.iam_admin_services_cpiConstants;
 import org.apache.airavata.service.profile.tenant.cpi.TenantProfileService;
 import org.apache.airavata.service.profile.tenant.cpi.exception.TenantProfileServiceException;
 import org.apache.airavata.service.profile.tenant.cpi.profile_tenant_cpiConstants;
@@ -58,6 +61,18 @@ public class ProfileServiceClientFactory {
             return new TenantProfileService.Client(multiplexedProtocol);
         } catch (TTransportException e) {
             throw new TenantProfileServiceException(e.getMessage());
+        }
+    }
+
+    public static IamAdminServices.Client createIamAdminServiceClient(String serverHost, int serverPort) throws IamAdminServicesException {
+        try {
+            TTransport transport = new TSocket(serverHost, serverPort);
+            transport.open();
+            TProtocol protocol = new TBinaryProtocol(transport);
+            TMultiplexedProtocol multiplexedProtocol = new TMultiplexedProtocol(protocol, iam_admin_services_cpiConstants.IAM_ADMIN_SERVICES_CPI_NAME);
+            return new IamAdminServices.Client(multiplexedProtocol);
+        } catch (TTransportException e) {
+            throw new IamAdminServicesException(e.getMessage());
         }
     }
 }

@@ -3486,7 +3486,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getAllAccessibleUsers\n");
   }
 
-  bool createGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel) {
+  void createGroup(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::group::GroupModel& groupModel) {
     // Your implementation goes here
     printf("createGroup\n");
   }
@@ -3496,7 +3496,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("updateGroup\n");
   }
 
-  bool deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId, const std::string& gatewayId) {
+  bool deleteGroup(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& groupId, const std::string& ownerId) {
     // Your implementation goes here
     printf("deleteGroup\n");
   }
@@ -3506,39 +3506,9 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getGroup\n");
   }
 
-  void getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName, const std::string& gatewayId) {
+  void getAllGroupsUserBelongs(std::vector< ::apache::airavata::model::group::GroupModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName) {
     // Your implementation goes here
     printf("getAllGroupsUserBelongs\n");
-  }
-
-  void addUserProfile(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::user::UserProfile& userProfile) {
-    // Your implementation goes here
-    printf("addUserProfile\n");
-  }
-
-  bool updateUserProfile(const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::user::UserProfile& userProfile) {
-    // Your implementation goes here
-    printf("updateUserProfile\n");
-  }
-
-  void getUserProfileById( ::apache::airavata::model::user::UserProfile& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayId) {
-    // Your implementation goes here
-    printf("getUserProfileById\n");
-  }
-
-  bool deleteUserProfile(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId) {
-    // Your implementation goes here
-    printf("deleteUserProfile\n");
-  }
-
-  void getAllUserProfilesInGateway(std::vector< ::apache::airavata::model::user::UserProfile> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int32_t offset, const int32_t limit) {
-    // Your implementation goes here
-    printf("getAllUserProfilesInGateway\n");
-  }
-
-  bool doesUserProfileExist(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userId, const std::string& gatewayId) {
-    // Your implementation goes here
-    printf("doesUserProfileExist\n");
   }
 
 };

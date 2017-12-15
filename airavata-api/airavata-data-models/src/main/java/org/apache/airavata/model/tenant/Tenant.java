@@ -64,14 +64,7 @@ public class Tenant implements org.apache.thrift.TBase<Tenant, Tenant._Fields>, 
   private static final org.apache.thrift.protocol.TField TENANT_URL_FIELD_DESC = new org.apache.thrift.protocol.TField("tenantURL", org.apache.thrift.protocol.TType.STRING, (short)7);
   private static final org.apache.thrift.protocol.TField TENANT_PUBLIC_ABSTRACT_FIELD_DESC = new org.apache.thrift.protocol.TField("tenantPublicAbstract", org.apache.thrift.protocol.TType.STRING, (short)8);
   private static final org.apache.thrift.protocol.TField REVIEW_PROPOSAL_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("reviewProposalDescription", org.apache.thrift.protocol.TType.STRING, (short)9);
-  private static final org.apache.thrift.protocol.TField TENANT_ADMIN_FIRST_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("tenantAdminFirstName", org.apache.thrift.protocol.TType.STRING, (short)10);
-  private static final org.apache.thrift.protocol.TField TENANT_ADMIN_LAST_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("tenantAdminLastName", org.apache.thrift.protocol.TType.STRING, (short)11);
-  private static final org.apache.thrift.protocol.TField TENANT_ADMIN_EMAIL_FIELD_DESC = new org.apache.thrift.protocol.TField("tenantAdminEmail", org.apache.thrift.protocol.TType.STRING, (short)12);
-  private static final org.apache.thrift.protocol.TField IDENTITY_SERVER_USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("identityServerUserName", org.apache.thrift.protocol.TType.STRING, (short)13);
-  private static final org.apache.thrift.protocol.TField IDENTITY_SERVER_PASSWORD_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("identityServerPasswordToken", org.apache.thrift.protocol.TType.STRING, (short)14);
   private static final org.apache.thrift.protocol.TField DECLINED_REASON_FIELD_DESC = new org.apache.thrift.protocol.TField("declinedReason", org.apache.thrift.protocol.TType.STRING, (short)15);
-  private static final org.apache.thrift.protocol.TField OAUTH_CLIENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("oauthClientId", org.apache.thrift.protocol.TType.STRING, (short)16);
-  private static final org.apache.thrift.protocol.TField OAUTH_CLIENT_SECRET_FIELD_DESC = new org.apache.thrift.protocol.TField("oauthClientSecret", org.apache.thrift.protocol.TType.STRING, (short)17);
   private static final org.apache.thrift.protocol.TField REQUEST_CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("requestCreationTime", org.apache.thrift.protocol.TType.I64, (short)18);
   private static final org.apache.thrift.protocol.TField REQUESTER_USERNAME_FIELD_DESC = new org.apache.thrift.protocol.TField("requesterUsername", org.apache.thrift.protocol.TType.STRING, (short)19);
 
@@ -90,14 +83,7 @@ public class Tenant implements org.apache.thrift.TBase<Tenant, Tenant._Fields>, 
   private String tenantURL; // optional
   private String tenantPublicAbstract; // optional
   private String reviewProposalDescription; // optional
-  private String tenantAdminFirstName; // optional
-  private String tenantAdminLastName; // optional
-  private String tenantAdminEmail; // optional
-  private String identityServerUserName; // optional
-  private String identityServerPasswordToken; // optional
   private String declinedReason; // optional
-  private String oauthClientId; // optional
-  private String oauthClientSecret; // optional
   private long requestCreationTime; // optional
   private String requesterUsername; // optional
 
@@ -116,14 +102,7 @@ public class Tenant implements org.apache.thrift.TBase<Tenant, Tenant._Fields>, 
     TENANT_URL((short)7, "tenantURL"),
     TENANT_PUBLIC_ABSTRACT((short)8, "tenantPublicAbstract"),
     REVIEW_PROPOSAL_DESCRIPTION((short)9, "reviewProposalDescription"),
-    TENANT_ADMIN_FIRST_NAME((short)10, "tenantAdminFirstName"),
-    TENANT_ADMIN_LAST_NAME((short)11, "tenantAdminLastName"),
-    TENANT_ADMIN_EMAIL((short)12, "tenantAdminEmail"),
-    IDENTITY_SERVER_USER_NAME((short)13, "identityServerUserName"),
-    IDENTITY_SERVER_PASSWORD_TOKEN((short)14, "identityServerPasswordToken"),
     DECLINED_REASON((short)15, "declinedReason"),
-    OAUTH_CLIENT_ID((short)16, "oauthClientId"),
-    OAUTH_CLIENT_SECRET((short)17, "oauthClientSecret"),
     REQUEST_CREATION_TIME((short)18, "requestCreationTime"),
     REQUESTER_USERNAME((short)19, "requesterUsername");
 
@@ -158,22 +137,8 @@ public class Tenant implements org.apache.thrift.TBase<Tenant, Tenant._Fields>, 
           return TENANT_PUBLIC_ABSTRACT;
         case 9: // REVIEW_PROPOSAL_DESCRIPTION
           return REVIEW_PROPOSAL_DESCRIPTION;
-        case 10: // TENANT_ADMIN_FIRST_NAME
-          return TENANT_ADMIN_FIRST_NAME;
-        case 11: // TENANT_ADMIN_LAST_NAME
-          return TENANT_ADMIN_LAST_NAME;
-        case 12: // TENANT_ADMIN_EMAIL
-          return TENANT_ADMIN_EMAIL;
-        case 13: // IDENTITY_SERVER_USER_NAME
-          return IDENTITY_SERVER_USER_NAME;
-        case 14: // IDENTITY_SERVER_PASSWORD_TOKEN
-          return IDENTITY_SERVER_PASSWORD_TOKEN;
         case 15: // DECLINED_REASON
           return DECLINED_REASON;
-        case 16: // OAUTH_CLIENT_ID
-          return OAUTH_CLIENT_ID;
-        case 17: // OAUTH_CLIENT_SECRET
-          return OAUTH_CLIENT_SECRET;
         case 18: // REQUEST_CREATION_TIME
           return REQUEST_CREATION_TIME;
         case 19: // REQUESTER_USERNAME
@@ -220,7 +185,7 @@ public class Tenant implements org.apache.thrift.TBase<Tenant, Tenant._Fields>, 
   // isset id assignments
   private static final int __REQUESTCREATIONTIME_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.TENANT_NAME,_Fields.DOMAIN,_Fields.EMAIL_ADDRESS,_Fields.TENANT_ACRONYM,_Fields.TENANT_URL,_Fields.TENANT_PUBLIC_ABSTRACT,_Fields.REVIEW_PROPOSAL_DESCRIPTION,_Fields.TENANT_ADMIN_FIRST_NAME,_Fields.TENANT_ADMIN_LAST_NAME,_Fields.TENANT_ADMIN_EMAIL,_Fields.IDENTITY_SERVER_USER_NAME,_Fields.IDENTITY_SERVER_PASSWORD_TOKEN,_Fields.DECLINED_REASON,_Fields.OAUTH_CLIENT_ID,_Fields.OAUTH_CLIENT_SECRET,_Fields.REQUEST_CREATION_TIME,_Fields.REQUESTER_USERNAME};
+  private static final _Fields optionals[] = {_Fields.TENANT_NAME,_Fields.DOMAIN,_Fields.EMAIL_ADDRESS,_Fields.TENANT_ACRONYM,_Fields.TENANT_URL,_Fields.TENANT_PUBLIC_ABSTRACT,_Fields.REVIEW_PROPOSAL_DESCRIPTION,_Fields.DECLINED_REASON,_Fields.REQUEST_CREATION_TIME,_Fields.REQUESTER_USERNAME};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -242,21 +207,7 @@ public class Tenant implements org.apache.thrift.TBase<Tenant, Tenant._Fields>, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.REVIEW_PROPOSAL_DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("reviewProposalDescription", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.TENANT_ADMIN_FIRST_NAME, new org.apache.thrift.meta_data.FieldMetaData("tenantAdminFirstName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.TENANT_ADMIN_LAST_NAME, new org.apache.thrift.meta_data.FieldMetaData("tenantAdminLastName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.TENANT_ADMIN_EMAIL, new org.apache.thrift.meta_data.FieldMetaData("tenantAdminEmail", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.IDENTITY_SERVER_USER_NAME, new org.apache.thrift.meta_data.FieldMetaData("identityServerUserName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.IDENTITY_SERVER_PASSWORD_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("identityServerPasswordToken", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.DECLINED_REASON, new org.apache.thrift.meta_data.FieldMetaData("declinedReason", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.OAUTH_CLIENT_ID, new org.apache.thrift.meta_data.FieldMetaData("oauthClientId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.OAUTH_CLIENT_SECRET, new org.apache.thrift.meta_data.FieldMetaData("oauthClientSecret", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.REQUEST_CREATION_TIME, new org.apache.thrift.meta_data.FieldMetaData("requestCreationTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
@@ -310,29 +261,8 @@ public class Tenant implements org.apache.thrift.TBase<Tenant, Tenant._Fields>, 
     if (other.isSetReviewProposalDescription()) {
       this.reviewProposalDescription = other.reviewProposalDescription;
     }
-    if (other.isSetTenantAdminFirstName()) {
-      this.tenantAdminFirstName = other.tenantAdminFirstName;
-    }
-    if (other.isSetTenantAdminLastName()) {
-      this.tenantAdminLastName = other.tenantAdminLastName;
-    }
-    if (other.isSetTenantAdminEmail()) {
-      this.tenantAdminEmail = other.tenantAdminEmail;
-    }
-    if (other.isSetIdentityServerUserName()) {
-      this.identityServerUserName = other.identityServerUserName;
-    }
-    if (other.isSetIdentityServerPasswordToken()) {
-      this.identityServerPasswordToken = other.identityServerPasswordToken;
-    }
     if (other.isSetDeclinedReason()) {
       this.declinedReason = other.declinedReason;
-    }
-    if (other.isSetOauthClientId()) {
-      this.oauthClientId = other.oauthClientId;
-    }
-    if (other.isSetOauthClientSecret()) {
-      this.oauthClientSecret = other.oauthClientSecret;
     }
     this.requestCreationTime = other.requestCreationTime;
     if (other.isSetRequesterUsername()) {
@@ -355,14 +285,7 @@ public class Tenant implements org.apache.thrift.TBase<Tenant, Tenant._Fields>, 
     this.tenantURL = null;
     this.tenantPublicAbstract = null;
     this.reviewProposalDescription = null;
-    this.tenantAdminFirstName = null;
-    this.tenantAdminLastName = null;
-    this.tenantAdminEmail = null;
-    this.identityServerUserName = null;
-    this.identityServerPasswordToken = null;
     this.declinedReason = null;
-    this.oauthClientId = null;
-    this.oauthClientSecret = null;
     setRequestCreationTimeIsSet(false);
     this.requestCreationTime = 0;
     this.requesterUsername = null;
@@ -583,121 +506,6 @@ public class Tenant implements org.apache.thrift.TBase<Tenant, Tenant._Fields>, 
     }
   }
 
-  public String getTenantAdminFirstName() {
-    return this.tenantAdminFirstName;
-  }
-
-  public void setTenantAdminFirstName(String tenantAdminFirstName) {
-    this.tenantAdminFirstName = tenantAdminFirstName;
-  }
-
-  public void unsetTenantAdminFirstName() {
-    this.tenantAdminFirstName = null;
-  }
-
-  /** Returns true if field tenantAdminFirstName is set (has been assigned a value) and false otherwise */
-  public boolean isSetTenantAdminFirstName() {
-    return this.tenantAdminFirstName != null;
-  }
-
-  public void setTenantAdminFirstNameIsSet(boolean value) {
-    if (!value) {
-      this.tenantAdminFirstName = null;
-    }
-  }
-
-  public String getTenantAdminLastName() {
-    return this.tenantAdminLastName;
-  }
-
-  public void setTenantAdminLastName(String tenantAdminLastName) {
-    this.tenantAdminLastName = tenantAdminLastName;
-  }
-
-  public void unsetTenantAdminLastName() {
-    this.tenantAdminLastName = null;
-  }
-
-  /** Returns true if field tenantAdminLastName is set (has been assigned a value) and false otherwise */
-  public boolean isSetTenantAdminLastName() {
-    return this.tenantAdminLastName != null;
-  }
-
-  public void setTenantAdminLastNameIsSet(boolean value) {
-    if (!value) {
-      this.tenantAdminLastName = null;
-    }
-  }
-
-  public String getTenantAdminEmail() {
-    return this.tenantAdminEmail;
-  }
-
-  public void setTenantAdminEmail(String tenantAdminEmail) {
-    this.tenantAdminEmail = tenantAdminEmail;
-  }
-
-  public void unsetTenantAdminEmail() {
-    this.tenantAdminEmail = null;
-  }
-
-  /** Returns true if field tenantAdminEmail is set (has been assigned a value) and false otherwise */
-  public boolean isSetTenantAdminEmail() {
-    return this.tenantAdminEmail != null;
-  }
-
-  public void setTenantAdminEmailIsSet(boolean value) {
-    if (!value) {
-      this.tenantAdminEmail = null;
-    }
-  }
-
-  public String getIdentityServerUserName() {
-    return this.identityServerUserName;
-  }
-
-  public void setIdentityServerUserName(String identityServerUserName) {
-    this.identityServerUserName = identityServerUserName;
-  }
-
-  public void unsetIdentityServerUserName() {
-    this.identityServerUserName = null;
-  }
-
-  /** Returns true if field identityServerUserName is set (has been assigned a value) and false otherwise */
-  public boolean isSetIdentityServerUserName() {
-    return this.identityServerUserName != null;
-  }
-
-  public void setIdentityServerUserNameIsSet(boolean value) {
-    if (!value) {
-      this.identityServerUserName = null;
-    }
-  }
-
-  public String getIdentityServerPasswordToken() {
-    return this.identityServerPasswordToken;
-  }
-
-  public void setIdentityServerPasswordToken(String identityServerPasswordToken) {
-    this.identityServerPasswordToken = identityServerPasswordToken;
-  }
-
-  public void unsetIdentityServerPasswordToken() {
-    this.identityServerPasswordToken = null;
-  }
-
-  /** Returns true if field identityServerPasswordToken is set (has been assigned a value) and false otherwise */
-  public boolean isSetIdentityServerPasswordToken() {
-    return this.identityServerPasswordToken != null;
-  }
-
-  public void setIdentityServerPasswordTokenIsSet(boolean value) {
-    if (!value) {
-      this.identityServerPasswordToken = null;
-    }
-  }
-
   public String getDeclinedReason() {
     return this.declinedReason;
   }
@@ -718,52 +526,6 @@ public class Tenant implements org.apache.thrift.TBase<Tenant, Tenant._Fields>, 
   public void setDeclinedReasonIsSet(boolean value) {
     if (!value) {
       this.declinedReason = null;
-    }
-  }
-
-  public String getOauthClientId() {
-    return this.oauthClientId;
-  }
-
-  public void setOauthClientId(String oauthClientId) {
-    this.oauthClientId = oauthClientId;
-  }
-
-  public void unsetOauthClientId() {
-    this.oauthClientId = null;
-  }
-
-  /** Returns true if field oauthClientId is set (has been assigned a value) and false otherwise */
-  public boolean isSetOauthClientId() {
-    return this.oauthClientId != null;
-  }
-
-  public void setOauthClientIdIsSet(boolean value) {
-    if (!value) {
-      this.oauthClientId = null;
-    }
-  }
-
-  public String getOauthClientSecret() {
-    return this.oauthClientSecret;
-  }
-
-  public void setOauthClientSecret(String oauthClientSecret) {
-    this.oauthClientSecret = oauthClientSecret;
-  }
-
-  public void unsetOauthClientSecret() {
-    this.oauthClientSecret = null;
-  }
-
-  /** Returns true if field oauthClientSecret is set (has been assigned a value) and false otherwise */
-  public boolean isSetOauthClientSecret() {
-    return this.oauthClientSecret != null;
-  }
-
-  public void setOauthClientSecretIsSet(boolean value) {
-    if (!value) {
-      this.oauthClientSecret = null;
     }
   }
 
@@ -886,67 +648,11 @@ public class Tenant implements org.apache.thrift.TBase<Tenant, Tenant._Fields>, 
       }
       break;
 
-    case TENANT_ADMIN_FIRST_NAME:
-      if (value == null) {
-        unsetTenantAdminFirstName();
-      } else {
-        setTenantAdminFirstName((String)value);
-      }
-      break;
-
-    case TENANT_ADMIN_LAST_NAME:
-      if (value == null) {
-        unsetTenantAdminLastName();
-      } else {
-        setTenantAdminLastName((String)value);
-      }
-      break;
-
-    case TENANT_ADMIN_EMAIL:
-      if (value == null) {
-        unsetTenantAdminEmail();
-      } else {
-        setTenantAdminEmail((String)value);
-      }
-      break;
-
-    case IDENTITY_SERVER_USER_NAME:
-      if (value == null) {
-        unsetIdentityServerUserName();
-      } else {
-        setIdentityServerUserName((String)value);
-      }
-      break;
-
-    case IDENTITY_SERVER_PASSWORD_TOKEN:
-      if (value == null) {
-        unsetIdentityServerPasswordToken();
-      } else {
-        setIdentityServerPasswordToken((String)value);
-      }
-      break;
-
     case DECLINED_REASON:
       if (value == null) {
         unsetDeclinedReason();
       } else {
         setDeclinedReason((String)value);
-      }
-      break;
-
-    case OAUTH_CLIENT_ID:
-      if (value == null) {
-        unsetOauthClientId();
-      } else {
-        setOauthClientId((String)value);
-      }
-      break;
-
-    case OAUTH_CLIENT_SECRET:
-      if (value == null) {
-        unsetOauthClientSecret();
-      } else {
-        setOauthClientSecret((String)value);
       }
       break;
 
@@ -998,29 +704,8 @@ public class Tenant implements org.apache.thrift.TBase<Tenant, Tenant._Fields>, 
     case REVIEW_PROPOSAL_DESCRIPTION:
       return getReviewProposalDescription();
 
-    case TENANT_ADMIN_FIRST_NAME:
-      return getTenantAdminFirstName();
-
-    case TENANT_ADMIN_LAST_NAME:
-      return getTenantAdminLastName();
-
-    case TENANT_ADMIN_EMAIL:
-      return getTenantAdminEmail();
-
-    case IDENTITY_SERVER_USER_NAME:
-      return getIdentityServerUserName();
-
-    case IDENTITY_SERVER_PASSWORD_TOKEN:
-      return getIdentityServerPasswordToken();
-
     case DECLINED_REASON:
       return getDeclinedReason();
-
-    case OAUTH_CLIENT_ID:
-      return getOauthClientId();
-
-    case OAUTH_CLIENT_SECRET:
-      return getOauthClientSecret();
 
     case REQUEST_CREATION_TIME:
       return getRequestCreationTime();
@@ -1057,22 +742,8 @@ public class Tenant implements org.apache.thrift.TBase<Tenant, Tenant._Fields>, 
       return isSetTenantPublicAbstract();
     case REVIEW_PROPOSAL_DESCRIPTION:
       return isSetReviewProposalDescription();
-    case TENANT_ADMIN_FIRST_NAME:
-      return isSetTenantAdminFirstName();
-    case TENANT_ADMIN_LAST_NAME:
-      return isSetTenantAdminLastName();
-    case TENANT_ADMIN_EMAIL:
-      return isSetTenantAdminEmail();
-    case IDENTITY_SERVER_USER_NAME:
-      return isSetIdentityServerUserName();
-    case IDENTITY_SERVER_PASSWORD_TOKEN:
-      return isSetIdentityServerPasswordToken();
     case DECLINED_REASON:
       return isSetDeclinedReason();
-    case OAUTH_CLIENT_ID:
-      return isSetOauthClientId();
-    case OAUTH_CLIENT_SECRET:
-      return isSetOauthClientSecret();
     case REQUEST_CREATION_TIME:
       return isSetRequestCreationTime();
     case REQUESTER_USERNAME:
@@ -1175,75 +846,12 @@ public class Tenant implements org.apache.thrift.TBase<Tenant, Tenant._Fields>, 
         return false;
     }
 
-    boolean this_present_tenantAdminFirstName = true && this.isSetTenantAdminFirstName();
-    boolean that_present_tenantAdminFirstName = true && that.isSetTenantAdminFirstName();
-    if (this_present_tenantAdminFirstName || that_present_tenantAdminFirstName) {
-      if (!(this_present_tenantAdminFirstName && that_present_tenantAdminFirstName))
-        return false;
-      if (!this.tenantAdminFirstName.equals(that.tenantAdminFirstName))
-        return false;
-    }
-
-    boolean this_present_tenantAdminLastName = true && this.isSetTenantAdminLastName();
-    boolean that_present_tenantAdminLastName = true && that.isSetTenantAdminLastName();
-    if (this_present_tenantAdminLastName || that_present_tenantAdminLastName) {
-      if (!(this_present_tenantAdminLastName && that_present_tenantAdminLastName))
-        return false;
-      if (!this.tenantAdminLastName.equals(that.tenantAdminLastName))
-        return false;
-    }
-
-    boolean this_present_tenantAdminEmail = true && this.isSetTenantAdminEmail();
-    boolean that_present_tenantAdminEmail = true && that.isSetTenantAdminEmail();
-    if (this_present_tenantAdminEmail || that_present_tenantAdminEmail) {
-      if (!(this_present_tenantAdminEmail && that_present_tenantAdminEmail))
-        return false;
-      if (!this.tenantAdminEmail.equals(that.tenantAdminEmail))
-        return false;
-    }
-
-    boolean this_present_identityServerUserName = true && this.isSetIdentityServerUserName();
-    boolean that_present_identityServerUserName = true && that.isSetIdentityServerUserName();
-    if (this_present_identityServerUserName || that_present_identityServerUserName) {
-      if (!(this_present_identityServerUserName && that_present_identityServerUserName))
-        return false;
-      if (!this.identityServerUserName.equals(that.identityServerUserName))
-        return false;
-    }
-
-    boolean this_present_identityServerPasswordToken = true && this.isSetIdentityServerPasswordToken();
-    boolean that_present_identityServerPasswordToken = true && that.isSetIdentityServerPasswordToken();
-    if (this_present_identityServerPasswordToken || that_present_identityServerPasswordToken) {
-      if (!(this_present_identityServerPasswordToken && that_present_identityServerPasswordToken))
-        return false;
-      if (!this.identityServerPasswordToken.equals(that.identityServerPasswordToken))
-        return false;
-    }
-
     boolean this_present_declinedReason = true && this.isSetDeclinedReason();
     boolean that_present_declinedReason = true && that.isSetDeclinedReason();
     if (this_present_declinedReason || that_present_declinedReason) {
       if (!(this_present_declinedReason && that_present_declinedReason))
         return false;
       if (!this.declinedReason.equals(that.declinedReason))
-        return false;
-    }
-
-    boolean this_present_oauthClientId = true && this.isSetOauthClientId();
-    boolean that_present_oauthClientId = true && that.isSetOauthClientId();
-    if (this_present_oauthClientId || that_present_oauthClientId) {
-      if (!(this_present_oauthClientId && that_present_oauthClientId))
-        return false;
-      if (!this.oauthClientId.equals(that.oauthClientId))
-        return false;
-    }
-
-    boolean this_present_oauthClientSecret = true && this.isSetOauthClientSecret();
-    boolean that_present_oauthClientSecret = true && that.isSetOauthClientSecret();
-    if (this_present_oauthClientSecret || that_present_oauthClientSecret) {
-      if (!(this_present_oauthClientSecret && that_present_oauthClientSecret))
-        return false;
-      if (!this.oauthClientSecret.equals(that.oauthClientSecret))
         return false;
     }
 
@@ -1317,45 +925,10 @@ public class Tenant implements org.apache.thrift.TBase<Tenant, Tenant._Fields>, 
     if (present_reviewProposalDescription)
       list.add(reviewProposalDescription);
 
-    boolean present_tenantAdminFirstName = true && (isSetTenantAdminFirstName());
-    list.add(present_tenantAdminFirstName);
-    if (present_tenantAdminFirstName)
-      list.add(tenantAdminFirstName);
-
-    boolean present_tenantAdminLastName = true && (isSetTenantAdminLastName());
-    list.add(present_tenantAdminLastName);
-    if (present_tenantAdminLastName)
-      list.add(tenantAdminLastName);
-
-    boolean present_tenantAdminEmail = true && (isSetTenantAdminEmail());
-    list.add(present_tenantAdminEmail);
-    if (present_tenantAdminEmail)
-      list.add(tenantAdminEmail);
-
-    boolean present_identityServerUserName = true && (isSetIdentityServerUserName());
-    list.add(present_identityServerUserName);
-    if (present_identityServerUserName)
-      list.add(identityServerUserName);
-
-    boolean present_identityServerPasswordToken = true && (isSetIdentityServerPasswordToken());
-    list.add(present_identityServerPasswordToken);
-    if (present_identityServerPasswordToken)
-      list.add(identityServerPasswordToken);
-
     boolean present_declinedReason = true && (isSetDeclinedReason());
     list.add(present_declinedReason);
     if (present_declinedReason)
       list.add(declinedReason);
-
-    boolean present_oauthClientId = true && (isSetOauthClientId());
-    list.add(present_oauthClientId);
-    if (present_oauthClientId)
-      list.add(oauthClientId);
-
-    boolean present_oauthClientSecret = true && (isSetOauthClientSecret());
-    list.add(present_oauthClientSecret);
-    if (present_oauthClientSecret)
-      list.add(oauthClientSecret);
 
     boolean present_requestCreationTime = true && (isSetRequestCreationTime());
     list.add(present_requestCreationTime);
@@ -1468,82 +1041,12 @@ public class Tenant implements org.apache.thrift.TBase<Tenant, Tenant._Fields>, 
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetTenantAdminFirstName()).compareTo(other.isSetTenantAdminFirstName());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetTenantAdminFirstName()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.tenantAdminFirstName, other.tenantAdminFirstName);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetTenantAdminLastName()).compareTo(other.isSetTenantAdminLastName());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetTenantAdminLastName()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.tenantAdminLastName, other.tenantAdminLastName);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetTenantAdminEmail()).compareTo(other.isSetTenantAdminEmail());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetTenantAdminEmail()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.tenantAdminEmail, other.tenantAdminEmail);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetIdentityServerUserName()).compareTo(other.isSetIdentityServerUserName());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetIdentityServerUserName()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.identityServerUserName, other.identityServerUserName);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetIdentityServerPasswordToken()).compareTo(other.isSetIdentityServerPasswordToken());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetIdentityServerPasswordToken()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.identityServerPasswordToken, other.identityServerPasswordToken);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     lastComparison = Boolean.valueOf(isSetDeclinedReason()).compareTo(other.isSetDeclinedReason());
     if (lastComparison != 0) {
       return lastComparison;
     }
     if (isSetDeclinedReason()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.declinedReason, other.declinedReason);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetOauthClientId()).compareTo(other.isSetOauthClientId());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetOauthClientId()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.oauthClientId, other.oauthClientId);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetOauthClientSecret()).compareTo(other.isSetOauthClientSecret());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetOauthClientSecret()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.oauthClientSecret, other.oauthClientSecret);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1673,56 +1176,6 @@ public class Tenant implements org.apache.thrift.TBase<Tenant, Tenant._Fields>, 
       }
       first = false;
     }
-    if (isSetTenantAdminFirstName()) {
-      if (!first) sb.append(", ");
-      sb.append("tenantAdminFirstName:");
-      if (this.tenantAdminFirstName == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.tenantAdminFirstName);
-      }
-      first = false;
-    }
-    if (isSetTenantAdminLastName()) {
-      if (!first) sb.append(", ");
-      sb.append("tenantAdminLastName:");
-      if (this.tenantAdminLastName == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.tenantAdminLastName);
-      }
-      first = false;
-    }
-    if (isSetTenantAdminEmail()) {
-      if (!first) sb.append(", ");
-      sb.append("tenantAdminEmail:");
-      if (this.tenantAdminEmail == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.tenantAdminEmail);
-      }
-      first = false;
-    }
-    if (isSetIdentityServerUserName()) {
-      if (!first) sb.append(", ");
-      sb.append("identityServerUserName:");
-      if (this.identityServerUserName == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.identityServerUserName);
-      }
-      first = false;
-    }
-    if (isSetIdentityServerPasswordToken()) {
-      if (!first) sb.append(", ");
-      sb.append("identityServerPasswordToken:");
-      if (this.identityServerPasswordToken == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.identityServerPasswordToken);
-      }
-      first = false;
-    }
     if (isSetDeclinedReason()) {
       if (!first) sb.append(", ");
       sb.append("declinedReason:");
@@ -1730,26 +1183,6 @@ public class Tenant implements org.apache.thrift.TBase<Tenant, Tenant._Fields>, 
         sb.append("null");
       } else {
         sb.append(this.declinedReason);
-      }
-      first = false;
-    }
-    if (isSetOauthClientId()) {
-      if (!first) sb.append(", ");
-      sb.append("oauthClientId:");
-      if (this.oauthClientId == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.oauthClientId);
-      }
-      first = false;
-    }
-    if (isSetOauthClientSecret()) {
-      if (!first) sb.append(", ");
-      sb.append("oauthClientSecret:");
-      if (this.oauthClientSecret == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.oauthClientSecret);
       }
       first = false;
     }
@@ -1894,66 +1327,10 @@ public class Tenant implements org.apache.thrift.TBase<Tenant, Tenant._Fields>, 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 10: // TENANT_ADMIN_FIRST_NAME
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.tenantAdminFirstName = iprot.readString();
-              struct.setTenantAdminFirstNameIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 11: // TENANT_ADMIN_LAST_NAME
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.tenantAdminLastName = iprot.readString();
-              struct.setTenantAdminLastNameIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 12: // TENANT_ADMIN_EMAIL
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.tenantAdminEmail = iprot.readString();
-              struct.setTenantAdminEmailIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 13: // IDENTITY_SERVER_USER_NAME
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.identityServerUserName = iprot.readString();
-              struct.setIdentityServerUserNameIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 14: // IDENTITY_SERVER_PASSWORD_TOKEN
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.identityServerPasswordToken = iprot.readString();
-              struct.setIdentityServerPasswordTokenIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
           case 15: // DECLINED_REASON
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.declinedReason = iprot.readString();
               struct.setDeclinedReasonIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 16: // OAUTH_CLIENT_ID
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.oauthClientId = iprot.readString();
-              struct.setOauthClientIdIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 17: // OAUTH_CLIENT_SECRET
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.oauthClientSecret = iprot.readString();
-              struct.setOauthClientSecretIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -2046,59 +1423,10 @@ public class Tenant implements org.apache.thrift.TBase<Tenant, Tenant._Fields>, 
           oprot.writeFieldEnd();
         }
       }
-      if (struct.tenantAdminFirstName != null) {
-        if (struct.isSetTenantAdminFirstName()) {
-          oprot.writeFieldBegin(TENANT_ADMIN_FIRST_NAME_FIELD_DESC);
-          oprot.writeString(struct.tenantAdminFirstName);
-          oprot.writeFieldEnd();
-        }
-      }
-      if (struct.tenantAdminLastName != null) {
-        if (struct.isSetTenantAdminLastName()) {
-          oprot.writeFieldBegin(TENANT_ADMIN_LAST_NAME_FIELD_DESC);
-          oprot.writeString(struct.tenantAdminLastName);
-          oprot.writeFieldEnd();
-        }
-      }
-      if (struct.tenantAdminEmail != null) {
-        if (struct.isSetTenantAdminEmail()) {
-          oprot.writeFieldBegin(TENANT_ADMIN_EMAIL_FIELD_DESC);
-          oprot.writeString(struct.tenantAdminEmail);
-          oprot.writeFieldEnd();
-        }
-      }
-      if (struct.identityServerUserName != null) {
-        if (struct.isSetIdentityServerUserName()) {
-          oprot.writeFieldBegin(IDENTITY_SERVER_USER_NAME_FIELD_DESC);
-          oprot.writeString(struct.identityServerUserName);
-          oprot.writeFieldEnd();
-        }
-      }
-      if (struct.identityServerPasswordToken != null) {
-        if (struct.isSetIdentityServerPasswordToken()) {
-          oprot.writeFieldBegin(IDENTITY_SERVER_PASSWORD_TOKEN_FIELD_DESC);
-          oprot.writeString(struct.identityServerPasswordToken);
-          oprot.writeFieldEnd();
-        }
-      }
       if (struct.declinedReason != null) {
         if (struct.isSetDeclinedReason()) {
           oprot.writeFieldBegin(DECLINED_REASON_FIELD_DESC);
           oprot.writeString(struct.declinedReason);
-          oprot.writeFieldEnd();
-        }
-      }
-      if (struct.oauthClientId != null) {
-        if (struct.isSetOauthClientId()) {
-          oprot.writeFieldBegin(OAUTH_CLIENT_ID_FIELD_DESC);
-          oprot.writeString(struct.oauthClientId);
-          oprot.writeFieldEnd();
-        }
-      }
-      if (struct.oauthClientSecret != null) {
-        if (struct.isSetOauthClientSecret()) {
-          oprot.writeFieldBegin(OAUTH_CLIENT_SECRET_FIELD_DESC);
-          oprot.writeString(struct.oauthClientSecret);
           oprot.writeFieldEnd();
         }
       }
@@ -2155,37 +1483,16 @@ public class Tenant implements org.apache.thrift.TBase<Tenant, Tenant._Fields>, 
       if (struct.isSetReviewProposalDescription()) {
         optionals.set(6);
       }
-      if (struct.isSetTenantAdminFirstName()) {
+      if (struct.isSetDeclinedReason()) {
         optionals.set(7);
       }
-      if (struct.isSetTenantAdminLastName()) {
+      if (struct.isSetRequestCreationTime()) {
         optionals.set(8);
       }
-      if (struct.isSetTenantAdminEmail()) {
+      if (struct.isSetRequesterUsername()) {
         optionals.set(9);
       }
-      if (struct.isSetIdentityServerUserName()) {
-        optionals.set(10);
-      }
-      if (struct.isSetIdentityServerPasswordToken()) {
-        optionals.set(11);
-      }
-      if (struct.isSetDeclinedReason()) {
-        optionals.set(12);
-      }
-      if (struct.isSetOauthClientId()) {
-        optionals.set(13);
-      }
-      if (struct.isSetOauthClientSecret()) {
-        optionals.set(14);
-      }
-      if (struct.isSetRequestCreationTime()) {
-        optionals.set(15);
-      }
-      if (struct.isSetRequesterUsername()) {
-        optionals.set(16);
-      }
-      oprot.writeBitSet(optionals, 17);
+      oprot.writeBitSet(optionals, 10);
       if (struct.isSetTenantName()) {
         oprot.writeString(struct.tenantName);
       }
@@ -2207,29 +1514,8 @@ public class Tenant implements org.apache.thrift.TBase<Tenant, Tenant._Fields>, 
       if (struct.isSetReviewProposalDescription()) {
         oprot.writeString(struct.reviewProposalDescription);
       }
-      if (struct.isSetTenantAdminFirstName()) {
-        oprot.writeString(struct.tenantAdminFirstName);
-      }
-      if (struct.isSetTenantAdminLastName()) {
-        oprot.writeString(struct.tenantAdminLastName);
-      }
-      if (struct.isSetTenantAdminEmail()) {
-        oprot.writeString(struct.tenantAdminEmail);
-      }
-      if (struct.isSetIdentityServerUserName()) {
-        oprot.writeString(struct.identityServerUserName);
-      }
-      if (struct.isSetIdentityServerPasswordToken()) {
-        oprot.writeString(struct.identityServerPasswordToken);
-      }
       if (struct.isSetDeclinedReason()) {
         oprot.writeString(struct.declinedReason);
-      }
-      if (struct.isSetOauthClientId()) {
-        oprot.writeString(struct.oauthClientId);
-      }
-      if (struct.isSetOauthClientSecret()) {
-        oprot.writeString(struct.oauthClientSecret);
       }
       if (struct.isSetRequestCreationTime()) {
         oprot.writeI64(struct.requestCreationTime);
@@ -2246,7 +1532,7 @@ public class Tenant implements org.apache.thrift.TBase<Tenant, Tenant._Fields>, 
       struct.setTenantIdIsSet(true);
       struct.tenantApprovalStatus = org.apache.airavata.model.tenant.TenantApprovalStatus.findByValue(iprot.readI32());
       struct.setTenantApprovalStatusIsSet(true);
-      BitSet incoming = iprot.readBitSet(17);
+      BitSet incoming = iprot.readBitSet(10);
       if (incoming.get(0)) {
         struct.tenantName = iprot.readString();
         struct.setTenantNameIsSet(true);
@@ -2276,42 +1562,14 @@ public class Tenant implements org.apache.thrift.TBase<Tenant, Tenant._Fields>, 
         struct.setReviewProposalDescriptionIsSet(true);
       }
       if (incoming.get(7)) {
-        struct.tenantAdminFirstName = iprot.readString();
-        struct.setTenantAdminFirstNameIsSet(true);
-      }
-      if (incoming.get(8)) {
-        struct.tenantAdminLastName = iprot.readString();
-        struct.setTenantAdminLastNameIsSet(true);
-      }
-      if (incoming.get(9)) {
-        struct.tenantAdminEmail = iprot.readString();
-        struct.setTenantAdminEmailIsSet(true);
-      }
-      if (incoming.get(10)) {
-        struct.identityServerUserName = iprot.readString();
-        struct.setIdentityServerUserNameIsSet(true);
-      }
-      if (incoming.get(11)) {
-        struct.identityServerPasswordToken = iprot.readString();
-        struct.setIdentityServerPasswordTokenIsSet(true);
-      }
-      if (incoming.get(12)) {
         struct.declinedReason = iprot.readString();
         struct.setDeclinedReasonIsSet(true);
       }
-      if (incoming.get(13)) {
-        struct.oauthClientId = iprot.readString();
-        struct.setOauthClientIdIsSet(true);
-      }
-      if (incoming.get(14)) {
-        struct.oauthClientSecret = iprot.readString();
-        struct.setOauthClientSecretIsSet(true);
-      }
-      if (incoming.get(15)) {
+      if (incoming.get(8)) {
         struct.requestCreationTime = iprot.readI64();
         struct.setRequestCreationTimeIsSet(true);
       }
-      if (incoming.get(16)) {
+      if (incoming.get(9)) {
         struct.requesterUsername = iprot.readString();
         struct.setRequesterUsernameIsSet(true);
       }
