@@ -64,7 +64,11 @@ zookeeper.timeout=30000
 ```
 sh airavata-server-start.sh all
 ```
-##  Airavata Testing Ends
+
+
+
+
+
 
 ### Consume Messages(optional for testing purpose)
 - Logs stored in the kafka can be view on differnt terminal by the consumer
@@ -72,6 +76,8 @@ sh airavata-server-start.sh all
 ```
 docker run --rm ches/kafka kafka-console-consumer.sh --topic test_all_logs --from-beginning --zookeeper $ZK_IP:2181
 ```
+##  Airavata Testing Ends
+
 
 ## ELK Stack
 - Logs emitted from kafka are consumed by logstash, so changing logstash conf file
