@@ -1,5 +1,6 @@
 
 from . import serializers
+from . import thrift_utils
 
 from rest_framework import status, mixins, pagination
 from rest_framework.decorators import api_view
@@ -24,7 +25,6 @@ from airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDe
 from airavata.model.appcatalog.computeresource.ttypes import ComputeResourceDescription
 from airavata.model.credential.store.ttypes import CredentialOwnerType,SummaryType,CredentialSummary
 
-import thrift_django_serializer
 from collections import OrderedDict
 import logging
 
@@ -265,7 +265,7 @@ class ApplicationModuleViewSet(APIBackedViewSet):
             if app_module_id in app_interface.applicationModules:
                 app_interfaces.append(app_interface)
         if len(app_interfaces) == 1:
-            serializer = thrift_django_serializer.create_serializer(
+            serializer = thrift_utils.create_serializer(
                 ApplicationInterfaceDescription, instance=app_interfaces[0], context={'request': request})
             return Response(serializer.data)
         elif len(app_interfaces) > 1:
@@ -397,7 +397,7 @@ class ComputeResourceDetails(APIView):
 
     def get(self, request, format=None):
         details = request.airavata_client.getComputeResource(request.authz_token, request.query_params["id"])
-        serializer = thrift_django_serializer.create_serializer(ComputeResourceDescription, instance=details,
+        serializer = thrift_utils.create_serializer(ComputeResourceDescription, instance=details,
                                                                 context={'request': request})
         print(details)
         return Response(serializer.data)
@@ -408,7 +408,7 @@ class ComputeResourcesQueues(APIView):
 
     def get(self, request, format=None):
         details = request.airavata_client.getComputeResource(request.authz_token, request.query_params["id"])
-        serializer = thrift_django_serializer.create_serializer(ComputeResourceDescription, instance=details,
+        serializer = thrift_utils.create_serializer(ComputeResourceDescription, instance=details,
                                                                 context={'request': request})
         data = serializer.data
         return Response([queue["queueName"] for queue in data["batchQueues"]])
@@ -417,7 +417,7 @@ class ComputeResourcesQueues(APIView):
 class ApplicationInterfaceList(APIView):
     def get(self, request, format=None):
         gateway_id = settings.GATEWAY_ID
-        serializer = thrift_django_serializer.create_serializer(ApplicationInterfaceDescription,
+        serializer = thrift_utils.create_serializer(ApplicationInterfaceDescription,
                                                                 instance=request.airavata_client.getAllApplicationInterfaces(
                                                                     request.authz_token, gateway_id),
                                                                 context={'request': request},many=True)
@@ -432,7 +432,7 @@ class FetchApplicationInterface(APIView):
                                                                     request.authz_token, gateway_id):
             app_modules=app_interface.applicationModules
             if request.query_params["id"] in app_modules:
-                return Response(thrift_django_serializer.create_serializer(ApplicationInterfaceDescription,
+                return Response(thrift_utils.create_serializer(ApplicationInterfaceDescription,
                                                                 instance=app_interface,
                                                                 context={'request': request}).data)
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -444,7 +444,7 @@ class FetchApplicationDeployment(APIView):
         gateway_id = settings.GATEWAY_ID
         app_deployments=[app_deployment for app_deployment in  request.airavata_client.getAllApplicationDeployments(
                 request.authz_token, gateway_id) if request.query_params["id"] == app_deployment.appModuleId]
-        serializer=thrift_django_serializer.create_serializer(ApplicationDeploymentDescription,
+        serializer=thrift_utils.create_serializer(ApplicationDeploymentDescription,
                                                    instance=app_deployments,
                                                    context={'request': request},many=True)
         return Response(serializer.data)
@@ -454,7 +454,7 @@ class FetchSSHPubKeys(APIView):
 
     def get(self,request,format=None):
         gateway_id = settings.GATEWAY_ID
-        serializer=thrift_django_serializer.create_serializer(CredentialSummary,instance=request.airavata_client.getAllCredentialSummaryForGateway (request.authz_token,SummaryType.SSH,gateway_id),context={'request': request},many=True)
+        serializer=thrift_utils.create_serializer(CredentialSummary,instance=request.airavata_client.getAllCredentialSummaryForGateway (request.authz_token,SummaryType.SSH,gateway_id),context={'request': request},many=True)
         return Response(serializer.data)
 
 class GenerateRegisterSSHKeys(APIView):
