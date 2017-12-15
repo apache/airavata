@@ -7,6 +7,9 @@ from airavata.model.application.io.ttypes import InputDataObjectType, OutputData
 from airavata.model.experiment.ttypes import ExperimentModel
 from airavata.model.workspace.ttypes import Project
 from airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule
+from airavata.model.appcatalog.computeresource.ttypes import BatchQueue
+import thrift_django_serializer
+
 from django.conf import settings
 
 from rest_framework import serializers
@@ -224,31 +227,10 @@ class SetEnvPathsSerializer(CustomSerializer):
         raise Exception("Not implemented")
 
 
-class ApplicationDeploymentDescriptionSerializer(CustomSerializer):
-    appModuleId = serializers.CharField(required=False)
-    computeHostId = serializers.CharField(required=False)
-    executablePath = serializers.CharField(required=False)
-    parallelism = serializers.IntegerField(required=False)
-    appDeploymentDescription = serializers.CharField(required=False)
-    moduleLoadCmds = serializers.ListSerializer(child=CommandObjectSerializer())
-    libPrependPaths = serializers.ListSerializer(child=SetEnvPathsSerializer())
-    libAppendPaths = serializers.ListSerializer(child=SetEnvPathsSerializer())
-    setEnvironment = serializers.ListSerializer(child=SetEnvPathsSerializer())
-    preJobCommands = serializers.ListSerializer(child=CommandObjectSerializer())
-    postJobCommands = serializers.ListSerializer(child=CommandObjectSerializer())
-    defaultQueueName = serializers.CharField(required=False)
-    defaultNodeCount = serializers.IntegerField(required=False)
-    defaultCPUCount = serializers.IntegerField(required=False)
-    defaultWalltime = serializers.IntegerField(required=False)
-    editableByUser = serializers.BooleanField(required=False)
-
-    def create(self, validated_data):
-        params=self.process_list_fields(validated_data)
-        return ApplicationDeploymentDescription(**params)
-
-    def update(self, instance, validated_data):
-        raise Exception("Not Implemented")
-
+class ApplicationDeploymentDescriptionSerializer(thrift_django_serializer.create_serializer_class(ApplicationDeploymentDescription)):
+    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-deployment-detail', lookup_field='appDeploymentId', lookup_url_kwarg='app_deployment_id')
+    # Default values returned in these results have been overridden with app deployment defaults for any that exist
+    queues = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-deployment-queues', lookup_field='appDeploymentId', lookup_url_kwarg='app_deployment_id')
 
 
 class ComputeResourceDescriptionSerializer(CustomSerializer):
@@ -257,3 +239,6 @@ class ComputeResourceDescriptionSerializer(CustomSerializer):
     ipAddresses=serializers.ListField(child=serializers.CharField())
     resourceDescription=serializers.CharField()
     enabled=serializers.BooleanField()
+
+class BatchQueueSerializer(thrift_django_serializer.create_serializer_class(BatchQueue)):
+    pass

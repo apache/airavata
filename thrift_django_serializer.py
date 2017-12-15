@@ -27,6 +27,9 @@ def create_serializer(thrift_data_type, **kwargs):
     :param kwargs: Other Django Framework Serializer initialization parameters
     :return: instance of custom serializer for the given thrift data type
     """
+    return create_serializer_class(thrift_data_type)(**kwargs)
+
+def create_serializer_class(thrift_data_type):
     class CustomSerializerMeta(SerializerMetaclass):
 
         def __new__(cls, name, bases, attrs):
@@ -58,7 +61,7 @@ def create_serializer(thrift_data_type, **kwargs):
         def update(self, instance, validated_data):
             raise Exception("Not implemented")
 
-    return CustomSerializer(**kwargs)
+    return CustomSerializer
 
 
 def process_field(field):

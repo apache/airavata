@@ -341,6 +341,47 @@ class ApplicationInterfaceViewSet(APIBackedViewSet):
         compute_resources = request.airavata_client.getAvailableAppInterfaceComputeResources(self.authz_token, app_interface_id)
         return Response(compute_resources)
 
+class ApplicationDeploymentViewSet(APIBackedViewSet):
+
+    serializer_class = serializers.ApplicationDeploymentDescriptionSerializer
+    lookup_field = 'app_deployment_id'
+    lookup_value_regex = '[^/]+'
+
+    def get_list(self):
+        return self.request.airavata_client.getAllApplicationDeployments(self.authz_token, self.gateway_id)
+
+    def get_instance(self, lookup_value):
+        return self.request.airavata_client.getApplicationDeployment(self.authz_token, lookup_value)
+
+    def perform_create(self, serializer):
+        application_deployment = serializer.save()
+        app_deployment_id = self.request.airavata_client.registerApplicationDeployment(self.authz_token, self.gateway_id, application_deployment)
+        application_deployment.appDeploymentId = app_deployment_id
+
+    def perform_update(self, serializer):
+        application_deployment = serializer.save()
+        self.request.airavata_client.updateApplicationDeployment(self.authz_token, application_deployment.appDeploymentId, application_deployment)
+
+    @detail_route()
+    def queues(self, request, app_deployment_id):
+        """Return queues for this deployment with defaults overridden by deployment defaults if they exist"""
+        app_deployment = self.request.airavata_client.getApplicationDeployment(self.authz_token, app_deployment_id)
+        compute_resource = request.airavata_client.getComputeResource(request.authz_token, app_deployment.computeHostId)
+        # Override defaults with app deployment defaults
+        batch_queues = []
+        for batch_queue in compute_resource.batchQueues:
+            if app_deployment.defaultQueueName:
+                batch_queue.isDefaultQueue = (app_deployment.defaultQueueName == batch_queue.queueName)
+            if app_deployment.defaultNodeCount:
+                batch_queue.defaultNodeCount = app_deployment.defaultNodeCount
+            if app_deployment.defaultCPUCount:
+                batch_queue.defaultCPUCount = app_deployment.defaultCPUCount
+            if app_deployment.defaultWalltime:
+                batch_queue.defaultWalltime = app_deployment.defaultWalltime
+            batch_queues.append(batch_queue)
+        serializer = serializers.BatchQueueSerializer(batch_queues, many=True, context={'request': request})
+        return Response(serializer.data)
+
 class ComputeResourceList(APIView):
     renderer_classes = (JSONRenderer,)
 
