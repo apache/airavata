@@ -43,8 +43,8 @@ public class GatewayProfileEntity implements Serializable {
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
 
-    @Column(name = "CS_TOKEN")
-    private String csToken;
+    @Column(name = "CREDENTIAL_STORE_TOKEN")
+    private String credentialStoreToken;
 
     @Column(name = "IDENTITY_SERVER_PWD_CRED_TOKEN")
     private String identityServerPwdCredToken;
@@ -54,7 +54,6 @@ public class GatewayProfileEntity implements Serializable {
 
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
-
 
     public GatewayProfileEntity() {
     }
@@ -75,12 +74,12 @@ public class GatewayProfileEntity implements Serializable {
         this.creationTime = creationTime;
     }
 
-    public String getCsToken() {
-        return csToken;
+    public String getCredentialStoreToken() {
+        return credentialStoreToken;
     }
 
-    public void setCsToken(String csToken) {
-        this.csToken = csToken;
+    public void setCredentialStoreToken(String credentialStoreToken) {
+        this.credentialStoreToken = credentialStoreToken;
     }
 
     public String getIdentityServerPwdCredToken() {
