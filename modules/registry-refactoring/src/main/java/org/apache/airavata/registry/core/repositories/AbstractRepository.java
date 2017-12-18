@@ -95,4 +95,10 @@ public abstract class AbstractRepository<T, E, Id> {
         resultSet.stream().forEach(rs -> gatewayList.add(mapper.map(rs, thriftGenericClass)));
         return gatewayList;
     }
+
+    public boolean isExists(Id id) {
+        return get(id) != null;
+    }
+
+
 }
