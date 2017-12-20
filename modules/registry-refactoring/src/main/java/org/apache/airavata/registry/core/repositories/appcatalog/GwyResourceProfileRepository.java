@@ -63,17 +63,17 @@ public class GwyResourceProfileRepository extends AbstractRepository<GatewayReso
         return gatewayResourceProfile;
     }
 
-    public boolean removeGatewayResourceProfile(String gatewayId) {
+ /*   public boolean removeGatewayResourceProfile(String gatewayId) {
         //return delete(gatewayId);
     }
 
     public boolean isGatewayResourceProfileExists(String gatewayId) {
         //return isExists(gatewayId);
-    }
+    }*/
 
-    public List<String> getGatewayProfileIds(String gatewayName) {
+    /*public List<String> getGatewayProfileIds(String gatewayName) {
         // TODO - Not used anywhere (dev list??)
-    }
+    }*/
 
     public List<GatewayResourceProfile> getAllGatewayProfiles() {
 

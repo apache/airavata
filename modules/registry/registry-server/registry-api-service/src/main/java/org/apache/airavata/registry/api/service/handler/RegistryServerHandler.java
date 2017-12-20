@@ -62,6 +62,7 @@ import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConver
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.core.experiment.catalog.resources.AbstractExpCatResource;
+import org.apache.airavata.registry.core.repositories.appcatalog.GwyResourceProfileRepository;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
@@ -1596,12 +1597,11 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            GatewayResourceProfile gatewayResourceProfile = gatewayProfile.getGatewayProfile(gatewayID);
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            GatewayResourceProfile gatewayResourceProfile = gwyResourceProfileRepository.getGatewayProfile(gatewayID);
             logger.debug("Airavata retrieved gateway profile with gateway id : " + gatewayID);
             return gatewayResourceProfile;
-        } catch (AppCatalogException e) {
+        } catch (Exception e) {
             logger.error(gatewayID, "Error while retrieving gateway resource profile...", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while retrieving gateway resource profile. More info : " + e.getMessage());
@@ -1623,12 +1623,11 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            gatewayProfile.removeGatewayResourceProfile(gatewayID);
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            gwyResourceProfileRepository.delete(gatewayID);
             logger.debug("Airavata deleted gateway profile with gateway id : " + gatewayID);
             return true;
-        } catch (AppCatalogException e) {
+        } catch (Exception e) {
             logger.error(gatewayID, "Error while removing gateway resource profile...", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while removing gateway resource profile. More info : " + e.getMessage());
@@ -1726,10 +1725,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            return gatewayProfile.getGatewayProfile(gatewayID).getComputeResourcePreferences();
-        } catch (AppCatalogException e) {
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            return gwyResourceProfileRepository.getGatewayProfile(gatewayID).getComputeResourcePreferences();
+        } catch (Exception e) {
             logger.error(gatewayID, "Error while reading gateway compute resource preferences...", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while reading gateway compute resource preferences. More info : " + e.getMessage());
@@ -1751,10 +1749,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            return gatewayProfile.getGatewayProfile(gatewayID).getStoragePreferences();
-        } catch (AppCatalogException e) {
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            return gwyResourceProfileRepository.getGatewayProfile(gatewayID).getStoragePreferences();
+        } catch (Exception e) {
             logger.error(gatewayID, "Error while reading gateway data storage preferences...", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while reading gateway data storage preferences. More info : " + e.getMessage());
@@ -1771,10 +1768,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<GatewayResourceProfile> getAllGatewayResourceProfiles() throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            return gatewayProfile.getAllGatewayProfiles();
-        } catch (AppCatalogException e) {
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            return gwyResourceProfileRepository.getAllGatewayProfiles();
+        } catch (Exception e) {
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while reading retrieving all gateway profiles. More info : " + e.getMessage());
             throw exception;
@@ -1796,10 +1792,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            return gatewayProfile.removeComputeResourcePreferenceFromGateway(gatewayID, computeResourceId);
-        } catch (AppCatalogException e) {
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+
+            return gwyResourceProfileRepository.removeComputeResourcePreferenceFromGateway(gatewayID, computeResourceId);
+        } catch (Exception e) {
             logger.error(gatewayID, "Error while reading gateway compute resource preference...", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while updating gateway compute resource preference. More info : " + e.getMessage());
@@ -1822,10 +1818,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            return gatewayProfile.removeDataStoragePreferenceFromGateway(gatewayID, storageId);
-        } catch (AppCatalogException e) {
+
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            return gwyResourceProfileRepository.removeDataStoragePreferenceFromGateway(gatewayID, storageId);
+        } catch (Exception e) {
             logger.error(gatewayID, "Error while reading gateway data storage preference...", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while updating gateway data storage preference. More info : " + e.getMessage());
@@ -2055,9 +2051,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            GatewayResourceProfile profile = gatewayProfile.getGatewayProfile(gatewayID);
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            GatewayResourceProfile profile = gwyResourceProfileRepository.getGatewayProfile(gatewayID);
             List<StoragePreference> dataStoragePreferences = profile.getStoragePreferences();
             StoragePreference preferenceToRemove = null;
             for (StoragePreference preference : dataStoragePreferences) {
@@ -2071,10 +2066,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
                         preferenceToRemove);
             }
             profile.getStoragePreferences().add(storagePreference);
-            gatewayProfile.updateGatewayResourceProfile(gatewayID, profile);
+            gwyResourceProfileRepository.updateGatewayResourceProfile(profile);
             logger.debug("Airavata updated storage resource preference with gateway id : " + gatewayID + " and for storage resource id : " + storageId );
             return true;
-        } catch (AppCatalogException e) {
+        } catch (Exception e) {
             logger.error(gatewayID, "Error while reading gateway data storage preference...", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while updating gateway data storage preference. More info : " + e.getMessage());
@@ -2098,9 +2093,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            GatewayResourceProfile profile = gatewayProfile.getGatewayProfile(gatewayID);
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            GatewayResourceProfile profile = gwyResourceProfileRepository.getGatewayProfile(gatewayID);
             List<ComputeResourcePreference> computeResourcePreferences = profile.getComputeResourcePreferences();
             ComputeResourcePreference preferenceToRemove = null;
             for (ComputeResourcePreference preference : computeResourcePreferences) {
@@ -2114,10 +2108,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
                         preferenceToRemove);
             }
             profile.getComputeResourcePreferences().add(computeResourcePreference);
-            gatewayProfile.updateGatewayResourceProfile(gatewayID, profile);
+            gwyResourceProfileRepository.updateGatewayResourceProfile(profile);
             logger.debug("Airavata updated compute resource preference with gateway id : " + gatewayID + " and for compute resource id : " + computeResourceId );
             return true;
-        } catch (AppCatalogException e) {
+        } catch (Exception e) {
             logger.error(gatewayID, "Error while reading gateway compute resource preference...", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while updating gateway compute resource preference. More info : " + e.getMessage());
@@ -2142,19 +2136,19 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            if (!gatewayProfile.isGatewayResourceProfileExists(gatewayID)){
+
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            if (!(gwyResourceProfileRepository.isExists(gatewayID))){
                 throw new RegistryServiceException("Gateway resource profile '"+gatewayID+"' does not exist!!!");
             }
-            GatewayResourceProfile profile = gatewayProfile.getGatewayProfile(gatewayID);
-//            gatewayProfile.removeGatewayResourceProfile(gatewayID);
+            GatewayResourceProfile profile = gwyResourceProfileRepository.getGatewayProfile(gatewayID);
+
             dataStoragePreference.setStorageResourceId(storageResourceId);
             profile.addToStoragePreferences(dataStoragePreference);
-            gatewayProfile.updateGatewayResourceProfile(gatewayID, profile);
+            gwyResourceProfileRepository.updateGatewayResourceProfile(profile);
             logger.debug("Airavata added storage resource preference with gateway id : " + gatewayID + " and for storage resource id : " + storageResourceId );
             return true;
-        } catch (AppCatalogException e) {
+        } catch (Exception e) {
             logger.error(gatewayID, "Error while registering gateway resource profile preference...", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while registering gateway resource profile preference. More info : " + e.getMessage());
@@ -2179,18 +2173,16 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            if (!gatewayProfile.isGatewayResourceProfileExists(gatewayID)){
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            if (!(gwyResourceProfileRepository.isExists(gatewayID))){
                 throw new RegistryServiceException("Gateway resource profile '"+gatewayID+"' does not exist!!!");
             }
-            GatewayResourceProfile profile = gatewayProfile.getGatewayProfile(gatewayID);
-//            gatewayProfile.removeGatewayResourceProfile(gatewayID);
+            GatewayResourceProfile profile = gwyResourceProfileRepository.getGatewayProfile(gatewayID);
             profile.addToComputeResourcePreferences(computeResourcePreference);
-            gatewayProfile.updateGatewayResourceProfile(gatewayID, profile);
+            gwyResourceProfileRepository.updateGatewayResourceProfile(profile);
             logger.debug("Airavata added gateway compute resource preference with gateway id : " + gatewayID + " and for compute resource id : " + computeResourceId );
             return true;
-        } catch (AppCatalogException e) {
+        } catch (Exception e) {
             logger.error(gatewayID, "Error while registering gateway resource profile preference...", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while registering gateway resource profile preference. More info : " + e.getMessage());
@@ -2213,12 +2205,11 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            gatewayProfile.updateGatewayResourceProfile(gatewayID, gatewayResourceProfile);
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            gwyResourceProfileRepository.updateGatewayResourceProfile(gatewayResourceProfile);
             logger.debug("Airavata updated gateway profile with gateway id : " + gatewayID);
             return true;
-        } catch (AppCatalogException e) {
+        } catch (Exception e) {
             logger.error(gatewayID, "Error while updating gateway resource profile...", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while updating gateway resource profile. More info : " + e.getMessage());
@@ -2248,12 +2239,11 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            String resourceProfile = gatewayProfile.addGatewayResourceProfile(gatewayResourceProfile);
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            String resourceProfile = gwyResourceProfileRepository.addGatewayResourceProfile(gatewayResourceProfile);
             logger.debug("Airavata registered gateway profile with gateway id : " + gatewayResourceProfile.getGatewayID());
             return resourceProfile;
-        } catch (AppCatalogException e) {
+        } catch (Exception e) {
             logger.error("Error while registering gateway resource profile...", e);
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while registering gateway resource profile. More info : " + e.getMessage());
