@@ -70,5 +70,10 @@
             <artifactId>libthrift</artifactId>
             <version>${thrift.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>registry-refactoring</artifactId>
+            <version>0.17-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>
