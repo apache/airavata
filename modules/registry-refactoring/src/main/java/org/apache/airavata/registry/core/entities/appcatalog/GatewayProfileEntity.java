@@ -32,7 +32,7 @@ import java.sql.Timestamp;
  * The persistent class for the gateway_profile database table.
  */
 @Entity
-@Table(name = "gateway_profile")
+@Table(name = "GATEWAY_PROFILE")
 public class GatewayProfileEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 

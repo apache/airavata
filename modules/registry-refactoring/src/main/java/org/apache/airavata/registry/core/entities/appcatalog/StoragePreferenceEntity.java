@@ -30,12 +30,12 @@ import java.io.Serializable;
  * The persistent class for the data_storage_preference database table.
  */
 @Entity
-@Table(name = "data_storage_preference")
-public class DataStoragePreferenceEntity implements Serializable {
+@Table(name = "STORAGE_PREFERENCE")
+public class StoragePreferenceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @EmbeddedId
-    private DataStoragePreferencePK id;
+    private StoragePreferencePK id;
 
     @Column(name = "FS_ROOT_LOCATION")
     private String fsRootLocation;
@@ -46,14 +46,14 @@ public class DataStoragePreferenceEntity implements Serializable {
     @Column(name = "RESOURCE_CS_TOKEN")
     private String resourceCsToken;
 
-    public DataStoragePreferenceEntity() {
+    public StoragePreferenceEntity() {
     }
 
-    public DataStoragePreferencePK getId() {
+    public StoragePreferencePK getId() {
         return id;
     }
 
-    public void setId(DataStoragePreferencePK id) {
+    public void setId(StoragePreferencePK id) {
         this.id = id;
     }
 

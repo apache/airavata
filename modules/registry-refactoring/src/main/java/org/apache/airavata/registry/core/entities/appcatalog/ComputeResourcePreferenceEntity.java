@@ -32,7 +32,7 @@ import java.sql.Timestamp;
  * The persistent class for the compute_resource_preference database table.
  */
 @Entity
-@Table(name = "compute_resource_preference")
+@Table(name = "COMPUTE_RESOURCE_PREFERENCE")
 public class ComputeResourcePreferenceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 

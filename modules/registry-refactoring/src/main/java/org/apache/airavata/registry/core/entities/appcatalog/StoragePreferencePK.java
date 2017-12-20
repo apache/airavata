@@ -28,7 +28,7 @@ import java.io.Serializable;
  * The primary key class for the data_storage_preference database table.
  */
 @Embeddable
-public class DataStoragePreferencePK implements Serializable {
+public class StoragePreferencePK implements Serializable {
     //default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
@@ -38,7 +38,7 @@ public class DataStoragePreferencePK implements Serializable {
     @Column(name = "STORAGE_RESOURCE_ID")
     private String storageResourceId;
 
-    public DataStoragePreferencePK() {
+    public StoragePreferencePK() {
     }
 
     public String getGatewayId() {
@@ -61,10 +61,10 @@ public class DataStoragePreferencePK implements Serializable {
         if (this == other) {
             return true;
         }
-        if (!(other instanceof DataStoragePreferencePK)) {
+        if (!(other instanceof StoragePreferencePK)) {
             return false;
         }
-        DataStoragePreferencePK castOther = (DataStoragePreferencePK) other;
+        StoragePreferencePK castOther = (StoragePreferencePK) other;
         return
                 this.gatewayId.equals(castOther.gatewayId)
                         && this.storageResourceId.equals(castOther.storageResourceId);

@@ -97,7 +97,7 @@
         <class>org.apache.airavata.registry.core.entities.appcatalog.JobManagerCommandEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ParallelismCommandEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.LocalDataMovementEntity</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.DataStoragePreferenceEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.StoragePreferenceEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.GlobusGkEndpointPK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.GsisshPostjobcommandPK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.GsisshPrejobcommandPK</class>
@@ -124,7 +124,7 @@
         <class>org.apache.airavata.registry.core.entities.appcatalog.StorageInterfacePK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.JobManagerCommandPK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ParallelismCommandPK</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.DataStoragePreferencePK</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.StoragePreferencePK</class>
 
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
