@@ -15,9 +15,9 @@ public interface QueryConstants {
     String FIND_ALL_USER_PROFILES_BY_GATEWAY_ID = "SELECT u FROM UserProfileEntity u " +
             "where u.gatewayId LIKE :"+ UserProfile._Fields.GATEWAY_ID.getFieldName() + "";
 
-    String FIND_ALL_GATEWAY_PROFILES = "SELECT G FROM " + GatewayProfileEntity.class.getSimpleName() + "G";
-    String FIND_ALL_COMPUTE_RESOURCE_PREFERENCES = "SELECT DISTINCT CR FROM " + ComputeResourcePreferenceEntity.class.getSimpleName() + "CR " +
-            "WHERE CR.gatewayId LIKE : " + DBConstants.ComputeResourcePreference.GATEWAY_ID;
-    String FIND_ALL_STORAGE_RESOURCE_PREFERENCES = "SELECT DISTINCT S FROM " + StoragePreferenceEntity.class.getSimpleName() + "S " +
-            "WHERE S.gatewayId LIKE : " + DBConstants.StorageResourcePreference.GATEWAY_ID;
+    String FIND_ALL_GATEWAY_PROFILES = "SELECT G FROM " + GatewayProfileEntity.class.getSimpleName() + " G";
+    String FIND_ALL_COMPUTE_RESOURCE_PREFERENCES = "SELECT DISTINCT CR FROM " + ComputeResourcePreferenceEntity.class.getSimpleName() + " CR " +
+            "WHERE CR.id.gatewayId LIKE : " + DBConstants.ComputeResourcePreference.GATEWAY_ID;
+    String FIND_ALL_STORAGE_RESOURCE_PREFERENCES = "SELECT DISTINCT S FROM " + StoragePreferenceEntity.class.getSimpleName() + " S " +
+            "WHERE S.id.gatewayId LIKE : " + DBConstants.StorageResourcePreference.GATEWAY_ID;
 }
