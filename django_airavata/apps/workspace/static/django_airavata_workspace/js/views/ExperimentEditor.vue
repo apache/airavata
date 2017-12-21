@@ -58,11 +58,41 @@
                         <b-form novalidate>
                             <b-form-group label="Compute Resource" label-for="compute-resource">
                                 <b-form-select id="compute-resource"
-                                    v-model="experiment.userConfigurationData.computationalResourceScheduling.resourceHostId" :options="computeResourceOptions" required>
+                                    v-model="experiment.userConfigurationData.computationalResourceScheduling.resourceHostId"
+                                    :options="computeResourceOptions" required
+                                    @change="computeResourceChanged">
                                     <template slot="first">
                                         <option :value="null" disabled>Select a Compute Resource</option>
                                     </template>
                                 </b-form-select>
+                            </b-form-group>
+
+                            <div class="card border-default">
+                                <div class="card-body">
+                                    <h4 class="card-title">Current Settings</h4>
+                                </div>
+                            </div>
+                            <b-form-group label="Select a Queue" label-for="queue">
+                                <b-form-select id="queue"
+                                    v-model="experiment.userConfigurationData.computationalResourceScheduling.queueName"
+                                    :options="queueOptions" required
+                                    @change="queueChanged">
+                                </b-form-select>
+                            </b-form-group>
+                            <b-form-group label="Node Count" label-for="node-count">
+                                <b-form-input id="node-count" type="number" min="1"
+                                    v-model="experiment.userConfigurationData.computationalResourceScheduling.nodeCount" required>
+                                </b-form-input>
+                            </b-form-group>
+                            <b-form-group label="Total Core Count" label-for="core-count">
+                                <b-form-input id="core-count" type="number" min="1"
+                                    v-model="experiment.userConfigurationData.computationalResourceScheduling.totalCPUCount" required>
+                                </b-form-input>
+                            </b-form-group>
+                            <b-form-group label="Wall Time Limit" label-for="walltime-limit">
+                                <b-form-input id="walltime-limit" type="number" min="1"
+                                    v-model="experiment.userConfigurationData.computationalResourceScheduling.wallTimeLimit" required>
+                                </b-form-input>
                             </b-form-group>
                         </b-form>
                     </div>
@@ -80,13 +110,21 @@ export default {
     props: ['experiment', 'appModule', 'appInterface'],
     data () {
         return {
-            'projects': [],
-            'computeResources': {},
+            projects: [],
+            computeResources: {},
+            applicationDeployments: [],
+            queueDefaults: [],
         }
     },
     mounted: function () {
         services.ProjectService.listAll()
             .then(projects => this.projects = projects);
+        services.ApplicationModuleService.getApplicationDeployments(this.appModule.appModuleId)
+            .then(applicationDeployments => {
+                this.applicationDeployments = applicationDeployments;
+            });
+        services.ApplicationInterfaceService.getComputeResources(this.appInterface.applicationInterfaceId)
+            .then(computeResources => this.computeResources = computeResources);
     },
     computed: {
         projectOptions: function() {
@@ -107,6 +145,55 @@ export default {
             }
             computeResourceOptions.sort((a, b) => a.text.localeCompare(b.text));
             return computeResourceOptions;
+        },
+        queueOptions: function() {
+            const queueOptions = this.queueDefaults.map(queueDefault => {
+                return {
+                    value: queueDefault.queueName,
+                    text: `${queueDefault.queueName}: ${queueDefault.queueDescription}`,
+                }
+            });
+            return queueOptions;
+        },
+    },
+    methods: {
+        computeResourceChanged: function(selectedComputeResourceId) {
+            // Find application deployment that corresponds to this compute resource
+            // TODO: switch to find()
+            let selectedApplicationDeployments = this.applicationDeployments.filter(dep => dep.computeHostId === selectedComputeResourceId);
+            if (selectedApplicationDeployments.length === 0) {
+                throw new Error("Failed to find application deployment!");
+            }
+            let selectedApplicationDeployment = selectedApplicationDeployments[0];
+            services.ApplicationDeploymentService.getQueues(selectedApplicationDeployment.appDeploymentId)
+                .then(queueDefaults => {
+                    // Sort queue defaults
+                    this.queueDefaults = queueDefaults.sort((a, b) => {
+                        // Sort default first, then by alphabetically by name
+                        if (a.isDefaultQueue) {
+                            return -1;
+                        } else if (b.isDefaultQueue) {
+                            return 1;
+                        } else {
+                            return a.queueName.localeCompare(b.queueName);
+                        }
+                    });
+                    // Find the default queue and apply it's settings
+                    const defaultQueue = this.queueDefaults[0];
+
+                    // TODO: we really shouldn't be modifying the props right?
+                    this.experiment.userConfigurationData.computationalResourceScheduling.queueName = defaultQueue.queueName;
+                    this.experiment.userConfigurationData.computationalResourceScheduling.totalCPUCount = defaultQueue.defaultCPUCount;
+                    this.experiment.userConfigurationData.computationalResourceScheduling.nodeCount = defaultQueue.defaultNodeCount;
+                    this.experiment.userConfigurationData.computationalResourceScheduling.wallTimeLimit = defaultQueue.defaultWalltime;
+                });
+        },
+        queueChanged: function(queueName) {
+
+            const queueDefault = this.queueDefaults.find(queue => queue.queueName === queueName);
+            this.experiment.userConfigurationData.computationalResourceScheduling.totalCPUCount = queueDefault.defaultCPUCount;
+            this.experiment.userConfigurationData.computationalResourceScheduling.nodeCount = queueDefault.defaultNodeCount;
+            this.experiment.userConfigurationData.computationalResourceScheduling.wallTimeLimit = queueDefault.defaultWalltime;
         }
     },
     watch: {
@@ -115,7 +202,7 @@ export default {
                 services.ApplicationInterfaceService.getComputeResources(this.appInterface.applicationInterfaceId)
                     .then(computeResources => this.computeResources = computeResources);
             }
-        }
+        },
     }
 }
 </script>

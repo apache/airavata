@@ -276,6 +276,13 @@ class ApplicationModuleViewSet(APIBackedViewSet):
             return Response({'error': 'No application interface found for module id {}'.format(app_module_id)},
                             status=status.HTTP_404_NOT_FOUND)
 
+    @detail_route()
+    def application_deployments(self, request, app_module_id):
+        all_deployments = self.request.airavata_client.getAllApplicationDeployments(self.authz_token, self.gateway_id)
+        app_deployments = [dep for dep in all_deployments if dep.appModuleId == app_module_id]
+        serializer = serializers.ApplicationDeploymentDescriptionSerializer(app_deployments, many=True, context={'request': request})
+        return Response(serializer.data)
+
 
 # TODO convert to APIBackedViewSet
 class RegisterApplicationModule(APIView):

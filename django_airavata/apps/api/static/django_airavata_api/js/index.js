@@ -6,6 +6,7 @@ import InputDataObjectType from './models/InputDataObjectType'
 import OutputDataTypeObject from './models/OutputDataTypeObject'
 import Project from './models/Project'
 
+import ApplicationDeploymentService from './services/ApplicationDeploymentService'
 import ApplicationInterfaceService from './services/ApplicationInterfaceService'
 import ApplicationModuleService from './services/ApplicationModuleService'
 import ProjectService from './services/ProjectService'
@@ -23,6 +24,7 @@ exports.models = {
 }
 
 exports.services = {
+    ApplicationDeploymentService,
     ApplicationInterfaceService,
     ApplicationModuleService,
     ProjectService,

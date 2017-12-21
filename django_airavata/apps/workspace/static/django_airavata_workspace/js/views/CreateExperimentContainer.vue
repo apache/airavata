@@ -1,5 +1,5 @@
 <template>
-    <experiment-editor :experiment="experiment" :app-module="appModule" :app-interface="appInterface">
+    <experiment-editor v-if="appModule && appInterface" :experiment="experiment" :app-module="appModule" :app-interface="appInterface">
         <span slot="title">Create a New Experiment</span>
     </experiment-editor>
 </template>
