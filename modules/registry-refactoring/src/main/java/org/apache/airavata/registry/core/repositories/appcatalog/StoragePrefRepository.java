@@ -5,7 +5,7 @@ import org.apache.airavata.registry.core.entities.appcatalog.StoragePreferenceEn
 import org.apache.airavata.registry.core.entities.appcatalog.StoragePreferencePK;
 import org.apache.airavata.registry.core.repositories.AbstractRepository;
 
-public class StoragePrefRepository extends AbstractRepository<StoragePreference, StoragePreferenceEntity, StoragePreferencePK> {
+public class StoragePrefRepository extends AppCatAbstractRepository<StoragePreference, StoragePreferenceEntity, StoragePreferencePK> {
 
     public StoragePrefRepository() {
         super(StoragePreference.class, StoragePreferenceEntity.class);

@@ -7,9 +7,7 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.registry.core.entities.appcatalog.ComputeResourcePreferencePK;
 import org.apache.airavata.registry.core.entities.appcatalog.StoragePreferencePK;
 import org.apache.airavata.registry.core.entities.appcatalog.GatewayProfileEntity;
-import org.apache.airavata.registry.core.repositories.AbstractRepository;
 import org.apache.airavata.registry.core.utils.DBConstants;
-import org.apache.airavata.registry.core.utils.JPAUtils;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.core.utils.QueryConstants;
 import org.dozer.Mapper;
@@ -21,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GwyResourceProfileRepository extends AbstractRepository<GatewayResourceProfile, GatewayProfileEntity, String>{
+public class GwyResourceProfileRepository extends AppCatAbstractRepository<GatewayResourceProfile, GatewayProfileEntity, String>{
 
     private final static Logger logger = LoggerFactory.getLogger(GwyResourceProfileRepository.class);
 
@@ -30,15 +28,21 @@ public class GwyResourceProfileRepository extends AbstractRepository<GatewayReso
     }
 
     public String addGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) {
-            return updateGatewayResourceProfile(gatewayResourceProfile);
+
+        return updateGatewayResourceProfile(gatewayResourceProfile);
     }
 
     public String updateGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) {
         String gatewayId = gatewayResourceProfile.getGatewayID();
         Mapper mapper = ObjectMapperSingleton.getInstance();
         GatewayProfileEntity gatewayProfileEntity = mapper.map(gatewayResourceProfile, GatewayProfileEntity.class);
-        gatewayProfileEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
-        GatewayProfileEntity persistedCopy = JPAUtils.execute(entityManager -> entityManager.merge(gatewayProfileEntity));
+        if (get(gatewayId) != null) {
+            gatewayProfileEntity.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+        }
+        else {
+            gatewayProfileEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
+        }
+        GatewayProfileEntity persistedCopy = execute(entityManager -> entityManager.merge(gatewayProfileEntity));
 
         List<ComputeResourcePreference> computeResourcePreferences = gatewayResourceProfile.getComputeResourcePreferences();
         if (computeResourcePreferences != null && !computeResourcePreferences.isEmpty()) {
@@ -57,41 +61,29 @@ public class GwyResourceProfileRepository extends AbstractRepository<GatewayReso
     }
 
     public GatewayResourceProfile getGatewayProfile(String gatewayId) {
-        GatewayResourceProfile gatewayResourceProfile = (new GwyResourceProfileRepository()).getGatewayProfile(gatewayId);
+        GatewayResourceProfile gatewayResourceProfile = get(gatewayId);
         gatewayResourceProfile.setComputeResourcePreferences(getAllComputeResourcePreferences(gatewayId));
         gatewayResourceProfile.setStoragePreferences(getAllStoragePreferences(gatewayId));
         return gatewayResourceProfile;
     }
 
- /*   public boolean removeGatewayResourceProfile(String gatewayId) {
-        //return delete(gatewayId);
-    }
-
-    public boolean isGatewayResourceProfileExists(String gatewayId) {
-        //return isExists(gatewayId);
-    }*/
-
-    /*public List<String> getGatewayProfileIds(String gatewayName) {
-        // TODO - Not used anywhere (dev list??)
-    }*/
-
     public List<GatewayResourceProfile> getAllGatewayProfiles() {
 
         List<GatewayResourceProfile> gwyResourceProfileList = new ArrayList<GatewayResourceProfile>();
-        List<GatewayResourceProfile> gatewayResourceProfileList = select(QueryConstants.FIND_ALL_GATEWAY_PROFILES,-1, 0);
+        List<GatewayResourceProfile> gatewayResourceProfileList = select(QueryConstants.FIND_ALL_GATEWAY_PROFILES, 0);
         if (gatewayResourceProfileList != null && !gatewayResourceProfileList.isEmpty()) {
             for (GatewayResourceProfile gatewayResourceProfile: gatewayResourceProfileList) {
                 gatewayResourceProfile.setComputeResourcePreferences(getAllComputeResourcePreferences(gatewayResourceProfile.getGatewayID()));
                 gatewayResourceProfile.setStoragePreferences(getAllStoragePreferences(gatewayResourceProfile.getGatewayID()));
             }
         }
-        return gwyResourceProfileList;
+        return gatewayResourceProfileList;
     }
 
     public boolean removeComputeResourcePreferenceFromGateway(String gatewayId, String preferenceId) {
         ComputeResourcePreferencePK computeResourcePreferencePK = new ComputeResourcePreferencePK();
         computeResourcePreferencePK.setGatewayId(gatewayId);
-        computeResourcePreferencePK.setResourceId(preferenceId);
+        computeResourcePreferencePK.setComputeResourceId(preferenceId);
         (new ComputeResourceRepository()).delete(computeResourcePreferencePK);
         return true;
     }
@@ -107,7 +99,7 @@ public class GwyResourceProfileRepository extends AbstractRepository<GatewayReso
     public ComputeResourcePreference getComputeResourcePreference(String gatewayId, String hostId) {
         ComputeResourcePreferencePK computeResourcePreferencePK = new ComputeResourcePreferencePK();
         computeResourcePreferencePK.setGatewayId(gatewayId);
-        computeResourcePreferencePK.setResourceId(hostId);
+        computeResourcePreferencePK.setComputeResourceId(hostId);
         return (new ComputeResourceRepository()).get(computeResourcePreferencePK);
     }
 
