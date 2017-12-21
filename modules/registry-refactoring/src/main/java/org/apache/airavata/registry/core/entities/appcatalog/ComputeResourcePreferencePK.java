@@ -36,7 +36,7 @@ public class ComputeResourcePreferencePK implements Serializable {
     private String gatewayId;
 
     @Column(name = "RESOURCE_ID", insertable = false, updatable = false)
-    private String resourceId;
+    private String computeResourceId;
 
     public ComputeResourcePreferencePK() {
     }
@@ -49,12 +49,12 @@ public class ComputeResourcePreferencePK implements Serializable {
         this.gatewayId = gatewayId;
     }
 
-    public String getResourceId() {
-        return resourceId;
+    public String getComputeResourceId() {
+        return computeResourceId;
     }
 
-    public void setResourceId(String resourceId) {
-        this.resourceId = resourceId;
+    public void setComputeResourceId(String computeResourceId) {
+        this.computeResourceId = computeResourceId;
     }
 
     public boolean equals(Object other) {
@@ -67,14 +67,14 @@ public class ComputeResourcePreferencePK implements Serializable {
         ComputeResourcePreferencePK castOther = (ComputeResourcePreferencePK) other;
         return
                 this.gatewayId.equals(castOther.gatewayId)
-                        && this.resourceId.equals(castOther.resourceId);
+                        && this.computeResourceId.equals(castOther.computeResourceId);
     }
 
     public int hashCode() {
         final int prime = 31;
         int hash = 17;
         hash = hash * prime + this.gatewayId.hashCode();
-        hash = hash * prime + this.resourceId.hashCode();
+        hash = hash * prime + this.computeResourceId.hashCode();
 
         return hash;
     }

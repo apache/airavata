@@ -74,6 +74,11 @@
             <artifactId>airavata-commons</artifactId>
             <version>0.17-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-server-configuration</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
