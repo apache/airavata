@@ -287,6 +287,7 @@ public class ExperimentRegistry {
             processResource.setExperimentDataDir(process.getExperimentDataDir());
             processResource.setUserName(process.getUserName());
             processResource.setUseUserCRPref(process.isUseUserCRPref());
+            processResource.setProcessTypeValue(process.getProcessType().getValue());
             if(process.isEnableEmailNotification()){
                 processResource.setEnableEmailNotification(true);
                 if(process.getEmailAddresses() != null){
@@ -771,6 +772,7 @@ public class ExperimentRegistry {
             processResource.setExperimentDataDir(process.getExperimentDataDir());
             processResource.setUserName(process.getUserName());
             processResource.setUseUserCRPref(process.isUseUserCRPref());
+            processResource.setProcessTypeValue(process.getProcessType().getValue());
             if(process.isEnableEmailNotification()){
                 processResource.setEnableEmailNotification(true);
                 if(process.getEmailAddresses() != null){

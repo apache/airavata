@@ -88,6 +88,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
   private static final org.apache.thrift.protocol.TField EXPERIMENT_DATA_DIR_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentDataDir", org.apache.thrift.protocol.TType.STRING, (short)22);
   private static final org.apache.thrift.protocol.TField USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userName", org.apache.thrift.protocol.TType.STRING, (short)23);
   private static final org.apache.thrift.protocol.TField USE_USER_CRPREF_FIELD_DESC = new org.apache.thrift.protocol.TField("useUserCRPref", org.apache.thrift.protocol.TType.BOOL, (short)24);
+  private static final org.apache.thrift.protocol.TField PROCESS_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("processType", org.apache.thrift.protocol.TType.I32, (short)25);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -119,6 +120,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
   private String experimentDataDir; // optional
   private String userName; // optional
   private boolean useUserCRPref; // optional
+  private ProcessType processType; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -145,7 +147,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     GENERATE_CERT((short)21, "generateCert"),
     EXPERIMENT_DATA_DIR((short)22, "experimentDataDir"),
     USER_NAME((short)23, "userName"),
-    USE_USER_CRPREF((short)24, "useUserCRPref");
+    USE_USER_CRPREF((short)24, "useUserCRPref"),
+    PROCESS_TYPE((short)25, "processType");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -208,6 +211,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           return USER_NAME;
         case 24: // USE_USER_CRPREF
           return USE_USER_CRPREF;
+        case 25: // PROCESS_TYPE
+          return PROCESS_TYPE;
         default:
           return null;
       }
@@ -312,6 +317,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.USE_USER_CRPREF, new org.apache.thrift.meta_data.FieldMetaData("useUserCRPref", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+    tmpMap.put(_Fields.PROCESS_TYPE, new org.apache.thrift.meta_data.FieldMetaData("processType", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.ENUM        , "ProcessType")));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ProcessModel.class, metaDataMap);
   }
@@ -325,11 +332,13 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
 
   public ProcessModel(
     String processId,
-    String experimentId)
+    String experimentId,
+    ProcessType processType)
   {
     this();
     this.processId = processId;
     this.experimentId = experimentId;
+    this.processType = processType;
   }
 
   /**
@@ -420,6 +429,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       this.userName = other.userName;
     }
     this.useUserCRPref = other.useUserCRPref;
+    if (other.isSetProcessType()) {
+      this.processType = other.processType;
+    }
   }
 
   public ProcessModel deepCopy() {
@@ -458,6 +470,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     this.userName = null;
     setUseUserCRPrefIsSet(false);
     this.useUserCRPref = false;
+    this.processType = null;
   }
 
   public String getProcessId() {
@@ -1097,6 +1110,29 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __USEUSERCRPREF_ISSET_ID, value);
   }
 
+  public ProcessType getProcessType() {
+    return this.processType;
+  }
+
+  public void setProcessType(ProcessType processType) {
+    this.processType = processType;
+  }
+
+  public void unsetProcessType() {
+    this.processType = null;
+  }
+
+  /** Returns true if field processType is set (has been assigned a value) and false otherwise */
+  public boolean isSetProcessType() {
+    return this.processType != null;
+  }
+
+  public void setProcessTypeIsSet(boolean value) {
+    if (!value) {
+      this.processType = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case PROCESS_ID:
@@ -1291,6 +1327,14 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       }
       break;
 
+    case PROCESS_TYPE:
+      if (value == null) {
+        unsetProcessType();
+      } else {
+        setProcessType((ProcessType)value);
+      }
+      break;
+
     }
   }
 
@@ -1368,6 +1412,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     case USE_USER_CRPREF:
       return isUseUserCRPref();
 
+    case PROCESS_TYPE:
+      return getProcessType();
+
     }
     throw new IllegalStateException();
   }
@@ -1427,6 +1474,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       return isSetUserName();
     case USE_USER_CRPREF:
       return isSetUseUserCRPref();
+    case PROCESS_TYPE:
+      return isSetProcessType();
     }
     throw new IllegalStateException();
   }
@@ -1660,6 +1709,15 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         return false;
     }
 
+    boolean this_present_processType = true && this.isSetProcessType();
+    boolean that_present_processType = true && that.isSetProcessType();
+    if (this_present_processType || that_present_processType) {
+      if (!(this_present_processType && that_present_processType))
+        return false;
+      if (!this.processType.equals(that.processType))
+        return false;
+    }
+
     return true;
   }
 
@@ -1786,6 +1844,11 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     list.add(present_useUserCRPref);
     if (present_useUserCRPref)
       list.add(useUserCRPref);
+
+    boolean present_processType = true && (isSetProcessType());
+    list.add(present_processType);
+    if (present_processType)
+      list.add(processType.getValue());
 
     return list.hashCode();
   }
@@ -2038,6 +2101,16 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetProcessType()).compareTo(other.isSetProcessType());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetProcessType()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.processType, other.processType);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -2273,6 +2346,14 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       sb.append(this.useUserCRPref);
       first = false;
     }
+    if (!first) sb.append(", ");
+    sb.append("processType:");
+    if (this.processType == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.processType);
+    }
+    first = false;
     sb.append(")");
     return sb.toString();
   }
@@ -2285,6 +2366,10 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
 
     if (!isSetExperimentId()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'experimentId' is unset! Struct:" + toString());
+    }
+
+    if (!isSetProcessType()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'processType' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -2587,6 +2672,14 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 25: // PROCESS_TYPE
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.processType = org.apache.airavata.model.process.ProcessType.findByValue(iprot.readI32());
+              struct.setProcessTypeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -2796,6 +2889,11 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         oprot.writeBool(struct.useUserCRPref);
         oprot.writeFieldEnd();
       }
+      if (struct.processType != null) {
+        oprot.writeFieldBegin(PROCESS_TYPE_FIELD_DESC);
+        oprot.writeI32(struct.processType.getValue());
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -2815,6 +2913,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeString(struct.processId);
       oprot.writeString(struct.experimentId);
+      oprot.writeI32(struct.processType.getValue());
       BitSet optionals = new BitSet();
       if (struct.isSetCreationTime()) {
         optionals.set(0);
@@ -2994,6 +3093,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       struct.setProcessIdIsSet(true);
       struct.experimentId = iprot.readString();
       struct.setExperimentIdIsSet(true);
+      struct.processType = org.apache.airavata.model.process.ProcessType.findByValue(iprot.readI32());
+      struct.setProcessTypeIsSet(true);
       BitSet incoming = iprot.readBitSet(22);
       if (incoming.get(0)) {
         struct.creationTime = iprot.readI64();

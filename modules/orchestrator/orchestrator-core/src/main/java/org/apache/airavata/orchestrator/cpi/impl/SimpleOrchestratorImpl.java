@@ -36,6 +36,7 @@ import org.apache.airavata.model.error.ValidationResults;
 import org.apache.airavata.model.error.ValidatorResult;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.experiment.*;
+import org.apache.airavata.model.process.ProcessType;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
@@ -265,6 +266,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 }
             }else {
                 ProcessModel processModel = ExperimentModelUtil.cloneProcessFromExperiment(experimentModel);
+                processModel.setProcessType(ProcessType.PRIMARY);
                 String processId = (String)registry.getExperimentCatalog().add(ExpCatChildDataType.PROCESS, processModel, experimentId);
                 processModel.setProcessId(processId);
                 processModels.add(processModel);
@@ -326,7 +328,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 } else {
                     taskIdList.addAll(createAndSaveSubmissionTasks(gatewayId, preferredJobSubmissionInterface, processModel, userGivenWallTime));
                 }
-                taskIdList.addAll(createAndSaveOutputDataStagingTasks(processModel, gatewayId));
+                taskIdList.addAll(createAndSaveOutputDataStagingTasks(processModel, gatewayId, null));
             }
             // update process scheduling
             experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processModel.getProcessId());
@@ -336,7 +338,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         }
     }
 
-    private String getTaskDag(List<String> taskIdList) {
+    public String getTaskDag(List<String> taskIdList) {
         if (taskIdList.isEmpty()) {
             return "";
         }
@@ -408,8 +410,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         return dataStagingTaskIds;
     }
 
-    public List<String> createAndSaveOutputDataStagingTasks(ProcessModel processModel, String gatewayId)
-            throws RegistryException, AiravataException {
+    public List<String> createAndSaveOutputDataStagingTasks(ProcessModel processModel, String gatewayId,
+                                                            String overrideWorkingDir) throws RegistryException, AiravataException {
 
         List<String> dataStagingTaskIds = new ArrayList<>();
         List<OutputDataObjectType> processOutputs = processModel.getProcessOutputs();
@@ -422,16 +424,19 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                         if (null == processOutput.getValue() || processOutput.getValue().trim().isEmpty()) {
                             processOutput.setValue(appName + ".stdout");
                         }
-                        createOutputDataSatagingTasks(processModel, gatewayId, dataStagingTaskIds, processOutput);
+                        createOutputDataSatagingTasks(processModel, gatewayId, dataStagingTaskIds, processOutput,
+                                overrideWorkingDir);
                         break;
                     case STDERR:
                         if (null == processOutput.getValue() || processOutput.getValue().trim().isEmpty()) {
                             processOutput.setValue(appName + ".stderr");
                         }
-                        createOutputDataSatagingTasks(processModel, gatewayId, dataStagingTaskIds, processOutput);
+                        createOutputDataSatagingTasks(processModel, gatewayId, dataStagingTaskIds, processOutput,
+                                overrideWorkingDir);
                         break;
                     case URI:
-                        createOutputDataSatagingTasks(processModel, gatewayId, dataStagingTaskIds, processOutput);
+                        createOutputDataSatagingTasks(processModel, gatewayId, dataStagingTaskIds, processOutput,
+                                overrideWorkingDir);
                         break;
                     default:
                         // nothing to do
@@ -462,7 +467,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                                                List<String> dataStagingTaskIds) throws RegistryException, AiravataException {
         TaskModel archiveTask = null;
         try {
-            archiveTask = getOutputDataStagingTask(processModel, null, gatewayId);
+            archiveTask = getOutputDataStagingTask(processModel, null, gatewayId, null);
         } catch (TException e) {
             throw new RegistryException("Error! DataStaging sub task serialization failed");
         }
@@ -476,9 +481,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
     private void createOutputDataSatagingTasks(ProcessModel processModel,
                                                String gatewayId,
                                                List<String> dataStagingTaskIds,
-                                               OutputDataObjectType processOutput) throws RegistryException, AiravataException {
+                                               OutputDataObjectType processOutput, String overrideWorkingDir) throws RegistryException, AiravataException {
         try {
-            TaskModel outputDataStagingTask = getOutputDataStagingTask(processModel, processOutput, gatewayId);
+            TaskModel outputDataStagingTask = getOutputDataStagingTask(processModel, processOutput, gatewayId, overrideWorkingDir);
             String taskId = (String) orchestratorContext.getRegistry().getExperimentCatalog()
                     .add(ExpCatChildDataType.TASK, outputDataStagingTask, processModel.getProcessId());
             outputDataStagingTask.setTaskId(taskId);
@@ -598,7 +603,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         return taskModel;
     }
 
-    private TaskModel getOutputDataStagingTask(ProcessModel processModel, OutputDataObjectType processOutput, String gatewayId) throws RegistryException, TException, AiravataException {
+    private TaskModel getOutputDataStagingTask(ProcessModel processModel, OutputDataObjectType processOutput,
+                                               String gatewayId, String overrideWorkingDir) throws RegistryException, TException, AiravataException {
         try {
 
             // create new task model for this task
@@ -613,8 +619,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             ComputeResourceDescription computeResource = orchestratorContext.getRegistry().getAppCatalog()
                     .getComputeResource().getComputeResource(processModel.getComputeResourceId());
 
-            String workingDir = OrchestratorUtils.getScratchLocation(orchestratorContext,processModel, gatewayId)
-                    + File.separator + processModel.getProcessId() + File.separator;
+            String workingDir =  OrchestratorUtils.getScratchLocation(orchestratorContext,processModel, gatewayId)
+                    + File.separator + (overrideWorkingDir != null ? overrideWorkingDir : processModel.getProcessId()) + File.separator;
             DataStagingTaskModel submodel = new DataStagingTaskModel();
             DataMovementProtocol dataMovementProtocol = OrchestratorUtils.getPreferredDataMovementProtocol(orchestratorContext, processModel, gatewayId);
             URI source = null;

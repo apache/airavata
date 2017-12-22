@@ -37,7 +37,11 @@ public enum ExperimentState implements org.apache.thrift.TEnum {
   CANCELING(5),
   CANCELED(6),
   COMPLETED(7),
-  FAILED(8);
+  FAILED(8),
+  FORCE_POST_PROCESSING_EXECUTING(9),
+  FORCE_POST_PROCESSING_COMPLETED(10),
+  FORCE_POST_PROCESSING_FAILED(11),
+  FORCE_POST_PROCESSING_CANCELED(12);
 
   private final int value;
 
@@ -76,6 +80,14 @@ public enum ExperimentState implements org.apache.thrift.TEnum {
         return COMPLETED;
       case 8:
         return FAILED;
+      case 9:
+        return FORCE_POST_PROCESSING_EXECUTING;
+      case 10:
+        return FORCE_POST_PROCESSING_COMPLETED;
+      case 11:
+        return FORCE_POST_PROCESSING_FAILED;
+      case 12:
+        return FORCE_POST_PROCESSING_CANCELED;
       default:
         return null;
     }

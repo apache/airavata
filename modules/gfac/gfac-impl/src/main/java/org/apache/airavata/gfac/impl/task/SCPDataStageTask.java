@@ -286,10 +286,16 @@ public class SCPDataStageTask implements Task {
     }
 
     private void localDataCopy(TaskContext taskContext, URI sourceURI, URI destinationURI) throws GFacException {
-        StringBuilder sb = new StringBuilder("rsync -cr ");
-        sb.append(sourceURI.getPath()).append(" ").append(destinationURI.getPath());
-        CommandInfo commandInfo = new RawCommandInfo(sb.toString());
-        taskContext.getParentProcessContext().getDataMovementRemoteCluster().execute(commandInfo);
+        File destinationFile = new File(destinationURI.getPath());
+        File destinationParentDir = destinationFile.getParentFile();
+        String destinationParentPath = destinationParentDir.getPath();
+        // create the parent directory if it does not exist.
+        String mkdirCommand = "mkdir -p " + destinationParentPath;
+        String rsyncCommand = "rsync -cr " + sourceURI.getPath() + " " + destinationURI.getPath();
+        CommandInfo mkdirCommandInfo = new RawCommandInfo(mkdirCommand);
+        CommandInfo rsyncCommandInfo = new RawCommandInfo(rsyncCommand);
+        taskContext.getParentProcessContext().getDataMovementRemoteCluster().execute(mkdirCommandInfo);
+        taskContext.getParentProcessContext().getDataMovementRemoteCluster().execute(rsyncCommandInfo);
     }
 
     private void inputDataStaging(TaskContext taskContext, Session srcSession, URI sourceURI,  Session destSession, URI

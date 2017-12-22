@@ -66,7 +66,8 @@ public class ExperimentConsumer extends QueueingConsumer {
         try {
             ThriftUtils.createThriftFromBytes(body, message);
             long deliveryTag = envelope.getDeliveryTag();
-            if (message.getMessageType() == MessageType.EXPERIMENT || message.getMessageType() == MessageType.EXPERIMENT_CANCEL) {
+            if (message.getMessageType() == MessageType.EXPERIMENT || message.getMessageType() == MessageType.EXPERIMENT_CANCEL
+                    || message.getMessageType().equals(MessageType.POSTPROCESSING_START)) {
                 TBase event = null;
                 String gatewayId = null;
                 ExperimentSubmitEvent experimentEvent = new ExperimentSubmitEvent();

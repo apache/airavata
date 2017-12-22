@@ -41,13 +41,14 @@ import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
 import org.apache.airavata.model.error.LaunchValidationException;
-import org.apache.airavata.model.error.ValidationResults;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.process.ProcessType;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
+import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
@@ -58,6 +59,7 @@ import org.apache.airavata.registry.core.app.catalog.resources.AppCatAbstractRes
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.core.experiment.catalog.resources.AbstractExpCatResource;
 import org.apache.airavata.registry.cpi.*;
+import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.commons.lang.StringUtils;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
@@ -150,10 +152,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 return false;
             }
 
-            ComputeResourcePreference computeResourcePreference = appCatalog.getGatewayProfile().
-					getComputeResourcePreference(gatewayId,
-							experiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId());
-            String token = computeResourcePreference.getResourceSpecificCredentialStoreToken();
+            String token = getCredentialsStoreToken(experiment, gatewayId);
+
             if (token == null || token.isEmpty()){
                 // try with gateway profile level token
                 GatewayResourceProfile gatewayProfile = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
@@ -171,51 +171,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 List<ProcessModel> processes = orchestrator.createProcesses(experimentId, gatewayId);
 
 				for (ProcessModel processModel : processes){
-					//FIXME Resolving replica if available. This is a very crude way of resolving input replicas. A full featured
-					//FIXME replica resolving logic should come here
-					ReplicaCatalog replicaCatalog = RegistryFactory.getReplicaCatalog();
-					processModel.getProcessInputs().stream().forEach(pi -> {
-						if (pi.getType().equals(DataType.URI) && pi.getValue().startsWith("airavata-dp://")) {
-							try {
-								DataProductModel dataProductModel = replicaCatalog.getDataProduct(pi.getValue());
-								Optional<DataReplicaLocationModel> rpLocation = dataProductModel.getReplicaLocations()
-										.stream().filter(rpModel -> rpModel.getReplicaLocationCategory().
-												equals(ReplicaLocationCategory.GATEWAY_DATA_STORE)).findFirst();
-								if (rpLocation.isPresent()) {
-									pi.setValue(rpLocation.get().getFilePath());
-									pi.setStorageResourceId(rpLocation.get().getStorageResourceId());
-								} else {
-									log.error("Could not find a replica for the URI " + pi.getValue());
-								}
-							} catch (ReplicaCatalogException e) {
-								log.error(e.getMessage(), e);
-							}
-						} else if (pi.getType().equals(DataType.URI_COLLECTION) && pi.getValue().contains("airavata-dp://")) {
-							try {
-								String[] uriList = pi.getValue().split(",");
-								final ArrayList<String> filePathList = new ArrayList<>();
-								for (String uri : uriList) {
-									if (uri.startsWith("airavata-dp://")) {
-										DataProductModel dataProductModel = replicaCatalog.getDataProduct(uri);
-										Optional<DataReplicaLocationModel> rpLocation = dataProductModel.getReplicaLocations()
-												.stream().filter(rpModel -> rpModel.getReplicaLocationCategory().
-														equals(ReplicaLocationCategory.GATEWAY_DATA_STORE)).findFirst();
-										if (rpLocation.isPresent()) {
-											filePathList.add(rpLocation.get().getFilePath());
-										} else {
-											log.error("Could not find a replica for the URI " + pi.getValue());
-										}
-									} else {
-										// uri is in file path format
-										filePathList.add(uri);
-									}
-								}
-								pi.setValue(StringUtils.join(filePathList, ','));
-							} catch (ReplicaCatalogException e) {
-								log.error(e.getMessage(), e);
-							}
-						}
-					});
+					parseInputOutput(processModel);
 					String taskDag = orchestrator.createAndSaveTasks(gatewayId, processModel, experiment.getUserConfigurationData().isAiravataAutoSchedule());
 					processModel.setTaskDag(taskDag);
 					experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processModel.getProcessId());
@@ -253,6 +209,103 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         return true;
 	}
 
+	private String getCredentialsStoreToken(ExperimentModel experiment, String gatewayId) throws AppCatalogException {
+        ComputeResourcePreference computeResourcePreference = appCatalog.getGatewayProfile().
+                getComputeResourcePreference(gatewayId,
+                        experiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId());
+        return computeResourcePreference.getResourceSpecificCredentialStoreToken();
+    }
+
+	private void parseInputOutput(ProcessModel processModel) throws ReplicaCatalogException {
+        //FIXME Resolving replica if available. This is a very crude way of resolving input replicas. A full featured
+        //FIXME replica resolving logic should come here
+
+        ReplicaCatalog replicaCatalog = RegistryFactory.getReplicaCatalog();
+        processModel.getProcessInputs().forEach(pi -> {
+            if (pi.getType().equals(DataType.URI) && pi.getValue().startsWith("airavata-dp://")) {
+                try {
+                    DataProductModel dataProductModel = replicaCatalog.getDataProduct(pi.getValue());
+                    Optional<DataReplicaLocationModel> rpLocation = dataProductModel.getReplicaLocations()
+                            .stream().filter(rpModel -> rpModel.getReplicaLocationCategory().
+                                    equals(ReplicaLocationCategory.GATEWAY_DATA_STORE)).findFirst();
+                    if (rpLocation.isPresent()) {
+                        pi.setValue(rpLocation.get().getFilePath());
+                        pi.setStorageResourceId(rpLocation.get().getStorageResourceId());
+                    } else {
+                        log.error("Could not find a replica for the URI " + pi.getValue());
+                    }
+                } catch (ReplicaCatalogException e) {
+                    log.error(e.getMessage(), e);
+                }
+            } else if (pi.getType().equals(DataType.URI_COLLECTION) && pi.getValue().contains("airavata-dp://")) {
+                try {
+                    String[] uriList = pi.getValue().split(",");
+                    final ArrayList<String> filePathList = new ArrayList<>();
+                    for (String uri : uriList) {
+                        if (uri.startsWith("airavata-dp://")) {
+                            DataProductModel dataProductModel = replicaCatalog.getDataProduct(uri);
+                            Optional<DataReplicaLocationModel> rpLocation = dataProductModel.getReplicaLocations()
+                                    .stream().filter(rpModel -> rpModel.getReplicaLocationCategory().
+                                            equals(ReplicaLocationCategory.GATEWAY_DATA_STORE)).findFirst();
+                            if (rpLocation.isPresent()) {
+                                filePathList.add(rpLocation.get().getFilePath());
+                            } else {
+                                log.error("Could not find a replica for the URI " + pi.getValue());
+                            }
+                        } else {
+                            // uri is in file path format
+                            filePathList.add(uri);
+                        }
+                    }
+                    pi.setValue(StringUtils.join(filePathList, ','));
+                } catch (ReplicaCatalogException e) {
+                    log.error(e.getMessage(), e);
+                }
+            }
+        });
+    }
+
+	private ProcessModel createAndSavePostProcessingProcess(ExperimentModel experiment, String gatewayId) throws
+            RegistryException, AiravataException, AppCatalogException {
+
+
+        List<Object> processes = experimentCatalog.get(ExperimentCatalogModelType.PROCESS,
+                Constants.FieldConstants.ProcessConstants.EXPERIMENT_ID, experiment.getExperimentId());
+
+        ProcessModel primaryProcess = null;
+        if (processes.size() > 0) {
+            Optional<ProcessModel> primaryProcessOp = processes.stream().map(ProcessModel.class::cast)
+                    .filter(processModel -> ProcessType.PRIMARY == processModel.getProcessType()).findFirst();
+            if (primaryProcessOp.isPresent()) {
+                primaryProcess = primaryProcessOp.get();
+            }
+        }
+
+        if (primaryProcess == null) {
+            log.error("Can not create post processing process without the primary process for experiment with id {}",
+                    experiment.getExperimentId());
+            throw new AiravataException("Can not create post processing process without the primary process for " +
+                    "experiment with id " + experiment.getExperimentId());
+        }
+
+        ProcessModel processModel = ExperimentModelUtil.cloneProcessFromExperiment(experiment);
+        processModel.setProcessType(ProcessType.FORCE_POST_PROCESING);
+
+        String processId = (String)experimentCatalog.add(ExpCatChildDataType.PROCESS, processModel, experiment.getExperimentId());
+        processModel.setProcessId(processId);
+
+        parseInputOutput(processModel);
+
+        List<String> tasks = orchestrator.createAndSaveOutputDataStagingTasks(processModel, gatewayId,
+                primaryProcess.getProcessId()); /* Make the working dir of this process as the working dir of
+         primary process as this is dealing with the content created by primary process */
+
+        String taskDag = orchestrator.getTaskDag(tasks);
+        processModel.setTaskDag(taskDag);
+
+        experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processModel.getProcessId());
+        return processModel;
+    }
 	/**
 	 * This method will validate the experiment before launching, if is failed
 	 * we do not run the launch in airavata thrift service (only if validation
@@ -325,7 +378,27 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 		}
 	}
 
-	private String getAiravataUserName() {
+    /**
+     * This method will create and launch a force post processing process of an experiment. This newly created
+     * process includes only the output data staging tasks of the experiment.
+     *
+     * @param experimentId target experiment id
+     * @param gatewayId gateway id
+     * @return true if the post processing process launched successfully, false otherwise
+     * @throws TException if the post processing of the experiment failed
+     */
+    @Override
+    public boolean launchPostProcessingOfExperiment(String experimentId, String gatewayId) throws TException {
+        log.info(experimentId, "Launching the post processing of Experiment: {}", experimentId);
+        try {
+            return validateStatesAndStartPostProcessing(experimentId, gatewayId);
+        } catch (Exception e) {
+            log.error("expId : " + experimentId + " :- Error while launching post processing", e);
+            return false;
+        }
+    }
+
+    private String getAiravataUserName() {
 		return airavataUserName;
 	}
 
@@ -410,6 +483,41 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 		return selectedModuleId;
 	}
 
+	private boolean validateStatesAndStartPostProcessing(String experimentId, String gatewayId) throws Exception {
+        ExperimentStatus experimentStatus = OrchestratorUtils.getExperimentStatus(experimentId);
+        switch (experimentStatus.getState()) {
+            case CREATED: case COMPLETED: case CANCELED: case CANCELING: case VALIDATED:
+                log.warn("Can't run post processing of the {} experiment with id {}", experimentStatus.getState().name(), experimentId);
+                return false;
+            case EXECUTING:
+            case LAUNCHED:
+            case SCHEDULED:
+            case FAILED:
+            case FORCE_POST_PROCESSING_COMPLETED:
+            case FORCE_POST_PROCESSING_CANCELED:
+            case FORCE_POST_PROCESSING_EXECUTING:
+            case FORCE_POST_PROCESSING_FAILED:
+
+                log.debug("State validation succeeded for the post processing of eperiment with id {}", experimentId);
+
+                ExperimentModel experiment = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+
+                if (experiment == null) {
+                    log.error("Error retrieving the Experiment by the given experiment id: {} ", experimentId);
+                    return false;
+                }
+
+                ProcessModel processModel = createAndSavePostProcessingProcess(experiment, gatewayId);
+                String token = getCredentialsStoreToken(experiment, gatewayId);
+                OrchestratorServerThreadPoolExecutor.getCachedThreadPool()
+                        .execute(MDCUtil.wrapWithMDC(new PostProcessingProcessRunner(processModel.getProcessId(), token, gatewayId)));
+                return true;
+            default:
+                log.warn("Invalid state for experiment with id {}", experimentId);
+                return false;
+        }
+    }
+
     private boolean validateStatesAndCancel(String experimentId, String gatewayId) throws Exception {
 		ExperimentStatus experimentStatus = OrchestratorUtils.getExperimentStatus(experimentId);
 		switch (experimentStatus.getState()) {
@@ -453,6 +561,28 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 		curatorClient = CuratorFrameworkFactory.newClient(connectionSting, retryPolicy);
 		curatorClient.start();
 	}
+
+	private class PostProcessingProcessRunner implements Runnable {
+	    String processId;
+	    String gatewayId;
+        String airavataCredStoreToken;
+
+        public PostProcessingProcessRunner(String processId, String gatewayId, String airavataCredStoreToken) {
+            this.processId = processId;
+            this.gatewayId = gatewayId;
+            this.airavataCredStoreToken = airavataCredStoreToken;
+        }
+
+        @Override
+        public void run() {
+            try {
+                launchProcess(processId, airavataCredStoreToken, gatewayId);
+            } catch (TException e) {
+                log.error("Error while launching post processing process {}", processId, e);
+                // TODO handle states
+            }
+        }
+    }
     private class SingleAppExperimentRunner implements Runnable {
 
         String experimentId;
@@ -514,6 +644,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 		@Override
 		public void onMessage(MessageContext message) {
 			if (message.getType().equals(MessageType.PROCESS)) {
+			    // TODO: Get a lock for the experiment id as there couldbe multiple processes
+                // including post processing processes updating the status
 				try {
 					ProcessStatusChangeEvent processStatusChangeEvent = new ProcessStatusChangeEvent();
 					TBase event = message.getEvent();
@@ -524,7 +656,25 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 					log.info("expId: {}, processId: {} :- Process status changed event received for status {}",
 							processIdentity.getExperimentId(), processIdentity.getProcessId(),
 							processStatusChangeEvent.getState().name());
-					switch (processStatusChangeEvent.getState()) {
+
+					ProcessModel processModel = null;
+					ExperimentModel experimentModel = null;
+
+					try {
+                        processModel = (ProcessModel) experimentCatalog.get(ExperimentCatalogModelType.PROCESS, processIdentity.getProcessId());
+                    } catch (RegistryException e) {
+                        log.error("Failed to find the process with id {}", processIdentity.getProcessId(), e);
+                        return;
+                    }
+
+                    try {
+                        experimentModel = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, processIdentity.getExperimentId());
+                    } catch (RegistryException e) {
+                        log.error("Failed to find the experiment with id {}", processIdentity.getProcessId(), e);
+                        return;
+                    }
+
+                    switch (processStatusChangeEvent.getState()) {
 //						case CREATED:
 //						case VALIDATED:
 						case STARTED:
@@ -535,12 +685,18 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 									status.setState(ExperimentState.CANCELING);
 									status.setReason("Process started but experiment cancelling is triggered");
 								} else {
-									status.setState(ExperimentState.EXECUTING);
-									status.setReason("process  started");
+								    if (processModel.getProcessType() == ProcessType.PRIMARY) {
+                                        status.setState(ExperimentState.EXECUTING);
+                                        status.setReason("process started");
+
+                                    } else if (processModel.getProcessType() == ProcessType.FORCE_POST_PROCESING) {
+                                        status.setState(ExperimentState.FORCE_POST_PROCESSING_EXECUTING);
+                                        status.setReason("force post processing process started");
+                                    }
 								}
 							} catch (RegistryException e) {
 								status.setState(ExperimentState.EXECUTING);
-								status.setReason("process  started");
+								status.setReason("process started");
 							}
 							break;
 //						case PRE_PROCESSING:
@@ -561,12 +717,28 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 									status.setState(ExperimentState.CANCELED);
 									status.setReason("Process competed but experiment cancelling is triggered");
 								} else {
-									status.setState(ExperimentState.COMPLETED);
-									status.setReason("process  completed");
+
+								    if (processModel.getProcessType() == ProcessType.PRIMARY) {
+                                        status.setState(ExperimentState.COMPLETED);
+                                        status.setReason("process completed");
+                                    } else if (processModel.getProcessType() == ProcessType.FORCE_POST_PROCESING) {
+
+                                        if (stat.getState() == ExperimentState.COMPLETED) {
+                                            // Ignore silently and mark as completed
+                                            status.setState(ExperimentState.COMPLETED);
+                                            status.setReason("process completed");
+                                        } else {
+                                            // otherwise mark post processing is completed
+                                            status.setState(ExperimentState.FORCE_POST_PROCESSING_COMPLETED);
+                                            status.setReason("force post processing process completed");
+                                        }
+
+                                    }
 								}
 							} catch (RegistryException e) {
+							    // TODO dimuthu: is this logic correct?
 								status.setState(ExperimentState.COMPLETED);
-								status.setReason("process  completed");
+								status.setReason("process completed");
 							}
 							break;
 						case FAILED:
@@ -577,18 +749,33 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 									status.setState(ExperimentState.CANCELED);
 									status.setReason("Process failed but experiment cancelling is triggered");
 								} else {
-									status.setState(ExperimentState.FAILED);
-									status.setReason("process  failed");
+                                    if (processModel.getProcessType() == ProcessType.PRIMARY) {
+                                        status.setState(ExperimentState.FAILED);
+                                        status.setReason("process failed");
+
+                                    } else if (processModel.getProcessType() == ProcessType.FORCE_POST_PROCESING) {
+
+                                        if (stat.getState() != ExperimentState.COMPLETED) {
+                                            // if experiment completed, silently ignore this
+                                            status.setState(ExperimentState.FORCE_POST_PROCESSING_FAILED);
+                                            status.setReason("force post processing process failed");
+                                        }
+                                    }
 								}
 							} catch (RegistryException e) {
 								status.setState(ExperimentState.FAILED);
-								status.setReason("process  failed");
+								status.setReason("process failed");
 							}
 							break;
 						case CANCELED:
 							// TODO if experiment have more than one process associated with it, then this should be changed.
-							status.setState(ExperimentState.CANCELED);
-							status.setReason("process  cancelled");
+                            if (processModel.getProcessType() == ProcessType.PRIMARY) {
+                                status.setState(ExperimentState.CANCELED);
+                                status.setReason("process cancelled");
+                            } else if (processModel.getProcessType() == ProcessType.FORCE_POST_PROCESING) {
+                                status.setState(ExperimentState.FORCE_POST_PROCESSING_CANCELED);
+                                status.setReason("process cancelled");
+                            }
 							break;
 						default:
 							// ignore other status changes, thoes will not affect for experiment status changes
@@ -624,6 +811,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 				case EXPERIMENT_CANCEL:
                     cancelExperiment(messageContext);
 					break;
+                case POSTPROCESSING_START:
+                    startPostProcessingOfExperiment(messageContext);
+                    break;
 				default:
 					experimentSubscriber.sendAck(messageContext.getDeliveryTag());
 					log.error("Orchestrator got un-support message type : " + messageContext.getType());
@@ -632,6 +822,19 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			MDC.clear();
 		}
 
+        private void startPostProcessingOfExperiment(MessageContext messageContext) {
+            try {
+                byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());
+                ExperimentSubmitEvent expEvent = new ExperimentSubmitEvent();
+                ThriftUtils.createThriftFromBytes(bytes, expEvent);
+                log.info("Starting the post processing of the experiment with experimentId: {} gateway Id: {}", expEvent.getExperimentId(), expEvent.getGatewayId());
+                launchPostProcessingOfExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
+            } catch (TException e) {
+                log.error("Experiment cancellation failed due to Thrift conversion error", e);
+            }finally {
+                experimentSubscriber.sendAck(messageContext.getDeliveryTag());
+            }
+        }
 		private void cancelExperiment(MessageContext messageContext) {
 			try {
 				byte[] bytes = ThriftUtils.serializeThriftObject(messageContext.getEvent());

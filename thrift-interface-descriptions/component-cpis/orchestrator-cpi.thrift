@@ -77,4 +77,6 @@ service OrchestratorService {
      *
     **/
   bool terminateExperiment (1: required string experimentId, 2: required string gatewayId)
+
+  bool launchPostProcessingOfExperiment(1: required string experimentId, 2: required string gatewayId)
 }

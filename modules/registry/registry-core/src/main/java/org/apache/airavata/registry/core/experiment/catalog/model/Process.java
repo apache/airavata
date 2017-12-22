@@ -55,6 +55,7 @@ public class Process {
     private String userDn;
     private boolean generateCert;
     private boolean useUserCRPref;
+    private Integer processTypeValue;
 
     @Id
     @Column(name = "PROCESS_ID")
@@ -319,5 +320,14 @@ public class Process {
 
     public void setUseUserCRPref(boolean useUserCRPref) {
         this.useUserCRPref = useUserCRPref;
+    }
+
+    @Column(name = "PROCESS_TYPE")
+    public Integer getProcessTypeValue() {
+        return processTypeValue;
+    }
+
+    public void setProcessTypeValue(Integer processTypeValue) {
+        this.processTypeValue = processTypeValue;
     }
 }

@@ -583,6 +583,7 @@ public class Utils {
             processResource.setExperimentDataDir(o.getExperimentDataDir());
             processResource.setUserName(o.getUserName());
             processResource.setUseUserCRPref(o.isUseUserCRPref());
+            processResource.setProcessTypeValue(o.getProcessTypeValue());
         }
         return processResource;
     }

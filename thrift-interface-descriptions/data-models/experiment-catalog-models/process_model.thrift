@@ -64,4 +64,10 @@ struct ProcessModel {
     22: optional string experimentDataDir,
     23: optional string userName,
     24: optional bool useUserCRPref;
+    25: required ProcessType processType;
+}
+
+enum ProcessType {
+    PRIMARY,
+    FORCE_POST_PROCESING
 }

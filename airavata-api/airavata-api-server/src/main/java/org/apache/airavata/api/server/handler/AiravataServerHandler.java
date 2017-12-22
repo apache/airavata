@@ -1762,6 +1762,26 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    @Override
+    public void executePostProcessing(AuthzToken authzToken, String airavataExperimentId, String gatewayId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        RegistryService.Client regClient = registryClientPool.getResource();
+        try {
+            ExperimentModel experiment = regClient.getExperiment(airavataExperimentId);
+            if (experiment == null) {
+                logger.error(airavataExperimentId, "Error while starting the post processing of experiment, experiment {} doesn't exist.", airavataExperimentId);
+                throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
+            startPostProcessingOfExperiment(gatewayId, airavataExperimentId);
+            registryClientPool.returnResource(regClient);
+        } catch (Exception e1) {
+            logger.error(airavataExperimentId, "Error while instantiate the registry instance", e1);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while instantiate the registry instance. More info : " + e1.getMessage());
+            registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
 
 
 //    private OrchestratorService.Client getOrchestratorClient() throws TException {
@@ -4806,6 +4826,13 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setMessage(msg + " More info : " + e.getMessage());
             throw exception;
         }
+    }
+
+    private void startPostProcessingOfExperiment(String gatewayId, String experimentId) throws AiravataException {
+        ExperimentSubmitEvent event = new ExperimentSubmitEvent(experimentId, gatewayId);
+        MessageContext messageContext = new MessageContext(event, MessageType.POSTPROCESSING_START, "POSTPROCESS.EXP-" + UUID.randomUUID().toString(), gatewayId);
+        messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+        experimentPublisher.publish(messageContext);
     }
 
     private void submitExperiment(String gatewayId,String experimentId) throws AiravataException {
