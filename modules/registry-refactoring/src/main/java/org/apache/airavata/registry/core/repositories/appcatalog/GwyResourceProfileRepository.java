@@ -10,6 +10,8 @@ import org.apache.airavata.registry.core.entities.appcatalog.GatewayProfileEntit
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.core.utils.QueryConstants;
+import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.GwyResourceProfile;
 import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GwyResourceProfileRepository extends AppCatAbstractRepository<GatewayResourceProfile, GatewayProfileEntity, String>{
+public class GwyResourceProfileRepository extends AppCatAbstractRepository<GatewayResourceProfile, GatewayProfileEntity, String> implements GwyResourceProfile {
 
     private final static Logger logger = LoggerFactory.getLogger(GwyResourceProfileRepository.class);
 
@@ -27,9 +29,15 @@ public class GwyResourceProfileRepository extends AppCatAbstractRepository<Gatew
         super(GatewayResourceProfile.class, GatewayProfileEntity.class);
     }
 
+    @Override
     public String addGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) {
 
         return updateGatewayResourceProfile(gatewayResourceProfile);
+    }
+
+    @Override
+    public void updateGatewayResourceProfile(String gatewayId, GatewayResourceProfile updatedProfile) throws AppCatalogException {
+        updateGatewayResourceProfile(updatedProfile);
     }
 
     public String updateGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) {
@@ -60,6 +68,7 @@ public class GwyResourceProfileRepository extends AppCatAbstractRepository<Gatew
         return persistedCopy.getGatewayId();
     }
 
+    @Override
     public GatewayResourceProfile getGatewayProfile(String gatewayId) {
         GatewayResourceProfile gatewayResourceProfile = get(gatewayId);
         gatewayResourceProfile.setComputeResourcePreferences(getAllComputeResourcePreferences(gatewayId));
@@ -67,6 +76,12 @@ public class GwyResourceProfileRepository extends AppCatAbstractRepository<Gatew
         return gatewayResourceProfile;
     }
 
+    @Override
+    public boolean removeGatewayResourceProfile(String gatewayId) throws AppCatalogException {
+        return delete(gatewayId);
+    }
+
+    @Override
     public List<GatewayResourceProfile> getAllGatewayProfiles() {
 
         List<GatewayResourceProfile> gwyResourceProfileList = new ArrayList<GatewayResourceProfile>();
@@ -80,6 +95,7 @@ public class GwyResourceProfileRepository extends AppCatAbstractRepository<Gatew
         return gatewayResourceProfileList;
     }
 
+    @Override
     public boolean removeComputeResourcePreferenceFromGateway(String gatewayId, String preferenceId) {
         ComputeResourcePreferencePK computeResourcePreferencePK = new ComputeResourcePreferencePK();
         computeResourcePreferencePK.setGatewayId(gatewayId);
@@ -88,6 +104,7 @@ public class GwyResourceProfileRepository extends AppCatAbstractRepository<Gatew
         return true;
     }
 
+    @Override
     public boolean removeDataStoragePreferenceFromGateway(String gatewayId, String preferenceId) {
         StoragePreferencePK storagePreferencePK = new StoragePreferencePK();
         storagePreferencePK.setGatewayId(gatewayId);
@@ -96,6 +113,12 @@ public class GwyResourceProfileRepository extends AppCatAbstractRepository<Gatew
         return true;
     }
 
+    @Override
+    public boolean isGatewayResourceProfileExists(String gatewayId) throws AppCatalogException {
+        return isExists(gatewayId);
+    }
+
+    @Override
     public ComputeResourcePreference getComputeResourcePreference(String gatewayId, String hostId) {
         ComputeResourcePreferencePK computeResourcePreferencePK = new ComputeResourcePreferencePK();
         computeResourcePreferencePK.setGatewayId(gatewayId);
@@ -103,6 +126,7 @@ public class GwyResourceProfileRepository extends AppCatAbstractRepository<Gatew
         return (new ComputeResourceRepository()).get(computeResourcePreferencePK);
     }
 
+    @Override
     public StoragePreference getStoragePreference(String gatewayId, String storageId){
         StoragePreferencePK storagePreferencePK = new StoragePreferencePK();
         storagePreferencePK.setStorageResourceId(storageId);
@@ -110,15 +134,23 @@ public class GwyResourceProfileRepository extends AppCatAbstractRepository<Gatew
         return (new StoragePrefRepository()).get(storagePreferencePK);
     }
 
+    @Override
     public List<ComputeResourcePreference> getAllComputeResourcePreferences(String gatewayId) {
         Map<String,Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.ComputeResourcePreference.GATEWAY_ID, gatewayId);
         return (new ComputeResourceRepository()).select(QueryConstants.FIND_ALL_COMPUTE_RESOURCE_PREFERENCES, -1, 0, queryParameters);
     }
 
+    @Override
     public List<StoragePreference> getAllStoragePreferences(String gatewayId) {
         Map<String,Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.StorageResourcePreference.GATEWAY_ID, gatewayId);
         return (new StoragePrefRepository()).select(QueryConstants.FIND_ALL_STORAGE_RESOURCE_PREFERENCES, -1, 0, queryParameters);
+    }
+
+    @Override
+    public List<String> getGatewayProfileIds(String gatewayName) throws AppCatalogException {
+        //not used anywhere. Skipping the implementation
+        return null;
     }
 }
