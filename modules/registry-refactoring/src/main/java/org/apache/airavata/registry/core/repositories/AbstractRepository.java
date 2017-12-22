@@ -96,9 +96,4 @@ public abstract class AbstractRepository<T, E, Id> {
         return gatewayList;
     }
 
-    public boolean isExists(Id id) {
-        return get(id) != null;
-    }
-
-
 }
