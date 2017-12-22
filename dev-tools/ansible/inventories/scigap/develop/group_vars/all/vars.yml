@@ -109,7 +109,7 @@ gfac_dir: "{{ deployment_dir }}/gfac-instance"
 gfac_log_dir: "{{ gfac_dir }}/logs"
 
 # Monitoring variables
-monitor_email_address: "gw56jobs@scigap.org"
+monitor_email_address: "devjobs@scigap.org"
 monitor_email_password: "{{ vault_monitor_email_password }}"
 
 # PGA variables
