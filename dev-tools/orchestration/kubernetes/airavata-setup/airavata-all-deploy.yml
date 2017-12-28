@@ -7,10 +7,10 @@ metadata:
     app: airavata
 spec:
   replicas: 3
-  selector:
-    matchLabels:
-      name: airavata-all
-      app: airavata
+  #selector:
+  #  matchLabels:
+  #    name: airavata-all
+  #    app: airavata
   template:
     metadata:
       labels:
