@@ -3,10 +3,10 @@ kind: Deployment
 metadata:
   name: mariadb
 spec:
-  selector:
-    matchLabels:
-      name: mariadb
-      app: airavata
+  #selector:
+  #  matchLabels:
+  #   name: mariadb
+  #   app: airavata
   replicas: 1 
   template: 
     metadata:    
