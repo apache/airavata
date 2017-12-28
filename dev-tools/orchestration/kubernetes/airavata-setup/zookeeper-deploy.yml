@@ -3,10 +3,10 @@ kind: Deployment
 metadata:
   name: zookeeper
 spec:
-  selector:
-    matchLabels:
-      name: zookeeper
-      app: airavata
+  #selector:
+  #  matchLabels:
+  #  name: zookeeper
+  #  app: airavata
   replicas: 1 
   template: 
     metadata:    
