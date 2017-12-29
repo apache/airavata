@@ -3,6 +3,7 @@ package org.apache.airavata.registry.core.repositories.appcatalog;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.model.data.movement.DMType;
+import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 import org.apache.airavata.registry.core.entities.appcatalog.*;
 import org.apache.airavata.registry.core.utils.AppCatalogUtils;
 import org.apache.airavata.registry.core.utils.DBConstants;
@@ -257,22 +258,45 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
 
     @Override
     public String addResourceJobManager(ResourceJobManager resourceJobManager) throws AppCatalogException {
-        return null;
+        ResourceJobManagerRepository resourceJobManagerRepository = new ResourceJobManagerRepository();
+        resourceJobManager.setResourceJobManagerId(AppCatalogUtils.getID("RJM"));
+        resourceJobManagerRepository.create(resourceJobManager);
+        Map<JobManagerCommand, String> jobManagerCommands = resourceJobManager.getJobManagerCommands();
+        if (jobManagerCommands!=null && jobManagerCommands.size() != 0) {
+            resourceJobManagerRepository.createJobManagerCommand(jobManagerCommands, resourceJobManager.getResourceJobManagerId());
+        }
+
+        Map<ApplicationParallelismType, String> parallelismPrefix = resourceJobManager.getParallelismPrefix();
+        if (parallelismPrefix!=null && parallelismPrefix.size() != 0) {
+            resourceJobManagerRepository.createParallesimPrefix(parallelismPrefix, resourceJobManager.getResourceJobManagerId());
+        }
+        return resourceJobManager.getResourceJobManagerId();
     }
 
     @Override
     public void updateResourceJobManager(String resourceJobManagerId, ResourceJobManager updatedResourceJobManager) throws AppCatalogException {
+        ResourceJobManagerRepository resourceJobManagerRepository = new ResourceJobManagerRepository();
+        updatedResourceJobManager.setResourceJobManagerId(resourceJobManagerId);
+        resourceJobManagerRepository.create(updatedResourceJobManager);
+        Map<JobManagerCommand, String> jobManagerCommands = updatedResourceJobManager.getJobManagerCommands();
+        if (jobManagerCommands!=null && jobManagerCommands.size() != 0) {
+            resourceJobManagerRepository.createJobManagerCommand(jobManagerCommands, updatedResourceJobManager.getResourceJobManagerId());
+        }
 
+        Map<ApplicationParallelismType, String> parallelismPrefix = updatedResourceJobManager.getParallelismPrefix();
+        if (parallelismPrefix!=null && parallelismPrefix.size() != 0) {
+            resourceJobManagerRepository.createParallesimPrefix(parallelismPrefix, updatedResourceJobManager.getResourceJobManagerId());
+        }
     }
 
     @Override
     public ResourceJobManager getResourceJobManager(String resourceJobManagerId) throws AppCatalogException {
-        return null;
+        return (new ResourceJobManagerRepository()).get(resourceJobManagerId);
     }
 
     @Override
     public void deleteResourceJobManager(String resourceJobManagerId) throws AppCatalogException {
-
+        (new ResourceJobManagerRepository()).delete(resourceJobManagerId);
     }
 
     @Override

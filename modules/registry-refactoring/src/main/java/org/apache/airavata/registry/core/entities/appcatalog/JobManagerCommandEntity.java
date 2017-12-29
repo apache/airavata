@@ -20,17 +20,14 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
  * The persistent class for the job_manager_command database table.
  */
 @Entity
-@Table(name = "job_manager_command")
+@Table(name = "JOB_MANAGER_COMMAND")
 public class JobManagerCommandEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -40,7 +37,19 @@ public class JobManagerCommandEntity implements Serializable {
     @Column(name = "COMMAND")
     private String command;
 
+    @ManyToOne(cascade= CascadeType.MERGE)
+    @JoinColumn(name = "RESOURCE_JOB_MANAGER_ID")
+    private ResourceJobManagerEntity resourceJobManager;
+
     public JobManagerCommandEntity() {
+    }
+
+    public ResourceJobManagerEntity getResourceJobManager() {
+        return resourceJobManager;
+    }
+
+    public void setResourceJobManager(ResourceJobManagerEntity resourceJobManager) {
+        this.resourceJobManager = resourceJobManager;
     }
 
     public JobManagerCommandPK getId() {
