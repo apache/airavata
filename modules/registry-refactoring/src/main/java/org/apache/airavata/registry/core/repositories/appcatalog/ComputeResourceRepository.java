@@ -136,12 +136,21 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
                                    ComputeResourceEntity computeHostResource)
             throws AppCatalogException {
         List<String> hostAliases = description.getHostAliases();
-        // delete previous host aliases
-        execute(entityManager -> {
-            HostAliasEntity entity = entityManager.find(HostAliasEntity.class, description.getComputeResourceId());
-            entityManager.remove(entity);
-            return entity;
-        });
+
+        if (hostAliases != null && !hostAliases.isEmpty()) {
+            for (String alias : hostAliases) {
+                HostAliasPK hostAliasPKCheck = new HostAliasPK();
+                hostAliasPKCheck.setAlias(alias);
+                hostAliasPKCheck.setResourceId(description.getComputeResourceId());
+                // delete previous host aliases
+                execute(entityManager -> {
+                    HostAliasEntity entity = entityManager.find(HostAliasEntity.class, hostAliasPKCheck);
+                    entityManager.remove(entity);
+                    return entity;
+                });
+            }
+        }
+
         if (hostAliases != null && !hostAliases.isEmpty()) {
             for (String alias : hostAliases) {
                 HostAliasPK hostAliasPK= new HostAliasPK();
@@ -159,11 +168,18 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
                                    ComputeResourceEntity computeHostResource)
             throws AppCatalogException {
         List<String> ipAddresses = description.getIpAddresses();
-        execute(entityManager -> {
-            HostIpaddressEntity entity = entityManager.find(HostIpaddressEntity.class, description.getComputeResourceId());
-            entityManager.remove(entity);
-            return entity;
-        });
+        if (ipAddresses != null && !ipAddresses.isEmpty()) {
+            for (String ipAddress : ipAddresses) {
+                HostIpaddressPK hostIpaddressPKCheck =  new HostIpaddressPK();
+                hostIpaddressPKCheck.setResourceId(description.getComputeResourceId());
+                hostIpaddressPKCheck.setIpAddress(ipAddress);
+                execute(entityManager -> {
+                    HostIpaddressEntity entity = entityManager.find(HostIpaddressEntity.class, hostIpaddressPKCheck);
+                    entityManager.remove(entity);
+                    return entity;
+                });
+            }
+        }
 
         if (ipAddresses != null && !ipAddresses.isEmpty()) {
             for (String ipAddress : ipAddresses) {
@@ -172,6 +188,7 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
                 hostIpaddressPK.setResourceId(computeHostResource.getComputeResourceId());
                 HostIpaddressEntity hostIpaddressEntity = new HostIpaddressEntity();
                 hostIpaddressEntity.setComputeResource(computeHostResource);
+                hostIpaddressEntity.setId(hostIpaddressPK);
                 execute(entityManager -> entityManager.merge(hostIpaddressEntity));
             }
         }
@@ -271,14 +288,16 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         ResourceJobManagerRepository resourceJobManagerRepository = new ResourceJobManagerRepository();
         resourceJobManager.setResourceJobManagerId(AppCatalogUtils.getID("RJM"));
         resourceJobManagerRepository.create(resourceJobManager);
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        ResourceJobManagerEntity resourceJobManagerEntity = mapper.map(resourceJobManager, ResourceJobManagerEntity.class);
         Map<JobManagerCommand, String> jobManagerCommands = resourceJobManager.getJobManagerCommands();
         if (jobManagerCommands!=null && jobManagerCommands.size() != 0) {
-            resourceJobManagerRepository.createJobManagerCommand(jobManagerCommands, resourceJobManager.getResourceJobManagerId());
+            resourceJobManagerRepository.createJobManagerCommand(jobManagerCommands, resourceJobManagerEntity);
         }
 
         Map<ApplicationParallelismType, String> parallelismPrefix = resourceJobManager.getParallelismPrefix();
         if (parallelismPrefix!=null && parallelismPrefix.size() != 0) {
-            resourceJobManagerRepository.createParallesimPrefix(parallelismPrefix, resourceJobManager.getResourceJobManagerId());
+            resourceJobManagerRepository.createParallesimPrefix(parallelismPrefix, resourceJobManagerEntity);
         }
         return resourceJobManager.getResourceJobManagerId();
     }
@@ -287,15 +306,17 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
     public void updateResourceJobManager(String resourceJobManagerId, ResourceJobManager updatedResourceJobManager) throws AppCatalogException {
         ResourceJobManagerRepository resourceJobManagerRepository = new ResourceJobManagerRepository();
         updatedResourceJobManager.setResourceJobManagerId(resourceJobManagerId);
-        resourceJobManagerRepository.create(updatedResourceJobManager);
+        ResourceJobManager resourceJobManager = resourceJobManagerRepository.create(updatedResourceJobManager);
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        ResourceJobManagerEntity resourceJobManagerEntity = mapper.map(resourceJobManager, ResourceJobManagerEntity.class);
         Map<JobManagerCommand, String> jobManagerCommands = updatedResourceJobManager.getJobManagerCommands();
         if (jobManagerCommands!=null && jobManagerCommands.size() != 0) {
-            resourceJobManagerRepository.createJobManagerCommand(jobManagerCommands, updatedResourceJobManager.getResourceJobManagerId());
+            resourceJobManagerRepository.createJobManagerCommand(jobManagerCommands, resourceJobManagerEntity);
         }
 
         Map<ApplicationParallelismType, String> parallelismPrefix = updatedResourceJobManager.getParallelismPrefix();
         if (parallelismPrefix!=null && parallelismPrefix.size() != 0) {
-            resourceJobManagerRepository.createParallesimPrefix(parallelismPrefix, updatedResourceJobManager.getResourceJobManagerId());
+            resourceJobManagerRepository.createParallesimPrefix(parallelismPrefix, resourceJobManagerEntity);
         }
     }
 
@@ -416,6 +437,7 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
                 gridftpEndpointPK.setEndpoint(endpoint);
                 GridftpEndpointEntity gridftpEndpointEntity = new GridftpEndpointEntity();
                 gridftpEndpointEntity.setGridftpDataMovement(gridftpDataMovementEntity);
+                gridftpEndpointEntity.setId(gridftpEndpointPK);
                 execute(entityManager -> entityManager.merge(gridftpEndpointEntity));
             }
         }

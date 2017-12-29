@@ -94,6 +94,7 @@
         <class>org.apache.airavata.registry.core.entities.appcatalog.ApplicationOutputEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.BatchQueueEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceFileSystemEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.CloudJobSubmissionEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.JobManagerCommandEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ParallelismCommandEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.LocalDataMovementEntity</class>
