@@ -12,4 +12,8 @@ public class DBConstants {
         public static final String GATEWAY_ID = "gatewayId";
     }
 
+    public static class ComputeResource {
+        public static final String HOST_NAME = "hostName";
+    }
+
 }

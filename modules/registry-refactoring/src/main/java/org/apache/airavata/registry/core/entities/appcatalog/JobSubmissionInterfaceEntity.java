@@ -20,10 +20,7 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -31,7 +28,7 @@ import java.sql.Timestamp;
  * The persistent class for the job_submission_interface database table.
  */
 @Entity
-@Table(name = "job_submission_interface")
+@Table(name = "JOB_SUBMISSION_INTERFACE")
 public class JobSubmissionInterfaceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -50,7 +47,19 @@ public class JobSubmissionInterfaceEntity implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
+    @ManyToOne(cascade= CascadeType.MERGE)
+    @JoinColumn(name = "COMPUTE_RESOURCE_ID")
+    private ComputeResourceEntity computeResource;
+
     public JobSubmissionInterfaceEntity() {
+    }
+
+    public ComputeResourceEntity getComputeResource() {
+        return computeResource;
+    }
+
+    public void setComputeResource(ComputeResourceEntity computeResource) {
+        this.computeResource = computeResource;
     }
 
     public JobSubmissionInterfacePK getId() {

@@ -32,7 +32,7 @@ import java.sql.Timestamp;
  * The persistent class for the scp_data_movement database table.
  */
 @Entity
-@Table(name = "scp_data_movement")
+@Table(name = "SCP_DATA_MOVEMENT")
 public class ScpDataMovementEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -41,7 +41,7 @@ public class ScpDataMovementEntity implements Serializable {
     private String dataMovementInterfaceId;
 
     @Column(name = "ALTERNATIVE_SCP_HOSTNAME")
-    private String alternativeScpHostname;
+    private String alternativeSCPHostName;
 
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
@@ -69,12 +69,12 @@ public class ScpDataMovementEntity implements Serializable {
         this.dataMovementInterfaceId = dataMovementInterfaceId;
     }
 
-    public String getAlternativeScpHostname() {
-        return alternativeScpHostname;
+    public String getAlternativeSCPHostName() {
+        return alternativeSCPHostName;
     }
 
-    public void setAlternativeScpHostname(String alternativeScpHostname) {
-        this.alternativeScpHostname = alternativeScpHostname;
+    public void setAlternativeSCPHostName(String alternativeSCPHostName) {
+        this.alternativeSCPHostName = alternativeSCPHostName;
     }
 
     public Timestamp getCreationTime() {

@@ -20,10 +20,7 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -50,7 +47,19 @@ public class DataMovementInterfaceEntity implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
+    @ManyToOne(cascade= CascadeType.MERGE)
+    @JoinColumn(name = "COMPUTE_RESOURCE_ID")
+    private ComputeResourceEntity computeResource;
+
     public DataMovementInterfaceEntity() {
+    }
+
+    public ComputeResourceEntity getComputeResource() {
+        return computeResource;
+    }
+
+    public void setComputeResource(ComputeResourceEntity computeResource) {
+        this.computeResource = computeResource;
     }
 
     public DataMovementInterfacePK getId() {

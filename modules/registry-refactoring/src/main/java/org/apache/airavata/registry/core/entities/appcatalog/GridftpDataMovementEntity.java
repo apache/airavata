@@ -32,7 +32,7 @@ import java.sql.Timestamp;
  * The persistent class for the gridftp_data_movement database table.
  */
 @Entity
-@Table(name = "gridftp_data_movement")
+@Table(name = "GRIDFTP_DATA_MOVEMENT")
 public class GridftpDataMovementEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 

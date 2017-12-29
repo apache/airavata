@@ -32,13 +32,13 @@ import java.io.Serializable;
  * 
  */
 @Entity
-@Table(name="unicore_datamovement")
+@Table(name="UNICORE_DATAMOVEMENT")
 public class UnicoreDatamovementEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name="DATAMOVEMENT_ID")
-	private String datamovementId;
+	private String dataMovementInterfaceId;
 
 	@Column(name="SECURITY_PROTOCAL")
 	private String securityProtocal;
@@ -49,12 +49,12 @@ public class UnicoreDatamovementEntity implements Serializable {
 	public UnicoreDatamovementEntity() {
 	}
 
-	public String getDatamovementId() {
-		return datamovementId;
+	public String getDataMovementInterfaceId() {
+		return dataMovementInterfaceId;
 	}
 
-	public void setDatamovementId(String datamovementId) {
-		this.datamovementId = datamovementId;
+	public void setDataMovementInterfaceId(String dataMovementInterfaceId) {
+		this.dataMovementInterfaceId = dataMovementInterfaceId;
 	}
 
 	public String getSecurityProtocal() {

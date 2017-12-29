@@ -31,24 +31,25 @@ import java.sql.Timestamp;
  * The persistent class for the compute_resource database table.
  */
 @Entity
-@Table(name = "compute_resource")
+@Table(name = "COMPUTE_RESOURCE")
 public class ComputeResourceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "RESOURCE_ID")
-    private String resourceId;
+    private String computeResourceId;
 
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
 
+    @Column(name = "ENABLED")
     private short enabled;
 
     @Column(name = "GATEWAY_USAGE_EXECUTABLE")
     private String gatewayUsageExecutable;
 
     @Column(name = "GATEWAY_USAGE_MODULE_LOAD_CMD")
-    private String gatewayUsageModuleLoadCmd;
+    private String gatewayUsageModuleLoadCommand;
 
     @Column(name = "GATEWAY_USAGE_REPORTING")
     private short gatewayUsageReporting;
@@ -57,7 +58,7 @@ public class ComputeResourceEntity implements Serializable {
     private String hostName;
 
     @Column(name = "MAX_MEMORY_NODE")
-    private int maxMemoryNode;
+    private int maxMemoryPerNode;
 
     @Column(name = "RESOURCE_DESCRIPTION")
     private String resourceDescription;
@@ -65,15 +66,19 @@ public class ComputeResourceEntity implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
+    @Column(name = "CPUS_PER_NODE")
+    private Integer cpusPerNode;
+
+    @Column(name = "DEFAULT_NODE_COUNT")
+    private Integer defaultNodeCount;
+
+    @Column(name = "DEFAULT_CPU_COUNT")
+    private Integer defaultCPUCount;
+
+    @Column(name = "DEFAULT_WALLTIME")
+    private Integer defaultWalltime;
+
     public ComputeResourceEntity() {
-    }
-
-    public String getResourceId() {
-        return resourceId;
-    }
-
-    public void setResourceId(String resourceId) {
-        this.resourceId = resourceId;
     }
 
     public Timestamp getCreationTime() {
@@ -100,14 +105,6 @@ public class ComputeResourceEntity implements Serializable {
         this.gatewayUsageExecutable = gatewayUsageExecutable;
     }
 
-    public String getGatewayUsageModuleLoadCmd() {
-        return gatewayUsageModuleLoadCmd;
-    }
-
-    public void setGatewayUsageModuleLoadCmd(String gatewayUsageModuleLoadCmd) {
-        this.gatewayUsageModuleLoadCmd = gatewayUsageModuleLoadCmd;
-    }
-
     public short getGatewayUsageReporting() {
         return gatewayUsageReporting;
     }
@@ -116,20 +113,36 @@ public class ComputeResourceEntity implements Serializable {
         this.gatewayUsageReporting = gatewayUsageReporting;
     }
 
+    public String getComputeResourceId() {
+        return computeResourceId;
+    }
+
+    public void setComputeResourceId(String computeResourceId) {
+        this.computeResourceId = computeResourceId;
+    }
+
+    public String getGatewayUsageModuleLoadCommand() {
+        return gatewayUsageModuleLoadCommand;
+    }
+
+    public void setGatewayUsageModuleLoadCommand(String gatewayUsageModuleLoadCommand) {
+        this.gatewayUsageModuleLoadCommand = gatewayUsageModuleLoadCommand;
+    }
+
+    public int getMaxMemoryPerNode() {
+        return maxMemoryPerNode;
+    }
+
+    public void setMaxMemoryPerNode(int maxMemoryPerNode) {
+        this.maxMemoryPerNode = maxMemoryPerNode;
+    }
+
     public String getHostName() {
         return hostName;
     }
 
     public void setHostName(String hostName) {
         this.hostName = hostName;
-    }
-
-    public int getMaxMemoryNode() {
-        return maxMemoryNode;
-    }
-
-    public void setMaxMemoryNode(int maxMemoryNode) {
-        this.maxMemoryNode = maxMemoryNode;
     }
 
     public String getResourceDescription() {
@@ -146,5 +159,37 @@ public class ComputeResourceEntity implements Serializable {
 
     public void setUpdateTime(Timestamp updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Integer getCpusPerNode() {
+        return cpusPerNode;
+    }
+
+    public void setCpusPerNode(Integer cpusPerNode) {
+        this.cpusPerNode = cpusPerNode;
+    }
+
+    public Integer getDefaultNodeCount() {
+        return defaultNodeCount;
+    }
+
+    public void setDefaultNodeCount(Integer defaultNodeCount) {
+        this.defaultNodeCount = defaultNodeCount;
+    }
+
+    public Integer getDefaultCPUCount() {
+        return defaultCPUCount;
+    }
+
+    public void setDefaultCPUCount(Integer defaultCPUCount) {
+        this.defaultCPUCount = defaultCPUCount;
+    }
+
+    public Integer getDefaultWalltime() {
+        return defaultWalltime;
+    }
+
+    public void setDefaultWalltime(Integer defaultWalltime) {
+        this.defaultWalltime = defaultWalltime;
     }
 }
