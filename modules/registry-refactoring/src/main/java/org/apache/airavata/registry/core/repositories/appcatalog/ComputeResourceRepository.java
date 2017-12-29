@@ -243,8 +243,18 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
 
     @Override
     public String addSSHJobSubmission(SSHJobSubmission sshJobSubmission) throws AppCatalogException {
-        //TODO Resource Manager
-        return null;
+        String submissionId = AppCatalogUtils.getID("SSH");
+        sshJobSubmission.setJobSubmissionInterfaceId(submissionId);
+        String resourceJobManagerId = addResourceJobManager(sshJobSubmission.getResourceJobManager());
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        SshJobSubmissionEntity sshJobSubmissionEntity = mapper.map(sshJobSubmission, SshJobSubmissionEntity.class);
+        sshJobSubmissionEntity.setResourceJobManagerId(resourceJobManagerId);
+        sshJobSubmissionEntity.getResourceJobManager().setResourceJobManagerId(resourceJobManagerId);
+        if (sshJobSubmission.getMonitorMode() != null){
+            sshJobSubmissionEntity.setMonitorMode(sshJobSubmission.getMonitorMode().toString());
+        }
+        execute(entityManager -> entityManager.merge(sshJobSubmissionEntity));
+        return submissionId;
     }
 
     @Override
@@ -317,8 +327,15 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
 
     @Override
     public String addLocalJobSubmission(LOCALSubmission localSubmission) throws AppCatalogException {
-        // TODO
-        return null;
+        localSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("LOCAL"));
+        String resourceJobManagerId = addResourceJobManager(localSubmission.getResourceJobManager());
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        LocalSubmissionEntity localSubmissionEntity = mapper.map(localSubmission, LocalSubmissionEntity.class);
+        localSubmissionEntity.setResourceJobManagerId(resourceJobManagerId);
+        localSubmissionEntity.getResourceJobManager().setResourceJobManagerId(resourceJobManagerId);
+        localSubmissionEntity.setSecurityProtocol(localSubmission.getSecurityProtocol().toString());
+        execute(entityManager -> entityManager.merge(localSubmissionEntity));
+        return localSubmissionEntity.getJobSubmissionInterfaceId();
     }
 
     @Override
@@ -367,7 +384,21 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
 
     @Override
     public String addDataMovementProtocol(String resourceId, DMType dmType, DataMovementInterface dataMovementInterface) throws AppCatalogException {
-        //TODO need Storage Resource implementation
+        if (dmType.equals(DMType.COMPUTE_RESOURCE)){
+            DataMovementInterfacePK dataMovementInterfacePK = new DataMovementInterfacePK();
+            dataMovementInterfacePK.setComputeResourceId(resourceId);
+            dataMovementInterfacePK.setDataMovementInterfaceId(dataMovementInterface.getDataMovementInterfaceId());
+            Mapper mapper = ObjectMapperSingleton.getInstance();
+            DataMovementInterfaceEntity dataMovementInterfaceEntity = mapper.map(dataMovementInterface, DataMovementInterfaceEntity.class);
+            ComputeResourceEntity computeResourceEntity = mapper.map(get(resourceId), ComputeResourceEntity.class);
+            dataMovementInterfaceEntity.setComputeResource(computeResourceEntity);
+            dataMovementInterfaceEntity.setId(dataMovementInterfacePK);
+            return dataMovementInterfacePK.getDataMovementInterfaceId();
+        }
+        else if (dmType.equals(DMType.STORAGE_RESOURCE)){
+            //TODO - COMPLETE this after StorageResourceRepo implementation
+            return null;
+        }
         return null;
     }
 
@@ -393,8 +424,12 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
 
     @Override
     public SSHJobSubmission getSSHJobSubmission(String submissionId) throws AppCatalogException {
-          // TODO
-        return null;
+        SshJobSubmissionEntity entity = execute(entityManager -> entityManager
+                .find(SshJobSubmissionEntity.class, submissionId));
+        if(entity == null)
+            return null;
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        return mapper.map(entity, SSHJobSubmission.class);
     }
 
     @Override
@@ -485,7 +520,12 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
 
     @Override
     public LOCALSubmission getLocalJobSubmission(String submissionId) throws AppCatalogException {
-        return null;
+        LocalSubmissionEntity entity = execute(entityManager -> entityManager
+                .find(LocalSubmissionEntity.class, submissionId));
+        if(entity == null)
+            return null;
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        return mapper.map(entity, LOCALSubmission.class);
     }
 
     @Override
