@@ -31,7 +31,7 @@ import java.sql.Timestamp;
  * The persistent class for the resource_job_manager database table.
  */
 @Entity
-@Table(name = "resource_job_manager")
+@Table(name = "RESOURCE_JOB_MANAGER")
 public class ResourceJobManagerEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
