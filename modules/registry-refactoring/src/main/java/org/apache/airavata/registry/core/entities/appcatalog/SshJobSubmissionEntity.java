@@ -129,4 +129,12 @@ public class SshJobSubmissionEntity implements Serializable {
 	public void setResourceJobManagerId(String resourceJobManagerId) {
 		this.resourceJobManagerId = resourceJobManagerId;
 	}
+
+    public ResourceJobManagerEntity getResourceJobManager() {
+        return resourceJobManager;
+    }
+
+    public void setResourceJobManager(ResourceJobManagerEntity resourceJobManager) {
+        this.resourceJobManager = resourceJobManager;
+    }
 }

@@ -28,7 +28,7 @@ import java.sql.Timestamp;
  * The persistent class for the data_movement_interface database table.
  */
 @Entity
-@Table(name = "data_movement_interface")
+@Table(name = "DATA_MOVEMENT_INTERFACE")
 public class DataMovementInterfaceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
