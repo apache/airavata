@@ -55,7 +55,7 @@ public class GwyResourceProfileRepository extends AppCatAbstractRepository<Gatew
         List<ComputeResourcePreference> computeResourcePreferences = gatewayResourceProfile.getComputeResourcePreferences();
         if (computeResourcePreferences != null && !computeResourcePreferences.isEmpty()) {
             for (ComputeResourcePreference preference : computeResourcePreferences ) {
-                (new ComputeResourceRepository()).create(preference);
+                (new ComputeResourcePrefRepository()).create(preference);
             }
         }
 
@@ -100,7 +100,7 @@ public class GwyResourceProfileRepository extends AppCatAbstractRepository<Gatew
         ComputeResourcePreferencePK computeResourcePreferencePK = new ComputeResourcePreferencePK();
         computeResourcePreferencePK.setGatewayId(gatewayId);
         computeResourcePreferencePK.setComputeResourceId(preferenceId);
-        (new ComputeResourceRepository()).delete(computeResourcePreferencePK);
+        (new ComputeResourcePrefRepository()).delete(computeResourcePreferencePK);
         return true;
     }
 
@@ -123,7 +123,7 @@ public class GwyResourceProfileRepository extends AppCatAbstractRepository<Gatew
         ComputeResourcePreferencePK computeResourcePreferencePK = new ComputeResourcePreferencePK();
         computeResourcePreferencePK.setGatewayId(gatewayId);
         computeResourcePreferencePK.setComputeResourceId(hostId);
-        return (new ComputeResourceRepository()).get(computeResourcePreferencePK);
+        return (new ComputeResourcePrefRepository()).get(computeResourcePreferencePK);
     }
 
     @Override
@@ -138,7 +138,7 @@ public class GwyResourceProfileRepository extends AppCatAbstractRepository<Gatew
     public List<ComputeResourcePreference> getAllComputeResourcePreferences(String gatewayId) {
         Map<String,Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.ComputeResourcePreference.GATEWAY_ID, gatewayId);
-        return (new ComputeResourceRepository()).select(QueryConstants.FIND_ALL_COMPUTE_RESOURCE_PREFERENCES, -1, 0, queryParameters);
+        return (new ComputeResourcePrefRepository()).select(QueryConstants.FIND_ALL_COMPUTE_RESOURCE_PREFERENCES, -1, 0, queryParameters);
     }
 
     @Override

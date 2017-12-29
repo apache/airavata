@@ -20,10 +20,7 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 
@@ -31,19 +28,27 @@ import java.io.Serializable;
  * The persistent class for the host_ipaddress database table.
  */
 @Entity
-@Table(name = "host_ipaddress")
+@Table(name = "HOST_IPADDRESS")
 public class HostIpaddressEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @EmbeddedId
     private HostIpaddressPK id;
 
-    @Column(name = "RESOURCE_ID")
-    private String resourceId;
+    @ManyToOne(cascade= CascadeType.MERGE)
+    @JoinColumn(name = "RESOURCE_ID")
+    private ComputeResourceEntity computeResource;
 
     public HostIpaddressEntity() {
     }
 
+    public ComputeResourceEntity getComputeResource() {
+        return computeResource;
+    }
+
+    public void setComputeResource(ComputeResourceEntity computeResource) {
+        this.computeResource = computeResource;
+    }
 
     public HostIpaddressPK getId() {
         return id;
@@ -51,13 +56,5 @@ public class HostIpaddressEntity implements Serializable {
 
     public void setId(HostIpaddressPK id) {
         this.id = id;
-    }
-
-    public String getResourceId() {
-        return resourceId;
-    }
-
-    public void setResourceId(String resourceId) {
-        this.resourceId = resourceId;
     }
 }

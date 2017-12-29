@@ -2,6 +2,7 @@ package org.apache.airavata.registry.core.utils;
 
 import org.apache.airavata.model.user.UserProfile;
 
+import org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.ComputeResourcePreferenceEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.StoragePreferenceEntity;
 import org.apache.airavata.registry.core.entities.appcatalog.GatewayProfileEntity;
@@ -20,4 +21,8 @@ public interface QueryConstants {
             "WHERE CR.id.gatewayId LIKE : " + DBConstants.ComputeResourcePreference.GATEWAY_ID;
     String FIND_ALL_STORAGE_RESOURCE_PREFERENCES = "SELECT DISTINCT S FROM " + StoragePreferenceEntity.class.getSimpleName() + " S " +
             "WHERE S.id.gatewayId LIKE : " + DBConstants.StorageResourcePreference.GATEWAY_ID;
+
+    String FIND_COMPUTE_RESOURCE = "SELECT DISTINCT CR FROM " + ComputeResourceEntity.class.getSimpleName() + " CR " +
+            "WHERE CR.hostName LIKE : " + DBConstants.ComputeResource.HOST_NAME;
+    String FIND_ALL_COMPUTE_RESOURCES = "SELECT CR FROM " + ComputeResourceEntity.class.getSimpleName() + " CR";
 }

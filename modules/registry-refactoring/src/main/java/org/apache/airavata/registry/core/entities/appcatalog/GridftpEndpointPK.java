@@ -35,6 +35,7 @@ public class GridftpEndpointPK implements Serializable {
     @Column(name = "DATA_MOVEMENT_INTERFACE_ID", insertable = false, updatable = false)
     private String dataMovementInterfaceId;
 
+    @Column(name = "ENDPOINT")
     private String endpoint;
 
     public GridftpEndpointPK() {

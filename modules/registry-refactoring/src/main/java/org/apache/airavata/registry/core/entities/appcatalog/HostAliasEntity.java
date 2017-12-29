@@ -20,10 +20,7 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -31,15 +28,16 @@ import java.io.Serializable;
  * 
  */
 @Entity
-@Table(name = "host_alias")
+@Table(name = "HOST_ALIAS")
 public class HostAliasEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@EmbeddedId
 	private HostAliasPK id;
 
-	@Column(name = "RESOURCE_ID")
-	private String resourceId;
+    @ManyToOne(cascade= CascadeType.MERGE)
+    @JoinColumn(name = "RESOURCE_ID")
+    private ComputeResourceEntity computeResource;
 
 	public HostAliasEntity() {
 	}
@@ -52,11 +50,11 @@ public class HostAliasEntity implements Serializable {
 		this.id = id;
 	}
 
-	public String getResourceId() {
-		return resourceId;
-	}
+    public ComputeResourceEntity getComputeResource() {
+        return computeResource;
+    }
 
-	public void setResourceId(String resourceId) {
-		this.resourceId = resourceId;
-	}
+    public void setComputeResource(ComputeResourceEntity computeResource) {
+        this.computeResource = computeResource;
+    }
 }
