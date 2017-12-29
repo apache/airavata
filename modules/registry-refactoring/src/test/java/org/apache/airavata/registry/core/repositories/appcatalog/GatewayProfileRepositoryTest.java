@@ -1,7 +1,6 @@
-package org.apache.airavata.registry.core.repositories;
+package org.apache.airavata.registry.core.repositories.appcatalog;
 
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.registry.core.repositories.appcatalog.GwyResourceProfileRepository;
 import org.apache.airavata.registry.core.repositories.util.Initialize;
 import org.junit.After;
 import org.junit.Before;

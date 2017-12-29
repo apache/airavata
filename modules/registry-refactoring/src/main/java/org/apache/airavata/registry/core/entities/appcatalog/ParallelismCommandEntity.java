@@ -59,4 +59,12 @@ public class ParallelismCommandEntity implements Serializable {
     public void setCommand(String command) {
         this.command = command;
     }
+
+    public ResourceJobManagerEntity getResourceJobManager() {
+        return resourceJobManager;
+    }
+
+    public void setResourceJobManager(ResourceJobManagerEntity resourceJobManager) {
+        this.resourceJobManager = resourceJobManager;
+    }
 }
