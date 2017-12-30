@@ -14,6 +14,7 @@ public class DBConstants {
 
     public static class ComputeResource {
         public static final String HOST_NAME = "hostName";
+        public static final String COMPUTE_RESOURCE_ID = "computeResourceId";
     }
 
 }

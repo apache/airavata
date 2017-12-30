@@ -15,6 +15,8 @@ import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.Query;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +79,12 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
 
     }
 
+    protected List<DataMovementInterface> getDataMovementInterfaces(String computeResourceId) {
+        Map<String,Object> queryParameters = new HashMap<>();
+        queryParameters.put(DBConstants.ComputeResource.COMPUTE_RESOURCE_ID, computeResourceId);
+        return (new DataMovementRepository()).select(QueryConstants.GET_DATA_MOVEMENT_INTERFACES, -1, 0, queryParameters);
+    }
+
     protected void saveJobSubmissionInterfaces(
             ComputeResourceDescription description,
             ComputeResourceEntity computeHostResource)
@@ -97,6 +105,12 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         }
     }
 
+    protected List<JobSubmissionInterface> getJobSubmissionInterfaces(String computeResourceId) {
+        Map<String,Object> queryParameters = new HashMap<>();
+        queryParameters.put(DBConstants.ComputeResource.COMPUTE_RESOURCE_ID, computeResourceId);
+        return (new JobSubmissionInterfaceRepository()).select(QueryConstants.GET_JOB_SUBMISSION_INTERFACE, -1, 0, queryParameters);
+    }
+
     protected void saveFileSystems(ComputeResourceDescription description,
                                    ComputeResourceEntity computeHostResource)
             throws AppCatalogException {
@@ -112,6 +126,12 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
                 execute(entityManager -> entityManager.merge(computeResourceFileSystemEntity));
             }
         }
+    }
+
+    protected List<FileSystems> getFileSystems(String computeResourceId) {
+        Map<String,Object> queryParameters = new HashMap<>();
+        queryParameters.put(DBConstants.ComputeResource.COMPUTE_RESOURCE_ID, computeResourceId);
+        return (new CompResourceFileSysRepository()).select(QueryConstants.GET_FILE_SYSTEM, -1, 0, queryParameters);
     }
 
     protected void saveBatchQueues(ComputeResourceDescription description,
@@ -132,6 +152,12 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         }
     }
 
+    protected List<BatchQueue> getbatchQueues(String computeResourceId) {
+        Map<String,Object> queryParameters = new HashMap<>();
+        queryParameters.put(DBConstants.ComputeResource.COMPUTE_RESOURCE_ID, computeResourceId);
+        return (new BatchQueueRepository()).select(QueryConstants.GET_BATCH_QUEUES, -1, 0, queryParameters);
+    }
+
     protected void saveHostAliases(ComputeResourceDescription description,
                                    ComputeResourceEntity computeHostResource)
             throws AppCatalogException {
@@ -141,7 +167,7 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
             for (String alias : hostAliases) {
                 HostAliasPK hostAliasPKCheck = new HostAliasPK();
                 hostAliasPKCheck.setAlias(alias);
-                hostAliasPKCheck.setResourceId(description.getComputeResourceId());
+                hostAliasPKCheck.setComputeResourceId(description.getComputeResourceId());
                 // delete previous host aliases
                 execute(entityManager -> {
                     HostAliasEntity entity = entityManager.find(HostAliasEntity.class, hostAliasPKCheck);
@@ -154,7 +180,7 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         if (hostAliases != null && !hostAliases.isEmpty()) {
             for (String alias : hostAliases) {
                 HostAliasPK hostAliasPK= new HostAliasPK();
-                hostAliasPK.setResourceId(computeHostResource.getComputeResourceId());
+                hostAliasPK.setComputeResourceId(computeHostResource.getComputeResourceId());
                 hostAliasPK.setAlias(alias);
                 HostAliasEntity aliasEntity = new HostAliasEntity();
                 aliasEntity.setComputeResource(computeHostResource);
@@ -164,6 +190,22 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         }
     }
 
+    protected List<String> getHostAliases(String computeResourceId) {
+        Map<String,Object> queryParameters = new HashMap<>();
+        queryParameters.put(DBConstants.ComputeResource.COMPUTE_RESOURCE_ID, computeResourceId);
+
+        List resultSet = (List) execute(entityManager -> {
+            Query jpaQuery = entityManager.createQuery(QueryConstants.GET_HOST_ALIASES);
+            for (Map.Entry<String, Object> entry : queryParameters.entrySet()) {
+                jpaQuery.setParameter(entry.getKey(), entry.getValue());
+            }
+            return jpaQuery.setFirstResult(0).setMaxResults(DBConstants.SELECT_MAX_ROWS).getResultList();
+        });
+        List<String> hostAliasList = new ArrayList<>();
+        resultSet.stream().forEach(rs -> hostAliasList.add((String)rs));
+        return hostAliasList;
+    }
+
     protected void saveIpAddresses(ComputeResourceDescription description,
                                    ComputeResourceEntity computeHostResource)
             throws AppCatalogException {
@@ -171,7 +213,7 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         if (ipAddresses != null && !ipAddresses.isEmpty()) {
             for (String ipAddress : ipAddresses) {
                 HostIpaddressPK hostIpaddressPKCheck =  new HostIpaddressPK();
-                hostIpaddressPKCheck.setResourceId(description.getComputeResourceId());
+                hostIpaddressPKCheck.setComputeResourceId(description.getComputeResourceId());
                 hostIpaddressPKCheck.setIpAddress(ipAddress);
                 execute(entityManager -> {
                     HostIpaddressEntity entity = entityManager.find(HostIpaddressEntity.class, hostIpaddressPKCheck);
@@ -185,13 +227,29 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
             for (String ipAddress : ipAddresses) {
                 HostIpaddressPK hostIpaddressPK = new HostIpaddressPK();
                 hostIpaddressPK.setIpAddress(ipAddress);
-                hostIpaddressPK.setResourceId(computeHostResource.getComputeResourceId());
+                hostIpaddressPK.setComputeResourceId(computeHostResource.getComputeResourceId());
                 HostIpaddressEntity hostIpaddressEntity = new HostIpaddressEntity();
                 hostIpaddressEntity.setComputeResource(computeHostResource);
                 hostIpaddressEntity.setId(hostIpaddressPK);
                 execute(entityManager -> entityManager.merge(hostIpaddressEntity));
             }
         }
+    }
+
+    protected List<String> getIPAddresses(String computeResourceId) {
+        Map<String,Object> queryParameters = new HashMap<>();
+        queryParameters.put(DBConstants.ComputeResource.COMPUTE_RESOURCE_ID, computeResourceId);
+
+        List resultSet = (List) execute(entityManager -> {
+            Query jpaQuery = entityManager.createQuery(QueryConstants.GET_IP_ADDRESS);
+            for (Map.Entry<String, Object> entry : queryParameters.entrySet()) {
+                jpaQuery.setParameter(entry.getKey(), entry.getValue());
+            }
+            return jpaQuery.setFirstResult(0).setMaxResults(DBConstants.SELECT_MAX_ROWS).getResultList();
+        });
+        List<String> ipAdressList = new ArrayList<>();
+        resultSet.stream().forEach(rs -> ipAdressList.add((String)rs));
+        return ipAdressList;
     }
 
     @Override
@@ -201,7 +259,17 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
 
     @Override
     public ComputeResourceDescription getComputeResource(String resourceId) throws AppCatalogException {
-        return get(resourceId);
+        //TODO
+        //getFileSystems(description, computeResourceEntity);
+
+        ComputeResourceDescription computeResourceDescription = get(resourceId);
+        computeResourceDescription.setHostAliases(getHostAliases(resourceId));
+        computeResourceDescription.setIpAddresses(getIPAddresses(resourceId));
+   //     List<FileSystems> fileSystems= getFileSystems(resourceId);
+        computeResourceDescription.setJobSubmissionInterfaces(getJobSubmissionInterfaces(resourceId));
+        computeResourceDescription.setDataMovementInterfaces(getDataMovementInterfaces(resourceId));
+        computeResourceDescription.setBatchQueues(getbatchQueues(resourceId));
+        return computeResourceDescription;
     }
 
     @Override
@@ -219,6 +287,7 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
 
     @Override
     public List<ComputeResourceDescription> getAllComputeResourceList() throws AppCatalogException {
+        //TODO ADD batch,file,alias....
         return select(QueryConstants.FIND_ALL_COMPUTE_RESOURCES, 0);
     }
 
@@ -322,6 +391,7 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
 
     @Override
     public ResourceJobManager getResourceJobManager(String resourceJobManagerId) throws AppCatalogException {
+        // TODO - Add parellelism and jobmanagercommand
         return (new ResourceJobManagerRepository()).get(resourceJobManagerId);
     }
 
@@ -414,6 +484,7 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
             ComputeResourceEntity computeResourceEntity = mapper.map(get(resourceId), ComputeResourceEntity.class);
             dataMovementInterfaceEntity.setComputeResource(computeResourceEntity);
             dataMovementInterfaceEntity.setId(dataMovementInterfacePK);
+            execute(entityManager -> entityManager.merge(dataMovementInterfaceEntity));
             return dataMovementInterfacePK.getDataMovementInterfaceId();
         }
         else if (dmType.equals(DMType.STORAGE_RESOURCE)){

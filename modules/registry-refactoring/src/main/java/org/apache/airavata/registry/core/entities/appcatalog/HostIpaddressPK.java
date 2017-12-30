@@ -33,7 +33,7 @@ public class HostIpaddressPK implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Column(name = "RESOURCE_ID", insertable = false, updatable = false)
-    private String resourceId;
+    private String computeResourceId;
 
     @Column(name = "IP_ADDRESS")
     private String ipAddress;
@@ -41,12 +41,12 @@ public class HostIpaddressPK implements Serializable {
     public HostIpaddressPK() {
     }
 
-    public String getResourceId() {
-        return resourceId;
+    public String getComputeResourceId() {
+        return computeResourceId;
     }
 
-    public void setResourceId(String resourceId) {
-        this.resourceId = resourceId;
+    public void setComputeResourceId(String computeResourceId) {
+        this.computeResourceId = computeResourceId;
     }
 
     public String getIpAddress() {
@@ -66,14 +66,14 @@ public class HostIpaddressPK implements Serializable {
         }
         HostIpaddressPK castOther = (HostIpaddressPK) other;
         return
-                this.resourceId.equals(castOther.resourceId)
+                this.computeResourceId.equals(castOther.computeResourceId)
                         && this.ipAddress.equals(castOther.ipAddress);
     }
 
     public int hashCode() {
         final int prime = 31;
         int hash = 17;
-        hash = hash * prime + this.resourceId.hashCode();
+        hash = hash * prime + this.computeResourceId.hashCode();
         hash = hash * prime + this.ipAddress.hashCode();
 
         return hash;
