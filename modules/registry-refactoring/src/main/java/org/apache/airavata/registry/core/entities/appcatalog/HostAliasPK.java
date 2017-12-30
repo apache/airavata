@@ -34,7 +34,7 @@ public class HostAliasPK implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Column(name="RESOURCE_ID", insertable=false, updatable=false)
-	private String resourceId;
+	private String computeResourceId;
 
 	@Column(name = "ALIAS")
 	private String alias;
@@ -42,12 +42,12 @@ public class HostAliasPK implements Serializable {
 	public HostAliasPK() {
 	}
 
-	public String getResourceId() {
-		return resourceId;
+	public String getComputeResourceId() {
+		return computeResourceId;
 	}
 
-	public void setResourceId(String resourceId) {
-		this.resourceId = resourceId;
+	public void setComputeResourceId(String computeResourceId) {
+		this.computeResourceId = computeResourceId;
 	}
 
 	public String getAlias() {
@@ -67,14 +67,14 @@ public class HostAliasPK implements Serializable {
 		}
 		HostAliasPK castOther = (HostAliasPK)other;
 		return 
-			this.resourceId.equals(castOther.resourceId)
+			this.computeResourceId.equals(castOther.computeResourceId)
 			&& this.alias.equals(castOther.alias);
 	}
 
 	public int hashCode() {
 		final int prime = 31;
 		int hash = 17;
-		hash = hash * prime + this.resourceId.hashCode();
+		hash = hash * prime + this.computeResourceId.hashCode();
 		hash = hash * prime + this.alias.hashCode();
 		
 		return hash;
