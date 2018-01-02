@@ -7,7 +7,7 @@
 <script>
 
 import {models, services} from 'django-airavata-api'
-import ExperimentEditor from './ExperimentEditor.vue'
+import ExperimentEditor from '../components/experiment/ExperimentEditor.vue'
 
 import moment from 'moment';
 

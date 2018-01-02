@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import BootstrapVue from 'bootstrap-vue'
-import DashboardContainer from './views/DashboardContainer.vue'
+import DashboardContainer from './containers/DashboardContainer.vue'
 
 // This is imported globally on the website so no need to include it again in this view
 // import 'bootstrap/dist/css/bootstrap.css'

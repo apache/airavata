@@ -23,8 +23,8 @@
 </template>
 
 <script>
-import ProjectButtonNew from './ProjectButtonNew.vue'
-import ProjectList from './ProjectList.vue'
+import ProjectButtonNew from '../components/project/ProjectButtonNew.vue'
+import ProjectList from '../components/project/ProjectList.vue'
 
 import { models, services } from 'django-airavata-api'
 import { components as comps } from 'django-airavata-common-ui'

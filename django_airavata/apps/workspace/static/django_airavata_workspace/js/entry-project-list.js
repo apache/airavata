@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import BootstrapVue from 'bootstrap-vue'
-import ProjectListContainer from './views/ProjectListContainer.vue'
+import ProjectListContainer from './containers/ProjectListContainer.vue'
 
 // This is imported globally on the website so no need to include it again in this view
 // import 'bootstrap/dist/css/bootstrap.css'
