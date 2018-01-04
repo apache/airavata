@@ -3,34 +3,58 @@
 
         <div class="card border-default">
             <div class="card-body">
-                <h4 class="card-title">Current Settings</h4>
+                <h5 class="card-title">Settings for queue {{ localComputationalResourceScheduling.queueName }}</h5>
+                <div class="row">
+                    <div class="col">
+                        <h1>{{ localComputationalResourceScheduling.nodeCount }}</h1>
+                        <span>NODE COUNT</span>
+                    </div>
+                    <div class="col">
+                        <h1>{{ localComputationalResourceScheduling.totalCPUCount }}</h1>
+                        <span>CORE COUNT</span>
+                    </div>
+                    <div class="col">
+                        <h1>{{ localComputationalResourceScheduling.wallTimeLimit }}</h1>
+                        <span>TIME LIMIT</span>
+                    </div>
+                </div>
             </div>
         </div>
-        <b-form-group label="Select a Queue" label-for="queue">
-            <b-form-select id="queue"
-                v-model="localComputationalResourceScheduling.queueName"
-                :options="queueOptions" required
-                @change="queueChanged">
-            </b-form-select>
-        </b-form-group>
-        <b-form-group label="Node Count" label-for="node-count">
-            <b-form-input id="node-count" type="number" min="1"
-                v-model="localComputationalResourceScheduling.nodeCount" required
-                @change="emitValueChanged">
-            </b-form-input>
-        </b-form-group>
-        <b-form-group label="Total Core Count" label-for="core-count">
-            <b-form-input id="core-count" type="number" min="1"
-                v-model="localComputationalResourceScheduling.totalCPUCount" required
-                @change="emitValueChanged">
-            </b-form-input>
-        </b-form-group>
-        <b-form-group label="Wall Time Limit" label-for="walltime-limit">
-            <b-form-input id="walltime-limit" type="number" min="1"
-                v-model="localComputationalResourceScheduling.wallTimeLimit" required
-                @change="emitValueChanged">
-            </b-form-input>
-        </b-form-group>
+        <div v-if="!showConfiguration">
+            <i class="fa fa-cog" aria-hidden="true"></i>
+            <a href="#" @click.prevent="showConfiguration = true">Configure Resource</a>
+        </div>
+        <div v-if="showConfiguration">
+            <b-form-group label="Select a Queue" label-for="queue">
+                <b-form-select id="queue"
+                    v-model="localComputationalResourceScheduling.queueName"
+                    :options="queueOptions" required
+                    @change="queueChanged">
+                </b-form-select>
+            </b-form-group>
+            <b-form-group label="Node Count" label-for="node-count">
+                <b-form-input id="node-count" type="number" min="1"
+                    v-model="localComputationalResourceScheduling.nodeCount" required
+                    @change="emitValueChanged">
+                </b-form-input>
+            </b-form-group>
+            <b-form-group label="Total Core Count" label-for="core-count">
+                <b-form-input id="core-count" type="number" min="1"
+                    v-model="localComputationalResourceScheduling.totalCPUCount" required
+                    @change="emitValueChanged">
+                </b-form-input>
+            </b-form-group>
+            <b-form-group label="Wall Time Limit" label-for="walltime-limit">
+                <b-form-input id="walltime-limit" type="number" min="1"
+                    v-model="localComputationalResourceScheduling.wallTimeLimit" required
+                    @change="emitValueChanged">
+                </b-form-input>
+            </b-form-group>
+            <div>
+                <i class="fa fa-times" aria-hidden="true"></i>
+                <a href="#" @click.prevent="showConfiguration = false">Hide Settings</a>
+            </div>
+        </div>
     </b-form>
 </template>
 
@@ -53,6 +77,7 @@ export default {
         return {
             localComputationalResourceScheduling: this.value.clone(),
             queueDefaults: [],
+            showConfiguration: false,
         }
     },
     computed: {
