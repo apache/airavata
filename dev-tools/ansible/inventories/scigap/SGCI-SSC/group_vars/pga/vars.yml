@@ -1,0 +1,75 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+
+user_data_dir: "/var/www/portals/gateway-user-data"
+real_user_data_dir: "/data/gateway-user-data"
+## Airavata Client related variables
+airavata_server: "tls://{{ groups['api-orch'][0] }}"
+airavata_port: "9930"
+# FIXME: temporarily turn off SSL verification for WSO2 IS. Needed for WSO2 IS
+# auth_verify_peer: "false" Needed for WSO2 IS
+
+pga_repo: "https://github.com/apache/airavata-php-gateway.git"
+git_branch: "master"
+user: "pga"
+group: "pga"
+doc_root_dir: "/var/www/portals/{{ gateway_id }}"
+vhost_servername: "ssctest.scigap.org"
+vhost_ssl: False
+# TODO: have Ansible manage these files as well
+#ssl_certificate_file: "/etc/letsencrypt/live/picksc.scigap.org/cert.pem"
+#ssl_certificate_chain_file: "/etc/letsencrypt/live/picksc.scigap.org/fullchain.pem"
+#ssl_certificate_key_file: "/etc/letsencrypt/live/picksc.scigap.org/privkey.pem"
+# pga_ssl_vhost_template: "{{ inventory_dir }}/files/pga-ssl-vhost.conf.j2" this is for dreg.
+airavata_profile_service_server: "{{ groups['api-orch'][0] }}"
+
+## WSO2 IS related variables
+tenant_domain: "{{ gateway_id }}"
+admin_username: "admin"
+admin_password: "{{ vault_admin_password }}"
+oauth_client_key: "{{ vault_oauth_client_key }}"
+oauth_client_secret: "{{ vault_oauth_client_secret }}"
+# dREG gateway automatically gives users the gateway-user role so they don't have to wait on admin approval
+# initial_role_name: "gateway-user"
+oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
+
+#Auth Options for Gateway
+auth_options:
+  - name: "LSU Computational Sys Biology"
+    oauth_grant_type: "password"
+oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
+
+gateway_id: "lsu-computational-sys-biology"
+# relative to document root dir
+experiment_data_dir: "{{ user_data_dir }}/CSBGLSU-Development"
+gateway_data_store_resource_id: "js-157-128.jetstream-cloud.org_5b4e532d-28f0-4891-894d-876bc504eb9e"
+gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDc/WQnD40zGuO+bIMsWc0ey8oxDzEj/dPFPg8LN7oNn/V7pi74mF2D57wgA8KsxcpsNydcReSXZhx6FynlK6iABDZP5QdREmhm87gkrMQUA/ZI7R2q7ekchbRtCnrGwU/pdHBh4penaiScs08o7OPfqJJp/TfgwH92dA9dThqGf9hD1Y0nmWECfvX56rXAggcgZl+Q6IFD0VFinFMkqZRWFFi4Zm7yiKCNWYXvXlIGjFOlDp0/ONGg5wjpCFivhI934Uk6Y69hSMhnFJc6g1JHD4PLaBILlUjwEikmH6KL3ii6Wt30pou+tIihBDBv0ODR4jDiOeBJGkcisWeh3Uzj"
+
+## Portal related variables
+super_admin_portal: "false"
+admin_emails: "['sgrc-iu-group@iu.edu','mbrylinski@lsu.edu']"
+portal_email_username: "pga.airavata@gmail.com"
+portal_email_password: "{{ vault_portal_email_password }}"
+# The portal theme is included in the dreg-gateway branch of airavata-php-gateway
+portal_theme: "base"
+portal_title: "LSU Computational Sys Biology"
+...
