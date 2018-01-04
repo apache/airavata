@@ -55,28 +55,11 @@
                         <h2 class="h5 mb-3">
                             Resource Selection
                         </h2>
-                        <b-form novalidate>
-                            <!-- TODO: combine compute resource selector with
-                            queue-settings-editor to create a
-                            ComputationalResourceSchedulingModelEditor component -->
-                            <b-form-group label="Compute Resource" label-for="compute-resource">
-                                <b-form-select id="compute-resource"
-                                    v-model="resourceHostId"
-                                    :options="computeResourceOptions" required
-                                    @change="computeResourceChanged">
-                                    <template slot="first">
-                                        <option :value="null" disabled>Select a Compute Resource</option>
-                                    </template>
-                                </b-form-select>
-                            </b-form-group>
-
-                            <queue-settings-editor
-                                v-model="experiment.userConfigurationData.computationalResourceScheduling"
-                                v-if="appDeploymentId && resourceHostId"
-                                :app-deployment-id="appDeploymentId"
-                                :resource-host-id="resourceHostId">
-                            </queue-settings-editor>
-                        </b-form>
+                        <computational-resource-scheduling-editor
+                            v-model="experiment.userConfigurationData.computationalResourceScheduling"
+                            :app-module-id="appModule.appModuleId"
+                            :app-interface-id="appInterface.applicationInterfaceId">
+                        </computational-resource-scheduling-editor>
                     </div>
                 </div>
             </div>
@@ -85,6 +68,7 @@
 </template>
 
 <script>
+import ComputationalResourceSchedulingEditor from './ComputationalResourceSchedulingEditor.vue'
 import QueueSettingsEditor from './QueueSettingsEditor.vue'
 import {models, services} from 'django-airavata-api'
 
@@ -95,24 +79,15 @@ export default {
     data () {
         return {
             projects: [],
-            computeResources: {},
-            applicationDeployments: [],
-            appDeploymentId: null,
-            resourceHostId: null,
         }
     },
     components: {
         QueueSettingsEditor,
+        ComputationalResourceSchedulingEditor,
     },
     mounted: function () {
         services.ProjectService.listAll()
             .then(projects => this.projects = projects);
-        services.ApplicationModuleService.getApplicationDeployments(this.appModule.appModuleId)
-            .then(applicationDeployments => {
-                this.applicationDeployments = applicationDeployments;
-            });
-        services.ApplicationInterfaceService.getComputeResources(this.appInterface.applicationInterfaceId)
-            .then(computeResources => this.computeResources = computeResources);
     },
     computed: {
         projectOptions: function() {
@@ -121,37 +96,10 @@ export default {
                 text: project.name,
             }));
         },
-        computeResourceOptions: function() {
-            const computeResourceOptions = [];
-            for (let computeResourceId in this.computeResources) {
-                if (this.computeResources.hasOwnProperty(computeResourceId)) {
-                    computeResourceOptions.push({
-                        value: computeResourceId,
-                        text: this.computeResources[computeResourceId],
-                    })
-                }
-            }
-            computeResourceOptions.sort((a, b) => a.text.localeCompare(b.text));
-            return computeResourceOptions;
-        },
     },
     methods: {
-        computeResourceChanged: function(selectedComputeResourceId) {
-            // Find application deployment that corresponds to this compute resource
-            let selectedApplicationDeployment = this.applicationDeployments.find(dep => dep.computeHostId === selectedComputeResourceId);
-            if (!selectedApplicationDeployment) {
-                throw new Error("Failed to find application deployment!");
-            }
-            this.appDeploymentId = selectedApplicationDeployment.appDeploymentId;
-        },
     },
     watch: {
-        appInterface: function() {
-            if (this.appInterface) {
-                services.ApplicationInterfaceService.getComputeResources(this.appInterface.applicationInterfaceId)
-                    .then(computeResources => this.computeResources = computeResources);
-            }
-        },
     }
 }
 </script>

@@ -48,16 +48,10 @@ export default {
             type: String,
             required: true
         },
-        resourceHostId: {
-            type: String,
-            required: true
-        }
     },
     data () {
-        const localComputationalResourceScheduling = this.value.clone();
-        localComputationalResourceScheduling.resourceHostId = this.resourceHostId;
         return {
-            localComputationalResourceScheduling: localComputationalResourceScheduling,
+            localComputationalResourceScheduling: this.value.clone(),
             queueDefaults: [],
         }
     },
@@ -116,10 +110,6 @@ export default {
         appDeploymentId: function(appDeploymentId) {
             this.loadQueueDefaults();
         },
-        resourceHostId: function(resourceHostId) {
-            this.localComputationalResourceScheduling.resourceHostId = resourceHostId;
-            this.emitValueChanged();
-        }
     },
     mounted: function() {
         this.loadQueueDefaults();
