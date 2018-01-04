@@ -56,9 +56,12 @@
                             Resource Selection
                         </h2>
                         <b-form novalidate>
+                            <!-- TODO: combine compute resource selector with
+                            queue-settings-editor to create a
+                            ComputationalResourceSchedulingModelEditor component -->
                             <b-form-group label="Compute Resource" label-for="compute-resource">
                                 <b-form-select id="compute-resource"
-                                    v-model="experiment.userConfigurationData.computationalResourceScheduling.resourceHostId"
+                                    v-model="resourceHostId"
                                     :options="computeResourceOptions" required
                                     @change="computeResourceChanged">
                                     <template slot="first">
@@ -67,33 +70,12 @@
                                 </b-form-select>
                             </b-form-group>
 
-                            <div class="card border-default">
-                                <div class="card-body">
-                                    <h4 class="card-title">Current Settings</h4>
-                                </div>
-                            </div>
-                            <b-form-group label="Select a Queue" label-for="queue">
-                                <b-form-select id="queue"
-                                    v-model="experiment.userConfigurationData.computationalResourceScheduling.queueName"
-                                    :options="queueOptions" required
-                                    @change="queueChanged">
-                                </b-form-select>
-                            </b-form-group>
-                            <b-form-group label="Node Count" label-for="node-count">
-                                <b-form-input id="node-count" type="number" min="1"
-                                    v-model="experiment.userConfigurationData.computationalResourceScheduling.nodeCount" required>
-                                </b-form-input>
-                            </b-form-group>
-                            <b-form-group label="Total Core Count" label-for="core-count">
-                                <b-form-input id="core-count" type="number" min="1"
-                                    v-model="experiment.userConfigurationData.computationalResourceScheduling.totalCPUCount" required>
-                                </b-form-input>
-                            </b-form-group>
-                            <b-form-group label="Wall Time Limit" label-for="walltime-limit">
-                                <b-form-input id="walltime-limit" type="number" min="1"
-                                    v-model="experiment.userConfigurationData.computationalResourceScheduling.wallTimeLimit" required>
-                                </b-form-input>
-                            </b-form-group>
+                            <queue-settings-editor
+                                v-model="experiment.userConfigurationData.computationalResourceScheduling"
+                                v-if="appDeploymentId && resourceHostId"
+                                :app-deployment-id="appDeploymentId"
+                                :resource-host-id="resourceHostId">
+                            </queue-settings-editor>
                         </b-form>
                     </div>
                 </div>
@@ -103,18 +85,24 @@
 </template>
 
 <script>
+import QueueSettingsEditor from './QueueSettingsEditor.vue'
 import {models, services} from 'django-airavata-api'
 
 export default {
     name: 'edit-experiment',
+    // TODO: clone experiment instead of editing it directly
     props: ['experiment', 'appModule', 'appInterface'],
     data () {
         return {
             projects: [],
             computeResources: {},
             applicationDeployments: [],
-            queueDefaults: [],
+            appDeploymentId: null,
+            resourceHostId: null,
         }
+    },
+    components: {
+        QueueSettingsEditor,
     },
     mounted: function () {
         services.ProjectService.listAll()
@@ -146,55 +134,16 @@ export default {
             computeResourceOptions.sort((a, b) => a.text.localeCompare(b.text));
             return computeResourceOptions;
         },
-        queueOptions: function() {
-            const queueOptions = this.queueDefaults.map(queueDefault => {
-                return {
-                    value: queueDefault.queueName,
-                    text: `${queueDefault.queueName}: ${queueDefault.queueDescription}`,
-                }
-            });
-            return queueOptions;
-        },
     },
     methods: {
         computeResourceChanged: function(selectedComputeResourceId) {
             // Find application deployment that corresponds to this compute resource
-            // TODO: switch to find()
-            let selectedApplicationDeployments = this.applicationDeployments.filter(dep => dep.computeHostId === selectedComputeResourceId);
-            if (selectedApplicationDeployments.length === 0) {
+            let selectedApplicationDeployment = this.applicationDeployments.find(dep => dep.computeHostId === selectedComputeResourceId);
+            if (!selectedApplicationDeployment) {
                 throw new Error("Failed to find application deployment!");
             }
-            let selectedApplicationDeployment = selectedApplicationDeployments[0];
-            services.ApplicationDeploymentService.getQueues(selectedApplicationDeployment.appDeploymentId)
-                .then(queueDefaults => {
-                    // Sort queue defaults
-                    this.queueDefaults = queueDefaults.sort((a, b) => {
-                        // Sort default first, then by alphabetically by name
-                        if (a.isDefaultQueue) {
-                            return -1;
-                        } else if (b.isDefaultQueue) {
-                            return 1;
-                        } else {
-                            return a.queueName.localeCompare(b.queueName);
-                        }
-                    });
-                    // Find the default queue and apply it's settings
-                    const defaultQueue = this.queueDefaults[0];
-
-                    // TODO: we really shouldn't be modifying the props right?
-                    this.experiment.userConfigurationData.computationalResourceScheduling.queueName = defaultQueue.queueName;
-                    this.experiment.userConfigurationData.computationalResourceScheduling.totalCPUCount = defaultQueue.defaultCPUCount;
-                    this.experiment.userConfigurationData.computationalResourceScheduling.nodeCount = defaultQueue.defaultNodeCount;
-                    this.experiment.userConfigurationData.computationalResourceScheduling.wallTimeLimit = defaultQueue.defaultWalltime;
-                });
+            this.appDeploymentId = selectedApplicationDeployment.appDeploymentId;
         },
-        queueChanged: function(queueName) {
-
-            const queueDefault = this.queueDefaults.find(queue => queue.queueName === queueName);
-            this.experiment.userConfigurationData.computationalResourceScheduling.totalCPUCount = queueDefault.defaultCPUCount;
-            this.experiment.userConfigurationData.computationalResourceScheduling.nodeCount = queueDefault.defaultNodeCount;
-            this.experiment.userConfigurationData.computationalResourceScheduling.wallTimeLimit = queueDefault.defaultWalltime;
-        }
     },
     watch: {
         appInterface: function() {

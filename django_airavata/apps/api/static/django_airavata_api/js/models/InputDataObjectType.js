@@ -21,8 +21,4 @@ export default class InputDataObjectType extends BaseModel {
     constructor(data = {}) {
         super(FIELDS, data);
     }
-
-    clone() {
-        return new InputDataObjectType(this);
-    }
 }

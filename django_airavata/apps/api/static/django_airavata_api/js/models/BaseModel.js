@@ -74,4 +74,8 @@ export default class BaseModel {
     validate() {
         return null;
     }
+
+    clone() {
+        return new this.constructor(this);
+    }
 }
