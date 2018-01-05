@@ -35,7 +35,8 @@ def create_serializer_class(thrift_data_type):
         def __new__(cls, name, bases, attrs):
             thrift_spec = thrift_data_type.thrift_spec
             for field in thrift_spec:
-                if field:
+                # Don't replace existing attrs to allow subclasses to override
+                if field and field[2] not in attrs:
                     field_serializer = process_field(field)
                     attrs[field[2]] = field_serializer
             return super().__new__(cls, name, bases, attrs)
