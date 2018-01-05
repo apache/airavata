@@ -15,12 +15,12 @@
                         <b-form novalidate>
                             <b-form-group label="Experiment Name" label-for="experiment-name">
                                 <b-form-input id="experiment-name"
-                                type="text" v-model="experiment.experimentName" required
+                                type="text" v-model="localExperiment.experimentName" required
                                 placeholder="Experiment name"></b-form-input>
                             </b-form-group>
                             <b-form-group label="Project" label-for="project">
                                 <b-form-select id="project"
-                                    v-model="experiment.projectId" :options="projectOptions" required>
+                                    v-model="localExperiment.projectId" :options="projectOptions" required>
                                     <template slot="first">
                                         <option :value="null" disabled>Select a Project</option>
                                     </template>
@@ -46,7 +46,7 @@
                             Application Inputs
                         </h2>
                         <b-form novalidate>
-                            <b-form-group v-for="experimentInput in experiment.experimentInputs"
+                            <b-form-group v-for="experimentInput in localExperiment.experimentInputs"
                                     :label="experimentInput.name" :label-for="experimentInput.name" :key="experimentInput.name">
                                 <b-form-input :id="experimentInput.name" type="text" v-model="experimentInput.value" required
                                     :placeholder="experimentInput.userFriendlyDescription"></b-form-input>
@@ -56,12 +56,22 @@
                             Resource Selection
                         </h2>
                         <computational-resource-scheduling-editor
-                            v-model="experiment.userConfigurationData.computationalResourceScheduling"
+                            v-model="localExperiment.userConfigurationData.computationalResourceScheduling"
                             :app-module-id="appModule.appModuleId"
                             :app-interface-id="appInterface.applicationInterfaceId">
                         </computational-resource-scheduling-editor>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="row">
+            <div id="col-exp-buttons" class="col">
+                <b-button variant="success" @click="saveAndLaunchExperiment">
+                    Save and Launch
+                </b-button>
+                <b-button variant="primary" @click="saveExperiment">
+                    Save
+                </b-button>
             </div>
         </div>
     </div>
@@ -75,10 +85,24 @@ import {models, services} from 'django-airavata-api'
 export default {
     name: 'edit-experiment',
     // TODO: clone experiment instead of editing it directly
-    props: ['experiment', 'appModule', 'appInterface'],
+    props: {
+        experiment: {
+            type: models.ExperimentModel,
+            required: true
+        },
+        appModule: {
+            type: models.ApplicationModule,
+            required: true
+        },
+        appInterface: {
+            type: models.ApplicationInterface,
+            required: true
+        }
+    },
     data () {
         return {
             projects: [],
+            localExperiment: this.experiment.clone(),
         }
     },
     components: {
@@ -98,6 +122,20 @@ export default {
         },
     },
     methods: {
+        saveExperiment: function() {
+            console.log(JSON.stringify(this.localExperiment));
+            // TODO: validate experiment
+            // TODO: save experiment
+            // TODO: set the experiment ID on the new experiment
+            // TODO: dispatch save event with updated experiment
+        },
+        saveAndLaunchExperiment: function() {
+            console.log(JSON.stringify(this.localExperiment));
+            // TODO: validate experiment
+            // TODO: save experiment
+            // TODO: set the experiment ID on the new experiment
+            // TODO: dispatch save event with updated experiment
+        }
     },
     watch: {
     }
@@ -107,5 +145,8 @@ export default {
 <style>
 .application-name {
     font-size: 12px;
+}
+#col-exp-buttons {
+    text-align: right;
 }
 </style>
