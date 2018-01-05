@@ -75,6 +75,9 @@ export default class BaseModel {
         return null;
     }
 
+    /**
+     * Return a fully deep cloned instance of this instance.
+     */
     clone() {
         return new this.constructor(this);
     }
