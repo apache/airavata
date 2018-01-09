@@ -1,24 +1,38 @@
+
 import BaseModel from './BaseModel';
-import UserConfigurationData from './UserConfigurationData'
+import ErrorModel from './ErrorModel'
+import ExperimentStatus from './ExperimentStatus'
 import InputDataObjectType from './InputDataObjectType'
 import OutputDataObjectType from './OutputDataObjectType'
-import ExperimentStatus from './ExperimentStatus'
-import ErrorModel from './ErrorModel'
+import ProcessModel from './ProcessModel'
+import UserConfigurationData from './UserConfigurationData'
 
 const FIELDS = [
     'experimentId',
     'projectId',
     'gatewayId',
-    'experimentType',
+    {
+        name: 'experimentType',
+        type: 'number',
+        default: 0,
+    },
     'userName',
     'experimentName',
     {
         name: 'creationTime',
         type: 'date'
     },
-    'description',
+    {
+        name: 'description',
+        type: 'string',
+        default: '',
+    },
     'executionId',
-    'enableEmailNotification',
+    {
+        name: 'enableEmailNotification',
+        type: 'boolean',
+        default: false,
+    },
     {
         name: 'emailAddresses',
         type: 'string',
@@ -49,12 +63,11 @@ const FIELDS = [
         type: ErrorModel,
         list: true,
     },
-    // TODO: map the ProcessModel
-    // {
-    //     name: 'processes',
-    //     type: ProcessModel,
-    //     list: true,
-    // },
+    {
+        name: 'processes',
+        type: ProcessModel,
+        list: true,
+    },
 ];
 
 export default class Experiment extends BaseModel {

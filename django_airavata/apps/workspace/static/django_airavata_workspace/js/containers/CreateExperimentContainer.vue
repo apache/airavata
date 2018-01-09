@@ -41,6 +41,7 @@ export default {
             .then(appInterface => {
                 this.experiment.experimentInputs = appInterface.getOrderedApplicationInputs().map(input => input.clone());
                 this.appInterface = appInterface;
+                this.experiment.executionId = this.appInterface.applicationInterfaceId;
             });
     }
 }

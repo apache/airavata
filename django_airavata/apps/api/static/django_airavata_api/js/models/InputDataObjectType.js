@@ -8,17 +8,33 @@ const FIELDS = [
     'applicationArgument',
     'standardInput',
     'userFriendlyDescription',
-    'metaData',
+    {
+        name: 'metaData',
+        type: 'string',
+        default: '',
+    },
     'inputOrder',
     'isRequired',
     'requiredToAddedToCommandLine',
     'dataStaged',
-    'storageResourceId',
+    {
+        name: 'storageResourceId',
+        type: 'string',
+        default: '',
+    },
     'isReadOnly',
 ];
 
 export default class InputDataObjectType extends BaseModel {
     constructor(data = {}) {
         super(FIELDS, data);
+        // TODO: move into BaseModel
+        // Convert null strings into empty strings
+        if ('metaData' in this && this.metaData === null) {
+            this.metaData = '';
+        }
+        if ('storageResourceId' in this && this.storageResourceId === null) {
+            this.storageResourceId = '';
+        }
     }
 }

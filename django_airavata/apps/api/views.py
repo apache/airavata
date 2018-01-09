@@ -225,15 +225,31 @@ class ProjectViewSet(APIBackedViewSet):
         serializer = serializers.ExperimentSerializer(experiments, many=True, context={'request': request})
         return Response(serializer.data)
 
-# TODO: convert to ViewSet
-class ExperimentList(APIView):
-    def get(self, request, format=None):
-        gateway_id = settings.GATEWAY_ID
-        username = request.user.username
 
-        experiments = request.airavata_client.getUserExperiments(request.authz_token, gateway_id, username, -1, 0)
-        serializer = serializers.ExperimentSerializer(experiments, many=True, context={'request': request})
-        return Response(serializer.data)
+class ExperimentViewSet(APIBackedViewSet):
+
+    serializer_class = serializers.ExperimentSerializer
+    lookup_field = 'experiment_id'
+
+    def get_list(self):
+        return self.request.airavata_client.getUserExperiments(self.authz_token, self.gateway_id, self.username, 1, 0)
+
+    def get_instance(self, lookup_value):
+        return self.request.airavata_client.getExperiment(self.authz_token, lookup_value)
+
+    def perform_create(self, serializer):
+        experiment = serializer.save()
+        experiment_id = self.request.airavata_client.createExperiment(self.authz_token, self.gateway_id, experiment)
+        experiment.experimentId = experiment_id
+
+    def perform_update(self, serializer):
+        experiment = serializer.save()
+        self.request.airavata_client.updateExperiment(self.authz_token, experiment.experimentId, experiment)
+
+    @detail_route(methods=['post'])
+    def launch(self, request, experiment_id=None):
+        request.airavata_client.launchExperiment(request.authz_token, experiment_id, self.gateway_id)
+        return Response({'success': True})
 
 
 class ApplicationModuleViewSet(APIBackedViewSet):

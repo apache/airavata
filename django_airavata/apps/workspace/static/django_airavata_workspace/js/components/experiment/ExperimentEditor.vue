@@ -87,7 +87,7 @@ export default {
     // TODO: clone experiment instead of editing it directly
     props: {
         experiment: {
-            type: models.ExperimentModel,
+            type: models.Experiment,
             required: true
         },
         appModule: {
@@ -125,9 +125,21 @@ export default {
         saveExperiment: function() {
             console.log(JSON.stringify(this.localExperiment));
             // TODO: validate experiment
-            // TODO: save experiment
-            // TODO: set the experiment ID on the new experiment
-            // TODO: dispatch save event with updated experiment
+            // save experiment
+            if (this.localExperiment.experimentId) {
+                services.ExperimentService.update(this.localExperiment)
+                    .then(experiment => {
+                        console.log(experiment);
+                        this.$emit('saved', experiment);
+                    });
+            } else {
+                services.ExperimentService.create(this.localExperiment)
+                    .then(experiment => {
+                        this.localExperiment.experimentId = experiment.experimentId;
+                        console.log(experiment);
+                        this.$emit('saved', experiment);
+                    });
+            }
         },
         saveAndLaunchExperiment: function() {
             console.log(JSON.stringify(this.localExperiment));
@@ -135,9 +147,12 @@ export default {
             // TODO: save experiment
             // TODO: set the experiment ID on the new experiment
             // TODO: dispatch save event with updated experiment
-        }
+        },
     },
     watch: {
+        experiment: function(newValue) {
+            this.localExperiment = newValue.clone();
+        },
     }
 }
 </script>

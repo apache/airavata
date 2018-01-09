@@ -9,6 +9,7 @@ import Project from './models/Project'
 import ApplicationDeploymentService from './services/ApplicationDeploymentService'
 import ApplicationInterfaceService from './services/ApplicationInterfaceService'
 import ApplicationModuleService from './services/ApplicationModuleService'
+import ExperimentService from './services/ExperimentService'
 import ProjectService from './services/ProjectService'
 
 import FetchUtils from './utils/FetchUtils'
@@ -27,6 +28,7 @@ exports.services = {
     ApplicationDeploymentService,
     ApplicationInterfaceService,
     ApplicationModuleService,
+    ExperimentService,
     ProjectService,
 }
 

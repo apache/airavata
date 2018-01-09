@@ -103,23 +103,6 @@ class ProjectSerializer(serializers.Serializer):
         return instance
 
 
-class ExperimentSerializer(serializers.Serializer):
-
-    experimentId = serializers.CharField(read_only=True)
-    projectId = serializers.CharField(required=True)
-    project = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-detail', lookup_field='projectId', lookup_url_kwarg='project_id')
-    gatewayId = GatewayIdDefaultField()
-    experimentType = serializers.CharField(required=True)
-    userName = GatewayUsernameDefaultField()
-    experimentName = serializers.CharField(required=True)
-
-    def create(self, validated_data):
-        return ExperimentModel(**validated_data)
-
-    def update(self, instance, validated_data):
-        raise Exception("Not implemented")
-
-
 class ApplicationModuleSerializer(serializers.Serializer):
     url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-detail', lookup_field='appModuleId', lookup_url_kwarg='app_module_id')
     appModuleId = serializers.CharField(required=True)
@@ -243,5 +226,20 @@ class ComputeResourceDescriptionSerializer(CustomSerializer):
     resourceDescription=serializers.CharField()
     enabled=serializers.BooleanField()
 
+
 class BatchQueueSerializer(thrift_utils.create_serializer_class(BatchQueue)):
     pass
+
+
+class ExperimentSerializer(
+        thrift_utils.create_serializer_class(ExperimentModel)):
+
+    class Meta:
+        required = ('projectId', 'experimentType', 'experimentName')
+        read_only = ('experimentId',)
+
+    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:experiment-detail', lookup_field='experimentId', lookup_url_kwarg='experiment_id')
+    project = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-detail', lookup_field='projectId', lookup_url_kwarg='project_id')
+    userName = GatewayUsernameDefaultField()
+    gatewayId = GatewayIdDefaultField()
+    creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
