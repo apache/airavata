@@ -58,4 +58,5 @@ portal_email_password: "{{ vault_portal_email_password }}"
 portal_theme: "iu-geosurvey-gateway-theme"
 portal_theme_repo: "https://github.com/SciGaP/iu-geosurvey-gateway-theme.git"
 portal_title: "Indiana Geological Survey"
+pga_google_analytics_id: "UA-111528347-8"
 ...
