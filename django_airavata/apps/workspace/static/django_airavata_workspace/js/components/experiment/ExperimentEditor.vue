@@ -126,27 +126,30 @@ export default {
             console.log(JSON.stringify(this.localExperiment));
             // TODO: validate experiment
             // save experiment
-            if (this.localExperiment.experimentId) {
-                services.ExperimentService.update(this.localExperiment)
-                    .then(experiment => {
-                        console.log(experiment);
-                        this.$emit('saved', experiment);
-                    });
-            } else {
-                services.ExperimentService.create(this.localExperiment)
-                    .then(experiment => {
-                        this.localExperiment.experimentId = experiment.experimentId;
-                        console.log(experiment);
-                        this.$emit('saved', experiment);
-                    });
-            }
+            services.ExperimentService.save(this.localExperiment)
+                .then(experiment => {
+                    this.localExperiment = experiment;
+                    console.log(experiment);
+                    alert('Experiment saved!');
+                    this.$emit('saved', experiment);
+                });
         },
         saveAndLaunchExperiment: function() {
             console.log(JSON.stringify(this.localExperiment));
             // TODO: validate experiment
-            // TODO: save experiment
-            // TODO: set the experiment ID on the new experiment
-            // TODO: dispatch save event with updated experiment
+            let savedExperiment = null;
+            services.ExperimentService.save(this.localExperiment)
+                .then(experiment => {
+                    this.localExperiment = experiment;
+                    return services.ExperimentService.launch(experiment.experimentId)
+                        .then(result => {
+                            alert('Experiment launched!');
+                            this.$emit('savedAndLaunched', experiment);
+                        });
+                    })
+                .catch(result => {
+                    console.log("Launch failed!", result);
+                });
         },
     },
     watch: {

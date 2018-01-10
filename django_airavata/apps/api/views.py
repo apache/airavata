@@ -239,6 +239,7 @@ class ExperimentViewSet(APIBackedViewSet):
 
     def perform_create(self, serializer):
         experiment = serializer.save()
+        experiment.userConfigurationData.storageId = settings.GATEWAY_DATA_STORE_RESOURCE_ID
         experiment_id = self.request.airavata_client.createExperiment(self.authz_token, self.gateway_id, experiment)
         experiment.experimentId = experiment_id
 
@@ -248,8 +249,11 @@ class ExperimentViewSet(APIBackedViewSet):
 
     @detail_route(methods=['post'])
     def launch(self, request, experiment_id=None):
-        request.airavata_client.launchExperiment(request.authz_token, experiment_id, self.gateway_id)
-        return Response({'success': True})
+        try:
+            request.airavata_client.launchExperiment(request.authz_token, experiment_id, self.gateway_id)
+            return Response({'success': True})
+        except Exception as e:
+            return Response({'success': False, 'errorMessage': e.message})
 
 
 class ApplicationModuleViewSet(APIBackedViewSet):

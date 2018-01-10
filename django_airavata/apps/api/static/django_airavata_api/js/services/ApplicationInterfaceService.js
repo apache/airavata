@@ -25,7 +25,7 @@ class ApplicationIterfaceService {
     }
 
     getComputeResources(appInterfaceId) {
-        return FetchUtils.get('/api/application-interfaces/' + encodeURIComponent(appInterfaceId) + '/compute_resources');
+        return FetchUtils.get('/api/application-interfaces/' + encodeURIComponent(appInterfaceId) + '/compute_resources/');
     }
 }
 

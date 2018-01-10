@@ -32,6 +32,7 @@ GATEWAY_ID = 'default'
 AIRAVATA_API_HOST = 'localhost'
 AIRAVATA_API_PORT = 8930
 AIRAVATA_API_SECURE = False
+GATEWAY_DATA_STORE_RESOURCE_ID = '...'
 
 # Sharing API Configuration
 SHARING_API_HOST = 'localhost'

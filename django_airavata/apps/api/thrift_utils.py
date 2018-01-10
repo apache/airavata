@@ -67,8 +67,20 @@ def create_serializer_class(thrift_data_type):
                     params[field_name] = serializer.create(params[field_name])
             return params
 
+        def process_empty_char_fields(self, validated_data):
+            """Convert empty CharFields to None."""
+            fields = self.fields
+            params = copy.deepcopy(validated_data)
+            for field_name, serializer in fields.items():
+                if isinstance(serializer, CharField) \
+                        and params.get(field_name, None) is not None \
+                        and params[field_name].strip() == '':
+                    params[field_name] = None
+            return params
+
         def create(self, validated_data):
             params = self.process_nested_fields(validated_data)
+            params = self.process_empty_char_fields(params)
             return thrift_data_type(**params)
 
         def update(self, instance, validated_data):
