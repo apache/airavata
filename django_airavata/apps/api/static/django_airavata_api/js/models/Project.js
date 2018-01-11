@@ -18,7 +18,7 @@ export default class Project extends BaseModel {
     }
 
     validate() {
-        if (this.name === null || this.name.trim() === "") {
+        if (this.isEmpty(this.name)) {
             return {
                 name: ["Please provide a name."]
             }

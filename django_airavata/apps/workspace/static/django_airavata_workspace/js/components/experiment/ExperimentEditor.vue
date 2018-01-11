@@ -47,9 +47,12 @@
                         </h2>
                         <b-form novalidate>
                             <b-form-group v-for="experimentInput in localExperiment.experimentInputs"
-                                    :label="experimentInput.name" :label-for="experimentInput.name" :key="experimentInput.name">
+                                    :label="experimentInput.name" :label-for="experimentInput.name" :key="experimentInput.name"
+                                    :feedback="getApplicationInputFeedback(experimentInput)"
+                                    :state="getApplicationInputState(experimentInput)">
                                 <b-form-input :id="experimentInput.name" type="text" v-model="experimentInput.value" required
-                                    :placeholder="experimentInput.userFriendlyDescription"></b-form-input>
+                                    :placeholder="experimentInput.userFriendlyDescription"
+                                    :state="getApplicationInputState(experimentInput)"></b-form-input>
                             </b-form-group>
                         </b-form>
                         <h2 class="h5 mb-3">
@@ -151,6 +154,21 @@ export default {
                     console.log("Launch failed!", result);
                 });
         },
+        getApplicationInputState: function(applicationInput) {
+            const validation = this.getApplicationInputValidation(applicationInput);
+            return validation !== null ? 'invalid' : null;
+        },
+        getApplicationInputFeedback: function(applicationInput) {
+            const validation = this.getApplicationInputValidation(applicationInput);
+            return validation !== null ? validation : null;
+        },
+        getApplicationInputValidation: function(applicationInput) {
+            const validationResults = applicationInput.validate();
+            if (validationResults !== null && 'value' in validationResults) {
+                return validationResults;
+            }
+            return null;
+        }
     },
     watch: {
         experiment: function(newValue) {

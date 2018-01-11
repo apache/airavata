@@ -37,4 +37,12 @@ export default class InputDataObjectType extends BaseModel {
             this.storageResourceId = '';
         }
     }
+
+    validate() {
+        let results = {};
+        if (this.isRequired && this.isEmpty(this.value)) {
+            results['value'] = 'This field is required.';
+        }
+        return results;
+    }
 }

@@ -75,6 +75,10 @@ export default class BaseModel {
         return null;
     }
 
+    isEmpty(value) {
+        return value === null || (typeof value === 'string' && value.trim() === '');
+    }
+
     /**
      * Return a fully deep cloned instance of this instance.
      */
