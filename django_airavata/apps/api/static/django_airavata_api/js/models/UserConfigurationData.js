@@ -27,26 +27,14 @@ const FIELDS = [
         type: 'boolean',
         default: false,
     },
-    {
-        name: 'userDN',
-        type: 'string',
-        default: '',
-    },
+    'userDN',
     {
         name: 'generateCert',
         type: 'boolean',
         default: false,
     },
-    {
-        name: 'storageId',
-        type: 'string',
-        default: '',
-    },
-    {
-        name: 'experimentDataDir',
-        type: 'string',
-        default: '',
-    },
+    'storageId',
+    'experimentDataDir',
     {
         name: 'useUserCRPref',
         type: 'boolean',

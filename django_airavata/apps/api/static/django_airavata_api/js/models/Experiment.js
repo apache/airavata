@@ -22,11 +22,7 @@ const FIELDS = [
         name: 'creationTime',
         type: 'date'
     },
-    {
-        name: 'description',
-        type: 'string',
-        default: '',
-    },
+    'description',
     'executionId',
     {
         name: 'enableEmailNotification',

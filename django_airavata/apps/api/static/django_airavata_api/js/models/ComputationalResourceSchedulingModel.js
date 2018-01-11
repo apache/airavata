@@ -8,31 +8,11 @@ const FIELDS = [
     'queueName',
     'wallTimeLimit',
     'totalPhysicalMemory',
-    {
-        name: 'chessisNumber',
-        type: 'string',
-        default: '',
-    },
-    {
-        name: 'staticWorkingDir',
-        type: 'string',
-        default: '',
-    },
-    {
-        name: 'overrideLoginUserName',
-        type: 'string',
-        default: '',
-    },
-    {
-        name: 'overrideScratchLocation',
-        type: 'string',
-        default: '',
-    },
-    {
-        name: 'overrideAllocationProjectNumber',
-        type: 'string',
-        default: '',
-    },
+    'chessisNumber',
+    'staticWorkingDir',
+    'overrideLoginUserName',
+    'overrideScratchLocation',
+    'overrideAllocationProjectNumber',
 ];
 
 export default class ComputationalResourceSchedulingModel extends BaseModel {

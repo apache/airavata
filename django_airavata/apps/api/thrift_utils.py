@@ -67,20 +67,8 @@ def create_serializer_class(thrift_data_type):
                     params[field_name] = serializer.create(params[field_name])
             return params
 
-        def process_empty_char_fields(self, validated_data):
-            """Convert empty CharFields to None."""
-            fields = self.fields
-            params = copy.deepcopy(validated_data)
-            for field_name, serializer in fields.items():
-                if isinstance(serializer, CharField) \
-                        and params.get(field_name, None) is not None \
-                        and params[field_name].strip() == '':
-                    params[field_name] = None
-            return params
-
         def create(self, validated_data):
             params = self.process_nested_fields(validated_data)
-            params = self.process_empty_char_fields(params)
             return thrift_data_type(**params)
 
         def update(self, instance, validated_data):
@@ -103,10 +91,10 @@ def process_field(field, required=False, read_only=False, allow_null=False):
         # mapping
         field_class = mapping[field[1]]
         kwargs = dict(required=required, read_only=read_only)
-        # allow_null isn't allowed for BooleanField and we'll use allow_blank
-        # for CharField
-        if field_class not in (BooleanField, CharField):
+        # allow_null isn't allowed for BooleanField
+        if field_class not in (BooleanField,):
             kwargs['allow_null'] = allow_null
+        # allow_null CharField are also allowed to be blank
         if field_class == CharField:
             kwargs['allow_blank'] = allow_null
         return mapping[field[1]](**kwargs)
