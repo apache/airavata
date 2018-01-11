@@ -69,10 +69,10 @@
         </div>
         <div class="row">
             <div id="col-exp-buttons" class="col">
-                <b-button variant="success" @click="saveAndLaunchExperiment">
+                <b-button variant="success" @click="saveAndLaunchExperiment" :disabled="isSaveDisabled">
                     Save and Launch
                 </b-button>
-                <b-button variant="primary" @click="saveExperiment">
+                <b-button variant="primary" @click="saveExperiment" :disabled="isSaveDisabled">
                     Save
                 </b-button>
             </div>
@@ -87,7 +87,6 @@ import {models, services} from 'django-airavata-api'
 
 export default {
     name: 'edit-experiment',
-    // TODO: clone experiment instead of editing it directly
     props: {
         experiment: {
             type: models.Experiment,
@@ -122,6 +121,10 @@ export default {
                 value: project.projectID,
                 text: project.name,
             }));
+        },
+        isSaveDisabled: function() {
+            const validation = this.localExperiment.validate();
+            return Object.keys(validation).length > 0;
         },
     },
     methods: {
@@ -160,7 +163,7 @@ export default {
         },
         getApplicationInputFeedback: function(applicationInput) {
             const validation = this.getApplicationInputValidation(applicationInput);
-            return validation !== null ? validation : null;
+            return validation !== null ? validation['value'] : null;
         },
         getApplicationInputValidation: function(applicationInput) {
             const validationResults = applicationInput.validate();
