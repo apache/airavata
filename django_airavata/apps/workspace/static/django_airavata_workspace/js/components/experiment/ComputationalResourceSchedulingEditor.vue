@@ -1,10 +1,13 @@
 <template>
     <b-form novalidate>
-        <b-form-group label="Compute Resource" label-for="compute-resource">
+        <b-form-group label="Compute Resource" label-for="compute-resource"
+                :feedback="getValidationFeedback('resourceHostId')"
+                :state="getValidationState('resourceHostId')">
             <b-form-select id="compute-resource"
                 v-model="resourceHostId"
                 :options="computeResourceOptions" required
-                @change="computeResourceChanged">
+                @change="computeResourceChanged"
+                :state="getValidationState('resourceHostId')">
                 <template slot="first">
                     <option :value="null" disabled>Select a Compute Resource</option>
                 </template>
@@ -23,6 +26,7 @@
 <script>
 import QueueSettingsEditor from './QueueSettingsEditor.vue'
 import {models, services} from 'django-airavata-api'
+import {utils} from 'django-airavata-common-ui'
 
 export default {
     name: 'computational-resource-scheduling-editor',
@@ -102,7 +106,13 @@ export default {
         },
         emitValueChanged: function() {
             this.$emit('input', this.localComputationalResourceScheduling);
-        }
+        },
+        getValidationFeedback: function(properties) {
+            return utils.getProperty(this.localComputationalResourceScheduling.validate(), properties);
+        },
+        getValidationState: function(properties) {
+            return this.getValidationFeedback(properties) ? 'invalid' : null;
+        },
     },
     watch: {
     }

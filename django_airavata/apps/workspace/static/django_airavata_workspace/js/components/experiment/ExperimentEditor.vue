@@ -13,14 +13,20 @@
                 <div class="card">
                     <div class="card-body">
                         <b-form novalidate>
-                            <b-form-group label="Experiment Name" label-for="experiment-name">
+                            <b-form-group label="Experiment Name" label-for="experiment-name"
+                                :feedback="getValidationFeedback('experimentName')"
+                                :state="getValidationState('experimentName')">
                                 <b-form-input id="experiment-name"
                                 type="text" v-model="localExperiment.experimentName" required
-                                placeholder="Experiment name"></b-form-input>
+                                placeholder="Experiment name"
+                                :state="getValidationState('experimentName')"></b-form-input>
                             </b-form-group>
-                            <b-form-group label="Project" label-for="project">
+                            <b-form-group label="Project" label-for="project"
+                                :feedback="getValidationFeedback('projectId')"
+                                :state="getValidationState('projectId')">
                                 <b-form-select id="project"
-                                    v-model="localExperiment.projectId" :options="projectOptions" required>
+                                    v-model="localExperiment.projectId" :options="projectOptions" required
+                                    :state="getValidationState('projectId')">
                                     <template slot="first">
                                         <option :value="null" disabled>Select a Project</option>
                                     </template>
@@ -48,11 +54,11 @@
                         <b-form novalidate>
                             <b-form-group v-for="experimentInput in localExperiment.experimentInputs"
                                     :label="experimentInput.name" :label-for="experimentInput.name" :key="experimentInput.name"
-                                    :feedback="getApplicationInputFeedback(experimentInput)"
-                                    :state="getApplicationInputState(experimentInput)">
+                                    :feedback="getValidationFeedback(['experimentInputs', experimentInput.name, 'value'])"
+                                    :state="getValidationState(['experimentInputs', experimentInput.name, 'value'])">
                                 <b-form-input :id="experimentInput.name" type="text" v-model="experimentInput.value" required
                                     :placeholder="experimentInput.userFriendlyDescription"
-                                    :state="getApplicationInputState(experimentInput)"></b-form-input>
+                                    :state="getValidationState(['experimentInputs', experimentInput.name, 'value'])"></b-form-input>
                             </b-form-group>
                         </b-form>
                         <h2 class="h5 mb-3">
@@ -84,6 +90,7 @@
 import ComputationalResourceSchedulingEditor from './ComputationalResourceSchedulingEditor.vue'
 import QueueSettingsEditor from './QueueSettingsEditor.vue'
 import {models, services} from 'django-airavata-api'
+import {utils} from 'django-airavata-common-ui'
 
 export default {
     name: 'edit-experiment',
@@ -171,7 +178,13 @@ export default {
                 return validationResults;
             }
             return null;
-        }
+        },
+        getValidationFeedback: function(properties) {
+            return utils.getProperty(this.localExperiment.validate(), properties);
+        },
+        getValidationState: function(properties) {
+            return this.getValidationFeedback(properties) ? 'invalid' : null;
+        },
     },
     watch: {
         experiment: function(newValue) {

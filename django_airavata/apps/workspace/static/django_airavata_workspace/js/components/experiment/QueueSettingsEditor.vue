@@ -25,29 +25,41 @@
             <a href="#" @click.prevent="showConfiguration = true">Configure Resource</a>
         </div>
         <div v-if="showConfiguration">
-            <b-form-group label="Select a Queue" label-for="queue">
+            <b-form-group label="Select a Queue" label-for="queue"
+                :feedback="getValidationFeedback('queueName')"
+                :state="getValidationState('queueName')">
                 <b-form-select id="queue"
                     v-model="localComputationalResourceScheduling.queueName"
                     :options="queueOptions" required
-                    @change="queueChanged">
+                    @change="queueChanged"
+                    :state="getValidationState('queueName')">
                 </b-form-select>
             </b-form-group>
-            <b-form-group label="Node Count" label-for="node-count">
+            <b-form-group label="Node Count" label-for="node-count"
+                :feedback="getValidationFeedback('nodeCount')"
+                :state="getValidationState('nodeCount')">
                 <b-form-input id="node-count" type="number" min="1"
                     v-model="localComputationalResourceScheduling.nodeCount" required
-                    @change="emitValueChanged">
+                    @input="emitValueChanged"
+                    :state="getValidationState('nodeCount')">
                 </b-form-input>
             </b-form-group>
-            <b-form-group label="Total Core Count" label-for="core-count">
+            <b-form-group label="Total Core Count" label-for="core-count"
+                :feedback="getValidationFeedback('totalCPUCount')"
+                :state="getValidationState('totalCPUCount')">
                 <b-form-input id="core-count" type="number" min="1"
                     v-model="localComputationalResourceScheduling.totalCPUCount" required
-                    @change="emitValueChanged">
+                    @input="emitValueChanged"
+                    :state="getValidationState('totalCPUCount')">
                 </b-form-input>
             </b-form-group>
-            <b-form-group label="Wall Time Limit" label-for="walltime-limit">
+            <b-form-group label="Wall Time Limit" label-for="walltime-limit"
+                :feedback="getValidationFeedback('wallTimeLimit')"
+                :state="getValidationState('wallTimeLimit')">
                 <b-form-input id="walltime-limit" type="number" min="1"
                     v-model="localComputationalResourceScheduling.wallTimeLimit" required
-                    @change="emitValueChanged">
+                    @input="emitValueChanged"
+                    :state="getValidationState('wallTimeLimit')">
                 </b-form-input>
             </b-form-group>
             <div>
@@ -60,6 +72,7 @@
 
 <script>
 import {models, services} from 'django-airavata-api'
+import {utils} from 'django-airavata-common-ui'
 
 export default {
     name: 'queue-settings-editor',
@@ -126,7 +139,13 @@ export default {
                     this.localComputationalResourceScheduling.wallTimeLimit = defaultQueue.defaultWalltime;
                     this.emitValueChanged();
                 });
-        }
+        },
+        getValidationFeedback: function(properties) {
+            return utils.getProperty(this.localComputationalResourceScheduling.validate(), properties);
+        },
+        getValidationState: function(properties) {
+            return this.getValidationFeedback(properties) ? 'invalid' : null;
+        },
     },
     watch: {
         value: function(newValue) {

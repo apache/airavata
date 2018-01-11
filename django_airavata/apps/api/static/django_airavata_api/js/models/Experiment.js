@@ -73,7 +73,7 @@ export default class Experiment extends BaseModel {
 
     validate() {
         let validationResults = {};
-        let experimentInputsValidation = this.experimentInputs
+        const experimentInputsValidation = this.experimentInputs
             .map(experimentInput => {
                 const validation = experimentInput.validate();
                 if (validation && 'value' in validation) {
@@ -85,6 +85,16 @@ export default class Experiment extends BaseModel {
             .reduce((accumulator, currentValue) => Object.assign(accumulator, currentValue), {});
         if (Object.keys(experimentInputsValidation).length > 0) {
             validationResults['experimentInputs'] = experimentInputsValidation;
+        }
+        const userConfigurationDataValidation = this.userConfigurationData.validate();
+        if (Object.keys(userConfigurationDataValidation).length > 0) {
+            validationResults['userConfigurationData'] = userConfigurationDataValidation;
+        }
+        if (this.isEmpty(this.experimentName)) {
+            validationResults['experimentName'] = "Please provide a name for this experiment.";
+        }
+        if (this.isEmpty(this.projectId)) {
+            validationResults['projectId'] = "Please select a project.";
         }
         return validationResults;
     }
