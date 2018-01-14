@@ -22,21 +22,23 @@ package org.apache.airavata.registry.core.entities.appcatalog;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.Id;
 import java.io.Serializable;
 
 /**
  * The primary key class for the batch_queue database table.
  * 
  */
-@Embeddable
 public class BatchQueuePK implements Serializable {
 	//default serial version id, required for serializable classes.
 	private static final long serialVersionUID = 1L;
 
 	@Column(name="COMPUTE_RESOURCE_ID", insertable=false, updatable=false)
+	@Id
 	private String computeResourceId;
 
 	@Column(name="QUEUE_NAME")
+	@Id
 	private String queueName;
 
 	public BatchQueuePK() {

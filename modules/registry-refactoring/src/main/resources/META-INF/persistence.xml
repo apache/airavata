@@ -82,8 +82,6 @@
         <class>org.apache.airavata.registry.core.entities.appcatalog.GsisshPostjobcommandEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.GsisshPrejobcommandEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.GsisshExportEntity</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.HostIpaddressEntity</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.HostAliasEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.LibraryApendPathEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.LibraryPrependPathEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.AppEnvironmentEntity</class>
@@ -103,8 +101,6 @@
         <class>org.apache.airavata.registry.core.entities.appcatalog.GsisshPostjobcommandPK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.GsisshPrejobcommandPK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.GsisshExportPK</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.HostIpaddressPK</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.HostAliasPK</class>
         <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowInputPK</class>
         <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowOutputPK</class>
         <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowStatusPK</class>
@@ -118,10 +114,6 @@
         <class>org.apache.airavata.registry.core.entities.appcatalog.ApplicationInputPK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ApplicationOutputPK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ComputeResourcePreferencePK</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.BatchQueuePK</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceFileSystemPK</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.JobSubmissionInterfacePK</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.DataMovementInterfacePK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.StorageInterfacePK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.JobManagerCommandPK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ParallelismCommandPK</class>

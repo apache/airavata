@@ -29,11 +29,17 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "DATA_MOVEMENT_INTERFACE")
+@IdClass(DataMovementInterfacePK.class)
 public class DataMovementInterfaceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private DataMovementInterfacePK id;
+    @Column(name = "COMPUTE_RESOURCE_ID")
+    @Id
+    private String computeResourceId;
+
+    @Column(name = "DATA_MOVEMENT_INTERFACE_ID")
+    @Id
+    private String dataMovementInterfaceId;
 
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
@@ -47,7 +53,7 @@ public class DataMovementInterfaceEntity implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
-    @ManyToOne(cascade= CascadeType.MERGE)
+    @ManyToOne(targetEntity = ComputeResourceEntity.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "COMPUTE_RESOURCE_ID")
     private ComputeResourceEntity computeResource;
 
@@ -62,12 +68,20 @@ public class DataMovementInterfaceEntity implements Serializable {
         this.computeResource = computeResource;
     }
 
-    public DataMovementInterfacePK getId() {
-        return id;
+    public String getComputeResourceId() {
+        return computeResourceId;
     }
 
-    public void setId(DataMovementInterfacePK id) {
-        this.id = id;
+    public void setComputeResourceId(String computeResourceId) {
+        this.computeResourceId = computeResourceId;
+    }
+
+    public String getDataMovementInterfaceId() {
+        return dataMovementInterfaceId;
+    }
+
+    public void setDataMovementInterfaceId(String dataMovementInterfaceId) {
+        this.dataMovementInterfaceId = dataMovementInterfaceId;
     }
 
     public Timestamp getCreationTime() {
