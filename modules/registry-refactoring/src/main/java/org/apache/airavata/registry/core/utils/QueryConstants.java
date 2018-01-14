@@ -22,16 +22,10 @@ public interface QueryConstants {
     String FIND_COMPUTE_RESOURCE = "SELECT DISTINCT CR FROM " + ComputeResourceEntity.class.getSimpleName() + " CR " +
             "WHERE CR.hostName LIKE : " + DBConstants.ComputeResource.HOST_NAME;
     String FIND_ALL_COMPUTE_RESOURCES = "SELECT CR FROM " + ComputeResourceEntity.class.getSimpleName() + " CR";
-    String GET_JOB_SUBMISSION_INTERFACE = "SELECT DISTINCT J FROM " + JobSubmissionInterfaceEntity.class.getSimpleName() + " J " +
-            "WHERE J.id.computeResourceId LIKE: " + DBConstants.ComputeResource.COMPUTE_RESOURCE_ID;
     String GET_FILE_SYSTEM = "SELECT DISTINCT FS FROM " + ComputeResourceFileSystemEntity.class.getSimpleName() + " FS " +
-            "WHERE FS.id.computeResourceId LIKE: " + DBConstants.ComputeResource.COMPUTE_RESOURCE_ID;
-    String GET_BATCH_QUEUES = "SELECT DISTINCT BQ FROM "+ BatchQueueEntity.class.getSimpleName() + " BQ " +
-            "WHERE BQ.id.computeResourceId LIKE: " + DBConstants.ComputeResource.COMPUTE_RESOURCE_ID;
-    String GET_DATA_MOVEMENT_INTERFACES = "SELECT DISTINCT DM FROM " + DataMovementInterfaceEntity.class.getSimpleName() + " DM "+
-            "WHERE DM.id.computeResourceId LIKE: " + DBConstants.ComputeResource.COMPUTE_RESOURCE_ID;
-    String GET_HOST_ALIASES = "SELECT DISTINCT HA.id.alias FROM "+ HostAliasEntity.class.getSimpleName() + " HA "+
-            "WHERE HA.id.computeResourceId LIKE: " + DBConstants.ComputeResource.COMPUTE_RESOURCE_ID;
-    String GET_IP_ADDRESS = "SELECT DISTINCT IP.id.ipAddress FROM "+ HostIpaddressEntity.class.getSimpleName() + " IP "+
-            "WHERE IP.id.computeResourceId LIKE: " + DBConstants.ComputeResource.COMPUTE_RESOURCE_ID;
+            "WHERE FS.computeResourceId LIKE: " + DBConstants.ComputeResource.COMPUTE_RESOURCE_ID;
+    String GET_JOB_MANAGER_COMMAND = "SELECT DISTINCT JM FROM " + JobManagerCommandEntity.class.getSimpleName() + " JM " +
+            "WHERE JM.id.resourceJobManagerId LIKE: " + DBConstants.ResourceJobManager.RESOURCE_JOB_MANAGER_ID;
+    String GET_PARALLELISM_PREFIX = "SELECT DISTINCT PF FROM " + ParallelismCommandEntity.class.getSimpleName() + " PF " +
+            "WHERE PF.id.resourceJobManagerId LIKE: " + DBConstants.ResourceJobManager.RESOURCE_JOB_MANAGER_ID;
 }

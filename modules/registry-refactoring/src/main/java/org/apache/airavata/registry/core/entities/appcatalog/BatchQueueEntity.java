@@ -28,11 +28,17 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "BATCH_QUEUE")
+@IdClass(BatchQueuePK.class)
 public class BatchQueueEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private BatchQueuePK id;
+    @Id
+    @Column(name="COMPUTE_RESOURCE_ID")
+    private String computeResourceId;
+
+    @Id
+    @Column(name="QUEUE_NAME")
+    private String queueName;
 
     @Column(name = "MAX_JOB_IN_QUEUE")
     private int maxJobInQueue;
@@ -52,7 +58,7 @@ public class BatchQueueEntity implements Serializable {
     @Column(name = "QUEUE_DESCRIPTION")
     private String queueDescription;
 
-    @ManyToOne(cascade= CascadeType.MERGE)
+    @ManyToOne(targetEntity = ComputeResourceEntity.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "COMPUTE_RESOURCE_ID")
     private ComputeResourceEntity computeResource;
 
@@ -77,12 +83,20 @@ public class BatchQueueEntity implements Serializable {
     public BatchQueueEntity() {
     }
 
-    public BatchQueuePK getId() {
-        return id;
+    public String getComputeResourceId() {
+        return computeResourceId;
     }
 
-    public void setId(BatchQueuePK id) {
-        this.id = id;
+    public void setComputeResourceId(String computeResourceId) {
+        this.computeResourceId = computeResourceId;
+    }
+
+    public String getQueueName() {
+        return queueName;
+    }
+
+    public void setQueueName(String queueName) {
+        this.queueName = queueName;
     }
 
     public int getMaxJobInQueue() {

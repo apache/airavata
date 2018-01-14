@@ -54,8 +54,10 @@ public class ComputeResourceRepositoryTest {
         String sshsubmissionId = addSSHJobSubmission();
 
         // Verify SSHJobSubmission
-        assertTrue(sshsubmissionId.equals(computeResourceRepository.getSSHJobSubmission(sshsubmissionId).getJobSubmissionInterfaceId()));
-        assertTrue(MonitorMode.POLL_JOB_MANAGER.toString().equals(computeResourceRepository.getSSHJobSubmission(sshsubmissionId).getMonitorMode().toString()));
+        SSHJobSubmission getSSHJobSubmission = computeResourceRepository.getSSHJobSubmission(sshsubmissionId);
+        assertTrue(sshsubmissionId.equals(getSSHJobSubmission.getJobSubmissionInterfaceId()));
+        assertTrue(MonitorMode.POLL_JOB_MANAGER.toString().equals(getSSHJobSubmission.getMonitorMode().toString()));
+        assertTrue(getSSHJobSubmission.getResourceJobManager().getJobManagerCommands().size() == 2);
 
         JobSubmissionInterface sshSubmissionInt = new JobSubmissionInterface();
         sshSubmissionInt.setJobSubmissionInterfaceId(sshsubmissionId);
@@ -89,6 +91,9 @@ public class ComputeResourceRepositoryTest {
         gridFTPMv.setDataMovementInterfaceId(gridFTPDataMoveId);
         gridFTPMv.setDataMovementProtocol(DataMovementProtocol.GridFTP);
         gridFTPMv.setPriorityOrder(2);
+
+        dataMovementInterfaces.add(scpInterface);
+        dataMovementInterfaces.add(gridFTPMv);
 
         description.setDataMovementInterfaces(dataMovementInterfaces);
 
@@ -161,15 +166,15 @@ public class ComputeResourceRepositoryTest {
         Map<String, String> cfilters = new HashMap<String, String>();
         cfilters.put(DBConstants.ComputeResource.HOST_NAME, "localhost2");
         List<ComputeResourceDescription> computeResourceList = computeResourceRepository.getComputeResourceList(cfilters);
-        assertTrue(computeResourceList.size() == 2);
+        assertTrue(computeResourceList.size() == 1);
         System.out.println("**********Size of compute resources ************* : " +  computeResourceList.size());
 
         List<ComputeResourceDescription> allComputeResourceList = computeResourceRepository.getAllComputeResourceList();
-        assertTrue(allComputeResourceList.size() == 2);
+        assertTrue(allComputeResourceList.size() == 1);
         System.out.println("**********Size of all compute resources ************* : " +  allComputeResourceList.size());
 
         Map<String, String> allComputeResourceIdList = computeResourceRepository.getAllComputeResourceIdList();
-        assertTrue(allComputeResourceIdList.size() == 2);
+        assertTrue(allComputeResourceIdList.size() == 1);
         System.out.println("**********Size of all compute resources ids ************* : " +  allComputeResourceIdList.size());
 
         assertTrue("Compute resource save successfully", host != null);

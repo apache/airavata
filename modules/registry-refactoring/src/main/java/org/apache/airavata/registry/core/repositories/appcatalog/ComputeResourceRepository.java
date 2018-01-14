@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.Query;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,73 +41,25 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
             ComputeResourceDescription description) throws AppCatalogException {
         //TODO remove existing one
         ComputeResourceEntity computeResourceEntity = saveComputeResource(description);
-        saveHostAliases(description, computeResourceEntity);
-        saveIpAddresses(description, computeResourceEntity);
-        saveBatchQueues(description, computeResourceEntity);
         saveFileSystems(description, computeResourceEntity);
-        saveJobSubmissionInterfaces(description, computeResourceEntity);
-        saveDataMovementInterfaces(description, computeResourceEntity);
         return computeResourceEntity.getComputeResourceId();
     }
 
     protected ComputeResourceEntity saveComputeResource(
             ComputeResourceDescription description) throws AppCatalogException {
-        ComputeResourceDescription computeResourceDescription = (new ComputeResourceRepository()).create(description);
+        String computeResourceId = description.getComputeResourceId();
         Mapper mapper = ObjectMapperSingleton.getInstance();
-        return mapper.map(computeResourceDescription, ComputeResourceEntity.class);
-    }
-
-    protected void saveDataMovementInterfaces(
-            ComputeResourceDescription description,
-            ComputeResourceEntity computeHostResource)
-            throws AppCatalogException {
-
-        List<DataMovementInterface> dataMovemenetInterfaces = description.getDataMovementInterfaces();
-        if (dataMovemenetInterfaces != null && !dataMovemenetInterfaces.isEmpty()) {
-            for (DataMovementInterface dataMovementInterface : dataMovemenetInterfaces) {
-                DataMovementInterfacePK dataMovementInterfacePK = new DataMovementInterfacePK();
-                dataMovementInterfacePK.setComputeResourceId(computeHostResource.getComputeResourceId());
-                dataMovementInterfacePK.setDataMovementInterfaceId(dataMovementInterface.getDataMovementInterfaceId());
-                Mapper mapper = ObjectMapperSingleton.getInstance();
-                DataMovementInterfaceEntity dataMovementInterfaceEntity = mapper.map(dataMovementInterface, DataMovementInterfaceEntity.class);
-                dataMovementInterfaceEntity.setComputeResource(computeHostResource);
-                dataMovementInterfaceEntity.setId(dataMovementInterfacePK);
-                execute(entityManager -> entityManager.merge(dataMovementInterfaceEntity));
-            }
+        ComputeResourceEntity computeResourceEntity = mapper.map(description, ComputeResourceEntity.class);
+        if (computeResourceEntity.getBatchQueues() != null) {
+            computeResourceEntity.getBatchQueues().forEach(batchQueueEntity -> batchQueueEntity.setComputeResourceId(computeResourceId));
         }
-
-    }
-
-    protected List<DataMovementInterface> getDataMovementInterfaces(String computeResourceId) {
-        Map<String,Object> queryParameters = new HashMap<>();
-        queryParameters.put(DBConstants.ComputeResource.COMPUTE_RESOURCE_ID, computeResourceId);
-        return (new DataMovementRepository()).select(QueryConstants.GET_DATA_MOVEMENT_INTERFACES, -1, 0, queryParameters);
-    }
-
-    protected void saveJobSubmissionInterfaces(
-            ComputeResourceDescription description,
-            ComputeResourceEntity computeHostResource)
-            throws AppCatalogException {
-
-        List<JobSubmissionInterface> jobSubmissionInterfaces = description.getJobSubmissionInterfaces();
-        if (jobSubmissionInterfaces != null && !jobSubmissionInterfaces.isEmpty()) {
-            for (JobSubmissionInterface jobSubmissionInterface : jobSubmissionInterfaces) {
-                JobSubmissionInterfacePK jobSubmissionInterfacePK = new JobSubmissionInterfacePK();
-                jobSubmissionInterfacePK.setComputeResourceId(computeHostResource.getComputeResourceId());
-                jobSubmissionInterfacePK.setJobSubmissionInterfaceId(jobSubmissionInterface.getJobSubmissionInterfaceId());
-                Mapper mapper = ObjectMapperSingleton.getInstance();
-                JobSubmissionInterfaceEntity jobSubmissionInterfaceEntity= mapper.map(jobSubmissionInterface, JobSubmissionInterfaceEntity.class);
-                jobSubmissionInterfaceEntity.setComputeResource(computeHostResource);
-                jobSubmissionInterfaceEntity.setId(jobSubmissionInterfacePK);
-                execute(entityManager -> entityManager.merge(jobSubmissionInterfaceEntity));
-            }
+        if (computeResourceEntity.getDataMovementInterfaces() != null) {
+            computeResourceEntity.getDataMovementInterfaces().forEach(dataMovementInterfaceEntity -> dataMovementInterfaceEntity.setComputeResourceId(computeResourceId));
         }
-    }
-
-    protected List<JobSubmissionInterface> getJobSubmissionInterfaces(String computeResourceId) {
-        Map<String,Object> queryParameters = new HashMap<>();
-        queryParameters.put(DBConstants.ComputeResource.COMPUTE_RESOURCE_ID, computeResourceId);
-        return (new JobSubmissionInterfaceRepository()).select(QueryConstants.GET_JOB_SUBMISSION_INTERFACE, -1, 0, queryParameters);
+        if (computeResourceEntity.getJobSubmissionInterfaces() != null) {
+            computeResourceEntity.getJobSubmissionInterfaces().forEach(jobSubmissionInterfaceEntity -> jobSubmissionInterfaceEntity.setComputeResourceId(computeResourceId));
+        }
+        return execute(entityManager -> entityManager.merge(computeResourceEntity));
     }
 
     protected void saveFileSystems(ComputeResourceDescription description,
@@ -117,139 +68,34 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         Map<FileSystems, String> fileSystems = description.getFileSystems();
         if (fileSystems != null && !fileSystems.isEmpty()) {
             for (FileSystems key : fileSystems.keySet()) {
-                ComputeResourceFileSystemPK computeResourceFileSystemPK = new ComputeResourceFileSystemPK();
-                computeResourceFileSystemPK.setComputeResourceId(computeHostResource.getComputeResourceId());
-                computeResourceFileSystemPK.setFileSystem(key.toString());
                 ComputeResourceFileSystemEntity computeResourceFileSystemEntity = new ComputeResourceFileSystemEntity();
-                computeResourceFileSystemEntity.setId(computeResourceFileSystemPK);
+                computeResourceFileSystemEntity.setComputeResourceId(computeHostResource.getComputeResourceId());
+                computeResourceFileSystemEntity.setFileSystem(key.toString());
+                computeResourceFileSystemEntity.setPath(fileSystems.get(key));
                 computeResourceFileSystemEntity.setComputeResource(computeHostResource);
                 execute(entityManager -> entityManager.merge(computeResourceFileSystemEntity));
             }
         }
     }
 
-    protected List<FileSystems> getFileSystems(String computeResourceId) {
-        Map<String,Object> queryParameters = new HashMap<>();
-        queryParameters.put(DBConstants.ComputeResource.COMPUTE_RESOURCE_ID, computeResourceId);
-        return (new CompResourceFileSysRepository()).select(QueryConstants.GET_FILE_SYSTEM, -1, 0, queryParameters);
-    }
-
-    protected void saveBatchQueues(ComputeResourceDescription description,
-                                   ComputeResourceEntity computeHostResource)
-            throws AppCatalogException {
-        List<BatchQueue> batchQueueList = description.getBatchQueues();
-        if (batchQueueList != null && !batchQueueList.isEmpty()) {
-            for (BatchQueue batchQueue : batchQueueList) {
-                BatchQueuePK batchQueuePK =  new BatchQueuePK();
-                batchQueuePK.setComputeResourceId(computeHostResource.getComputeResourceId());
-                batchQueuePK.setQueueName(batchQueue.getQueueName());
-                Mapper mapper = ObjectMapperSingleton.getInstance();
-                BatchQueueEntity batchQueueEntity = mapper.map(batchQueue, BatchQueueEntity.class);
-                batchQueueEntity.setComputeResource(computeHostResource);
-                batchQueueEntity.setId(batchQueuePK);
-                execute(entityManager -> entityManager.merge(batchQueueEntity));
-            }
-        }
-    }
-
-    protected List<BatchQueue> getbatchQueues(String computeResourceId) {
-        Map<String,Object> queryParameters = new HashMap<>();
-        queryParameters.put(DBConstants.ComputeResource.COMPUTE_RESOURCE_ID, computeResourceId);
-        return (new BatchQueueRepository()).select(QueryConstants.GET_BATCH_QUEUES, -1, 0, queryParameters);
-    }
-
-    protected void saveHostAliases(ComputeResourceDescription description,
-                                   ComputeResourceEntity computeHostResource)
-            throws AppCatalogException {
-        List<String> hostAliases = description.getHostAliases();
-
-        if (hostAliases != null && !hostAliases.isEmpty()) {
-            for (String alias : hostAliases) {
-                HostAliasPK hostAliasPKCheck = new HostAliasPK();
-                hostAliasPKCheck.setAlias(alias);
-                hostAliasPKCheck.setComputeResourceId(description.getComputeResourceId());
-                // delete previous host aliases
-                execute(entityManager -> {
-                    HostAliasEntity entity = entityManager.find(HostAliasEntity.class, hostAliasPKCheck);
-                    entityManager.remove(entity);
-                    return entity;
-                });
-            }
-        }
-
-        if (hostAliases != null && !hostAliases.isEmpty()) {
-            for (String alias : hostAliases) {
-                HostAliasPK hostAliasPK= new HostAliasPK();
-                hostAliasPK.setComputeResourceId(computeHostResource.getComputeResourceId());
-                hostAliasPK.setAlias(alias);
-                HostAliasEntity aliasEntity = new HostAliasEntity();
-                aliasEntity.setComputeResource(computeHostResource);
-                aliasEntity.setId(hostAliasPK);
-                execute(entityManager -> entityManager.merge(aliasEntity));
-            }
-        }
-    }
-
-    protected List<String> getHostAliases(String computeResourceId) {
+    protected Map<FileSystems, String> getFileSystems(String computeResourceId) {
         Map<String,Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.ComputeResource.COMPUTE_RESOURCE_ID, computeResourceId);
 
         List resultSet = (List) execute(entityManager -> {
-            Query jpaQuery = entityManager.createQuery(QueryConstants.GET_HOST_ALIASES);
+            Query jpaQuery = entityManager.createQuery(QueryConstants.GET_FILE_SYSTEM);
             for (Map.Entry<String, Object> entry : queryParameters.entrySet()) {
                 jpaQuery.setParameter(entry.getKey(), entry.getValue());
             }
-            return jpaQuery.setFirstResult(0).setMaxResults(DBConstants.SELECT_MAX_ROWS).getResultList();
+            return jpaQuery.setFirstResult(0).getResultList();
         });
-        List<String> hostAliasList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> hostAliasList.add((String)rs));
-        return hostAliasList;
-    }
 
-    protected void saveIpAddresses(ComputeResourceDescription description,
-                                   ComputeResourceEntity computeHostResource)
-            throws AppCatalogException {
-        List<String> ipAddresses = description.getIpAddresses();
-        if (ipAddresses != null && !ipAddresses.isEmpty()) {
-            for (String ipAddress : ipAddresses) {
-                HostIpaddressPK hostIpaddressPKCheck =  new HostIpaddressPK();
-                hostIpaddressPKCheck.setComputeResourceId(description.getComputeResourceId());
-                hostIpaddressPKCheck.setIpAddress(ipAddress);
-                execute(entityManager -> {
-                    HostIpaddressEntity entity = entityManager.find(HostIpaddressEntity.class, hostIpaddressPKCheck);
-                    entityManager.remove(entity);
-                    return entity;
-                });
-            }
+        List<ComputeResourceFileSystemEntity> computeResourceFileSystemEntityList = resultSet;
+        Map<FileSystems, String> fileSystemsMap= new HashMap<FileSystems,String>();
+        for (ComputeResourceFileSystemEntity fs: computeResourceFileSystemEntityList) {
+            fileSystemsMap.put(FileSystems.valueOf(fs.getFileSystem()), fs.getPath());
         }
-
-        if (ipAddresses != null && !ipAddresses.isEmpty()) {
-            for (String ipAddress : ipAddresses) {
-                HostIpaddressPK hostIpaddressPK = new HostIpaddressPK();
-                hostIpaddressPK.setIpAddress(ipAddress);
-                hostIpaddressPK.setComputeResourceId(computeHostResource.getComputeResourceId());
-                HostIpaddressEntity hostIpaddressEntity = new HostIpaddressEntity();
-                hostIpaddressEntity.setComputeResource(computeHostResource);
-                hostIpaddressEntity.setId(hostIpaddressPK);
-                execute(entityManager -> entityManager.merge(hostIpaddressEntity));
-            }
-        }
-    }
-
-    protected List<String> getIPAddresses(String computeResourceId) {
-        Map<String,Object> queryParameters = new HashMap<>();
-        queryParameters.put(DBConstants.ComputeResource.COMPUTE_RESOURCE_ID, computeResourceId);
-
-        List resultSet = (List) execute(entityManager -> {
-            Query jpaQuery = entityManager.createQuery(QueryConstants.GET_IP_ADDRESS);
-            for (Map.Entry<String, Object> entry : queryParameters.entrySet()) {
-                jpaQuery.setParameter(entry.getKey(), entry.getValue());
-            }
-            return jpaQuery.setFirstResult(0).setMaxResults(DBConstants.SELECT_MAX_ROWS).getResultList();
-        });
-        List<String> ipAdressList = new ArrayList<>();
-        resultSet.stream().forEach(rs -> ipAdressList.add((String)rs));
-        return ipAdressList;
+        return fileSystemsMap;
     }
 
     @Override
@@ -259,16 +105,8 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
 
     @Override
     public ComputeResourceDescription getComputeResource(String resourceId) throws AppCatalogException {
-        //TODO
-        //getFileSystems(description, computeResourceEntity);
-
         ComputeResourceDescription computeResourceDescription = get(resourceId);
-        computeResourceDescription.setHostAliases(getHostAliases(resourceId));
-        computeResourceDescription.setIpAddresses(getIPAddresses(resourceId));
-   //     List<FileSystems> fileSystems= getFileSystems(resourceId);
-        computeResourceDescription.setJobSubmissionInterfaces(getJobSubmissionInterfaces(resourceId));
-        computeResourceDescription.setDataMovementInterfaces(getDataMovementInterfaces(resourceId));
-        computeResourceDescription.setBatchQueues(getbatchQueues(resourceId));
+        computeResourceDescription.setFileSystems(getFileSystems(resourceId));
         return computeResourceDescription;
     }
 
@@ -277,7 +115,11 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         if (filters.containsKey(DBConstants.ComputeResource.HOST_NAME)) {
             Map<String,Object> queryParameters = new HashMap<>();
             queryParameters.put(DBConstants.ComputeResource.HOST_NAME, filters.get(DBConstants.ComputeResource.HOST_NAME));
-            return select(QueryConstants.FIND_COMPUTE_RESOURCE, -1, 0, queryParameters);
+            List<ComputeResourceDescription> computeResourceDescriptionList = select(QueryConstants.FIND_COMPUTE_RESOURCE, -1, 0, queryParameters);
+            for (ComputeResourceDescription cd: computeResourceDescriptionList) {
+                cd.setFileSystems(getFileSystems(cd.getComputeResourceId()));
+            }
+            return computeResourceDescriptionList;
         }
         else {
             logger.error("Unsupported field name for compute resource.", new IllegalArgumentException());
@@ -287,8 +129,11 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
 
     @Override
     public List<ComputeResourceDescription> getAllComputeResourceList() throws AppCatalogException {
-        //TODO ADD batch,file,alias....
-        return select(QueryConstants.FIND_ALL_COMPUTE_RESOURCES, 0);
+        List<ComputeResourceDescription> computeResourceDescriptionList =  select(QueryConstants.FIND_ALL_COMPUTE_RESOURCES, 0);
+        for (ComputeResourceDescription cd: computeResourceDescriptionList) {
+            cd.setFileSystems(getFileSystems(cd.getComputeResourceId()));
+        }
+        return computeResourceDescriptionList;
     }
 
     @Override
@@ -336,6 +181,12 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         SshJobSubmissionEntity sshJobSubmissionEntity = mapper.map(sshJobSubmission, SshJobSubmissionEntity.class);
         sshJobSubmissionEntity.setResourceJobManagerId(resourceJobManagerId);
         sshJobSubmissionEntity.getResourceJobManager().setResourceJobManagerId(resourceJobManagerId);
+        if (sshJobSubmission.getResourceJobManager().getParallelismPrefix() != null) {
+            (new ResourceJobManagerRepository()).createParallesimPrefix(sshJobSubmission.getResourceJobManager().getParallelismPrefix(), sshJobSubmissionEntity.getResourceJobManager());
+        }
+        if (sshJobSubmission.getResourceJobManager().getJobManagerCommands() != null) {
+            (new ResourceJobManagerRepository()).createJobManagerCommand(sshJobSubmission.getResourceJobManager().getJobManagerCommands(), sshJobSubmissionEntity.getResourceJobManager());
+        }
         if (sshJobSubmission.getMonitorMode() != null){
             sshJobSubmissionEntity.setMonitorMode(sshJobSubmission.getMonitorMode().toString());
         }
@@ -391,8 +242,11 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
 
     @Override
     public ResourceJobManager getResourceJobManager(String resourceJobManagerId) throws AppCatalogException {
-        // TODO - Add parellelism and jobmanagercommand
-        return (new ResourceJobManagerRepository()).get(resourceJobManagerId);
+        ResourceJobManagerRepository resourceJobManagerRepository = new ResourceJobManagerRepository();
+        ResourceJobManager resourceJobManager = resourceJobManagerRepository.get(resourceJobManagerId);
+        resourceJobManager.setJobManagerCommands(resourceJobManagerRepository.getJobManagerCommand(resourceJobManagerId));
+        resourceJobManager.setParallelismPrefix(resourceJobManagerRepository.getParallelismPrefix(resourceJobManagerId));
+        return resourceJobManager;
     }
 
     @Override
@@ -402,18 +256,15 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
 
     @Override
     public String addJobSubmissionProtocol(String computeResourceId, JobSubmissionInterface jobSubmissionInterface) throws AppCatalogException {
-        JobSubmissionInterfacePK jobSubmissionInterfacePK = new JobSubmissionInterfacePK();
-        jobSubmissionInterfacePK.setJobSubmissionInterfaceId(jobSubmissionInterface.getJobSubmissionInterfaceId());
-        jobSubmissionInterfacePK.setComputeResourceId(computeResourceId);
         Mapper mapper = ObjectMapperSingleton.getInstance();
         JobSubmissionInterfaceEntity jobSubmissionInterfaceEntity = mapper.map(jobSubmissionInterface, JobSubmissionInterfaceEntity.class);
         ComputeResourceDescription computeResourceDescription = get(computeResourceId);
         ComputeResourceEntity computeResourceEntity = mapper.map(computeResourceDescription, ComputeResourceEntity.class);
         jobSubmissionInterfaceEntity.setComputeResource(computeResourceEntity);
-        jobSubmissionInterfaceEntity.setId(jobSubmissionInterfacePK);
+        jobSubmissionInterfaceEntity.setComputeResourceId(computeResourceId);
         execute(entityManager -> entityManager.merge(jobSubmissionInterfaceEntity));
 
-        return jobSubmissionInterfacePK.getJobSubmissionInterfaceId();
+        return jobSubmissionInterfaceEntity.getJobSubmissionInterfaceId();
     }
 
     @Override
@@ -424,6 +275,13 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         LocalSubmissionEntity localSubmissionEntity = mapper.map(localSubmission, LocalSubmissionEntity.class);
         localSubmissionEntity.setResourceJobManagerId(resourceJobManagerId);
         localSubmissionEntity.getResourceJobManager().setResourceJobManagerId(resourceJobManagerId);
+        if (localSubmission.getResourceJobManager().getParallelismPrefix() != null) {
+            (new ResourceJobManagerRepository()).createParallesimPrefix(localSubmission.getResourceJobManager().getParallelismPrefix(), localSubmissionEntity.getResourceJobManager());
+        }
+        if (localSubmission.getResourceJobManager().getJobManagerCommands() != null) {
+            (new ResourceJobManagerRepository()).createJobManagerCommand(localSubmission.getResourceJobManager().getJobManagerCommands(), localSubmissionEntity.getResourceJobManager());
+        }
+
         localSubmissionEntity.setSecurityProtocol(localSubmission.getSecurityProtocol().toString());
         execute(entityManager -> entityManager.merge(localSubmissionEntity));
         return localSubmissionEntity.getJobSubmissionInterfaceId();
@@ -476,16 +334,13 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
     @Override
     public String addDataMovementProtocol(String resourceId, DMType dmType, DataMovementInterface dataMovementInterface) throws AppCatalogException {
         if (dmType.equals(DMType.COMPUTE_RESOURCE)){
-            DataMovementInterfacePK dataMovementInterfacePK = new DataMovementInterfacePK();
-            dataMovementInterfacePK.setComputeResourceId(resourceId);
-            dataMovementInterfacePK.setDataMovementInterfaceId(dataMovementInterface.getDataMovementInterfaceId());
             Mapper mapper = ObjectMapperSingleton.getInstance();
             DataMovementInterfaceEntity dataMovementInterfaceEntity = mapper.map(dataMovementInterface, DataMovementInterfaceEntity.class);
             ComputeResourceEntity computeResourceEntity = mapper.map(get(resourceId), ComputeResourceEntity.class);
             dataMovementInterfaceEntity.setComputeResource(computeResourceEntity);
-            dataMovementInterfaceEntity.setId(dataMovementInterfacePK);
+            dataMovementInterfaceEntity.setComputeResourceId(resourceId);
             execute(entityManager -> entityManager.merge(dataMovementInterfaceEntity));
-            return dataMovementInterfacePK.getDataMovementInterfaceId();
+            return dataMovementInterfaceEntity.getDataMovementInterfaceId();
         }
         else if (dmType.equals(DMType.STORAGE_RESOURCE)){
             //TODO - COMPLETE this after StorageResourceRepo implementation
@@ -522,7 +377,10 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         if(entity == null)
             return null;
         Mapper mapper = ObjectMapperSingleton.getInstance();
-        return mapper.map(entity, SSHJobSubmission.class);
+        SSHJobSubmission sshJobSubmission = mapper.map(entity, SSHJobSubmission.class);
+        sshJobSubmission.getResourceJobManager().setParallelismPrefix((new ResourceJobManagerRepository().getParallelismPrefix(sshJobSubmission.getResourceJobManager().getResourceJobManagerId())));
+        sshJobSubmission.getResourceJobManager().setJobManagerCommands((new ResourceJobManagerRepository().getJobManagerCommand(sshJobSubmission.getResourceJobManager().getResourceJobManagerId())));
+        return sshJobSubmission;
     }
 
     @Override
@@ -618,7 +476,10 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         if(entity == null)
             return null;
         Mapper mapper = ObjectMapperSingleton.getInstance();
-        return mapper.map(entity, LOCALSubmission.class);
+        LOCALSubmission localSubmission = mapper.map(entity, LOCALSubmission.class);
+        localSubmission.getResourceJobManager().setParallelismPrefix((new ResourceJobManagerRepository().getParallelismPrefix(localSubmission.getResourceJobManager().getResourceJobManagerId())));
+        localSubmission.getResourceJobManager().setJobManagerCommands((new ResourceJobManagerRepository().getJobManagerCommand(localSubmission.getResourceJobManager().getResourceJobManagerId())));
+        return localSubmission;
     }
 
     @Override

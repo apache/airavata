@@ -20,12 +20,11 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The persistent class for the compute_resource database table.
@@ -77,6 +76,28 @@ public class ComputeResourceEntity implements Serializable {
 
     @Column(name = "DEFAULT_WALLTIME")
     private Integer defaultWalltime;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="HOST_ALIAS", joinColumns = @JoinColumn(name="RESOURCE_ID"))
+    @Column(name = "ALIAS")
+    private List<String> hostAliases;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="HOST_IPADDRESS", joinColumns = @JoinColumn(name="RESOURCE_ID"))
+    @Column(name = "IP_ADDRESS")
+    private List<String> ipAddresses;
+
+    @OneToMany(targetEntity = BatchQueueEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "computeResource", fetch = FetchType.EAGER)
+    private List<BatchQueueEntity> batchQueues;
+
+    @OneToMany(targetEntity = JobSubmissionInterfaceEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "computeResource", fetch = FetchType.EAGER)
+    private List<JobSubmissionInterfaceEntity> jobSubmissionInterfaces;
+
+    @OneToMany(targetEntity = DataMovementInterfaceEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "computeResource", fetch = FetchType.EAGER)
+    private List<DataMovementInterfaceEntity> dataMovementInterfaces;
 
     public ComputeResourceEntity() {
     }
@@ -191,5 +212,45 @@ public class ComputeResourceEntity implements Serializable {
 
     public void setDefaultWalltime(Integer defaultWalltime) {
         this.defaultWalltime = defaultWalltime;
+    }
+
+    public List<String> getHostAliases() {
+        return hostAliases;
+    }
+
+    public void setHostAliases(List<String> hostAliases) {
+        this.hostAliases = hostAliases;
+    }
+
+    public List<String> getIpAddresses() {
+        return ipAddresses;
+    }
+
+    public void setIpAddresses(List<String> ipAddresses) {
+        this.ipAddresses = ipAddresses;
+    }
+
+    public List<BatchQueueEntity> getBatchQueues() {
+        return batchQueues;
+    }
+
+    public void setBatchQueues(List<BatchQueueEntity> batchQueues) {
+        this.batchQueues = batchQueues;
+    }
+
+    public List<JobSubmissionInterfaceEntity> getJobSubmissionInterfaces() {
+        return jobSubmissionInterfaces;
+    }
+
+    public void setJobSubmissionInterfaces(List<JobSubmissionInterfaceEntity> jobSubmissionInterfaces) {
+        this.jobSubmissionInterfaces = jobSubmissionInterfaces;
+    }
+
+    public List<DataMovementInterfaceEntity> getDataMovementInterfaces() {
+        return dataMovementInterfaces;
+    }
+
+    public void setDataMovementInterfaces(List<DataMovementInterfaceEntity> dataMovementInterfaces) {
+        this.dataMovementInterfaces = dataMovementInterfaces;
     }
 }

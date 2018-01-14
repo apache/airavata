@@ -17,4 +17,8 @@ public class DBConstants {
         public static final String COMPUTE_RESOURCE_ID = "computeResourceId";
     }
 
+    public static class ResourceJobManager {
+        public static final String RESOURCE_JOB_MANAGER_ID = "resourceJobManagerId";
+    }
+
 }

@@ -29,11 +29,17 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "JOB_SUBMISSION_INTERFACE")
+@IdClass(JobSubmissionInterfacePK.class)
 public class JobSubmissionInterfaceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private JobSubmissionInterfacePK id;
+    @Column(name = "COMPUTE_RESOURCE_ID")
+    @Id
+    private String computeResourceId;
+
+    @Column(name = "JOB_SUBMISSION_INTERFACE_ID")
+    @Id
+    private String jobSubmissionInterfaceId;
 
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
@@ -47,7 +53,7 @@ public class JobSubmissionInterfaceEntity implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
-    @ManyToOne(cascade= CascadeType.MERGE)
+    @ManyToOne(targetEntity = ComputeResourceEntity.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "COMPUTE_RESOURCE_ID")
     private ComputeResourceEntity computeResource;
 
@@ -62,12 +68,20 @@ public class JobSubmissionInterfaceEntity implements Serializable {
         this.computeResource = computeResource;
     }
 
-    public JobSubmissionInterfacePK getId() {
-        return id;
+    public String getComputeResourceId() {
+        return computeResourceId;
     }
 
-    public void setId(JobSubmissionInterfacePK id) {
-        this.id = id;
+    public void setComputeResourceId(String computeResourceId) {
+        this.computeResourceId = computeResourceId;
+    }
+
+    public String getJobSubmissionInterfaceId() {
+        return jobSubmissionInterfaceId;
+    }
+
+    public void setJobSubmissionInterfaceId(String jobSubmissionInterfaceId) {
+        this.jobSubmissionInterfaceId = jobSubmissionInterfaceId;
     }
 
     public Timestamp getCreationTime() {
