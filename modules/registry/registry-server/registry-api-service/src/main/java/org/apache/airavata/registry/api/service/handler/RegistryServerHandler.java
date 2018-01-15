@@ -62,6 +62,7 @@ import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConver
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.core.experiment.catalog.resources.AbstractExpCatResource;
+import org.apache.airavata.registry.core.repositories.appcatalog.ComputeResourceRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.GwyResourceProfileRepository;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
@@ -1118,7 +1119,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             ApplicationDeployment applicationDeployment = appCatalog.getApplicationDeployment();
-            Map<String, String> allComputeResources = appCatalog.getComputeResource().getAvailableComputeResourceIdList();
+            Map<String, String> allComputeResources = new ComputeResourceRepository().getAvailableComputeResourceIdList();
             Map<String, String> availableComputeResources = new HashMap<String, String>();
             ApplicationInterfaceDescription applicationInterface =
                     appCatalog.getApplicationInterface().getApplicationInterface(appInterfaceId);
@@ -1157,8 +1158,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public ComputeResourceDescription getComputeResource(String computeResourceId) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            ComputeResourceDescription computeResource = appCatalog.getComputeResource().getComputeResource(computeResourceId);
+            ComputeResourceDescription computeResource = new ComputeResourceRepository().getComputeResource(computeResourceId);
             logger.debug("Airavata retrieved compute resource with compute resource Id : " + computeResourceId);
             return computeResource;
         } catch (AppCatalogException e) {
@@ -1178,8 +1178,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public Map<String, String> getAllComputeResourceNames() throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            Map<String, String> computeResourceIdList = appCatalog.getComputeResource().getAllComputeResourceIdList();
+            Map<String, String> computeResourceIdList = new ComputeResourceRepository().getAllComputeResourceIdList();
             logger.debug("Airavata retrieved all the available compute resources...");
             return computeResourceIdList;
         } catch (AppCatalogException e) {
@@ -1200,8 +1199,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean deleteComputeResource(String computeResourceId) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            appCatalog.getComputeResource().removeComputeResource(computeResourceId);
+            new ComputeResourceRepository().removeComputeResource(computeResourceId);
             logger.debug("Airavata deleted compute resource with compute resource Id : " + computeResourceId);
             return true;
         } catch (AppCatalogException e) {
@@ -1285,8 +1283,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public LOCALSubmission getLocalJobSubmission(String jobSubmissionId) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            LOCALSubmission localJobSubmission = appCatalog.getComputeResource().getLocalJobSubmission(jobSubmissionId);
+            LOCALSubmission localJobSubmission = new ComputeResourceRepository().getLocalJobSubmission(jobSubmissionId);
             logger.debug("Airavata retrieved local job submission for job submission interface id: " + jobSubmissionId);
             return localJobSubmission;
         } catch (AppCatalogException e) {
@@ -1306,8 +1303,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public SSHJobSubmission getSSHJobSubmission(String jobSubmissionId) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(jobSubmissionId);
+            SSHJobSubmission sshJobSubmission = new ComputeResourceRepository().getSSHJobSubmission(jobSubmissionId);
             logger.debug("Airavata retrieved SSH job submission for job submission interface id: " + jobSubmissionId);
             return sshJobSubmission;
         } catch (AppCatalogException e) {
@@ -1334,8 +1330,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public UnicoreJobSubmission getUnicoreJobSubmission(String jobSubmissionId) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            UnicoreJobSubmission unicoreJobSubmission = appCatalog.getComputeResource().getUNICOREJobSubmission(jobSubmissionId);
+            UnicoreJobSubmission unicoreJobSubmission = new ComputeResourceRepository().getUNICOREJobSubmission(jobSubmissionId);
             logger.debug("Airavata retrieved UNICORE job submission for job submission interface id: " + jobSubmissionId);
             return unicoreJobSubmission;
         } catch (AppCatalogException e) {
@@ -1360,8 +1355,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public CloudJobSubmission getCloudJobSubmission(String jobSubmissionId) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            CloudJobSubmission cloudJobSubmission = appCatalog.getComputeResource().getCloudJobSubmission(jobSubmissionId);
+            CloudJobSubmission cloudJobSubmission = new ComputeResourceRepository().getCloudJobSubmission(jobSubmissionId);
             logger.debug("Airavata retrieved cloud job submission for job submission interface id: " + jobSubmissionId);
             return cloudJobSubmission;
         } catch (AppCatalogException e) {
@@ -1382,8 +1376,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public LOCALDataMovement getLocalDataMovement(String dataMovementId) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            LOCALDataMovement localDataMovement = appCatalog.getComputeResource().getLocalDataMovement(dataMovementId);
+            LOCALDataMovement localDataMovement = new ComputeResourceRepository().getLocalDataMovement(dataMovementId);
             logger.debug("Airavata retrieved local data movement with data movement id: " + dataMovementId);
             return localDataMovement;
         } catch (AppCatalogException e) {
@@ -1404,8 +1397,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public SCPDataMovement getSCPDataMovement(String dataMovementId) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            SCPDataMovement scpDataMovement = appCatalog.getComputeResource().getSCPDataMovement(dataMovementId);
+            SCPDataMovement scpDataMovement = new ComputeResourceRepository().getSCPDataMovement(dataMovementId);
             logger.debug("Airavata retrieved SCP data movement with data movement id: " + dataMovementId);
             return scpDataMovement;
         } catch (AppCatalogException e) {
@@ -1426,8 +1418,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public UnicoreDataMovement getUnicoreDataMovement(String dataMovementId) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            UnicoreDataMovement unicoreDataMovement = appCatalog.getComputeResource().getUNICOREDataMovement(dataMovementId);
+            UnicoreDataMovement unicoreDataMovement = new ComputeResourceRepository().getUNICOREDataMovement(dataMovementId);
             logger.debug("Airavata retrieved UNICORE data movement with data movement id: " + dataMovementId);
             return unicoreDataMovement;
         } catch (AppCatalogException e) {
@@ -1448,8 +1439,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public GridFTPDataMovement getGridFTPDataMovement(String dataMovementId) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            GridFTPDataMovement gridFTPDataMovement = appCatalog.getComputeResource().getGridFTPDataMovement(dataMovementId);
+            GridFTPDataMovement gridFTPDataMovement = new ComputeResourceRepository().getGridFTPDataMovement(dataMovementId);
             logger.debug("Airavata retrieved GRIDFTP data movement with data movement id: " + dataMovementId);
             return gridFTPDataMovement;
         } catch (AppCatalogException e) {
@@ -1522,8 +1512,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean deleteJobSubmissionInterface(String computeResourceId, String jobSubmissionInterfaceId) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            appCatalog.getComputeResource().removeJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId);
+            new ComputeResourceRepository().removeJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId);
             logger.debug("Airavata deleted job submission interface with interface id : " + jobSubmissionInterfaceId);
             return true;
         } catch (AppCatalogException e) {
@@ -1537,8 +1526,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public ResourceJobManager getResourceJobManager(String resourceJobManagerId) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            return appCatalog.getComputeResource().getResourceJobManager(resourceJobManagerId);
+            return new ComputeResourceRepository().getResourceJobManager(resourceJobManagerId);
         } catch (AppCatalogException e) {
             logger.error(resourceJobManagerId, "Error while retrieving resource job manager...", e);
             RegistryServiceException exception = new RegistryServiceException();
@@ -1550,8 +1538,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean deleteResourceJobManager(String resourceJobManagerId) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            appCatalog.getComputeResource().deleteResourceJobManager(resourceJobManagerId);
+            new ComputeResourceRepository().deleteResourceJobManager(resourceJobManagerId);
             return true;
         } catch (AppCatalogException e) {
             logger.error(resourceJobManagerId, "Error while deleting resource job manager...", e);
@@ -1572,8 +1559,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean deleteBatchQueue(String computeResourceId, String queueName) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            appCatalog.getComputeResource().removeBatchQueue(computeResourceId, queueName);
+            new ComputeResourceRepository().removeBatchQueue(computeResourceId, queueName);
             return true;
         } catch (AppCatalogException e) {
             logger.error(computeResourceId, "Error while deleting batch queue...", e);
@@ -1652,14 +1638,14 @@ public class RegistryServerHandler implements RegistryService.Iface {
             }
             appCatalog = RegistryFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            ComputeResource computeResource = appCatalog.getComputeResource();
+            ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
             if (!gatewayProfile.isGatewayResourceProfileExists(gatewayID)){
                 logger.error(gatewayID, "Given gateway profile does not exist in the system. Please provide a valid gateway id...");
                 RegistryServiceException exception = new RegistryServiceException();
                 exception.setMessage("Given gateway profile does not exist in the system. Please provide a valid gateway id...");
                 throw exception;
             }
-            if (!computeResource.isComputeResourceExists(computeResourceId)){
+            if (!computeResourceRepository.isComputeResourceExists(computeResourceId)){
                 logger.error(computeResourceId, "Given compute resource does not exist in the system. Please provide a valid compute resource id...");
                 RegistryServiceException exception = new RegistryServiceException();
                 exception.setMessage("Given compute resource does not exist in the system. Please provide a valid compute resource id...");
@@ -2254,8 +2240,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateResourceJobManager(String resourceJobManagerId, ResourceJobManager updatedResourceJobManager) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            appCatalog.getComputeResource().updateResourceJobManager(resourceJobManagerId, updatedResourceJobManager);
+            new ComputeResourceRepository().updateResourceJobManager(resourceJobManagerId, updatedResourceJobManager);
             return true;
         } catch (AppCatalogException e) {
             logger.error(resourceJobManagerId, "Error while updating resource job manager...", e);
@@ -2268,8 +2253,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String registerResourceJobManager(ResourceJobManager resourceJobManager) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            return appCatalog.getComputeResource().addResourceJobManager(resourceJobManager);
+            return new ComputeResourceRepository().addResourceJobManager(resourceJobManager);
         } catch (AppCatalogException e) {
             logger.error(resourceJobManager.getResourceJobManagerId(), "Error while adding resource job manager...", e);
             RegistryServiceException exception = new RegistryServiceException();
@@ -2293,7 +2277,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             appCatalog = RegistryFactory.getAppCatalog();
             switch (dmType){
                 case COMPUTE_RESOURCE:
-                    appCatalog.getComputeResource().removeDataMovementInterface(resourceId, dataMovementInterfaceId);
+                    new ComputeResourceRepository().removeDataMovementInterface(resourceId, dataMovementInterfaceId);
                     logger.debug("Airavata deleted data movement interface with interface id : " + dataMovementInterfaceId);
                     return true;
                 case STORAGE_RESOURCE:
@@ -2351,10 +2335,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String addGridFTPDataMovementDetails(String computeResourceId, DMType dmType, int priorityOrder, GridFTPDataMovement gridFTPDataMovement) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            ComputeResource computeResource = appCatalog.getComputeResource();
-            String addDataMovementInterface = addDataMovementInterface(computeResource, computeResourceId, dmType,
-                    computeResource.addGridFTPDataMovement(gridFTPDataMovement), DataMovementProtocol.GridFTP, priorityOrder);
+            ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+            String addDataMovementInterface = addDataMovementInterface(computeResourceRepository, computeResourceId, dmType,
+                    computeResourceRepository.addGridFTPDataMovement(gridFTPDataMovement), DataMovementProtocol.GridFTP, priorityOrder);
             logger.debug("Airavata registered GridFTP data movement for resource Id: " + computeResourceId);
             return addDataMovementInterface;
         } catch (AppCatalogException e) {
@@ -2405,10 +2388,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String addUnicoreDataMovementDetails(String resourceId, DMType dmType, int priorityOrder, UnicoreDataMovement unicoreDataMovement) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            ComputeResource computeResource = appCatalog.getComputeResource();
-            String movementInterface = addDataMovementInterface(computeResource, resourceId, dmType,
-                    computeResource.addUnicoreDataMovement(unicoreDataMovement), DataMovementProtocol.UNICORE_STORAGE_SERVICE, priorityOrder);
+            ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+            String movementInterface = addDataMovementInterface(computeResourceRepository, resourceId, dmType,
+                    computeResourceRepository.addUnicoreDataMovement(unicoreDataMovement), DataMovementProtocol.UNICORE_STORAGE_SERVICE, priorityOrder);
             logger.debug("Airavata registered UNICORE data movement for resource Id: " + resourceId);
             return movementInterface;
         } catch (AppCatalogException e) {
@@ -2458,10 +2440,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String addSCPDataMovementDetails(String resourceId, DMType dmType, int priorityOrder, SCPDataMovement scpDataMovement) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            ComputeResource computeResource = appCatalog.getComputeResource();
-            String movementInterface = addDataMovementInterface(computeResource, resourceId, dmType,
-                    computeResource.addScpDataMovement(scpDataMovement), DataMovementProtocol.SCP, priorityOrder);
+            ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+            String movementInterface = addDataMovementInterface(computeResourceRepository, resourceId, dmType,
+                    computeResourceRepository.addScpDataMovement(scpDataMovement), DataMovementProtocol.SCP, priorityOrder);
             logger.debug("Airavata registered SCP data movement for resource Id: " + resourceId);
             return movementInterface;
         } catch (AppCatalogException e) {
@@ -2510,10 +2491,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String addLocalDataMovementDetails(String resourceId, DMType dataMoveType, int priorityOrder, LOCALDataMovement localDataMovement) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            ComputeResource computeResource = appCatalog.getComputeResource();
-            String movementInterface = addDataMovementInterface(computeResource, resourceId, dataMoveType,
-                    computeResource.addLocalDataMovement(localDataMovement), DataMovementProtocol.LOCAL, priorityOrder);
+            ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+            String movementInterface = addDataMovementInterface(computeResourceRepository, resourceId, dataMoveType,
+                    computeResourceRepository.addLocalDataMovement(localDataMovement), DataMovementProtocol.LOCAL, priorityOrder);
             logger.debug("Airavata registered local data movement for resource Id: " + resourceId);
             return movementInterface;
         } catch (AppCatalogException e) {
@@ -2622,10 +2602,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String addCloudJobSubmissionDetails(String computeResourceId, int priorityOrder, CloudJobSubmission cloudSubmission) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            ComputeResource computeResource = appCatalog.getComputeResource();
-            String submissionInterface = addJobSubmissionInterface(computeResource, computeResourceId,
-                    computeResource.addCloudJobSubmission(cloudSubmission), JobSubmissionProtocol.CLOUD, priorityOrder);
+            ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+            String submissionInterface = addJobSubmissionInterface(computeResourceRepository, computeResourceId,
+                    computeResourceRepository.addCloudJobSubmission(cloudSubmission), JobSubmissionProtocol.CLOUD, priorityOrder);
             logger.debug("Airavata registered Cloud job submission for compute resource id: " + computeResourceId);
             return submissionInterface;
         } catch (AppCatalogException e) {
@@ -2649,10 +2628,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String addUNICOREJobSubmissionDetails(String computeResourceId, int priorityOrder, UnicoreJobSubmission unicoreJobSubmission) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            ComputeResource computeResource = appCatalog.getComputeResource();
-            String submissionInterface = addJobSubmissionInterface(computeResource, computeResourceId,
-                    computeResource.addUNICOREJobSubmission(unicoreJobSubmission), JobSubmissionProtocol.UNICORE, priorityOrder);
+            ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+            String submissionInterface = addJobSubmissionInterface(computeResourceRepository, computeResourceId,
+                    computeResourceRepository.addUNICOREJobSubmission(unicoreJobSubmission), JobSubmissionProtocol.UNICORE, priorityOrder);
             logger.debug("Airavata registered UNICORE job submission for compute resource id: " + computeResourceId);
             return submissionInterface;
         } catch (AppCatalogException e) {
@@ -2676,10 +2654,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String addSSHForkJobSubmissionDetails(String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            ComputeResource computeResource = appCatalog.getComputeResource();
-            String submissionDetails = addJobSubmissionInterface(computeResource, computeResourceId,
-                    computeResource.addSSHJobSubmission(sshJobSubmission), JobSubmissionProtocol.SSH_FORK, priorityOrder);
+            ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+            String submissionDetails = addJobSubmissionInterface(computeResourceRepository, computeResourceId,
+                    computeResourceRepository.addSSHJobSubmission(sshJobSubmission), JobSubmissionProtocol.SSH_FORK, priorityOrder);
             logger.debug("Airavata registered Fork job submission for compute resource id: " + computeResourceId);
             return submissionDetails;
         } catch (AppCatalogException e) {
@@ -2703,10 +2680,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String addSSHJobSubmissionDetails(String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            ComputeResource computeResource = appCatalog.getComputeResource();
-            String submissionInterface = addJobSubmissionInterface(computeResource, computeResourceId,
-                    computeResource.addSSHJobSubmission(sshJobSubmission), JobSubmissionProtocol.SSH, priorityOrder);
+            ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+            String submissionInterface = addJobSubmissionInterface(computeResourceRepository, computeResourceId,
+                    computeResourceRepository.addSSHJobSubmission(sshJobSubmission), JobSubmissionProtocol.SSH, priorityOrder);
             logger.debug("Airavata registered SSH job submission for compute resource id: " + computeResourceId);
             return submissionInterface;
         } catch (AppCatalogException e) {
@@ -2754,10 +2730,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String addLocalSubmissionDetails(String computeResourceId, int priorityOrder, LOCALSubmission localSubmission) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            ComputeResource computeResource = appCatalog.getComputeResource();
-            String submissionInterface = addJobSubmissionInterface(computeResource, computeResourceId,
-                    computeResource.addLocalJobSubmission(localSubmission), JobSubmissionProtocol.LOCAL, priorityOrder);
+            ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+            String submissionInterface = addJobSubmissionInterface(computeResourceRepository, computeResourceId,
+                    computeResourceRepository.addLocalJobSubmission(localSubmission), JobSubmissionProtocol.LOCAL, priorityOrder);
             logger.debug("Airavata added local job submission for compute resource id: " + computeResourceId);
             return submissionInterface;
         } catch (AppCatalogException e) {
@@ -2824,8 +2799,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateComputeResource(String computeResourceId, ComputeResourceDescription computeResourceDescription) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            appCatalog.getComputeResource().updateComputeResource(computeResourceId, computeResourceDescription);
+            new ComputeResourceRepository().updateComputeResource(computeResourceId, computeResourceDescription);
             logger.debug("Airavata updated compute resource with compute resource Id : " + computeResourceId);
             return true;
         } catch (AppCatalogException e) {
@@ -2846,8 +2820,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String registerComputeResource(ComputeResourceDescription computeResourceDescription) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            String computeResource = appCatalog.getComputeResource().addComputeResource(computeResourceDescription);
+            String computeResource = new ComputeResourceRepository().addComputeResource(computeResourceDescription);
             logger.debug("Airavata registered compute resource with compute resource Id : " + computeResource);
             return computeResource;
         } catch (AppCatalogException e) {
@@ -3129,7 +3102,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                                 .getComputationalResourceScheduling() != null){
                             String compResourceId = experiment.getUserConfigurationData()
                                     .getComputationalResourceScheduling().getResourceHostId();
-                            ComputeResourceDescription computeResourceDescription = appCatalog.getComputeResource()
+                            ComputeResourceDescription computeResourceDescription = new ComputeResourceRepository()
                                     .getComputeResource(compResourceId);
                             if(!computeResourceDescription.isEnabled()){
                                 logger.error("Compute Resource is not enabled by the Admin!");
@@ -3233,7 +3206,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
 
                 String compResourceId = experiment.getUserConfigurationData()
                         .getComputationalResourceScheduling().getResourceHostId();
-                ComputeResourceDescription computeResourceDescription = appCatalog.getComputeResource()
+                ComputeResourceDescription computeResourceDescription = new ComputeResourceRepository()
                         .getComputeResource(compResourceId);
                 if(!computeResourceDescription.isEnabled()){
                     logger.error("Compute Resource is not enabled by the Admin!");
@@ -3670,7 +3643,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
         }
     }
 
-    private String addJobSubmissionInterface(ComputeResource computeResource,
+    private String addJobSubmissionInterface(ComputeResourceRepository computeResourceRepository,
                                              String computeResourceId, String jobSubmissionInterfaceId,
                                              JobSubmissionProtocol protocolType, int priorityOrder)
             throws AppCatalogException {
@@ -3678,7 +3651,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
         jobSubmissionInterface.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
         jobSubmissionInterface.setPriorityOrder(priorityOrder);
         jobSubmissionInterface.setJobSubmissionProtocol(protocolType);
-        return computeResource.addJobSubmissionProtocol(computeResourceId,jobSubmissionInterface);
+        return computeResourceRepository.addJobSubmissionProtocol(computeResourceId,jobSubmissionInterface);
     }
 
     private String addDataMovementInterface(ComputeResource computeResource,
@@ -3971,8 +3944,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
             if (!userProfile.isUserResourceProfileExists(userId, gatewayID)){
                 throw new RegistryServiceException("User resource profile with user id'"+userId+" &  gateway Id"+gatewayID+"' does not exist!!!");
             }
-            ComputeResource computeResource = appCatalog.getComputeResource();
-            if (!computeResource.isComputeResourceExists(userComputeResourceId)){
+            ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
+            if (!computeResourceRepository.isComputeResourceExists(userComputeResourceId)){
                 logger.error(userComputeResourceId, "Given compute resource does not exist in the system. Please provide a valid compute resource id...");
                 RegistryServiceException exception = new RegistryServiceException();
                 exception.setMessage("Given compute resource does not exist in the system. Please provide a valid compute resource id...");
