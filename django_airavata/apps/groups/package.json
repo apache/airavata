@@ -15,6 +15,7 @@
     "django-airavata-api": "file:../api",
     "django-airavata-common-ui": "file:../../static/common",
     "moment": "^2.18.1",
+    "v-autocomplete": "^1.8.1",
     "vue": "^2.3.3"
   },
   "devDependencies": {

@@ -7,6 +7,7 @@ import OutputDataTypeObject from './models/OutputDataTypeObject'
 import Project from './models/Project'
 import GroupMember from './models/GroupMember'
 import GroupOwner from './models/GroupOwner'
+import Group from './models/Group'
 
 import ApplicationDeploymentService from './services/ApplicationDeploymentService'
 import ApplicationInterfaceService from './services/ApplicationInterfaceService'
@@ -15,6 +16,7 @@ import ExperimentService from './services/ExperimentService'
 import ProjectService from './services/ProjectService'
 import GroupMemberService from './services/GroupMemberService'
 import GroupOwnerService from './services/GroupOwnerService'
+import GroupService from './services/GroupService'
 
 import FetchUtils from './utils/FetchUtils'
 import PaginationIterator from './utils/PaginationIterator'
@@ -28,6 +30,7 @@ exports.models = {
     Project,
     GroupMember,
     GroupOwner,
+    Group,
 }
 
 exports.services = {
@@ -38,6 +41,7 @@ exports.services = {
     ProjectService,
     GroupMemberService,
     GroupOwnerService,
+    GroupService,
 }
 
 exports.utils = {

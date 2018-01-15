@@ -5,7 +5,7 @@
                 <h1 class="h4 mb-4">Groups you own:</h1>
             </div>
             <div id="col-new-group" class="col-sm-2">
-                <group-button-new @new-group="onNewGroup"/>
+                <b-button href="create" :variant="'primary'">Create New Group&nbsp;&nbsp;<i class="fa fa-plus" aria-hidden="true"></i></b-button>
             </div>
         </div>
         <div class="row">
@@ -66,10 +66,6 @@ export default {
         },
         previousOwnerGroups: function(event) {
             this.groupOwnersPaginator.previous();
-        },
-        onNewGroup: function(group) {
-            services.GroupOwnerService.list()
-                .then(result => this.groupOwnersPaginator = result);
         },
     },
     computed: {

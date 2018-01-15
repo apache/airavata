@@ -12,13 +12,9 @@ class GroupOwnerService {
                 credentials: 'include'
             })
             .then(response => response.json())
+            .catch(error => console.log(err.data))
             .then(json => new PaginationIterator(json, GroupOwner));
         }
-    }
-
-    create(group) {
-        return FetchUtils.post('/api/groups/', project.toJSONForCreate())
-            .then(result => new GroupOwner(result));
     }
 
     update() {

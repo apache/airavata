@@ -24,6 +24,7 @@ new Vue({
       }
       if(this.$el.dataset.groupsMembersData) {
           this.groupsMembersData = JSON.parse(this.$el.dataset.groupsMembersData);
+          console.log(this.groupsMembersData);
       }
   }
 })

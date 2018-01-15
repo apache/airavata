@@ -12,13 +12,9 @@ class GroupMemberService {
                 credentials: 'include'
             })
             .then(response => response.json())
+            .catch(error => console.log(err.data))
             .then(json => new PaginationIterator(json, GroupMember));
         }
-    }
-
-    create(group) {
-        return FetchUtils.post('/api/groups/', project.toJSONForCreate())
-            .then(result => new GroupMember(result));
     }
 
     update() {

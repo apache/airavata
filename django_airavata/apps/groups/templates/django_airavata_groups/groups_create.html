@@ -1,7 +1,19 @@
 {% extends 'base.html' %}
 
-{% block content %}
+{% load static %}
 
+{% block content %}
+<div id="create-group"></div>
+{% endblock content %}
+
+{% block scripts %}
+<script src="{% static "django_airavata_groups/dist/group-create.js" %}"></script>
+{% endblock %}
+
+
+<!-- OLD CODE -->
+
+<!--
 <h1 align="center">Create a Group</h1>
 <br>
 {% block body %}
@@ -23,6 +35,4 @@
     <p><a class="btn btn-primary btn-lg" href="{% url 'django_airavata_auth:login' %}" role="button">Login »</a></p>
     {% endif %}
 </div>
-{% endblock %}
-
-{% endblock content %}
+{% endblock %} -->

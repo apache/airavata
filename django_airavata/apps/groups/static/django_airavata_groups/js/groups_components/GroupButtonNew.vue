@@ -46,8 +46,6 @@ export default {
             loading: false,
         }
     },
-    components: {
-    },
     methods: {
         onCreateGroup: function(event) {
             // Prevent hiding modal, hide it programmatically when Group gets created
