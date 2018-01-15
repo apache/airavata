@@ -438,11 +438,7 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         JobSubmissionInterfacePK jobSubmissionInterfacePK = new JobSubmissionInterfacePK();
         jobSubmissionInterfacePK.setComputeResourceId(computeResourceId);
         jobSubmissionInterfacePK.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
-        execute(entityManager -> {
-            JobSubmissionInterfaceEntity entity = entityManager.find(JobSubmissionInterfaceEntity.class, jobSubmissionInterfacePK);
-            entityManager.remove(entity);
-            return entity;
-        });
+        (new JobSubmissionInterfaceRepository()).delete(jobSubmissionInterfacePK);
     }
 
     @Override
@@ -450,11 +446,7 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         DataMovementInterfacePK dataMovementInterfacePK = new DataMovementInterfacePK();
         dataMovementInterfacePK.setDataMovementInterfaceId(dataMovementInterfaceId);
         dataMovementInterfacePK.setComputeResourceId(computeResourceId);
-        execute(entityManager -> {
-            DataMovementInterfaceEntity entity = entityManager.find(DataMovementInterfaceEntity.class, dataMovementInterfacePK);
-            entityManager.remove(entity);
-            return entity;
-        });
+        (new DataMovementRepository()).delete(dataMovementInterfacePK);
     }
 
     @Override
@@ -462,11 +454,7 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         BatchQueuePK batchQueuePK = new BatchQueuePK();
         batchQueuePK.setQueueName(queueName);
         batchQueuePK.setComputeResourceId(computeResourceId);
-        execute(entityManager -> {
-            BatchQueueEntity entity = entityManager.find(BatchQueueEntity.class, batchQueuePK);
-            entityManager.remove(entity);
-            return entity;
-        });
+        (new BatchQueueRepository()).delete(batchQueuePK);
     }
 
     @Override
