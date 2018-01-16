@@ -256,15 +256,7 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
 
     @Override
     public String addJobSubmissionProtocol(String computeResourceId, JobSubmissionInterface jobSubmissionInterface) throws AppCatalogException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        JobSubmissionInterfaceEntity jobSubmissionInterfaceEntity = mapper.map(jobSubmissionInterface, JobSubmissionInterfaceEntity.class);
-        ComputeResourceDescription computeResourceDescription = get(computeResourceId);
-        ComputeResourceEntity computeResourceEntity = mapper.map(computeResourceDescription, ComputeResourceEntity.class);
-        jobSubmissionInterfaceEntity.setComputeResource(computeResourceEntity);
-        jobSubmissionInterfaceEntity.setComputeResourceId(computeResourceId);
-        execute(entityManager -> entityManager.merge(jobSubmissionInterfaceEntity));
-
-        return jobSubmissionInterfaceEntity.getJobSubmissionInterfaceId();
+        return (new JobSubmissionInterfaceRepository()).addJobSubmission(computeResourceId, jobSubmissionInterface);
     }
 
     @Override
@@ -334,13 +326,7 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
     @Override
     public String addDataMovementProtocol(String resourceId, DMType dmType, DataMovementInterface dataMovementInterface) throws AppCatalogException {
         if (dmType.equals(DMType.COMPUTE_RESOURCE)){
-            Mapper mapper = ObjectMapperSingleton.getInstance();
-            DataMovementInterfaceEntity dataMovementInterfaceEntity = mapper.map(dataMovementInterface, DataMovementInterfaceEntity.class);
-            ComputeResourceEntity computeResourceEntity = mapper.map(get(resourceId), ComputeResourceEntity.class);
-            dataMovementInterfaceEntity.setComputeResource(computeResourceEntity);
-            dataMovementInterfaceEntity.setComputeResourceId(resourceId);
-            execute(entityManager -> entityManager.merge(dataMovementInterfaceEntity));
-            return dataMovementInterfaceEntity.getDataMovementInterfaceId();
+            return (new DataMovementRepository()).addDataMovementProtocol(resourceId, dataMovementInterface);
         }
         else if (dmType.equals(DMType.STORAGE_RESOURCE)){
             //TODO - COMPLETE this after StorageResourceRepo implementation

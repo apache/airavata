@@ -1637,9 +1637,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
             }
             appCatalog = RegistryFactory.getAppCatalog();
-            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
             ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
-            if (!gatewayProfile.isGatewayResourceProfileExists(gatewayID)){
+            if (!gwyResourceProfileRepository.isGatewayResourceProfileExists(gatewayID)){
                 logger.error(gatewayID, "Given gateway profile does not exist in the system. Please provide a valid gateway id...");
                 RegistryServiceException exception = new RegistryServiceException();
                 exception.setMessage("Given gateway profile does not exist in the system. Please provide a valid gateway id...");
@@ -1651,7 +1651,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 exception.setMessage("Given compute resource does not exist in the system. Please provide a valid compute resource id...");
                 throw exception;
             }
-            ComputeResourcePreference computeResourcePreference = gatewayProfile.getComputeResourcePreference(gatewayID, computeResourceId);
+            ComputeResourcePreference computeResourcePreference = gwyResourceProfileRepository.getComputeResourcePreference(gatewayID, computeResourceId);
             logger.debug("Airavata retrieved gateway compute resource preference with gateway id : " + gatewayID + " and for compute resoruce id : " + computeResourceId );
             return computeResourcePreference;
         } catch (AppCatalogException e) {
@@ -1678,15 +1678,15 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
             }
             appCatalog = RegistryFactory.getAppCatalog();
-            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            if (!gatewayProfile.isGatewayResourceProfileExists(gatewayID)){
+            GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
+            if (!gwyResourceProfileRepository.isGatewayResourceProfileExists(gatewayID)){
                 logger.error(gatewayID, "Given gateway profile does not exist in the system. Please provide a valid gateway id...");
                 RegistryServiceException exception = new RegistryServiceException();
                 exception.setMessage("Given gateway profile does not exist in the system. Please provide a valid gateway id...");
                 throw exception;
             }
 
-            StoragePreference storagePreference = gatewayProfile.getStoragePreference(gatewayID, storageId);
+            StoragePreference storagePreference = gwyResourceProfileRepository.getStoragePreference(gatewayID, storageId);
             logger.debug("Airavata retrieved storage resource preference with gateway id : " + gatewayID + " and for storage resource id : " + storageId);
             return storagePreference;
         } catch (AppCatalogException e) {
@@ -3497,11 +3497,11 @@ public class RegistryServerHandler implements RegistryService.Iface {
             experimentCatalog.update(ExperimentCatalogModelType.GATEWAY, updatedGateway, gatewayId);
 
             // check if gatewayprofile exists and check if the identity server password token equals the admin password token, if not update
-            GatewayResourceProfile existingGwyResourceProfile = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
+            GatewayResourceProfile existingGwyResourceProfile = new GwyResourceProfileRepository().getGatewayProfile(gatewayId);
             if (existingGwyResourceProfile.getIdentityServerPwdCredToken() == null
                     || !existingGwyResourceProfile.getIdentityServerPwdCredToken().equals(updatedGateway.getIdentityServerPasswordToken())) {
                 existingGwyResourceProfile.setIdentityServerPwdCredToken(updatedGateway.getIdentityServerPasswordToken());
-                appCatalog.getGatewayProfile().updateGatewayResourceProfile(gatewayId, existingGwyResourceProfile);
+                new GwyResourceProfileRepository().updateGatewayResourceProfile(gatewayId, existingGwyResourceProfile);
             }
             logger.debug("Airavata update gateway with gateway id : " + gatewayId);
             return true;
@@ -3539,7 +3539,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 throw new DuplicateEntryException("Gateway with gatewayId: " + gateway.getGatewayId() + ", already exists in ExperimentCatalog.");
             }
             // check if gatewayresourceprofile exists
-            if (appCatalog.getGatewayProfile().isGatewayResourceProfileExists(gateway.getGatewayId())) {
+            if (new GwyResourceProfileRepository().isGatewayResourceProfileExists(gateway.getGatewayId())) {
                 throw new DuplicateEntryException("GatewayResourceProfile with gatewayId: " + gateway.getGatewayId() + ", already exists in AppCatalog.");
             }
 
@@ -3551,7 +3551,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             gatewayResourceProfile.setGatewayID(gatewayId);
             gatewayResourceProfile.setIdentityServerTenant(gatewayId);
             gatewayResourceProfile.setIdentityServerPwdCredToken(gateway.getIdentityServerPasswordToken());
-            appCatalog.getGatewayProfile().addGatewayResourceProfile(gatewayResourceProfile);
+            new GwyResourceProfileRepository().addGatewayResourceProfile(gatewayResourceProfile);
             logger.debug("Airavata added gateway with gateway id : " + gateway.getGatewayId());
             return gatewayId;
         } catch (RegistryException e) {

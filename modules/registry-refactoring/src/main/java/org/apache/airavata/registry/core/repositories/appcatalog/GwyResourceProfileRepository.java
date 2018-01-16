@@ -4,9 +4,7 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
-import org.apache.airavata.registry.core.entities.appcatalog.ComputeResourcePreferencePK;
-import org.apache.airavata.registry.core.entities.appcatalog.StoragePreferencePK;
-import org.apache.airavata.registry.core.entities.appcatalog.GatewayProfileEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.*;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.core.utils.QueryConstants;
@@ -50,19 +48,29 @@ public class GwyResourceProfileRepository extends AppCatAbstractRepository<Gatew
         else {
             gatewayProfileEntity.setCreationTime(AiravataUtils.getCurrentTimestamp());
         }
+
+        if (gatewayProfileEntity.getComputeResourcePreferences() != null)
+            gatewayProfileEntity.getComputeResourcePreferences().forEach(pref->pref.setGatewayId(gatewayId));
+
+        if (gatewayProfileEntity.getStoragePreferences() != null)
+            gatewayProfileEntity.getStoragePreferences().forEach(pref->pref.setGatewayId(gatewayId));
+
         GatewayProfileEntity persistedCopy = execute(entityManager -> entityManager.merge(gatewayProfileEntity));
 
         List<ComputeResourcePreference> computeResourcePreferences = gatewayResourceProfile.getComputeResourcePreferences();
         if (computeResourcePreferences != null && !computeResourcePreferences.isEmpty()) {
             for (ComputeResourcePreference preference : computeResourcePreferences ) {
-                (new ComputeResourcePrefRepository()).create(preference);
-            }
-        }
-
-        List<StoragePreference> dataStoragePreferences = gatewayResourceProfile.getStoragePreferences();
-        if (dataStoragePreferences != null && !dataStoragePreferences.isEmpty()) {
-            for (StoragePreference storagePreference : dataStoragePreferences) {
-                (new StoragePrefRepository()).create(storagePreference);
+                if (preference.getSshAccountProvisionerConfig() != null && !preference.getSshAccountProvisionerConfig().isEmpty()){
+                    ComputeResourcePreferenceEntity computeResourcePreferenceEntity = mapper.map(preference, ComputeResourcePreferenceEntity.class);
+                    computeResourcePreferenceEntity.setGatewayId(gatewayId);
+                    List<SSHAccountProvisionerConfiguration> configurations = new ArrayList<>();
+                    for (String sshAccountProvisionerConfigName : preference.getSshAccountProvisionerConfig().keySet()) {
+                        String value = preference.getSshAccountProvisionerConfig().get(sshAccountProvisionerConfigName);
+                        configurations.add(new SSHAccountProvisionerConfiguration(sshAccountProvisionerConfigName, value, computeResourcePreferenceEntity));
+                    }
+                    computeResourcePreferenceEntity.setSshAccountProvisionerConfigurations(configurations);
+                    execute(entityManager -> entityManager.merge(computeResourcePreferenceEntity));
+                }
             }
         }
         return persistedCopy.getGatewayId();
@@ -71,8 +79,12 @@ public class GwyResourceProfileRepository extends AppCatAbstractRepository<Gatew
     @Override
     public GatewayResourceProfile getGatewayProfile(String gatewayId) {
         GatewayResourceProfile gatewayResourceProfile = get(gatewayId);
-        gatewayResourceProfile.setComputeResourcePreferences(getAllComputeResourcePreferences(gatewayId));
-        gatewayResourceProfile.setStoragePreferences(getAllStoragePreferences(gatewayId));
+        if (gatewayResourceProfile.getComputeResourcePreferences() != null && !gatewayResourceProfile.getComputeResourcePreferences().isEmpty()){
+            for (ComputeResourcePreference preference: gatewayResourceProfile.getComputeResourcePreferences()){
+                ComputeResourcePrefRepository computeResourcePrefRepository = new ComputeResourcePrefRepository();
+                preference.setSshAccountProvisionerConfig(computeResourcePrefRepository.getsshAccountProvisionerConfig(gatewayResourceProfile.getGatewayID(), preference.getComputeResourceId()));
+            }
+        }
         return gatewayResourceProfile;
     }
 
@@ -88,8 +100,12 @@ public class GwyResourceProfileRepository extends AppCatAbstractRepository<Gatew
         List<GatewayResourceProfile> gatewayResourceProfileList = select(QueryConstants.FIND_ALL_GATEWAY_PROFILES, 0);
         if (gatewayResourceProfileList != null && !gatewayResourceProfileList.isEmpty()) {
             for (GatewayResourceProfile gatewayResourceProfile: gatewayResourceProfileList) {
-                gatewayResourceProfile.setComputeResourcePreferences(getAllComputeResourcePreferences(gatewayResourceProfile.getGatewayID()));
-                gatewayResourceProfile.setStoragePreferences(getAllStoragePreferences(gatewayResourceProfile.getGatewayID()));
+                if (gatewayResourceProfile.getComputeResourcePreferences() != null && !gatewayResourceProfile.getComputeResourcePreferences().isEmpty()){
+                    for (ComputeResourcePreference preference: gatewayResourceProfile.getComputeResourcePreferences()){
+                        ComputeResourcePrefRepository computeResourcePrefRepository = new ComputeResourcePrefRepository();
+                        preference.setSshAccountProvisionerConfig(computeResourcePrefRepository.getsshAccountProvisionerConfig(gatewayResourceProfile.getGatewayID(), preference.getComputeResourceId()));
+                    }
+                }
             }
         }
         return gatewayResourceProfileList;
@@ -123,7 +139,10 @@ public class GwyResourceProfileRepository extends AppCatAbstractRepository<Gatew
         ComputeResourcePreferencePK computeResourcePreferencePK = new ComputeResourcePreferencePK();
         computeResourcePreferencePK.setGatewayId(gatewayId);
         computeResourcePreferencePK.setComputeResourceId(hostId);
-        return (new ComputeResourcePrefRepository()).get(computeResourcePreferencePK);
+        ComputeResourcePrefRepository computeResourcePrefRepository = new ComputeResourcePrefRepository();
+        ComputeResourcePreference computeResourcePreference = computeResourcePrefRepository.get(computeResourcePreferencePK);
+        computeResourcePreference.setSshAccountProvisionerConfig(computeResourcePrefRepository.getsshAccountProvisionerConfig(gatewayId, hostId));
+        return computeResourcePreference;
     }
 
     @Override
@@ -138,7 +157,14 @@ public class GwyResourceProfileRepository extends AppCatAbstractRepository<Gatew
     public List<ComputeResourcePreference> getAllComputeResourcePreferences(String gatewayId) {
         Map<String,Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.ComputeResourcePreference.GATEWAY_ID, gatewayId);
-        return (new ComputeResourcePrefRepository()).select(QueryConstants.FIND_ALL_COMPUTE_RESOURCE_PREFERENCES, -1, 0, queryParameters);
+        ComputeResourcePrefRepository computeResourcePrefRepository = new ComputeResourcePrefRepository();
+        List<ComputeResourcePreference> preferences = computeResourcePrefRepository.select(QueryConstants.FIND_ALL_COMPUTE_RESOURCE_PREFERENCES, -1, 0, queryParameters);
+        if (preferences != null && !preferences.isEmpty()) {
+            for (ComputeResourcePreference preference: preferences){
+                preference.setSshAccountProvisionerConfig(computeResourcePrefRepository.getsshAccountProvisionerConfig(gatewayId, preference.getComputeResourceId()));
+            }
+        }
+        return preferences;
     }
 
     @Override
