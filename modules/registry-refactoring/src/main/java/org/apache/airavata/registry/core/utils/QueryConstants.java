@@ -15,9 +15,9 @@ public interface QueryConstants {
 
     String FIND_ALL_GATEWAY_PROFILES = "SELECT G FROM " + GatewayProfileEntity.class.getSimpleName() + " G";
     String FIND_ALL_COMPUTE_RESOURCE_PREFERENCES = "SELECT DISTINCT CR FROM " + ComputeResourcePreferenceEntity.class.getSimpleName() + " CR " +
-            "WHERE CR.id.gatewayId LIKE : " + DBConstants.ComputeResourcePreference.GATEWAY_ID;
+            "WHERE CR.gatewayId LIKE : " + DBConstants.ComputeResourcePreference.GATEWAY_ID;
     String FIND_ALL_STORAGE_RESOURCE_PREFERENCES = "SELECT DISTINCT S FROM " + StoragePreferenceEntity.class.getSimpleName() + " S " +
-            "WHERE S.id.gatewayId LIKE : " + DBConstants.StorageResourcePreference.GATEWAY_ID;
+            "WHERE S.gatewayId LIKE : " + DBConstants.StorageResourcePreference.GATEWAY_ID;
 
     String FIND_COMPUTE_RESOURCE = "SELECT DISTINCT CR FROM " + ComputeResourceEntity.class.getSimpleName() + " CR " +
             "WHERE CR.hostName LIKE : " + DBConstants.ComputeResource.HOST_NAME;

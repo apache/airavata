@@ -20,12 +20,10 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.List;
 
 
 /**
@@ -54,6 +52,14 @@ public class GatewayProfileEntity implements Serializable {
 
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
+
+    @OneToMany(targetEntity = ComputeResourcePreferenceEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "gatewayProfileResource", fetch = FetchType.EAGER)
+    private List<ComputeResourcePreferenceEntity> computeResourcePreferences;
+
+    @OneToMany(targetEntity = StoragePreferenceEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "gatewayProfileResource", fetch = FetchType.EAGER)
+    private List<StoragePreferenceEntity> storagePreferences;
 
     public GatewayProfileEntity() {
     }
@@ -104,5 +110,21 @@ public class GatewayProfileEntity implements Serializable {
 
     public void setUpdateTime(Timestamp updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public List<ComputeResourcePreferenceEntity> getComputeResourcePreferences() {
+        return computeResourcePreferences;
+    }
+
+    public void setComputeResourcePreferences(List<ComputeResourcePreferenceEntity> computeResourcePreferences) {
+        this.computeResourcePreferences = computeResourcePreferences;
+    }
+
+    public List<StoragePreferenceEntity> getStoragePreferences() {
+        return storagePreferences;
+    }
+
+    public void setStoragePreferences(List<StoragePreferenceEntity> storagePreferences) {
+        this.storagePreferences = storagePreferences;
     }
 }
