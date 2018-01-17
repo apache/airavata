@@ -639,11 +639,18 @@ public class ProcessContext {
 					String hostName = !(alternateHostName == null || alternateHostName.length() == 0) ? alternateHostName :
 								getComputeResourceDescription().getHostName();
 
-					return new ServerInfo(
-							getComputeResourceLoginUserName(),
-							hostName,
-							getComputeResourceCredentialToken(),
-							sshJobSubmission.getSshPort());
+					if (sshJobSubmission.getSshPort() > 0) {
+                        return new ServerInfo(
+                                getComputeResourceLoginUserName(),
+                                hostName,
+                                getComputeResourceCredentialToken(),
+                                sshJobSubmission.getSshPort());
+                    } else {
+                        return new ServerInfo(
+                                getComputeResourceLoginUserName(),
+                                hostName,
+                                getComputeResourceCredentialToken());
+                    }
 
 				} catch (AppCatalogException e) {
 					throw new GFacException("Failed to fetch ssh job submission for interface " +
