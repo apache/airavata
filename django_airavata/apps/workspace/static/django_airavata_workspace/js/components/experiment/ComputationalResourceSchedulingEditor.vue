@@ -1,26 +1,33 @@
 <template>
-    <b-form novalidate>
-        <b-form-group label="Compute Resource" label-for="compute-resource"
-                :feedback="getValidationFeedback('resourceHostId')"
-                :state="getValidationState('resourceHostId')">
-            <b-form-select id="compute-resource"
-                v-model="resourceHostId"
-                :options="computeResourceOptions" required
-                @change="computeResourceChanged"
-                :state="getValidationState('resourceHostId')">
-                <template slot="first">
-                    <option :value="null" disabled>Select a Compute Resource</option>
-                </template>
-            </b-form-select>
-        </b-form-group>
-
-        <queue-settings-editor
-            v-model="localComputationalResourceScheduling"
-            v-if="appDeploymentId"
-            :app-deployment-id="appDeploymentId"
-            @input="queueSettingsChanged">
-        </queue-settings-editor>
-    </b-form>
+    <div>
+        <div class="row">
+            <div class="col">
+                <b-form-group label="Compute Resource" label-for="compute-resource"
+                        :feedback="getValidationFeedback('resourceHostId')"
+                        :state="getValidationState('resourceHostId')">
+                    <b-form-select id="compute-resource"
+                        v-model="resourceHostId"
+                        :options="computeResourceOptions" required
+                        @change="computeResourceChanged"
+                        :state="getValidationState('resourceHostId')">
+                        <template slot="first">
+                            <option :value="null" disabled>Select a Compute Resource</option>
+                        </template>
+                    </b-form-select>
+                </b-form-group>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <queue-settings-editor
+                    v-model="localComputationalResourceScheduling"
+                    v-if="appDeploymentId"
+                    :app-deployment-id="appDeploymentId"
+                    @input="queueSettingsChanged">
+                </queue-settings-editor>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>

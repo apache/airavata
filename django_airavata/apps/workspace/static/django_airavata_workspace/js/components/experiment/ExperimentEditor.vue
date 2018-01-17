@@ -8,50 +8,48 @@
                 </h1>
             </div>
         </div>
-        <div class="row">
-            <div class="col">
-                <div class="card">
-                    <div class="card-body">
-                        <b-form novalidate>
-                            <b-form-group label="Experiment Name" label-for="experiment-name"
-                                :feedback="getValidationFeedback('experimentName')"
-                                :state="getValidationState('experimentName')">
-                                <b-form-input id="experiment-name"
-                                type="text" v-model="localExperiment.experimentName" required
-                                placeholder="Experiment name"
-                                :state="getValidationState('experimentName')"></b-form-input>
-                            </b-form-group>
-                            <b-form-group label="Project" label-for="project"
-                                :feedback="getValidationFeedback('projectId')"
-                                :state="getValidationState('projectId')">
-                                <b-form-select id="project"
-                                    v-model="localExperiment.projectId" :options="projectOptions" required
-                                    :state="getValidationState('projectId')">
-                                    <template slot="first">
-                                        <option :value="null" disabled>Select a Project</option>
-                                    </template>
-                                </b-form-select>
-                            </b-form-group>
-                        </b-form>
-                    </div>
+        <b-form novalidate>
+            <div class="row">
+                <div class="col">
+                    <b-form-group label="Experiment Name" label-for="experiment-name"
+                        :feedback="getValidationFeedback('experimentName')"
+                        :state="getValidationState('experimentName')">
+                        <b-form-input id="experiment-name"
+                        type="text" v-model="localExperiment.experimentName" required
+                        placeholder="Experiment name"
+                        :state="getValidationState('experimentName')"></b-form-input>
+                    </b-form-group>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <h1 class="h4 mb-4">
-                    Application Configuration
-                </h1>
+            <div class="row">
+                <div class="col">
+                    <b-form-group label="Project" label-for="project"
+                        :feedback="getValidationFeedback('projectId')"
+                        :state="getValidationState('projectId')">
+                        <b-form-select id="project"
+                            v-model="localExperiment.projectId" :options="projectOptions" required
+                            :state="getValidationState('projectId')">
+                            <template slot="first">
+                                <option :value="null" disabled>Select a Project</option>
+                            </template>
+                        </b-form-select>
+                    </b-form-group>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <div class="card">
-                    <div class="card-body">
-                        <h2 class="h5 mb-3">
-                            Application Inputs
-                        </h2>
-                        <b-form novalidate>
+            <div class="row">
+                <div class="col">
+                    <h1 class="h4 mt-5 mb-4">
+                        Application Configuration
+                    </h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="card border-default">
+                        <div class="card-body">
+                            <h2 class="h6 mb-3">
+                                Application Inputs
+                            </h2>
                             <b-form-group v-for="experimentInput in localExperiment.experimentInputs"
                                     :label="experimentInput.name" :label-for="experimentInput.name" :key="experimentInput.name"
                                     :feedback="getValidationFeedback(['experimentInputs', experimentInput.name, 'value'])"
@@ -60,35 +58,42 @@
                                     :placeholder="experimentInput.userFriendlyDescription"
                                     :state="getValidationState(['experimentInputs', experimentInput.name, 'value'])"></b-form-input>
                             </b-form-group>
-                        </b-form>
-                        <h2 class="h5 mb-3">
-                            Resource Selection
-                        </h2>
-                        <computational-resource-scheduling-editor
-                            v-model="localExperiment.userConfigurationData.computationalResourceScheduling"
-                            :app-module-id="appModule.appModuleId"
-                            :app-interface-id="appInterface.applicationInterfaceId">
-                        </computational-resource-scheduling-editor>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div id="col-exp-buttons" class="col">
-                <b-button variant="success" @click="saveAndLaunchExperiment" :disabled="isSaveDisabled">
-                    Save and Launch
-                </b-button>
-                <b-button variant="primary" @click="saveExperiment" :disabled="isSaveDisabled">
-                    Save
-                </b-button>
+            <div class="row">
+                <div class="col">
+                    <h2 class="h4 mt-4 mb-3">
+                        Resource Selection
+                    </h2>
+                </div>
             </div>
-        </div>
+            <div class="row">
+                <div class="col">
+                    <computational-resource-scheduling-editor
+                        v-model="localExperiment.userConfigurationData.computationalResourceScheduling"
+                        :app-module-id="appModule.appModuleId"
+                        :app-interface-id="appInterface.applicationInterfaceId">
+                    </computational-resource-scheduling-editor>
+                </div>
+            </div>
+            <div class="row">
+                <div id="col-exp-buttons" class="col">
+                    <b-button variant="success" @click="saveAndLaunchExperiment" :disabled="isSaveDisabled">
+                        Save and Launch
+                    </b-button>
+                    <b-button variant="primary" @click="saveExperiment" :disabled="isSaveDisabled">
+                        Save
+                    </b-button>
+                </div>
+            </div>
+        </b-form>
     </div>
 </template>
 
 <script>
 import ComputationalResourceSchedulingEditor from './ComputationalResourceSchedulingEditor.vue'
-import QueueSettingsEditor from './QueueSettingsEditor.vue'
 import {models, services} from 'django-airavata-api'
 import {utils} from 'django-airavata-common-ui'
 
@@ -115,7 +120,6 @@ export default {
         }
     },
     components: {
-        QueueSettingsEditor,
         ComputationalResourceSchedulingEditor,
     },
     mounted: function () {

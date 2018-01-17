@@ -1,73 +1,102 @@
 <template>
-    <b-form novalidate>
 
-        <div class="card border-default">
-            <div class="card-body">
-                <h5 class="card-title">Settings for queue {{ localComputationalResourceScheduling.queueName }}</h5>
-                <div class="row">
-                    <div class="col">
-                        <h1>{{ localComputationalResourceScheduling.nodeCount }}</h1>
-                        <span>NODE COUNT</span>
-                    </div>
-                    <div class="col">
-                        <h1>{{ localComputationalResourceScheduling.totalCPUCount }}</h1>
-                        <span>CORE COUNT</span>
-                    </div>
-                    <div class="col">
-                        <h1>{{ localComputationalResourceScheduling.wallTimeLimit }}</h1>
-                        <span>TIME LIMIT</span>
+    <div>
+        <div class="row">
+            <div class="col">
+                <div class="card border-default">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Settings for queue {{ localComputationalResourceScheduling.queueName }}</h5>
+                        <div class="row">
+                            <div class="col">
+                                <h3 class="h5 mb-0">{{ localComputationalResourceScheduling.nodeCount }}</h3>
+                                <span class="text-muted text-uppercase">NODE COUNT</span>
+                            </div>
+                            <div class="col">
+                                <h3 class="h5 mb-0">{{ localComputationalResourceScheduling.totalCPUCount }}</h3>
+                                <span class="text-muted text-uppercase">CORE COUNT</span>
+                            </div>
+                            <div class="col">
+                                <h3 class="h5 mb-0">{{ localComputationalResourceScheduling.wallTimeLimit }}</h3>
+                                <span class="text-muted text-uppercase">TIME LIMIT</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div v-if="!showConfiguration">
-            <i class="fa fa-cog" aria-hidden="true"></i>
-            <a href="#" @click.prevent="showConfiguration = true">Configure Resource</a>
-        </div>
-        <div v-if="showConfiguration">
-            <b-form-group label="Select a Queue" label-for="queue"
-                :feedback="getValidationFeedback('queueName')"
-                :state="getValidationState('queueName')">
-                <b-form-select id="queue"
-                    v-model="localComputationalResourceScheduling.queueName"
-                    :options="queueOptions" required
-                    @change="queueChanged"
-                    :state="getValidationState('queueName')">
-                </b-form-select>
-            </b-form-group>
-            <b-form-group label="Node Count" label-for="node-count"
-                :feedback="getValidationFeedback('nodeCount')"
-                :state="getValidationState('nodeCount')">
-                <b-form-input id="node-count" type="number" min="1"
-                    v-model="localComputationalResourceScheduling.nodeCount" required
-                    @input="emitValueChanged"
-                    :state="getValidationState('nodeCount')">
-                </b-form-input>
-            </b-form-group>
-            <b-form-group label="Total Core Count" label-for="core-count"
-                :feedback="getValidationFeedback('totalCPUCount')"
-                :state="getValidationState('totalCPUCount')">
-                <b-form-input id="core-count" type="number" min="1"
-                    v-model="localComputationalResourceScheduling.totalCPUCount" required
-                    @input="emitValueChanged"
-                    :state="getValidationState('totalCPUCount')">
-                </b-form-input>
-            </b-form-group>
-            <b-form-group label="Wall Time Limit" label-for="walltime-limit"
-                :feedback="getValidationFeedback('wallTimeLimit')"
-                :state="getValidationState('wallTimeLimit')">
-                <b-form-input id="walltime-limit" type="number" min="1"
-                    v-model="localComputationalResourceScheduling.wallTimeLimit" required
-                    @input="emitValueChanged"
-                    :state="getValidationState('wallTimeLimit')">
-                </b-form-input>
-            </b-form-group>
-            <div>
-                <i class="fa fa-times" aria-hidden="true"></i>
-                <a href="#" @click.prevent="showConfiguration = false">Hide Settings</a>
+        <div class="row">
+            <div class="col">
+                <div v-if="!showConfiguration">
+                    <i class="fa fa-cog text-secondary" aria-hidden="true"></i>
+                    <a class="text-secondary" href="#" @click.prevent="showConfiguration = true">Configure Resource</a>
+                </div>
             </div>
         </div>
-    </b-form>
+        <div v-if="showConfiguration">
+            <div class="row">
+                <div class="col">
+                    <b-form-group label="Select a Queue" label-for="queue"
+                        :feedback="getValidationFeedback('queueName')"
+                        :state="getValidationState('queueName')"
+                        :description="queueDescription">
+                        <b-form-select id="queue"
+                            v-model="localComputationalResourceScheduling.queueName"
+                            :options="queueOptions" required
+                            @change="queueChanged"
+                            :state="getValidationState('queueName')">
+                        </b-form-select>
+                    </b-form-group>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <b-form-group label="Node Count" label-for="node-count"
+                        :feedback="getValidationFeedback('nodeCount')"
+                        :state="getValidationState('nodeCount')">
+                        <b-form-input id="node-count" type="number" min="1"
+                            v-model="localComputationalResourceScheduling.nodeCount" required
+                            @input="emitValueChanged"
+                            :state="getValidationState('nodeCount')">
+                        </b-form-input>
+                    </b-form-group>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <b-form-group label="Total Core Count" label-for="core-count"
+                        :feedback="getValidationFeedback('totalCPUCount')"
+                        :state="getValidationState('totalCPUCount')">
+                        <b-form-input id="core-count" type="number" min="1"
+                            v-model="localComputationalResourceScheduling.totalCPUCount" required
+                            @input="emitValueChanged"
+                            :state="getValidationState('totalCPUCount')">
+                        </b-form-input>
+                    </b-form-group>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <b-form-group label="Wall Time Limit" label-for="walltime-limit"
+                        :feedback="getValidationFeedback('wallTimeLimit')"
+                        :state="getValidationState('wallTimeLimit')">
+                        <b-form-input id="walltime-limit" type="number" min="1"
+                            v-model="localComputationalResourceScheduling.wallTimeLimit" required
+                            @input="emitValueChanged"
+                            :state="getValidationState('wallTimeLimit')">
+                        </b-form-input>
+                    </b-form-group>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div>
+                        <i class="fa fa-times text-secondary" aria-hidden="true"></i>
+                        <a class="text-secondary" href="#" @click.prevent="showConfiguration = false">Hide Settings</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -91,6 +120,7 @@ export default {
             localComputationalResourceScheduling: this.value.clone(),
             queueDefaults: [],
             showConfiguration: false,
+            queueDescription: null,
         }
     },
     computed: {
@@ -98,7 +128,7 @@ export default {
             const queueOptions = this.queueDefaults.map(queueDefault => {
                 return {
                     value: queueDefault.queueName,
-                    text: `${queueDefault.queueName}: ${queueDefault.queueDescription}`,
+                    text: queueDefault.queueName,
                 }
             });
             return queueOptions;
@@ -111,6 +141,7 @@ export default {
             this.localComputationalResourceScheduling.totalCPUCount = queueDefault.defaultCPUCount;
             this.localComputationalResourceScheduling.nodeCount = queueDefault.defaultNodeCount;
             this.localComputationalResourceScheduling.wallTimeLimit = queueDefault.defaultWalltime;
+            this.queueDescription = queueDefault.queueDescription;
             this.emitValueChanged();
         },
         emitValueChanged: function() {
@@ -137,6 +168,7 @@ export default {
                     this.localComputationalResourceScheduling.totalCPUCount = defaultQueue.defaultCPUCount;
                     this.localComputationalResourceScheduling.nodeCount = defaultQueue.defaultNodeCount;
                     this.localComputationalResourceScheduling.wallTimeLimit = defaultQueue.defaultWalltime;
+                    this.queueDescription = defaultQueue.queueDescription;
                     this.emitValueChanged();
                 });
         },

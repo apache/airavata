@@ -46,3 +46,9 @@ export default {
     }
 }
 </script>
+<style>
+/* style the containing div, in base.html template */
+.main-content {
+    background-color: #ffffff;
+}
+</style>
