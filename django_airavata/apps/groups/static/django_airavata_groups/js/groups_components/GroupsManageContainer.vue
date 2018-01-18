@@ -32,7 +32,6 @@
 
 <script>
 
-import GroupButtonNew from './GroupButtonNew.vue'
 import GroupOwnerList from './GroupOwnerList.vue';
 import GroupMemberList from './GroupMemberList.vue';
 
@@ -51,7 +50,6 @@ export default {
     components: {
         'group-owner-list': GroupOwnerList,
         'group-member-list': GroupMemberList,
-        'group-button-new': GroupButtonNew,
         'pager': comps.Pager,
     },
     methods: {

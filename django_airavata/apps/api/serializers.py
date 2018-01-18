@@ -103,7 +103,7 @@ class GatewayIdDefaultField(serializers.CharField):
 
 
 class GroupSerializer(serializers.Serializer):
-    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:group-list', lookup_field='id', lookup_url_kwarg='group_id')
+    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:group-detail', lookup_field='id', lookup_url_kwarg='group_id')
     id = serializers.CharField(default=GroupModel.thrift_spec[1][4])
     name = serializers.CharField(required=True)
     description = serializers.CharField(allow_null=True)

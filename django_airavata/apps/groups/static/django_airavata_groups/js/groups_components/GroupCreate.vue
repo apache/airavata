@@ -4,7 +4,7 @@
       {{ showDismissibleAlert.message }}
     </b-alert>
 
-    <b-form @submit="onSubmit" v-if="show">
+    <b-form v-if="show">
 
       <b-form-group id="group1" label="Group Name:" label-for="group_name" description="Name should only contain Alpha Characters">
         <b-form-input id="group_name" type="text" v-model="newGroup.name" required placeholder="Enter group name">
@@ -16,15 +16,11 @@
         </b-form-textarea>
       </b-form-group>
 
-      <b-form-group id="group3">
-        <b-btn v-b-toggle.togglemembers size="sm" variant="primary">Add Members&nbsp;&nbsp;&#9660;</b-btn>
-        <b-collapse id="togglemembers" class="mt-2">
-          <b-form-checkbox-group v-model="selected" name="addMembers" :options="membersList"></b-form-checkbox-group>
-        </b-collapse>
+      <b-form-group id="group3" label="Add Members:" label-for="members">
+        <autocomplete id="members" :suggestions="suggestions" v-model="selection" v-on:updateSelected="updateSelectedValue"></autocomplete>
       </b-form-group>
 
-      <b-button type="submit" variant="success">Submit</b-button>
-
+      <b-button @click="submitForm" variant="primary">Submit</b-button>
     </b-form>
   </div>
 </template>
@@ -33,21 +29,38 @@
 
 import { models, services } from 'django-airavata-api'
 
+import Autocomplete from './Autocomplete.vue'
+
 export default {
   data () {
     return {
+      selection: '',
+      suggestions: [
+          { id: 1, name: 'Stephen' },
+          { id: 2, name: 'Marcus' },
+          { id: 3, name: 'Marlon' },
+          { id: 4, name: 'Suresh' },
+          { id: 5, name: 'Eroma' },
+          { id: 6, name: 'Sachin' },
+          { id: 7, name: 'Jerrin' },
+          { id: 8, name: 'Eldho' },
+          { id: 9, name: 'Dimuthu' },
+          { id: 10, name: 'Ameya' },
+          { id: 11, name: 'Sneha' },
+        ],
       newGroup: new models.Group(),
       show: true,
-      membersList: ['stephen', 'marcus', 'marlon', 'suresh'],
       selected: [],
       showDismissibleAlert: {'variant':'success', 'message':'no data', 'dismissable':false},
     }
   },
+  components: {
+    Autocomplete
+  },
   methods: {
-    onSubmit (evt) {
-      evt.preventDefault();
-      this.newGroup.members = this.selected.toString();
-      alert(JSON.stringify(this.newGroup));
+    submitForm () {
+      this.newGroup.members = this.selected;
+      console.log(JSON.stringify(this.newGroup));
       services.GroupService.create(this.newGroup)
           .then(result => {
               this.showDismissibleAlert.dismissable = true;
@@ -61,6 +74,9 @@ export default {
               this.showDismissibleAlert.variant = "danger";
           });
     },
+    updateSelectedValue(data) {
+      this.selected = data;
+    }
   }
 }
 </script>

@@ -192,13 +192,13 @@ class GroupViewSet(APIBackedViewSet):
     serializer_class = serializers.GroupSerializer
     lookup_field = 'group_id'
     pagination_class = APIResultPagination
-    pagination_viewname = 'django_airavata_api:group-owner-list'
+    pagination_viewname = 'django_airavata_api:group-list'
 
     def get_list(self):
         view = self
         class GroupMemberResultIterator(APIResultIterator):
             def get_results(self, limit=-1, offset=0):
-                return view.request.airavata_client.getGroups(view.authz_token, view.gateway_id, limit, offset)
+                return view.request.sharing_client.getGroups(view.gateway_id, limit, offset)
         return GroupMemberResultIterator()
 
     def get_instance(self, lookup_value):

@@ -22,11 +22,6 @@ export default class Group extends BaseModel {
                 name: ["Please provide a description."]
             }
         }
-        if (this.members === null || this.members.trim() === "") {
-            return {
-                name: ["Please provide some members."]
-            }
-        }
         return null;
     }
 
