@@ -848,7 +848,7 @@ public class GFacEngineImpl implements GFacEngine {
     }
 
     private TaskContext getDataStagingTaskContext(ProcessContext processContext, OutputDataObjectType processOutput)
-            throws TException, TaskException {
+            throws TException, TaskException, GFacException {
         TaskContext taskCtx = new TaskContext();
         taskCtx.setParentProcessContext(processContext);
         // create new task model for this task

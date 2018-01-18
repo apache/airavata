@@ -22,12 +22,7 @@ package org.apache.airavata.gfac.impl;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
-import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
-import com.jcraft.jsch.UserInfo;
+import com.jcraft.jsch.*;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -596,7 +591,7 @@ public abstract class Factory {
 		return new ArchiveTask();
 	}
 
-	private static class DefaultUserInfo implements UserInfo {
+	private static class DefaultUserInfo implements UserInfo, UIKeyboardInteractive {
 
 		private String userName;
 		private String password;
@@ -637,5 +632,11 @@ public abstract class Factory {
 		public void showMessage(String s) {
 
 		}
-	}
+
+        @Override
+        public String[] promptKeyboardInteractive(String destination, String name, String instruction,
+                                                  String[] prompt, boolean[] echo) {
+            return new String[0];
+        }
+    }
 }

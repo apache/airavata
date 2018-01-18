@@ -43,6 +43,7 @@ import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.registry.cpi.AppCatalog;
+import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.curator.framework.CuratorFramework;
 import org.slf4j.Logger;
@@ -620,7 +621,44 @@ public class ProcessContext {
 		}
 	}
 
-	public ServerInfo getComputeResourceServerInfo(){
+	public ServerInfo getComputeResourceServerInfo() throws GFacException {
+
+		if (this.jobSubmissionProtocol  == JobSubmissionProtocol.SSH) {
+			Optional<JobSubmissionInterface> firstJobSubmissionIface = getComputeResourceDescription()
+					.getJobSubmissionInterfaces().stream()
+					.filter(iface -> iface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH)
+					.findFirst();
+
+			if (firstJobSubmissionIface.isPresent()) {
+
+				try {
+                    SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource()
+                            .getSSHJobSubmission(firstJobSubmissionIface.get().getJobSubmissionInterfaceId());
+
+					String alternateHostName = sshJobSubmission.getAlternativeSSHHostName();
+					String hostName = !(alternateHostName == null || alternateHostName.length() == 0) ? alternateHostName :
+								getComputeResourceDescription().getHostName();
+
+					if (sshJobSubmission.getSshPort() > 0) {
+                        return new ServerInfo(
+                                getComputeResourceLoginUserName(),
+                                hostName,
+                                getComputeResourceCredentialToken(),
+                                sshJobSubmission.getSshPort());
+                    } else {
+                        return new ServerInfo(
+                                getComputeResourceLoginUserName(),
+                                hostName,
+                                getComputeResourceCredentialToken());
+                    }
+
+				} catch (AppCatalogException e) {
+					throw new GFacException("Failed to fetch ssh job submission for interface " +
+                            firstJobSubmissionIface.get().getJobSubmissionInterfaceId(), e);
+				}
+			}
+		}
+
 		return new ServerInfo(getComputeResourceLoginUserName(),
 				getComputeResourceDescription().getHostName(),
 				getComputeResourceCredentialToken());
