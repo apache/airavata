@@ -44,6 +44,11 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('   getGroups(string domainId, i32 offset, i32 limit)')
     print('  bool addUsersToGroup(string domainId,  userIds, string groupId)')
     print('  bool removeUsersFromGroup(string domainId,  userIds, string groupId)')
+    print('  bool transferGroupOwnership(string domainId, string groupId, string newOwnerId)')
+    print('  bool addGroupAdmins(string domainId, string groupId,  adminIds)')
+    print('  bool removeGroupAdmins(string domainId, string groupId,  adminIds)')
+    print('  bool hasAdminAccess(string domainId, string groupId, string adminId)')
+    print('  bool hasOwnerAccess(string domainId, string groupId, string ownerId)')
     print('   getGroupMembersOfTypeUser(string domainId, string groupId, i32 offset, i32 limit)')
     print('   getGroupMembersOfTypeGroup(string domainId, string groupId, i32 offset, i32 limit)')
     print('  bool addChildGroupsToParentGroup(string domainId,  childIds, string groupId)')
@@ -272,6 +277,36 @@ elif cmd == 'removeUsersFromGroup':
         print('removeUsersFromGroup requires 3 args')
         sys.exit(1)
     pp.pprint(client.removeUsersFromGroup(args[0], eval(args[1]), args[2],))
+
+elif cmd == 'transferGroupOwnership':
+    if len(args) != 3:
+        print('transferGroupOwnership requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.transferGroupOwnership(args[0], args[1], args[2],))
+
+elif cmd == 'addGroupAdmins':
+    if len(args) != 3:
+        print('addGroupAdmins requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.addGroupAdmins(args[0], args[1], eval(args[2]),))
+
+elif cmd == 'removeGroupAdmins':
+    if len(args) != 3:
+        print('removeGroupAdmins requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.removeGroupAdmins(args[0], args[1], eval(args[2]),))
+
+elif cmd == 'hasAdminAccess':
+    if len(args) != 3:
+        print('hasAdminAccess requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.hasAdminAccess(args[0], args[1], args[2],))
+
+elif cmd == 'hasOwnerAccess':
+    if len(args) != 3:
+        print('hasOwnerAccess requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.hasOwnerAccess(args[0], args[1], args[2],))
 
 elif cmd == 'getGroupMembersOfTypeUser':
     if len(args) != 4:
