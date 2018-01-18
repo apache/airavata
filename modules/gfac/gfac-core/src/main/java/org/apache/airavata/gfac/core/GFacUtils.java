@@ -868,7 +868,7 @@ public class GFacUtils {
         try {
             make = engine.createTemplate(template).make(groovyMap);
         } catch (Exception e) {
-            throw new GFacException("Error while generating script using groovy map");
+            throw new GFacException("Error while generating script using groovy map", e);
         }
         return make.toString();
     }
