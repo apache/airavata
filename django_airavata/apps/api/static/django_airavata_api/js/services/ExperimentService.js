@@ -32,10 +32,14 @@ class ExperimentService {
         }
     }
 
-    get() {
-        return FetchUtils.get('/api/experiments/'
-                + encodeURIComponent(experiment.experimentId) + '/')
-            .then(result => new Experiment(result));
+    get(experimentId, data = null) {
+        if (data) {
+            return Promise.resolve(new Experiment(data));
+        } else {
+            return FetchUtils.get('/api/experiments/'
+                    + encodeURIComponent(experimentId) + '/')
+                .then(result => new Experiment(result));
+        }
     }
 
     launch(experimentId) {

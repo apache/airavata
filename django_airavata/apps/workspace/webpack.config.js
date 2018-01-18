@@ -8,6 +8,7 @@ module.exports = {
       'project-list': './static/django_airavata_workspace/js/entry-project-list',
       'dashboard': './static/django_airavata_workspace/js/entry-dashboard',
       'create-experiment': './static/django_airavata_workspace/js/entry-create-experiment',
+      'view-experiment': './static/django_airavata_workspace/js/entry-view-experiment',
   },
   output: {
     path: path.resolve(__dirname, './static/django_airavata_workspace/dist/'),

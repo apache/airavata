@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
+from django_airavata.apps.api.views import ExperimentViewSet
 from django_airavata.apps.api.views import ProjectViewSet
 
 logger = logging.getLogger(__name__)
@@ -38,4 +39,16 @@ def create_experiment(request, app_module_id):
 
     return render(request, 'django_airavata_workspace/create_experiment.html', {
         'app_module_id': app_module_id
+    })
+
+@login_required
+def view_experiment(request, experiment_id):
+    request.active_nav_item = 'experiments'
+
+    response = ExperimentViewSet.as_view(
+        {'get': 'retrieve'})(request, experiment_id=experiment_id)
+    experiment_json = JSONRenderer().render(response.data)
+
+    return render(request, 'django_airavata_workspace/view_experiment.html', {
+        'experiment_data': experiment_json
     })
