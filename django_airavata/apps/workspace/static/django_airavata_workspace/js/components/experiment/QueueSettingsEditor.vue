@@ -37,58 +37,61 @@
                 <div class="col">
                     <b-form-group label="Select a Queue" label-for="queue"
                         :feedback="getValidationFeedback('queueName')"
-                        :state="getValidationState('queueName')"
-                        :description="queueDescription">
+                        :state="getValidationState('queueName')">
                         <b-form-select id="queue"
                             v-model="localComputationalResourceScheduling.queueName"
                             :options="queueOptions" required
                             @change="queueChanged"
                             :state="getValidationState('queueName')">
                         </b-form-select>
+                        <div slot="description">
+                            {{ selectedQueueDefault.queueDescription }}
+                        </div>
                     </b-form-group>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
                     <b-form-group label="Node Count" label-for="node-count"
                         :feedback="getValidationFeedback('nodeCount')"
                         :state="getValidationState('nodeCount')">
                         <b-form-input id="node-count" type="number" min="1"
+                            :max="selectedQueueDefault.maxNodes"
                             v-model="localComputationalResourceScheduling.nodeCount" required
                             @input="emitValueChanged"
                             :state="getValidationState('nodeCount')">
                         </b-form-input>
+                        <div slot="description">
+                            <i class="fa fa-info-circle" aria-hidden="true"></i>
+                            Max Allowed Nodes = {{ selectedQueueDefault.maxNodes }}
+                        </div>
                     </b-form-group>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
                     <b-form-group label="Total Core Count" label-for="core-count"
                         :feedback="getValidationFeedback('totalCPUCount')"
                         :state="getValidationState('totalCPUCount')">
                         <b-form-input id="core-count" type="number" min="1"
+                            :max="selectedQueueDefault.maxProcessors"
                             v-model="localComputationalResourceScheduling.totalCPUCount" required
                             @input="emitValueChanged"
                             :state="getValidationState('totalCPUCount')">
                         </b-form-input>
+                        <div slot="description">
+                            <i class="fa fa-info-circle" aria-hidden="true"></i>
+                            Max Allowed Cores = {{ selectedQueueDefault.maxProcessors }}
+                        </div>
                     </b-form-group>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
                     <b-form-group label="Wall Time Limit" label-for="walltime-limit"
                         :feedback="getValidationFeedback('wallTimeLimit')"
                         :state="getValidationState('wallTimeLimit')">
-                        <b-form-input id="walltime-limit" type="number" min="1"
-                            v-model="localComputationalResourceScheduling.wallTimeLimit" required
-                            @input="emitValueChanged"
-                            :state="getValidationState('wallTimeLimit')">
-                        </b-form-input>
+                        <b-input-group right="minutes">
+                            <b-form-input id="walltime-limit" type="number" min="1"
+                                :max="selectedQueueDefault.maxRunTime"
+                                v-model="localComputationalResourceScheduling.wallTimeLimit" required
+                                @input="emitValueChanged"
+                                :state="getValidationState('wallTimeLimit')">
+                            </b-form-input>
+                        </b-input-group>
+                        <div slot="description">
+                            <i class="fa fa-info-circle" aria-hidden="true"></i>
+                            Max Allowed Wall Time = {{ selectedQueueDefault.maxRunTime }}
+                        </div>
                     </b-form-group>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
                     <div>
                         <i class="fa fa-times text-secondary" aria-hidden="true"></i>
                         <a class="text-secondary" href="#" @click.prevent="showConfiguration = false">Hide Settings</a>
@@ -120,7 +123,6 @@ export default {
             localComputationalResourceScheduling: this.value.clone(),
             queueDefaults: [],
             showConfiguration: false,
-            queueDescription: null,
         }
     },
     computed: {
@@ -133,6 +135,9 @@ export default {
             });
             return queueOptions;
         },
+        selectedQueueDefault: function() {
+            return this.queueDefaults.find(queue => queue.queueName === this.localComputationalResourceScheduling.queueName);
+        },
     },
     methods: {
         queueChanged: function(queueName) {
@@ -141,7 +146,6 @@ export default {
             this.localComputationalResourceScheduling.totalCPUCount = queueDefault.defaultCPUCount;
             this.localComputationalResourceScheduling.nodeCount = queueDefault.defaultNodeCount;
             this.localComputationalResourceScheduling.wallTimeLimit = queueDefault.defaultWalltime;
-            this.queueDescription = queueDefault.queueDescription;
             this.emitValueChanged();
         },
         emitValueChanged: function() {
@@ -168,12 +172,11 @@ export default {
                     this.localComputationalResourceScheduling.totalCPUCount = defaultQueue.defaultCPUCount;
                     this.localComputationalResourceScheduling.nodeCount = defaultQueue.defaultNodeCount;
                     this.localComputationalResourceScheduling.wallTimeLimit = defaultQueue.defaultWalltime;
-                    this.queueDescription = defaultQueue.queueDescription;
                     this.emitValueChanged();
                 });
         },
         getValidationFeedback: function(properties) {
-            return utils.getProperty(this.localComputationalResourceScheduling.validate(), properties);
+            return utils.getProperty(this.localComputationalResourceScheduling.validate(this.selectedQueueDefault), properties);
         },
         getValidationState: function(properties) {
             return this.getValidationFeedback(properties) ? 'invalid' : null;
