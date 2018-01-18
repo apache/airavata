@@ -317,6 +317,360 @@ class NSFDemographics(object):
         return not (self == other)
 
 
+class CustomDashboard(object):
+    """
+    A structure holding the cutomized admin dashboard information.
+
+
+
+    Attributes:
+     - airavataInternalUserId
+     - experimentId
+     - name
+     - description
+     - project
+     - owner
+     - application
+     - computeResource
+     - jobName
+     - jobId
+     - jobStatus
+     - jobCreationTime
+     - notificationsTo
+     - workingDir
+     - jobDescription
+     - creationTime
+     - lastModifiedTime
+     - wallTime
+     - cpuCount
+     - nodeCount
+     - queue
+     - inputs
+     - outputs
+     - storageDir
+     - errors
+    """
+
+    thrift_spec = (
+        None,  # 0
+        (1, TType.STRING, 'airavataInternalUserId', 'UTF8', "DO_NOT_SET_AT_CLIENTS", ),  # 1
+        (2, TType.STRING, 'experimentId', 'UTF8', None, ),  # 2
+        (3, TType.STRING, 'name', 'UTF8', None, ),  # 3
+        (4, TType.STRING, 'description', 'UTF8', None, ),  # 4
+        (5, TType.STRING, 'project', 'UTF8', None, ),  # 5
+        (6, TType.STRING, 'owner', 'UTF8', None, ),  # 6
+        (7, TType.STRING, 'application', 'UTF8', None, ),  # 7
+        (8, TType.STRING, 'computeResource', 'UTF8', None, ),  # 8
+        (9, TType.STRING, 'jobName', 'UTF8', None, ),  # 9
+        (10, TType.STRING, 'jobId', 'UTF8', None, ),  # 10
+        (11, TType.STRING, 'jobStatus', 'UTF8', None, ),  # 11
+        (12, TType.STRING, 'jobCreationTime', 'UTF8', None, ),  # 12
+        (13, TType.STRING, 'notificationsTo', 'UTF8', None, ),  # 13
+        (14, TType.STRING, 'workingDir', 'UTF8', None, ),  # 14
+        (15, TType.STRING, 'jobDescription', 'UTF8', None, ),  # 15
+        (16, TType.STRING, 'creationTime', 'UTF8', None, ),  # 16
+        (17, TType.STRING, 'lastModifiedTime', 'UTF8', None, ),  # 17
+        (18, TType.STRING, 'wallTime', 'UTF8', None, ),  # 18
+        (19, TType.STRING, 'cpuCount', 'UTF8', None, ),  # 19
+        (20, TType.STRING, 'nodeCount', 'UTF8', None, ),  # 20
+        (21, TType.STRING, 'queue', 'UTF8', None, ),  # 21
+        (22, TType.STRING, 'inputs', 'UTF8', None, ),  # 22
+        (23, TType.STRING, 'outputs', 'UTF8', None, ),  # 23
+        (24, TType.STRING, 'storageDir', 'UTF8', None, ),  # 24
+        (25, TType.STRING, 'errors', 'UTF8', None, ),  # 25
+    )
+
+    def __init__(self, airavataInternalUserId=thrift_spec[1][4], experimentId=None, name=None, description=None, project=None, owner=None, application=None, computeResource=None, jobName=None, jobId=None, jobStatus=None, jobCreationTime=None, notificationsTo=None, workingDir=None, jobDescription=None, creationTime=None, lastModifiedTime=None, wallTime=None, cpuCount=None, nodeCount=None, queue=None, inputs=None, outputs=None, storageDir=None, errors=None,):
+        self.airavataInternalUserId = airavataInternalUserId
+        self.experimentId = experimentId
+        self.name = name
+        self.description = description
+        self.project = project
+        self.owner = owner
+        self.application = application
+        self.computeResource = computeResource
+        self.jobName = jobName
+        self.jobId = jobId
+        self.jobStatus = jobStatus
+        self.jobCreationTime = jobCreationTime
+        self.notificationsTo = notificationsTo
+        self.workingDir = workingDir
+        self.jobDescription = jobDescription
+        self.creationTime = creationTime
+        self.lastModifiedTime = lastModifiedTime
+        self.wallTime = wallTime
+        self.cpuCount = cpuCount
+        self.nodeCount = nodeCount
+        self.queue = queue
+        self.inputs = inputs
+        self.outputs = outputs
+        self.storageDir = storageDir
+        self.errors = errors
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, (self.__class__, self.thrift_spec))
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.airavataInternalUserId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.experimentId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
+                if ftype == TType.STRING:
+                    self.name = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.STRING:
+                    self.description = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 5:
+                if ftype == TType.STRING:
+                    self.project = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 6:
+                if ftype == TType.STRING:
+                    self.owner = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 7:
+                if ftype == TType.STRING:
+                    self.application = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 8:
+                if ftype == TType.STRING:
+                    self.computeResource = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 9:
+                if ftype == TType.STRING:
+                    self.jobName = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 10:
+                if ftype == TType.STRING:
+                    self.jobId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 11:
+                if ftype == TType.STRING:
+                    self.jobStatus = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 12:
+                if ftype == TType.STRING:
+                    self.jobCreationTime = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 13:
+                if ftype == TType.STRING:
+                    self.notificationsTo = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 14:
+                if ftype == TType.STRING:
+                    self.workingDir = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 15:
+                if ftype == TType.STRING:
+                    self.jobDescription = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 16:
+                if ftype == TType.STRING:
+                    self.creationTime = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 17:
+                if ftype == TType.STRING:
+                    self.lastModifiedTime = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 18:
+                if ftype == TType.STRING:
+                    self.wallTime = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 19:
+                if ftype == TType.STRING:
+                    self.cpuCount = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 20:
+                if ftype == TType.STRING:
+                    self.nodeCount = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 21:
+                if ftype == TType.STRING:
+                    self.queue = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 22:
+                if ftype == TType.STRING:
+                    self.inputs = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 23:
+                if ftype == TType.STRING:
+                    self.outputs = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 24:
+                if ftype == TType.STRING:
+                    self.storageDir = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 25:
+                if ftype == TType.STRING:
+                    self.errors = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, (self.__class__, self.thrift_spec)))
+            return
+        oprot.writeStructBegin('CustomDashboard')
+        if self.airavataInternalUserId is not None:
+            oprot.writeFieldBegin('airavataInternalUserId', TType.STRING, 1)
+            oprot.writeString(self.airavataInternalUserId.encode('utf-8') if sys.version_info[0] == 2 else self.airavataInternalUserId)
+            oprot.writeFieldEnd()
+        if self.experimentId is not None:
+            oprot.writeFieldBegin('experimentId', TType.STRING, 2)
+            oprot.writeString(self.experimentId.encode('utf-8') if sys.version_info[0] == 2 else self.experimentId)
+            oprot.writeFieldEnd()
+        if self.name is not None:
+            oprot.writeFieldBegin('name', TType.STRING, 3)
+            oprot.writeString(self.name.encode('utf-8') if sys.version_info[0] == 2 else self.name)
+            oprot.writeFieldEnd()
+        if self.description is not None:
+            oprot.writeFieldBegin('description', TType.STRING, 4)
+            oprot.writeString(self.description.encode('utf-8') if sys.version_info[0] == 2 else self.description)
+            oprot.writeFieldEnd()
+        if self.project is not None:
+            oprot.writeFieldBegin('project', TType.STRING, 5)
+            oprot.writeString(self.project.encode('utf-8') if sys.version_info[0] == 2 else self.project)
+            oprot.writeFieldEnd()
+        if self.owner is not None:
+            oprot.writeFieldBegin('owner', TType.STRING, 6)
+            oprot.writeString(self.owner.encode('utf-8') if sys.version_info[0] == 2 else self.owner)
+            oprot.writeFieldEnd()
+        if self.application is not None:
+            oprot.writeFieldBegin('application', TType.STRING, 7)
+            oprot.writeString(self.application.encode('utf-8') if sys.version_info[0] == 2 else self.application)
+            oprot.writeFieldEnd()
+        if self.computeResource is not None:
+            oprot.writeFieldBegin('computeResource', TType.STRING, 8)
+            oprot.writeString(self.computeResource.encode('utf-8') if sys.version_info[0] == 2 else self.computeResource)
+            oprot.writeFieldEnd()
+        if self.jobName is not None:
+            oprot.writeFieldBegin('jobName', TType.STRING, 9)
+            oprot.writeString(self.jobName.encode('utf-8') if sys.version_info[0] == 2 else self.jobName)
+            oprot.writeFieldEnd()
+        if self.jobId is not None:
+            oprot.writeFieldBegin('jobId', TType.STRING, 10)
+            oprot.writeString(self.jobId.encode('utf-8') if sys.version_info[0] == 2 else self.jobId)
+            oprot.writeFieldEnd()
+        if self.jobStatus is not None:
+            oprot.writeFieldBegin('jobStatus', TType.STRING, 11)
+            oprot.writeString(self.jobStatus.encode('utf-8') if sys.version_info[0] == 2 else self.jobStatus)
+            oprot.writeFieldEnd()
+        if self.jobCreationTime is not None:
+            oprot.writeFieldBegin('jobCreationTime', TType.STRING, 12)
+            oprot.writeString(self.jobCreationTime.encode('utf-8') if sys.version_info[0] == 2 else self.jobCreationTime)
+            oprot.writeFieldEnd()
+        if self.notificationsTo is not None:
+            oprot.writeFieldBegin('notificationsTo', TType.STRING, 13)
+            oprot.writeString(self.notificationsTo.encode('utf-8') if sys.version_info[0] == 2 else self.notificationsTo)
+            oprot.writeFieldEnd()
+        if self.workingDir is not None:
+            oprot.writeFieldBegin('workingDir', TType.STRING, 14)
+            oprot.writeString(self.workingDir.encode('utf-8') if sys.version_info[0] == 2 else self.workingDir)
+            oprot.writeFieldEnd()
+        if self.jobDescription is not None:
+            oprot.writeFieldBegin('jobDescription', TType.STRING, 15)
+            oprot.writeString(self.jobDescription.encode('utf-8') if sys.version_info[0] == 2 else self.jobDescription)
+            oprot.writeFieldEnd()
+        if self.creationTime is not None:
+            oprot.writeFieldBegin('creationTime', TType.STRING, 16)
+            oprot.writeString(self.creationTime.encode('utf-8') if sys.version_info[0] == 2 else self.creationTime)
+            oprot.writeFieldEnd()
+        if self.lastModifiedTime is not None:
+            oprot.writeFieldBegin('lastModifiedTime', TType.STRING, 17)
+            oprot.writeString(self.lastModifiedTime.encode('utf-8') if sys.version_info[0] == 2 else self.lastModifiedTime)
+            oprot.writeFieldEnd()
+        if self.wallTime is not None:
+            oprot.writeFieldBegin('wallTime', TType.STRING, 18)
+            oprot.writeString(self.wallTime.encode('utf-8') if sys.version_info[0] == 2 else self.wallTime)
+            oprot.writeFieldEnd()
+        if self.cpuCount is not None:
+            oprot.writeFieldBegin('cpuCount', TType.STRING, 19)
+            oprot.writeString(self.cpuCount.encode('utf-8') if sys.version_info[0] == 2 else self.cpuCount)
+            oprot.writeFieldEnd()
+        if self.nodeCount is not None:
+            oprot.writeFieldBegin('nodeCount', TType.STRING, 20)
+            oprot.writeString(self.nodeCount.encode('utf-8') if sys.version_info[0] == 2 else self.nodeCount)
+            oprot.writeFieldEnd()
+        if self.queue is not None:
+            oprot.writeFieldBegin('queue', TType.STRING, 21)
+            oprot.writeString(self.queue.encode('utf-8') if sys.version_info[0] == 2 else self.queue)
+            oprot.writeFieldEnd()
+        if self.inputs is not None:
+            oprot.writeFieldBegin('inputs', TType.STRING, 22)
+            oprot.writeString(self.inputs.encode('utf-8') if sys.version_info[0] == 2 else self.inputs)
+            oprot.writeFieldEnd()
+        if self.outputs is not None:
+            oprot.writeFieldBegin('outputs', TType.STRING, 23)
+            oprot.writeString(self.outputs.encode('utf-8') if sys.version_info[0] == 2 else self.outputs)
+            oprot.writeFieldEnd()
+        if self.storageDir is not None:
+            oprot.writeFieldBegin('storageDir', TType.STRING, 24)
+            oprot.writeString(self.storageDir.encode('utf-8') if sys.version_info[0] == 2 else self.storageDir)
+            oprot.writeFieldEnd()
+        if self.errors is not None:
+            oprot.writeFieldBegin('errors', TType.STRING, 25)
+            oprot.writeString(self.errors.encode('utf-8') if sys.version_info[0] == 2 else self.errors)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.airavataInternalUserId is None:
+            raise TProtocolException(message='Required field airavataInternalUserId is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
 class UserProfile(object):
     """
     * A structure holding the user profile and its child models.
@@ -402,6 +756,7 @@ class UserProfile(object):
      - gpgKey
      - timeZone
      - nsfDemographics
+     - customDashboard
     """
 
     thrift_spec = (
@@ -431,9 +786,10 @@ class UserProfile(object):
         (23, TType.STRING, 'gpgKey', 'UTF8', None, ),  # 23
         (24, TType.STRING, 'timeZone', 'UTF8', None, ),  # 24
         (25, TType.STRUCT, 'nsfDemographics', (NSFDemographics, NSFDemographics.thrift_spec), None, ),  # 25
+        (26, TType.STRUCT, 'customDashboard', (CustomDashboard, CustomDashboard.thrift_spec), None, ),  # 26
     )
 
-    def __init__(self, userModelVersion=thrift_spec[1][4], airavataInternalUserId=thrift_spec[2][4], userId=None, gatewayId=None, emails=None, firstName=None, lastName=None, middleName=None, namePrefix=None, nameSuffix=None, orcidId=None, phones=None, country=None, nationality=None, homeOrganization=None, orginationAffiliation=None, creationTime=None, lastAccessTime=None, validUntil=None, State=None, comments=None, labeledURI=None, gpgKey=None, timeZone=None, nsfDemographics=None,):
+    def __init__(self, userModelVersion=thrift_spec[1][4], airavataInternalUserId=thrift_spec[2][4], userId=None, gatewayId=None, emails=None, firstName=None, lastName=None, middleName=None, namePrefix=None, nameSuffix=None, orcidId=None, phones=None, country=None, nationality=None, homeOrganization=None, orginationAffiliation=None, creationTime=None, lastAccessTime=None, validUntil=None, State=None, comments=None, labeledURI=None, gpgKey=None, timeZone=None, nsfDemographics=None, customDashboard=None,):
         self.userModelVersion = userModelVersion
         self.airavataInternalUserId = airavataInternalUserId
         self.userId = userId
@@ -459,6 +815,7 @@ class UserProfile(object):
         self.gpgKey = gpgKey
         self.timeZone = timeZone
         self.nsfDemographics = nsfDemographics
+        self.customDashboard = customDashboard
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -615,6 +972,12 @@ class UserProfile(object):
                     self.nsfDemographics.read(iprot)
                 else:
                     iprot.skip(ftype)
+            elif fid == 26:
+                if ftype == TType.STRUCT:
+                    self.customDashboard = CustomDashboard()
+                    self.customDashboard.read(iprot)
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -736,6 +1099,10 @@ class UserProfile(object):
         if self.nsfDemographics is not None:
             oprot.writeFieldBegin('nsfDemographics', TType.STRUCT, 25)
             self.nsfDemographics.write(oprot)
+            oprot.writeFieldEnd()
+        if self.customDashboard is not None:
+            oprot.writeFieldBegin('customDashboard', TType.STRUCT, 26)
+            self.customDashboard.write(oprot)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
