@@ -9,7 +9,8 @@
                         v-model="resourceHostId"
                         :options="computeResourceOptions" required
                         @change="computeResourceChanged"
-                        :state="getValidationState('resourceHostId')">
+                        :state="getValidationState('resourceHostId')"
+                        :disabled="loading">
                         <template slot="first">
                             <option :value="null" disabled>Select a Compute Resource</option>
                         </template>
@@ -58,6 +59,8 @@ export default {
             applicationDeployments: [],
             appDeploymentId: null,
             resourceHostId: null,
+            // TODO: replace this with Loading spinner, better mechanism
+            loadingCount: 0,
         }
     },
     components: {
@@ -81,6 +84,9 @@ export default {
             computeResourceOptions.sort((a, b) => a.text.localeCompare(b.text));
             return computeResourceOptions;
         },
+        loading: function() {
+            return this.loadingCount > 0;
+        }
     },
     methods: {
         computeResourceChanged: function(selectedComputeResourceId) {
@@ -94,14 +100,18 @@ export default {
             this.appDeploymentId = selectedApplicationDeployment.appDeploymentId;
         },
         loadApplicationDeployments: function(appModuleId) {
+            this.loadingCount++;
             services.ApplicationModuleService.getApplicationDeployments(appModuleId)
                 .then(applicationDeployments => {
                     this.applicationDeployments = applicationDeployments;
-                });
+                })
+                .then(()=> {this.loadingCount--;}, () => {this.loadingCount--;});
         },
         loadComputeResourcesForApplicationInterface: function(appInterfaceId) {
+            this.loadingCount++;
             services.ApplicationInterfaceService.getComputeResources(appInterfaceId)
-                .then(computeResources => this.computeResources = computeResources);
+                .then(computeResources => this.computeResources = computeResources)
+                .then(()=> {this.loadingCount--;}, () => {this.loadingCount--;});
         },
         queueSettingsChanged: function() {
             // QueueSettingsEditor updates the full
