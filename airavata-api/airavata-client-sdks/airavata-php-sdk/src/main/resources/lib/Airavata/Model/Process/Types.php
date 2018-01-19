@@ -17,6 +17,15 @@ use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
 
 
+final class ProcessType {
+  const PRIMARY = 0;
+  const FORCE_POST_PROCESING = 1;
+  static public $__names = array(
+    0 => 'PRIMARY',
+    1 => 'FORCE_POST_PROCESING',
+  );
+}
+
 /**
  * ProcessModel: A structure holding the process details. The infromation is derived based on user provided
  *          configuration data or system inferred information from scheduling and QoS parameters.
@@ -125,6 +134,10 @@ class ProcessModel {
    * @var bool
    */
   public $useUserCRPref = null;
+  /**
+   * @var int
+   */
+  public $processType = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -255,6 +268,10 @@ class ProcessModel {
           'var' => 'useUserCRPref',
           'type' => TType::BOOL,
           ),
+        25 => array(
+          'var' => 'processType',
+          'type' => TType::I32,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -329,6 +346,9 @@ class ProcessModel {
       }
       if (isset($vals['useUserCRPref'])) {
         $this->useUserCRPref = $vals['useUserCRPref'];
+      }
+      if (isset($vals['processType'])) {
+        $this->processType = $vals['processType'];
       }
     }
   }
@@ -586,6 +606,13 @@ class ProcessModel {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 25:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->processType);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -792,6 +819,11 @@ class ProcessModel {
     if ($this->useUserCRPref !== null) {
       $xfer += $output->writeFieldBegin('useUserCRPref', TType::BOOL, 24);
       $xfer += $output->writeBool($this->useUserCRPref);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->processType !== null) {
+      $xfer += $output->writeFieldBegin('processType', TType::I32, 25);
+      $xfer += $output->writeI32($this->processType);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

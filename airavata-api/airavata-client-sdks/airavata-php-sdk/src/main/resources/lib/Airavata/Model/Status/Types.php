@@ -27,6 +27,10 @@ final class ExperimentState {
   const CANCELED = 6;
   const COMPLETED = 7;
   const FAILED = 8;
+  const FORCE_POST_PROCESSING_EXECUTING = 9;
+  const FORCE_POST_PROCESSING_COMPLETED = 10;
+  const FORCE_POST_PROCESSING_FAILED = 11;
+  const FORCE_POST_PROCESSING_CANCELED = 12;
   static public $__names = array(
     0 => 'CREATED',
     1 => 'VALIDATED',
@@ -37,6 +41,10 @@ final class ExperimentState {
     6 => 'CANCELED',
     7 => 'COMPLETED',
     8 => 'FAILED',
+    9 => 'FORCE_POST_PROCESSING_EXECUTING',
+    10 => 'FORCE_POST_PROCESSING_COMPLETED',
+    11 => 'FORCE_POST_PROCESSING_FAILED',
+    12 => 'FORCE_POST_PROCESSING_CANCELED',
   );
 }
 
