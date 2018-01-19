@@ -6,7 +6,7 @@
           </b-button>&nbsp;&nbsp;
         </span>
         <hr>
-        <input class="form-control" type="text" :value="value" @input="updateValue($event.target.value)"
+        <input class="form-control" type="text" :value="value" placeholder="Type to get suggestions..." @input="updateValue($event.target.value)"
           @keydown.enter = 'enter'
           @keydown.down = 'down'
           @keydown.up = 'up'
@@ -101,6 +101,7 @@ export default {
     removeClick(data) {
       var index = this.selected.indexOf(data);
       this.selected.splice(index,1);
+      this.$emit('updateSelected',this.selected);
     }
   }
 }
