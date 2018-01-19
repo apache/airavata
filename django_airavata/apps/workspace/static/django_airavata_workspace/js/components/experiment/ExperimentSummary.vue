@@ -26,6 +26,7 @@
                                     <td>{{ project && project.name || '' }}</td>
                                 </tr>
                                 <tr>
+                                    <!-- TODO -->
                                     <th scope="row">Outputs</th>
                                     <td></td>
                                 </tr>
@@ -39,16 +40,58 @@
                                     <td>{{ localExperiment.userName }}</td>
                                 </tr>
                                 <tr>
+                                    <!-- TODO -->
                                     <th scope="row">Application</th>
                                     <td></td>
                                 </tr>
                                 <tr>
+                                    <!-- TODO -->
                                     <th scope="row">Compute Resource</th>
                                     <td></td>
                                 </tr>
                                 <tr>
                                     <th scope="row">Experiment Status</th>
-                                    <td>{{ localExperiment.experimentStatus[0].stateName }}</td>
+                                    <td>{{ experimentStatus.stateName }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Notification List</th>
+                                    <td>{{ localExperiment.emailAddresses
+                                            ? localExperiment.emailAddresses.join(", ")
+                                            : '' }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Creation Time</th>
+                                    <td><span :title="localExperiment.creationTime.toString()">{{ creationTime }}</span></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Last Modified Time</th>
+                                    <td><span :title="experimentStatus.timeOfStateChange.toString()">{{ lastModifiedTime }}</span></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Wall Time Limit</th>
+                                    <td>{{ localExperiment.userConfigurationData.computationalResourceScheduling.wallTimeLimit }} minutes</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">CPU Count</th>
+                                    <td>{{ localExperiment.userConfigurationData.computationalResourceScheduling.totalCPUCount }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Node Count</th>
+                                    <td>{{ localExperiment.userConfigurationData.computationalResourceScheduling.nodeCount }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Queue</th>
+                                    <td>{{ localExperiment.userConfigurationData.computationalResourceScheduling.queueName }}</td>
+                                </tr>
+                                <tr>
+                                    <!-- TODO -->
+                                    <th scope="row">Inputs</th>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <!-- TODO -->
+                                    <th scope="row">Errors</th>
+                                    <td></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -62,6 +105,8 @@
 <script>
 
 import {models, services} from 'django-airavata-api'
+
+import moment from 'moment';
 
 export default {
     name: 'experiment-summary',
@@ -80,6 +125,15 @@ export default {
     components: {
     },
     computed: {
+        creationTime: function() {
+            return moment(this.localExperiment.creationTime).fromNow();
+        },
+        experimentStatus: function() {
+            return this.localExperiment.experimentStatus[0];
+        },
+        lastModifiedTime: function() {
+            return moment(this.experimentStatus.timeOfStateChange).fromNow();
+        }
     },
     methods: {
         loadProject: function() {
@@ -87,19 +141,18 @@ export default {
                 .then(proj => this.project = proj);
         },
         loadApplication: function() {
-            
+
         },
         loadOutputs: function() {
-            
+
         },
         loadComputeHost: function() {
-            
+
         },
     },
     watch: {
     },
     mounted: function() {
-        console.log(JSON.stringify(this.experiment.experimentOutputs))
         this.loadProject();
     }
 }
