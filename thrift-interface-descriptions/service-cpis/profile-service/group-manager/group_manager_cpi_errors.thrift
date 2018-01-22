@@ -26,6 +26,7 @@
 
 namespace java org.apache.airavata.service.profile.groupmanager.cpi.exception
 namespace php Airavata.Service.Profile.Groupmanager.CPI.Error
+namespace py airavata.service.profile.groupmanager.cpi.error
 
 exception GroupManagerServiceException {
   1: required string message
