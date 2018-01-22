@@ -3,13 +3,15 @@ import ApplicationInterfaceDefinition from './models/ApplicationInterfaceDefinit
 import ApplicationModule from './models/ApplicationModule'
 import Experiment from './models/Experiment'
 import InputDataObjectType from './models/InputDataObjectType'
-import OutputDataTypeObject from './models/OutputDataTypeObject'
+import OutputDataObjectType from './models/OutputDataObjectType'
 import Project from './models/Project'
+import FullExperiment from './models/FullExperiment'
 
 import ApplicationDeploymentService from './services/ApplicationDeploymentService'
 import ApplicationInterfaceService from './services/ApplicationInterfaceService'
 import ApplicationModuleService from './services/ApplicationModuleService'
 import ExperimentService from './services/ExperimentService'
+import FullExperimentService from './services/FullExperimentService'
 import ProjectService from './services/ProjectService'
 
 import FetchUtils from './utils/FetchUtils'
@@ -19,8 +21,9 @@ exports.models = {
     ApplicationInterfaceDefinition,
     ApplicationModule,
     Experiment,
+    FullExperiment,
     InputDataObjectType,
-    OutputDataTypeObject,
+    OutputDataObjectType,
     Project,
 }
 
@@ -29,6 +32,7 @@ exports.services = {
     ApplicationInterfaceService,
     ApplicationModuleService,
     ExperimentService,
+    FullExperimentService,
     ProjectService,
 }
 

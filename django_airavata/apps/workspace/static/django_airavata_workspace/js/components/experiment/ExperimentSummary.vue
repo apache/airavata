@@ -15,20 +15,23 @@
                             <tbody>
                                 <tr>
                                     <th scope="row">Name</th>
-                                    <td><span :title="localExperiment.experimentId">{{ localExperiment.experimentName }}</span></td>
+                                    <td><span :title="experiment.experimentId">{{ experiment.experimentName }}</span></td>
                                 </tr>
                                 <tr>
                                     <th scope="row">Description</th>
-                                    <td>{{ localExperiment.description }}</td>
+                                    <td>{{ experiment.description }}</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">Project</th>
-                                    <td>{{ project && project.name || '' }}</td>
+                                    <td>{{ fullExperiment.projectName }}</td>
                                 </tr>
                                 <tr>
-                                    <!-- TODO -->
                                     <th scope="row">Outputs</th>
-                                    <td></td>
+                                    <td>
+                                        <template v-for="output in fullExperiment.outputDataProducts">
+                                            {{ output.filename }}
+                                        </template>
+                                    </td>
                                 </tr>
                                 <!-- Going to leave this out for now -->
                                 <!-- <tr>
@@ -37,56 +40,59 @@
                                 </tr> -->
                                 <tr>
                                     <th scope="row">Owner</th>
-                                    <td>{{ localExperiment.userName }}</td>
+                                    <td>{{ experiment.userName }}</td>
                                 </tr>
                                 <tr>
-                                    <!-- TODO -->
                                     <th scope="row">Application</th>
-                                    <td></td>
+                                    <td>{{ fullExperiment.applicationName }}</td>
                                 </tr>
                                 <tr>
-                                    <!-- TODO -->
                                     <th scope="row">Compute Resource</th>
-                                    <td></td>
+                                    <td>{{ fullExperiment.computeHostName }}</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">Experiment Status</th>
-                                    <td>{{ experimentStatus.stateName }}</td>
+                                    <td>{{ fullExperiment.experimentStatusName }}</td>
                                 </tr>
-                                <tr>
+                                <!--  TODO: leave this out for now -->
+                                <!-- <tr>
                                     <th scope="row">Notification List</th>
-                                    <td>{{ localExperiment.emailAddresses
-                                            ? localExperiment.emailAddresses.join(", ")
+                                    <td>{{ fullExperiment.experiment.emailAddresses
+                                            ? fullExperiment.experiment.emailAddresses.join(", ")
                                             : '' }}</td>
-                                </tr>
+                                </tr> -->
                                 <tr>
                                     <th scope="row">Creation Time</th>
-                                    <td><span :title="localExperiment.creationTime.toString()">{{ creationTime }}</span></td>
+                                    <td><span :title="experiment.creationTime.toString()">{{ creationTime }}</span></td>
                                 </tr>
                                 <tr>
                                     <th scope="row">Last Modified Time</th>
-                                    <td><span :title="experimentStatus.timeOfStateChange.toString()">{{ lastModifiedTime }}</span></td>
+                                    <td><span :title="fullExperiment.experimentStatus.timeOfStateChange.toString()">{{ lastModifiedTime }}</span></td>
                                 </tr>
                                 <tr>
                                     <th scope="row">Wall Time Limit</th>
-                                    <td>{{ localExperiment.userConfigurationData.computationalResourceScheduling.wallTimeLimit }} minutes</td>
+                                    <td>{{ experiment.userConfigurationData.computationalResourceScheduling.wallTimeLimit }} minutes</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">CPU Count</th>
-                                    <td>{{ localExperiment.userConfigurationData.computationalResourceScheduling.totalCPUCount }}</td>
+                                    <td>{{ experiment.userConfigurationData.computationalResourceScheduling.totalCPUCount }}</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">Node Count</th>
-                                    <td>{{ localExperiment.userConfigurationData.computationalResourceScheduling.nodeCount }}</td>
+                                    <td>{{ experiment.userConfigurationData.computationalResourceScheduling.nodeCount }}</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">Queue</th>
-                                    <td>{{ localExperiment.userConfigurationData.computationalResourceScheduling.queueName }}</td>
+                                    <td>{{ experiment.userConfigurationData.computationalResourceScheduling.queueName }}</td>
                                 </tr>
                                 <tr>
                                     <!-- TODO -->
                                     <th scope="row">Inputs</th>
-                                    <td></td>
+                                    <td>
+                                        <template v-for="input in fullExperiment.inputDataProducts">
+                                            {{ input.filename }}
+                                        </template>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <!-- TODO -->
@@ -111,50 +117,33 @@ import moment from 'moment';
 export default {
     name: 'experiment-summary',
     props: {
-        experiment: {
-            type: models.Experiment,
+        fullExperiment: {
+            type: models.FullExperiment,
             required: true
         },
     },
     data () {
         return {
-            localExperiment: this.experiment.clone(),
-            project: null,
+            localFullExperiment: this.fullExperiment.clone(),
         }
     },
     components: {
     },
     computed: {
         creationTime: function() {
-            return moment(this.localExperiment.creationTime).fromNow();
-        },
-        experimentStatus: function() {
-            return this.localExperiment.experimentStatus[0];
+            return moment(this.localFullExperiment.experiment.creationTime).fromNow();
         },
         lastModifiedTime: function() {
-            return moment(this.experimentStatus.timeOfStateChange).fromNow();
+            return moment(this.localFullExperiment.experimentStatus.timeOfStateChange).fromNow();
+        },
+        experiment: function() {
+            return this.localFullExperiment.experiment;
         }
     },
     methods: {
-        loadProject: function() {
-            services.ProjectService.get(this.experiment.projectId)
-                .then(proj => this.project = proj);
-        },
-        loadApplication: function() {
-
-        },
-        loadOutputs: function() {
-
-        },
-        loadComputeHost: function() {
-
-        },
     },
     watch: {
     },
-    mounted: function() {
-        this.loadProject();
-    }
 }
 </script>
 

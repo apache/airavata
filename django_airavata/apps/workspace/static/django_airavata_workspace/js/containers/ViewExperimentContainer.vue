@@ -1,5 +1,5 @@
 <template>
-    <experiment-summary v-if="experiment" :experiment="experiment">
+    <experiment-summary v-if="fullExperiment" :fullExperiment="fullExperiment">
     </experiment-summary>
 </template>
 
@@ -11,13 +11,13 @@ import ExperimentSummary from '../components/experiment/ExperimentSummary.vue'
 export default {
     name: 'view-experiment-container',
     props: {
-        initialExperimentData: {
+        initialFullExperimentData: {
             required: true
         },
     },
     data () {
         return {
-            experiment: null,
+            fullExperiment: null,
         }
     },
     components: {
@@ -28,8 +28,8 @@ export default {
     computed: {
     },
     beforeMount: function () {
-        services.ExperimentService.get(this.initialExperimentData.experimentId, this.initialExperimentData)
-            .then(exp => this.experiment = exp);
+        services.FullExperimentService.get(this.initialFullExperimentData.experimentId, this.initialFullExperimentData)
+            .then(exp => this.fullExperiment = exp);
     }
 }
 </script>

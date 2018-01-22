@@ -1,13 +1,13 @@
 
-from airavata.model.experiment.ttypes import ExperimentModel
-from airavata.model.workspace.ttypes import Project
 from airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule, ApplicationDeploymentDescription,CommandObject,SetEnvPaths
 from airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDescription
-from airavata.model.application.io.ttypes import InputDataObjectType, OutputDataObjectType
-from airavata.model.experiment.ttypes import ExperimentModel
-from airavata.model.workspace.ttypes import Project
-from airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule
 from airavata.model.appcatalog.computeresource.ttypes import BatchQueue
+from airavata.model.application.io.ttypes import InputDataObjectType, OutputDataObjectType
+from airavata.model.data.replica.ttypes import DataProductModel, DataReplicaLocationModel
+from airavata.model.experiment.ttypes import ExperimentModel
+from airavata.model.status.ttypes import ExperimentStatus
+from airavata.model.workspace.ttypes import Project
+
 from . import thrift_utils
 
 from django.conf import settings
@@ -231,6 +231,10 @@ class BatchQueueSerializer(thrift_utils.create_serializer_class(BatchQueue)):
     pass
 
 
+class ExperimentStatusSerializer(thrift_utils.create_serializer_class(ExperimentStatus)):
+    timeOfStateChange = UTCPosixTimestampDateTimeField()
+
+
 class ExperimentSerializer(
         thrift_utils.create_serializer_class(ExperimentModel)):
 
@@ -239,7 +243,57 @@ class ExperimentSerializer(
         read_only = ('experimentId',)
 
     url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:experiment-detail', lookup_field='experimentId', lookup_url_kwarg='experiment_id')
+    full_experiment = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:full-experiment-detail', lookup_field='experimentId', lookup_url_kwarg='experiment_id')
     project = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-detail', lookup_field='projectId', lookup_url_kwarg='project_id')
     userName = GatewayUsernameDefaultField()
     gatewayId = GatewayIdDefaultField()
     creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
+    experimentStatus = ExperimentStatusSerializer(many=True)
+
+
+class DataReplicaLocationSerializer(
+        thrift_utils.create_serializer_class(DataReplicaLocationModel)):
+    creationTime = UTCPosixTimestampDateTimeField()
+    lastModifiedTime = UTCPosixTimestampDateTimeField()
+
+
+class DataProductSerializer(
+        thrift_utils.create_serializer_class(DataProductModel)):
+    creationTime = UTCPosixTimestampDateTimeField()
+    lastModifiedTime = UTCPosixTimestampDateTimeField()
+    replicaLocations = DataReplicaLocationSerializer(many=True)
+
+
+# TODO move this into airavata_sdk?
+class FullExperiment:
+    """Experiment with referenced data models."""
+
+    def __init__(self, experimentModel, project=None, outputDataProducts=None,
+                 inputDataProducts=None, applicationModule=None,
+                 computeResource=None):
+        self.experiment = experimentModel
+        self.experimentId = experimentModel.experimentId
+        self.project = project
+        self.outputDataProducts = outputDataProducts
+        self.inputDataProducts = inputDataProducts
+        self.applicationModule = applicationModule
+        self.computeResource = computeResource
+
+
+class FullExperimentSerializer(serializers.Serializer):
+    url = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:full-experiment-detail',
+        lookup_field='experimentId',
+        lookup_url_kwarg='experiment_id')
+    experiment = ExperimentSerializer()
+    outputDataProducts = DataProductSerializer(many=True, read_only=True)
+    inputDataProducts = DataProductSerializer(many=True, read_only=True)
+    applicationModule = ApplicationModuleSerializer(read_only=True)
+    computeResource = ComputeResourceDescriptionSerializer(read_only=True)
+    project = ProjectSerializer(read_only=True)
+
+    def create(self, validated_data):
+        raise Exception("Not implemented")
+
+    def update(self, instance, validated_data):
+        raise Exception("Not implemented")

@@ -24,6 +24,9 @@ from airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule, Ap
 from airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDescription
 from airavata.model.appcatalog.computeresource.ttypes import ComputeResourceDescription
 from airavata.model.credential.store.ttypes import CredentialOwnerType,SummaryType,CredentialSummary
+from airavata.model.application.io.ttypes import DataType
+
+from airavata_sdk.experiment import Experiment
 
 from collections import OrderedDict
 import logging
@@ -101,6 +104,7 @@ class APIBackedViewSet(mixins.CreateModelMixin,
     * perform_destroy(self, instance)
     """
     pass
+
 
 class APIResultIterator(object):
     """
@@ -232,7 +236,7 @@ class ExperimentViewSet(APIBackedViewSet):
     lookup_field = 'experiment_id'
 
     def get_list(self):
-        return self.request.airavata_client.getUserExperiments(self.authz_token, self.gateway_id, self.username, 1, 0)
+        return self.request.airavata_client.getUserExperiments(self.authz_token, self.gateway_id, self.username, -1, 0)
 
     def get_instance(self, lookup_value):
         return self.request.airavata_client.getExperiment(self.authz_token, lookup_value)
@@ -254,6 +258,53 @@ class ExperimentViewSet(APIBackedViewSet):
             return Response({'success': True})
         except Exception as e:
             return Response({'success': False, 'errorMessage': e.message})
+
+
+class FullExperimentViewSet(mixins.RetrieveModelMixin,
+                            GenericAPIBackedViewSet):
+
+    serializer_class = serializers.FullExperimentSerializer
+    lookup_field = 'experiment_id'
+
+    def get_instance(self, lookup_value):
+        """Get FullExperiment instance with resolved references."""
+        # TODO: move loading experiment and references to airavata_sdk?
+        experimentModel = self.request.airavata_client.getExperiment(
+            self.authz_token, lookup_value)
+        outputDataProducts = [
+            self.request.airavata_client.getDataProduct(self.authz_token,
+                                                        output.value)
+            for output in experimentModel.experimentOutputs
+            if output.type in (DataType.URI, DataType.STDOUT, DataType.STDERR)]
+        inputDataProducts = [
+            self.request.airavata_client.getDataProduct(self.authz_token,
+                                                        inp.value)
+            for inp in experimentModel.experimentInputs
+            if inp.type in (DataType.URI, DataType.STDOUT, DataType.STDERR)]
+        appInterfaceId = experimentModel.executionId
+        applicationInterface = self.request.airavata_client\
+            .getApplicationInterface(self.authz_token, appInterfaceId)
+        appModuleId = applicationInterface.applicationModules[0]
+        applicationModule = self.request.airavata_client\
+            .getApplicationModule(self.authz_token, appModuleId)
+        compute_resource_id = None
+        user_conf = experimentModel.userConfigurationData
+        if user_conf and user_conf.computationalResourceScheduling:
+            comp_res_sched = user_conf.computationalResourceScheduling
+            compute_resource_id = comp_res_sched.resourceHostId
+        compute_resource = self.request.airavata_client.getComputeResource(
+            self.authz_token, compute_resource_id)\
+            if compute_resource_id else None
+        project = self.request.airavata_client.getProject(
+            self.authz_token, experimentModel.projectId)
+        full_experiment = serializers.FullExperiment(
+            experimentModel,
+            project=project,
+            outputDataProducts=outputDataProducts,
+            inputDataProducts=inputDataProducts,
+            applicationModule=applicationModule,
+            computeResource=compute_resource)
+        return full_experiment
 
 
 class ApplicationModuleViewSet(APIBackedViewSet):

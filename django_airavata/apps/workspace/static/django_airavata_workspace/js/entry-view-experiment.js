@@ -10,17 +10,16 @@ Vue.use(BootstrapVue);
 
 new Vue({
   el: '#view-experiment',
-  template: '<view-experiment-container :initial-experiment-data="experiment"></view-experiment-container>',
+  template: '<view-experiment-container :initial-full-experiment-data="fullExperimentData"></view-experiment-container>',
   data () {
       return {
-          experiment: null,
+          fullExperimentData: null,
       }
   },
   components: {
       ViewExperimentContainer,
   },
   beforeMount: function () {
-      console.log(this.$el.dataset.experimentData);
-      this.experiment = JSON.parse(this.$el.dataset.experimentData);
+      this.fullExperimentData = JSON.parse(this.$el.dataset.fullExperimentData);
   }
 })
