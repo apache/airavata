@@ -30,6 +30,7 @@ include "profile_tenant_cpi_errors.thrift"
 
 namespace java org.apache.airavata.service.profile.tenant.cpi
 namespace php Airavata.Service.Profile.Tenant.CPI
+namespace py airavata.service.profile.tenant.cpi
 
 const string TENANT_PROFILE_CPI_VERSION = "0.17"
 const string TENANT_PROFILE_CPI_NAME = "TenantProfileService"

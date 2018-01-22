@@ -30,6 +30,7 @@ include "group_manager_cpi_errors.thrift"
 
 namespace java org.apache.airavata.service.profile.groupmanager.cpi
 namespace php Airavata.Service.Profile.Groupmanager.CPI
+namespace py airavata.service.profile.groupmanager.cpi
 
 const string GROUP_MANAGER_CPI_VERSION = "0.17"
 const string GROUP_MANAGER_CPI_NAME = "GroupManagerService"

@@ -1,0 +1,72 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+
+user_data_dir: "/var/www/portals/gateway-user-data"
+real_user_data_dir: "/data/gateway-user-data"
+## Airavata Client related variables
+airavata_server: "tls://{{ groups['api-orch'][0] }}"
+airavata_port: "9930"
+# FIXME: temporarily turn off SSL verification for WSO2 IS. Needed for WSO2 IS
+# auth_verify_peer: "false" Needed for WSO2 IS
+
+pga_repo: "https://github.com/apache/airavata-php-gateway.git"
+git_branch: "master"
+user: "pga"
+group: "pga"
+doc_root_dir: "/var/www/portals/{{ gateway_id }}"
+vhost_servername: "CHANGEME"
+vhost_ssl: False
+# TODO: have Ansible manage these files as well
+#ssl_certificate_file: "/etc/letsencrypt/live/picksc.scigap.org/cert.pem"
+#ssl_certificate_chain_file: "/etc/letsencrypt/live/picksc.scigap.org/fullchain.pem"
+#ssl_certificate_key_file: "/etc/letsencrypt/live/picksc.scigap.org/privkey.pem"
+# pga_ssl_vhost_template: "{{ inventory_dir }}/files/pga-ssl-vhost.conf.j2" this is for dreg.
+airavata_profile_service_server: "{{ groups['api-orch'][0] }}"
+
+## WSO2 IS related variables
+tenant_domain: "{{ gateway_id }}"
+admin_username: "CHANGEME"
+admin_password: "CHANGEME"
+oauth_client_key: "CHANGEME"
+oauth_client_secret: "CHANGEME"
+oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
+
+#Auth Options for Gateway
+auth_options:
+  - name: "CHANGEME"
+    oauth_grant_type: "password"
+oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
+
+gateway_id: "CHANGEME"
+# relative to document root dir
+experiment_data_dir: "{{ user_data_dir }}/{{ gateway_id }}"
+gateway_data_store_resource_id: "CHANGEME"
+#gateway_data_store_ssh_public_key: "CHANGEME"
+
+## Portal related variables
+super_admin_portal: "false"
+admin_emails: "['CHANGEME','CHANGEME']"
+portal_email_username: "CHANGEME"
+portal_email_password: "CHANGEME"
+portal_theme: "base"
+portal_title: "CHANGEME"
+...
