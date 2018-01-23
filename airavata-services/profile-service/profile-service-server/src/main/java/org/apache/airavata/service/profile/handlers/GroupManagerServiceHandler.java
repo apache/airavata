@@ -42,6 +42,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             sharingUserGroup.setDescription(groupModel.getDescription());
             sharingUserGroup.setGroupType(GroupType.USER_LEVEL_GROUP);
             sharingUserGroup.setDomainId(authzToken.getClaimsMap().get(Constants.GATEWAY_ID));
+            sharingUserGroup.setOwnerId(authzToken.getClaimsMap().get(Constants.USER_NAME));
 
             String groupId = sharingClient.createGroup(sharingUserGroup);
             sharingClient.addUsersToGroup(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupModel.getMembers(), groupId);
