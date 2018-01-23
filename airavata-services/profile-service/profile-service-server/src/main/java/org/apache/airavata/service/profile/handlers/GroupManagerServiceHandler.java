@@ -41,11 +41,13 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             sharingUserGroup.setName(groupModel.getName());
             sharingUserGroup.setDescription(groupModel.getDescription());
             sharingUserGroup.setGroupType(GroupType.USER_LEVEL_GROUP);
-            sharingUserGroup.setDomainId(authzToken.getClaimsMap().get(Constants.GATEWAY_ID));
-            sharingUserGroup.setOwnerId(authzToken.getClaimsMap().get(Constants.USER_NAME));
+            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            sharingUserGroup.setDomainId(gatewayId);
+            String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
+            sharingUserGroup.setOwnerId(username + "@" + gatewayId);
 
             String groupId = sharingClient.createGroup(sharingUserGroup);
-            sharingClient.addUsersToGroup(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupModel.getMembers(), groupId);
+            sharingClient.addUsersToGroup(gatewayId, groupModel.getMembers(), groupId);
             return groupId;
         }
         catch (Exception e) {
