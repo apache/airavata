@@ -38,7 +38,7 @@
 <script>
   import ApplicationInputField from './ApplicationInputField.vue';
   import BooleanRadioButton from './BooleanRadioButton.vue';
-  import NewApplicationButtons from './NewApplicationButtons.vue';
+  import NewApplicationButtons from './TabActionConsole.vue';
   import ApplicationOutputField from './ApplicationOutputField.vue'
   import Loading from '../Loading.vue'
 

@@ -4,6 +4,7 @@ import ExperimentsDashboard from './components/dashboards/ExperimentDashboard.vu
 import ApplicationDetails from'./components/admin/ApplicationDetails.vue'
 import ApplicationInterface from './components/admin/ApplicationInterface.vue'
 import ApplicationDeployments from  './components/admin/ApplicationDeployments.vue'
+import ComputeResourceDashboard from './components/tabs/TabbedView'
 import VueRouter from 'vue-router'
 
 
@@ -27,7 +28,8 @@ const routes=[
     }
   ]},
   { path: '/', component: AdminDashboardHome },
-  {path:'/experiments',component:ExperimentsDashboard}
+  {path:'/experiments',component:ExperimentsDashboard},
+  {path:'/compute/resource',component:ComputeResourceDashboard}
 ];
 export default new VueRouter({
   routes:routes

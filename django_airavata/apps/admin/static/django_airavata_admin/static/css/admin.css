@@ -101,6 +101,56 @@ button,input[type="button"] {
   opacity: 0
 }
 
+  .new_app {
+    margin: 45px;
+    width: 70%;
+  }
+
+  .main {
+    width: 100%;
+    margin-top: 50px;
+  }
+
+  .tab {
+    text-align: center;
+    width: 120px;
+    margin-bottom: 15px;
+    border-bottom: solid #999999 1px;
+    color: #007BFF;
+  }
+
+  .tab .lbl:hover {
+    cursor: pointer;
+  }
+
+  .active .lbl:hover {
+    cursor: default;
+  }
+
+  .lbl {
+    margin: 10px;
+    color: inherit;
+  }
+
+  .link{
+    color: inherit;
+  }
+
+  .active {
+    color: #333333;
+    border-top: solid #999999 1px;
+    border-left: solid #999999 1px;
+    border-right: solid #999999 1px;
+    border-bottom: hidden;
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
+  }
+
+  .tabs {
+    display: flex;
+    width: 100%;
+  }
+
 
 
 

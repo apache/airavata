@@ -127,7 +127,7 @@
 </template>
 <script>
   import {createNamespacedHelpers} from 'vuex'
-  import NewApplicationButtons from './NewApplicationButtons.vue';
+  import NewApplicationButtons from './TabActionConsole.vue';
   import Loading from '../Loading.vue'
 
   import Utils from '../../utils'
