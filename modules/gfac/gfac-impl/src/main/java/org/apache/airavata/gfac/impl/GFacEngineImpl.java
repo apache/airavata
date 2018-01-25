@@ -20,6 +20,7 @@
 package org.apache.airavata.gfac.impl;
 
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
@@ -68,6 +69,9 @@ import org.apache.airavata.model.task.JobSubmissionTaskModel;
 import org.apache.airavata.model.task.MonitorTaskModel;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
+import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ExpCatChildDataType;
@@ -103,7 +107,7 @@ public class GFacEngineImpl implements GFacEngine {
 
     @Override
     public ProcessContext populateProcessContext(String processId, String gatewayId, String
-            tokenId) throws GFacException, CredentialStoreException {
+            tokenId) throws GFacException, CredentialStoreException, TException {
 
         // NOTE: Process context gives precedence to data come with process Computer resources;
         ProcessContext processContext = null;
@@ -111,9 +115,11 @@ public class GFacEngineImpl implements GFacEngine {
         try {
             AppCatalog appCatalog = Factory.getDefaultAppCatalog();
             ExperimentCatalog expCatalog = Factory.getDefaultExpCatalog();
+            RegistryService.Client registryClient = getRegistryServiceClient();
             ProcessModel processModel = (ProcessModel) expCatalog.get(ExperimentCatalogModelType.PROCESS, processId);
             builder.setAppCatalog(appCatalog)
                     .setExperimentCatalog(expCatalog)
+                    .setRegistryClient(registryClient)
                     .setCuratorClient(Factory.getCuratorClient())
                     .setStatusPublisher(Factory.getStatusPublisher())
                     .setProcessModel(processModel)
@@ -239,22 +245,21 @@ public class GFacEngineImpl implements GFacEngine {
         }
     }
 
-    private void setUserResourceProfile(String gatewayId, ProcessContext processContext) throws AppCatalogException {
-        AppCatalog appCatalog = processContext.getAppCatalog();
+    private void setUserResourceProfile(String gatewayId, ProcessContext processContext) throws AppCatalogException, TException {
+        RegistryService.Client registryClient = processContext.getRegistryClient();
         ProcessModel processModel = processContext.getProcessModel();
 
-        UserResourceProfile userResourceProfile =
-                appCatalog.getUserResourceProfile()
+        UserResourceProfile userResourceProfile = registryClient
                         .getUserResourceProfile(processModel.getUserName(), gatewayId);
 
         processContext.setUserResourceProfile(userResourceProfile);
     }
 
-    private void setUserComputeResourcePreference(String gatewayId, ProcessContext processContext) throws AppCatalogException {
-        AppCatalog appCatalog = processContext.getAppCatalog();
+    private void setUserComputeResourcePreference(String gatewayId, ProcessContext processContext) throws AppCatalogException, TException {
+        RegistryService.Client registryClient = processContext.getRegistryClient();
         ProcessModel processModel = processContext.getProcessModel();
         UserComputeResourcePreference userComputeResourcePreference =
-                appCatalog.getUserResourceProfile().getUserComputeResourcePreference(
+                registryClient.getUserComputeResourcePreference(
                         processModel.getUserName(),
                         gatewayId,
                         processModel.getComputeResourceId());
@@ -986,5 +991,15 @@ public class GFacEngineImpl implements GFacEngine {
             throw new GFacException("Resource Job Manager is empty.");
         }
         return resourceJobManager;
+    }
+
+    private RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
+        final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
+        final String serverHost = ServerSettings.getRegistryServerHost();
+        try {
+            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
+        } catch (RegistryServiceException e) {
+            throw new TException("Unable to create registry client...", e);
+        }
     }
 }

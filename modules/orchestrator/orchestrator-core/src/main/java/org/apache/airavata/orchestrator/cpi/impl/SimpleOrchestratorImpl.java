@@ -67,7 +67,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
     private JobSubmitter jobSubmitter = null;
 
 
-    public SimpleOrchestratorImpl() throws OrchestratorException {
+    public SimpleOrchestratorImpl() throws OrchestratorException, TException {
         try {
             try {
                 // We are only going to use GFacPassiveJobSubmitter
@@ -278,7 +278,6 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
     public String createAndSaveTasks(String gatewayId, ProcessModel processModel, boolean autoSchedule) throws OrchestratorException {
         try {
             ExperimentCatalog experimentCatalog = orchestratorContext.getRegistry().getExperimentCatalog();
-            AppCatalog appCatalog = orchestratorContext.getRegistry().getAppCatalog();
             ComputationalResourceSchedulingModel resourceSchedule = processModel.getProcessResourceSchedule();
             String userGivenQueueName = resourceSchedule.getQueueName();
             int userGivenWallTime = resourceSchedule.getWallTimeLimit();
@@ -286,7 +285,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             if (resourceHostId == null){
                 throw new OrchestratorException("Compute Resource Id cannot be null at this point");
             }
-            ComputeResourceDescription computeResource = appCatalog.getComputeResource().getComputeResource(resourceHostId);
+            ComputeResourceDescription computeResource = orchestratorContext.getRegistryClient().getComputeResource(resourceHostId);
             JobSubmissionInterface preferredJobSubmissionInterface =
                     OrchestratorUtils.getPreferredJobSubmissionInterface(orchestratorContext, processModel, gatewayId);
             ComputeResourcePreference resourcePreference =
@@ -409,11 +408,11 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
     }
 
     public List<String> createAndSaveOutputDataStagingTasks(ProcessModel processModel, String gatewayId)
-            throws RegistryException, AiravataException {
+            throws RegistryException, AiravataException, TException {
 
         List<String> dataStagingTaskIds = new ArrayList<>();
         List<OutputDataObjectType> processOutputs = processModel.getProcessOutputs();
-        String appName = OrchestratorUtils.getApplicationInterfaceName(orchestratorContext, processModel);
+        String appName = OrchestratorUtils.getApplicationInterfaceName(processModel);
         if (processOutputs != null) {
             for (OutputDataObjectType processOutput : processOutputs) {
                 DataType type = processOutput.getType();
@@ -573,8 +572,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         taskModel.setTaskType(TaskTypes.DATA_STAGING);
         // create data staging sub task model
         DataStagingTaskModel submodel = new DataStagingTaskModel();
-        ComputeResourceDescription computeResource = orchestratorContext.getRegistry().getAppCatalog()
-                .getComputeResource().getComputeResource(processModel.getComputeResourceId());
+        ComputeResourceDescription computeResource = orchestratorContext.getRegistryClient().
+                getComputeResource(processModel.getComputeResourceId());
         String workingDir = OrchestratorUtils.getScratchLocation(orchestratorContext,processModel, gatewayId) +
                 File.separator + processModel.getProcessId() + File.separator;
         URI destination = null;
@@ -610,8 +609,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             taskModel.setTaskStatuses(Arrays.asList(taskStatus));
             taskModel.setTaskType(TaskTypes.DATA_STAGING);
-            ComputeResourceDescription computeResource = orchestratorContext.getRegistry().getAppCatalog()
-                    .getComputeResource().getComputeResource(processModel.getComputeResourceId());
+            ComputeResourceDescription computeResource = orchestratorContext.getRegistryClient().
+                    getComputeResource(processModel.getComputeResourceId());
 
             String workingDir = OrchestratorUtils.getScratchLocation(orchestratorContext,processModel, gatewayId)
                     + File.separator + processModel.getProcessId() + File.separator;
@@ -648,7 +647,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             submodel.setDestination("dummy://temp/file/location");
             taskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
             return taskModel;
-        } catch (AppCatalogException | TaskException e) {
+        } catch (TaskException e) {
            throw new RegistryException("Error occurred while retrieving data movement from app catalog", e);
         }
     }

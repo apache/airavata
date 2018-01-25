@@ -21,12 +21,13 @@ package org.apache.airavata.gfac.core;
 
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.context.ProcessContext;
+import org.apache.thrift.TException;
 
 public interface GFacEngine {
 
 
 	public ProcessContext populateProcessContext(String processId, String gatewayId, String tokenId)
-			throws GFacException, CredentialStoreException;
+            throws GFacException, CredentialStoreException, TException;
 
 	public void executeProcess(ProcessContext processContext) throws GFacException;
 

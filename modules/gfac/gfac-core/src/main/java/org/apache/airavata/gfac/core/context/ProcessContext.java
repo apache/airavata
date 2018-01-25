@@ -42,6 +42,7 @@ import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.task.TaskModel;
+import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
@@ -103,6 +104,7 @@ public class ProcessContext {
 	private boolean recoveryWithCancel = false;
 	private String usageReportingGatewayId;
 	private List<String> queueSpecificMacros;
+	private RegistryService.Client registryClient;
 
 	/**
 	 * Note: process context property use lazy loading approach. In runtime you will see some properties as null
@@ -166,7 +168,15 @@ public class ProcessContext {
 		this.processModel = processModel;
 	}
 
-	public String getWorkingDir() {
+    public RegistryService.Client getRegistryClient() {
+        return registryClient;
+    }
+
+    public void setRegistryClient(RegistryService.Client registryClient) {
+        this.registryClient = registryClient;
+    }
+
+    public String getWorkingDir() {
 		if (workingDir == null) {
             if (processModel.getProcessResourceSchedule().getStaticWorkingDir() != null){
                 workingDir = processModel.getProcessResourceSchedule().getStaticWorkingDir();
@@ -746,6 +756,7 @@ public class ProcessContext {
 		private final String tokenId;
 		private ExperimentCatalog experimentCatalog;
 		private AppCatalog appCatalog;
+        private RegistryService.Client registryClient;
 		private CuratorFramework curatorClient;
 		private Publisher statusPublisher;
 		private GatewayResourceProfile gatewayResourceProfile;
@@ -802,7 +813,12 @@ public class ProcessContext {
 			return this;
 		}
 
-		public ProcessContext build() throws GFacException {
+        public ProcessContextBuilder setRegistryClient(RegistryService.Client registryClient) {
+            this.registryClient = registryClient;
+            return this;
+        }
+
+        public ProcessContext build() throws GFacException {
 			if (notValid(gatewayResourceProfile)) {
 				throwError("Invalid GatewayResourceProfile");
 			}
@@ -827,10 +843,14 @@ public class ProcessContext {
 			if (notValid(statusPublisher)) {
 				throwError("Invalid Status Publisher");
 			}
+			if (notValid(registryClient)) {
+			    throwError("Invalid Registry Client");
+            }
 
 			ProcessContext pc = new ProcessContext(processId, gatewayId, tokenId);
 			pc.setAppCatalog(appCatalog);
 			pc.setExperimentCatalog(experimentCatalog);
+			pc.setRegistryClient(registryClient);
 			pc.setCuratorClient(curatorClient);
 			pc.setStatusPublisher(statusPublisher);
 			pc.setProcessModel(processModel);
