@@ -141,9 +141,25 @@ export default {
         }
     },
     methods: {
+        loadExperiment: function() {
+            return services.FullExperimentService.get(this.localFullExperiment.experiment.experimentId)
+                .then(exp => this.localFullExperiment = exp);
+        },
+        initPollingExperiment: function() {
+            var pollExperiment = function() {
+                this.loadExperiment()
+                    .then(exp => {
+                        setTimeout(pollExperiment.bind(this), 3000);
+                    })
+            }.bind(this);
+            setTimeout(pollExperiment, 3000);
+        }
     },
     watch: {
     },
+    mounted: function() {
+        this.initPollingExperiment();
+    }
 }
 </script>
 
