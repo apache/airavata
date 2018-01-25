@@ -52,7 +52,13 @@
                                 </tr>
                                 <tr>
                                     <th scope="row">Experiment Status</th>
-                                    <td>{{ fullExperiment.experimentStatusName }}</td>
+                                    <td>
+                                        <template v-if="fullExperiment.experiment.isProgressing">
+                                            <i class="fa fa-refresh fa-spin"></i>
+                                            <span class="sr-only">Progressing...</span>
+                                        </template>
+                                        {{ fullExperiment.experimentStatusName }}
+                                    </td>
                                 </tr>
                                 <!--  TODO: leave this out for now -->
                                 <!-- <tr>
@@ -147,6 +153,9 @@ export default {
         },
         initPollingExperiment: function() {
             var pollExperiment = function() {
+                if (!this.localFullExperiment.experiment.isProgressing) {
+                    return;
+                }
                 this.loadExperiment()
                     .then(exp => {
                         setTimeout(pollExperiment.bind(this), 3000);

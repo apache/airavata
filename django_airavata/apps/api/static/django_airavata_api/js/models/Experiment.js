@@ -1,6 +1,7 @@
 
 import BaseModel from './BaseModel';
 import ErrorModel from './ErrorModel'
+import ExperimentState from './ExperimentState'
 import ExperimentStatus from './ExperimentStatus'
 import InputDataObjectType from './InputDataObjectType'
 import OutputDataObjectType from './OutputDataObjectType'
@@ -97,5 +98,15 @@ export default class Experiment extends BaseModel {
             validationResults['projectId'] = "Please select a project.";
         }
         return validationResults;
+    }
+
+    get isProgressing() {
+        const progressingStates = [ExperimentState.SCHEDULED,
+                                   ExperimentState.LAUNCHED,
+                                   ExperimentState.EXECUTING,
+                                   ExperimentState.CANCELING];
+        return this.experimentStatus
+            && this.experimentStatus.length > 0
+            && progressingStates.indexOf(this.experimentStatus[0].state) >= 0;
     }
 }

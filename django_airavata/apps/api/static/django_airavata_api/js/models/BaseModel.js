@@ -54,6 +54,11 @@ export default class BaseModel {
     convertModelField(modelClass, fieldValue, fieldDefault) {
         if (typeof fieldValue !== 'undefined') {
             if (modelClass.prototype instanceof BaseEnum) {
+                // When cloning the fieldValue is an enum instance
+                if (fieldValue instanceof BaseEnum){
+                    return fieldValue;
+                }
+                // Otherwise it is an integer that we need to convert to enum
                 return modelClass.byValue(fieldValue);
             } else {
                 return new modelClass(fieldValue);
