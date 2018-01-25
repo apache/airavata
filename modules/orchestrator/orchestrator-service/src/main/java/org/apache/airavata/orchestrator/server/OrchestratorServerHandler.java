@@ -54,6 +54,9 @@ import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.orchestrator.cpi.orchestrator_cpiConstants;
 import org.apache.airavata.orchestrator.util.OrchestratorServerThreadPoolExecutor;
 import org.apache.airavata.orchestrator.util.OrchestratorUtils;
+import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.core.app.catalog.resources.AppCatAbstractResource;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.core.experiment.catalog.resources.AbstractExpCatResource;
@@ -85,6 +88,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	private final Subscriber statusSubscribe;
 	private final Subscriber experimentSubscriber;
 	private CuratorFramework curatorClient;
+	private RegistryService.Client registryClient;
 
     /**
 	 * Query orchestrator server to fetch the CPI version
@@ -93,15 +97,16 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 		return orchestrator_cpiConstants.ORCHESTRATOR_CPI_VERSION;
 	}
 
-	public OrchestratorServerHandler() throws OrchestratorException{
+	public OrchestratorServerHandler() throws OrchestratorException, TException {
 		// orchestrator init
 		try {
 			// first constructing the monitorManager and orchestrator, then fill
 			// the required properties
 			setAiravataUserName(ServerSettings.getDefaultUser());
 			orchestrator = new SimpleOrchestratorImpl();
-			experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-			appCatalog = RegistryFactory.getAppCatalog();
+			//--experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+			//--appCatalog = RegistryFactory.getAppCatalog();
+			registryClient = orchestrator.getOrchestratorContext().getRegistryClient();
 
 			publisher = MessagingFactory.getPublisher(Type.STATUS);
 			orchestrator.initialize();
@@ -109,7 +114,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			statusSubscribe = getStatusSubscriber();
 			experimentSubscriber  = getExperimentSubscriber();
 			startCurator();
-		} catch (OrchestratorException | RegistryException | AppCatalogException | AiravataException e) {
+		} catch (OrchestratorException | AiravataException e) {
 			log.error(e.getMessage(), e);
 			throw new OrchestratorException("Error while initializing orchestrator service", e);
 		}
@@ -144,19 +149,19 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentNodePath);
 			String experimentCancelNode = ZKPaths.makePath(experimentNodePath, ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
 			ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentCancelNode);
-            experiment = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+            experiment = registryClient.getExperiment(experimentId);
             if (experiment == null) {
                 log.error("Error retrieving the Experiment by the given experimentID: {} ", experimentId);
                 return false;
             }
 
-            ComputeResourcePreference computeResourcePreference = appCatalog.getGatewayProfile().
-					getComputeResourcePreference(gatewayId,
+            ComputeResourcePreference computeResourcePreference = registryClient.getGatewayComputeResourcePreference
+							(gatewayId,
 							experiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId());
             String token = computeResourcePreference.getResourceSpecificCredentialStoreToken();
             if (token == null || token.isEmpty()){
                 // try with gateway profile level token
-                GatewayResourceProfile gatewayProfile = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
+                GatewayResourceProfile gatewayProfile = registryClient.getGatewayResourceProfile(gatewayId);
                 token = gatewayProfile.getCredentialStoreToken();
             }
             // still the token is empty, then we fail the experiment
@@ -173,11 +178,10 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 				for (ProcessModel processModel : processes){
 					//FIXME Resolving replica if available. This is a very crude way of resolving input replicas. A full featured
 					//FIXME replica resolving logic should come here
-					ReplicaCatalog replicaCatalog = RegistryFactory.getReplicaCatalog();
 					processModel.getProcessInputs().stream().forEach(pi -> {
 						if (pi.getType().equals(DataType.URI) && pi.getValue().startsWith("airavata-dp://")) {
 							try {
-								DataProductModel dataProductModel = replicaCatalog.getDataProduct(pi.getValue());
+								DataProductModel dataProductModel = registryClient.getDataProduct(pi.getValue());
 								Optional<DataReplicaLocationModel> rpLocation = dataProductModel.getReplicaLocations()
 										.stream().filter(rpModel -> rpModel.getReplicaLocationCategory().
 												equals(ReplicaLocationCategory.GATEWAY_DATA_STORE)).findFirst();
@@ -187,16 +191,18 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 								} else {
 									log.error("Could not find a replica for the URI " + pi.getValue());
 								}
-							} catch (ReplicaCatalogException e) {
-								log.error(e.getMessage(), e);
-							}
-						} else if (pi.getType().equals(DataType.URI_COLLECTION) && pi.getValue().contains("airavata-dp://")) {
+							} catch (RegistryServiceException e) {
+                                e.printStackTrace();
+                            } catch (TException e) {
+                                e.printStackTrace();
+                            }
+                        } else if (pi.getType().equals(DataType.URI_COLLECTION) && pi.getValue().contains("airavata-dp://")) {
 							try {
 								String[] uriList = pi.getValue().split(",");
 								final ArrayList<String> filePathList = new ArrayList<>();
 								for (String uri : uriList) {
 									if (uri.startsWith("airavata-dp://")) {
-										DataProductModel dataProductModel = replicaCatalog.getDataProduct(uri);
+										DataProductModel dataProductModel = registryClient.getDataProduct(uri);
 										Optional<DataReplicaLocationModel> rpLocation = dataProductModel.getReplicaLocations()
 												.stream().filter(rpModel -> rpModel.getReplicaLocationCategory().
 														equals(ReplicaLocationCategory.GATEWAY_DATA_STORE)).findFirst();
@@ -211,10 +217,12 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 									}
 								}
 								pi.setValue(StringUtils.join(filePathList, ','));
-							} catch (ReplicaCatalogException e) {
-								log.error(e.getMessage(), e);
-							}
-						}
+							} catch (RegistryServiceException e) {
+                                e.printStackTrace();
+                            } catch (TException e) {
+                                e.printStackTrace();
+                            }
+                        }
 					});
 					String taskDag = orchestrator.createAndSaveTasks(gatewayId, processModel, experiment.getUserConfigurationData().isAiravataAutoSchedule());
 					processModel.setTaskDag(taskDag);
@@ -367,25 +375,26 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     private ApplicationDeploymentDescription getAppDeployment(ProcessModel processModel, String applicationId)
             throws AppCatalogException, OrchestratorException,
             ClassNotFoundException, ApplicationSettingsException,
-            InstantiationException, IllegalAccessException {
-        String selectedModuleId = getModuleId(appCatalog, applicationId);
+            InstantiationException, IllegalAccessException, TException {
+        String selectedModuleId = getModuleId(applicationId);
         return getAppDeploymentForModule(processModel, selectedModuleId);
     }
 
     private ApplicationDeploymentDescription getAppDeploymentForModule(ProcessModel processModel, String selectedModuleId)
             throws AppCatalogException, ClassNotFoundException,
             ApplicationSettingsException, InstantiationException,
-            IllegalAccessException {
+            IllegalAccessException, TException {
         Map<String, String> moduleIdFilter = new HashMap<String, String>();
         moduleIdFilter.put(AppCatAbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, selectedModuleId);
         if (processModel.getProcessResourceSchedule() != null && processModel.getProcessResourceSchedule().getResourceHostId() != null) {
             moduleIdFilter.put(AppCatAbstractResource.ApplicationDeploymentConstants.COMPUTE_HOST_ID, processModel.getProcessResourceSchedule().getResourceHostId());
         }
+        //TODO
         List<ApplicationDeploymentDescription> applicationDeployements = appCatalog.getApplicationDeployment().getApplicationDeployements(moduleIdFilter);
         Map<ComputeResourceDescription, ApplicationDeploymentDescription> deploymentMap = new HashMap<ComputeResourceDescription, ApplicationDeploymentDescription>();
-        ComputeResource computeResource = appCatalog.getComputeResource();
+
         for (ApplicationDeploymentDescription deploymentDescription : applicationDeployements) {
-            deploymentMap.put(computeResource.getComputeResource(deploymentDescription.getComputeHostId()), deploymentDescription);
+            deploymentMap.put(registryClient.getComputeResource(deploymentDescription.getComputeHostId()), deploymentDescription);
         }
         List<ComputeResourceDescription> computeHostList = Arrays.asList(deploymentMap.keySet().toArray(new ComputeResourceDescription[]{}));
         Class<? extends HostScheduler> aClass = Class.forName(
@@ -396,9 +405,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         return deploymentMap.get(ComputeResourceDescription);
     }
 
-	private String getModuleId(AppCatalog appCatalog, String applicationId)
-			throws AppCatalogException, OrchestratorException {
-		ApplicationInterfaceDescription applicationInterface = appCatalog.getApplicationInterface().getApplicationInterface(applicationId);
+	private String getModuleId(String applicationId)
+            throws AppCatalogException, OrchestratorException, TException {
+		ApplicationInterfaceDescription applicationInterface = registryClient.getApplicationInterface(applicationId);
 		List<String> applicationModules = applicationInterface.getApplicationModules();
 		if (applicationModules.size()==0){
 			throw new OrchestratorException(
@@ -678,6 +687,16 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 		}finally {
 			experimentSubscriber.sendAck(messageContext.getDeliveryTag());
 			MDC.clear();
+		}
+	}
+
+	private RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
+		final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
+		final String serverHost = ServerSettings.getRegistryServerHost();
+		try {
+			return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
+		} catch (RegistryServiceException e) {
+			throw new TException("Unable to create registry client...", e);
 		}
 	}
 

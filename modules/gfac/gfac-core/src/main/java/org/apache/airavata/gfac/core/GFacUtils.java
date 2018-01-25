@@ -426,11 +426,11 @@ public class GFacUtils {
         return ZKPaths.makePath(ZkConstants.ZOOKEEPER_SERVERS_NODE, ZkConstants.ZOOKEEPER_GFAC_SERVER_NODE);
     }
     public static GroovyMap crateGroovyMap(ProcessContext processContext)
-            throws ApplicationSettingsException, AppCatalogException, GFacException {
+            throws ApplicationSettingsException, AppCatalogException, GFacException, TException {
         return createGroovyMap(processContext, null);
     }
     public static GroovyMap createGroovyMap(ProcessContext processContext, TaskContext taskContext)
-            throws GFacException, AppCatalogException, ApplicationSettingsException {
+            throws GFacException, AppCatalogException, ApplicationSettingsException, TException {
 
         GroovyMap groovyMap = new GroovyMap();
         ProcessModel processModel = processContext.getProcessModel();
@@ -593,7 +593,7 @@ public class GFacUtils {
         return str != null && !str.isEmpty();
     }
     private static void setMailAddresses(ProcessContext processContext, GroovyMap groovyMap)
-            throws GFacException, AppCatalogException, ApplicationSettingsException {
+            throws GFacException, AppCatalogException, ApplicationSettingsException, TException {
 
         ProcessModel processModel =  processContext.getProcessModel();
         String emailIds = null;
@@ -745,7 +745,7 @@ public class GFacUtils {
         }
     }
 
-    public static ResourceJobManager getResourceJobManager(ProcessContext processContext) {
+    public static ResourceJobManager getResourceJobManager(ProcessContext processContext) throws TException {
         try {
             JobSubmissionProtocol submissionProtocol = getPreferredJobSubmissionProtocol(processContext);
             JobSubmissionInterface jobSubmissionInterface = getPreferredJobSubmissionInterface(processContext);
@@ -771,12 +771,12 @@ public class GFacUtils {
         return null;
     }
 
-    public static boolean isEmailBasedJobMonitor(ProcessContext processContext) throws GFacException, AppCatalogException {
+    public static boolean isEmailBasedJobMonitor(ProcessContext processContext) throws GFacException, AppCatalogException, TException {
         JobSubmissionProtocol jobSubmissionProtocol = getPreferredJobSubmissionProtocol(processContext);
         JobSubmissionInterface jobSubmissionInterface = getPreferredJobSubmissionInterface(processContext);
         if (jobSubmissionProtocol == JobSubmissionProtocol.SSH) {
             String jobSubmissionInterfaceId = jobSubmissionInterface.getJobSubmissionInterfaceId();
-            SSHJobSubmission sshJobSubmission = processContext.getAppCatalog().getComputeResource().getSSHJobSubmission(jobSubmissionInterfaceId);
+            SSHJobSubmission sshJobSubmission = processContext.getRegistryClient().getSSHJobSubmission(jobSubmissionInterfaceId);
             MonitorMode monitorMode = sshJobSubmission.getMonitorMode();
             return monitorMode != null && monitorMode == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR;
         } else {
@@ -784,11 +784,11 @@ public class GFacUtils {
         }
     }
 
-    public static JobSubmissionInterface getPreferredJobSubmissionInterface(ProcessContext processContext) throws AppCatalogException {
+    public static JobSubmissionInterface getPreferredJobSubmissionInterface(ProcessContext processContext) throws AppCatalogException, TException {
         try {
             String resourceHostId = processContext.getComputeResourceDescription().getComputeResourceId();
             JobSubmissionProtocol preferredJobSubmissionProtocol = processContext.getPreferredJobSubmissionProtocol();
-            ComputeResourceDescription resourceDescription = processContext.getAppCatalog().getComputeResource().getComputeResource(resourceHostId);
+            ComputeResourceDescription resourceDescription = processContext.getRegistryClient().getComputeResource(resourceHostId);
             List<JobSubmissionInterface> jobSubmissionInterfaces = resourceDescription.getJobSubmissionInterfaces();
             Map<JobSubmissionProtocol, List<JobSubmissionInterface>> orderedInterfaces = new HashMap<>();
             List<JobSubmissionInterface> interfaces = new ArrayList<>();
@@ -830,17 +830,11 @@ public class GFacUtils {
         }
     }
 
-    public static JobSubmissionProtocol getPreferredJobSubmissionProtocol(ProcessContext context) throws AppCatalogException {
-        try {
-            GwyResourceProfile gatewayProfile = context.getAppCatalog().getGatewayProfile();
-            String resourceHostId = context.getComputeResourceDescription().getComputeResourceId();
-            ComputeResourcePreference preference = gatewayProfile.getComputeResourcePreference(context.getGatewayId()
-		            , resourceHostId);
-            return preference.getPreferredJobSubmissionProtocol();
-        } catch (AppCatalogException e) {
-            log.error("Error occurred while initializing app catalog", e);
-            throw new AppCatalogException("Error occurred while initializing app catalog", e);
-        }
+    public static JobSubmissionProtocol getPreferredJobSubmissionProtocol(ProcessContext context) throws AppCatalogException, TException {
+        String resourceHostId = context.getComputeResourceDescription().getComputeResourceId();
+        ComputeResourcePreference preference = context.getRegistryClient().getGatewayComputeResourcePreference(context.getGatewayId()
+                , resourceHostId);
+        return preference.getPreferredJobSubmissionProtocol();
     }
 
     public static File createJobFile(GroovyMap groovyMap, TaskContext tc, JobManagerConfiguration jMC)
