@@ -59,6 +59,6 @@ export default class FullExperiment extends BaseModel {
     }
 
     get experimentStatusName() {
-        return this.experimentStatus ? this.experimentStatus.stateName : null;
+        return this.experimentStatus ? this.experimentStatus.state.name : null;
     }
 }

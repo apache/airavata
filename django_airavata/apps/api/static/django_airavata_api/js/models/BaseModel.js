@@ -1,3 +1,4 @@
+import BaseEnum from './BaseEnum'
 
 export default class BaseModel {
 
@@ -51,7 +52,14 @@ export default class BaseModel {
     }
 
     convertModelField(modelClass, fieldValue, fieldDefault) {
-        return typeof fieldValue !== 'undefined' ? new modelClass(fieldValue) : fieldDefault;
+        if (typeof fieldValue !== 'undefined') {
+            if (modelClass.prototype instanceof BaseEnum) {
+                return modelClass.byValue(fieldValue);
+            } else {
+                return new modelClass(fieldValue);
+            }
+        }
+        return fieldDefault;
     }
 
     getDefaultValue(fieldDefault) {
