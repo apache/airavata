@@ -29,7 +29,7 @@ import java.io.Serializable;
  * 
  */
 @Entity
-@Table(name="compute_resource_file_system")
+@Table(name="COMPUTE_RESOURCE_FILE_SYSTEM")
 @IdClass(ComputeResourceFileSystemPK.class)
 public class ComputeResourceFileSystemEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
