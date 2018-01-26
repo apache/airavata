@@ -67,7 +67,10 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
     private final static String SHARING_RESOURCE_METHODS = "/airavata/shareResourceWithUsers|/airavata/revokeSharingOfResourceFromUsers|/airavata/getAllAccessibleUsers";
     private final static String SSH_ACCOUNT_PROVISIONER_METHODS =
             "/airavata/getSSHAccountProvisioners|/airavata/doesUserHaveSSHAccount|/airavata" +
-                    "/setupUserComputeResourcePreferencesForSSH";
+                    "/setupUserComputeResourcePreferencesForSSH|" +
+                    // getGatewayResourceProfile is needed to look up whether ssh account provisioning is
+                    // configured for a gateway's compute resource preference
+                    "/airavata/getGatewayResourceProfile";
 
     public KeyCloakSecurityManager() throws AiravataSecurityException {
         rolePermissionConfig.put("admin", "/airavata/.*");
