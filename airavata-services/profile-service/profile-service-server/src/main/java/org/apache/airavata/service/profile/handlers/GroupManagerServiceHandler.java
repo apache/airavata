@@ -18,6 +18,7 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -137,7 +138,23 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     @SecurityCheck
     public List<GroupModel> getAllGroupsUserBelongs(AuthzToken authzToken, String userName) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
-            throw new UnsupportedOperationException("Method not supported yet");
+            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+            List<GroupModel> groupModels = new ArrayList<GroupModel>();
+            List<UserGroup> userGroups = sharingClient.getAllMemberGroupsForUser(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), userName);
+
+            for (UserGroup userGroup: userGroups) {
+                GroupModel groupModel = new GroupModel();
+                groupModel.setId(userGroup.getGroupId());
+                groupModel.setName(userGroup.getName());
+                groupModel.setDescription(userGroup.getDescription());
+                groupModel.setOwnerId(userGroup.getOwnerId());
+
+                sharingClient.getGroupMembersOfTypeUser(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), userGroup.getGroupId(), 0, -1).stream().forEach(user->
+                        groupModel.addToMembers(user.getUserId()));
+
+                groupModels.add(groupModel);
+            }
+            return groupModels;
         }
         catch (Exception e) {
             String msg = "Error Retreiving All Groups for User. User ID: " + userName ;
