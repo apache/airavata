@@ -31,7 +31,6 @@ public class GfacClientFactoryTest {
     private final static Logger logger = LoggerFactory.getLogger(GfacClientFactoryTest.class);
 //    private DocumentCreator documentCreator;
     private GfacService.Client gfacClient;
-    private ExperimentCatalog experimentCatalog;
     private int NUM_CONCURRENT_REQUESTS = 1;
     Initialize initialize;
     GfacServer service;

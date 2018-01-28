@@ -46,6 +46,7 @@ import org.apache.airavata.orchestrator.core.impl.GFACPassiveJobSubmitter;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
+import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
@@ -254,8 +255,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
     public List<ProcessModel> createProcesses (String experimentId, String gatewayId) throws OrchestratorException {
         List<ProcessModel> processModels = new ArrayList<ProcessModel>();
         try {
-            Registry registry = orchestratorContext.getRegistry();
-            ExperimentModel experimentModel = (ExperimentModel)registry.getExperimentCatalog().get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+            RegistryService.Client registryClient = orchestratorContext.getRegistryClient();
+            ExperimentModel experimentModel = registryClient.getExperiment(experimentId);
             List<Object> processList = registry.getExperimentCatalog()
                     .get(ExperimentCatalogModelType.PROCESS, Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, experimentId);
             if (processList != null && !processList.isEmpty()) {
@@ -277,7 +278,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
 
     public String createAndSaveTasks(String gatewayId, ProcessModel processModel, boolean autoSchedule) throws OrchestratorException {
         try {
-            ExperimentCatalog experimentCatalog = orchestratorContext.getRegistry().getExperimentCatalog();
+            RegistryService.Client registryClient = orchestratorContext.getRegistryClient();
             ComputationalResourceSchedulingModel resourceSchedule = processModel.getProcessResourceSchedule();
             String userGivenQueueName = resourceSchedule.getQueueName();
             int userGivenWallTime = resourceSchedule.getWallTimeLimit();
@@ -285,7 +286,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             if (resourceHostId == null){
                 throw new OrchestratorException("Compute Resource Id cannot be null at this point");
             }
-            ComputeResourceDescription computeResource = orchestratorContext.getRegistryClient().getComputeResource(resourceHostId);
+            ComputeResourceDescription computeResource = registryClient.getComputeResource(resourceHostId);
             JobSubmissionInterface preferredJobSubmissionInterface =
                     OrchestratorUtils.getPreferredJobSubmissionInterface(orchestratorContext, processModel, gatewayId);
             ComputeResourcePreference resourcePreference =
@@ -296,7 +297,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 // TODO - breakdown unicore all in one task to multiple tasks, then we don't need to handle UNICORE here.
                 taskIdList.addAll(createAndSaveSubmissionTasks(gatewayId, preferredJobSubmissionInterface, processModel, userGivenWallTime));
             } else {
-                taskIdList.addAll(createAndSaveEnvSetupTask(gatewayId, processModel, experimentCatalog));
+                taskIdList.addAll(createAndSaveEnvSetupTask(gatewayId, processModel));
                 taskIdList.addAll(createAndSaveInputDataStagingTasks(processModel, gatewayId));
                 if (autoSchedule) {
                     List<BatchQueue> definedBatchQueues = computeResource.getBatchQueues();
@@ -328,7 +329,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 taskIdList.addAll(createAndSaveOutputDataStagingTasks(processModel, gatewayId));
             }
             // update process scheduling
-            experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processModel.getProcessId());
+            registryClient.updateProcess(processModel, processModel.getProcessId());
             return getTaskDag(taskIdList);
         } catch (Exception e) {
             throw new OrchestratorException("Error during creating process", e);
@@ -348,8 +349,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
     }
 
     private List<String> createAndSaveEnvSetupTask(String gatewayId,
-                                                   ProcessModel processModel,
-                                                   ExperimentCatalog experimentCatalog)
+                                                   ProcessModel processModel)
             throws RegistryException, TException, AiravataException {
         List<String> envTaskIds = new ArrayList<>();
         TaskModel envSetupTask = new TaskModel();
@@ -365,7 +365,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         envSetupSubModel.setLocation(workingDir);
         byte[] envSetupSub = ThriftUtils.serializeThriftObject(envSetupSubModel);
         envSetupTask.setSubTaskModel(envSetupSub);
-        String envSetupTaskId = (String) experimentCatalog.add(ExpCatChildDataType.TASK, envSetupTask, processModel.getProcessId());
+        String envSetupTaskId = (String) orchestratorContext.getRegistryClient().addTask(envSetupTask, processModel.getProcessId());
         envSetupTask.setTaskId(envSetupTaskId);
         envTaskIds.add(envSetupTaskId);
         return envTaskIds;

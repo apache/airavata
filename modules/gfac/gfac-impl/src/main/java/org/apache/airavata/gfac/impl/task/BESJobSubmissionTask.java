@@ -81,6 +81,7 @@ import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.thrift.TException;
 import org.apache.xmlbeans.XmlCursor;
 import org.ggf.schemas.bes.x2006.x08.besFactory.*;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
@@ -134,6 +135,8 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             taskStatus.setState(TaskState.FAILED);
             taskStatus.setReason(msg);
             return taskStatus;
+        } catch (TException e) {
+            e.printStackTrace();
         }
 
         try {
@@ -347,12 +350,12 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
         processContext.setOutputDir(localPath);
     }
 
-    private DefaultClientConfiguration getSecurityConfig(ProcessContext pc) throws GFacException {
+    private DefaultClientConfiguration getSecurityConfig(ProcessContext pc) throws GFacException, TException {
         DefaultClientConfiguration clientConfig = null;
         try {
             UNICORESecurityContext unicoreSecurityContext = SecurityUtils.getSecurityContext(pc);
-            UserConfigurationDataModel userConfigDataModel = (UserConfigurationDataModel) pc.getExperimentCatalog().
-                    get(ExperimentCatalogModelType.USER_CONFIGURATION_DATA, pc.getExperimentId());
+            UserConfigurationDataModel userConfigDataModel =  pc.getRegistryClient().
+                    getUserConfigurationData(pc.getExperimentId());
             // FIXME - remove following setter lines, and use original value comes with user configuration data model.
             userConfigDataModel.setGenerateCert(true);
 //            userConfigDataModel.setUserDN("CN=swus3, O=Ultrascan Gateway, C=DE");
@@ -361,8 +364,6 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             } else {
                 clientConfig = unicoreSecurityContext.getDefaultConfiguration(false);
             }
-        } catch (RegistryException e) {
-            throw new GFacException("Error! reading user configuration data from registry", e);
         } catch (ApplicationSettingsException e) {
             throw new GFacException("Error! retrieving default client configurations", e);
         }

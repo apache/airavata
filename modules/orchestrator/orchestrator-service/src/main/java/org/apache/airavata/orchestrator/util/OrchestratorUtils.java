@@ -20,24 +20,30 @@
 package org.apache.airavata.orchestrator.util;
 
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.status.ExperimentStatus;
+import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class OrchestratorUtils {
 	private static final Logger log = LoggerFactory.getLogger(OrchestratorUtils.class);
 
-	public static void updageAndPublishExperimentStatus(String experimentId, ExperimentStatus status, Publisher publisher, String gatewayId) {
+	public static void updateAndPublishExperimentStatus(String experimentId, ExperimentStatus status, Publisher publisher, String gatewayId) throws TException {
 		try {
-			RegistryFactory.getDefaultExpCatalog().update(ExperimentCatalogModelType.EXPERIMENT_STATUS, status,
+			getRegistryServiceClient().updateExperimentStatus(status,
 					experimentId);
             ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(status.getState(),
                     experimentId,
@@ -46,16 +52,24 @@ public class OrchestratorUtils {
             MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, messageId, gatewayId);
             messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             publisher.publish(messageContext);
-		} catch (RegistryException e) {
-			log.error("expId : " + experimentId + " Error while updating experiment status to " + status.toString(), e);
 		} catch (AiravataException e) {
             log.error("expId : " + experimentId + " Error while publishing experiment status to " + status.toString(), e);
         }
     }
 
-	public static ExperimentStatus getExperimentStatus(String experimentId) throws RegistryException {
-		return ((ExperimentStatus) RegistryFactory.getDefaultExpCatalog().get(ExperimentCatalogModelType
-						.EXPERIMENT_STATUS,
-				experimentId));
+	public static ExperimentStatus getExperimentStatus(String experimentId) throws RegistryException, TException, ApplicationSettingsException {
+		return getRegistryServiceClient().getExperimentStatus(experimentId);
 	}
+
+
+	private static RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
+		final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
+		final String serverHost = ServerSettings.getRegistryServerHost();
+		try {
+			return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
+		} catch (RegistryServiceException e) {
+			throw new TException("Unable to create registry client...", e);
+		}
+	}
+
 }
