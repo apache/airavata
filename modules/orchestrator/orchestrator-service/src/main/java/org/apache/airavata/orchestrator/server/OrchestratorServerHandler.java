@@ -27,6 +27,7 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.common.utils.ZkConstants;
+import org.apache.airavata.gfac.core.GFacConstants;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.scheduler.HostScheduler;
 import org.apache.airavata.messaging.core.*;
@@ -79,8 +80,6 @@ import java.util.*;
 public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	private static Logger log = LoggerFactory.getLogger(OrchestratorServerHandler.class);
 	private SimpleOrchestratorImpl orchestrator = null;
-	private ExperimentCatalog experimentCatalog;
-    private AppCatalog appCatalog;
 	private static Integer mutex = new Integer(-1);
 	private String airavataUserName;
 	private String gatewayName;
@@ -104,8 +103,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			// the required properties
 			setAiravataUserName(ServerSettings.getDefaultUser());
 			orchestrator = new SimpleOrchestratorImpl();
-			//--experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-			//--appCatalog = RegistryFactory.getAppCatalog();
 			registryClient = orchestrator.getOrchestratorContext().getRegistryClient();
 
 			publisher = MessagingFactory.getPublisher(Type.STATUS);
@@ -226,7 +223,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 					});
 					String taskDag = orchestrator.createAndSaveTasks(gatewayId, processModel, experiment.getUserConfigurationData().isAiravataAutoSchedule());
 					processModel.setTaskDag(taskDag);
-					experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processModel.getProcessId());
+					registryClient.updateProcess(processModel, processModel.getProcessId());
 				}
 
 				if (!validateProcess(experimentId, processes)) {
@@ -238,7 +235,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 ExperimentStatus status = new ExperimentStatus(ExperimentState.LAUNCHED);
                 status.setReason("submitted all processes");
                 status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                OrchestratorUtils.updageAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
+                OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
                 log.info("expId: {}, Launched experiment ", experimentId);
                 OrchestratorServerThreadPoolExecutor.getCachedThreadPool().execute(MDCUtil.wrapWithMDC(new SingleAppExperimentRunner(experimentId, token, gatewayId)));
             } else if (executionType == ExperimentType.WORKFLOW) {
@@ -253,7 +250,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			ExperimentStatus status = new ExperimentStatus(ExperimentState.FAILED);
 			status.setReason("Validation failed: " + launchValidationException.getErrorMessage());
 			status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-			OrchestratorUtils.updageAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
+			OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
 			throw new TException("Experiment '" + experimentId + "' launch failed. Experiment failed to validate: " + launchValidationException.getErrorMessage(), launchValidationException);
         } catch (Exception e) {
             throw new TException("Experiment '" + experimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getExecutionId(), e);
@@ -272,12 +269,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	 */
 	public boolean validateExperiment(String experimentId) throws TException, LaunchValidationException {
 		try {
-            ExperimentModel experimentModel = (ExperimentModel)experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+            ExperimentModel experimentModel = registryClient.getExperiment(experimentId);
             return orchestrator.validateExperiment(experimentModel).isValidationState();
 		} catch (OrchestratorException e) {
-            log.error(experimentId, "Error while validating experiment", e);
-			throw new TException(e);
-		} catch (RegistryException e) {
             log.error(experimentId, "Error while validating experiment", e);
 			throw new TException(e);
 		}
@@ -286,7 +280,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     @Override
     public boolean validateProcess(String experimentId, List<ProcessModel> processes) throws LaunchValidationException, TException {
         try {
-			ExperimentModel experimentModel = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+			ExperimentModel experimentModel = registryClient.getExperiment(experimentId);
 			for (ProcessModel processModel : processes) {
 				boolean state = orchestrator.validateProcess(experimentModel, processModel).isSetValidationState();
 				if (!state) {
@@ -300,20 +294,13 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			ErrorModel details = new ErrorModel();
 			details.setActualErrorMessage(lve.getErrorMessage());
 			details.setCreationTime(Calendar.getInstance().getTimeInMillis());
-			try {
-				experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_ERROR, details, experimentId);
-			} catch (RegistryException e) {
-			    log.error("Failed to add EXPERIMENT_ERROR regarding LaunchValidationException to experiment " + experimentId, e);
-			}
+			registryClient.addErrors(GFacConstants.EXPERIMENT_ERROR, details, experimentId);
 			throw lve;
         } catch (OrchestratorException e) {
             log.error(experimentId, "Error while validating process", e);
             throw new TException(e);
-        } catch (RegistryException e) {
-            log.error(experimentId, "Error while validating process", e);
-            throw new TException(e);
         }
-    }
+	}
 
     /**
 	 * This can be used to cancel a running experiment and store the status to
@@ -352,8 +339,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	@Override
 	public boolean launchProcess(String processId, String airavataCredStoreToken, String gatewayId) throws TException {
 		try {
-			ProcessModel processModel = (ProcessModel) experimentCatalog.get(
-					ExperimentCatalogModelType.PROCESS, processId);
+			ProcessModel processModel = registryClient.getProcess(processId);
             String applicationId = processModel.getApplicationInterfaceId();
 			if (applicationId == null) {
                 log.error(processId, "Application interface id shouldn't be null.");
@@ -364,7 +350,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             processModel.setApplicationDeploymentId(applicationDeploymentDescription.getAppDeploymentId());
 			// set compute resource id to process model, default we set the same in the user preferred compute host id
 			processModel.setComputeResourceId(processModel.getProcessResourceSchedule().getResourceHostId());
-			experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel,processModel.getProcessId());
+			registryClient.updateProcess(processModel,processModel.getProcessId());
 		    return orchestrator.launchProcess(processModel, airavataCredStoreToken);
 		} catch (Exception e) {
             log.error(processId, "Error while launching process ", e);
@@ -384,13 +370,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             throws AppCatalogException, ClassNotFoundException,
             ApplicationSettingsException, InstantiationException,
             IllegalAccessException, TException {
-        Map<String, String> moduleIdFilter = new HashMap<String, String>();
-        moduleIdFilter.put(AppCatAbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, selectedModuleId);
-        if (processModel.getProcessResourceSchedule() != null && processModel.getProcessResourceSchedule().getResourceHostId() != null) {
-            moduleIdFilter.put(AppCatAbstractResource.ApplicationDeploymentConstants.COMPUTE_HOST_ID, processModel.getProcessResourceSchedule().getResourceHostId());
-        }
-        //TODO
-        List<ApplicationDeploymentDescription> applicationDeployements = appCatalog.getApplicationDeployment().getApplicationDeployements(moduleIdFilter);
+
+        List<ApplicationDeploymentDescription> applicationDeployements = registryClient.getApplicationDeployments(selectedModuleId);
         Map<ComputeResourceDescription, ApplicationDeploymentDescription> deploymentMap = new HashMap<ComputeResourceDescription, ApplicationDeploymentDescription>();
 
         for (ApplicationDeploymentDescription deploymentDescription : applicationDeployements) {
@@ -420,7 +401,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	}
 
     private boolean validateStatesAndCancel(String experimentId, String gatewayId) throws Exception {
-		ExperimentStatus experimentStatus = OrchestratorUtils.getExperimentStatus(experimentId);
+		ExperimentStatus experimentStatus = registryClient.getExperimentStatus(experimentId);
 		switch (experimentStatus.getState()) {
 			case COMPLETED: case CANCELED: case FAILED: case CANCELING:
 				log.warn("Can't terminate already {} experiment", experimentStatus.getState().name());
@@ -438,7 +419,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 					ExperimentStatus status = new ExperimentStatus(ExperimentState.CANCELING);
 					status.setReason("Experiment cancel request processed");
 					status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-					OrchestratorUtils.updageAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
+					OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
 					log.info("expId : " + experimentId + " :- Experiment status updated to " + status.getState());
 					return true;
 				}
@@ -485,8 +466,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 
         private boolean launchSingleAppExperiment() throws TException, AiravataException {
             try {
-                List<String> processIds = experimentCatalog.getIds(ExperimentCatalogModelType.PROCESS,
-						AbstractExpCatResource.ProcessConstants.EXPERIMENT_ID, experimentId);
+                List<String> processIds = registryClient.getProcessIds(experimentId);
                 for (String processId : processIds) {
                     launchProcess(processId, airavataCredStoreToken, gatewayId);
                 }
@@ -498,7 +478,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			} catch (Exception e) {
 	            ExperimentStatus status = new ExperimentStatus(ExperimentState.FAILED);
 	            status.setReason("Error while updating task status");
-	            OrchestratorUtils.updageAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
+	            OrchestratorUtils.updateAndPublishExperimentStatus(experimentId, status, publisher, gatewayId);
 	            log.error("expId: " + experimentId + ", Error while updating task status, hence updated experiment status to " +
 			            ExperimentState.FAILED, e);
                 ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.FAILED,
@@ -550,6 +530,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 							} catch (RegistryException e) {
 								status.setState(ExperimentState.EXECUTING);
 								status.setReason("process  started");
+							} catch (ApplicationSettingsException e) {
+								e.printStackTrace();
 							}
 							break;
 //						case PRE_PROCESSING:
@@ -576,6 +558,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 							} catch (RegistryException e) {
 								status.setState(ExperimentState.COMPLETED);
 								status.setReason("process  completed");
+							} catch (ApplicationSettingsException e) {
+								e.printStackTrace();
 							}
 							break;
 						case FAILED:
@@ -592,6 +576,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 							} catch (RegistryException e) {
 								status.setState(ExperimentState.FAILED);
 								status.setReason("process  failed");
+							} catch (ApplicationSettingsException e) {
+								e.printStackTrace();
 							}
 							break;
 						case CANCELED:
@@ -605,7 +591,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 					}
 					if (status.getState() != null) {
 						status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-						OrchestratorUtils.updageAndPublishExperimentStatus(processIdentity.getExperimentId(), status, publisher,  processIdentity.getGatewayId());
+						OrchestratorUtils.updateAndPublishExperimentStatus(processIdentity.getExperimentId(), status, publisher,  processIdentity.getGatewayId());
 						log.info("expId : " + processIdentity.getExperimentId() + " :- Experiment status updated to " +
 								status.getState());
 					}
@@ -665,8 +651,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			MDC.put(MDCConstants.EXPERIMENT_ID, expEvent.getExperimentId());
 			log.info("Launching experiment with experimentId: {} gateway Id: {}", expEvent.getExperimentId(), expEvent.getGatewayId());
 			if (messageContext.isRedeliver()) {
-				ExperimentModel experimentModel = (ExperimentModel) experimentCatalog.
-						get(ExperimentCatalogModelType.EXPERIMENT, expEvent.getExperimentId());
+				ExperimentModel experimentModel = registryClient.
+						getExperiment(expEvent.getExperimentId());
 				MDC.put(MDCConstants.EXPERIMENT_NAME, experimentModel.getExperimentName());
 				if (experimentModel.getExperimentStatus().get(0).getState() == ExperimentState.CREATED) {
 					launchExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
@@ -679,24 +665,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 					String.format("Experiment launch failed due to Thrift conversion error, experimentId: %s, gatewayId: %s",
 					expEvent.getExperimentId(), expEvent.getGatewayId()): "Experiment launch failed due to Thrift conversion error";
             log.error(logMessage,  e);
-		} catch (RegistryException e) {
-			String logMessage =  expEvent.getExperimentId() != null && expEvent.getGatewayId() != null ?
-					String.format("Experiment launch failed due to registry access issue, experimentId: %s, gatewayId: %s",
-					expEvent.getExperimentId(), expEvent.getGatewayId()): "Experiment launch failed due to registry access issue";
-			log.error(logMessage, e);
-		}finally {
+		} finally {
 			experimentSubscriber.sendAck(messageContext.getDeliveryTag());
 			MDC.clear();
-		}
-	}
-
-	private RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
-		final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-		final String serverHost = ServerSettings.getRegistryServerHost();
-		try {
-			return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-		} catch (RegistryServiceException e) {
-			throw new TException("Unable to create registry client...", e);
 		}
 	}
 

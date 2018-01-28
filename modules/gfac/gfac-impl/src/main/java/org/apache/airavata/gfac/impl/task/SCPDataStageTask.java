@@ -24,6 +24,7 @@ import com.jcraft.jsch.Session;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
+import org.apache.airavata.gfac.core.GFacConstants;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
@@ -44,6 +45,7 @@ import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.model.task.TaskTypes;
+import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.cpi.ExpCatChildDataType;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.airavata.registry.cpi.RegistryException;
@@ -166,7 +168,7 @@ public class SCPDataStageTask implements Task {
                 List<String> fileNames = taskContext.getParentProcessContext().getDataMovementRemoteCluster()
                         .getFileNameFromExtension(fileName, sourceParentPath, remoteSession);
 
-                ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+                RegistryService.Client registryCLient = processContext.getRegistryClient();
 
                 String experimentId = processContext.getExperimentId();
 
@@ -189,8 +191,8 @@ public class SCPDataStageTask implements Task {
                     if (processState == ProcessState.OUTPUT_DATA_STAGING) {
                         processOutput.setName(fileName);
 
-                        experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_OUTPUT, Arrays.asList(processOutput), experimentId);
-                        experimentCatalog.add(ExpCatChildDataType.PROCESS_OUTPUT, Arrays.asList(processOutput), processId);
+                        registryCLient.addExperimentProcessOutputs(GFacConstants.EXPERIMENT_OUTPUT, Arrays.asList(processOutput), experimentId);
+                        registryCLient.addExperimentProcessOutputs(GFacConstants.PROCESS_OUTPUT, Arrays.asList(processOutput), processId);
 
                         taskContext.setProcessOutput(processOutput);
 
@@ -272,7 +274,7 @@ public class SCPDataStageTask implements Task {
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
-        } catch (RegistryException | GFacException e) {
+        } catch (GFacException e) {
             String msg = "Data staging failed";
             log.error(msg, e);
             status.setState(TaskState.FAILED);

@@ -47,6 +47,7 @@ import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.JobSubmissionTaskModel;
+import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
@@ -216,7 +217,7 @@ public class GFacUtils {
             if(jobModel.getJobStatuses() != null)
 			    jobStatus = jobModel.getJobStatuses().get(0);
 
-            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+            RegistryService.Client registryClient = processContext.getRegistryClient();
             List<JobStatus> statuses = new ArrayList<>();
             statuses.add(jobStatus);
             jobModel.setJobStatuses(statuses);
@@ -225,8 +226,7 @@ public class GFacUtils {
             }else {
                 jobStatus.setTimeOfStateChange(jobStatus.getTimeOfStateChange());
             }
-            CompositeIdentifier ids = new CompositeIdentifier(jobModel.getTaskId(), jobModel.getJobId());
-			experimentCatalog.add(ExpCatChildDataType.JOB_STATUS, jobStatus, ids);
+			registryClient.addJobStatus(jobStatus, jobModel.getTaskId(), jobModel.getJobId());
             JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), jobModel.getTaskId(),
                     processContext.getProcessId(), processContext.getProcessModel().getExperimentId(),
                     processContext.getGatewayId());
@@ -246,14 +246,14 @@ public class GFacUtils {
 	        TaskState state = taskContext.getTaskState();
 	        // first we save job jobModel to the registry for sa and then save the job status.
 	        ProcessContext processContext = taskContext.getParentProcessContext();
-	        ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+	        RegistryService.Client registryClient = processContext.getRegistryClient();
 	        TaskStatus status = taskContext.getTaskStatus();
             if (status.getTimeOfStateChange() == 0 || status.getTimeOfStateChange() > 0 ){
                 status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             }else {
                 status.setTimeOfStateChange(status.getTimeOfStateChange());
             }
-	        experimentCatalog.add(ExpCatChildDataType.TASK_STATUS, status, taskContext.getTaskId());
+            registryClient.addTaskStatus(status, taskContext.getTaskId());
 	        TaskIdentifier identifier = new TaskIdentifier(taskContext.getTaskId(),
 			        processContext.getProcessId(), processContext.getProcessModel().getExperimentId(),
 			        processContext.getGatewayId());
@@ -272,14 +272,14 @@ public class GFacUtils {
     public static void saveAndPublishProcessStatus(ProcessContext processContext) throws GFacException {
         try {
             // first we save job jobModel to the registry for sa and then save the job status.
-            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+            RegistryService.Client registryClient = processContext.getRegistryClient();
             ProcessStatus status = processContext.getProcessStatus();
             if (status.getTimeOfStateChange() == 0 || status.getTimeOfStateChange() > 0 ){
                 status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             }else {
                 status.setTimeOfStateChange(status.getTimeOfStateChange());
             }
-            experimentCatalog.add(ExpCatChildDataType.PROCESS_STATUS, status, processContext.getProcessId());
+            registryClient.addProcessStatus(status, processContext.getProcessId());
             ProcessIdentifier identifier = new ProcessIdentifier(processContext.getProcessId(),
                                                                  processContext.getProcessModel().getExperimentId(),
                                                                  processContext.getGatewayId());
@@ -908,64 +908,46 @@ public class GFacUtils {
 		}
 	}
 
-	public static void saveJobModel(ProcessContext processContext, JobModel jobModel) throws GFacException {
-		try {
-			ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
-			experimentCatalog.add(ExpCatChildDataType.JOB, jobModel, processContext.getProcessId());
-		} catch (RegistryException e) {
-			String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
-					+ " jobId: " + jobModel.getJobId() + " : - Error while saving Job Model";
-			throw new GFacException(msg, e);
-		}
-	}
-
-    public static void saveExperimentInput(ProcessContext processContext, String inputName, String inputVal) throws GFacException {
-        try {
-            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
-            String experimentId = processContext.getExperimentId();
-            ExperimentModel experiment = (ExperimentModel)experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
-            List<InputDataObjectType> experimentInputs = experiment.getExperimentInputs();
-            if (experimentInputs != null && !experimentInputs.isEmpty()){
-                for (InputDataObjectType expInput : experimentInputs){
-                    if (expInput.getName().equals(inputName)){
-                        expInput.setValue(inputVal);
-                    }
-                }
-            }
-            experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT, experiment, experimentId);
-        } catch (RegistryException e) {
-            String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
-                    + " : - Error while updating experiment inputs";
-            throw new GFacException(msg, e);
-        }
+	public static void saveJobModel(ProcessContext processContext, JobModel jobModel) throws GFacException, TException {
+        RegistryService.Client registryClient = processContext.getRegistryClient();
+        registryClient.addJob(jobModel, processContext.getProcessId());
     }
 
-    public static void saveProcessInput(ProcessContext processContext, String inputName, String inputVal) throws GFacException {
-        try {
-            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
-            String processId = processContext.getProcessId();
-            ProcessModel processModel = (ProcessModel)experimentCatalog.get(ExperimentCatalogModelType.PROCESS, processId);
-            List<InputDataObjectType> processInputs = processModel.getProcessInputs();
-            if (processInputs != null && !processInputs.isEmpty()){
-                for (InputDataObjectType processInput : processInputs){
-                    if (processInput.getName().equals(inputName)){
-                        processInput.setValue(inputVal);
-                    }
+    public static void saveExperimentInput(ProcessContext processContext, String inputName, String inputVal) throws GFacException, TException {
+        RegistryService.Client registryCLient = processContext.getRegistryClient();
+        String experimentId = processContext.getExperimentId();
+        ExperimentModel experiment = registryCLient.getExperiment(experimentId);
+        List<InputDataObjectType> experimentInputs = experiment.getExperimentInputs();
+        if (experimentInputs != null && !experimentInputs.isEmpty()){
+            for (InputDataObjectType expInput : experimentInputs){
+                if (expInput.getName().equals(inputName)){
+                    expInput.setValue(inputVal);
                 }
             }
-            experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processId);
-        } catch (RegistryException e) {
-            String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
-                    + " : - Error while updating experiment inputs";
-            throw new GFacException(msg, e);
         }
+        registryCLient.updateExperiment(experimentId, experiment);
     }
 
-    public static void saveExperimentOutput(ProcessContext processContext, String outputName, String outputVal) throws GFacException {
+    public static void saveProcessInput(ProcessContext processContext, String inputName, String inputVal) throws GFacException, TException {
+        RegistryService.Client registryClient = processContext.getRegistryClient();
+        String processId = processContext.getProcessId();
+        ProcessModel processModel = registryClient.getProcess(processId);
+        List<InputDataObjectType> processInputs = processModel.getProcessInputs();
+        if (processInputs != null && !processInputs.isEmpty()){
+            for (InputDataObjectType processInput : processInputs){
+                if (processInput.getName().equals(inputName)){
+                    processInput.setValue(inputVal);
+                }
+            }
+        }
+        registryClient.updateProcess(processModel, processId);
+    }
+
+    public static void saveExperimentOutput(ProcessContext processContext, String outputName, String outputVal) throws GFacException, TException {
         try {
-            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+            RegistryService.Client registryClient = processContext.getRegistryClient();
             String experimentId = processContext.getExperimentId();
-            ExperimentModel experiment = (ExperimentModel)experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+            ExperimentModel experiment = registryClient.getExperiment(experimentId);
             List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
             if (experimentOutputs != null && !experimentOutputs.isEmpty()){
                 for (OutputDataObjectType expOutput : experimentOutputs){
@@ -990,7 +972,7 @@ public class GFacUtils {
                     }
                 }
             }
-            experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT, experiment, experimentId);
+            registryClient.updateExperiment(experimentId, experiment);
         } catch (RegistryException e) {
             String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
                     + " : - Error while updating experiment outputs";
@@ -998,64 +980,40 @@ public class GFacUtils {
         }
     }
 
-    public static void saveProcessOutput(ProcessContext processContext, String outputName, String outputVal) throws GFacException {
-        try {
-            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
-            String processId = processContext.getProcessId();
-            List<OutputDataObjectType>  processOutputs = (List<OutputDataObjectType> )experimentCatalog.get(ExperimentCatalogModelType.PROCESS_OUTPUT, processId);
-            if (processOutputs != null && !processOutputs.isEmpty()){
-                for (OutputDataObjectType processOutput : processOutputs){
-                    if (processOutput.getName().equals(outputName)){
-                        processOutput.setValue(outputVal);
-                    }
+    public static void saveProcessOutput(ProcessContext processContext, String outputName, String outputVal) throws GFacException, TException {
+        RegistryService.Client registryClient = processContext.getRegistryClient();
+        String processId = processContext.getProcessId();
+        List<OutputDataObjectType>  processOutputs = (List<OutputDataObjectType> )registryClient.getProcessOutputs(processId);
+        if (processOutputs != null && !processOutputs.isEmpty()){
+            for (OutputDataObjectType processOutput : processOutputs){
+                if (processOutput.getName().equals(outputName)){
+                    processOutput.setValue(outputVal);
                 }
             }
-            ProcessModel processModel = processContext.getProcessModel();
-            processModel.setProcessOutputs(processOutputs);
-            experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processId);
-        } catch (RegistryException e) {
-            String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
-                    + " : - Error while updating experiment outputs";
-            throw new GFacException(msg, e);
         }
+        ProcessModel processModel = processContext.getProcessModel();
+        processModel.setProcessOutputs(processOutputs);
+        registryClient.updateProcess(processModel, processId);
     }
 
-    public static void saveExperimentError(ProcessContext processContext, ErrorModel errorModel) throws GFacException {
-        try {
-            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
-            String experimentId = processContext.getExperimentId();
-            errorModel.setErrorId(AiravataUtils.getId("EXP_ERROR"));
-            experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_ERROR, errorModel, experimentId);
-        } catch (RegistryException e) {
-            String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
-                    + " : - Error while updating experiment errors";
-            throw new GFacException(msg, e);
-        }
+    public static void saveExperimentError(ProcessContext processContext, ErrorModel errorModel) throws GFacException, TException {
+        RegistryService.Client registryClient = processContext.getRegistryClient();
+        String experimentId = processContext.getExperimentId();
+        errorModel.setErrorId(AiravataUtils.getId("EXP_ERROR"));
+        registryClient.addErrors(GFacConstants.EXPERIMENT_ERROR, errorModel, experimentId);
     }
 
-    public static void saveProcessError(ProcessContext processContext, ErrorModel errorModel) throws GFacException {
-        try {
-            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
-            errorModel.setErrorId(AiravataUtils.getId("PROCESS_ERROR"));
-            experimentCatalog.add(ExpCatChildDataType.PROCESS_ERROR, errorModel, processContext.getProcessId());
-        } catch (RegistryException e) {
-            String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
-                    + " : - Error while updating process errors";
-            throw new GFacException(msg, e);
-        }
+    public static void saveProcessError(ProcessContext processContext, ErrorModel errorModel) throws GFacException, TException {
+        RegistryService.Client registryClient = processContext.getRegistryClient();
+        errorModel.setErrorId(AiravataUtils.getId("PROCESS_ERROR"));
+        registryClient.addErrors(GFacConstants.PROCESS_ERROR, errorModel, processContext.getProcessId());
     }
 
-    public static void saveTaskError(TaskContext taskContext, ErrorModel errorModel) throws GFacException {
-        try {
-            ExperimentCatalog experimentCatalog = taskContext.getParentProcessContext().getExperimentCatalog();
-            String taskId = taskContext.getTaskId();
-            errorModel.setErrorId(AiravataUtils.getId("TASK_ERROR"));
-            experimentCatalog.add(ExpCatChildDataType.TASK_ERROR, errorModel, taskId);
-        } catch (RegistryException e) {
-            String msg = "expId: " + taskContext.getParentProcessContext().getExperimentId() + " processId: " + taskContext.getParentProcessContext().getProcessId() + " taskId: " + taskContext.getTaskId()
-                    + " : - Error while updating task errors";
-            throw new GFacException(msg, e);
-        }
+    public static void saveTaskError(TaskContext taskContext, ErrorModel errorModel) throws GFacException, TException {
+        RegistryService.Client registryClient = taskContext.getParentProcessContext().getRegistryClient();
+        String taskId = taskContext.getTaskId();
+        errorModel.setErrorId(AiravataUtils.getId("TASK_ERROR"));
+        registryClient.addErrors(GFacConstants.TASK_ERROR, errorModel, taskId);
     }
 
 	public static void handleProcessInterrupt(ProcessContext processContext) throws GFacException {
@@ -1079,21 +1037,9 @@ public class GFacUtils {
 		}
 	}
 
-    public static JobModel getJobModel(ProcessContext processContext) throws RegistryException {
-        ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
-        List<Object> objects = experimentCatalog.get(ExperimentCatalogModelType.JOB,
-                Constants.FieldConstants.JobConstants.PROCESS_ID, processContext.getProcessId());
-        List<JobModel> jobModels = new ArrayList<>();
-        JobModel jobModel = null;
-        if (objects != null) {
-            for (Object object : objects) {
-                jobModel = ((JobModel) object);
-                if (jobModel.getJobId() != null || !jobModel.equals("")) {
-                    return jobModel;
-                }
-            }
-        }
-        return jobModel;
+    public static JobModel getJobModel(ProcessContext processContext) throws TException {
+        RegistryService.Client registryClient = processContext.getRegistryClient();
+        return registryClient.getJob(GFacConstants.PROCESS_ID, processContext.getProcessId());
     }
 
     public static List<String> parseTaskDag(String taskDag) {

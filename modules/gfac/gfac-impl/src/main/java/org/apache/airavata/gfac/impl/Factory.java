@@ -72,6 +72,9 @@ import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
+import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
@@ -81,6 +84,7 @@ import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -181,6 +185,16 @@ public abstract class Factory {
 
 	public static AppCatalog getDefaultAppCatalog() throws AppCatalogException {
 		return RegistryFactory.getAppCatalog();
+	}
+
+	public static RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
+		final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
+		final String serverHost = ServerSettings.getRegistryServerHost();
+		try {
+			return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
+		} catch (RegistryServiceException e) {
+			throw new TException("Unable to create registry client...", e);
+		}
 	}
 
 	public static Publisher getStatusPublisher() throws AiravataException {
