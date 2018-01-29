@@ -679,7 +679,13 @@ public class ProcessContext {
 	}
 
 	public String getAllocationProjectNumber() {
-		return gatewayComputeResourcePreference.getAllocationProjectNumber();
+		if (isUseUserCRPref() &&
+				userComputeResourcePreference != null &&
+				userComputeResourcePreference.getAllocationProjectNumber() != null) {
+			return userComputeResourcePreference.getAllocationProjectNumber();
+		} else {
+			return gatewayComputeResourcePreference.getAllocationProjectNumber();
+		}
 	}
 
 	public String getReservation() {
@@ -687,7 +693,7 @@ public class ProcessContext {
 		String reservation = null;
 		if (isUseUserCRPref() &&
 				userComputeResourcePreference != null &&
-				isValid(userComputeResourcePreference.getReservation())) {
+				userComputeResourcePreference.getReservation() != null) {
 			reservation = userComputeResourcePreference.getReservation();
 			start = userComputeResourcePreference.getReservationStartTime();
 			end = userComputeResourcePreference.getReservationEndTime();
@@ -708,7 +714,7 @@ public class ProcessContext {
 	public String getQualityOfService() {
 		if (isUseUserCRPref() &&
 				userComputeResourcePreference != null &&
-				isValid(userComputeResourcePreference.getQualityOfService())) {
+				userComputeResourcePreference.getQualityOfService() != null) {
 			return userComputeResourcePreference.getQualityOfService();
 		} else {
 			return gatewayComputeResourcePreference.getQualityOfService();
@@ -717,12 +723,12 @@ public class ProcessContext {
 
 
 	public String getQueueName() {
-		if (isUseUserCRPref() &&
-				userComputeResourcePreference != null &&
-				isValid(userComputeResourcePreference.getPreferredBatchQueue())) {
-			return userComputeResourcePreference.getPreferredBatchQueue();
-		} else if (isValid(processModel.getProcessResourceSchedule().getQueueName())) {
+		if (isValid(processModel.getProcessResourceSchedule().getQueueName())) {
 			return processModel.getProcessResourceSchedule().getQueueName();
+		} else if (isUseUserCRPref() &&
+				userComputeResourcePreference != null &&
+				userComputeResourcePreference.getPreferredBatchQueue() != null) {
+			return userComputeResourcePreference.getPreferredBatchQueue();
 		} else {
 			return gatewayComputeResourcePreference.getPreferredBatchQueue();
 		}
