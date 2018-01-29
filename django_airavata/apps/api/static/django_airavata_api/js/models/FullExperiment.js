@@ -2,8 +2,9 @@
 import ApplicationModule from './ApplicationModule'
 import BaseModel from './BaseModel'
 import ComputeResourceDescription from './ComputeResourceDescription'
-import DataProduct from './DataProduct.js'
+import DataProduct from './DataProduct'
 import Experiment from './Experiment'
+import Job from './Job'
 import Project from './Project'
 
 const FIELDS = [
@@ -33,7 +34,12 @@ const FIELDS = [
         name: 'inputDataProducts',
         type: DataProduct,
         list: true
-    }
+    },
+    {
+        name: 'jobDetails',
+        type: Job,
+        list: true,
+    },
 ];
 
 export default class FullExperiment extends BaseModel {

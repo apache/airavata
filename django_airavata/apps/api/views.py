@@ -259,6 +259,14 @@ class ExperimentViewSet(APIBackedViewSet):
         except Exception as e:
             return Response({'success': False, 'errorMessage': e.message})
 
+    @detail_route(methods=['get'])
+    def jobs(self, request, experiment_id=None):
+        jobs = request.airavata_client.getJobDetails(
+            self.authz_token, experiment_id)
+        serializer = serializers.JobSerializer(
+            jobs, many=True, context={'request': request})
+        return Response(serializer.data)
+
 
 class FullExperimentViewSet(mixins.RetrieveModelMixin,
                             GenericAPIBackedViewSet):
@@ -303,13 +311,16 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
             if compute_resource_id else None
         project = self.request.airavata_client.getProject(
             self.authz_token, experimentModel.projectId)
+        job_details = self.request.airavata_client.getJobDetails(
+            self.authz_token, lookup_value)
         full_experiment = serializers.FullExperiment(
             experimentModel,
             project=project,
             outputDataProducts=outputDataProducts,
             inputDataProducts=inputDataProducts,
             applicationModule=applicationModule,
-            computeResource=compute_resource)
+            computeResource=compute_resource,
+            jobDetails=job_details)
         return full_experiment
 
 

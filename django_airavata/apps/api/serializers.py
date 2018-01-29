@@ -5,6 +5,7 @@ from airavata.model.appcatalog.computeresource.ttypes import BatchQueue
 from airavata.model.application.io.ttypes import InputDataObjectType, OutputDataObjectType
 from airavata.model.data.replica.ttypes import DataProductModel, DataReplicaLocationModel
 from airavata.model.experiment.ttypes import ExperimentModel
+from airavata.model.job.ttypes import JobModel
 from airavata.model.status.ttypes import ExperimentStatus
 from airavata.model.workspace.ttypes import Project
 
@@ -245,6 +246,7 @@ class ExperimentSerializer(
     url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:experiment-detail', lookup_field='experimentId', lookup_url_kwarg='experiment_id')
     full_experiment = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:full-experiment-detail', lookup_field='experimentId', lookup_url_kwarg='experiment_id')
     project = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-detail', lookup_field='projectId', lookup_url_kwarg='project_id')
+    jobs = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:experiment-jobs', lookup_field='experimentId', lookup_url_kwarg='experiment_id')
     userName = GatewayUsernameDefaultField()
     gatewayId = GatewayIdDefaultField()
     creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
@@ -270,7 +272,7 @@ class FullExperiment:
 
     def __init__(self, experimentModel, project=None, outputDataProducts=None,
                  inputDataProducts=None, applicationModule=None,
-                 computeResource=None):
+                 computeResource=None, jobDetails=None):
         self.experiment = experimentModel
         self.experimentId = experimentModel.experimentId
         self.project = project
@@ -278,6 +280,11 @@ class FullExperiment:
         self.inputDataProducts = inputDataProducts
         self.applicationModule = applicationModule
         self.computeResource = computeResource
+        self.jobDetails = jobDetails
+
+
+class JobSerializer(thrift_utils.create_serializer_class(JobModel)):
+    creationTime = UTCPosixTimestampDateTimeField()
 
 
 class FullExperimentSerializer(serializers.Serializer):
@@ -291,6 +298,7 @@ class FullExperimentSerializer(serializers.Serializer):
     applicationModule = ApplicationModuleSerializer(read_only=True)
     computeResource = ComputeResourceDescriptionSerializer(read_only=True)
     project = ProjectSerializer(read_only=True)
+    jobDetails = JobSerializer(many=True, read_only=True)
 
     def create(self, validated_data):
         raise Exception("Not implemented")

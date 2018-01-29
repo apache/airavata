@@ -60,6 +60,25 @@
                                         {{ localFullExperiment.experimentStatusName }}
                                     </td>
                                 </tr>
+                                <tr v-if="localFullExperiment.jobDetails && localFullExperiment.jobDetails.length > 0">
+                                    <th scope="row">Job</th>
+                                    <td>
+                                        <table class="table">
+                                            <thead>
+                                                <th>Name</th>
+                                                <th>ID</th>
+                                                <th>Status</th>
+                                                <th>Creation Time</th>
+                                            </thead>
+                                            <tr v-for="(jobDetail, index) in localFullExperiment.jobDetails">
+                                                <td>{{ jobDetail.jobName }}</td>
+                                                <td>{{ jobDetail.jobId }}</td>
+                                                <td>{{ jobDetail.jobStatuses[0].jobState.name }}</td>
+                                                <td><span :title="jobDetail.creationTime.toString()">{{ jobCreationTimes[index] }}</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
                                 <!--  TODO: leave this out for now -->
                                 <!-- <tr>
                                     <th scope="row">Notification List</th>
@@ -148,6 +167,9 @@ export default {
         },
         experiment: function() {
             return this.localFullExperiment.experiment;
+        },
+        jobCreationTimes: function() {
+            return this.localFullExperiment.jobDetails.map(jobDetail => moment(jobDetail.creationTime).fromNow());
         }
     },
     methods: {
