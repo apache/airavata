@@ -20,22 +20,25 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
  * The persistent class for the batch_queue database table.
  */
 @Entity
-@Table(name = "batch_queue")
+@Table(name = "BATCH_QUEUE")
+@IdClass(BatchQueuePK.class)
 public class BatchQueueEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private BatchQueuePK id;
+    @Id
+    @Column(name="COMPUTE_RESOURCE_ID")
+    private String computeResourceId;
+
+    @Id
+    @Column(name="QUEUE_NAME")
+    private String queueName;
 
     @Column(name = "MAX_JOB_IN_QUEUE")
     private int maxJobInQueue;
@@ -55,15 +58,45 @@ public class BatchQueueEntity implements Serializable {
     @Column(name = "QUEUE_DESCRIPTION")
     private String queueDescription;
 
+    @ManyToOne(targetEntity = ComputeResourceEntity.class, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "COMPUTE_RESOURCE_ID")
+    private ComputeResourceEntity computeResource;
+
+    @Column(name = "CPU_PER_NODE")
+    private int cpuPerNode;
+
+    @Column(name = "DEFAULT_NODE_COUNT")
+    private int defaultNodeCount;
+
+    @Column(name = "DEFAULT_CPU_COUNT")
+    private int defaultCPUCount;
+
+    @Column(name = "DEFAULT_WALLTIME")
+    private int defaultWalltime;
+
+    @Column(name = "QUEUE_SPECIFIC_MACROS")
+    private String queueSpecificMacros;
+
+    @Column(name = "IS_DEFAULT_QUEUE")
+    private boolean isDefaultQueue;
+
     public BatchQueueEntity() {
     }
 
-    public BatchQueuePK getId() {
-        return id;
+    public String getComputeResourceId() {
+        return computeResourceId;
     }
 
-    public void setId(BatchQueuePK id) {
-        this.id = id;
+    public void setComputeResourceId(String computeResourceId) {
+        this.computeResourceId = computeResourceId;
+    }
+
+    public String getQueueName() {
+        return queueName;
+    }
+
+    public void setQueueName(String queueName) {
+        this.queueName = queueName;
     }
 
     public int getMaxJobInQueue() {
@@ -112,5 +145,61 @@ public class BatchQueueEntity implements Serializable {
 
     public void setQueueDescription(String queueDescription) {
         this.queueDescription = queueDescription;
+    }
+
+    public ComputeResourceEntity getComputeResource() {
+        return computeResource;
+    }
+
+    public void setComputeResource(ComputeResourceEntity computeResource) {
+        this.computeResource = computeResource;
+    }
+
+    public int getCpuPerNode() {
+        return cpuPerNode;
+    }
+
+    public void setCpuPerNode(int cpuPerNode) {
+        this.cpuPerNode = cpuPerNode;
+    }
+
+    public int getDefaultNodeCount() {
+        return defaultNodeCount;
+    }
+
+    public void setDefaultNodeCount(int defaultNodeCount) {
+        this.defaultNodeCount = defaultNodeCount;
+    }
+
+    public int getDefaultCPUCount() {
+        return defaultCPUCount;
+    }
+
+    public void setDefaultCPUCount(int defaultCPUCount) {
+        this.defaultCPUCount = defaultCPUCount;
+    }
+
+    public int getDefaultWalltime() {
+        return defaultWalltime;
+    }
+
+    public void setDefaultWalltime(int defaultWalltime) {
+        this.defaultWalltime = defaultWalltime;
+    }
+
+    public String getQueueSpecificMacros() {
+        return queueSpecificMacros;
+    }
+
+    public void setQueueSpecificMacros(String queueSpecificMacros) {
+        this.queueSpecificMacros = queueSpecificMacros;
+    }
+
+    public boolean isDefaultQueue() {
+        return isDefaultQueue;
+    }
+
+    public void setDefaultQueue(boolean defaultQueue) {
+        isDefaultQueue = defaultQueue;
     }
 }

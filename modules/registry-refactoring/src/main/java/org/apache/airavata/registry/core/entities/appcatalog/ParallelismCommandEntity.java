@@ -20,17 +20,14 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
  * The persistent class for the parallelism_command database table.
  */
 @Entity
-@Table(name = "parallelism_command")
+@Table(name = "PARALLELISM_COMMAND")
 public class ParallelismCommandEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -39,6 +36,10 @@ public class ParallelismCommandEntity implements Serializable {
 
     @Column(name = "COMMAND")
     private String command;
+
+    @ManyToOne(cascade= CascadeType.MERGE)
+    @JoinColumn(name = "RESOURCE_JOB_MANAGER_ID")
+    private ResourceJobManagerEntity resourceJobManager;
 
     public ParallelismCommandEntity() {
     }
@@ -57,5 +58,13 @@ public class ParallelismCommandEntity implements Serializable {
 
     public void setCommand(String command) {
         this.command = command;
+    }
+
+    public ResourceJobManagerEntity getResourceJobManager() {
+        return resourceJobManager;
+    }
+
+    public void setResourceJobManager(ResourceJobManagerEntity resourceJobManager) {
+        this.resourceJobManager = resourceJobManager;
     }
 }
