@@ -685,12 +685,12 @@ public class ProcessContext {
 
 
 	public String getQueueName() {
-		if (isUseUserCRPref() &&
+		if (isValid(processModel.getProcessResourceSchedule().getQueueName())) {
+			return processModel.getProcessResourceSchedule().getQueueName();
+		} else if (isUseUserCRPref() &&
 				userComputeResourcePreference != null &&
 				userComputeResourcePreference.getPreferredBatchQueue() != null) {
 			return userComputeResourcePreference.getPreferredBatchQueue();
-		} else if (isValid(processModel.getProcessResourceSchedule().getQueueName())) {
-			return processModel.getProcessResourceSchedule().getQueueName();
 		} else {
 			return gatewayComputeResourcePreference.getPreferredBatchQueue();
 		}
