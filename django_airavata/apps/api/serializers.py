@@ -248,7 +248,7 @@ class ExperimentSerializer(
     userName = GatewayUsernameDefaultField()
     gatewayId = GatewayIdDefaultField()
     creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
-    experimentStatus = ExperimentStatusSerializer(many=True)
+    experimentStatus = ExperimentStatusSerializer(many=True, read_only=True)
 
 
 class DataReplicaLocationSerializer(
