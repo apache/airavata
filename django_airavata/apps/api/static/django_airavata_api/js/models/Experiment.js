@@ -109,4 +109,17 @@ export default class Experiment extends BaseModel {
             && this.experimentStatus.length > 0
             && progressingStates.indexOf(this.experimentStatus[0].state) >= 0;
     }
+
+    get hasLaunched() {
+        const hasLaunchedStates = [ExperimentState.SCHEDULED,
+                                   ExperimentState.LAUNCHED,
+                                   ExperimentState.EXECUTING,
+                                   ExperimentState.CANCELING,
+                                   ExperimentState.CANCELED,
+                                   ExperimentState.FAILED,
+                                   ExperimentState.COMPLETED];
+        return this.experimentStatus
+            && this.experimentStatus.length > 0
+            && hasLaunchedStates.indexOf(this.experimentStatus[0].state) >= 0;
+    }
 }

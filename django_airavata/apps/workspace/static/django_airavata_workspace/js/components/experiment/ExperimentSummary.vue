@@ -23,12 +23,12 @@
                                 </tr>
                                 <tr>
                                     <th scope="row">Project</th>
-                                    <td>{{ fullExperiment.projectName }}</td>
+                                    <td>{{ localFullExperiment.projectName }}</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">Outputs</th>
                                     <td>
-                                        <template v-for="output in fullExperiment.outputDataProducts">
+                                        <template v-for="output in localFullExperiment.outputDataProducts">
                                             {{ output.filename }}
                                         </template>
                                     </td>
@@ -44,27 +44,27 @@
                                 </tr>
                                 <tr>
                                     <th scope="row">Application</th>
-                                    <td>{{ fullExperiment.applicationName }}</td>
+                                    <td>{{ localFullExperiment.applicationName }}</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">Compute Resource</th>
-                                    <td>{{ fullExperiment.computeHostName }}</td>
+                                    <td>{{ localFullExperiment.computeHostName }}</td>
                                 </tr>
                                 <tr>
                                     <th scope="row">Experiment Status</th>
                                     <td>
-                                        <template v-if="fullExperiment.experiment.isProgressing">
+                                        <template v-if="localFullExperiment.experiment.isProgressing">
                                             <i class="fa fa-refresh fa-spin"></i>
                                             <span class="sr-only">Progressing...</span>
                                         </template>
-                                        {{ fullExperiment.experimentStatusName }}
+                                        {{ localFullExperiment.experimentStatusName }}
                                     </td>
                                 </tr>
                                 <!--  TODO: leave this out for now -->
                                 <!-- <tr>
                                     <th scope="row">Notification List</th>
-                                    <td>{{ fullExperiment.experiment.emailAddresses
-                                            ? fullExperiment.experiment.emailAddresses.join(", ")
+                                    <td>{{ experiment.emailAddresses
+                                            ? experiment.emailAddresses.join(", ")
                                             : '' }}</td>
                                 </tr> -->
                                 <tr>
@@ -73,7 +73,7 @@
                                 </tr>
                                 <tr>
                                     <th scope="row">Last Modified Time</th>
-                                    <td><span :title="fullExperiment.experimentStatus.timeOfStateChange.toString()">{{ lastModifiedTime }}</span></td>
+                                    <td><span :title="localFullExperiment.experimentStatus.timeOfStateChange.toString()">{{ lastModifiedTime }}</span></td>
                                 </tr>
                                 <tr>
                                     <th scope="row">Wall Time Limit</th>
@@ -95,7 +95,7 @@
                                     <!-- TODO -->
                                     <th scope="row">Inputs</th>
                                     <td>
-                                        <template v-for="input in fullExperiment.inputDataProducts">
+                                        <template v-for="input in localFullExperiment.inputDataProducts">
                                             {{ input.filename }}
                                         </template>
                                     </td>
@@ -127,6 +127,10 @@ export default {
             type: models.FullExperiment,
             required: true
         },
+        launching: {
+            type: Boolean,
+            default: false
+        }
     },
     data () {
         return {
@@ -153,13 +157,12 @@ export default {
         },
         initPollingExperiment: function() {
             var pollExperiment = function() {
-                if (!this.localFullExperiment.experiment.isProgressing) {
-                    return;
+                if ((this.launching && !this.localFullExperiment.experiment.hasLaunched) || this.localFullExperiment.experiment.isProgressing) {
+                    this.loadExperiment()
+                        .then(exp => {
+                            setTimeout(pollExperiment.bind(this), 3000);
+                        });
                 }
-                this.loadExperiment()
-                    .then(exp => {
-                        setTimeout(pollExperiment.bind(this), 3000);
-                    })
             }.bind(this);
             setTimeout(pollExperiment, 3000);
         }

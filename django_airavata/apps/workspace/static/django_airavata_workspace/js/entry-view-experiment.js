@@ -10,10 +10,11 @@ Vue.use(BootstrapVue);
 
 new Vue({
   el: '#view-experiment',
-  template: '<view-experiment-container :initial-full-experiment-data="fullExperimentData"></view-experiment-container>',
+  template: '<view-experiment-container :initial-full-experiment-data="fullExperimentData" :launching="launching"></view-experiment-container>',
   data () {
       return {
           fullExperimentData: null,
+          launching: false,
       }
   },
   components: {
@@ -21,5 +22,8 @@ new Vue({
   },
   beforeMount: function () {
       this.fullExperimentData = JSON.parse(this.$el.dataset.fullExperimentData);
+      if ('launching' in this.$el.dataset) {
+          this.launching = JSON.parse(this.$el.dataset.launching);
+      }
   }
 })

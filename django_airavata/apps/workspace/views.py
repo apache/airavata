@@ -1,4 +1,5 @@
 
+import json
 import logging
 
 from rest_framework.renderers import JSONRenderer
@@ -47,10 +48,12 @@ def create_experiment(request, app_module_id):
 def view_experiment(request, experiment_id):
     request.active_nav_item = 'experiments'
 
+    launching = json.loads(request.GET.get('launching', 'false'))
     response = FullExperimentViewSet.as_view(
         {'get': 'retrieve'})(request, experiment_id=experiment_id)
     full_experiment_json = JSONRenderer().render(response.data)
 
     return render(request, 'django_airavata_workspace/view_experiment.html', {
-        'full_experiment_data': full_experiment_json
+        'full_experiment_data': full_experiment_json,
+        'launching': json.dumps(launching),
     })

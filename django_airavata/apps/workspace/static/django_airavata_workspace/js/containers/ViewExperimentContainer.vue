@@ -1,5 +1,5 @@
 <template>
-    <experiment-summary v-if="fullExperiment" :fullExperiment="fullExperiment">
+    <experiment-summary v-if="fullExperiment" :fullExperiment="fullExperiment" :launching="launching">
     </experiment-summary>
 </template>
 
@@ -14,6 +14,10 @@ export default {
         initialFullExperimentData: {
             required: true
         },
+        launching: {
+            type: Boolean,
+            default: false,
+        }
     },
     data () {
         return {
