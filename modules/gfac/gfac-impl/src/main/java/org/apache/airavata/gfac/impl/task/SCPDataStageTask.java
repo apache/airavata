@@ -46,9 +46,6 @@ import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.cpi.ExpCatChildDataType;
-import org.apache.airavata.registry.cpi.ExperimentCatalog;
-import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -304,7 +301,7 @@ public class SCPDataStageTask implements Task {
     }
 
     private void outputDataStaging(TaskContext taskContext, Session srcSession, URI sourceURI,  Session destSession, URI destinationURI)
-            throws AiravataException, IOException, JSchException, GFacException {
+            throws AiravataException, IOException, JSchException, GFacException, TException {
 
         /**
          * scp third party file transfer 'from' comute resource.

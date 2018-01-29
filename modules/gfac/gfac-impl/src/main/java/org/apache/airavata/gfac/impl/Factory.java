@@ -75,11 +75,6 @@ import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.AppCatalog;
-import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.airavata.registry.cpi.ExperimentCatalog;
-import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -179,14 +174,6 @@ public abstract class Factory {
 		return gfacContext;
 	}
 
-	public static ExperimentCatalog getDefaultExpCatalog() throws RegistryException {
-		return RegistryFactory.getDefaultExpCatalog();
-	}
-
-	public static AppCatalog getDefaultAppCatalog() throws AppCatalogException {
-		return RegistryFactory.getAppCatalog();
-	}
-
 	public static RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
 		final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
 		final String serverHost = ServerSettings.getRegistryServerHost();
@@ -284,11 +271,10 @@ public abstract class Factory {
 	 * @param processContext
 	 * @return
 	 * @throws GFacException
-	 * @throws AppCatalogException
 	 * @throws AiravataException
 	 */
 	public static RemoteCluster getJobSubmissionRemoteCluster(ProcessContext processContext)
-			throws GFacException, AppCatalogException, AiravataException, CredentialStoreException {
+			throws GFacException, AiravataException, CredentialStoreException, TException {
 
         String computeResourceId = processContext.getComputeResourceId();
         JobSubmissionProtocol jobSubmissionProtocol = processContext.getJobSubmissionProtocol();

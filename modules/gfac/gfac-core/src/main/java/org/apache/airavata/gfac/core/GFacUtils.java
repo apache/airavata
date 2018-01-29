@@ -48,9 +48,8 @@ import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.JobSubmissionTaskModel;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.*;
-import org.apache.airavata.registry.cpi.utils.Constants;
+import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.commons.io.FileUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.utils.ZKPaths;
@@ -341,47 +340,47 @@ public class GFacUtils {
         }
     }
 
-    public static LOCALSubmission getLocalJobSubmission(String submissionId) throws AppCatalogException {
+    public static LOCALSubmission getLocalJobSubmission(String submissionId) throws TException, ApplicationSettingsException {
         try {
-            AppCatalog appCatalog = RegistryFactory.getAppCatalog();
-            return appCatalog.getComputeResource().getLocalJobSubmission(submissionId);
-        } catch (Exception e) {
+            RegistryService.Client registryClient = getRegistryServiceClient();
+            return registryClient.getLocalJobSubmission(submissionId);
+        } catch (ApplicationSettingsException e) {
             String errorMsg = "Error while retrieving local job submission with submission id : " + submissionId;
             log.error(errorMsg, e);
-            throw new AppCatalogException(errorMsg, e);
+            throw new ApplicationSettingsException(errorMsg,e);
         }
     }
 
-    public static UnicoreJobSubmission getUnicoreJobSubmission(String submissionId) throws AppCatalogException {
+    public static UnicoreJobSubmission getUnicoreJobSubmission(String submissionId) throws TException, ApplicationSettingsException {
         try {
-            AppCatalog appCatalog = RegistryFactory.getAppCatalog();
-            return appCatalog.getComputeResource().getUNICOREJobSubmission(submissionId);
-        } catch (Exception e) {
+            RegistryService.Client registryClient = getRegistryServiceClient();
+            return registryClient.getUnicoreJobSubmission(submissionId);
+        } catch (ApplicationSettingsException e) {
             String errorMsg = "Error while retrieving UNICORE job submission with submission id : " + submissionId;
             log.error(errorMsg, e);
-            throw new AppCatalogException(errorMsg, e);
+            throw new ApplicationSettingsException(errorMsg,e);
         }
     }
 
-    public static SSHJobSubmission getSSHJobSubmission(String submissionId) throws AppCatalogException {
+    public static SSHJobSubmission getSSHJobSubmission(String submissionId) throws TException, ApplicationSettingsException {
         try {
-            AppCatalog appCatalog = RegistryFactory.getAppCatalog();
-            return appCatalog.getComputeResource().getSSHJobSubmission(submissionId);
-        } catch (Exception e) {
+            RegistryService.Client registryClient = getRegistryServiceClient();
+            return registryClient.getSSHJobSubmission(submissionId);
+        } catch (ApplicationSettingsException e) {
             String errorMsg = "Error while retrieving SSH job submission with submission id : " + submissionId;
             log.error(errorMsg, e);
-            throw new AppCatalogException(errorMsg, e);
+            throw new ApplicationSettingsException(errorMsg,e);
         }
     }
 
-    public static CloudJobSubmission getCloudJobSubmission(String submissionId) throws RegistryException {
+    public static CloudJobSubmission getCloudJobSubmission(String submissionId) throws TException, ApplicationSettingsException {
         try {
-            AppCatalog appCatalog = RegistryFactory.getAppCatalog();
-            return appCatalog.getComputeResource().getCloudJobSubmission(submissionId);
+            RegistryService.Client registryClient = getRegistryServiceClient();
+            return registryClient.getCloudJobSubmission(submissionId);
         } catch (Exception e) {
             String errorMsg = "Error while retrieving SSH job submission with submission id : " + submissionId;
             log.error(errorMsg, e);
-            throw new RegistryException(errorMsg, e);
+            throw new ApplicationSettingsException(errorMsg,e);
         }
     }
 
@@ -426,11 +425,11 @@ public class GFacUtils {
         return ZKPaths.makePath(ZkConstants.ZOOKEEPER_SERVERS_NODE, ZkConstants.ZOOKEEPER_GFAC_SERVER_NODE);
     }
     public static GroovyMap crateGroovyMap(ProcessContext processContext)
-            throws ApplicationSettingsException, AppCatalogException, GFacException, TException {
+            throws ApplicationSettingsException, GFacException, TException {
         return createGroovyMap(processContext, null);
     }
     public static GroovyMap createGroovyMap(ProcessContext processContext, TaskContext taskContext)
-            throws GFacException, AppCatalogException, ApplicationSettingsException, TException {
+            throws GFacException, ApplicationSettingsException, TException {
 
         GroovyMap groovyMap = new GroovyMap();
         ProcessModel processModel = processContext.getProcessModel();
@@ -593,7 +592,7 @@ public class GFacUtils {
         return str != null && !str.isEmpty();
     }
     private static void setMailAddresses(ProcessContext processContext, GroovyMap groovyMap)
-            throws GFacException, AppCatalogException, ApplicationSettingsException, TException {
+            throws GFacException, ApplicationSettingsException, TException {
 
         ProcessModel processModel =  processContext.getProcessModel();
         String emailIds = null;
@@ -765,13 +764,13 @@ public class GFacUtils {
                     return sshJobSubmission.getResourceJobManager();
                 }
             }
-        } catch (AppCatalogException e) {
+        } catch (ApplicationSettingsException e) {
             log.error("Error occured while retrieving resource job manager", e);
         }
         return null;
     }
 
-    public static boolean isEmailBasedJobMonitor(ProcessContext processContext) throws GFacException, AppCatalogException, TException {
+    public static boolean isEmailBasedJobMonitor(ProcessContext processContext) throws GFacException, TException, ApplicationSettingsException {
         JobSubmissionProtocol jobSubmissionProtocol = getPreferredJobSubmissionProtocol(processContext);
         JobSubmissionInterface jobSubmissionInterface = getPreferredJobSubmissionInterface(processContext);
         if (jobSubmissionProtocol == JobSubmissionProtocol.SSH) {
@@ -784,7 +783,7 @@ public class GFacUtils {
         }
     }
 
-    public static JobSubmissionInterface getPreferredJobSubmissionInterface(ProcessContext processContext) throws AppCatalogException, TException {
+    public static JobSubmissionInterface getPreferredJobSubmissionInterface(ProcessContext processContext) throws TException, ApplicationSettingsException {
         try {
             String resourceHostId = processContext.getComputeResourceDescription().getComputeResourceId();
             JobSubmissionProtocol preferredJobSubmissionProtocol = processContext.getPreferredJobSubmissionProtocol();
@@ -822,15 +821,15 @@ public class GFacUtils {
                     }
                 });
             } else {
-                throw new AppCatalogException("Compute resource should have at least one job submission interface defined...");
+                throw new ApplicationSettingsException("Compute resource should have at least one job submission interface defined...");
             }
             return interfaces.get(0);
-        } catch (AppCatalogException e) {
-            throw new AppCatalogException("Error occurred while retrieving data from app catalog", e);
+        } catch (ApplicationSettingsException e) {
+            throw new ApplicationSettingsException("Error occurred while retrieving data from app catalog", e);
         }
     }
 
-    public static JobSubmissionProtocol getPreferredJobSubmissionProtocol(ProcessContext context) throws AppCatalogException, TException {
+    public static JobSubmissionProtocol getPreferredJobSubmissionProtocol(ProcessContext context) throws TException {
         String resourceHostId = context.getComputeResourceDescription().getComputeResourceId();
         ComputeResourcePreference preference = context.getRegistryClient().getGatewayComputeResourcePreference(context.getGatewayId()
                 , resourceHostId);
@@ -966,14 +965,13 @@ public class GFacUtils {
                         replicaLocationModel.setFilePath(outputVal);
                         dataProductModel.addToReplicaLocations(replicaLocationModel);
 
-                        ReplicaCatalog replicaCatalog = RegistryFactory.getReplicaCatalog();
-                        String productUri = replicaCatalog.registerDataProduct(dataProductModel);
+                        String productUri = registryClient.registerDataProduct(dataProductModel);
                         expOutput.setValue(productUri);
                     }
                 }
             }
             registryClient.updateExperiment(experimentId, experiment);
-        } catch (RegistryException e) {
+        } catch (Exception e) {
             String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
                     + " : - Error while updating experiment outputs";
             throw new GFacException(msg, e);
@@ -1046,6 +1044,16 @@ public class GFacUtils {
         // TODO - parse taskDag and create taskId list
         String[] tasks = taskDag.split(",");
         return Arrays.asList(tasks);
+    }
+
+    private static RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
+        final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
+        final String serverHost = ServerSettings.getRegistryServerHost();
+        try {
+            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
+        } catch (RegistryServiceException e) {
+            throw new TException("Unable to create registry client...", e);
+        }
     }
 
 }

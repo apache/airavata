@@ -741,6 +741,9 @@ service RegistryService {
            process_model.ProcessModel getProcess(1: required string processId)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 
+           list<process_model.ProcessModel> getProcessList(1: required string experimentId)
+                        throws (1: registry_api_errors.RegistryServiceException rse)
+
            status_models.ProcessStatus getProcessStatus(1: required string processId)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 
