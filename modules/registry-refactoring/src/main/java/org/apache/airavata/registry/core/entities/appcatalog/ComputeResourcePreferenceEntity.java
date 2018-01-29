@@ -20,12 +20,11 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.List;
 
 
 /**
@@ -33,33 +32,40 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "COMPUTE_RESOURCE_PREFERENCE")
+@IdClass(ComputeResourcePreferencePK.class)
 public class ComputeResourcePreferenceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private ComputeResourcePreferencePK id;
+    @Column(name = "GATEWAY_ID")
+    @Id
+    private String gatewayId;
+
+    @Column(name = "RESOURCE_ID")
+    @Id
+    private String computeResourceId;
 
     @Column(name = "ALLOCATION_PROJECT_NUMBER")
     private String allocationProjectNumber;
 
     @Column(name = "LOGIN_USERNAME")
-    private String loginUsername;
+    private String loginUserName;
 
     @Column(name = "OVERRIDE_BY_AIRAVATA")
-    private short overrideByAiravata;
+    private short overridebyAiravata;
 
     @Column(name = "PREFERED_BATCH_QUEUE")
-    private String preferedBatchQueue;
+    private String preferredBatchQueue;
 
     @Column(name = "PREFERED_DATA_MOVE_PROTOCOL")
-    private String preferedDataMoveProtocol;
+    private String preferredDataMovementProtocol;
 
     @Column(name = "PREFERED_JOB_SUB_PROTOCOL")
-    private String preferedJobSubProtocol;
+    private String preferredJobSubmissionProtocol;
 
     @Column(name = "QUALITY_OF_SERVICE")
     private String qualityOfService;
 
+    @Column(name = "RESERVATION")
     private String reservation;
 
     @Column(name = "RESERVATION_END_TIME")
@@ -69,7 +75,7 @@ public class ComputeResourcePreferenceEntity implements Serializable {
     private Timestamp reservationStartTime;
 
     @Column(name = "RESOURCE_CS_TOKEN")
-    private String resourceCsToken;
+    private String resourceSpecificCredentialStoreToken;
 
     @Column(name = "SCRATCH_LOCATION")
     private String scratchLocation;
@@ -77,15 +83,36 @@ public class ComputeResourcePreferenceEntity implements Serializable {
     @Column(name = "USAGE_REPORTING_GATEWAY_ID")
     private String usageReportingGatewayId;
 
+    @Column(name = "SSH_ACCOUNT_PROVISIONER")
+    private String sshAccountProvisioner;
+
+    @Column(name = "SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO")
+    private String sshAccountProvisionerAdditionalInfo;
+
+    @OneToMany(targetEntity = SSHAccountProvisionerConfiguration.class, mappedBy = "computeResourcePreference", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<SSHAccountProvisionerConfiguration> sshAccountProvisionerConfigurations;
+
+    @ManyToOne(targetEntity = GatewayProfileEntity.class, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "GATEWAY_ID")
+    private GatewayProfileEntity gatewayProfileResource;
+
     public ComputeResourcePreferenceEntity() {
     }
 
-    public ComputeResourcePreferencePK getId() {
-        return id;
+    public String getGatewayId() {
+        return gatewayId;
     }
 
-    public void setId(ComputeResourcePreferencePK id) {
-        this.id = id;
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
+
+    public String getComputeResourceId() {
+        return computeResourceId;
+    }
+
+    public void setComputeResourceId(String computeResourceId) {
+        this.computeResourceId = computeResourceId;
     }
 
     public String getAllocationProjectNumber() {
@@ -94,46 +121,6 @@ public class ComputeResourcePreferenceEntity implements Serializable {
 
     public void setAllocationProjectNumber(String allocationProjectNumber) {
         this.allocationProjectNumber = allocationProjectNumber;
-    }
-
-    public String getLoginUsername() {
-        return loginUsername;
-    }
-
-    public void setLoginUsername(String loginUsername) {
-        this.loginUsername = loginUsername;
-    }
-
-    public short getOverrideByAiravata() {
-        return overrideByAiravata;
-    }
-
-    public void setOverrideByAiravata(short overrideByAiravata) {
-        this.overrideByAiravata = overrideByAiravata;
-    }
-
-    public String getPreferedBatchQueue() {
-        return preferedBatchQueue;
-    }
-
-    public void setPreferedBatchQueue(String preferedBatchQueue) {
-        this.preferedBatchQueue = preferedBatchQueue;
-    }
-
-    public String getPreferedDataMoveProtocol() {
-        return preferedDataMoveProtocol;
-    }
-
-    public void setPreferedDataMoveProtocol(String preferedDataMoveProtocol) {
-        this.preferedDataMoveProtocol = preferedDataMoveProtocol;
-    }
-
-    public String getPreferedJobSubProtocol() {
-        return preferedJobSubProtocol;
-    }
-
-    public void setPreferedJobSubProtocol(String preferedJobSubProtocol) {
-        this.preferedJobSubProtocol = preferedJobSubProtocol;
     }
 
     public String getQualityOfService() {
@@ -168,14 +155,6 @@ public class ComputeResourcePreferenceEntity implements Serializable {
         this.reservationStartTime = reservationStartTime;
     }
 
-    public String getResourceCsToken() {
-        return resourceCsToken;
-    }
-
-    public void setResourceCsToken(String resourceCsToken) {
-        this.resourceCsToken = resourceCsToken;
-    }
-
     public String getScratchLocation() {
         return scratchLocation;
     }
@@ -190,5 +169,86 @@ public class ComputeResourcePreferenceEntity implements Serializable {
 
     public void setUsageReportingGatewayId(String usageReportingGatewayId) {
         this.usageReportingGatewayId = usageReportingGatewayId;
+    }
+
+    public String getSshAccountProvisioner() {
+        return sshAccountProvisioner;
+    }
+
+    public void setSshAccountProvisioner(String sshAccountProvisioner) {
+        this.sshAccountProvisioner = sshAccountProvisioner;
+    }
+
+    public String getSshAccountProvisionerAdditionalInfo() {
+        return sshAccountProvisionerAdditionalInfo;
+    }
+
+    public void setSshAccountProvisionerAdditionalInfo(String sshAccountProvisionerAdditionalInfo) {
+        this.sshAccountProvisionerAdditionalInfo = sshAccountProvisionerAdditionalInfo;
+    }
+
+
+    public GatewayProfileEntity getGatewayProfileResource() {
+        return gatewayProfileResource;
+    }
+
+    public void setGatewayProfileResource(GatewayProfileEntity gatewayProfileResource) {
+        this.gatewayProfileResource = gatewayProfileResource;
+    }
+
+    public String getLoginUserName() {
+        return loginUserName;
+    }
+
+    public void setLoginUserName(String loginUserName) {
+        this.loginUserName = loginUserName;
+    }
+
+    public short getOverridebyAiravata() {
+        return overridebyAiravata;
+    }
+
+    public void setOverridebyAiravata(short overridebyAiravata) {
+        this.overridebyAiravata = overridebyAiravata;
+    }
+
+    public String getPreferredBatchQueue() {
+        return preferredBatchQueue;
+    }
+
+    public void setPreferredBatchQueue(String preferredBatchQueue) {
+        this.preferredBatchQueue = preferredBatchQueue;
+    }
+
+    public String getPreferredDataMovementProtocol() {
+        return preferredDataMovementProtocol;
+    }
+
+    public void setPreferredDataMovementProtocol(String preferredDataMovementProtocol) {
+        this.preferredDataMovementProtocol = preferredDataMovementProtocol;
+    }
+
+    public String getPreferredJobSubmissionProtocol() {
+        return preferredJobSubmissionProtocol;
+    }
+
+    public void setPreferredJobSubmissionProtocol(String preferredJobSubmissionProtocol) {
+        this.preferredJobSubmissionProtocol = preferredJobSubmissionProtocol;
+    }
+
+    public String getResourceSpecificCredentialStoreToken() {
+        return resourceSpecificCredentialStoreToken;
+    }
+
+    public void setResourceSpecificCredentialStoreToken(String resourceSpecificCredentialStoreToken) {
+        this.resourceSpecificCredentialStoreToken = resourceSpecificCredentialStoreToken;
+    }
+
+    public List<SSHAccountProvisionerConfiguration> getSshAccountProvisionerConfigurations() {
+        return sshAccountProvisionerConfigurations;
+    }
+
+    public void setSshAccountProvisionerConfigurations(List<SSHAccountProvisionerConfiguration> sshAccountProvisionerConfigurations) {
+        this.sshAccountProvisionerConfigurations = sshAccountProvisionerConfigurations;
     }
 }

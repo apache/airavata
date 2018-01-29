@@ -20,10 +20,7 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 
@@ -32,12 +29,22 @@ import java.io.Serializable;
  * 
  */
 @Entity
-@Table(name="compute_resource_file_system")
+@Table(name="COMPUTE_RESOURCE_FILE_SYSTEM")
+@IdClass(ComputeResourceFileSystemPK.class)
 public class ComputeResourceFileSystemEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@EmbeddedId
-	private ComputeResourceFileSystemPK id;
+	@Column(name="COMPUTE_RESOURCE_ID")
+	@Id
+	private String computeResourceId;
+
+	@Column(name="FILE_SYSTEM")
+	@Id
+	private String fileSystem;
+
+	@ManyToOne(cascade= CascadeType.MERGE)
+	@JoinColumn(name = "COMPUTE_RESOURCE_ID")
+	private ComputeResourceEntity computeResource;
 
 	@Column(name="PATH")
 	private String path;
@@ -46,12 +53,20 @@ public class ComputeResourceFileSystemEntity implements Serializable {
 	public ComputeResourceFileSystemEntity() {
 	}
 
-	public ComputeResourceFileSystemPK getId() {
-		return id;
+	public String getComputeResourceId() {
+		return computeResourceId;
 	}
 
-	public void setId(ComputeResourceFileSystemPK id) {
-		this.id = id;
+	public void setComputeResourceId(String computeResourceId) {
+		this.computeResourceId = computeResourceId;
+	}
+
+	public String getFileSystem() {
+		return fileSystem;
+	}
+
+	public void setFileSystem(String fileSystem) {
+		this.fileSystem = fileSystem;
 	}
 
 	public String getPath() {
@@ -60,5 +75,13 @@ public class ComputeResourceFileSystemEntity implements Serializable {
 
 	public void setPath(String path) {
 		this.path = path;
+	}
+
+	public ComputeResourceEntity getComputeResource() {
+		return computeResource;
+	}
+
+	public void setComputeResource(ComputeResourceEntity computeResource) {
+		this.computeResource = computeResource;
 	}
 }

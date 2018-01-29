@@ -31,7 +31,7 @@ import java.io.Serializable;
  * The persistent class for the local_data_movement database table.
  */
 @Entity
-@Table(name = "local_data_movement")
+@Table(name = "LOCAL_DATA_MOVEMENT")
 public class LocalDataMovementEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 

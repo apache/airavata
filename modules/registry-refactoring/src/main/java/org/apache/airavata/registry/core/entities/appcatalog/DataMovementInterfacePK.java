@@ -22,20 +22,23 @@ package org.apache.airavata.registry.core.entities.appcatalog;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
 import java.io.Serializable;
 
 /**
  * The primary key class for the data_movement_interface database table.
  */
-@Embeddable
 public class DataMovementInterfacePK implements Serializable {
     //default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
     @Column(name = "COMPUTE_RESOURCE_ID", insertable = false, updatable = false)
+    @Id
     private String computeResourceId;
 
     @Column(name = "DATA_MOVEMENT_INTERFACE_ID")
+    @Id
     private String dataMovementInterfaceId;
 
     public DataMovementInterfacePK() {

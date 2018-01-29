@@ -38,38 +38,38 @@ public class UnicoreSubmissionEntity implements Serializable {
 
 	@Id
 	@Column(name="SUBMISSION_ID")
-	private String submissionId;
+	private String jobSubmissionInterfaceId;
 
 	@Column(name="SECURITY_PROTOCAL")
-	private String securityProtocal;
+	private String securityProtocol;
 
 	@Column(name="UNICORE_ENDPOINT_URL")
-	private String unicoreEndpointUrl;
+	private String unicoreEndPointURL;
 
 	public UnicoreSubmissionEntity() {
 	}
 
-	public String getSubmissionId() {
-		return submissionId;
+	public String getJobSubmissionInterfaceId() {
+		return jobSubmissionInterfaceId;
 	}
 
-	public void setSubmissionId(String submissionId) {
-		this.submissionId = submissionId;
+	public void setJobSubmissionInterfaceId(String jobSubmissionInterfaceId) {
+		this.jobSubmissionInterfaceId = jobSubmissionInterfaceId;
 	}
 
-	public String getSecurityProtocal() {
-		return securityProtocal;
+	public String getSecurityProtocol() {
+		return securityProtocol;
 	}
 
-	public void setSecurityProtocal(String securityProtocal) {
-		this.securityProtocal = securityProtocal;
+	public void setSecurityProtocol(String securityProtocol) {
+		this.securityProtocol = securityProtocol;
 	}
 
-	public String getUnicoreEndpointUrl() {
-		return unicoreEndpointUrl;
+	public String getUnicoreEndPointURL() {
+		return unicoreEndPointURL;
 	}
 
-	public void setUnicoreEndpointUrl(String unicoreEndpointUrl) {
-		this.unicoreEndpointUrl = unicoreEndpointUrl;
+	public void setUnicoreEndPointURL(String unicoreEndPointURL) {
+		this.unicoreEndPointURL = unicoreEndPointURL;
 	}
 }

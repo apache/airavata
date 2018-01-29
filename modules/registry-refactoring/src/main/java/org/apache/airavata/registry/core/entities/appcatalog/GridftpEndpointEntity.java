@@ -20,10 +20,7 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -45,8 +42,20 @@ public class GridftpEndpointEntity implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
+    @ManyToOne(cascade= CascadeType.MERGE)
+    @JoinColumn(name = "DATA_MOVEMENT_INTERFACE_ID")
+    private GridftpDataMovementEntity gridftpDataMovement;
+
 
     public GridftpEndpointEntity() {
+    }
+
+    public GridftpDataMovementEntity getGridftpDataMovement() {
+        return gridftpDataMovement;
+    }
+
+    public void setGridftpDataMovement(GridftpDataMovementEntity gridftpDataMovement) {
+        this.gridftpDataMovement = gridftpDataMovement;
     }
 
     public GridftpEndpointPK getId() {

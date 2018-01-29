@@ -20,10 +20,7 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -33,13 +30,17 @@ import java.sql.Timestamp;
  * 
  */
 @Entity
-@Table(name="ssh_job_submission")
+@Table(name="SSH_JOB_SUBMISSION")
 public class SshJobSubmissionEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name="JOB_SUBMISSION_INTERFACE_ID")
 	private String jobSubmissionInterfaceId;
+
+	@ManyToOne(cascade= CascadeType.MERGE)
+	@JoinColumn(name = "RESOURCE_JOB_MANAGER_ID")
+	private ResourceJobManagerEntity resourceJobManager;
 
 	@Column(name="ALTERNATIVE_SSH_HOSTNAME")
 	private String alternativeSshHostname;
@@ -128,4 +129,12 @@ public class SshJobSubmissionEntity implements Serializable {
 	public void setResourceJobManagerId(String resourceJobManagerId) {
 		this.resourceJobManagerId = resourceJobManagerId;
 	}
+
+    public ResourceJobManagerEntity getResourceJobManager() {
+        return resourceJobManager;
+    }
+
+    public void setResourceJobManager(ResourceJobManagerEntity resourceJobManager) {
+        this.resourceJobManager = resourceJobManager;
+    }
 }

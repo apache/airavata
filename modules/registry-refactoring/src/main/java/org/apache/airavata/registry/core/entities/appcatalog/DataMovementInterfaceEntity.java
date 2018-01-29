@@ -20,10 +20,7 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -31,12 +28,18 @@ import java.sql.Timestamp;
  * The persistent class for the data_movement_interface database table.
  */
 @Entity
-@Table(name = "data_movement_interface")
+@Table(name = "DATA_MOVEMENT_INTERFACE")
+@IdClass(DataMovementInterfacePK.class)
 public class DataMovementInterfaceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private DataMovementInterfacePK id;
+    @Column(name = "COMPUTE_RESOURCE_ID")
+    @Id
+    private String computeResourceId;
+
+    @Column(name = "DATA_MOVEMENT_INTERFACE_ID")
+    @Id
+    private String dataMovementInterfaceId;
 
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
@@ -50,15 +53,35 @@ public class DataMovementInterfaceEntity implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
+    @ManyToOne(targetEntity = ComputeResourceEntity.class, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "COMPUTE_RESOURCE_ID")
+    private ComputeResourceEntity computeResource;
+
     public DataMovementInterfaceEntity() {
     }
 
-    public DataMovementInterfacePK getId() {
-        return id;
+    public ComputeResourceEntity getComputeResource() {
+        return computeResource;
     }
 
-    public void setId(DataMovementInterfacePK id) {
-        this.id = id;
+    public void setComputeResource(ComputeResourceEntity computeResource) {
+        this.computeResource = computeResource;
+    }
+
+    public String getComputeResourceId() {
+        return computeResourceId;
+    }
+
+    public void setComputeResourceId(String computeResourceId) {
+        this.computeResourceId = computeResourceId;
+    }
+
+    public String getDataMovementInterfaceId() {
+        return dataMovementInterfaceId;
+    }
+
+    public void setDataMovementInterfaceId(String dataMovementInterfaceId) {
+        this.dataMovementInterfaceId = dataMovementInterfaceId;
     }
 
     public Timestamp getCreationTime() {

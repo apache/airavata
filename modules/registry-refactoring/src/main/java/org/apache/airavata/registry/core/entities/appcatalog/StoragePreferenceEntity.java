@@ -20,10 +20,7 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -31,11 +28,17 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "STORAGE_PREFERENCE")
+@IdClass(StoragePreferencePK.class)
 public class StoragePreferenceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private StoragePreferencePK id;
+    @Column(name = "GATEWAY_ID")
+    @Id
+    private String gatewayId;
+
+    @Column(name = "STORAGE_RESOURCE_ID")
+    @Id
+    private String storageResourceId;
 
     @Column(name = "FS_ROOT_LOCATION")
     private String fsRootLocation;
@@ -44,17 +47,29 @@ public class StoragePreferenceEntity implements Serializable {
     private String loginUsername;
 
     @Column(name = "RESOURCE_CS_TOKEN")
-    private String resourceCsToken;
+    private String resourceSpecificCredentialStoreToken;
+
+    @ManyToOne(targetEntity = GatewayProfileEntity.class, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "GATEWAY_ID")
+    private GatewayProfileEntity gatewayProfileResource;
 
     public StoragePreferenceEntity() {
     }
 
-    public StoragePreferencePK getId() {
-        return id;
+    public String getGatewayId() {
+        return gatewayId;
     }
 
-    public void setId(StoragePreferencePK id) {
-        this.id = id;
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
+
+    public String getStorageResourceId() {
+        return storageResourceId;
+    }
+
+    public void setStorageResourceId(String storageResourceId) {
+        this.storageResourceId = storageResourceId;
     }
 
     public String getFsRootLocation() {
@@ -73,11 +88,19 @@ public class StoragePreferenceEntity implements Serializable {
         this.loginUsername = loginUsername;
     }
 
-    public String getResourceCsToken() {
-        return resourceCsToken;
+    public String getResourceSpecificCredentialStoreToken() {
+        return resourceSpecificCredentialStoreToken;
     }
 
-    public void setResourceCsToken(String resourceCsToken) {
-        this.resourceCsToken = resourceCsToken;
+    public void setResourceSpecificCredentialStoreToken(String resourceSpecificCredentialStoreToken) {
+        this.resourceSpecificCredentialStoreToken = resourceSpecificCredentialStoreToken;
+    }
+
+    public GatewayProfileEntity getGatewayProfileResource() {
+        return gatewayProfileResource;
+    }
+
+    public void setGatewayProfileResource(GatewayProfileEntity gatewayProfileResource) {
+        this.gatewayProfileResource = gatewayProfileResource;
     }
 }

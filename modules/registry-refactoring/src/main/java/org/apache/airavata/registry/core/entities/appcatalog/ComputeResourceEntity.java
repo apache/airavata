@@ -20,35 +20,35 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The persistent class for the compute_resource database table.
  */
 @Entity
-@Table(name = "compute_resource")
+@Table(name = "COMPUTE_RESOURCE")
 public class ComputeResourceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "RESOURCE_ID")
-    private String resourceId;
+    private String computeResourceId;
 
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
 
+    @Column(name = "ENABLED")
     private short enabled;
 
     @Column(name = "GATEWAY_USAGE_EXECUTABLE")
     private String gatewayUsageExecutable;
 
     @Column(name = "GATEWAY_USAGE_MODULE_LOAD_CMD")
-    private String gatewayUsageModuleLoadCmd;
+    private String gatewayUsageModuleLoadCommand;
 
     @Column(name = "GATEWAY_USAGE_REPORTING")
     private short gatewayUsageReporting;
@@ -57,7 +57,7 @@ public class ComputeResourceEntity implements Serializable {
     private String hostName;
 
     @Column(name = "MAX_MEMORY_NODE")
-    private int maxMemoryNode;
+    private int maxMemoryPerNode;
 
     @Column(name = "RESOURCE_DESCRIPTION")
     private String resourceDescription;
@@ -65,15 +65,41 @@ public class ComputeResourceEntity implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
+    @Column(name = "CPUS_PER_NODE")
+    private Integer cpusPerNode;
+
+    @Column(name = "DEFAULT_NODE_COUNT")
+    private Integer defaultNodeCount;
+
+    @Column(name = "DEFAULT_CPU_COUNT")
+    private Integer defaultCPUCount;
+
+    @Column(name = "DEFAULT_WALLTIME")
+    private Integer defaultWalltime;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="HOST_ALIAS", joinColumns = @JoinColumn(name="RESOURCE_ID"))
+    @Column(name = "ALIAS")
+    private List<String> hostAliases;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="HOST_IPADDRESS", joinColumns = @JoinColumn(name="RESOURCE_ID"))
+    @Column(name = "IP_ADDRESS")
+    private List<String> ipAddresses;
+
+    @OneToMany(targetEntity = BatchQueueEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "computeResource", fetch = FetchType.EAGER)
+    private List<BatchQueueEntity> batchQueues;
+
+    @OneToMany(targetEntity = JobSubmissionInterfaceEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "computeResource", fetch = FetchType.EAGER)
+    private List<JobSubmissionInterfaceEntity> jobSubmissionInterfaces;
+
+    @OneToMany(targetEntity = DataMovementInterfaceEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "computeResource", fetch = FetchType.EAGER)
+    private List<DataMovementInterfaceEntity> dataMovementInterfaces;
+
     public ComputeResourceEntity() {
-    }
-
-    public String getResourceId() {
-        return resourceId;
-    }
-
-    public void setResourceId(String resourceId) {
-        this.resourceId = resourceId;
     }
 
     public Timestamp getCreationTime() {
@@ -100,14 +126,6 @@ public class ComputeResourceEntity implements Serializable {
         this.gatewayUsageExecutable = gatewayUsageExecutable;
     }
 
-    public String getGatewayUsageModuleLoadCmd() {
-        return gatewayUsageModuleLoadCmd;
-    }
-
-    public void setGatewayUsageModuleLoadCmd(String gatewayUsageModuleLoadCmd) {
-        this.gatewayUsageModuleLoadCmd = gatewayUsageModuleLoadCmd;
-    }
-
     public short getGatewayUsageReporting() {
         return gatewayUsageReporting;
     }
@@ -116,20 +134,36 @@ public class ComputeResourceEntity implements Serializable {
         this.gatewayUsageReporting = gatewayUsageReporting;
     }
 
+    public String getComputeResourceId() {
+        return computeResourceId;
+    }
+
+    public void setComputeResourceId(String computeResourceId) {
+        this.computeResourceId = computeResourceId;
+    }
+
+    public String getGatewayUsageModuleLoadCommand() {
+        return gatewayUsageModuleLoadCommand;
+    }
+
+    public void setGatewayUsageModuleLoadCommand(String gatewayUsageModuleLoadCommand) {
+        this.gatewayUsageModuleLoadCommand = gatewayUsageModuleLoadCommand;
+    }
+
+    public int getMaxMemoryPerNode() {
+        return maxMemoryPerNode;
+    }
+
+    public void setMaxMemoryPerNode(int maxMemoryPerNode) {
+        this.maxMemoryPerNode = maxMemoryPerNode;
+    }
+
     public String getHostName() {
         return hostName;
     }
 
     public void setHostName(String hostName) {
         this.hostName = hostName;
-    }
-
-    public int getMaxMemoryNode() {
-        return maxMemoryNode;
-    }
-
-    public void setMaxMemoryNode(int maxMemoryNode) {
-        this.maxMemoryNode = maxMemoryNode;
     }
 
     public String getResourceDescription() {
@@ -146,5 +180,77 @@ public class ComputeResourceEntity implements Serializable {
 
     public void setUpdateTime(Timestamp updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Integer getCpusPerNode() {
+        return cpusPerNode;
+    }
+
+    public void setCpusPerNode(Integer cpusPerNode) {
+        this.cpusPerNode = cpusPerNode;
+    }
+
+    public Integer getDefaultNodeCount() {
+        return defaultNodeCount;
+    }
+
+    public void setDefaultNodeCount(Integer defaultNodeCount) {
+        this.defaultNodeCount = defaultNodeCount;
+    }
+
+    public Integer getDefaultCPUCount() {
+        return defaultCPUCount;
+    }
+
+    public void setDefaultCPUCount(Integer defaultCPUCount) {
+        this.defaultCPUCount = defaultCPUCount;
+    }
+
+    public Integer getDefaultWalltime() {
+        return defaultWalltime;
+    }
+
+    public void setDefaultWalltime(Integer defaultWalltime) {
+        this.defaultWalltime = defaultWalltime;
+    }
+
+    public List<String> getHostAliases() {
+        return hostAliases;
+    }
+
+    public void setHostAliases(List<String> hostAliases) {
+        this.hostAliases = hostAliases;
+    }
+
+    public List<String> getIpAddresses() {
+        return ipAddresses;
+    }
+
+    public void setIpAddresses(List<String> ipAddresses) {
+        this.ipAddresses = ipAddresses;
+    }
+
+    public List<BatchQueueEntity> getBatchQueues() {
+        return batchQueues;
+    }
+
+    public void setBatchQueues(List<BatchQueueEntity> batchQueues) {
+        this.batchQueues = batchQueues;
+    }
+
+    public List<JobSubmissionInterfaceEntity> getJobSubmissionInterfaces() {
+        return jobSubmissionInterfaces;
+    }
+
+    public void setJobSubmissionInterfaces(List<JobSubmissionInterfaceEntity> jobSubmissionInterfaces) {
+        this.jobSubmissionInterfaces = jobSubmissionInterfaces;
+    }
+
+    public List<DataMovementInterfaceEntity> getDataMovementInterfaces() {
+        return dataMovementInterfaces;
+    }
+
+    public void setDataMovementInterfaces(List<DataMovementInterfaceEntity> dataMovementInterfaces) {
+        this.dataMovementInterfaces = dataMovementInterfaces;
     }
 }
