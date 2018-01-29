@@ -37,6 +37,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.KeyStore;
 import java.security.PrivateKey;
@@ -239,16 +241,16 @@ public class CredentialsDAOTest extends DatabaseTestCases {
     }
 
     @Test
-    public void testSerializationWithEncryption() throws CredentialStoreException {
+    public void testSerializationWithEncryption() throws CredentialStoreException, URISyntaxException {
 
-        URL url = this.getClass().getClassLoader().getResource("mykeystore.jks");
+        URI uri = this.getClass().getClassLoader().getResource("mykeystore.jks").toURI();
         String secretKeyAlias = "mykey";
 
-        assert url != null;
+        assert uri != null;
 
         CertificateCredential certificateCredential = getTestCredentialObject();
 
-        CredentialsDAO credentialsDAO1 = new CredentialsDAO(url.getPath(), secretKeyAlias,
+        CredentialsDAO credentialsDAO1 = new CredentialsDAO(uri.getPath(), secretKeyAlias,
                 new TestACSKeyStoreCallback());
 
         byte[] array = credentialsDAO1.convertObjectToByteArray(certificateCredential);
