@@ -31,9 +31,6 @@ import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
-import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +54,7 @@ public class OrchestratorUtils {
         }
     }
 
-	public static ExperimentStatus getExperimentStatus(String experimentId) throws RegistryException, TException, ApplicationSettingsException {
+	public static ExperimentStatus getExperimentStatus(String experimentId) throws TException, ApplicationSettingsException {
 		return getRegistryServiceClient().getExperimentStatus(experimentId);
 	}
 

@@ -41,15 +41,15 @@ import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.*;
 import org.apache.airavata.model.util.ExperimentModelUtil;
+import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.impl.GFACPassiveJobSubmitter;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
+import org.apache.airavata.orchestrator.core.utils.OrchestratorConstants;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.*;
-import org.apache.airavata.registry.cpi.utils.Constants;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,10 +127,12 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                             ErrorModel details = new ErrorModel();
                             details.setActualErrorMessage(errorMsg);
                             details.setCreationTime(Calendar.getInstance().getTimeInMillis());
-                            orchestratorContext.getRegistry().getExperimentCatalog()
-                                    .add(ExpCatChildDataType.EXPERIMENT_ERROR, details, experiment.getExperimentId());
-                        } catch (RegistryException e) {
+                            orchestratorContext.getRegistryClient()
+                                    .addErrors(OrchestratorConstants.EXPERIMENT_ERROR, details, experiment.getExperimentId());
+                        } catch (RegistryServiceException e) {
                             logger.error("Error while saving error details to registry", e);
+                        } catch (TException e) {
+                            e.printStackTrace();
                         }
                         break;
                     }
@@ -190,10 +192,12 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                             ErrorModel details = new ErrorModel();
                             details.setActualErrorMessage(errorMsg);
                             details.setCreationTime(Calendar.getInstance().getTimeInMillis());
-                            orchestratorContext.getRegistry().getExperimentCatalog()
-                                    .add(ExpCatChildDataType.PROCESS_ERROR, details, processModel.getProcessId());
-                        } catch (RegistryException e) {
+                            orchestratorContext.getRegistryClient()
+                                    .addErrors(OrchestratorConstants.PROCESS_ERROR, details, processModel.getProcessId());
+                        } catch (RegistryServiceException e) {
                             logger.error("Error while saving error details to registry", e);
+                        } catch (TException e) {
+                            e.printStackTrace();
                         }
                         break;
                     }
@@ -253,27 +257,21 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
     }
 
     public List<ProcessModel> createProcesses (String experimentId, String gatewayId) throws OrchestratorException {
-        List<ProcessModel> processModels = new ArrayList<ProcessModel>();
         try {
             RegistryService.Client registryClient = orchestratorContext.getRegistryClient();
             ExperimentModel experimentModel = registryClient.getExperiment(experimentId);
-            List<Object> processList = registry.getExperimentCatalog()
-                    .get(ExperimentCatalogModelType.PROCESS, Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, experimentId);
-            if (processList != null && !processList.isEmpty()) {
-                for (Object processObject : processList) {
-                    ProcessModel processModel = (ProcessModel)processObject;
-                    processModels.add(processModel);
-                }
-            }else {
+            List<ProcessModel> processModels = registryClient.getProcessList(experimentId);
+            if (processModels.equals(null) || processModels.isEmpty()){
                 ProcessModel processModel = ExperimentModelUtil.cloneProcessFromExperiment(experimentModel);
-                String processId = (String)registry.getExperimentCatalog().add(ExpCatChildDataType.PROCESS, processModel, experimentId);
+                String processId = registryClient.addProcess(processModel, experimentId);
                 processModel.setProcessId(processId);
                 processModels.add(processModel);
+                return processModels;
             }
         } catch (Exception e) {
             throw new OrchestratorException("Error during creating process");
         }
-        return processModels;
+        return null;
     }
 
     public String createAndSaveTasks(String gatewayId, ProcessModel processModel, boolean autoSchedule) throws OrchestratorException {
@@ -350,7 +348,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
 
     private List<String> createAndSaveEnvSetupTask(String gatewayId,
                                                    ProcessModel processModel)
-            throws RegistryException, TException, AiravataException {
+            throws TException, AiravataException, OrchestratorException {
         List<String> envTaskIds = new ArrayList<>();
         TaskModel envSetupTask = new TaskModel();
         envSetupTask.setTaskType(TaskTypes.ENV_SETUP);
@@ -372,7 +370,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
     }
 
     public List<String> createAndSaveInputDataStagingTasks(ProcessModel processModel, String gatewayId)
-            throws RegistryException, AiravataException {
+            throws AiravataException, OrchestratorException {
 
         List<String> dataStagingTaskIds = new ArrayList<>();
         List<InputDataObjectType> processInputs = processModel.getProcessInputs();
@@ -390,12 +388,12 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                     case URI_COLLECTION:
                         try {
                             TaskModel inputDataStagingTask = getInputDataStagingTask(processModel, processInput, gatewayId);
-                            String taskId = (String) orchestratorContext.getRegistry().getExperimentCatalog()
-                                    .add(ExpCatChildDataType.TASK, inputDataStagingTask, processModel.getProcessId());
+                            String taskId = orchestratorContext.getRegistryClient()
+                                    .addTask( inputDataStagingTask, processModel.getProcessId());
                             inputDataStagingTask.setTaskId(taskId);
                             dataStagingTaskIds.add(inputDataStagingTask.getTaskId());
-                        } catch (TException | AppCatalogException | TaskException e) {
-                            throw new RegistryException("Error while serializing data staging sub task model");
+                        } catch (TException | TaskException e) {
+                            throw new AiravataException("Error while serializing data staging sub task model");
                         }
                         break;
                     default:
@@ -408,11 +406,11 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
     }
 
     public List<String> createAndSaveOutputDataStagingTasks(ProcessModel processModel, String gatewayId)
-            throws RegistryException, AiravataException, TException {
+            throws AiravataException, TException, OrchestratorException {
 
         List<String> dataStagingTaskIds = new ArrayList<>();
         List<OutputDataObjectType> processOutputs = processModel.getProcessOutputs();
-        String appName = OrchestratorUtils.getApplicationInterfaceName(processModel);
+        String appName = OrchestratorUtils.getApplicationInterfaceName(orchestratorContext, processModel);
         if (processOutputs != null) {
             for (OutputDataObjectType processOutput : processOutputs) {
                 DataType type = processOutput.getType();
@@ -440,33 +438,32 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         }
 
         try {
-            if (isArchive(processModel, gatewayId)) {
+            if (isArchive(processModel, orchestratorContext)) {
                 createArchiveDataStatgingTask(processModel, gatewayId, dataStagingTaskIds);
             }
-        } catch (AppCatalogException e) {
-            throw new RegistryException("Error! Application interface retrieval failed");
+        } catch (Exception e) {
+            throw new AiravataException("Error! Application interface retrieval failed");
         }
         return dataStagingTaskIds;
     }
 
-    private boolean isArchive(ProcessModel processModel, String gatewayId) throws AppCatalogException {
-        AppCatalog appCatalog = RegistryFactory.getAppCatalog();
-        ApplicationInterfaceDescription appInterface = appCatalog.getApplicationInterface()
+    private boolean isArchive(ProcessModel processModel, OrchestratorContext orchestratorContext) throws TException {
+        ApplicationInterfaceDescription appInterface = orchestratorContext.getRegistryClient()
                 .getApplicationInterface(processModel.getApplicationInterfaceId());
         return appInterface.isArchiveWorkingDirectory();
     }
 
     private void createArchiveDataStatgingTask(ProcessModel processModel,
                                                String gatewayId,
-                                               List<String> dataStagingTaskIds) throws RegistryException, AiravataException {
+                                               List<String> dataStagingTaskIds) throws AiravataException, TException, OrchestratorException {
         TaskModel archiveTask = null;
         try {
             archiveTask = getOutputDataStagingTask(processModel, null, gatewayId);
         } catch (TException e) {
-            throw new RegistryException("Error! DataStaging sub task serialization failed");
+            throw new AiravataException("Error! DataStaging sub task serialization failed");
         }
-        String taskId = (String) orchestratorContext.getRegistry().getExperimentCatalog()
-                .add(ExpCatChildDataType.TASK, archiveTask, processModel.getProcessId());
+        String taskId = orchestratorContext.getRegistryClient()
+                .addTask(archiveTask, processModel.getProcessId());
         archiveTask.setTaskId(taskId);
         dataStagingTaskIds.add(archiveTask.getTaskId());
 
@@ -475,15 +472,15 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
     private void createOutputDataSatagingTasks(ProcessModel processModel,
                                                String gatewayId,
                                                List<String> dataStagingTaskIds,
-                                               OutputDataObjectType processOutput) throws RegistryException, AiravataException {
+                                               OutputDataObjectType processOutput) throws AiravataException, OrchestratorException {
         try {
             TaskModel outputDataStagingTask = getOutputDataStagingTask(processModel, processOutput, gatewayId);
-            String taskId = (String) orchestratorContext.getRegistry().getExperimentCatalog()
-                    .add(ExpCatChildDataType.TASK, outputDataStagingTask, processModel.getProcessId());
+            String taskId = orchestratorContext.getRegistryClient()
+                    .addTask(outputDataStagingTask, processModel.getProcessId());
             outputDataStagingTask.setTaskId(taskId);
             dataStagingTaskIds.add(outputDataStagingTask.getTaskId());
         } catch (TException e) {
-            throw new RegistryException("Error while serializing data staging sub task model", e);
+            throw new AiravataException("Error while serializing data staging sub task model", e);
         }
     }
 
@@ -491,7 +488,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                                                       JobSubmissionInterface jobSubmissionInterface,
                                                       ProcessModel processModel,
                                                       int wallTime)
-            throws TException, RegistryException, OrchestratorException {
+            throws TException, OrchestratorException {
 
         JobSubmissionProtocol jobSubmissionProtocol = jobSubmissionInterface.getJobSubmissionProtocol();
         MonitorMode monitorMode = null;
@@ -524,7 +521,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         submissionSubTask.setWallTime(wallTime);
         byte[] bytes = ThriftUtils.serializeThriftObject(submissionSubTask);
         taskModel.setSubTaskModel(bytes);
-        String taskId = (String) orchestratorContext.getRegistry().getExperimentCatalog().add(ExpCatChildDataType.TASK, taskModel,
+        String taskId = orchestratorContext.getRegistryClient().addTask(taskModel,
                 processModel.getProcessId());
         taskModel.setTaskId(taskId);
         submissionTaskIds.add(taskModel.getTaskId());
@@ -543,7 +540,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             MonitorTaskModel monitorSubTaskModel = new MonitorTaskModel();
             monitorSubTaskModel.setMonitorMode(monitorMode);
             monitorTaskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(monitorSubTaskModel));
-            String mTaskId = (String) orchestratorContext.getRegistry().getExperimentCatalog().add(ExpCatChildDataType.TASK, monitorTaskModel, processModel.getProcessId());
+            String mTaskId = (String) orchestratorContext.getRegistryClient().addTask(monitorTaskModel, processModel.getProcessId());
             monitorTaskModel.setTaskId(mTaskId);
             submissionTaskIds.add(monitorTaskModel.getTaskId());
         }
@@ -560,7 +557,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         });
     }
 
-    private TaskModel getInputDataStagingTask(ProcessModel processModel, InputDataObjectType processInput, String gatewayId) throws RegistryException, TException, AppCatalogException, TaskException, AiravataException {
+    private TaskModel getInputDataStagingTask(ProcessModel processModel, InputDataObjectType processInput, String gatewayId) throws TException, TaskException, AiravataException, OrchestratorException {
         // create new task model for this task
         TaskModel taskModel = new TaskModel();
         taskModel.setParentProcessId(processModel.getProcessId());
@@ -597,7 +594,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         return taskModel;
     }
 
-    private TaskModel getOutputDataStagingTask(ProcessModel processModel, OutputDataObjectType processOutput, String gatewayId) throws RegistryException, TException, AiravataException {
+    private TaskModel getOutputDataStagingTask(ProcessModel processModel, OutputDataObjectType processOutput, String gatewayId) throws TException, AiravataException, OrchestratorException {
         try {
 
             // create new task model for this task
@@ -648,7 +645,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             taskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
             return taskModel;
         } catch (TaskException e) {
-           throw new RegistryException("Error occurred while retrieving data movement from app catalog", e);
+           throw new OrchestratorException("Error occurred while retrieving data movement from app catalog", e);
         }
     }
 

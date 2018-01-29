@@ -167,6 +167,8 @@ public class ArchiveTask implements Task {
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
+        } catch (TException e) {
+            e.printStackTrace();
         }
         return status;
     }

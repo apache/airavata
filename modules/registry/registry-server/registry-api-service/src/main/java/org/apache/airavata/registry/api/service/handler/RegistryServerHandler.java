@@ -954,6 +954,30 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
+    public List<ProcessModel> getProcessList(String experimentId) throws RegistryServiceException, TException {
+        try {
+            List<ProcessModel> processModels = new ArrayList<ProcessModel>();
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            List<Object> processList = experimentCatalog.get(ExperimentCatalogModelType.PROCESS, Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, experimentId);
+
+            if (processList != null && !processList.isEmpty()) {
+                for (Object processObject : processList) {
+                    ProcessModel processModel = (ProcessModel)processObject;
+                    processModels.add(processModel);
+                }
+            }
+            return processModels;
+
+        } catch (Exception e) {
+            logger.error(experimentId, "Error while retrieving process list ", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving process list. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
     public ProcessStatus getProcessStatus(String processId) throws RegistryServiceException, TException {
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();

@@ -23,16 +23,12 @@ import de.fzj.unicore.uas.client.StorageClient;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.gfac.core.GFacConstants;
 import org.apache.airavata.gfac.core.GFacException;
-import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.cpi.ExpCatChildDataType;
-import org.apache.airavata.registry.cpi.ExperimentCatalog;
-import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -319,7 +315,7 @@ public class DataTransferrer {
     public void publishFinalOutputs() throws GFacException, TException {
         if(!resultantOutputsLst.isEmpty()) {
             log.debug("Publishing the list of outputs to the registry instance..");
-            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+            RegistryService.Client registryClient = processContext.getRegistryClient();
             registryClient.addExperimentProcessOutputs(GFacConstants.EXPERIMENT_OUTPUT, resultantOutputsLst, processContext.getExperimentId());
         }
 

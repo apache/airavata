@@ -42,7 +42,6 @@ import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
 import org.apache.airavata.model.error.LaunchValidationException;
-import org.apache.airavata.model.error.ValidationResults;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.messaging.event.*;
@@ -56,12 +55,7 @@ import org.apache.airavata.orchestrator.cpi.orchestrator_cpiConstants;
 import org.apache.airavata.orchestrator.util.OrchestratorServerThreadPoolExecutor;
 import org.apache.airavata.orchestrator.util.OrchestratorUtils;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.registry.core.app.catalog.resources.AppCatAbstractResource;
-import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.core.experiment.catalog.resources.AbstractExpCatResource;
-import org.apache.airavata.registry.cpi.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
@@ -359,7 +353,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	}
 
     private ApplicationDeploymentDescription getAppDeployment(ProcessModel processModel, String applicationId)
-            throws AppCatalogException, OrchestratorException,
+            throws OrchestratorException,
             ClassNotFoundException, ApplicationSettingsException,
             InstantiationException, IllegalAccessException, TException {
         String selectedModuleId = getModuleId(applicationId);
@@ -367,7 +361,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     }
 
     private ApplicationDeploymentDescription getAppDeploymentForModule(ProcessModel processModel, String selectedModuleId)
-            throws AppCatalogException, ClassNotFoundException,
+            throws ClassNotFoundException,
             ApplicationSettingsException, InstantiationException,
             IllegalAccessException, TException {
 
@@ -387,7 +381,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
     }
 
 	private String getModuleId(String applicationId)
-            throws AppCatalogException, OrchestratorException, TException {
+            throws OrchestratorException, TException {
 		ApplicationInterfaceDescription applicationInterface = registryClient.getApplicationInterface(applicationId);
 		List<String> applicationModules = applicationInterface.getApplicationModules();
 		if (applicationModules.size()==0){
@@ -527,9 +521,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 									status.setState(ExperimentState.EXECUTING);
 									status.setReason("process  started");
 								}
-							} catch (RegistryException e) {
-								status.setState(ExperimentState.EXECUTING);
-								status.setReason("process  started");
 							} catch (ApplicationSettingsException e) {
 								e.printStackTrace();
 							}
@@ -555,10 +546,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 									status.setState(ExperimentState.COMPLETED);
 									status.setReason("process  completed");
 								}
-							} catch (RegistryException e) {
-								status.setState(ExperimentState.COMPLETED);
-								status.setReason("process  completed");
-							} catch (ApplicationSettingsException e) {
+							}  catch (ApplicationSettingsException e) {
 								e.printStackTrace();
 							}
 							break;
@@ -573,9 +561,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 									status.setState(ExperimentState.FAILED);
 									status.setReason("process  failed");
 								}
-							} catch (RegistryException e) {
-								status.setState(ExperimentState.FAILED);
-								status.setReason("process  failed");
 							} catch (ApplicationSettingsException e) {
 								e.printStackTrace();
 							}

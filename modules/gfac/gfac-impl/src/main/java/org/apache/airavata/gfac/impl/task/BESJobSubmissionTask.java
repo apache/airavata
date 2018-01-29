@@ -78,9 +78,6 @@ import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskTypes;
-import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
-import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.thrift.TException;
 import org.apache.xmlbeans.XmlCursor;
 import org.ggf.schemas.bes.x2006.x08.besFactory.*;
@@ -259,10 +256,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             }
 //            dt.publishFinalOutputs();
             taskStatus.setState(TaskState.COMPLETED);
-        } catch (AppCatalogException e) {
-            log.error("Error while retrieving UNICORE job submission.." , e);
-            taskStatus.setState(TaskState.FAILED);
-        } catch (Exception e) {
+        }  catch (Exception e) {
             log.error("BES task failed... ", e);
             taskStatus.setState(TaskState.FAILED);
         }
@@ -270,7 +264,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
         return taskStatus;
     }
 
-    private void copyOutputFilesToStorage(TaskContext taskContext, List<OutputDataObjectType> copyOutput) throws GFacException {
+    private void copyOutputFilesToStorage(TaskContext taskContext, List<OutputDataObjectType> copyOutput) throws GFacException, TException {
         ProcessContext pc = taskContext.getParentProcessContext();
         String remoteFilePath = null, fileName = null, localFilePath = null;
         try {

@@ -32,8 +32,6 @@ import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
-import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.*;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,13 +62,11 @@ public class BatchQueueValidator implements JobMetadataValidator {
             validationResults.setValidationResultList(validatorResultList);
         } catch (TException e) {
             e.printStackTrace();
-        } catch (AppCatalogException e) {
-            e.printStackTrace();
         }
         return validationResults;
     }
 
-    private List<ValidatorResult> validateUserConfiguration (ExperimentModel experiment, ProcessModel processModel) throws AppCatalogException, TException {
+    private List<ValidatorResult> validateUserConfiguration (ExperimentModel experiment, ProcessModel processModel) throws TException {
         List<ValidatorResult> validatorResultList = new ArrayList<ValidatorResult>();
         UserConfigurationDataModel userConfigurationData = experiment.getUserConfigurationData();
         ComputationalResourceSchedulingModel computationalResourceScheduling = userConfigurationData.getComputationalResourceScheduling();

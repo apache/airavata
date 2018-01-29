@@ -28,6 +28,7 @@ import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +67,7 @@ public class GFacWorker implements Runnable {
 	 * This constructor will be called when new or recovery request comes.
 	 */
 	public GFacWorker(String processId, String gatewayId, String tokenId) throws GFacException,
-			CredentialStoreException {
+			CredentialStoreException, TException {
 		this.processId = processId;
 		this.gatewayId = gatewayId;
 		this.tokenId = tokenId;
@@ -147,6 +148,8 @@ public class GFacWorker implements Runnable {
 			} catch (GFacException e1) {
 				log.error("expId: {}, processId: {} :- Couldn't save and publish process status {}", processContext
 						.getExperimentId(), processContext.getProcessId(), processContext.getProcessState());
+			} catch (TException e1) {
+				e1.printStackTrace();
 			}
 			sendAck();
 		}

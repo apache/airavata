@@ -40,8 +40,8 @@ import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskTypes;
-import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.commons.io.FileUtils;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,7 +127,7 @@ public class LocalJobSubmissionTask implements JobSubmissionTask{
                 }
             }
 
-        } catch (GFacException | IOException | AppCatalogException | ApplicationSettingsException e) {
+        } catch (GFacException | IOException | ApplicationSettingsException e) {
             String msg = "Error occurred while submitting a local job";
             log.error(msg, e);
             taskStatus.setReason(msg);
@@ -136,6 +136,8 @@ public class LocalJobSubmissionTask implements JobSubmissionTask{
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
             taskStatus.setState(TaskState.FAILED);
+        } catch (TException e) {
+            e.printStackTrace();
         }
         return taskStatus;
     }
