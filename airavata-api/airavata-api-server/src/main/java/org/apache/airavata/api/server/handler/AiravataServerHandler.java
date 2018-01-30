@@ -2102,9 +2102,40 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    /**
+     * Fetch all Application Module Descriptions.
+     *
+     * @return list applicationModule.
+     * Returns the list of all Application Module Objects.
+     */
     @Override
     @SecurityCheck
     public List<ApplicationModule> getAllAppModules(AuthzToken authzToken, String gatewayId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        RegistryService.Client regClient = registryClientPool.getResource();
+        try {
+            List<ApplicationModule> result = regClient.getAllAppModules(gatewayId);
+            registryClientPool.returnResource(regClient);
+            return result;
+        } catch (Exception e) {
+            logger.error("Error while retrieving all application modules...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving all application modules. More info : " + e.getMessage());
+            registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
+
+    /**
+     * Fetch all accessible Application Module Descriptions.
+     *
+     * @return list applicationModule.
+     * Returns the list of Application Module Objects that are accessible to the user.
+     */
+    @Override
+    @SecurityCheck
+    public List<ApplicationModule> getAccessibleAppModules(AuthzToken authzToken, String gatewayId) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
@@ -2121,7 +2152,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         userName + "@" + gatewayId, sharingFilters, 0, -1).forEach(a -> accessibleAppIds.add(a.entityId));
             }
-            List<ApplicationModule> result = regClient.getAllAppModules(gatewayId, accessibleAppIds);
+            List<ApplicationModule> result = regClient.getAccessibleAppModules(gatewayId, accessibleAppIds);
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
             return result;
@@ -2271,11 +2302,37 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Fetch all Application Deployment Descriptions.
      *
      * @return list applicationDeployment.
-     * Returns the list of all application Deployment Objects.
+     * Returns the list of all Application Deployment Objects.
      */
     @Override
     @SecurityCheck
     public List<ApplicationDeploymentDescription> getAllApplicationDeployments(AuthzToken authzToken, String gatewayId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        RegistryService.Client regClient = registryClientPool.getResource();
+        try {
+            List<ApplicationDeploymentDescription> result = regClient.getAllApplicationDeployments(gatewayId);
+            registryClientPool.returnResource(regClient);
+            return result;
+        } catch (Exception e) {
+            logger.error("Error while retrieving application deployments...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving application deployments. More info : " + e.getMessage());
+            registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
+
+
+    /**
+     * Fetch all accessible Application Deployment Descriptions.
+     *
+     * @return list applicationDeployment.
+     * Returns the list of Application Deployment Objects that are accessible to the user.
+     */
+    @Override
+    @SecurityCheck
+    public List<ApplicationDeploymentDescription> getAccessibleApplicationDeployments(AuthzToken authzToken, String gatewayId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
@@ -2292,7 +2349,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         userName + "@" + gatewayId, sharingFilters, 0, -1).forEach(a -> accessibleAppIds.add(a.entityId));
             }
-            List<ApplicationDeploymentDescription> result = regClient.getAllApplicationDeployments(gatewayId, accessibleAppIds);
+            List<ApplicationDeploymentDescription> result = regClient.getAccessibleApplicationDeployments(gatewayId, accessibleAppIds);
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
             return result;
