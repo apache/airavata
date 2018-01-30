@@ -30,7 +30,7 @@ import java.io.Serializable;
  * The persistent class for the application_output database table.
  */
 @Entity
-@Table(name = "application_output")
+@Table(name = "APPLICATION_OUTPUT")
 public class ApplicationOutputEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 

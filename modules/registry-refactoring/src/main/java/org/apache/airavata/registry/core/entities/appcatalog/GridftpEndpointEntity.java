@@ -29,7 +29,7 @@ import java.sql.Timestamp;
  * The persistent class for the gridftp_endpoint database table.
  */
 @Entity
-@Table(name = "gridftp_endpoint")
+@Table(name = "GRIDFTP_ENDPOINT")
 public class GridftpEndpointEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
