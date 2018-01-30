@@ -305,3 +305,10 @@ class FullExperimentSerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         raise Exception("Not implemented")
+
+
+class ExperimentSummarySerializer(
+        thrift_utils.create_serializer_class(ExperimentSummaryModel)):
+    creationTime = UTCPosixTimestampDateTimeField()
+    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:experiment-detail', lookup_field='experimentId', lookup_url_kwarg='experiment_id')
+    project = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-detail', lookup_field='projectId', lookup_url_kwarg='project_id')

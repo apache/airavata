@@ -268,6 +268,27 @@ class ExperimentViewSet(APIBackedViewSet):
         return Response(serializer.data)
 
 
+class ExperimentSearchViewSet(mixins.ListModelMixin, GenericAPIBackedViewSet):
+
+    serializer_class = serializers.ExperimentSummarySerializer
+    pagination_class = APIResultPagination
+    pagination_viewname = 'django_airavata_api:experiment-search-list'
+
+    def get_list(self):
+        view = self
+
+        # TODO: implement support for filters
+        class ExperimentSearchResultIterator(APIResultIterator):
+            def get_results(self, limit=-1, offset=0):
+                return view.request.airavata_client.searchExperiments(
+                    view.authz_token, view.gateway_id, view.username, {},
+                    limit, offset)
+        return ExperimentSearchResultIterator()
+
+    def get_instance(self, lookup_value):
+        raise NotImplementedError()
+
+
 class FullExperimentViewSet(mixins.RetrieveModelMixin,
                             GenericAPIBackedViewSet):
 
