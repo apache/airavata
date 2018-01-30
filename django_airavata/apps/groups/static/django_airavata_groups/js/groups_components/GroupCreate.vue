@@ -37,8 +37,8 @@ export default {
       selection: '',
       suggestions: [
           { id: 1, name: 'Stephen' },
-          { id: 2, name: 'Marcus' },
-          { id: 3, name: 'Marlon' },
+          { id: 2, name: 'marcus@seagrid' },
+          { id: 3, name: 'marlonpierce@seagrid' },
           { id: 4, name: 'Suresh' },
           { id: 5, name: 'Eroma' },
           { id: 6, name: 'Sachin' },
@@ -59,10 +59,15 @@ export default {
   },
   methods: {
     submitForm () {
-      this.newGroup.members = this.selected;
+      var temp = [];
+      for(var i=0;i<this.selected.length;i++) {
+        temp.push(this.selected[i].name);
+      }
+      this.newGroup.members = temp;
       console.log(JSON.stringify(this.newGroup));
       services.GroupService.create(this.newGroup)
           .then(result => {
+              console.log(result.json());
               this.showDismissibleAlert.dismissable = true;
               this.showDismissibleAlert.message = "Successfully created a new group";
               this.showDismissibleAlert.variant = "success";

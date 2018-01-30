@@ -195,23 +195,22 @@ class GroupViewSet(APIBackedViewSet):
     pagination_viewname = 'django_airavata_api:group-list'
 
     def get_list(self):
-        view = self
         class GroupMemberResultIterator(APIResultIterator):
             def get_results(self, limit=-1, offset=0):
-                return view.request.sharing_client.getGroups(view.gateway_id, limit, offset)
+                return self.request.sharing_client.getGroups(self.gateway_id, limit, offset)
         return GroupMemberResultIterator()
 
     def get_instance(self, lookup_value):
-        return self.request.airavata_client.getGroup(view.authz_token, view.gateway_id, lookup_value)
+        return self.request.airavata_client.getGroup(self.authz_token, self.gateway_id, lookup_value)
 
     def perform_create(self, serializer):
         group = serializer.save()
-        group_id = self.request.airavata_client.createGroup(view.authz_token, group)
+        group_id = self.request.profile_service['group_manager'].createGroup(self.authz_token, group)
         group.groupID = group_id
 
     def perform_update(self, serializer):
         group = serializer.save()
-        self.request.airavata_client.updateGroup(view.authz_token, group)
+        self.request.airavata_client.updateGroup(self.authz_token, group)
 
 
 class ProjectViewSet(APIBackedViewSet):

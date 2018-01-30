@@ -1,25 +1,22 @@
 import BaseModel from './BaseModel';
 
+const FIELDS = [
+    'id',
+    'name',
+    'ownerId',
+    'description',
+    'members',
+];
+
 export default class Group extends BaseModel {
-    constructor(data = {}) {
-        super(data);
-        this.id = null;
-        this.name = null;
-        this.ownerId = null;
-        this.description = null;
-        this.members = null;
-        this.copyData(data);
+    constructor(data={}) {
+      super(FIELDS,data);
     }
 
-    validateForCreate() {
-        if (this.name === null || this.name.trim() === "") {
+    validate() {
+        if (this.isEmpty(this.name.trim())) {
             return {
                 name: ["Please provide a name."]
-            }
-        }
-        if (this.description === null || this.description.trim() === "") {
-            return {
-                name: ["Please provide a description."]
             }
         }
         return null;

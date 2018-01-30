@@ -104,13 +104,14 @@ class GatewayIdDefaultField(serializers.CharField):
 
 class GroupSerializer(serializers.Serializer):
     url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:group-detail', lookup_field='id', lookup_url_kwarg='group_id')
-    id = serializers.CharField(default=GroupModel.thrift_spec[1][4])
+    id = serializers.CharField(default=GroupModel.thrift_spec[1][4], read_only=True)
     name = serializers.CharField(required=True)
     description = serializers.CharField(allow_null=True)
-    ownerID = GatewayUsernameDefaultField()
-    members = serializers.CharField(default=GroupModel.thrift_spec[5][4])
+    ownerId = GatewayUsernameDefaultField()
+    members = serializers.ListSerializer(child=serializers.CharField())
 
     def create(self, validated_data):
+        validated_data['ownerId'] = self.context['request'].user.username
         return GroupModel(**validated_data)
 
     def update(self, instance, validated_data):

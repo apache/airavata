@@ -75,10 +75,10 @@ export default {
         },
     },
     beforeMount: function () {
-        services.GroupMemberService.list(this.groupsDataMembers)
+        services.GroupService.listMemberGroups(this.groupsDataMembers)
             .then(result => this.groupMembersPaginator = result);
 
-        services.GroupOwnerService.list(this.groupsDataOwners)
+        services.GroupService.listOwnerGroups(this.groupsDataOwners)
             .then(result => this.groupOwnersPaginator = result);
     },
 }

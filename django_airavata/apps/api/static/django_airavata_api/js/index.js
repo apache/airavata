@@ -3,7 +3,7 @@ import ApplicationInterfaceDefinition from './models/ApplicationInterfaceDefinit
 import ApplicationModule from './models/ApplicationModule'
 import Experiment from './models/Experiment'
 import InputDataObjectType from './models/InputDataObjectType'
-import OutputDataTypeObject from './models/OutputDataTypeObject'
+import OutputDataObjectType from './models/OutputDataObjectType'
 import Project from './models/Project'
 import GroupMember from './models/GroupMember'
 import GroupOwner from './models/GroupOwner'
@@ -26,7 +26,7 @@ exports.models = {
     ApplicationModule,
     Experiment,
     InputDataObjectType,
-    OutputDataTypeObject,
+    OutputDataObjectType,
     Project,
     GroupMember,
     GroupOwner,

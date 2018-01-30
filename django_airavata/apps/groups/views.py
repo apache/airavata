@@ -21,26 +21,27 @@ def groups_manage(request):
 
     gateway_id = settings.GATEWAY_ID
     username = request.user.username
+    authz_token = request.authz_token
 
     try:
-        owner_list = request.sharing_client.getGroups(gateway_id, 0, -1)
-        for group in owner_list:
-            if group.groupCardinality == 0:
-                owner_list.remove(group)
-        owner = []
-        for group in owner_list:
-            if group.ownerId == username:
-                owner.append(group)
+        owner_list = request.profile_service['group_manager'].getAllGroupsUserBelongs(authz_token, username)
+        # for group in owner_list:
+        #     if group.groupCardinality == 0:
+        #         owner_list.remove(group)
+        # owner = []
+        # for group in owner_list:
+        #     if group.ownerId == username:
+        #         owner.append(group)
 
-        owner = JSONRenderer().render(owner)
+        owner = JSONRenderer().render(owner_list)
 
-        member_list = request.sharing_client.getAllMemberGroupsForUser(gateway_id, username)
-        member = []
-        for group in member_list:
-            if group.ownerId != username:
-                member.append(group)
+        member_list = request.profile_service['group_manager'].getAllGroupsUserBelongs(authz_token, username)
+        # member = []
+        # for group in member_list:
+        #     if group.ownerId != username:
+        #         member.append(group)
 
-        member = JSONRenderer().render(member)
+        member = JSONRenderer().render(member_list)
 
         return render(request, 'django_airavata_groups/groups_manage.html', {
             'groups_owners_data': owner, 'groups_members_data': member

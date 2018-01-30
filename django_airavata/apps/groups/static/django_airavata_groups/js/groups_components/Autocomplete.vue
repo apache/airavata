@@ -1,5 +1,5 @@
 <template>
-    <div style="position:relative" v-bind:class="{'open':openSuggestion}">
+    <div style="position:relative">
         <span class="selected-cards" style="position:relative" v-for="item in selected" v-bind:key="item.id">
           <b-button disabled variant="warning">
              {{ item.name }}&nbsp;&nbsp;<b-badge variant="light"><a href="#" @click="removeClick(item)">x</a></b-badge>
@@ -12,7 +12,7 @@
           @keydown.up = 'up'
         >
         <b-list-group style="width: 100%;" v-if="open">
-            <b-list-group-item v-for="(suggestion, index) in matches.slice(0,5)" v-bind:class="{'active': isActive(index)}" href="#" @click="suggestionClick(index)" v-bind:key="suggestion.id">
+            <b-list-group-item v-for="(suggestion, index) in filtered.slice(0,5)" v-bind:class="{'active': isActive(index)}" href="#" @click="suggestionClick(index)" v-bind:key="suggestion.id">
               {{ suggestion.name }}
             </b-list-group-item>
         </b-list-group>
@@ -44,15 +44,10 @@ export default {
   },
 
   computed: {
-    matches () {
+    filtered () {
       return this.suggestions.filter((data) => {
         return data.name.indexOf(this.value) >= 0
       })
-    },
-    openSuggestion () {
-      return this.selection !== '' &&
-             this.matches.length !== 0 &&
-             this.open === true
     },
   },
   methods: {
@@ -67,11 +62,11 @@ export default {
       this.$emit('input', value)
     },
     enter () {
-      // this.$emit('input', this.matches[this.current].name)
+      // this.$emit('input', this.filtered[this.current].name)
       this.$emit('input','');
-      var index = this.suggestions.indexOf(this.matches[this.current].name);
-      if(this.selected.indexOf(this.matches[this.current])==-1){
-        this.selected.push(this.matches[this.current]);
+      var index = this.suggestions.indexOf(this.filtered[this.current].name);
+      if(this.selected.indexOf(this.filtered[this.current])==-1){
+        this.selected.push(this.filtered[this.current]);
       }
       this.$emit('updateSelected',this.selected);
       this.open = false
@@ -82,7 +77,7 @@ export default {
       }
     },
     down () {
-      if (this.current < this.matches.length - 1) {
+      if (this.current < this.filtered.length - 1) {
         this.current++
       }
     },
@@ -90,10 +85,10 @@ export default {
       return index === this.current
     },
     suggestionClick (index) {
-      // this.$emit('input', this.matches[index].name)
+      // this.$emit('input', this.filtered[index].name)
       this.$emit('input','');
-      if(this.selected.indexOf(this.matches[index])==-1) {
-        this.selected.push(this.matches[index]);
+      if(this.selected.indexOf(this.filtered[index])==-1) {
+        this.selected.push(this.filtered[index]);
       }
       this.$emit('updateSelected',this.selected);
       this.open = false;
