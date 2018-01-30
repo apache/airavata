@@ -31,7 +31,7 @@ import java.io.Serializable;
  * The persistent class for the library_apend_path database table.
  */
 @Entity
-@Table(name = "library_apend_path")
+@Table(name = "LIBRARY_APEND_PATH")
 public class LibraryApendPathEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -39,10 +39,10 @@ public class LibraryApendPathEntity implements Serializable {
     @Column(name = "DEPLOYMENT_ID")
     private String deploymentId;
 
-    @Column(name = "value")
+    @Column(name = "VALUE")
     private String value;
 
-    @Column(name = "name")
+    @Column(name = "NAME")
     private String name;
 
 

@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
+import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -30,12 +31,15 @@ import java.io.Serializable;
  * The persistent class for the postjob_command database table.
  */
 @Entity
-@Table(name = "postjob_command")
+@Table(name = "POSTJOB_COMMAND")
 public class PostjobCommandEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @EmbeddedId
     private PostjobCommandPK id;
+
+    @Column(name = "COMMAND_ORDER")
+    private int commandOrder;
 
 
     public PostjobCommandEntity() {
@@ -48,4 +52,8 @@ public class PostjobCommandEntity implements Serializable {
     public void setId(PostjobCommandPK id) {
         this.id = id;
     }
+
+    public int getCommandOrder() { return commandOrder; }
+
+    public void setCommandOrder(int commandOrder) { this.commandOrder = commandOrder; }
 }

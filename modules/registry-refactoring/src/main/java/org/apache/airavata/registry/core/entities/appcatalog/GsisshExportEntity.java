@@ -30,7 +30,7 @@ import java.io.Serializable;
  * The persistent class for the gsissh_export database table.
  */
 @Entity
-@Table(name = "gsissh_export")
+@Table(name = "GSISSH_EXPORT")
 public class GsisshExportEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 

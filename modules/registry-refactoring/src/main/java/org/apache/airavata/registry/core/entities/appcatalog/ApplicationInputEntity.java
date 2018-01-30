@@ -31,7 +31,7 @@ import java.io.Serializable;
  * 
  */
 @Entity
-@Table(name = "application_input")
+@Table(name = "APPLICATION_INPUT")
 public class ApplicationInputEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -67,6 +67,9 @@ public class ApplicationInputEntity implements Serializable {
 
 	@Column(name = "USER_FRIENDLY_DESC")
 	private String userFriendlyDesc;
+
+	@Column(name = "IS_READ_ONLY")
+	private short isReadOnly;
 
 	public ApplicationInputEntity() {
 	}
@@ -158,4 +161,13 @@ public class ApplicationInputEntity implements Serializable {
 	public void setUserFriendlyDesc(String userFriendlyDesc) {
 		this.userFriendlyDesc = userFriendlyDesc;
 	}
+
+	public short getIsReadOnly() {
+		return isReadOnly;
+	}
+
+	public void setIsReadOnly(short isReadOnly) {
+		this.isReadOnly = isReadOnly;
+	}
+
 }
