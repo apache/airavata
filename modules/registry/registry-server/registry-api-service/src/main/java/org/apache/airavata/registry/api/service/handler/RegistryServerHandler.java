@@ -829,14 +829,41 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns the list of all Application Module Objects.
      */
     @Override
-    public List<ApplicationModule> getAllAppModules(String gatewayId, List<String> accessibleAppIds) throws RegistryServiceException, TException {
+    public List<ApplicationModule> getAllAppModules(String gatewayId) throws RegistryServiceException, TException {
         if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
         }
         try {
             appCatalog = RegistryFactory.getAppCatalog();
-            List<ApplicationModule> moduleList = appCatalog.getApplicationInterface().getAllApplicationModules(gatewayId, accessibleAppIds);
+            List<ApplicationModule> moduleList = appCatalog.getApplicationInterface().getAllApplicationModules(gatewayId);
+            logger.debug("Airavata retrieved modules for gateway id : " + gatewayId);
+            return moduleList;
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving all application modules...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving all application modules. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Fetch all Application Module Descriptions.
+     *
+     * @param gatewayId ID of the gateway which need to list all available application deployment documentation.
+     * @param accessibleAppIds App IDs that are accessible to the user
+     * @return list
+     * Returns the list of all Application Module Objects that are accessible to the user.
+     */
+    @Override
+    public List<ApplicationModule> getAccessibleAppModules(String gatewayId, List<String> accessibleAppIds) throws RegistryServiceException, TException {
+        if (!isGatewayExistInternal(gatewayId)){
+            logger.error("Gateway does not exist.Please provide a valid gateway id...");
+            throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+        }
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            List<ApplicationModule> moduleList = appCatalog.getApplicationInterface().getAccessibleApplicationModules(gatewayId, accessibleAppIds);
             logger.debug("Airavata retrieved modules for gateway id : " + gatewayId);
             return moduleList;
         } catch (AppCatalogException e) {
@@ -921,14 +948,41 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * Returns the list of all application Deployment Objects.
      */
     @Override
-    public List<ApplicationDeploymentDescription> getAllApplicationDeployments(String gatewayId, List<String> accessibleAppIds) throws RegistryServiceException, TException {
+    public List<ApplicationDeploymentDescription> getAllApplicationDeployments(String gatewayId) throws RegistryServiceException, TException {
         if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
         }
         try {
             appCatalog = RegistryFactory.getAppCatalog();
-            List<ApplicationDeploymentDescription> deployements = appCatalog.getApplicationDeployment().getAllApplicationDeployements(gatewayId, accessibleAppIds);
+            List<ApplicationDeploymentDescription> deployements = appCatalog.getApplicationDeployment().getAllApplicationDeployements(gatewayId);
+            logger.debug("Airavata retrieved application deployments for gateway id : " + gatewayId);
+            return deployements;
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving application deployments...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving application deployments. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Fetch all Application Deployment Descriptions.
+     *
+     * @param gatewayId ID of the gateway which need to list all available application deployment documentation.
+     * @param accessibleAppIds App IDs that are accessible to the user
+     * @return list<applicationDeployment.
+     * Returns the list of all application Deployment Objects  that are accessible to the user.
+     */
+    @Override
+    public List<ApplicationDeploymentDescription> getAccessibleApplicationDeployments(String gatewayId, List<String> accessibleAppIds) throws RegistryServiceException, TException {
+        if (!isGatewayExistInternal(gatewayId)){
+            logger.error("Gateway does not exist.Please provide a valid gateway id...");
+            throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+        }
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            List<ApplicationDeploymentDescription> deployements = appCatalog.getApplicationDeployment().getAccessibleApplicationDeployements(gatewayId, accessibleAppIds);
             logger.debug("Airavata retrieved application deployments for gateway id : " + gatewayId);
             return deployements;
         } catch (AppCatalogException e) {
