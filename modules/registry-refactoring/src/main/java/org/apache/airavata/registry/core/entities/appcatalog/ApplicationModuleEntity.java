@@ -32,7 +32,7 @@ import java.sql.Timestamp;
  * 
  */
 @Entity
-@Table(name = "application_module")
+@Table(name = "APPLICATION_MODULE")
 public class ApplicationModuleEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 

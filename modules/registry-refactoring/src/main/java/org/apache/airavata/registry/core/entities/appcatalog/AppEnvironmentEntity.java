@@ -30,7 +30,7 @@ import java.io.Serializable;
  * The persistent class for the app_environment database table.
  */
 @Entity
-@Table(name = "app_environment")
+@Table(name = "APP_ENVIRONMENT")
 public class AppEnvironmentEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -38,11 +38,14 @@ public class AppEnvironmentEntity implements Serializable {
     @Column(name = "DEPLOYMENT_ID")
     private String deploymentId;
 
-    @Column(name = "value")
+    @Column(name = "VALUE")
     private String value;
 
-    @Column(name = "name")
+    @Column(name = "NAME")
     private String name;
+
+    @Column(name = "ENV_ORDER")
+    private int envOrder;
 
     public AppEnvironmentEntity() {
     }
@@ -70,4 +73,8 @@ public class AppEnvironmentEntity implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+
+    public int getEnvOrder() { return envOrder; }
+
+    public void setEnvOrder(int envOrder) { this.envOrder = envOrder; }
 }

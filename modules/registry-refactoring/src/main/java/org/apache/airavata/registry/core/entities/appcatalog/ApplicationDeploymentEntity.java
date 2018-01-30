@@ -31,7 +31,7 @@ import java.sql.Timestamp;
  * The persistent class for the application_deployment database table.
  */
 @Entity
-@Table(name = "application_deployment")
+@Table(name = "APPLICATION_DEPLOYMENT")
 public class ApplicationDeploymentEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -61,10 +61,25 @@ public class ApplicationDeploymentEntity implements Serializable {
     private Timestamp updateTime;
 
     @Column(name = "COMPUTE_HOSTID")
-    private String computeHostid;
+    private String computeHostId;
 
     @Column(name = "APP_MODULE_ID")
     private String applicationModuleId;
+
+    @Column(name = "DEFAULT_NODE_COUNT")
+    private int defaultNodeCount;
+
+    @Column(name = "DEFAULT_CPU_COUNT")
+    private int getDefaultCPUCount;
+
+    @Column(name = "DEFAULT_WALLTIME")
+    private int defaultWallTime;
+
+    @Column(name = "DEFAULT_QUEUE_NAME")
+    private int defaultQueueName;
+
+    @Column(name = "EDITABLE_BY_USER")
+    private short editableByUser;
 
     public ApplicationDeploymentEntity() {
     }
@@ -133,12 +148,12 @@ public class ApplicationDeploymentEntity implements Serializable {
         this.updateTime = updateTime;
     }
 
-    public String getComputeHostid() {
-        return computeHostid;
+    public String getComputeHostId() {
+        return computeHostId;
     }
 
-    public void setComputeHostid(String computeHostid) {
-        this.computeHostid = computeHostid;
+    public void setComputeHostId(String computeHostId) {
+        this.computeHostId = computeHostId;
     }
 
     public String getApplicationModuleId() {
@@ -148,4 +163,45 @@ public class ApplicationDeploymentEntity implements Serializable {
     public void setApplicationModuleId(String applicationModuleId) {
         this.applicationModuleId = applicationModuleId;
     }
+
+    public int getDefaultNodeCount() {
+        return defaultNodeCount;
+    }
+
+    public void setDefaultNodeCount(int defaultNodeCount) {
+        this.defaultNodeCount = defaultNodeCount;
+    }
+
+    public int getDefaultCPUCount() {
+        return getDefaultCPUCount;
+    }
+
+    public void setDefaultCPUCount(int getDefaultCPUCount) {
+        this.getDefaultCPUCount = getDefaultCPUCount;
+    }
+
+    public int getDefaultWallTime() {
+        return defaultWallTime;
+    }
+
+    public void setDefaultWallTime(int defaultWallTime) {
+        this.defaultWallTime = defaultWallTime;
+    }
+
+    public int getDefaultQueueName() {
+        return defaultQueueName;
+    }
+
+    public void setDefaultQueueName(int defaultQueueName) {
+        this.defaultQueueName = defaultQueueName;
+    }
+
+    public short getEditableByUser() {
+        return editableByUser;
+    }
+
+    public void setEditableByUser(short editableByUser) {
+        this.editableByUser = editableByUser;
+    }
+
 }

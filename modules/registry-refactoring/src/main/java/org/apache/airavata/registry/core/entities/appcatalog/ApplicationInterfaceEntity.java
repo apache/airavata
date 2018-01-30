@@ -33,7 +33,7 @@ import java.sql.Timestamp;
  * 
  */
 @Entity
-@Table(name="application_interface")
+@Table(name="APPLICATION_INTERFACE")
 public class ApplicationInterfaceEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -58,6 +58,9 @@ public class ApplicationInterfaceEntity implements Serializable {
 
 	@Column(name="UPDATE_TIME")
 	private Timestamp updateTime;
+
+	@Column(name="HAS_OPTIONAL_FILE_INPUTS")
+	private short hasOptionalFileInputs;
 
 	
 	public ApplicationInterfaceEntity() {
@@ -117,5 +120,13 @@ public class ApplicationInterfaceEntity implements Serializable {
 
 	public void setUpdateTime(Timestamp updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	public short getHasOptionalFileInputs() {
+		return hasOptionalFileInputs;
+	}
+
+	public void setHasOptionalFileInputs(short hasOptionalFileInputs) {
+		this.hasOptionalFileInputs = hasOptionalFileInputs;
 	}
 }

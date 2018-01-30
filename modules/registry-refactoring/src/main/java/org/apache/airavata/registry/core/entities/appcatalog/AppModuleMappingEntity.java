@@ -31,7 +31,7 @@ import java.io.Serializable;
  * 
  */
 @Entity
-@Table(name="app_module_mapping")
+@Table(name="APP_MODULE_MAPPING")
 public class AppModuleMappingEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
