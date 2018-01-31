@@ -146,7 +146,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 LOGIN_URL = 'django_airavata_auth:login'
-LOGIN_REDIRECT_URL = 'home'
+LOGIN_REDIRECT_URL = 'django_airavata_workspace:dashboard'
 LOGOUT_REDIRECT_URL = 'home'
 
 LOGGING = {
