@@ -6,6 +6,7 @@ import InputDataObjectType from './models/InputDataObjectType'
 import OutputDataObjectType from './models/OutputDataObjectType'
 import Project from './models/Project'
 import FullExperiment from './models/FullExperiment'
+import Group from './models/Group'
 
 import ApplicationDeploymentService from './services/ApplicationDeploymentService'
 import ApplicationInterfaceService from './services/ApplicationInterfaceService'
@@ -14,6 +15,7 @@ import ExperimentService from './services/ExperimentService'
 import ExperimentSearchService from './services/ExperimentSearchService'
 import FullExperimentService from './services/FullExperimentService'
 import ProjectService from './services/ProjectService'
+import GroupService from './services/GroupService'
 
 import FetchUtils from './utils/FetchUtils'
 import PaginationIterator from './utils/PaginationIterator'
@@ -26,6 +28,7 @@ exports.models = {
     InputDataObjectType,
     OutputDataObjectType,
     Project,
+    Group,
 }
 
 exports.services = {
@@ -36,6 +39,7 @@ exports.services = {
     ExperimentSearchService,
     FullExperimentService,
     ProjectService,
+    GroupService,
 }
 
 exports.utils = {

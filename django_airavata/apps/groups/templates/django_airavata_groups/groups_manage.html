@@ -1,99 +1,14 @@
-{% extends 'base.html' %}
+{% extends './base.html' %}
+
+{% load static %}
 
 {% block content %}
 
-<h1 align="center">Manage Groups</h1>
-<br>
-<div class="container">
-    {% if user.is_authenticated %}
-    <div class="row">
-        <a href="{% url 'django_airavata_groups:create' %}">
-            <button type="button" class="btn btn-default toggle-add-tenant"><span
-                        class="glyphicon glyphicon-plus"></span>Create a New Group
-            </button>
-        </a>
-    </div>
-    <br>
-    <hr>
-    {% if messages %}
-    <div class="alert alert-info">
-        <ul class="messages">
-            {% for message in messages %}
-            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
-    <br>
-    <div class="row">
-        <div class="col-md-12 table-responsive">
-            <h3>Groups you own</h3>
-            <br>
-            <br>
-            <table class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th style="text-align:center">NAME</th>
-                        <th style="text-align:center">OPTIONS</th>
-                    </tr>
-                </thead>
-                <tbody align="center">
-                    {% for group in owner %}
-                    <tr>
-                        <td>{{ group.name }}</td>
-                        <td>
-                            <a href="{% url 'django_airavata_groups:view' %}?group_id={{ group.groupId | urlencode }}">
-                                <button type="button" class="btn btn-primary btn-xs">View</button>
-                            </a>
-                            <a href="{% url 'django_airavata_groups:edit' %}?group_id={{ group.groupId | urlencode }}">
-                                <button type="button" class="btn btn-primary btn-xs">Edit</button>
-                            </a>
-                            <a href="{% url 'django_airavata_groups:delete' %}?group_id={{ group.groupId | urlencode }}">
-                                <button type="button" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete the group? This action cannot be undone!')">Delete</button>
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <br>
-    <hr>
-    <br>
-    <div class="row">
-        <div class="col-md-12 table-responsive">
-            <h3>Groups you're a member of</h3>
-            <br>
-            <br>
-            <table class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th style="text-align:center">NAME</th>
-                        <th style="text-align:center">OPTIONS</th>
-                    </tr>
-                </thead>
-                <tbody align="center">
-                    {% for group in member %}
-                    <tr>
-                        <td>{{ group.name }}</td>
-                        <td>
-                            <a href="{% url 'django_airavata_groups:view' %}?group_id={{ group.groupId | urlencode }}">
-                                <button type="button" class="btn btn-primary btn-xs">View</button>
-                            </a>
-                            <a href="{% url 'django_airavata_groups:leave' %}?group_id={{ group.groupId | urlencode }}">
-                                <button type="button" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to leave the group? This action cannot be undone!')">Leave</button>
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    {% else %}
-    <p><a class="btn btn-primary btn-lg" href="{% url 'django_airavata_auth:login' %}" role="button">Login »</a></p>
-    {% endif %}
-</div>
+<div id="groups-owners-manage" data-groups-owners-data="{{ groups_owners_data }}" data-groups-members-data="{{ groups_members_data }}"></div>
 
 {% endblock content %}
+
+{% block scripts %}
+
+<script src="{% static "django_airavata_groups/dist/group-list.js" %}"></script>
+{% endblock %}
