@@ -2,14 +2,13 @@
 import json
 import logging
 
-from rest_framework.renderers import JSONRenderer
-from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render
+from rest_framework.renderers import JSONRenderer
 
-from django_airavata.apps.api.views import ExperimentViewSet
-from django_airavata.apps.api.views import FullExperimentViewSet
-from django_airavata.apps.api.views import ProjectViewSet
+from django_airavata.apps.api.views import (ExperimentSearchViewSet,
+                                            FullExperimentViewSet,
+                                            ProjectViewSet)
 
 logger = logging.getLogger(__name__)
 
@@ -17,12 +16,19 @@ logger = logging.getLogger(__name__)
 @login_required
 def experiments_list(request):
     request.active_nav_item = 'experiments'
-    return render(request, 'django_airavata_workspace/experiments_list.html')
+
+    response = ExperimentSearchViewSet.as_view({'get': 'list'})(request)
+    experiments_json = JSONRenderer().render(response.data)
+    return render(request, 'django_airavata_workspace/experiments_list.html', {
+        'experiments_data': experiments_json
+    })
+
 
 @login_required
 def dashboard(request):
     request.active_nav_item = 'dashboard'
     return render(request, 'django_airavata_workspace/dashboard.html')
+
 
 @login_required
 def projects_list(request):
@@ -34,6 +40,7 @@ def projects_list(request):
     return render(request, 'django_airavata_workspace/projects_list.html', {
         'projects_data': projects_json
     })
+
 
 @login_required
 def create_experiment(request, app_module_id):

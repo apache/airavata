@@ -11,6 +11,7 @@ import ApplicationDeploymentService from './services/ApplicationDeploymentServic
 import ApplicationInterfaceService from './services/ApplicationInterfaceService'
 import ApplicationModuleService from './services/ApplicationModuleService'
 import ExperimentService from './services/ExperimentService'
+import ExperimentSearchService from './services/ExperimentSearchService'
 import FullExperimentService from './services/FullExperimentService'
 import ProjectService from './services/ProjectService'
 
@@ -32,6 +33,7 @@ exports.services = {
     ApplicationInterfaceService,
     ApplicationModuleService,
     ExperimentService,
+    ExperimentSearchService,
     FullExperimentService,
     ProjectService,
 }
