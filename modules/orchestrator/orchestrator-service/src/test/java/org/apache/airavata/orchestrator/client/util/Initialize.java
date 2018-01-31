@@ -21,9 +21,6 @@ package org.apache.airavata.orchestrator.client.util;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
-import org.apache.airavata.registry.core.experiment.catalog.resources.*;
-import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.derby.drda.NetworkServerControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,38 +128,39 @@ public class Initialize {
             }
         }
 
-        try{
-            GatewayResource gatewayResource = new GatewayResource();
-            gatewayResource.setGatewayId(ServerSettings.getSetting("default.registry.gateway"));
-            gatewayResource.setGatewayName(ServerSettings.getSetting("default.registry.gateway"));
-            gatewayResource.setDomain("test-domain");
-            gatewayResource.setEmailAddress("test-email");
-            gatewayResource.save();
-            
-            UserResource userResource = new UserResource();
-            userResource.setUserName(ServerSettings.getSetting("default.registry.user"));
-            userResource.setPassword(ServerSettings.getSetting("default.registry.password"));
-            userResource.save();
-
-            WorkerResource workerResource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
-            workerResource.setUser(userResource.getUserName());
-            workerResource.save();
-            
-            ProjectResource projectResource = (ProjectResource)workerResource.create(ResourceType.PROJECT);
-            projectResource.setGatewayId(gatewayResource.getGatewayId());
-            projectResource.setId("default");
-            projectResource.setName("default");
-            projectResource.setWorker(workerResource);
-            projectResource.save();
-        
-          
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read properties", e);
-            throw new SQLException(e.getMessage(), e);
-        } catch (RegistryException e) {
-            logger.error("Unable to save data to registry", e);
-            throw new SQLException(e.getMessage(), e);
-        }
+        //Commenting this as its not used anywhere and creates dependency on registry-cpi and registry-core
+//        try{
+//            GatewayResource gatewayResource = new GatewayResource();
+//            gatewayResource.setGatewayId(ServerSettings.getSetting("default.registry.gateway"));
+//            gatewayResource.setGatewayName(ServerSettings.getSetting("default.registry.gateway"));
+//            gatewayResource.setDomain("test-domain");
+//            gatewayResource.setEmailAddress("test-email");
+//            gatewayResource.save();
+//
+//            UserResource userResource = new UserResource();
+//            userResource.setUserName(ServerSettings.getSetting("default.registry.user"));
+//            userResource.setPassword(ServerSettings.getSetting("default.registry.password"));
+//            userResource.save();
+//
+//            WorkerResource workerResource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
+//            workerResource.setUser(userResource.getUserName());
+//            workerResource.save();
+//
+//            ProjectResource projectResource = (ProjectResource)workerResource.create(ResourceType.PROJECT);
+//            projectResource.setGatewayId(gatewayResource.getGatewayId());
+//            projectResource.setId("default");
+//            projectResource.setName("default");
+//            projectResource.setWorker(workerResource);
+//            projectResource.save();
+//
+//
+//        } catch (ApplicationSettingsException e) {
+//            logger.error("Unable to read properties", e);
+//            throw new SQLException(e.getMessage(), e);
+//        } catch (RegistryException e) {
+//            logger.error("Unable to save data to registry", e);
+//            throw new SQLException(e.getMessage(), e);
+//        }
     }
 
     public static boolean isDatabaseStructureCreated(String tableName, Connection conn) {

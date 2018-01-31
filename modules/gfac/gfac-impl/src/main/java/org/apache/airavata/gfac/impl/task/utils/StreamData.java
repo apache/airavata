@@ -34,6 +34,7 @@ import org.apache.airavata.gfac.impl.SSHUtils;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.task.DataStagingTaskModel;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,13 +89,15 @@ public class StreamData extends TimerTask  {
             log.error("expId: {}, processId:{}, taskId: {}:- Couldn't stage file {} , Error occurred while connecting with credential store",
                     taskContext.getExperimentId(), taskContext.getProcessId(), taskContext.getTaskId(),
                     taskContext.getProcessOutput().getName());
+        } catch (TException e) {
+            throw new RuntimeException("Error ", e);
         }
     }
 
     public void runOutputStaging() throws URISyntaxException,
             IllegalAccessException,
             InstantiationException,
-            CredentialStoreException, AiravataException, IOException, JSchException {
+            CredentialStoreException, AiravataException, IOException, JSchException, TException {
         try {
 
             URI sourceURI = new URI(subTaskModel.getSource());
@@ -145,7 +148,7 @@ public class StreamData extends TimerTask  {
     }
 
     private void outputDataStaging(TaskContext taskContext, Session srcSession, URI sourceURI, Session destSession, URI destinationURI)
-            throws AiravataException, IOException, JSchException, GFacException {
+            throws AiravataException, IOException, JSchException, GFacException, TException {
 
         /**
          * scp third party file transfer 'from' comute resource.
