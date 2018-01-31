@@ -26,8 +26,6 @@ from airavata.model.appcatalog.computeresource.ttypes import ComputeResourceDesc
 from airavata.model.credential.store.ttypes import CredentialOwnerType,SummaryType,CredentialSummary
 from airavata.model.application.io.ttypes import DataType
 
-from airavata_sdk.experiment import Experiment
-
 from collections import OrderedDict
 import logging
 
