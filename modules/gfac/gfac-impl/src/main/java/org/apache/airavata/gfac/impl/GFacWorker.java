@@ -149,7 +149,7 @@ public class GFacWorker implements Runnable {
 				log.error("expId: {}, processId: {} :- Couldn't save and publish process status {}", processContext
 						.getExperimentId(), processContext.getProcessId(), processContext.getProcessState());
 			} catch (TException e1) {
-				e1.printStackTrace();
+				throw new RuntimeException("Error", e);
 			}
 			sendAck();
 		}

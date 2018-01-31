@@ -254,7 +254,7 @@ public class GFacEngineImpl implements GFacEngine {
         try {
             executeTaskListFrom(processContext, taskIds.get(0));
         } catch (TException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error ", e);
         }
     }
 
@@ -670,9 +670,9 @@ public class GFacEngineImpl implements GFacEngine {
                 log.error("expId: {}, processId: {}, Error while canceling process which is in recovery mode",
                         processContext.getExperimentId(), processContext.getProcessId());
             } catch (RegistryServiceException e) {
-                e.printStackTrace();
+                throw new RuntimeException("Error while cancelling job submission", e);
             } catch (TException e) {
-                e.printStackTrace();
+                throw new RuntimeException("Error while cancelling job submission", e);
             }
         }).start();
     }
@@ -686,7 +686,7 @@ public class GFacEngineImpl implements GFacEngine {
         try {
             executeTaskListFrom(processContext, taskId);
         } catch (TException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error ", e);
         }
     }
 

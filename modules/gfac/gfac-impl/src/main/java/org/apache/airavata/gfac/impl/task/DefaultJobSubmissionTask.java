@@ -228,13 +228,7 @@ public class DefaultJobSubmissionTask implements JobSubmissionTask {
 	    } catch (ApplicationSettingsException e) {
 		    String msg = "Error occurred while creating job descriptor";
 		    log.error(msg, e);
-		    taskStatus.setState(TaskState.FAILED);
-		    taskStatus.setReason(msg);
-            taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-		    ErrorModel errorModel = new ErrorModel();
-		    errorModel.setActualErrorMessage(e.getMessage());
-		    errorModel.setUserFriendlyMessage(msg);
-		    taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
+			throw new RuntimeException(msg, e);
 	    } catch (GFacException e) {
 		    String msg = "Error occurred while submitting the job";
 		    log.error(msg, e);

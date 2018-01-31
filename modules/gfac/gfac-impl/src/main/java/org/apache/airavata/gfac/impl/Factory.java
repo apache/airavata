@@ -180,7 +180,7 @@ public abstract class Factory {
 		try {
 			return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
 		} catch (RegistryServiceException e) {
-			throw new TException("Unable to create registry client...", e);
+			throw new RuntimeException("Unable to create registry client...", e);
 		}
 	}
 
