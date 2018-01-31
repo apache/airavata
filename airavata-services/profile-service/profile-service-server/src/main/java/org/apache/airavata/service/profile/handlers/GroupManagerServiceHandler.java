@@ -111,17 +111,10 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     public GroupModel getGroup(AuthzToken authzToken, String groupId) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
             SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
-            UserGroup userGroup = sharingClient.getGroup(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId);
+            final String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            UserGroup userGroup = sharingClient.getGroup(domainId, groupId);
 
-            GroupModel groupModel = new GroupModel();
-            groupModel.setId(userGroup.getGroupId());
-            groupModel.setName(userGroup.getName());
-            groupModel.setDescription(userGroup.getDescription());
-            groupModel.setOwnerId(userGroup.getOwnerId());
-
-            sharingClient.getGroupMembersOfTypeUser(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, 0, -1).stream().forEach(user->
-                    groupModel.addToMembers(user.getUserId())
-            );
+            GroupModel groupModel = convertToGroupModel(userGroup, sharingClient);
 
             return groupModel;
         }
@@ -134,23 +127,59 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
         }
     }
 
+    private GroupModel convertToGroupModel(UserGroup userGroup, SharingRegistryService.Client sharingClient) throws TException {
+        GroupModel groupModel = new GroupModel();
+        groupModel.setId(userGroup.getGroupId());
+        groupModel.setName(userGroup.getName());
+        groupModel.setDescription(userGroup.getDescription());
+        groupModel.setOwnerId(userGroup.getOwnerId());
+
+        sharingClient.getGroupMembersOfTypeUser(userGroup.getDomainId(), userGroup.getGroupId(), 0, -1).stream().forEach(user->
+                groupModel.addToMembers(user.getUserId())
+        );
+        return groupModel;
+    }
+
+    @Override
+    @SecurityCheck
+    public List<GroupModel> getGroups(AuthzToken authzToken) throws GroupManagerServiceException, AuthorizationException, TException {
+        final String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        SharingRegistryService.Client sharingClient = null;
+        try {
+            sharingClient = getSharingRegistryServiceClient();
+            List<UserGroup> userGroups = sharingClient.getGroups(domainId, 0, -1);
+
+            List<GroupModel> groupModels = new ArrayList<>();
+
+            for (UserGroup userGroup: userGroups) {
+                GroupModel groupModel = convertToGroupModel(userGroup, sharingClient);
+
+                groupModels.add(groupModel);
+            }
+            return groupModels;
+        }
+        catch (Exception e) {
+            String msg = "Error Retrieving Groups. Domain ID: " + domainId;
+            logger.error(msg, e);
+            GroupManagerServiceException exception = new GroupManagerServiceException();
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            throw exception;
+        } finally {
+            closeSharingClient(sharingClient);
+        }
+    }
+
     @Override
     @SecurityCheck
     public List<GroupModel> getAllGroupsUserBelongs(AuthzToken authzToken, String userName) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
             SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
             List<GroupModel> groupModels = new ArrayList<GroupModel>();
-            List<UserGroup> userGroups = sharingClient.getAllMemberGroupsForUser(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), userName);
+            final String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            List<UserGroup> userGroups = sharingClient.getAllMemberGroupsForUser(domainId, userName);
 
             for (UserGroup userGroup: userGroups) {
-                GroupModel groupModel = new GroupModel();
-                groupModel.setId(userGroup.getGroupId());
-                groupModel.setName(userGroup.getName());
-                groupModel.setDescription(userGroup.getDescription());
-                groupModel.setOwnerId(userGroup.getOwnerId());
-
-                sharingClient.getGroupMembersOfTypeUser(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), userGroup.getGroupId(), 0, -1).stream().forEach(user->
-                        groupModel.addToMembers(user.getUserId()));
+                GroupModel groupModel = convertToGroupModel(userGroup, sharingClient);
 
                 groupModels.add(groupModel);
             }
@@ -246,6 +275,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
         }
     }
 
+    // TODO: replace these methods with ThriftClientPool (see AIRAVATA-2607)
     private SharingRegistryService.Client getSharingRegistryServiceClient() throws TException, ApplicationSettingsException {
         final int serverPort = Integer.parseInt(ServerSettings.getSharingRegistryPort());
         final String serverHost = ServerSettings.getSharingRegistryHost();
@@ -255,4 +285,16 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             throw new TException("Unable to create sharing registry client...", e);
         }
     }
+
+    private void closeSharingClient(SharingRegistryService.Client sharingClient) {
+        if (sharingClient != null) {
+            if (sharingClient.getInputProtocol().getTransport().isOpen()) {
+                sharingClient.getInputProtocol().getTransport().close();
+            }
+            if (sharingClient.getOutputProtocol().getTransport().isOpen()) {
+                sharingClient.getOutputProtocol().getTransport().close();
+            }
+        }
+    }
+
 }
