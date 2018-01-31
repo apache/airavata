@@ -93,6 +93,7 @@ public class DataStageTask implements Task {
 				errorModel.setActualErrorMessage(e.getMessage());
 				errorModel.setUserFriendlyMessage(msg);
 				taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
+				throw new RuntimeException(msg, e);
 			} catch (URISyntaxException e) {
 				String msg = "source or destination is not a valid URI";
 				log.error(msg, e);

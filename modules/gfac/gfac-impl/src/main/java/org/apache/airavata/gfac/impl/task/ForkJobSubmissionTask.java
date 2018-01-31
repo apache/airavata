@@ -37,8 +37,8 @@ import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskTypes;
-import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.commons.io.FileUtils;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,21 +118,7 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
         } catch (ApplicationSettingsException e) {
             String msg = "Error occurred while creating job descriptor";
             log.error(msg, e);
-            taskStatus.setState(TaskState.FAILED);
-            taskStatus.setReason(msg);
-            ErrorModel errorModel = new ErrorModel();
-            errorModel.setActualErrorMessage(e.getMessage());
-            errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
-        } catch (AppCatalogException e) {
-            String msg = "Error while instantiating app catalog";
-            log.error(msg, e);
-            taskStatus.setState(TaskState.FAILED);
-            taskStatus.setReason(msg);
-            ErrorModel errorModel = new ErrorModel();
-            errorModel.setActualErrorMessage(e.getMessage());
-            errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
+            throw new RuntimeException(msg, e);
         } catch (GFacException e) {
             String msg = "Error occurred while submitting the job";
             log.error(msg, e);
@@ -151,6 +137,8 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
+        } catch (TException e) {
+            throw new RuntimeException("Error while cancelling job submission", e);
         }
         return taskStatus;
     }

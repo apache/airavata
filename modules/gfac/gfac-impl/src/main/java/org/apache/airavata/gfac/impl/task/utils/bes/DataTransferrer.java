@@ -21,16 +21,15 @@ package org.apache.airavata.gfac.impl.task.utils.bes;
 
 import de.fzj.unicore.uas.client.StorageClient;
 import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.gfac.core.GFacConstants;
 import org.apache.airavata.gfac.core.GFacException;
-import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.registry.cpi.ExpCatChildDataType;
-import org.apache.airavata.registry.cpi.ExperimentCatalog;
-import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.api.RegistryService;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,12 +52,15 @@ public class DataTransferrer {
 	protected StorageClient storageClient;
 	
 	protected List<OutputDataObjectType> resultantOutputsLst;
+
+	protected RegistryService.Client registryClient;
 	
 	protected String gatewayDownloadLocation, stdoutLocation, stderrLocation;
 	
 	public DataTransferrer(ProcessContext processContext, StorageClient storageClient) {
 		this.processContext = processContext;
 		this.storageClient = storageClient;
+		this.registryClient = processContext.getRegistryClient();
 		resultantOutputsLst = new ArrayList<OutputDataObjectType>();
 		initStdoutsLocation();
 	}
@@ -310,15 +312,11 @@ public class DataTransferrer {
 
     }
 
-    public void publishFinalOutputs() throws GFacException {
-        try {
-            if(!resultantOutputsLst.isEmpty()) {
-                log.debug("Publishing the list of outputs to the registry instance..");
-                ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
-                experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_OUTPUT, resultantOutputsLst, processContext.getExperimentId());
-            }
-        } catch (RegistryException e) {
-            throw new GFacException("Cannot publish outputs to the registry.");
+    public void publishFinalOutputs() throws GFacException, TException {
+        if(!resultantOutputsLst.isEmpty()) {
+            log.debug("Publishing the list of outputs to the registry instance..");
+            RegistryService.Client registryClient = processContext.getRegistryClient();
+            registryClient.addExperimentProcessOutputs(GFacConstants.EXPERIMENT_OUTPUT, resultantOutputsLst, processContext.getExperimentId());
         }
 
 

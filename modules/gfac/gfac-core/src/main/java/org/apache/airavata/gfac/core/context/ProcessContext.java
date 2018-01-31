@@ -42,10 +42,9 @@ import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.task.TaskModel;
-import org.apache.airavata.registry.cpi.AppCatalog;
-import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.airavata.registry.cpi.ExperimentCatalog;
+import org.apache.airavata.registry.api.RegistryService;
 import org.apache.curator.framework.CuratorFramework;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,8 +54,6 @@ public class ProcessContext {
 
 	private static final Logger log = LoggerFactory.getLogger(ProcessContext.class);
 	// process model
-	private ExperimentCatalog experimentCatalog;
-	private AppCatalog appCatalog;
 	private CuratorFramework curatorClient;
 	private Publisher statusPublisher;
 	private final String processId;
@@ -103,6 +100,7 @@ public class ProcessContext {
 	private boolean recoveryWithCancel = false;
 	private String usageReportingGatewayId;
 	private List<String> queueSpecificMacros;
+	private RegistryService.Client registryClient;
 
 	/**
 	 * Note: process context property use lazy loading approach. In runtime you will see some properties as null
@@ -112,22 +110,6 @@ public class ProcessContext {
 		this.processId = processId;
 		this.gatewayId = gatewayId;
 		this.tokenId = tokenId;
-	}
-
-	public ExperimentCatalog getExperimentCatalog() {
-		return experimentCatalog;
-	}
-
-	public void setExperimentCatalog(ExperimentCatalog experimentCatalog) {
-		this.experimentCatalog = experimentCatalog;
-	}
-
-	public AppCatalog getAppCatalog() {
-		return appCatalog;
-	}
-
-	public void setAppCatalog(AppCatalog appCatalog) {
-		this.appCatalog = appCatalog;
 	}
 
 	public String getGatewayId() {
@@ -166,7 +148,15 @@ public class ProcessContext {
 		this.processModel = processModel;
 	}
 
-	public String getWorkingDir() {
+    public RegistryService.Client getRegistryClient() {
+        return registryClient;
+    }
+
+    public void setRegistryClient(RegistryService.Client registryClient) {
+        this.registryClient = registryClient;
+    }
+
+    public String getWorkingDir() {
 		if (workingDir == null) {
             if (processModel.getProcessResourceSchedule().getStaticWorkingDir() != null){
                 workingDir = processModel.getProcessResourceSchedule().getStaticWorkingDir();
@@ -621,7 +611,7 @@ public class ProcessContext {
 		}
 	}
 
-	public ServerInfo getComputeResourceServerInfo() throws GFacException {
+	public ServerInfo getComputeResourceServerInfo() throws GFacException, TException {
 
 		if (this.jobSubmissionProtocol  == JobSubmissionProtocol.SSH) {
 			Optional<JobSubmissionInterface> firstJobSubmissionIface = getComputeResourceDescription()
@@ -631,31 +621,26 @@ public class ProcessContext {
 
 			if (firstJobSubmissionIface.isPresent()) {
 
-				try {
-                    SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource()
-                            .getSSHJobSubmission(firstJobSubmissionIface.get().getJobSubmissionInterfaceId());
+				SSHJobSubmission sshJobSubmission = registryClient
+                        .getSSHJobSubmission(firstJobSubmissionIface.get().getJobSubmissionInterfaceId());
 
-					String alternateHostName = sshJobSubmission.getAlternativeSSHHostName();
-					String hostName = !(alternateHostName == null || alternateHostName.length() == 0) ? alternateHostName :
-								getComputeResourceDescription().getHostName();
+				String alternateHostName = sshJobSubmission.getAlternativeSSHHostName();
+				String hostName = !(alternateHostName == null || alternateHostName.length() == 0) ? alternateHostName :
+                            getComputeResourceDescription().getHostName();
 
-					if (sshJobSubmission.getSshPort() > 0) {
-                        return new ServerInfo(
-                                getComputeResourceLoginUserName(),
-                                hostName,
-                                getComputeResourceCredentialToken(),
-                                sshJobSubmission.getSshPort());
-                    } else {
-                        return new ServerInfo(
-                                getComputeResourceLoginUserName(),
-                                hostName,
-                                getComputeResourceCredentialToken());
-                    }
+				if (sshJobSubmission.getSshPort() > 0) {
+return new ServerInfo(
+getComputeResourceLoginUserName(),
+hostName,
+getComputeResourceCredentialToken(),
+sshJobSubmission.getSshPort());
+} else {
+return new ServerInfo(
+getComputeResourceLoginUserName(),
+hostName,
+getComputeResourceCredentialToken());
+}
 
-				} catch (AppCatalogException e) {
-					throw new GFacException("Failed to fetch ssh job submission for interface " +
-                            firstJobSubmissionIface.get().getJobSubmissionInterfaceId(), e);
-				}
 			}
 		}
 
@@ -744,8 +729,7 @@ public class ProcessContext {
 		private final String processId;
 		private final String gatewayId;
 		private final String tokenId;
-		private ExperimentCatalog experimentCatalog;
-		private AppCatalog appCatalog;
+        private RegistryService.Client registryClient;
 		private CuratorFramework curatorClient;
 		private Publisher statusPublisher;
 		private GatewayResourceProfile gatewayResourceProfile;
@@ -782,16 +766,6 @@ public class ProcessContext {
 			return this;
 		}
 
-		public ProcessContextBuilder setExperimentCatalog(ExperimentCatalog experimentCatalog) {
-			this.experimentCatalog = experimentCatalog;
-			return this;
-		}
-
-		public ProcessContextBuilder setAppCatalog(AppCatalog appCatalog) {
-			this.appCatalog = appCatalog;
-			return this;
-		}
-
 		public ProcessContextBuilder setCuratorClient(CuratorFramework curatorClient) {
 			this.curatorClient = curatorClient;
 			return this;
@@ -802,7 +776,12 @@ public class ProcessContext {
 			return this;
 		}
 
-		public ProcessContext build() throws GFacException {
+        public ProcessContextBuilder setRegistryClient(RegistryService.Client registryClient) {
+            this.registryClient = registryClient;
+            return this;
+        }
+
+        public ProcessContext build() throws GFacException {
 			if (notValid(gatewayResourceProfile)) {
 				throwError("Invalid GatewayResourceProfile");
 			}
@@ -815,22 +794,18 @@ public class ProcessContext {
 			if (notValid(processModel)) {
 				throwError("Invalid Process Model");
 			}
-			if (notValid(appCatalog)) {
-				throwError("Invalid AppCatalog");
-			}
-			if (notValid(experimentCatalog)) {
-				throwError("Invalid Experiment catalog");
-			}
 			if (notValid(curatorClient)) {
 				throwError("Invalid Curator Client");
 			}
 			if (notValid(statusPublisher)) {
 				throwError("Invalid Status Publisher");
 			}
+			if (notValid(registryClient)) {
+			    throwError("Invalid Registry Client");
+            }
 
 			ProcessContext pc = new ProcessContext(processId, gatewayId, tokenId);
-			pc.setAppCatalog(appCatalog);
-			pc.setExperimentCatalog(experimentCatalog);
+			pc.setRegistryClient(registryClient);
 			pc.setCuratorClient(curatorClient);
 			pc.setStatusPublisher(statusPublisher);
 			pc.setProcessModel(processModel);

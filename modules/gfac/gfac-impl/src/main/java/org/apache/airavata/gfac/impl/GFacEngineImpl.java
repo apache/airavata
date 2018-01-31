@@ -20,6 +20,7 @@
 package org.apache.airavata.gfac.impl;
 
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
@@ -49,7 +50,6 @@ import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescr
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
 import org.apache.airavata.model.application.io.DataType;
-import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.data.movement.SecurityProtocol;
@@ -68,13 +68,9 @@ import org.apache.airavata.model.task.JobSubmissionTaskModel;
 import org.apache.airavata.model.task.MonitorTaskModel;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
-import org.apache.airavata.registry.cpi.AppCatalog;
-import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.airavata.registry.cpi.ExpCatChildDataType;
-import org.apache.airavata.registry.cpi.ExperimentCatalog;
-import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
-import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.registry.cpi.utils.Constants;
+import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.utils.ZKPaths;
 import org.apache.thrift.TException;
@@ -87,8 +83,6 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -103,27 +97,25 @@ public class GFacEngineImpl implements GFacEngine {
 
     @Override
     public ProcessContext populateProcessContext(String processId, String gatewayId, String
-            tokenId) throws GFacException, CredentialStoreException {
+            tokenId) throws GFacException, CredentialStoreException, TException {
 
         // NOTE: Process context gives precedence to data come with process Computer resources;
         ProcessContext processContext = null;
         ProcessContext.ProcessContextBuilder builder = new ProcessContext.ProcessContextBuilder(processId, gatewayId, tokenId);
         try {
-            AppCatalog appCatalog = Factory.getDefaultAppCatalog();
-            ExperimentCatalog expCatalog = Factory.getDefaultExpCatalog();
-            ProcessModel processModel = (ProcessModel) expCatalog.get(ExperimentCatalogModelType.PROCESS, processId);
-            builder.setAppCatalog(appCatalog)
-                    .setExperimentCatalog(expCatalog)
+            RegistryService.Client registryClient = Factory.getRegistryServiceClient();
+            ProcessModel processModel = registryClient.getProcess(processId);
+            builder.setRegistryClient(registryClient)
                     .setCuratorClient(Factory.getCuratorClient())
                     .setStatusPublisher(Factory.getStatusPublisher())
                     .setProcessModel(processModel)
-                    .setGatewayResourceProfile(appCatalog.getGatewayProfile().getGatewayProfile(gatewayId))
+                    .setGatewayResourceProfile(registryClient.getGatewayResourceProfile(gatewayId))
                     .setGatewayComputeResourcePreference(
-                            appCatalog.getGatewayProfile()
-                                    .getComputeResourcePreference(gatewayId, processModel.getComputeResourceId()))
+                            registryClient
+                                    .getGatewayComputeResourcePreference(gatewayId, processModel.getComputeResourceId()))
                     .setGatewayStorageResourcePreference(
-                            appCatalog.getGatewayProfile()
-                                    .getStoragePreference(gatewayId, processModel.getStorageResourceId()));
+                            registryClient
+                                    .getGatewayStoragePreference(gatewayId, processModel.getStorageResourceId()));
 
             processContext = builder.build();
             /* check point */
@@ -136,8 +128,7 @@ public class GFacEngineImpl implements GFacEngine {
 
             String scratchLocation = processContext.getScratchLocation();
             String workingDirectory = scratchLocation + File.separator + processId + File.separator;
-            StorageResourceDescription storageResource = appCatalog.getStorageResource()
-                    .getStorageResource(processModel.getStorageResourceId());
+            StorageResourceDescription storageResource = registryClient.getStorageResource(processModel.getStorageResourceId());
             if (storageResource != null){
                 processContext.setStorageResource(storageResource);
             }else {
@@ -152,12 +143,10 @@ public class GFacEngineImpl implements GFacEngine {
             if (storageResource != null){
                 processContext.setStorageResource(storageResource);
             }*/
-            processContext.setComputeResourceDescription(appCatalog.getComputeResource().getComputeResource
+            processContext.setComputeResourceDescription(registryClient.getComputeResource
                     (processContext.getComputeResourceId()));
-            processContext.setApplicationDeploymentDescription(appCatalog.getApplicationDeployment()
-                    .getApplicationDeployement(processModel.getApplicationDeploymentId()));
-            ApplicationInterfaceDescription applicationInterface = appCatalog.getApplicationInterface()
-                    .getApplicationInterface(processModel.getApplicationInterfaceId());
+            processContext.setApplicationDeploymentDescription(registryClient.getApplicationDeployment(processModel.getApplicationDeploymentId()));
+            ApplicationInterfaceDescription applicationInterface = registryClient.getApplicationInterface(processModel.getApplicationInterfaceId());
             processContext.setApplicationInterfaceDescription(applicationInterface);
             List<OutputDataObjectType> applicationOutputs = applicationInterface.getApplicationOutputs();
             if (applicationOutputs != null && !applicationOutputs.isEmpty()) {
@@ -181,7 +170,7 @@ public class GFacEngineImpl implements GFacEngine {
                     }
                 }
             }
-            expCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processId);
+            registryClient.updateProcess(processModel, processId);
             processModel.setProcessOutputs(applicationOutputs);
 
             if (processContext.getJobSubmissionProtocol() == JobSubmissionProtocol.UNICORE) {
@@ -199,28 +188,8 @@ public class GFacEngineImpl implements GFacEngine {
                 processContext.setLocalWorkingDir((inputPath.endsWith("/") ? inputPath : inputPath + "/") +
                         processContext.getProcessId());
             }
-
-            List<Object> jobModels = expCatalog.get(ExperimentCatalogModelType.JOB, "processId", processId);
-            if (jobModels != null && !jobModels.isEmpty()) {
-                if (jobModels.size() > 1) {
-                    log.warn("Process has more than one job model, take first one");
-                }
-                processContext.setJobModel(((JobModel) jobModels.get(0)));
-            }
-
-
-
+            processContext.setJobModel(registryClient.getJob(GFacConstants.PROCESS_ID, processId));
             return processContext;
-        } catch (AppCatalogException e) {
-            String msg = "App catalog access exception ";
-            saveErrorModel(processContext, e, msg);
-            updateProcessFailure(processContext, msg);
-            throw new GFacException(msg, e);
-        } catch (RegistryException e) {
-            String msg = "Registry access exception";
-            saveErrorModel(processContext, e, msg);
-            updateProcessFailure(processContext, msg);
-            throw new GFacException(msg, e);
         } catch (AiravataException e) {
             String msg = "Remote cluster initialization error";
             saveErrorModel(processContext, e, msg);
@@ -239,22 +208,21 @@ public class GFacEngineImpl implements GFacEngine {
         }
     }
 
-    private void setUserResourceProfile(String gatewayId, ProcessContext processContext) throws AppCatalogException {
-        AppCatalog appCatalog = processContext.getAppCatalog();
+    private void setUserResourceProfile(String gatewayId, ProcessContext processContext) throws TException {
+        RegistryService.Client registryClient = processContext.getRegistryClient();
         ProcessModel processModel = processContext.getProcessModel();
 
-        UserResourceProfile userResourceProfile =
-                appCatalog.getUserResourceProfile()
+        UserResourceProfile userResourceProfile = registryClient
                         .getUserResourceProfile(processModel.getUserName(), gatewayId);
 
         processContext.setUserResourceProfile(userResourceProfile);
     }
 
-    private void setUserComputeResourcePreference(String gatewayId, ProcessContext processContext) throws AppCatalogException {
-        AppCatalog appCatalog = processContext.getAppCatalog();
+    private void setUserComputeResourcePreference(String gatewayId, ProcessContext processContext) throws TException {
+        RegistryService.Client registryClient = processContext.getRegistryClient();
         ProcessModel processModel = processContext.getProcessModel();
         UserComputeResourcePreference userComputeResourcePreference =
-                appCatalog.getUserResourceProfile().getUserComputeResourcePreference(
+                registryClient.getUserComputeResourcePreference(
                         processModel.getUserName(),
                         gatewayId,
                         processModel.getComputeResourceId());
@@ -283,10 +251,14 @@ public class GFacEngineImpl implements GFacEngine {
         String taskDag = processContext.getTaskDag();
         List<String> taskIds = GFacUtils.parseTaskDag(taskDag);
         processContext.setTaskExecutionOrder(taskIds);
-        executeTaskListFrom(processContext, taskIds.get(0));
+        try {
+            executeTaskListFrom(processContext, taskIds.get(0));
+        } catch (TException e) {
+            throw new RuntimeException("Error ", e);
+        }
     }
 
-    private void executeTaskListFrom(ProcessContext processContext, String startingTaskId) throws GFacException {
+    private void executeTaskListFrom(ProcessContext processContext, String startingTaskId) throws GFacException, TException {
         // checkpoint
         if (processContext.isInterrupted() && processContext.getProcessState() != ProcessState.MONITORING) {
             GFacUtils.handleProcessInterrupt(processContext);
@@ -412,13 +384,12 @@ public class GFacEngineImpl implements GFacEngine {
                                         submodel.setSource(source.getPath());
                                         submodel.setDestination("dummy://temp/file/location");
                                         streamingTaskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
-                                        String streamTaskId = (String) processContext.getExperimentCatalog()
-                                                .add(ExpCatChildDataType.TASK, streamingTaskModel, processContext.getProcessId());
+                                        String streamTaskId = processContext.getRegistryClient().addTask(streamingTaskModel, processContext.getProcessId());
                                         streamingTaskModel.setTaskId(streamTaskId);
                                         streamingTaskContext.setTaskModel(streamingTaskModel);
                                         executeDataStreaming(streamingTaskContext, processContext.isRecovery());
                                     }
-                                } catch (URISyntaxException | TException | RegistryException e) {
+                                } catch (URISyntaxException | TException e) {
                                     log.error("Error while streaming output " + output.getValue());
                                 }
                             }
@@ -452,7 +423,7 @@ public class GFacEngineImpl implements GFacEngine {
         processContext.setComplete(true);
     }
 
-    private void executeJobMonitoring(TaskContext taskContext, boolean recovery) throws GFacException {
+    private void executeJobMonitoring(TaskContext taskContext, boolean recovery) throws GFacException, TException {
         ProcessContext processContext = taskContext.getParentProcessContext();
         TaskStatus taskStatus;
         JobMonitor monitorService = null;
@@ -610,7 +581,7 @@ public class GFacEngineImpl implements GFacEngine {
         return false;
     }
 
-    private void checkFailures(TaskContext taskContext, TaskStatus taskStatus, Task task) throws GFacException {
+    private void checkFailures(TaskContext taskContext, TaskStatus taskStatus, Task task) throws GFacException, TException {
         if (taskStatus.getState() == TaskState.FAILED) {
             log.error("expId: {}, processId: {}, taskId: {} type: {},:- " + task.getType().toString() + " failed, " +
                     "reason:" + " {}", taskContext.getParentProcessContext().getExperimentId(), taskContext
@@ -667,58 +638,56 @@ public class GFacEngineImpl implements GFacEngine {
             try {
                 processContext.setCancel(true);
                 ProcessState processState = processContext.getProcessState();
-                List<Object> jobModels = null;
+                JobModel jobModel = null;
                 switch (processState) {
                     case EXECUTING:
-                        jobModels = processContext.getExperimentCatalog().get(
-                                ExperimentCatalogModelType.JOB, Constants.FieldConstants.TaskConstants.TASK_ID,
+                        jobModel = processContext.getRegistryClient().getJob(
+                                 GFacConstants.TASK_ID,
                                 rTaskId);
                         break;
                     case MONITORING:
                         if (pTaskId != null) {
-                            jobModels = processContext.getExperimentCatalog().get(
-                                    ExperimentCatalogModelType.JOB, Constants.FieldConstants.TaskConstants.TASK_ID,
+                            jobModel = processContext.getRegistryClient().getJob(
+                                    GFacConstants.TASK_ID,
                                     pTaskId);
                         }
                 }
 
-                if (jobModels != null && !jobModels.isEmpty()) {
-                    JobModel jobModel = (JobModel) jobModels.get(jobModels.size() - 1);
-                    if (jobModel.getJobId() != null) {
-                        processContext.setJobModel(jobModel);
-                        log.info("expId: {}, processId: {}, Canceling jobId {}", processContext.getExperimentId(),
-                                processContext.getProcessId(), jobModel.getJobId());
-                        cancelProcess(processContext);
-                        log.info("expId: {}, processId: {}, Canceled jobId {}", processContext.getExperimentId(),
-                                processContext.getProcessId(), jobModel.getJobId());
-                    } else {
+
+                if (jobModel.getJobId() != null) {
+                    processContext.setJobModel(jobModel);
+                    log.info("expId: {}, processId: {}, Canceling jobId {}", processContext.getExperimentId(),
+                            processContext.getProcessId(), jobModel.getJobId());
+                    cancelProcess(processContext);
+                    log.info("expId: {}, processId: {}, Canceled jobId {}", processContext.getExperimentId(),
+                            processContext.getProcessId(), jobModel.getJobId());
+                } else {
                         log.error("expId: {}, processId: {}, Couldn't find jobId in jobModel, aborting process recovery",
                                 processContext.getExperimentId(), processContext.getProcessId());
-                    }
                 }
+
             } catch (GFacException e) {
                 log.error("expId: {}, processId: {}, Error while canceling process which is in recovery mode",
                         processContext.getExperimentId(), processContext.getProcessId());
-            } catch (RegistryException e) {
-                log.error("expId: {}, processId: {}, Error while getting job model for taskId {}, " +
-                                "couldn't cancel process which is in recovery mode", processContext.getExperimentId(),
-                        processContext.getProcessId(), rTaskId);
+            } catch (RegistryServiceException e) {
+                throw new RuntimeException("Error while cancelling job submission", e);
+            } catch (TException e) {
+                throw new RuntimeException("Error while cancelling job submission", e);
             }
         }).start();
     }
 
-    private JobModel getJobModel(ProcessContext processContext) {
-        try {
-            return GFacUtils.getJobModel(processContext);
-        } catch (RegistryException e) {
-            log.error("Error while retrieving jobId,", e);
-            return null;
-        }
+    private JobModel getJobModel(ProcessContext processContext) throws TException {
+        return GFacUtils.getJobModel(processContext);
     }
 
     @Override
     public void continueProcess(ProcessContext processContext, String taskId) throws GFacException {
-        executeTaskListFrom(processContext, taskId);
+        try {
+            executeTaskListFrom(processContext, taskId);
+        } catch (TException e) {
+            throw new RuntimeException("Error ", e);
+        }
     }
 
     /**
@@ -746,7 +715,7 @@ public class GFacEngineImpl implements GFacEngine {
      * @return <code>true</code> if process execution interrupted , <code>false</code> otherwise.
      * @throws GFacException
      */
-    private boolean outputDataStaging(TaskContext taskContext, boolean recovery, boolean isArchive) throws GFacException {
+    private boolean outputDataStaging(TaskContext taskContext, boolean recovery, boolean isArchive) throws GFacException, TException {
         TaskStatus taskStatus = new TaskStatus(TaskState.EXECUTING);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         taskContext.setTaskStatus(taskStatus);
@@ -885,33 +854,15 @@ public class GFacEngineImpl implements GFacEngine {
     /**
      * Persist task model
      */
-    private void saveTaskModel(TaskContext taskContext) throws GFacException {
-        try {
-            TaskModel taskModel = taskContext.getTaskModel();
-            taskContext.getParentProcessContext().getExperimentCatalog().add(ExpCatChildDataType.TASK, taskModel,
-                    taskModel.getParentProcessId());
-        } catch (RegistryException e) {
-            throw new GFacException("Error while saving task model", e);
-        }
+    private void saveTaskModel(TaskContext taskContext) throws GFacException, TException {
+        TaskModel taskModel = taskContext.getTaskModel();
+        taskContext.getParentProcessContext().getRegistryClient().addTask(taskModel, taskModel.getParentProcessId());
     }
 
     private TaskContext getTaskContext(ProcessContext processContext) {
         TaskContext taskCtx = new TaskContext();
         taskCtx.setParentProcessContext(processContext);
         return taskCtx;
-    }
-
-
-    /**
-     * Sort input data type by input order.
-     */
-    private void sortByInputOrder(List<InputDataObjectType> processInputs) {
-        Collections.sort(processInputs, new Comparator<InputDataObjectType>() {
-            @Override
-            public int compare(InputDataObjectType inputDT_1, InputDataObjectType inputDT_2) {
-                return inputDT_1.getInputOrder() - inputDT_2.getInputOrder();
-            }
-        });
     }
 
     private void updateProcessFailure(ProcessContext pc, String reason) throws GFacException {
@@ -928,7 +879,7 @@ public class GFacEngineImpl implements GFacEngine {
         }
     }
 
-    private void saveErrorModel(ProcessContext pc, Exception e, String userFriendlyMsg) throws GFacException {
+    private void saveErrorModel(ProcessContext pc, Exception e, String userFriendlyMsg) throws GFacException, TException {
         if(pc == null){
             throw new GFacException("Can't save error process context is null", e);
         }
@@ -946,9 +897,10 @@ public class GFacEngineImpl implements GFacEngine {
         }
     }
 
-    public static ResourceJobManager getResourceJobManager(ProcessContext processCtx) throws AppCatalogException, GFacException {
-        List<JobSubmissionInterface> jobSubmissionInterfaces = Factory.getDefaultAppCatalog().getComputeResource()
-                .getComputeResource(processCtx.getComputeResourceId()).getJobSubmissionInterfaces();
+    public static ResourceJobManager getResourceJobManager(ProcessContext processCtx) throws GFacException, TException, ApplicationSettingsException {
+        RegistryService.Client registryCLient = Factory.getRegistryServiceClient();
+        List<JobSubmissionInterface> jobSubmissionInterfaces = registryCLient.
+                getComputeResource(processCtx.getComputeResourceId()).getJobSubmissionInterfaces();
 
         ResourceJobManager resourceJobManager = null;
         JobSubmissionInterface jsInterface = null;
@@ -961,17 +913,17 @@ public class GFacEngineImpl implements GFacEngine {
         if (jsInterface == null) {
             throw new GFacException("Job Submission interface cannot be empty at this point");
         } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH) {
-            SSHJobSubmission sshJobSubmission = Factory.getDefaultAppCatalog().getComputeResource().getSSHJobSubmission
+            SSHJobSubmission sshJobSubmission = registryCLient.getSSHJobSubmission
                     (jsInterface.getJobSubmissionInterfaceId());
             processCtx.setMonitorMode(sshJobSubmission.getMonitorMode()); // fixme - Move this to populate process
             // context method.
             resourceJobManager = sshJobSubmission.getResourceJobManager();
         } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.LOCAL) {
-            LOCALSubmission localSubmission = Factory.getDefaultAppCatalog().getComputeResource().getLocalJobSubmission
+            LOCALSubmission localSubmission = registryCLient.getLocalJobSubmission
                     (jsInterface.getJobSubmissionInterfaceId());
             resourceJobManager = localSubmission.getResourceJobManager();
         } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH_FORK) {
-            SSHJobSubmission sshJobSubmission = Factory.getDefaultAppCatalog().getComputeResource().getSSHJobSubmission
+            SSHJobSubmission sshJobSubmission = registryCLient.getSSHJobSubmission
                     (jsInterface.getJobSubmissionInterfaceId());
             processCtx.setMonitorMode(sshJobSubmission.getMonitorMode()); // fixme - Move this to populate process
             resourceJobManager = sshJobSubmission.getResourceJobManager();
