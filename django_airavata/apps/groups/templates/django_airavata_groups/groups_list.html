@@ -1,0 +1,14 @@
+
+{% extends 'main_base.html' %}
+
+{% block content %}
+
+<h1>Groups</h1>
+
+<ul>
+    {% for group in groups  %}
+        <li>{{ group.name }}</li>
+    {% endfor %}
+</ul>
+
+{% endblock content %}

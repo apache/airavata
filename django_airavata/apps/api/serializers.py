@@ -20,6 +20,7 @@ from airavata.model.data.replica.ttypes import (DataProductModel,
                                                 DataReplicaLocationModel)
 from airavata.model.experiment.ttypes import (ExperimentModel,
                                               ExperimentSummaryModel)
+from airavata.model.group.ttypes import GroupModel
 from airavata.model.job.ttypes import JobModel
 from airavata.model.status.ttypes import ExperimentStatus
 from airavata.model.workspace.ttypes import Project
@@ -74,6 +75,15 @@ class GetGatewayUsername(object):
         self.field = field
 
 
+class GetGatewayUserId(object):
+
+    def __call__(self):
+        return self.field.context['request'].user.id
+
+    def set_context(self, field):
+        self.field = field
+
+
 class GatewayUsernameDefaultField(serializers.CharField):
 
     def __init__(self, *args, **kwargs):
@@ -82,12 +92,38 @@ class GatewayUsernameDefaultField(serializers.CharField):
         self.default = GetGatewayUsername()
 
 
+class GatewayUserIdDefaultField(serializers.CharField):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.read_only = True
+        self.default = GetGatewayUserId()
+
+
 class GatewayIdDefaultField(serializers.CharField):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.read_only = True
         self.default = settings.GATEWAY_ID
+
+
+class GroupSerializer(serializers.Serializer):
+    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:group-detail', lookup_field='id', lookup_url_kwarg='group_id')
+    id = serializers.CharField(default=GroupModel.thrift_spec[1][4], read_only=True)
+    name = serializers.CharField(required=True)
+    description = serializers.CharField(allow_null=True)
+    ownerId = GatewayUsernameDefaultField()
+    members = serializers.ListSerializer(child=serializers.CharField())
+
+    def create(self, validated_data):
+        validated_data['ownerId'] = self.context['request'].user.username
+        return GroupModel(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.description = validated_data.get('description', instance.description)
+        return instance
 
 
 class ProjectSerializer(serializers.Serializer):
