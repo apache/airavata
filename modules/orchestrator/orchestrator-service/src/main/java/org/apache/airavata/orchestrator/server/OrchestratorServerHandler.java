@@ -183,9 +183,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 									log.error("Could not find a replica for the URI " + pi.getValue());
 								}
 							} catch (RegistryServiceException e) {
-                                e.printStackTrace();
+								throw new RuntimeException("Error while launching experiment", e);
                             } catch (TException e) {
-                                e.printStackTrace();
+								throw new RuntimeException("Error while launching experiment", e);
                             }
                         } else if (pi.getType().equals(DataType.URI_COLLECTION) && pi.getValue().contains("airavata-dp://")) {
 							try {
@@ -209,9 +209,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 								}
 								pi.setValue(StringUtils.join(filePathList, ','));
 							} catch (RegistryServiceException e) {
-                                e.printStackTrace();
+								throw new RuntimeException("Error while launching experiment", e);
                             } catch (TException e) {
-                                e.printStackTrace();
+								throw new RuntimeException("Error while launching experiment", e);
                             }
                         }
 					});
@@ -453,6 +453,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 launchSingleAppExperiment();
             } catch (TException e) {
                 log.error("Unable to launch experiment..", e);
+				throw new RuntimeException("Error while launching experiment", e);
             } catch (AiravataException e) {
                 log.error("Unable to publish experiment status..", e);
             }
@@ -522,7 +523,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 									status.setReason("process  started");
 								}
 							} catch (ApplicationSettingsException e) {
-								e.printStackTrace();
+								throw new RuntimeException("Error ", e);
 							}
 							break;
 //						case PRE_PROCESSING:
@@ -547,7 +548,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 									status.setReason("process  completed");
 								}
 							}  catch (ApplicationSettingsException e) {
-								e.printStackTrace();
+								throw new RuntimeException("Error ", e);
 							}
 							break;
 						case FAILED:
@@ -562,7 +563,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 									status.setReason("process  failed");
 								}
 							} catch (ApplicationSettingsException e) {
-								e.printStackTrace();
+								throw new RuntimeException("Unable to create registry client...", e);
 							}
 							break;
 						case CANCELED:
@@ -583,6 +584,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 				} catch (TException e) {
 					log.error("Message Id : " + message.getMessageId() + ", Message type : " + message.getType() +
 							"Error" + " while prcessing process status change event");
+					throw new RuntimeException("Error while updating experiment status", e);
 				}
 			} else {
 				System.out.println("Message Recieved with message id " + message.getMessageId() + " and with message " +
@@ -620,7 +622,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 				log.info("Cancelling experiment with experimentId: {} gateway Id: {}", expEvent.getExperimentId(), expEvent.getGatewayId());
 				terminateExperiment(expEvent.getExperimentId(), expEvent.getGatewayId());
 			} catch (TException e) {
-				log.error("Experiment cancellation failed due to Thrift conversion error", e);
+				log.error("Error while cancelling experiment", e);
+				throw new RuntimeException("Error while cancelling experiment", e);
 			}finally {
 				experimentSubscriber.sendAck(messageContext.getDeliveryTag());
 			}
@@ -650,6 +653,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 					String.format("Experiment launch failed due to Thrift conversion error, experimentId: %s, gatewayId: %s",
 					expEvent.getExperimentId(), expEvent.getGatewayId()): "Experiment launch failed due to Thrift conversion error";
             log.error(logMessage,  e);
+			throw new RuntimeException("Experiment launch error", e);
 		} finally {
 			experimentSubscriber.sendAck(messageContext.getDeliveryTag());
 			MDC.clear();

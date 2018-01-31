@@ -131,8 +131,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                                     .addErrors(OrchestratorConstants.EXPERIMENT_ERROR, details, experiment.getExperimentId());
                         } catch (RegistryServiceException e) {
                             logger.error("Error while saving error details to registry", e);
+                            throw new RuntimeException("Error while saving error details to registry", e);
                         } catch (TException e) {
-                            e.printStackTrace();
+                            throw new RuntimeException("Error while saving error details to registry", e);
                         }
                         break;
                     }
@@ -196,8 +197,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                                     .addErrors(OrchestratorConstants.PROCESS_ERROR, details, processModel.getProcessId());
                         } catch (RegistryServiceException e) {
                             logger.error("Error while saving error details to registry", e);
+                            throw new RuntimeException("Error while saving error details to registry", e);
                         } catch (TException e) {
-                            e.printStackTrace();
+                            throw new RuntimeException("Error while saving error details to registry", e);
                         }
                         break;
                     }

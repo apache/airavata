@@ -133,7 +133,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             taskStatus.setReason(msg);
             return taskStatus;
         } catch (TException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error ", e);
         }
 
         try {

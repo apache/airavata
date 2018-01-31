@@ -90,7 +90,7 @@ public class StreamData extends TimerTask  {
                     taskContext.getExperimentId(), taskContext.getProcessId(), taskContext.getTaskId(),
                     taskContext.getProcessOutput().getName());
         } catch (TException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error ", e);
         }
     }
 

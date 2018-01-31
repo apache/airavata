@@ -87,7 +87,7 @@ public class ArchiveTask implements Task {
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
-            return status;
+            throw new RuntimeException(msg, e);
         }
 
         try {
@@ -168,7 +168,7 @@ public class ArchiveTask implements Task {
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         } catch (TException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error ", e);
         }
         return status;
     }

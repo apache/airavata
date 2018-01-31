@@ -480,6 +480,7 @@ public class GFacUtils {
                 }
             } catch (TException e) {
                 log.error("Error while getting job submission sub task model", e);
+                throw new RuntimeException("Error while getting job submission sub task model", e);
             }
         }
 
@@ -766,6 +767,7 @@ public class GFacUtils {
             }
         } catch (ApplicationSettingsException e) {
             log.error("Error occured while retrieving resource job manager", e);
+            throw new RuntimeException("Error occured while retrieving resource job manager", e);
         }
         return null;
     }
@@ -1052,7 +1054,7 @@ public class GFacUtils {
         try {
             return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
         } catch (RegistryServiceException e) {
-            throw new TException("Unable to create registry client...", e);
+            throw new RuntimeException("Unable to create registry client...", e);
         }
     }
 

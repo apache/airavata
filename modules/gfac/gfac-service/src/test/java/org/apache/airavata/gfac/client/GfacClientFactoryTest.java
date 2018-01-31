@@ -22,7 +22,6 @@ package org.apache.airavata.gfac.client;
 import org.apache.airavata.gfac.client.util.Initialize;
 import org.apache.airavata.gfac.cpi.GfacService;
 import org.apache.airavata.gfac.server.GfacServer;
-import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.zookeeper.server.ServerCnxnFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

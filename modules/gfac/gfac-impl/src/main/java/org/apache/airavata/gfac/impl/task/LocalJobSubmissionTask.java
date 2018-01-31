@@ -137,7 +137,7 @@ public class LocalJobSubmissionTask implements JobSubmissionTask{
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
             taskStatus.setState(TaskState.FAILED);
         } catch (TException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error ", e);
         }
         return taskStatus;
     }

@@ -61,7 +61,7 @@ public class BatchQueueValidator implements JobMetadataValidator {
             }
             validationResults.setValidationResultList(validatorResultList);
         } catch (TException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error while validating", e);
         }
         return validationResults;
     }
@@ -204,7 +204,7 @@ public class BatchQueueValidator implements JobMetadataValidator {
         try {
             return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
         } catch (RegistryServiceException e) {
-            throw new TException("Unable to create registry client...", e);
+            throw new RuntimeException("Unable to create registry client...", e);
         }
     }
 }

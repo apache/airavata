@@ -91,6 +91,7 @@ public abstract class AbstractOrchestrator implements Orchestrator {
             setGatewayName(ServerSettings.getDefaultUserGateway());
         }  catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
+            throw new RuntimeException("Error while setting gateway properties.", e);
         }
     }
 
@@ -100,7 +101,7 @@ public abstract class AbstractOrchestrator implements Orchestrator {
         try {
             return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
         } catch (RegistryServiceException e) {
-            throw new TException("Unable to create registry client...", e);
+            throw new RuntimeException("Unable to create registry client...", e);
         }
     }
 

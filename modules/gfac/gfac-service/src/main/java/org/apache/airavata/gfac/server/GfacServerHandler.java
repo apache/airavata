@@ -50,11 +50,6 @@ import org.apache.airavata.model.messaging.event.TaskSubmitEvent;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.cpi.AppCatalog;
-import org.apache.airavata.registry.cpi.ExpCatChildDataType;
-import org.apache.airavata.registry.cpi.ExperimentCatalog;
-import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
-import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.utils.ZKPaths;
 import org.apache.thrift.TBase;
@@ -257,6 +252,7 @@ public class GfacServerHandler implements GfacService.Iface {
                         } catch (TException e) {
                             submissionErrorHandling(status, event, e);
                             processLaunchSubscriber.sendAck(messageContext.getDeliveryTag());
+                            throw new RuntimeException("Error ", e);
                         }
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -264,6 +260,7 @@ public class GfacServerHandler implements GfacService.Iface {
                     }
                 } catch (TException e) {
                     log.error(e.getMessage(), e); //nobody is listening so nothing to throw
+                    throw new RuntimeException("Error ", e);
                 } catch (AiravataException e) {
 	                log.error("Error while publishing process status", e);
                 } finally {
@@ -273,7 +270,7 @@ public class GfacServerHandler implements GfacService.Iface {
         }
     }
 
-    private void submissionErrorHandling(ProcessStatus status, ProcessSubmitEvent event, TException e) throws RegistryException, AiravataException, TException {
+    private void submissionErrorHandling(ProcessStatus status, ProcessSubmitEvent event, TException e) throws  AiravataException, TException {
         StringWriter errors = new StringWriter();
         e.printStackTrace(new PrintWriter(errors));
         ErrorModel errorModel = new ErrorModel();
