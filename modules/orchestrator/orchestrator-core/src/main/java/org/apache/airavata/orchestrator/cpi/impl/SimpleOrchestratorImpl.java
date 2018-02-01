@@ -280,13 +280,14 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         try {
             ExperimentModel experimentModel = registryClient.getExperiment(experimentId);
             List<ProcessModel> processModels = registryClient.getProcessList(experimentId);
-            if (processModels.equals(null) || processModels.isEmpty()){
+            if (processModels == null || processModels.isEmpty()){
                 ProcessModel processModel = ExperimentModelUtil.cloneProcessFromExperiment(experimentModel);
                 String processId = registryClient.addProcess(processModel, experimentId);
                 processModel.setProcessId(processId);
+                processModels = new ArrayList<>();
                 processModels.add(processModel);
-                return processModels;
             }
+            return processModels;
         } catch (Exception e) {
             throw new OrchestratorException("Error during creating process", e);
         } finally {
@@ -294,7 +295,6 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 ThriftUtils.close(registryClient);
             }
         }
-        return null;
     }
 
     public String createAndSaveTasks(String gatewayId, ProcessModel processModel, boolean autoSchedule) throws OrchestratorException {
