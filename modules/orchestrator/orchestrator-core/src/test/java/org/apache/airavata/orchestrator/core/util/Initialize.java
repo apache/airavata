@@ -19,11 +19,6 @@
  */
 package org.apache.airavata.orchestrator.core.util;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
-//import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
-import org.apache.airavata.registry.core.experiment.catalog.resources.*;
-//import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.derby.drda.NetworkServerControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +27,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
 import java.sql.*;
 import java.util.StringTokenizer;
 
@@ -299,24 +293,6 @@ public class Initialize {
                 }
             }
         }
-    }
-
-    private void startDerbyInServerMode() {
-        try {
-            System.setProperty(DERBY_SERVER_MODE_SYS_PROPERTY, "true");
-            server = new NetworkServerControl(InetAddress.getByName(Utils.getHost()),
-                    20000,
-                    Utils.getJDBCUser(), Utils.getJDBCPassword());
-            java.io.PrintWriter consoleWriter = new java.io.PrintWriter(System.out, true);
-            server.start(consoleWriter);
-        } catch (IOException e) {
-            logger.error("Unable to start Apache derby in the server mode! Check whether " +
-                    "specified port is available");
-        } catch (Exception e) {
-            logger.error("Unable to start Apache derby in the server mode! Check whether " +
-                    "specified port is available");
-        }
-
     }
 
     public void stopDerbyServer() throws SQLException{
