@@ -356,6 +356,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         envSetupTask.setTaskType(TaskTypes.ENV_SETUP);
         envSetupTask.setTaskStatuses(Arrays.asList(new TaskStatus(TaskState.CREATED)));
         envSetupTask.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
+        envSetupTask.setLastUpdateTime(AiravataUtils.getCurrentTimestamp().getTime());
         envSetupTask.setParentProcessId(processModel.getProcessId());
         EnvironmentSetupTaskModel envSetupSubModel = new EnvironmentSetupTaskModel();
         envSetupSubModel.setProtocol(OrchestratorUtils.getSecurityProtocol(orchestratorContext, processModel, gatewayId));
