@@ -271,7 +271,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 return processModels;
             }
         } catch (Exception e) {
-            throw new OrchestratorException("Error during creating process");
+            throw new OrchestratorException("Error during creating process", e);
         }
         return null;
     }
@@ -396,7 +396,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                             inputDataStagingTask.setTaskId(taskId);
                             dataStagingTaskIds.add(inputDataStagingTask.getTaskId());
                         } catch (TException | TaskException e) {
-                            throw new AiravataException("Error while serializing data staging sub task model");
+                            throw new AiravataException("Error while serializing data staging sub task model", e);
                         }
                         break;
                     default:
@@ -445,7 +445,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 createArchiveDataStatgingTask(processModel, gatewayId, dataStagingTaskIds);
             }
         } catch (Exception e) {
-            throw new AiravataException("Error! Application interface retrieval failed");
+            throw new AiravataException("Error! Application interface retrieval failed", e);
         }
         return dataStagingTaskIds;
     }
@@ -463,7 +463,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         try {
             archiveTask = getOutputDataStagingTask(processModel, null, gatewayId);
         } catch (TException e) {
-            throw new AiravataException("Error! DataStaging sub task serialization failed");
+            throw new AiravataException("Error! DataStaging sub task serialization failed", e);
         }
         String taskId = orchestratorContext.getRegistryClient()
                 .addTask(archiveTask, processModel.getProcessId());
@@ -587,7 +587,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                     OrchestratorUtils.getDataMovementPort(orchestratorContext, processModel, gatewayId),
                     workingDir , null, null);
         } catch (URISyntaxException e) {
-            throw new TaskException("Error while constructing destination file URI");
+            throw new TaskException("Error while constructing destination file URI", e);
         }
         submodel.setType(DataStageType.INPUT);
         submodel.setSource(processInput.getValue());
@@ -637,7 +637,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                             workingDir, null, null);
                 }
             } catch (URISyntaxException e) {
-                throw new TaskException("Error while constructing source file URI");
+                throw new TaskException("Error while constructing source file URI", e);
             }
             // We don't know destination location at this time, data staging task will set this.
             // because destination is required field we set dummy destination
