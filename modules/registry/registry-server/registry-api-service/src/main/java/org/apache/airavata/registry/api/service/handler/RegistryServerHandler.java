@@ -1024,7 +1024,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                     }
                 }
             }
-            return null;
+            throw new Exception("Job not found for queryType: " + queryType + ", id: " + id);
         } catch (Exception e) {
             logger.error(id, "Error while retrieving job", e);
             AiravataSystemException exception = new AiravataSystemException();
