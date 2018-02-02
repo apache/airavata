@@ -186,7 +186,9 @@ public class GFacEngineImpl implements GFacEngine {
                 processContext.setLocalWorkingDir((inputPath.endsWith("/") ? inputPath : inputPath + "/") +
                         processContext.getProcessId());
             }
-            processContext.setJobModel(registryClient.getJob(GFacConstants.PROCESS_ID, processId));
+            if (registryClient.isJobExist(GFacConstants.PROCESS_ID, processId)) {
+                processContext.setJobModel(registryClient.getJob(GFacConstants.PROCESS_ID, processId));
+            }
             return processContext;
         } catch (AiravataException e) {
             String msg = "Remote cluster initialization error";

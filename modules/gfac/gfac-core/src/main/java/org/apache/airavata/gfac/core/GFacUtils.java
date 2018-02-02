@@ -1043,10 +1043,6 @@ public class GFacUtils {
 		}
 	}
 
-    public static JobModel getJobModel(ProcessContext processContext, RegistryService.Client registryClient) throws TException {
-        return registryClient.getJob(GFacConstants.PROCESS_ID, processContext.getProcessId());
-    }
-
     public static List<String> parseTaskDag(String taskDag) {
         // TODO - parse taskDag and create taskId list
         String[] tasks = taskDag.split(",");
