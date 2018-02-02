@@ -751,6 +751,13 @@ service RegistryService {
            * queryType can be TASK_ID OR PROCESS_ID
            *
            */
+           bool isJobExist(1: required string queryType, 2: required string id)
+                       throws (1: registry_api_errors.RegistryServiceException rse)
+
+           /*
+           * queryType can be TASK_ID OR PROCESS_ID
+           *
+           */
            job_model.JobModel getJob(1: required string queryType, 2: required string id)
                        throws (1: registry_api_errors.RegistryServiceException rse)
 

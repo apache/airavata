@@ -996,34 +996,28 @@ public class RegistryServerHandler implements RegistryService.Iface {
      * queryType can be PROCESS_ID or TASK_ID
      */
     @Override
+    public boolean isJobExist(String queryType, String id) throws RegistryServiceException, TException {
+        try {
+            JobModel jobModel = fetchJobModel(queryType, id);
+            return jobModel != null;
+        } catch (Exception e) {
+            logger.error(id, "Error while retrieving job", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving job. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     *
+     * queryType can be PROCESS_ID or TASK_ID
+     */
+    @Override
     public JobModel getJob(String queryType, String id) throws RegistryServiceException, TException {
         try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            if (queryType.equals(Constants.FieldConstants.JobConstants.TASK_ID)) {
-                List<Object> jobs = experimentCatalog.get(ExperimentCatalogModelType.JOB, Constants.FieldConstants.JobConstants.TASK_ID, id);
-                JobModel jobModel = null;
-                if (jobs != null) {
-                    for (Object object : jobs) {
-                        jobModel = ((JobModel) object);
-                        if (jobModel.getJobId() != null || !jobModel.equals("")) {
-                            return jobModel;
-                        }
-                    }
-                }
-            }
-            else if (queryType.equals(Constants.FieldConstants.JobConstants.PROCESS_ID)) {
-                List<Object> objects = experimentCatalog.get(ExperimentCatalogModelType.JOB,
-                        Constants.FieldConstants.JobConstants.PROCESS_ID, id);
-                JobModel jobModel = null;
-                if (objects != null) {
-                    for (Object object : objects) {
-                        jobModel = ((JobModel) object);
-                        if (jobModel.getJobId() != null || !jobModel.equals("")) {
-                            return jobModel;
-                        }
-                    }
-                }
-            }
+            JobModel jobModel = fetchJobModel(queryType, id);
+            if (jobModel != null) return jobModel;
             throw new Exception("Job not found for queryType: " + queryType + ", id: " + id);
         } catch (Exception e) {
             logger.error(id, "Error while retrieving job", e);
@@ -1032,6 +1026,36 @@ public class RegistryServerHandler implements RegistryService.Iface {
             exception.setMessage("Error while retrieving job. More info : " + e.getMessage());
             throw exception;
         }
+    }
+
+    private JobModel fetchJobModel(String queryType, String id) throws RegistryException {
+        experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+        if (queryType.equals(Constants.FieldConstants.JobConstants.TASK_ID)) {
+            List<Object> jobs = experimentCatalog.get(ExperimentCatalogModelType.JOB, Constants.FieldConstants.JobConstants.TASK_ID, id);
+            JobModel jobModel = null;
+            if (jobs != null) {
+                for (Object object : jobs) {
+                    jobModel = ((JobModel) object);
+                    if (jobModel.getJobId() != null || !jobModel.equals("")) {
+                        return jobModel;
+                    }
+                }
+            }
+        }
+        else if (queryType.equals(Constants.FieldConstants.JobConstants.PROCESS_ID)) {
+            List<Object> objects = experimentCatalog.get(ExperimentCatalogModelType.JOB,
+                    Constants.FieldConstants.JobConstants.PROCESS_ID, id);
+            JobModel jobModel = null;
+            if (objects != null) {
+                for (Object object : objects) {
+                    jobModel = ((JobModel) object);
+                    if (jobModel.getJobId() != null || !jobModel.equals("")) {
+                        return jobModel;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     @Override
