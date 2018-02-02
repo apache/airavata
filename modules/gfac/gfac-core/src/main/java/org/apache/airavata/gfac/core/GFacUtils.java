@@ -23,7 +23,12 @@ import groovy.lang.Writable;
 import groovy.text.GStringTemplateEngine;
 import groovy.text.TemplateEngine;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.*;
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.AiravataZKUtils;
+import org.apache.airavata.common.utils.ApplicationSettings;
+import org.apache.airavata.common.utils.DBUtil;
+import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.ZkConstants;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 import org.apache.airavata.gfac.core.context.ProcessContext;
@@ -32,24 +37,45 @@ import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.CommandObject;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
-import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
-import org.apache.airavata.model.data.replica.*;
+import org.apache.airavata.model.data.replica.DataProductModel;
+import org.apache.airavata.model.data.replica.DataProductType;
+import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
+import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
+import org.apache.airavata.model.data.replica.ReplicaPersistentType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.job.JobModel;
-import org.apache.airavata.model.messaging.event.*;
+import org.apache.airavata.model.messaging.event.JobIdentifier;
+import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.model.messaging.event.ProcessIdentifier;
+import org.apache.airavata.model.messaging.event.ProcessStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.TaskIdentifier;
+import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.status.*;
+import org.apache.airavata.model.status.JobStatus;
+import org.apache.airavata.model.status.ProcessState;
+import org.apache.airavata.model.status.ProcessStatus;
+import org.apache.airavata.model.status.TaskState;
+import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.JobSubmissionTaskModel;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
-import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.commons.io.FileUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.utils.ZKPaths;
@@ -65,15 +91,34 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.xml.xpath.*;
-import java.io.*;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -209,14 +254,13 @@ public class GFacUtils {
         return buf.toString();
     }
 
-	public static void saveJobStatus(ProcessContext processContext, JobModel jobModel) throws GFacException {
+	public static void saveJobStatus(ProcessContext processContext, RegistryService.Client registryClient, JobModel jobModel) throws GFacException {
 		try {
             // first we save job jobModel to the registry for sa and then save the job status.
             JobStatus jobStatus = null;
             if(jobModel.getJobStatuses() != null)
 			    jobStatus = jobModel.getJobStatuses().get(0);
 
-            RegistryService.Client registryClient = processContext.getRegistryClient();
             List<JobStatus> statuses = new ArrayList<>();
             statuses.add(jobStatus);
             jobModel.setJobStatuses(statuses);
@@ -240,12 +284,11 @@ public class GFacUtils {
 		}
 	}
 
-    public static void saveAndPublishTaskStatus(TaskContext taskContext) throws GFacException {
+    public static void saveAndPublishTaskStatus(TaskContext taskContext, RegistryService.Client registryClient) throws GFacException {
         try {
 	        TaskState state = taskContext.getTaskState();
 	        // first we save job jobModel to the registry for sa and then save the job status.
 	        ProcessContext processContext = taskContext.getParentProcessContext();
-	        RegistryService.Client registryClient = processContext.getRegistryClient();
 	        TaskStatus status = taskContext.getTaskStatus();
             if (status.getTimeOfStateChange() == 0 || status.getTimeOfStateChange() > 0 ){
                 status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
@@ -268,10 +311,9 @@ public class GFacUtils {
         }
     }
 
-    public static void saveAndPublishProcessStatus(ProcessContext processContext) throws GFacException {
+    public static void saveAndPublishProcessStatus(ProcessContext processContext, RegistryService.Client registryClient) throws GFacException {
         try {
             // first we save job jobModel to the registry for sa and then save the job status.
-            RegistryService.Client registryClient = processContext.getRegistryClient();
             ProcessStatus status = processContext.getProcessStatus();
             if (status.getTimeOfStateChange() == 0 || status.getTimeOfStateChange() > 0 ){
                 status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
@@ -340,48 +382,20 @@ public class GFacUtils {
         }
     }
 
-    public static LOCALSubmission getLocalJobSubmission(String submissionId) throws TException, ApplicationSettingsException {
-        try {
-            RegistryService.Client registryClient = getRegistryServiceClient();
-            return registryClient.getLocalJobSubmission(submissionId);
-        } catch (ApplicationSettingsException e) {
-            String errorMsg = "Error while retrieving local job submission with submission id : " + submissionId;
-            log.error(errorMsg, e);
-            throw new ApplicationSettingsException(errorMsg,e);
-        }
+    public static LOCALSubmission getLocalJobSubmission(RegistryService.Client registryClient, String submissionId) throws TException {
+        return registryClient.getLocalJobSubmission(submissionId);
     }
 
-    public static UnicoreJobSubmission getUnicoreJobSubmission(String submissionId) throws TException, ApplicationSettingsException {
-        try {
-            RegistryService.Client registryClient = getRegistryServiceClient();
-            return registryClient.getUnicoreJobSubmission(submissionId);
-        } catch (ApplicationSettingsException e) {
-            String errorMsg = "Error while retrieving UNICORE job submission with submission id : " + submissionId;
-            log.error(errorMsg, e);
-            throw new ApplicationSettingsException(errorMsg,e);
-        }
+    public static UnicoreJobSubmission getUnicoreJobSubmission(RegistryService.Client registryClient, String submissionId) throws TException {
+        return registryClient.getUnicoreJobSubmission(submissionId);
     }
 
-    public static SSHJobSubmission getSSHJobSubmission(String submissionId) throws TException, ApplicationSettingsException {
-        try {
-            RegistryService.Client registryClient = getRegistryServiceClient();
-            return registryClient.getSSHJobSubmission(submissionId);
-        } catch (ApplicationSettingsException e) {
-            String errorMsg = "Error while retrieving SSH job submission with submission id : " + submissionId;
-            log.error(errorMsg, e);
-            throw new ApplicationSettingsException(errorMsg,e);
-        }
+    public static SSHJobSubmission getSSHJobSubmission(RegistryService.Client registryClient, String submissionId) throws TException {
+        return registryClient.getSSHJobSubmission(submissionId);
     }
 
-    public static CloudJobSubmission getCloudJobSubmission(String submissionId) throws TException, ApplicationSettingsException {
-        try {
-            RegistryService.Client registryClient = getRegistryServiceClient();
-            return registryClient.getCloudJobSubmission(submissionId);
-        } catch (Exception e) {
-            String errorMsg = "Error while retrieving SSH job submission with submission id : " + submissionId;
-            log.error(errorMsg, e);
-            throw new ApplicationSettingsException(errorMsg,e);
-        }
+    public static CloudJobSubmission getCloudJobSubmission(RegistryService.Client registryClient, String submissionId) throws TException {
+        return registryClient.getCloudJobSubmission(submissionId);
     }
 
     /**
@@ -424,17 +438,17 @@ public class GFacUtils {
     public static String getZKGfacServersParentPath() {
         return ZKPaths.makePath(ZkConstants.ZOOKEEPER_SERVERS_NODE, ZkConstants.ZOOKEEPER_GFAC_SERVER_NODE);
     }
-    public static GroovyMap crateGroovyMap(ProcessContext processContext)
+    public static GroovyMap crateGroovyMap(ProcessContext processContext, RegistryService.Client registryClient)
             throws ApplicationSettingsException, GFacException, TException {
-        return createGroovyMap(processContext, null);
+        return createGroovyMap(processContext, registryClient, null);
     }
-    public static GroovyMap createGroovyMap(ProcessContext processContext, TaskContext taskContext)
+    public static GroovyMap createGroovyMap(ProcessContext processContext, RegistryService.Client registryClient, TaskContext taskContext)
             throws GFacException, ApplicationSettingsException, TException {
 
         GroovyMap groovyMap = new GroovyMap();
         ProcessModel processModel = processContext.getProcessModel();
-        ResourceJobManager resourceJobManager = getResourceJobManager(processContext);
-        setMailAddresses(processContext, groovyMap); // set email options and addresses
+        ResourceJobManager resourceJobManager = getResourceJobManager(processContext, registryClient);
+        setMailAddresses(processContext, registryClient, groovyMap); // set email options and addresses
 
         groovyMap.add(Script.INPUT_DIR, processContext.getInputDir());
         groovyMap.add(Script.OUTPUT_DIR, processContext.getOutputDir());
@@ -592,12 +606,12 @@ public class GFacUtils {
     private static boolean isValid(String str) {
         return str != null && !str.isEmpty();
     }
-    private static void setMailAddresses(ProcessContext processContext, GroovyMap groovyMap)
+    private static void setMailAddresses(ProcessContext processContext, RegistryService.Client registryClient, GroovyMap groovyMap)
             throws GFacException, ApplicationSettingsException, TException {
 
         ProcessModel processModel =  processContext.getProcessModel();
         String emailIds = null;
-        if (isEmailBasedJobMonitor(processContext)) {
+        if (isEmailBasedJobMonitor(processContext, registryClient)) {
             emailIds = ServerSettings.getEmailBasedMonitorAddress();
         }
         if (ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_ENABLE).equalsIgnoreCase("true")) {
@@ -745,22 +759,22 @@ public class GFacUtils {
         }
     }
 
-    public static ResourceJobManager getResourceJobManager(ProcessContext processContext) throws TException {
+    public static ResourceJobManager getResourceJobManager(ProcessContext processContext, RegistryService.Client registryClient) throws TException {
         try {
-            JobSubmissionProtocol submissionProtocol = getPreferredJobSubmissionProtocol(processContext);
-            JobSubmissionInterface jobSubmissionInterface = getPreferredJobSubmissionInterface(processContext);
+            JobSubmissionProtocol submissionProtocol = getPreferredJobSubmissionProtocol(processContext, registryClient);
+            JobSubmissionInterface jobSubmissionInterface = getPreferredJobSubmissionInterface(processContext, registryClient);
             if (submissionProtocol == JobSubmissionProtocol.SSH ) {
-                SSHJobSubmission sshJobSubmission = GFacUtils.getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
+                SSHJobSubmission sshJobSubmission = GFacUtils.getSSHJobSubmission(registryClient, jobSubmissionInterface.getJobSubmissionInterfaceId());
                 if (sshJobSubmission != null) {
                     return sshJobSubmission.getResourceJobManager();
                 }
             } else if (submissionProtocol == JobSubmissionProtocol.LOCAL) {
-                LOCALSubmission localJobSubmission = GFacUtils.getLocalJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
+                LOCALSubmission localJobSubmission = GFacUtils.getLocalJobSubmission(registryClient, jobSubmissionInterface.getJobSubmissionInterfaceId());
                 if (localJobSubmission != null) {
                     return localJobSubmission.getResourceJobManager();
                 }
             } else if (submissionProtocol == JobSubmissionProtocol.SSH_FORK){
-                SSHJobSubmission sshJobSubmission = GFacUtils.getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
+                SSHJobSubmission sshJobSubmission = GFacUtils.getSSHJobSubmission(registryClient, jobSubmissionInterface.getJobSubmissionInterfaceId());
                 if (sshJobSubmission != null) {
                     return sshJobSubmission.getResourceJobManager();
                 }
@@ -772,12 +786,12 @@ public class GFacUtils {
         return null;
     }
 
-    public static boolean isEmailBasedJobMonitor(ProcessContext processContext) throws GFacException, TException, ApplicationSettingsException {
-        JobSubmissionProtocol jobSubmissionProtocol = getPreferredJobSubmissionProtocol(processContext);
-        JobSubmissionInterface jobSubmissionInterface = getPreferredJobSubmissionInterface(processContext);
+    public static boolean isEmailBasedJobMonitor(ProcessContext processContext, RegistryService.Client registryClient) throws GFacException, TException, ApplicationSettingsException {
+        JobSubmissionProtocol jobSubmissionProtocol = getPreferredJobSubmissionProtocol(processContext, registryClient);
+        JobSubmissionInterface jobSubmissionInterface = getPreferredJobSubmissionInterface(processContext, registryClient);
         if (jobSubmissionProtocol == JobSubmissionProtocol.SSH) {
             String jobSubmissionInterfaceId = jobSubmissionInterface.getJobSubmissionInterfaceId();
-            SSHJobSubmission sshJobSubmission = processContext.getRegistryClient().getSSHJobSubmission(jobSubmissionInterfaceId);
+            SSHJobSubmission sshJobSubmission = registryClient.getSSHJobSubmission(jobSubmissionInterfaceId);
             MonitorMode monitorMode = sshJobSubmission.getMonitorMode();
             return monitorMode != null && monitorMode == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR;
         } else {
@@ -785,11 +799,11 @@ public class GFacUtils {
         }
     }
 
-    public static JobSubmissionInterface getPreferredJobSubmissionInterface(ProcessContext processContext) throws TException, ApplicationSettingsException {
+    public static JobSubmissionInterface getPreferredJobSubmissionInterface(ProcessContext processContext, RegistryService.Client registryClient) throws TException, ApplicationSettingsException {
         try {
             String resourceHostId = processContext.getComputeResourceDescription().getComputeResourceId();
             JobSubmissionProtocol preferredJobSubmissionProtocol = processContext.getPreferredJobSubmissionProtocol();
-            ComputeResourceDescription resourceDescription = processContext.getRegistryClient().getComputeResource(resourceHostId);
+            ComputeResourceDescription resourceDescription = registryClient.getComputeResource(resourceHostId);
             List<JobSubmissionInterface> jobSubmissionInterfaces = resourceDescription.getJobSubmissionInterfaces();
             Map<JobSubmissionProtocol, List<JobSubmissionInterface>> orderedInterfaces = new HashMap<>();
             List<JobSubmissionInterface> interfaces = new ArrayList<>();
@@ -831,9 +845,9 @@ public class GFacUtils {
         }
     }
 
-    public static JobSubmissionProtocol getPreferredJobSubmissionProtocol(ProcessContext context) throws TException {
+    public static JobSubmissionProtocol getPreferredJobSubmissionProtocol(ProcessContext context, RegistryService.Client registryClient) throws TException {
         String resourceHostId = context.getComputeResourceDescription().getComputeResourceId();
-        ComputeResourcePreference preference = context.getRegistryClient().getGatewayComputeResourcePreference(context.getGatewayId()
+        ComputeResourcePreference preference = registryClient.getGatewayComputeResourcePreference(context.getGatewayId()
                 , resourceHostId);
         return preference.getPreferredJobSubmissionProtocol();
     }
@@ -909,15 +923,13 @@ public class GFacUtils {
 		}
 	}
 
-	public static void saveJobModel(ProcessContext processContext, JobModel jobModel) throws GFacException, TException {
-        RegistryService.Client registryClient = processContext.getRegistryClient();
+	public static void saveJobModel(ProcessContext processContext, RegistryService.Client registryClient, JobModel jobModel) throws GFacException, TException {
         registryClient.addJob(jobModel, processContext.getProcessId());
     }
 
-    public static void saveExperimentInput(ProcessContext processContext, String inputName, String inputVal) throws GFacException, TException {
-        RegistryService.Client registryCLient = processContext.getRegistryClient();
+    public static void saveExperimentInput(ProcessContext processContext, RegistryService.Client registryClient, String inputName, String inputVal) throws GFacException, TException {
         String experimentId = processContext.getExperimentId();
-        ExperimentModel experiment = registryCLient.getExperiment(experimentId);
+        ExperimentModel experiment = registryClient.getExperiment(experimentId);
         List<InputDataObjectType> experimentInputs = experiment.getExperimentInputs();
         if (experimentInputs != null && !experimentInputs.isEmpty()){
             for (InputDataObjectType expInput : experimentInputs){
@@ -926,11 +938,10 @@ public class GFacUtils {
                 }
             }
         }
-        registryCLient.updateExperiment(experimentId, experiment);
+        registryClient.updateExperiment(experimentId, experiment);
     }
 
-    public static void saveProcessInput(ProcessContext processContext, String inputName, String inputVal) throws GFacException, TException {
-        RegistryService.Client registryClient = processContext.getRegistryClient();
+    public static void saveProcessInput(ProcessContext processContext, RegistryService.Client registryClient, String inputName, String inputVal) throws GFacException, TException {
         String processId = processContext.getProcessId();
         ProcessModel processModel = registryClient.getProcess(processId);
         List<InputDataObjectType> processInputs = processModel.getProcessInputs();
@@ -944,9 +955,8 @@ public class GFacUtils {
         registryClient.updateProcess(processModel, processId);
     }
 
-    public static void saveExperimentOutput(ProcessContext processContext, String outputName, String outputVal) throws GFacException, TException {
+    public static void saveExperimentOutput(ProcessContext processContext, RegistryService.Client registryClient, String outputName, String outputVal) throws GFacException, TException {
         try {
-            RegistryService.Client registryClient = processContext.getRegistryClient();
             String experimentId = processContext.getExperimentId();
             ExperimentModel experiment = registryClient.getExperiment(experimentId);
             List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
@@ -980,8 +990,7 @@ public class GFacUtils {
         }
     }
 
-    public static void saveProcessOutput(ProcessContext processContext, String outputName, String outputVal) throws GFacException, TException {
-        RegistryService.Client registryClient = processContext.getRegistryClient();
+    public static void saveProcessOutput(ProcessContext processContext, RegistryService.Client registryClient, String outputName, String outputVal) throws GFacException, TException {
         String processId = processContext.getProcessId();
         List<OutputDataObjectType>  processOutputs = (List<OutputDataObjectType> )registryClient.getProcessOutputs(processId);
         if (processOutputs != null && !processOutputs.isEmpty()){
@@ -996,39 +1005,36 @@ public class GFacUtils {
         registryClient.updateProcess(processModel, processId);
     }
 
-    public static void saveExperimentError(ProcessContext processContext, ErrorModel errorModel) throws GFacException, TException {
-        RegistryService.Client registryClient = processContext.getRegistryClient();
+    public static void saveExperimentError(ProcessContext processContext, RegistryService.Client registryClient, ErrorModel errorModel) throws GFacException, TException {
         String experimentId = processContext.getExperimentId();
         errorModel.setErrorId(AiravataUtils.getId("EXP_ERROR"));
         registryClient.addErrors(GFacConstants.EXPERIMENT_ERROR, errorModel, experimentId);
     }
 
-    public static void saveProcessError(ProcessContext processContext, ErrorModel errorModel) throws GFacException, TException {
-        RegistryService.Client registryClient = processContext.getRegistryClient();
+    public static void saveProcessError(ProcessContext processContext, RegistryService.Client registryClient, ErrorModel errorModel) throws GFacException, TException {
         errorModel.setErrorId(AiravataUtils.getId("PROCESS_ERROR"));
         registryClient.addErrors(GFacConstants.PROCESS_ERROR, errorModel, processContext.getProcessId());
     }
 
-    public static void saveTaskError(TaskContext taskContext, ErrorModel errorModel) throws GFacException, TException {
-        RegistryService.Client registryClient = taskContext.getParentProcessContext().getRegistryClient();
+    public static void saveTaskError(TaskContext taskContext, RegistryService.Client registryClient, ErrorModel errorModel) throws GFacException, TException {
         String taskId = taskContext.getTaskId();
         errorModel.setErrorId(AiravataUtils.getId("TASK_ERROR"));
         registryClient.addErrors(GFacConstants.TASK_ERROR, errorModel, taskId);
     }
 
-	public static void handleProcessInterrupt(ProcessContext processContext) throws GFacException {
+	public static void handleProcessInterrupt(ProcessContext processContext, RegistryService.Client registryClient) throws GFacException {
 		if (processContext.isCancel()) {
 			ProcessStatus pStatus = new ProcessStatus(ProcessState.CANCELLING);
 			pStatus.setReason("Process Cancel triggered");
 			pStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 			processContext.setProcessStatus(pStatus);
-			saveAndPublishProcessStatus(processContext);
+			saveAndPublishProcessStatus(processContext, registryClient);
 			// do cancel operation here
 
 			pStatus.setState(ProcessState.CANCELED);
 			processContext.setProcessStatus(pStatus);
             pStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-            saveAndPublishProcessStatus(processContext);
+            saveAndPublishProcessStatus(processContext, registryClient);
 		}else if (processContext.isHandOver()) {
 
 		} else {
@@ -1037,8 +1043,7 @@ public class GFacUtils {
 		}
 	}
 
-    public static JobModel getJobModel(ProcessContext processContext) throws TException {
-        RegistryService.Client registryClient = processContext.getRegistryClient();
+    public static JobModel getJobModel(ProcessContext processContext, RegistryService.Client registryClient) throws TException {
         return registryClient.getJob(GFacConstants.PROCESS_ID, processContext.getProcessId());
     }
 
@@ -1047,15 +1052,4 @@ public class GFacUtils {
         String[] tasks = taskDag.split(",");
         return Arrays.asList(tasks);
     }
-
-    private static RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-        final String serverHost = ServerSettings.getRegistryServerHost();
-        try {
-            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-        } catch (RegistryServiceException e) {
-            throw new RuntimeException("Unable to create registry client...", e);
-        }
-    }
-
 }

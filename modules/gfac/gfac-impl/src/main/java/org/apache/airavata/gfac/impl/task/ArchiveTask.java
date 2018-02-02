@@ -43,6 +43,7 @@ import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.model.task.TaskTypes;
+import org.apache.airavata.registry.api.RegistryService;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,6 +91,7 @@ public class ArchiveTask implements Task {
             throw new RuntimeException(msg, e);
         }
 
+        RegistryService.Client registryClient = Factory.getRegistryServiceClient();
         try {
             StorageResourceDescription storageResource = taskContext.getParentProcessContext().getStorageResource();
 
@@ -105,7 +107,7 @@ public class ArchiveTask implements Task {
             status = new TaskStatus(TaskState.COMPLETED);
 
             Session srcSession = Factory.getSSHSession(Factory.getComputerResourceSSHKeyAuthentication(processContext),
-                    processContext.getComputeResourceServerInfo());
+                    processContext.getComputeResourceServerInfo(registryClient));
             Session destSession =  Factory.getSSHSession(Factory.getStorageSSHKeyAuthentication(processContext),
                     processContext.getStorageResourceServerInfo());
 
@@ -169,6 +171,10 @@ public class ArchiveTask implements Task {
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         } catch (TException e) {
             throw new RuntimeException("Error ", e);
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
         }
         return status;
     }

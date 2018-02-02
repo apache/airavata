@@ -193,8 +193,8 @@ public class GfacServerHandler implements GfacService.Iface {
             if (messageContext.getType().equals(MessageType.LAUNCHPROCESS)) {
 	            ProcessStatus status = new ProcessStatus();
 	            status.setState(ProcessState.STARTED);
+                RegistryService.Client registryClient = Factory.getRegistryServiceClient();
                 try {
-                    RegistryService.Client registryClient = Factory.getRegistryServiceClient();
                     ProcessSubmitEvent event = new ProcessSubmitEvent();
                     TBase messageEvent = messageContext.getEvent();
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
@@ -213,14 +213,14 @@ public class GfacServerHandler implements GfacService.Iface {
 			                }
 		                } else {
 			                // read process status from registry
-			                ProcessStatus processStatus = Factory.getRegistryServiceClient().getProcessStatus(event.getProcessId());
+			                ProcessStatus processStatus = registryClient.getProcessStatus(event.getProcessId());
 			                status.setState(processStatus.getState());
 			                // write server name to zookeeper , this is happen inside createProcessZKNode(...) method 
 		                }
 	                }
                     // update process status
 	                status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
-	                Factory.getRegistryServiceClient().updateProcessStatus(status, event
+	                registryClient.updateProcessStatus(status, event
 			                .getProcessId());
 	                publishProcessStatus(event, status);
                     MDC.put(MDCConstants.EXPERIMENT_ID, event.getExperimentId());
@@ -264,6 +264,9 @@ public class GfacServerHandler implements GfacService.Iface {
                 } catch (AiravataException e) {
 	                log.error("Error while publishing process status", e);
                 } finally {
+                    if (registryClient != null) {
+                        ThriftUtils.close(registryClient);
+                    }
                     MDC.clear();
                 }
             }
@@ -279,18 +282,24 @@ public class GfacServerHandler implements GfacService.Iface {
         errorModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
         RegistryService.Client registryClient = Factory.getRegistryServiceClient();
 
-        errorModel.setErrorId(AiravataUtils.getId("PROCESS_ERROR"));
-        registryClient.addErrors(GFacConstants.PROCESS_ERROR, errorModel, event.getProcessId());
+        try {
+            errorModel.setErrorId(AiravataUtils.getId("PROCESS_ERROR"));
+            registryClient.addErrors(GFacConstants.PROCESS_ERROR, errorModel, event.getProcessId());
 
-        errorModel.setErrorId(AiravataUtils.getId("EXP_ERROR"));
-        registryClient.addErrors(GFacConstants.EXPERIMENT_ERROR, errorModel, event.getExperimentId());
+            errorModel.setErrorId(AiravataUtils.getId("EXP_ERROR"));
+            registryClient.addErrors(GFacConstants.EXPERIMENT_ERROR, errorModel, event.getExperimentId());
 
-        status.setState(ProcessState.FAILED);
-        status.setReason("Process execution failed");
-        status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-        registryClient
-                .updateProcessStatus(status, event.getProcessId());
-        publishProcessStatus(event, status);
+            status.setState(ProcessState.FAILED);
+            status.setReason("Process execution failed");
+            status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            registryClient
+                    .updateProcessStatus(status, event.getProcessId());
+            publishProcessStatus(event, status);
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
+        }
     }
 
     private void setCancelData(String experimentId, String processId) throws Exception {

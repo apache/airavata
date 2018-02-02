@@ -101,11 +101,10 @@ public class GFacEngineImpl implements GFacEngine {
         // NOTE: Process context gives precedence to data come with process Computer resources;
         ProcessContext processContext = null;
         ProcessContext.ProcessContextBuilder builder = new ProcessContext.ProcessContextBuilder(processId, gatewayId, tokenId);
+        RegistryService.Client registryClient = Factory.getRegistryServiceClient();
         try {
-            RegistryService.Client registryClient = Factory.getRegistryServiceClient();
             ProcessModel processModel = registryClient.getProcess(processId);
-            builder.setRegistryClient(registryClient)
-                    .setCuratorClient(Factory.getCuratorClient())
+            builder.setCuratorClient(Factory.getCuratorClient())
                     .setStatusPublisher(Factory.getStatusPublisher())
                     .setProcessModel(processModel)
                     .setGatewayResourceProfile(registryClient.getGatewayResourceProfile(gatewayId))
@@ -121,8 +120,8 @@ public class GFacEngineImpl implements GFacEngine {
             checkpoint(processContext);
 
             if (processModel.isUseUserCRPref()) {
-                setUserResourceProfile(gatewayId, processContext);
-                setUserComputeResourcePreference(gatewayId, processContext);
+                setUserResourceProfile(gatewayId, processContext, registryClient);
+                setUserComputeResourcePreference(gatewayId, processContext, registryClient);
             }
 
             String scratchLocation = processContext.getScratchLocation();
@@ -133,7 +132,7 @@ public class GFacEngineImpl implements GFacEngine {
             }else {
                 // we need to fail the process which will fail the experiment
                 processContext.setProcessStatus(new ProcessStatus(ProcessState.FAILED));
-                GFacUtils.saveAndPublishProcessStatus(processContext);
+                GFacUtils.saveAndPublishProcessStatus(processContext, registryClient);
                 throw new GFacException("expId: " + processModel.getExperimentId() + ", processId: " + processId +
                         ":- Couldn't find storage resource for storage resource id :" + processModel.getStorageResourceId());
             }
@@ -178,7 +177,7 @@ public class GFacEngineImpl implements GFacEngine {
                 processContext.setMonitorMode(MonitorMode.FORK);
             } else {
                 processContext.setResourceJobManager(getResourceJobManager(processContext));
-                processContext.setJobSubmissionRemoteCluster(Factory.getJobSubmissionRemoteCluster(processContext));
+                processContext.setJobSubmissionRemoteCluster(Factory.getJobSubmissionRemoteCluster(processContext, registryClient));
                 processContext.setDataMovementRemoteCluster(Factory.getDataMovementRemoteCluster(processContext));
             }
 
@@ -191,9 +190,13 @@ public class GFacEngineImpl implements GFacEngine {
             return processContext;
         } catch (AiravataException e) {
             String msg = "Remote cluster initialization error";
-            saveErrorModel(processContext, e, msg);
-            updateProcessFailure(processContext, msg);
+            saveErrorModel(processContext, registryClient, e, msg);
+            updateProcessFailure(processContext, registryClient, msg);
             throw new GFacException(msg, e);
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
         }
 
     }
@@ -207,8 +210,7 @@ public class GFacEngineImpl implements GFacEngine {
         }
     }
 
-    private void setUserResourceProfile(String gatewayId, ProcessContext processContext) throws TException {
-        RegistryService.Client registryClient = processContext.getRegistryClient();
+    private void setUserResourceProfile(String gatewayId, ProcessContext processContext, RegistryService.Client registryClient) throws TException {
         ProcessModel processModel = processContext.getProcessModel();
 
         UserResourceProfile userResourceProfile = registryClient
@@ -217,8 +219,7 @@ public class GFacEngineImpl implements GFacEngine {
         processContext.setUserResourceProfile(userResourceProfile);
     }
 
-    private void setUserComputeResourcePreference(String gatewayId, ProcessContext processContext) throws TException {
-        RegistryService.Client registryClient = processContext.getRegistryClient();
+    private void setUserComputeResourcePreference(String gatewayId, ProcessContext processContext, RegistryService.Client registryClient) throws TException {
         ProcessModel processModel = processContext.getProcessModel();
         UserComputeResourcePreference userComputeResourcePreference =
                 registryClient.getUserComputeResourcePreference(
@@ -243,24 +244,31 @@ public class GFacEngineImpl implements GFacEngine {
 
     @Override
     public void executeProcess(ProcessContext processContext) throws GFacException {
-        if (processContext.isInterrupted()) {
-            GFacUtils.handleProcessInterrupt(processContext);
-            return;
-        }
-        String taskDag = processContext.getTaskDag();
-        List<String> taskIds = GFacUtils.parseTaskDag(taskDag);
-        processContext.setTaskExecutionOrder(taskIds);
+        RegistryService.Client registryClient = Factory.getRegistryServiceClient();
         try {
-            executeTaskListFrom(processContext, taskIds.get(0));
-        } catch (TException e) {
-            throw new RuntimeException("Error ", e);
+            if (processContext.isInterrupted()) {
+                GFacUtils.handleProcessInterrupt(processContext, registryClient);
+                return;
+            }
+            String taskDag = processContext.getTaskDag();
+            List<String> taskIds = GFacUtils.parseTaskDag(taskDag);
+            processContext.setTaskExecutionOrder(taskIds);
+            try {
+                executeTaskListFrom(processContext, registryClient, taskIds.get(0));
+            } catch (TException e) {
+                throw new RuntimeException("Error ", e);
+            }
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
         }
     }
 
-    private void executeTaskListFrom(ProcessContext processContext, String startingTaskId) throws GFacException, TException {
+    private void executeTaskListFrom(ProcessContext processContext, RegistryService.Client registryClient, String startingTaskId) throws GFacException, TException {
         // checkpoint
         if (processContext.isInterrupted() && processContext.getProcessState() != ProcessState.MONITORING) {
-            GFacUtils.handleProcessInterrupt(processContext);
+            GFacUtils.handleProcessInterrupt(processContext, registryClient);
             return;
         }
         List<TaskModel> taskList = processContext.getTaskList();
@@ -286,16 +294,16 @@ public class GFacEngineImpl implements GFacEngine {
                     status = new ProcessStatus(ProcessState.CONFIGURING_WORKSPACE);
                     status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                     processContext.setProcessStatus(status);
-                    GFacUtils.saveAndPublishProcessStatus(processContext);
+                    GFacUtils.saveAndPublishProcessStatus(processContext, registryClient);
                     // checkpoint
                     if (processContext.isInterrupted()) {
-                        GFacUtils.handleProcessInterrupt(processContext);
+                        GFacUtils.handleProcessInterrupt(processContext, registryClient);
                         return;
                     }
-                    configureWorkspace(taskContext, processContext.isRecovery());
+                    configureWorkspace(taskContext, registryClient, processContext.isRecovery());
                     // checkpoint
                     if (processContext.isInterrupted()) {
-                        GFacUtils.handleProcessInterrupt(processContext);
+                        GFacUtils.handleProcessInterrupt(processContext, registryClient);
                         return;
                     }
                     break;
@@ -303,7 +311,7 @@ public class GFacEngineImpl implements GFacEngine {
                     try {
                         // checkpoint
                         if (processContext.isInterrupted()) {
-                            GFacUtils.handleProcessInterrupt(processContext);
+                            GFacUtils.handleProcessInterrupt(processContext, registryClient);
                             return;
                         }
                         DataStagingTaskModel subTaskModel = (DataStagingTaskModel) taskContext.getSubTaskModel();
@@ -313,30 +321,30 @@ public class GFacEngineImpl implements GFacEngine {
                                 status = new ProcessStatus(ProcessState.INPUT_DATA_STAGING);
                                 status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                                 processContext.setProcessStatus(status);
-                                GFacUtils.saveAndPublishProcessStatus(processContext);
+                                GFacUtils.saveAndPublishProcessStatus(processContext, registryClient);
                                 taskContext.setProcessInput(subTaskModel.getProcessInput());
-                                inputDataStaging(taskContext, processContext.isRecovery());
+                                inputDataStaging(taskContext, registryClient, processContext.isRecovery());
                                 break;
                             case OUPUT:
                                 status = new ProcessStatus(ProcessState.OUTPUT_DATA_STAGING);
                                 status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                                 processContext.setProcessStatus(status);
-                                GFacUtils.saveAndPublishProcessStatus(processContext);
+                                GFacUtils.saveAndPublishProcessStatus(processContext, registryClient);
                                 taskContext.setProcessOutput(subTaskModel.getProcessOutput());
-                                outputDataStaging(taskContext, processContext.isRecovery(), false);
+                                outputDataStaging(taskContext, registryClient, processContext.isRecovery(), false);
                                 break;
                             case ARCHIVE_OUTPUT:
                                 status = new ProcessStatus(ProcessState.OUTPUT_DATA_STAGING);
                                 status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                                 processContext.setProcessStatus(status);
-                                GFacUtils.saveAndPublishProcessStatus(processContext);
-                                outputDataStaging(taskContext, processContext.isRecovery(), true);
+                                GFacUtils.saveAndPublishProcessStatus(processContext, registryClient);
+                                outputDataStaging(taskContext, registryClient, processContext.isRecovery(), true);
                                 break;
 
                         }
                         // checkpoint
                         if (processContext.isInterrupted()) {
-                            GFacUtils.handleProcessInterrupt(processContext);
+                            GFacUtils.handleProcessInterrupt(processContext, registryClient);
                             return;
                         }
                     } catch (TException e) {
@@ -347,14 +355,14 @@ public class GFacEngineImpl implements GFacEngine {
                 case JOB_SUBMISSION:
                     // checkpoint
                     if (processContext.isInterrupted()) {
-                        GFacUtils.handleProcessInterrupt(processContext);
+                        GFacUtils.handleProcessInterrupt(processContext, registryClient);
                         return;
                     }
                     status = new ProcessStatus(ProcessState.EXECUTING);
                     status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                     processContext.setProcessStatus(status);
-                    GFacUtils.saveAndPublishProcessStatus(processContext);
-                    executeJobSubmission(taskContext, processContext.isRecovery());
+                    GFacUtils.saveAndPublishProcessStatus(processContext, registryClient);
+                    executeJobSubmission(taskContext, registryClient, processContext.isRecovery());
                     // Don't put any checkpoint in between JobSubmission and Monitoring tasks
 
                     JobStatus jobStatus = processContext.getJobModel().getJobStatuses().get(0);
@@ -383,10 +391,10 @@ public class GFacEngineImpl implements GFacEngine {
                                         submodel.setSource(source.getPath());
                                         submodel.setDestination("dummy://temp/file/location");
                                         streamingTaskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
-                                        String streamTaskId = processContext.getRegistryClient().addTask(streamingTaskModel, processContext.getProcessId());
+                                        String streamTaskId = registryClient.addTask(streamingTaskModel, processContext.getProcessId());
                                         streamingTaskModel.setTaskId(streamTaskId);
                                         streamingTaskContext.setTaskModel(streamingTaskModel);
-                                        executeDataStreaming(streamingTaskContext, processContext.isRecovery());
+                                        executeDataStreaming(streamingTaskContext, registryClient, processContext.isRecovery());
                                     }
                                 } catch (URISyntaxException | TException e) {
                                     log.error("Error while streaming output " + output.getValue());
@@ -400,8 +408,8 @@ public class GFacEngineImpl implements GFacEngine {
                     status = new ProcessStatus(ProcessState.MONITORING);
                     status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                     processContext.setProcessStatus(status);
-                    GFacUtils.saveAndPublishProcessStatus(processContext);
-                    executeJobMonitoring(taskContext, processContext.isRecovery());
+                    GFacUtils.saveAndPublishProcessStatus(processContext, registryClient);
+                    executeJobMonitoring(taskContext, registryClient, processContext.isRecovery());
                     break;
 
                 case ENV_CLEANUP:
@@ -422,7 +430,7 @@ public class GFacEngineImpl implements GFacEngine {
         processContext.setComplete(true);
     }
 
-    private void executeJobMonitoring(TaskContext taskContext, boolean recovery) throws GFacException, TException {
+    private void executeJobMonitoring(TaskContext taskContext, RegistryService.Client registryClient, boolean recovery) throws GFacException, TException {
         ProcessContext processContext = taskContext.getParentProcessContext();
         TaskStatus taskStatus;
         JobMonitor monitorService = null;
@@ -430,7 +438,7 @@ public class GFacEngineImpl implements GFacEngine {
             taskStatus = new TaskStatus(TaskState.EXECUTING);
             taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             taskContext.setTaskStatus(taskStatus);
-            GFacUtils.saveAndPublishTaskStatus(taskContext);
+            GFacUtils.saveAndPublishTaskStatus(taskContext, registryClient);
 
             MonitorTaskModel monitorTaskModel = ((MonitorTaskModel) taskContext.getSubTaskModel());
             monitorService = Factory.getMonitorService(monitorTaskModel.getMonitorMode());
@@ -444,7 +452,7 @@ public class GFacEngineImpl implements GFacEngine {
             taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             taskStatus.setReason("Couldn't handover jobId {} to monitor service, monitor service type {}");
             taskContext.setTaskStatus(taskStatus);
-            GFacUtils.saveAndPublishTaskStatus(taskContext);
+            GFacUtils.saveAndPublishTaskStatus(taskContext, registryClient);
 
             String errorMsg = new StringBuilder("expId: ").append(processContext.getExperimentId()).append(", processId: ")
                     .append(processContext.getProcessId()).append(", taskId: ").append(taskContext.getTaskId())
@@ -453,7 +461,7 @@ public class GFacEngineImpl implements GFacEngine {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setUserFriendlyMessage("Error while staging output data");
             errorModel.setActualErrorMessage(errorMsg);
-            GFacUtils.saveTaskError(taskContext, errorModel);
+            GFacUtils.saveTaskError(taskContext, registryClient, errorModel);
             throw new GFacException(e);
         }
         if (processContext.isPauseTaskExecution()) {
@@ -464,14 +472,14 @@ public class GFacEngineImpl implements GFacEngine {
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         taskStatus.setReason("Successfully handed over job id to job monitor service.");
         taskContext.setTaskStatus(taskStatus);
-        GFacUtils.saveAndPublishTaskStatus(taskContext);
+        GFacUtils.saveAndPublishTaskStatus(taskContext, registryClient);
     }
 
-    private boolean executeJobSubmission(TaskContext taskContext, boolean recovery) throws GFacException {
+    private boolean executeJobSubmission(TaskContext taskContext, RegistryService.Client registryClient, boolean recovery) throws GFacException {
         TaskStatus taskStatus = new TaskStatus(TaskState.EXECUTING);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         taskContext.setTaskStatus(taskStatus);
-        GFacUtils.saveAndPublishTaskStatus(taskContext);
+        GFacUtils.saveAndPublishTaskStatus(taskContext, registryClient);
         try {
             JobSubmissionTaskModel jobSubmissionTaskModel = ((JobSubmissionTaskModel) taskContext.getSubTaskModel());
             JobSubmissionTask jobSubmissionTask = Factory.getJobSubmissionTask(jobSubmissionTaskModel.getJobSubmissionProtocol());
@@ -480,31 +488,31 @@ public class GFacEngineImpl implements GFacEngine {
             taskStatus = executeTask(taskContext, jobSubmissionTask, recovery);
             taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             taskContext.setTaskStatus(taskStatus);
-            GFacUtils.saveAndPublishTaskStatus(taskContext);
-            checkFailures(taskContext, taskStatus, jobSubmissionTask);
+            GFacUtils.saveAndPublishTaskStatus(taskContext, registryClient);
+            checkFailures(taskContext, registryClient, taskStatus, jobSubmissionTask);
             return false;
         } catch (TException e) {
             throw new GFacException(e);
         }
     }
 
-    private void executeDataStreaming(TaskContext taskContext, boolean recovery) throws GFacException {
+    private void executeDataStreaming(TaskContext taskContext, RegistryService.Client registryClient, boolean recovery) throws GFacException {
         TaskStatus taskStatus = new TaskStatus(TaskState.EXECUTING);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         taskContext.setTaskStatus(taskStatus);
-        GFacUtils.saveAndPublishTaskStatus(taskContext);
+        GFacUtils.saveAndPublishTaskStatus(taskContext, registryClient);
         try {
             DataStreamingTask dataStreamingTask = new DataStreamingTask();
             taskStatus = executeTask(taskContext, dataStreamingTask, recovery);
             taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             taskContext.setTaskStatus(taskStatus);
-            GFacUtils.saveAndPublishTaskStatus(taskContext);
+            GFacUtils.saveAndPublishTaskStatus(taskContext, registryClient);
         } catch (Exception e) {
             throw new GFacException(e);
         }
     }
 
-    private boolean configureWorkspace(TaskContext taskContext, boolean recover) throws GFacException {
+    private boolean configureWorkspace(TaskContext taskContext, RegistryService.Client registryClient, boolean recover) throws GFacException {
 
         try {
             EnvironmentSetupTaskModel subTaskModel = (EnvironmentSetupTaskModel) taskContext.getSubTaskModel();
@@ -519,11 +527,11 @@ public class GFacEngineImpl implements GFacEngine {
             TaskStatus status = new TaskStatus(TaskState.EXECUTING);
             status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             taskContext.setTaskStatus(status);
-            GFacUtils.saveAndPublishTaskStatus(taskContext);
+            GFacUtils.saveAndPublishTaskStatus(taskContext, registryClient);
             TaskStatus taskStatus = executeTask(taskContext, envSetupTask, recover);
             taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             taskContext.setTaskStatus(taskStatus);
-            GFacUtils.saveAndPublishTaskStatus(taskContext);
+            GFacUtils.saveAndPublishTaskStatus(taskContext, registryClient);
 
             if (taskStatus.getState() == TaskState.FAILED) {
                 log.error("expId: {}, processId: {}, taskId: {} type: {},:- Input staging failed, " +
@@ -538,7 +546,7 @@ public class GFacEngineImpl implements GFacEngine {
                 ErrorModel errorModel = new ErrorModel();
                 errorModel.setUserFriendlyMessage("Error while environment setup");
                 errorModel.setActualErrorMessage(errorMsg);
-                GFacUtils.saveTaskError(taskContext, errorModel);
+                GFacUtils.saveTaskError(taskContext, registryClient, errorModel);
                 throw new GFacException("Error while environment setup");
             }
         } catch (TException e) {
@@ -547,11 +555,11 @@ public class GFacEngineImpl implements GFacEngine {
         return false;
     }
 
-    private boolean inputDataStaging(TaskContext taskContext, boolean recover) throws GFacException, TException {
+    private boolean inputDataStaging(TaskContext taskContext, RegistryService.Client registryClient, boolean recover) throws GFacException, TException {
         TaskStatus taskStatus = new TaskStatus(TaskState.EXECUTING);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         taskContext.setTaskStatus(taskStatus);
-        GFacUtils.saveAndPublishTaskStatus(taskContext);
+        GFacUtils.saveAndPublishTaskStatus(taskContext, registryClient);
 
         ProcessContext processContext = taskContext.getParentProcessContext();
         // handle URI_COLLECTION input data type
@@ -575,12 +583,12 @@ public class GFacEngineImpl implements GFacEngine {
         }
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         taskContext.setTaskStatus(taskStatus);
-        GFacUtils.saveAndPublishTaskStatus(taskContext);
-        checkFailures(taskContext, taskStatus, dMoveTask);
+        GFacUtils.saveAndPublishTaskStatus(taskContext, registryClient);
+        checkFailures(taskContext, registryClient, taskStatus, dMoveTask);
         return false;
     }
 
-    private void checkFailures(TaskContext taskContext, TaskStatus taskStatus, Task task) throws GFacException, TException {
+    private void checkFailures(TaskContext taskContext, RegistryService.Client registryClient, TaskStatus taskStatus, Task task) throws GFacException, TException {
         if (taskStatus.getState() == TaskState.FAILED) {
             log.error("expId: {}, processId: {}, taskId: {} type: {},:- " + task.getType().toString() + " failed, " +
                     "reason:" + " {}", taskContext.getParentProcessContext().getExperimentId(), taskContext
@@ -593,7 +601,7 @@ public class GFacEngineImpl implements GFacEngine {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setUserFriendlyMessage("Error while executing " + task.getType() + " task" );
             errorModel.setActualErrorMessage(errorMsg);
-            GFacUtils.saveTaskError(taskContext, errorModel);
+            GFacUtils.saveTaskError(taskContext, registryClient, errorModel);
             throw new GFacException("Error: userFriendly msg :" + errorModel.getUserFriendlyMessage() + ", actual msg :"
                     + errorModel.getActualErrorMessage());
         }
@@ -601,38 +609,45 @@ public class GFacEngineImpl implements GFacEngine {
 
     @Override
     public void recoverProcess(ProcessContext processContext) throws GFacException {
-        processContext.setRecovery(true);
-        String taskDag = processContext.getProcessModel().getTaskDag();
-        List<String> taskExecutionOrder = GFacUtils.parseTaskDag(taskDag);
-        processContext.setTaskExecutionOrder(taskExecutionOrder);
-        Map<String, TaskModel> taskMap = processContext.getTaskMap();
-        String recoverTaskId = null;
-        String previousTaskId = null;
-        TaskModel taskModel = null;
-        for (String taskId : taskExecutionOrder) {
-            taskModel = taskMap.get(taskId);
-            TaskState state = taskModel.getTaskStatuses().get(0).getState();
-            if (state == TaskState.CREATED || state == TaskState.EXECUTING) {
-                recoverTaskId = taskId;
-                break;
+        RegistryService.Client registryClient = Factory.getRegistryServiceClient();
+        try {
+            processContext.setRecovery(true);
+            String taskDag = processContext.getProcessModel().getTaskDag();
+            List<String> taskExecutionOrder = GFacUtils.parseTaskDag(taskDag);
+            processContext.setTaskExecutionOrder(taskExecutionOrder);
+            Map<String, TaskModel> taskMap = processContext.getTaskMap();
+            String recoverTaskId = null;
+            String previousTaskId = null;
+            TaskModel taskModel = null;
+            for (String taskId : taskExecutionOrder) {
+                taskModel = taskMap.get(taskId);
+                TaskState state = taskModel.getTaskStatuses().get(0).getState();
+                if (state == TaskState.CREATED || state == TaskState.EXECUTING) {
+                    recoverTaskId = taskId;
+                    break;
+                }
+                previousTaskId = taskId;
             }
-            previousTaskId = taskId;
-        }
-        final String rTaskId = recoverTaskId;
-        final String pTaskId = previousTaskId;
-        if (recoverTaskId != null) {
-            if (processContext.isRecoveryWithCancel()) {
-                cancelJobSubmission(processContext, rTaskId, pTaskId);
+            final String rTaskId = recoverTaskId;
+            final String pTaskId = previousTaskId;
+            if (recoverTaskId != null) {
+                if (processContext.isRecoveryWithCancel()) {
+                    cancelJobSubmission(processContext, registryClient, rTaskId, pTaskId);
+                }
+                continueProcess(processContext, recoverTaskId);
+            } else {
+                log.error("expId: {}, processId: {}, couldn't find recovery task, mark this as complete ",
+                        processContext.getExperimentId(), processContext.getProcessId());
+                processContext.setComplete(true);
             }
-            continueProcess(processContext, recoverTaskId);
-        } else {
-            log.error("expId: {}, processId: {}, couldn't find recovery task, mark this as complete ",
-                    processContext.getExperimentId(), processContext.getProcessId());
-            processContext.setComplete(true);
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
         }
     }
 
-    private void cancelJobSubmission(ProcessContext processContext, String rTaskId, String pTaskId) {
+    private void cancelJobSubmission(ProcessContext processContext, RegistryService.Client registryClient, String rTaskId, String pTaskId) {
         new Thread(() -> {
             try {
                 processContext.setCancel(true);
@@ -640,13 +655,13 @@ public class GFacEngineImpl implements GFacEngine {
                 JobModel jobModel = null;
                 switch (processState) {
                     case EXECUTING:
-                        jobModel = processContext.getRegistryClient().getJob(
+                        jobModel = registryClient.getJob(
                                  GFacConstants.TASK_ID,
                                 rTaskId);
                         break;
                     case MONITORING:
                         if (pTaskId != null) {
-                            jobModel = processContext.getRegistryClient().getJob(
+                            jobModel = registryClient.getJob(
                                     GFacConstants.TASK_ID,
                                     pTaskId);
                         }
@@ -676,16 +691,21 @@ public class GFacEngineImpl implements GFacEngine {
         }).start();
     }
 
-    private JobModel getJobModel(ProcessContext processContext) throws TException {
-        return GFacUtils.getJobModel(processContext);
-    }
+//    private JobModel getJobModel(ProcessContext processContext) throws TException {
+//        return GFacUtils.getJobModel(processContext);
+//    }
 
     @Override
     public void continueProcess(ProcessContext processContext, String taskId) throws GFacException {
+        RegistryService.Client registryClient = Factory.getRegistryServiceClient();
         try {
-            executeTaskListFrom(processContext, taskId);
+            executeTaskListFrom(processContext, registryClient, taskId);
         } catch (TException e) {
             throw new RuntimeException("Error ", e);
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
         }
     }
 
@@ -695,14 +715,14 @@ public class GFacEngineImpl implements GFacEngine {
      * @return <code>true</code> if you need to interrupt processing <code>false</code> otherwise.
      * @throws GFacException
      */
-    private boolean postProcessing(ProcessContext processContext, boolean recovery) throws GFacException {
+    private boolean postProcessing(ProcessContext processContext, RegistryService.Client registryClient, boolean recovery) throws GFacException {
         ProcessStatus status = new ProcessStatus(ProcessState.POST_PROCESSING);
         status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         processContext.setProcessStatus(status);
-        GFacUtils.saveAndPublishProcessStatus(processContext);
+        GFacUtils.saveAndPublishProcessStatus(processContext, registryClient);
 //		taskCtx = getEnvCleanupTaskContext(processContext);
         if (processContext.isInterrupted()) {
-            GFacUtils.handleProcessInterrupt(processContext);
+            GFacUtils.handleProcessInterrupt(processContext, registryClient);
             return true;
         }
         return false;
@@ -714,11 +734,11 @@ public class GFacEngineImpl implements GFacEngine {
      * @return <code>true</code> if process execution interrupted , <code>false</code> otherwise.
      * @throws GFacException
      */
-    private boolean outputDataStaging(TaskContext taskContext, boolean recovery, boolean isArchive) throws GFacException, TException {
+    private boolean outputDataStaging(TaskContext taskContext, RegistryService.Client registryClient, boolean recovery, boolean isArchive) throws GFacException, TException {
         TaskStatus taskStatus = new TaskStatus(TaskState.EXECUTING);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         taskContext.setTaskStatus(taskStatus);
-        GFacUtils.saveAndPublishTaskStatus(taskContext);
+        GFacUtils.saveAndPublishTaskStatus(taskContext, registryClient);
 
         ProcessContext processContext = taskContext.getParentProcessContext();
         Task dMoveTask = null;
@@ -734,7 +754,7 @@ public class GFacEngineImpl implements GFacEngine {
         taskStatus = executeTask(taskContext, dMoveTask, recovery);
         taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         taskContext.setTaskStatus(taskStatus);
-        GFacUtils.saveAndPublishTaskStatus(taskContext);
+        GFacUtils.saveAndPublishTaskStatus(taskContext, registryClient);
 
         if (taskStatus.getState() == TaskState.FAILED) {
             log.error("expId: {}, processId: {}, taskId: {} type: {},:- output staging failed, " +
@@ -749,7 +769,7 @@ public class GFacEngineImpl implements GFacEngine {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setUserFriendlyMessage("Error while staging output data");
             errorModel.setActualErrorMessage(errorMsg);
-            GFacUtils.saveTaskError(taskContext, errorModel);
+            GFacUtils.saveTaskError(taskContext, registryClient, errorModel);
         }
         return false;
     }
@@ -815,7 +835,7 @@ public class GFacEngineImpl implements GFacEngine {
         return taskCtx;
     }
 
-    private TaskContext getDataStagingTaskContext(ProcessContext processContext, OutputDataObjectType processOutput)
+    private TaskContext getDataStagingTaskContext(ProcessContext processContext, RegistryService.Client registryClient, OutputDataObjectType processOutput)
             throws TException, TaskException, GFacException {
         TaskContext taskCtx = new TaskContext();
         taskCtx.setParentProcessContext(processContext);
@@ -832,7 +852,7 @@ public class GFacEngineImpl implements GFacEngine {
         String remoteOutputDir = processContext.getOutputDir();
         remoteOutputDir = remoteOutputDir.endsWith("/") ? remoteOutputDir : remoteOutputDir + "/";
         DataStagingTaskModel submodel = new DataStagingTaskModel();
-        ServerInfo serverInfo = processContext.getComputeResourceServerInfo();
+        ServerInfo serverInfo = processContext.getComputeResourceServerInfo(registryClient);
         URI source = null;
         try {
             source = new URI(processContext.getDataMovementProtocol().name(), serverInfo.getHost(),
@@ -853,9 +873,9 @@ public class GFacEngineImpl implements GFacEngine {
     /**
      * Persist task model
      */
-    private void saveTaskModel(TaskContext taskContext) throws GFacException, TException {
+    private void saveTaskModel(TaskContext taskContext, RegistryService.Client registryClient) throws GFacException, TException {
         TaskModel taskModel = taskContext.getTaskModel();
-        taskContext.getParentProcessContext().getRegistryClient().addTask(taskModel, taskModel.getParentProcessId());
+        registryClient.addTask(taskModel, taskModel.getParentProcessId());
     }
 
     private TaskContext getTaskContext(ProcessContext processContext) {
@@ -864,7 +884,7 @@ public class GFacEngineImpl implements GFacEngine {
         return taskCtx;
     }
 
-    private void updateProcessFailure(ProcessContext pc, String reason) throws GFacException {
+    private void updateProcessFailure(ProcessContext pc, RegistryService.Client registryClient, String reason) throws GFacException {
         if (pc == null) {
             throw new GFacException("Can't update process failure, process context is null");
         }
@@ -872,13 +892,13 @@ public class GFacEngineImpl implements GFacEngine {
         status.setReason(reason);
         pc.setProcessStatus(status);
         try {
-            GFacUtils.saveAndPublishProcessStatus(pc);
+            GFacUtils.saveAndPublishProcessStatus(pc, registryClient);
         } catch (GFacException e) {
             log.error("Error while save and publishing process failed status event");
         }
     }
 
-    private void saveErrorModel(ProcessContext pc, Exception e, String userFriendlyMsg) throws GFacException, TException {
+    private void saveErrorModel(ProcessContext pc, RegistryService.Client registryClient, Exception e, String userFriendlyMsg) throws GFacException, TException {
         if(pc == null){
             throw new GFacException("Can't save error process context is null", e);
         }
@@ -889,53 +909,59 @@ public class GFacEngineImpl implements GFacEngine {
         errorModel.setActualErrorMessage(errors.toString());
         errorModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
         try {
-            GFacUtils.saveProcessError(pc, errorModel);
-            GFacUtils.saveExperimentError(pc, errorModel);
+            GFacUtils.saveProcessError(pc, registryClient, errorModel);
+            GFacUtils.saveExperimentError(pc, registryClient, errorModel);
         } catch (GFacException e1) {
             log.error("Error while updating error model for process:" + pc.getProcessId());
         }
     }
 
     public static ResourceJobManager getResourceJobManager(ProcessContext processCtx) throws GFacException, TException, ApplicationSettingsException {
-        RegistryService.Client registryCLient = Factory.getRegistryServiceClient();
-        List<JobSubmissionInterface> jobSubmissionInterfaces = registryCLient.
-                getComputeResource(processCtx.getComputeResourceId()).getJobSubmissionInterfaces();
+        RegistryService.Client registryClient = Factory.getRegistryServiceClient();
+        try {
+            List<JobSubmissionInterface> jobSubmissionInterfaces = registryClient.
+                    getComputeResource(processCtx.getComputeResourceId()).getJobSubmissionInterfaces();
 
-        ResourceJobManager resourceJobManager = null;
-        JobSubmissionInterface jsInterface = null;
-        for (JobSubmissionInterface jobSubmissionInterface : jobSubmissionInterfaces) {
-            if (jobSubmissionInterface.getJobSubmissionProtocol() == processCtx.getJobSubmissionProtocol()) {
-                jsInterface = jobSubmissionInterface;
-                break;
+            ResourceJobManager resourceJobManager = null;
+            JobSubmissionInterface jsInterface = null;
+            for (JobSubmissionInterface jobSubmissionInterface : jobSubmissionInterfaces) {
+                if (jobSubmissionInterface.getJobSubmissionProtocol() == processCtx.getJobSubmissionProtocol()) {
+                    jsInterface = jobSubmissionInterface;
+                    break;
+                }
+            }
+            if (jsInterface == null) {
+                throw new GFacException("Job Submission interface cannot be empty at this point");
+            } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH) {
+                SSHJobSubmission sshJobSubmission = registryClient.getSSHJobSubmission
+                        (jsInterface.getJobSubmissionInterfaceId());
+                processCtx.setMonitorMode(sshJobSubmission.getMonitorMode()); // fixme - Move this to populate process
+                // context method.
+                resourceJobManager = sshJobSubmission.getResourceJobManager();
+            } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.LOCAL) {
+                LOCALSubmission localSubmission = registryClient.getLocalJobSubmission
+                        (jsInterface.getJobSubmissionInterfaceId());
+                resourceJobManager = localSubmission.getResourceJobManager();
+            } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH_FORK) {
+                SSHJobSubmission sshJobSubmission = registryClient.getSSHJobSubmission
+                        (jsInterface.getJobSubmissionInterfaceId());
+                processCtx.setMonitorMode(sshJobSubmission.getMonitorMode()); // fixme - Move this to populate process
+                resourceJobManager = sshJobSubmission.getResourceJobManager();
+            } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.CLOUD) {
+                return null;
+            } else {
+                throw new GFacException("Unsupported JobSubmissionProtocol - " + jsInterface.getJobSubmissionProtocol()
+                        .name());
+            }
+
+            if (resourceJobManager == null) {
+                throw new GFacException("Resource Job Manager is empty.");
+            }
+            return resourceJobManager;
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
             }
         }
-        if (jsInterface == null) {
-            throw new GFacException("Job Submission interface cannot be empty at this point");
-        } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH) {
-            SSHJobSubmission sshJobSubmission = registryCLient.getSSHJobSubmission
-                    (jsInterface.getJobSubmissionInterfaceId());
-            processCtx.setMonitorMode(sshJobSubmission.getMonitorMode()); // fixme - Move this to populate process
-            // context method.
-            resourceJobManager = sshJobSubmission.getResourceJobManager();
-        } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.LOCAL) {
-            LOCALSubmission localSubmission = registryCLient.getLocalJobSubmission
-                    (jsInterface.getJobSubmissionInterfaceId());
-            resourceJobManager = localSubmission.getResourceJobManager();
-        } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH_FORK) {
-            SSHJobSubmission sshJobSubmission = registryCLient.getSSHJobSubmission
-                    (jsInterface.getJobSubmissionInterfaceId());
-            processCtx.setMonitorMode(sshJobSubmission.getMonitorMode()); // fixme - Move this to populate process
-            resourceJobManager = sshJobSubmission.getResourceJobManager();
-        } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.CLOUD) {
-            return null;
-        } else {
-            throw new GFacException("Unsupported JobSubmissionProtocol - " + jsInterface.getJobSubmissionProtocol()
-                    .name());
-        }
-
-        if (resourceJobManager == null) {
-            throw new GFacException("Resource Job Manager is empty.");
-        }
-        return resourceJobManager;
     }
 }
