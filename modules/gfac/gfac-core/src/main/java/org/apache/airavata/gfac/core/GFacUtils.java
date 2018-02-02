@@ -979,10 +979,10 @@ public class GFacUtils {
 
                         String productUri = registryClient.registerDataProduct(dataProductModel);
                         expOutput.setValue(productUri);
+                        registryClient.addExperimentProcessOutputs(GFacConstants.EXPERIMENT_OUTPUT, Arrays.asList(expOutput), experimentId);
                     }
                 }
             }
-            registryClient.updateExperiment(experimentId, experiment);
         } catch (Exception e) {
             String msg = "expId: " + processContext.getExperimentId() + " processId: " + processContext.getProcessId()
                     + " : - Error while updating experiment outputs";
@@ -997,12 +997,10 @@ public class GFacUtils {
             for (OutputDataObjectType processOutput : processOutputs){
                 if (processOutput.getName().equals(outputName)){
                     processOutput.setValue(outputVal);
+                    registryClient.addExperimentProcessOutputs(GFacConstants.PROCESS_OUTPUT, Arrays.asList(processOutput), processId);
                 }
             }
         }
-        ProcessModel processModel = processContext.getProcessModel();
-        processModel.setProcessOutputs(processOutputs);
-        registryClient.updateProcess(processModel, processId);
     }
 
     public static void saveExperimentError(ProcessContext processContext, RegistryService.Client registryClient, ErrorModel errorModel) throws GFacException, TException {
