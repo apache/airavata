@@ -100,7 +100,6 @@ public class ProcessContext {
 	private boolean recoveryWithCancel = false;
 	private String usageReportingGatewayId;
 	private List<String> queueSpecificMacros;
-	private RegistryService.Client registryClient;
 
 	/**
 	 * Note: process context property use lazy loading approach. In runtime you will see some properties as null
@@ -147,14 +146,6 @@ public class ProcessContext {
 	public void setProcessModel(ProcessModel processModel) {
 		this.processModel = processModel;
 	}
-
-    public RegistryService.Client getRegistryClient() {
-        return registryClient;
-    }
-
-    public void setRegistryClient(RegistryService.Client registryClient) {
-        this.registryClient = registryClient;
-    }
 
     public String getWorkingDir() {
 		if (workingDir == null) {
@@ -611,7 +602,7 @@ public class ProcessContext {
 		}
 	}
 
-	public ServerInfo getComputeResourceServerInfo() throws GFacException, TException {
+	public ServerInfo getComputeResourceServerInfo(RegistryService.Client registryClient) throws GFacException, TException {
 
 		if (this.jobSubmissionProtocol  == JobSubmissionProtocol.SSH) {
 			Optional<JobSubmissionInterface> firstJobSubmissionIface = getComputeResourceDescription()
@@ -729,7 +720,6 @@ getComputeResourceCredentialToken());
 		private final String processId;
 		private final String gatewayId;
 		private final String tokenId;
-        private RegistryService.Client registryClient;
 		private CuratorFramework curatorClient;
 		private Publisher statusPublisher;
 		private GatewayResourceProfile gatewayResourceProfile;
@@ -776,11 +766,6 @@ getComputeResourceCredentialToken());
 			return this;
 		}
 
-        public ProcessContextBuilder setRegistryClient(RegistryService.Client registryClient) {
-            this.registryClient = registryClient;
-            return this;
-        }
-
         public ProcessContext build() throws GFacException {
 			if (notValid(gatewayResourceProfile)) {
 				throwError("Invalid GatewayResourceProfile");
@@ -800,12 +785,8 @@ getComputeResourceCredentialToken());
 			if (notValid(statusPublisher)) {
 				throwError("Invalid Status Publisher");
 			}
-			if (notValid(registryClient)) {
-			    throwError("Invalid Registry Client");
-            }
 
 			ProcessContext pc = new ProcessContext(processId, gatewayId, tokenId);
-			pc.setRegistryClient(registryClient);
 			pc.setCuratorClient(curatorClient);
 			pc.setStatusPublisher(statusPublisher);
 			pc.setProcessModel(processModel);

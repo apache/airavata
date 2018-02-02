@@ -21,9 +21,11 @@ package org.apache.airavata.gfac.impl.task.utils.bes;
 
 import de.fzj.unicore.uas.client.StorageClient;
 import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.gfac.core.GFacConstants;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.context.ProcessContext;
+import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
@@ -33,7 +35,11 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -53,14 +59,11 @@ public class DataTransferrer {
 	
 	protected List<OutputDataObjectType> resultantOutputsLst;
 
-	protected RegistryService.Client registryClient;
-	
 	protected String gatewayDownloadLocation, stdoutLocation, stderrLocation;
 	
 	public DataTransferrer(ProcessContext processContext, StorageClient storageClient) {
 		this.processContext = processContext;
 		this.storageClient = storageClient;
-		this.registryClient = processContext.getRegistryClient();
 		resultantOutputsLst = new ArrayList<OutputDataObjectType>();
 		initStdoutsLocation();
 	}
@@ -315,8 +318,14 @@ public class DataTransferrer {
     public void publishFinalOutputs() throws GFacException, TException {
         if(!resultantOutputsLst.isEmpty()) {
             log.debug("Publishing the list of outputs to the registry instance..");
-            RegistryService.Client registryClient = processContext.getRegistryClient();
-            registryClient.addExperimentProcessOutputs(GFacConstants.EXPERIMENT_OUTPUT, resultantOutputsLst, processContext.getExperimentId());
+            RegistryService.Client registryClient = Factory.getRegistryServiceClient();
+            try {
+                registryClient.addExperimentProcessOutputs(GFacConstants.EXPERIMENT_OUTPUT, resultantOutputsLst, processContext.getExperimentId());
+            } finally {
+                if (registryClient != null) {
+                    ThriftUtils.close(registryClient);
+                }
+            }
         }
 
 

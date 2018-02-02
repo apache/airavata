@@ -174,12 +174,12 @@ public abstract class Factory {
 		return gfacContext;
 	}
 
-	public static RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
-		final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
-		final String serverHost = ServerSettings.getRegistryServerHost();
+	public static RegistryService.Client getRegistryServiceClient() {
 		try {
+			final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
+			final String serverHost = ServerSettings.getRegistryServerHost();
 			return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
-		} catch (RegistryServiceException e) {
+		} catch (RegistryServiceException|ApplicationSettingsException e) {
 			throw new RuntimeException("Unable to create registry client...", e);
 		}
 	}
@@ -273,7 +273,7 @@ public abstract class Factory {
 	 * @throws GFacException
 	 * @throws AiravataException
 	 */
-	public static RemoteCluster getJobSubmissionRemoteCluster(ProcessContext processContext)
+	public static RemoteCluster getJobSubmissionRemoteCluster(ProcessContext processContext, RegistryService.Client registryClient)
 			throws GFacException, AiravataException, CredentialStoreException, TException {
 
         String computeResourceId = processContext.getComputeResourceId();
@@ -291,14 +291,14 @@ public abstract class Factory {
             JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
             if (jobSubmissionProtocol == JobSubmissionProtocol.LOCAL ||
                     jobSubmissionProtocol == JobSubmissionProtocol.LOCAL_FORK) {
-				remoteCluster = new LocalRemoteCluster(processContext.getComputeResourceServerInfo(),
+				remoteCluster = new LocalRemoteCluster(processContext.getComputeResourceServerInfo(registryClient),
 						jobManagerConfiguration,
 						null);
 			} else if (jobSubmissionProtocol == JobSubmissionProtocol.SSH ||
                     jobSubmissionProtocol == JobSubmissionProtocol.SSH_FORK
 					|| jobSubmissionProtocol == JobSubmissionProtocol.CLOUD) {
 
-				remoteCluster = new HPCRemoteCluster(processContext.getComputeResourceServerInfo(),
+				remoteCluster = new HPCRemoteCluster(processContext.getComputeResourceServerInfo(registryClient),
 						jobManagerConfiguration,
 						Factory.getComputerResourceSSHKeyAuthentication(processContext));
 			}else {
@@ -315,7 +315,7 @@ public abstract class Factory {
 							getJobManagerConfiguration(processContext.getResourceJobManager());
                     if (jobSubmissionProtocol == JobSubmissionProtocol.SSH ||
                             jobSubmissionProtocol == JobSubmissionProtocol.SSH_FORK) {
-						remoteCluster = new HPCRemoteCluster(processContext.getComputeResourceServerInfo(),
+						remoteCluster = new HPCRemoteCluster(processContext.getComputeResourceServerInfo(registryClient),
 								jobManagerConfiguration,
 								Factory.getComputerResourceSSHKeyAuthentication(processContext));
 					}

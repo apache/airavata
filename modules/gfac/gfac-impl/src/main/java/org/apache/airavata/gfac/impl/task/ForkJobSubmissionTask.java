@@ -21,7 +21,12 @@ package org.apache.airavata.gfac.impl.task;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.gfac.core.*;
+import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.gfac.core.GFacException;
+import org.apache.airavata.gfac.core.GFacUtils;
+import org.apache.airavata.gfac.core.GroovyMap;
+import org.apache.airavata.gfac.core.JobManagerConfiguration;
+import org.apache.airavata.gfac.core.Script;
 import org.apache.airavata.gfac.core.cluster.JobSubmissionOutput;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.ProcessContext;
@@ -37,6 +42,7 @@ import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskTypes;
+import org.apache.airavata.registry.api.RegistryService;
 import org.apache.commons.io.FileUtils;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -57,14 +63,15 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
     @Override
     public TaskStatus execute(TaskContext taskContext) {
         TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
+        RegistryService.Client registryClient = Factory.getRegistryServiceClient();
         try {
             ProcessContext processContext = taskContext.getParentProcessContext();
             JobModel jobModel = processContext.getJobModel();
             jobModel.setTaskId(taskContext.getTaskId());
             RemoteCluster remoteCluster = processContext.getJobSubmissionRemoteCluster();
-            GroovyMap groovyMap = GFacUtils.createGroovyMap(processContext, taskContext);
+            GroovyMap groovyMap = GFacUtils.createGroovyMap(processContext, registryClient, taskContext);
             jobModel.setJobName(groovyMap.get(Script.JOB_NAME).toString());
-            ResourceJobManager resourceJobManager = GFacUtils.getResourceJobManager(processContext);
+            ResourceJobManager resourceJobManager = GFacUtils.getResourceJobManager(processContext, registryClient);
             JobManagerConfiguration jConfig = null;
             if (resourceJobManager != null) {
                 jConfig = Factory.getJobManagerConfiguration(resourceJobManager);
@@ -81,13 +88,13 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
 	            String jobId = jobSubmissionOutput.getJobId();
 	            if (jobId != null && !jobId.isEmpty()) {
                     jobModel.setJobId(jobId);
-                    GFacUtils.saveJobModel(processContext, jobModel);
+                    GFacUtils.saveJobModel(processContext, registryClient, jobModel);
                     jobStatus.setJobState(JobState.SUBMITTED);
                     jobStatus.setReason("Successfully Submitted to " + taskContext.getParentProcessContext()
                             .getComputeResourceDescription().getHostName());
                     jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                     jobModel.setJobStatuses(Arrays.asList(jobStatus));
-                    GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), jobModel);
+                    GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), registryClient, jobModel);
                     taskStatus = new TaskStatus(TaskState.COMPLETED);
                     taskStatus.setReason("Submitted job to compute resource");
                 }
@@ -99,13 +106,13 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
                     ErrorModel errorModel = new ErrorModel();
                     errorModel.setActualErrorMessage(msg);
                     errorModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
-                    GFacUtils.saveExperimentError(processContext, errorModel);
-                    GFacUtils.saveProcessError(processContext, errorModel);
-                    GFacUtils.saveTaskError(taskContext, errorModel);
+                    GFacUtils.saveExperimentError(processContext, registryClient, errorModel);
+                    GFacUtils.saveProcessError(processContext, registryClient, errorModel);
+                    GFacUtils.saveTaskError(taskContext, registryClient, errorModel);
                     taskStatus.setState(TaskState.FAILED);
                     taskStatus.setReason("Couldn't find job id in both submitted and verified steps");
                 }else {
-                    GFacUtils.saveJobModel(processContext, jobModel);
+                    GFacUtils.saveJobModel(processContext, registryClient, jobModel);
                 }
             } else {
                 taskStatus.setState(TaskState.FAILED);
@@ -139,6 +146,10 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         } catch (TException e) {
             throw new RuntimeException("Error while cancelling job submission", e);
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
         }
         return taskStatus;
     }
