@@ -20,10 +20,7 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -32,17 +29,23 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "APPLICATION_INPUT")
+@IdClass(ApplicationInputPK.class)
 public class ApplicationInputEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@EmbeddedId
-	private ApplicationInputPK id;
+	@Id
+	@Column(name = "INTERFACE_ID")
+	private String interfaceId;
+
+	@Id
+	@Column(name = "INPUT_KEY")
+	private String inputKey;
 
 	@Column(name = "APP_ARGUMENT")
 	private String appArgument;
 
 	@Column(name = "DATA_STAGED")
-	private short dataStaged;
+	private boolean dataStaged;
 
 	@Column(name = "DATA_TYPE")
 	private String dataType;
@@ -54,32 +57,44 @@ public class ApplicationInputEntity implements Serializable {
 	private String inputValue;
 
 	@Column(name = "IS_REQUIRED")
-	private short isRequired;
+	private boolean isRequired;
 
 	@Column(name = "METADATA")
 	private String metadata;
 
 	@Column(name = "REQUIRED_TO_COMMANDLINE")
-	private short requiredToCommandline;
+	private boolean requiredToCommandline;
 
 	@Column(name = "STANDARD_INPUT")
-	private short standardInput;
+	private boolean standardInput;
 
 	@Column(name = "USER_FRIENDLY_DESC")
 	private String userFriendlyDesc;
 
 	@Column(name = "IS_READ_ONLY")
-	private short isReadOnly;
+	private boolean isReadOnly;
+
+	@ManyToOne(targetEntity = ApplicationInterfaceEntity.class, cascade = CascadeType.MERGE)
+	@JoinColumn(name = "INTERFACE_ID")
+	private ApplicationInterfaceEntity applicationInterface;
 
 	public ApplicationInputEntity() {
 	}
 
-	public ApplicationInputPK getId() {
-		return id;
+	public String getInterfaceId() {
+		return interfaceId;
 	}
 
-	public void setId(ApplicationInputPK id) {
-		this.id = id;
+	public void setInterfaceId(String interfaceId) {
+		this.interfaceId = interfaceId;
+	}
+
+	public String getInputKey() {
+		return inputKey;
+	}
+
+	public void setInputKey(String inputKey) {
+		this.inputKey = inputKey;
 	}
 
 	public String getAppArgument() {
@@ -90,11 +105,11 @@ public class ApplicationInputEntity implements Serializable {
 		this.appArgument = appArgument;
 	}
 
-	public short getDataStaged() {
+	public boolean getDataStaged() {
 		return dataStaged;
 	}
 
-	public void setDataStaged(short dataStaged) {
+	public void setDataStaged(boolean dataStaged) {
 		this.dataStaged = dataStaged;
 	}
 
@@ -122,11 +137,11 @@ public class ApplicationInputEntity implements Serializable {
 		this.inputValue = inputValue;
 	}
 
-	public short getIsRequired() {
+	public boolean getIsRequired() {
 		return isRequired;
 	}
 
-	public void setIsRequired(short isRequired) {
+	public void setIsRequired(boolean isRequired) {
 		this.isRequired = isRequired;
 	}
 
@@ -138,19 +153,19 @@ public class ApplicationInputEntity implements Serializable {
 		this.metadata = metadata;
 	}
 
-	public short getRequiredToCommandline() {
+	public boolean getRequiredToCommandline() {
 		return requiredToCommandline;
 	}
 
-	public void setRequiredToCommandline(short requiredToCommandline) {
+	public void setRequiredToCommandline(boolean requiredToCommandline) {
 		this.requiredToCommandline = requiredToCommandline;
 	}
 
-	public short getStandardInput() {
+	public boolean getStandardInput() {
 		return standardInput;
 	}
 
-	public void setStandardInput(short standardInput) {
+	public void setStandardInput(boolean standardInput) {
 		this.standardInput = standardInput;
 	}
 
@@ -162,12 +177,20 @@ public class ApplicationInputEntity implements Serializable {
 		this.userFriendlyDesc = userFriendlyDesc;
 	}
 
-	public short getIsReadOnly() {
+	public boolean getIsReadOnly() {
 		return isReadOnly;
 	}
 
-	public void setIsReadOnly(short isReadOnly) {
+	public void setIsReadOnly(boolean isReadOnly) {
 		this.isReadOnly = isReadOnly;
+	}
+
+	public ApplicationInterfaceEntity getApplicationInterface() {
+		return applicationInterface;
+	}
+
+	public void setApplicationInterface(ApplicationInterfaceEntity applicationInterface) {
+		this.applicationInterface = applicationInterface;
 	}
 
 }

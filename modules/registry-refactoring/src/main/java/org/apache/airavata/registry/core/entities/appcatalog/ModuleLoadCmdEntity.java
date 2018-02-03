@@ -24,60 +24,55 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 /**
- * The persistent class for the app_environment database table.
+ * The persistent class for the module_load_cmd database table.
  */
 @Entity
-@Table(name = "APP_ENVIRONMENT")
-public class AppEnvironmentEntity implements Serializable {
+@Table(name = "MODULE_LOAD_CMD")
+@IdClass(ModuleLoadCmdPK.class)
+public class ModuleLoadCmdEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "DEPLOYMENT_ID")
-    private String deploymentId;
+    @Column(name = "APP_DEPLOYMENT_ID")
+    private String appdeploymentId;
 
-    @Column(name = "VALUE")
-    private String value;
+    @Id
+    @Column(name = "CMD")
+    private String command;
 
-    @Column(name = "NAME")
-    private String name;
-
-    @Column(name = "ENV_ORDER")
-    private int envPathOrder;
+    @Column(name = "COMMAND_ORDER")
+    private int commandOrder;
 
     @ManyToOne(targetEntity = ApplicationDeploymentEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "DEPLOYMENT_ID")
+    @JoinColumn(name = "APP_DEPLOYMENT_ID")
     private ApplicationDeploymentEntity applicationDeployment;
 
-    public AppEnvironmentEntity() {
+    public ModuleLoadCmdEntity() {
     }
 
-    public String getDeploymentId() {
-        return deploymentId;
+    public String getAppdeploymentId() {
+        return appdeploymentId;
     }
 
-    public void setDeploymentId(String deploymentId) {
-        this.deploymentId = deploymentId;
+    public void setAppdeploymentId(String appdeploymentId) {
+        this.appdeploymentId = appdeploymentId;
     }
 
-    public String getValue() {
-        return value;
+    public String getCommand() {
+        return command;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setCommand(String command) {
+        this.command = command;
     }
 
-    public String getName() {
-        return name;
+    public int getCommandOrder() {
+        return commandOrder;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCommandOrder(int commandOrder) {
+        this.commandOrder = commandOrder;
     }
-
-    public int getEnvOrder() { return envPathOrder; }
-
-    public void setEnvOrder(int envPathOrder) { this.envPathOrder = envPathOrder; }
 
     public ApplicationDeploymentEntity getApplicationDeployment() {
         return applicationDeployment;
@@ -86,4 +81,5 @@ public class AppEnvironmentEntity implements Serializable {
     public void setApplicationDeployment(ApplicationDeploymentEntity applicationDeployment) {
         this.applicationDeployment = applicationDeployment;
     }
+
 }
