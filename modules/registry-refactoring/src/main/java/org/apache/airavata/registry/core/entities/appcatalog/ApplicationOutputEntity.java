@@ -20,10 +20,7 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -31,17 +28,23 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "APPLICATION_OUTPUT")
+@IdClass(ApplicationOutputPK.class)
 public class ApplicationOutputEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private ApplicationOutputPK id;
+    @Id
+    @Column(name="INTERFACE_ID")
+    private String interfaceId;
+
+    @Id
+    @Column(name="OUTPUT_KEY")
+    private String outputKey;
 
     @Column(name = "APP_ARGUMENT")
     private String appArgument;
 
     @Column(name = "DATA_MOVEMENT")
-    private short dataMovement;
+    private boolean dataMovement;
 
     @Column(name = "DATA_NAME_LOCATION")
     private String dataNameLocation;
@@ -50,29 +53,41 @@ public class ApplicationOutputEntity implements Serializable {
     private String dataType;
 
     @Column(name = "IS_REQUIRED")
-    private short isRequired;
+    private boolean isRequired;
 
     @Column(name = "OUTPUT_STREAMING")
-    private short outputStreaming;
+    private boolean outputStreaming;
 
     @Column(name = "OUTPUT_VALUE")
     private String outputValue;
 
     @Column(name = "REQUIRED_TO_COMMANDLINE")
-    private short requiredToCommandline;
+    private boolean requiredToCommandline;
 
     @Column(name = "SEARCH_QUERY")
     private String searchQuery;
 
+    @ManyToOne(targetEntity = ApplicationInterfaceEntity.class, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "INTERFACE_ID")
+    private ApplicationInterfaceEntity applicationInterface;
+
     public ApplicationOutputEntity() {
     }
 
-    public ApplicationOutputPK getId() {
-        return id;
+    public String getInterfaceId() {
+        return interfaceId;
     }
 
-    public void setId(ApplicationOutputPK id) {
-        this.id = id;
+    public void setInterfaceId(String interfaceId) {
+        this.interfaceId = interfaceId;
+    }
+
+    public String getOutputKey() {
+        return outputKey;
+    }
+
+    public void setOutputKey(String outputKey) {
+        this.outputKey = outputKey;
     }
 
     public String getAppArgument() {
@@ -83,11 +98,11 @@ public class ApplicationOutputEntity implements Serializable {
         this.appArgument = appArgument;
     }
 
-    public short getDataMovement() {
+    public boolean getDataMovement() {
         return dataMovement;
     }
 
-    public void setDataMovement(short dataMovement) {
+    public void setDataMovement(boolean dataMovement) {
         this.dataMovement = dataMovement;
     }
 
@@ -107,19 +122,19 @@ public class ApplicationOutputEntity implements Serializable {
         this.dataType = dataType;
     }
 
-    public short getIsRequired() {
+    public boolean getIsRequired() {
         return isRequired;
     }
 
-    public void setIsRequired(short isRequired) {
+    public void setIsRequired(boolean isRequired) {
         this.isRequired = isRequired;
     }
 
-    public short getOutputStreaming() {
+    public boolean getOutputStreaming() {
         return outputStreaming;
     }
 
-    public void setOutputStreaming(short outputStreaming) {
+    public void setOutputStreaming(boolean outputStreaming) {
         this.outputStreaming = outputStreaming;
     }
 
@@ -131,11 +146,11 @@ public class ApplicationOutputEntity implements Serializable {
         this.outputValue = outputValue;
     }
 
-    public short getRequiredToCommandline() {
+    public boolean getRequiredToCommandline() {
         return requiredToCommandline;
     }
 
-    public void setRequiredToCommandline(short requiredToCommandline) {
+    public void setRequiredToCommandline(boolean requiredToCommandline) {
         this.requiredToCommandline = requiredToCommandline;
     }
 
@@ -146,4 +161,13 @@ public class ApplicationOutputEntity implements Serializable {
     public void setSearchQuery(String searchQuery) {
         this.searchQuery = searchQuery;
     }
+
+    public ApplicationInterfaceEntity getApplicationInterface() {
+        return applicationInterface;
+    }
+
+    public void setApplicationInterface(ApplicationInterfaceEntity applicationInterface) {
+        this.applicationInterface = applicationInterface;
+    }
+
 }

@@ -21,22 +21,23 @@
 package org.apache.airavata.registry.core.entities.appcatalog;
 
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import java.io.Serializable;
+import javax.persistence.Id;
 
 /**
  * The primary key class for the application_output database table.
  * 
  */
-@Embeddable
 public class ApplicationOutputPK implements Serializable {
 	//default serial version id, required for serializable classes.
 	private static final long serialVersionUID = 1L;
 
 	@Column(name="INTERFACE_ID", insertable=false, updatable=false)
+	@Id
 	private String interfaceId;
 
 	@Column(name="OUTPUT_KEY")
+	@Id
 	private String outputKey;
 
 	public ApplicationOutputPK() {

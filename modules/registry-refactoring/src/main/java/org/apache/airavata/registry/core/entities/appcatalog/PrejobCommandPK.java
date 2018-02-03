@@ -21,22 +21,23 @@
 package org.apache.airavata.registry.core.entities.appcatalog;
 
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import java.io.Serializable;
+import javax.persistence.Id;
 
 /**
  * The primary key class for the prejob_command database table.
  * 
  */
-@Embeddable
 public class PrejobCommandPK implements Serializable {
 	//default serial version id, required for serializable classes.
 	private static final long serialVersionUID = 1L;
 
 	@Column(name="APPDEPLOYMENT_ID", insertable=false, updatable=false)
+	@Id
 	private String appdeploymentId;
 
 	@Column(name="COMMAND")
+	@Id
 	private String command;
 
 	public PrejobCommandPK() {
