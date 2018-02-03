@@ -20,10 +20,7 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 
@@ -32,27 +29,54 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "PREJOB_COMMAND")
+@IdClass(PrejobCommandPK.class)
 public class PrejobCommandEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private PrejobCommandPK id;
+    @Id
+    @Column(name = "APPDEPLOYMENT_ID")
+    private String appdeploymentId;
+
+    @Id
+    @Column(name = "COMMAND")
+    private String command;
 
     @Column(name = "COMMAND_ORDER")
     private int commandOrder;
 
+    @ManyToOne(targetEntity = ApplicationDeploymentEntity.class, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "APPDEPLOYMENT_ID")
+    private ApplicationDeploymentEntity applicationDeployment;
+
     public PrejobCommandEntity() {
     }
 
-    public PrejobCommandPK getId() {
-        return id;
+    public String getAppdeploymentId() {
+        return appdeploymentId;
     }
 
-    public void setId(PrejobCommandPK id) {
-        this.id = id;
+    public void setAppdeploymentId(String appdeploymentId) {
+        this.appdeploymentId = appdeploymentId;
+    }
+
+    public String getCommand() {
+        return command;
+    }
+
+    public void setCommand(String command) {
+        this.command = command;
     }
 
     public int getCommandOrder() { return commandOrder; }
 
     public void setCommandOrder(int commandOrder) { this.commandOrder = commandOrder; }
+
+    public ApplicationDeploymentEntity getApplicationDeployment() {
+        return applicationDeployment;
+    }
+
+    public void setApplicationDeployment(ApplicationDeploymentEntity applicationDeployment) {
+        this.applicationDeployment = applicationDeployment;
+    }
+
 }

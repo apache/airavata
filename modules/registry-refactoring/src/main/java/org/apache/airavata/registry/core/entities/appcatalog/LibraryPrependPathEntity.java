@@ -20,10 +20,7 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 
@@ -46,7 +43,9 @@ public class LibraryPrependPathEntity implements Serializable {
 	@Column(name="NAME")
 	private String name;
 
-	
+	@ManyToOne(targetEntity = ApplicationDeploymentEntity.class, cascade = CascadeType.MERGE)
+	@JoinColumn(name = "DEPLOYMENT_ID")
+	private ApplicationDeploymentEntity applicationDeployment;
 
 	public LibraryPrependPathEntity() {
 	}
@@ -74,4 +73,13 @@ public class LibraryPrependPathEntity implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+	public ApplicationDeploymentEntity getApplicationDeployment() {
+		return applicationDeployment;
+	}
+
+	public void setApplicationDeployment(ApplicationDeploymentEntity applicationDeployment) {
+		this.applicationDeployment = applicationDeployment;
+	}
+
 }
