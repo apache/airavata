@@ -277,7 +277,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             group.setUpdatedTime(System.currentTimeMillis());
             (new UserGroupRepository()).create(group);
 
-            addUsersToGroup(group.domainId, Arrays.asList(group.ownerId), group.groupId);
+            if(group.ownerId != null)
+                addUsersToGroup(group.domainId, Arrays.asList(group.ownerId), group.groupId);
+
             return group.groupId;
         }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
