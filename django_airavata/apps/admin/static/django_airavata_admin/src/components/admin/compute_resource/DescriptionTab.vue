@@ -13,7 +13,8 @@
         </div>
       </div>
       <div class="deployment-entry">
-        <input type="button" class="deployment btn" v-if="view" value="Add Aliases" v-on:click="data.hostAliases.push('')"/>
+        <input type="button" class="deployment btn" v-if="view" value="Add Aliases"
+               v-on:click="data.hostAliases.push('')"/>
       </div>
     </div>
     <div class="new-application-tab-main">
@@ -24,7 +25,8 @@
         </div>
       </div>
       <div class="deployment-entry">
-        <input type="button" class="deployment btn" v-if="view" value="Add IP Addresses" v-on:click="data.ipAddresses.push('')"/>
+        <input type="button" class="deployment btn" v-if="view" value="Add IP Addresses"
+               v-on:click="data.ipAddresses.push('')"/>
       </div>
     </div>
 
@@ -40,7 +42,7 @@
     </div>
     <div class="new-application-tab-main">
       <tab-action-console v-if="view" v-bind:save="save" v-bind:cancel="cancel"
-                          v-bind:sectionName="'Application Deployment'"></tab-action-console>
+                          v-bind:sectionName="'Description'"></tab-action-console>
     </div>
   </div>
 </template>
@@ -55,6 +57,17 @@
     components: {TabActionConsole},
     name: "description-tab",
     mixins: [tabMixin, computeResourceTabMixin],
+    data: function () {
+      return {
+        fields: [
+          "hostName",
+          'hostAliases',
+          'ipAddresses',
+          'resourceDescription',
+          'maxMemoryPerNode',
+        ]
+      }
+    }
 
   }
 </script>
@@ -64,33 +77,6 @@
     font-size: 1.0em;
     font-weight: bold;
     margin-bottom: 10px;
-  }
-
-  .deployment.btn {
-    float: right;
-    text-align: center;
-    border-color: #007BFF;
-    border-style: solid;
-    border-radius: 3px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 15px;
-    padding-right: 15px;
-    color: #007BFF;
-    background-color: white;
-    width: auto;
-    float: left;
-  }
-
-  .deployment.btn:hover {
-    color: white;
-    background-color: rgba(0, 105, 217, 1);
-  }
-
-  .deployment-entry {
-    display: inline-block;
-    margin-top: 15px;
-    width: 100%;
   }
 
   .name_value {

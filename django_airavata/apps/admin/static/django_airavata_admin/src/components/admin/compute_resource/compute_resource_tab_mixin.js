@@ -6,14 +6,15 @@ export default {
   computed: {
     ...mapGetters({
       storeData: 'data',
-      view:'view'
+      view: 'view',
+      createBatchQueue: 'createBatchQueue'
     })
   },
   methods: {
     ...mapMutations(['updateStore', 'resetStore']),
     ...mapActions(['save']),
     cancel: function () {
-      this.resetStore();
+      this.resetStore({resetFields: this.fields});
       this.tabCreation();
     }
   }

@@ -53,11 +53,18 @@
         </div>
         <div class="entry">
           <boolean-radio-button v-bind:heading="'Default Queue for the Resource'" v-bind:selectorId="index"
-                            v-bind:def="data.batchQueues[index].isDefaultQueue"
-                            v-on:bool_selector="boolValueHandler"></boolean-radio-button>
+                                v-bind:def="data.batchQueues[index].isDefaultQueue"
+                                v-on:bool_selector="boolValueHandler"></boolean-radio-button>
         </div>
       </tab-sub-section>
-
+      <div class="deployment-entry">
+        <input type="button" class="deployment btn" v-if="view" value="Add Queue"
+               v-on:click="data.batchQueues.push(createBatchQueue)"/>
+      </div>
+    </div>
+     <div class="new-application-tab-main">
+      <tab-action-console v-if="view" v-bind:save="save" v-bind:cancel="cancel"
+                          v-bind:sectionName="'Queues'"></tab-action-console>
     </div>
   </div>
 </template>
@@ -73,11 +80,16 @@
     name: "queues-tab",
     mixins: [tabMixin, computeResourceTabMixin],
     components: {
-      TabSubSection, TabActionConsole,BooleanRadioButton
+      TabSubSection, TabActionConsole, BooleanRadioButton
     },
-    methods:{
-      boolValueHandler:function (selectorID, value) {
-        this.data.batchQueues[index].isDefaultQueue=value
+    data:function () {
+      return {
+        fields:['batchQueues']
+      }
+    },
+    methods: {
+      boolValueHandler: function (selectorID, value) {
+        this.data.batchQueues[selectorID].isDefaultQueue = value
       }
     }
   }

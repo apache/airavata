@@ -1,0 +1,45 @@
+<template>
+  <div>
+    <div class="entry">
+      <div class="heading">Select Security Protocol</div>
+      <select v-model="data.securityProtocol">
+        <option value="0">USERNAME_PASSWORD</option>
+        <option value="1">SSH_KEYS</option>
+        <option value="2">GSI</option>
+        <option value="3">KERBEROS</option>
+        <option value="4">OAUTH</option>
+        <option value="5">LOCAL</option>
+      </select>
+    </div>
+    <div class="entry">
+      <div class="heading">Unicore Endpoint URL</div>
+      <input type="text" v-model="data.unicoreEndPointURL"/>
+    </div>
+  </div>
+</template>
+
+<script>
+  import {createNamespacedHelpers} from 'vuex'
+  import dataMovementMixin from './data_movement_mixin'
+
+  const {mapGetters, mapActions, mapMutations} = createNamespacedHelpers('computeResource/dataMovement')
+
+  export default {
+    name: "unicore-data-movement",
+    mixins: [dataMovementMixin],
+    computed: {
+      ...mapGetters({
+        storeData: 'unicoreData'
+      })
+    },
+    methods: {
+      ...mapMutations({
+        updateStore: 'updateUnicore'
+      })
+    }
+  }
+</script>
+
+<style scoped>
+
+</style>

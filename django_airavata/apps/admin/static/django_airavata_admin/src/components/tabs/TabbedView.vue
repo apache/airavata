@@ -77,7 +77,7 @@
 
   .tab {
     text-align: center;
-    width: 120px;
+    min-width: 120px;
     margin-bottom: 15px;
     border-bottom: solid #999999 1px;
     color: #007BFF;

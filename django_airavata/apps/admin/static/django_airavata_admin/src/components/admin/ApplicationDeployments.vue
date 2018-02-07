@@ -253,17 +253,7 @@
     width: 100%;
   }
 
-  .name_value {
-    display: inline-flex;
-    width: 100%;
-    margin-bottom: 5px;
-  }
 
-  .name_value input {
-    width: 50%;
-    display: inline-flex;
-    margin-right: 5px;
-  }
 
   .deployment-entry .entry {
     margin-bottom: 5px;

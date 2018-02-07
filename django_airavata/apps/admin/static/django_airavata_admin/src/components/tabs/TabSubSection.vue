@@ -4,7 +4,9 @@
       {{sectionName}}
       <img v-if="enableDeletion" v-on:click="deleteSection()" src="/static/images/delete.png"/>
     </div>
-    <slot></slot>
+    <div class="tab-view">
+      <slot></slot>
+    </div>
   </div>
 </template>
 
