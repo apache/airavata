@@ -6,9 +6,12 @@
   "private": true,
   "main": "./static/django_airavata_api/dist/index.js",
   "scripts": {
-    "build": "babel static/django_airavata_api/js -d static/django_airavata_api/dist"
+    "build": "babel static/django_airavata_api/js -d static/django_airavata_api/dist",
+    "watch": "babel static/django_airavata_api/js --watch -d static/django_airavata_api/dist"
   },
-  "dependencies": {},
+  "dependencies": {
+    "url-parse": "^1.2.0"
+  },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.5.1"

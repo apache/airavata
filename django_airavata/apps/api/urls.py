@@ -10,9 +10,14 @@ logger = logging.getLogger(__name__)
 
 router = routers.DefaultRouter()
 router.register(r'projects', views.ProjectViewSet, base_name='project')
+router.register(r'experiments', views.ExperimentViewSet, base_name='experiment')
+router.register(r'full-experiments', views.FullExperimentViewSet, base_name='full-experiment')
+router.register(r'experiment-search', views.ExperimentSearchViewSet, base_name='experiment-search')
+router.register(r'groups', views.GroupViewSet, base_name='group')
 router.register(r'new/application/module', views.RegisterApplicationModule, base_name='register_app_module')
-router.register(r'application-interface', views.ApplicationInterfaceViewSet, base_name='application-interface')
+router.register(r'application-interfaces', views.ApplicationInterfaceViewSet, base_name='application-interface')
 router.register(r'applications', views.ApplicationModuleViewSet, base_name='application')
+router.register(r'application-deployments', views.ApplicationDeploymentViewSet, base_name='application-deployment')
 
 app_name = 'django_airavata_api'
 urlpatterns = [

@@ -1,20 +1,33 @@
-from abc import ABC
 
-from apache.airavata.model.experiment.ttypes import ExperimentModel
-from apache.airavata.model.workspace.ttypes import Project
-from apache.airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule, ApplicationDeploymentDescription,CommandObject,SetEnvPaths
-from apache.airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDescription
-from apache.airavata.model.application.io.ttypes import InputDataObjectType, OutputDataObjectType
-from apache.airavata.model.experiment.ttypes import ExperimentModel
-from apache.airavata.model.workspace.ttypes import Project
-from apache.airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule
+import copy
+import datetime
+import logging
+from urllib.parse import quote
+
 from django.conf import settings
-
 from rest_framework import serializers
 
-import datetime
-import copy
-from urllib.parse import quote
+from airavata.model.appcatalog.appdeployment.ttypes import (ApplicationDeploymentDescription,
+                                                            ApplicationModule,
+                                                            CommandObject,
+                                                            SetEnvPaths)
+from airavata.model.appcatalog.appinterface.ttypes import \
+    ApplicationInterfaceDescription
+from airavata.model.appcatalog.computeresource.ttypes import BatchQueue
+from airavata.model.application.io.ttypes import (InputDataObjectType,
+                                                  OutputDataObjectType)
+from airavata.model.data.replica.ttypes import (DataProductModel,
+                                                DataReplicaLocationModel)
+from airavata.model.experiment.ttypes import (ExperimentModel,
+                                              ExperimentSummaryModel)
+from airavata.model.group.ttypes import GroupModel
+from airavata.model.job.ttypes import JobModel
+from airavata.model.status.ttypes import ExperimentStatus
+from airavata.model.workspace.ttypes import Project
+
+from . import thrift_utils
+
+log = logging.getLogger(__name__)
 
 
 class FullyEncodedHyperlinkedIdentityField(serializers.HyperlinkedIdentityField):
@@ -62,12 +75,29 @@ class GetGatewayUsername(object):
         self.field = field
 
 
+class GetGatewayUserId(object):
+
+    def __call__(self):
+        return self.field.context['request'].user.id
+
+    def set_context(self, field):
+        self.field = field
+
+
 class GatewayUsernameDefaultField(serializers.CharField):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.read_only = True
         self.default = GetGatewayUsername()
+
+
+class GatewayUserIdDefaultField(serializers.CharField):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.read_only = True
+        self.default = GetGatewayUserId()
 
 
 class GatewayIdDefaultField(serializers.CharField):
@@ -78,15 +108,33 @@ class GatewayIdDefaultField(serializers.CharField):
         self.default = settings.GATEWAY_ID
 
 
+class GroupSerializer(serializers.Serializer):
+    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:group-detail', lookup_field='id', lookup_url_kwarg='group_id')
+    id = serializers.CharField(default=GroupModel.thrift_spec[1][4], read_only=True)
+    name = serializers.CharField(required=True)
+    description = serializers.CharField(allow_null=True)
+    ownerId = GatewayUsernameDefaultField()
+    members = serializers.ListSerializer(child=serializers.CharField())
+
+    def create(self, validated_data):
+        validated_data['ownerId'] = self.context['request'].user.username
+        return GroupModel(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.description = validated_data.get('description', instance.description)
+        return instance
+
+
 class ProjectSerializer(serializers.Serializer):
     url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-detail', lookup_field='projectID', lookup_url_kwarg='project_id')
-    projectID = serializers.CharField(default=Project.thrift_spec[1][4])
+    projectID = serializers.CharField(default=Project.thrift_spec[1][4], read_only=True)
     name = serializers.CharField(required=True)
     description = serializers.CharField(allow_null=True)
     owner = GatewayUsernameDefaultField()
     gatewayId = GatewayIdDefaultField()
     experiments = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-experiments', lookup_field='projectID', lookup_url_kwarg='project_id')
-    creationTime = UTCPosixTimestampDateTimeField()
+    creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
 
     def create(self, validated_data):
         return Project(**validated_data)
@@ -97,28 +145,14 @@ class ProjectSerializer(serializers.Serializer):
         return instance
 
 
-class ExperimentSerializer(serializers.Serializer):
-
-    experimentId = serializers.CharField(read_only=True)
-    projectId = serializers.CharField(required=True)
-    project = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-detail', lookup_field='projectId', lookup_url_kwarg='project_id')
-    gatewayId = GatewayIdDefaultField()
-    experimentType = serializers.CharField(required=True)
-    userName = GatewayUsernameDefaultField()
-    experimentName = serializers.CharField(required=True)
-
-    def create(self, validated_data):
-        return ExperimentModel(**validated_data)
-
-    def update(self, instance, validated_data):
-        raise Exception("Not implemented")
-
-
 class ApplicationModuleSerializer(serializers.Serializer):
+    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-detail', lookup_field='appModuleId', lookup_url_kwarg='app_module_id')
     appModuleId = serializers.CharField(required=True)
     appModuleName = serializers.CharField(required=True)
     appModuleDescription = serializers.CharField()
     appModuleVersion = serializers.CharField()
+    applicationInterface = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-application-interface', lookup_field='appModuleId', lookup_url_kwarg='app_module_id')
+    applicationDeployments = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-application-deployments', lookup_field='appModuleId', lookup_url_kwarg='app_module_id')
 
 
     def create(self, validated_data):
@@ -179,13 +213,9 @@ class CustomSerializer(serializers.Serializer):
         return params
 
 
-
-
-
-
-
-
 class ApplicationInterfaceDescriptionSerializer(CustomSerializer):
+    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-interface-detail', lookup_field='applicationInterfaceId', lookup_url_kwarg='app_interface_id')
+    applicationInterfaceId = serializers.CharField(read_only=True)
     applicationName = serializers.CharField(required=False)
     applicationDescription = serializers.CharField(required=False)
     archiveWorkingDirectory = serializers.BooleanField(required=False)
@@ -225,31 +255,10 @@ class SetEnvPathsSerializer(CustomSerializer):
         raise Exception("Not implemented")
 
 
-class ApplicationDeploymentDescriptionSerializer(CustomSerializer):
-    appModuleId = serializers.CharField(required=False)
-    computeHostId = serializers.CharField(required=False)
-    executablePath = serializers.CharField(required=False)
-    parallelism = serializers.IntegerField(required=False)
-    appDeploymentDescription = serializers.CharField(required=False)
-    moduleLoadCmds = serializers.ListSerializer(child=CommandObjectSerializer())
-    libPrependPaths = serializers.ListSerializer(child=SetEnvPathsSerializer())
-    libAppendPaths = serializers.ListSerializer(child=SetEnvPathsSerializer())
-    setEnvironment = serializers.ListSerializer(child=SetEnvPathsSerializer())
-    preJobCommands = serializers.ListSerializer(child=CommandObjectSerializer())
-    postJobCommands = serializers.ListSerializer(child=CommandObjectSerializer())
-    defaultQueueName = serializers.CharField(required=False)
-    defaultNodeCount = serializers.IntegerField(required=False)
-    defaultCPUCount = serializers.IntegerField(required=False)
-    defaultWalltime = serializers.IntegerField(required=False)
-    editableByUser = serializers.BooleanField(required=False)
-
-    def create(self, validated_data):
-        params=self.process_list_fields(validated_data)
-        return ApplicationDeploymentDescription(**params)
-
-    def update(self, instance, validated_data):
-        raise Exception("Not Implemented")
-
+class ApplicationDeploymentDescriptionSerializer(thrift_utils.create_serializer_class(ApplicationDeploymentDescription)):
+    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-deployment-detail', lookup_field='appDeploymentId', lookup_url_kwarg='app_deployment_id')
+    # Default values returned in these results have been overridden with app deployment defaults for any that exist
+    queues = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:application-deployment-queues', lookup_field='appDeploymentId', lookup_url_kwarg='app_deployment_id')
 
 
 class ComputeResourceDescriptionSerializer(CustomSerializer):
@@ -258,3 +267,90 @@ class ComputeResourceDescriptionSerializer(CustomSerializer):
     ipAddresses=serializers.ListField(child=serializers.CharField())
     resourceDescription=serializers.CharField()
     enabled=serializers.BooleanField()
+
+
+class BatchQueueSerializer(thrift_utils.create_serializer_class(BatchQueue)):
+    pass
+
+
+class ExperimentStatusSerializer(thrift_utils.create_serializer_class(ExperimentStatus)):
+    timeOfStateChange = UTCPosixTimestampDateTimeField()
+
+
+class ExperimentSerializer(
+        thrift_utils.create_serializer_class(ExperimentModel)):
+
+    class Meta:
+        required = ('projectId', 'experimentType', 'experimentName')
+        read_only = ('experimentId',)
+
+    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:experiment-detail', lookup_field='experimentId', lookup_url_kwarg='experiment_id')
+    full_experiment = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:full-experiment-detail', lookup_field='experimentId', lookup_url_kwarg='experiment_id')
+    project = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-detail', lookup_field='projectId', lookup_url_kwarg='project_id')
+    jobs = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:experiment-jobs', lookup_field='experimentId', lookup_url_kwarg='experiment_id')
+    userName = GatewayUsernameDefaultField()
+    gatewayId = GatewayIdDefaultField()
+    creationTime = UTCPosixTimestampDateTimeField(allow_null=True)
+    experimentStatus = ExperimentStatusSerializer(many=True, read_only=True)
+
+
+class DataReplicaLocationSerializer(
+        thrift_utils.create_serializer_class(DataReplicaLocationModel)):
+    creationTime = UTCPosixTimestampDateTimeField()
+    lastModifiedTime = UTCPosixTimestampDateTimeField()
+
+
+class DataProductSerializer(
+        thrift_utils.create_serializer_class(DataProductModel)):
+    creationTime = UTCPosixTimestampDateTimeField()
+    lastModifiedTime = UTCPosixTimestampDateTimeField()
+    replicaLocations = DataReplicaLocationSerializer(many=True)
+
+
+# TODO move this into airavata_sdk?
+class FullExperiment:
+    """Experiment with referenced data models."""
+
+    def __init__(self, experimentModel, project=None, outputDataProducts=None,
+                 inputDataProducts=None, applicationModule=None,
+                 computeResource=None, jobDetails=None):
+        self.experiment = experimentModel
+        self.experimentId = experimentModel.experimentId
+        self.project = project
+        self.outputDataProducts = outputDataProducts
+        self.inputDataProducts = inputDataProducts
+        self.applicationModule = applicationModule
+        self.computeResource = computeResource
+        self.jobDetails = jobDetails
+
+
+class JobSerializer(thrift_utils.create_serializer_class(JobModel)):
+    creationTime = UTCPosixTimestampDateTimeField()
+
+
+class FullExperimentSerializer(serializers.Serializer):
+    url = FullyEncodedHyperlinkedIdentityField(
+        view_name='django_airavata_api:full-experiment-detail',
+        lookup_field='experimentId',
+        lookup_url_kwarg='experiment_id')
+    experiment = ExperimentSerializer()
+    outputDataProducts = DataProductSerializer(many=True, read_only=True)
+    inputDataProducts = DataProductSerializer(many=True, read_only=True)
+    applicationModule = ApplicationModuleSerializer(read_only=True)
+    computeResource = ComputeResourceDescriptionSerializer(read_only=True)
+    project = ProjectSerializer(read_only=True)
+    jobDetails = JobSerializer(many=True, read_only=True)
+
+    def create(self, validated_data):
+        raise Exception("Not implemented")
+
+    def update(self, instance, validated_data):
+        raise Exception("Not implemented")
+
+
+class ExperimentSummarySerializer(
+        thrift_utils.create_serializer_class(ExperimentSummaryModel)):
+    creationTime = UTCPosixTimestampDateTimeField()
+    statusUpdateTime = UTCPosixTimestampDateTimeField()
+    url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:experiment-detail', lookup_field='experimentId', lookup_url_kwarg='experiment_id')
+    project = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-detail', lookup_field='projectId', lookup_url_kwarg='project_id')

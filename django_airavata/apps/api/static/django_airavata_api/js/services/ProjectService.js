@@ -16,8 +16,16 @@ class ProjectService {
         }
     }
 
+    listAll() {
+        return fetch('/api/projects/list_all/', {
+            credentials: 'include'
+        })
+        .then(response => response.json())
+        .then(json => json.map(project => new Project(project)));
+    }
+
     create(project) {
-        return FetchUtils.post('/api/projects/', project.toJSONForCreate())
+        return FetchUtils.post('/api/projects/', JSON.stringify(project))
             .then(result => new Project(result));
     }
 
@@ -25,8 +33,14 @@ class ProjectService {
         // TODO
     }
 
-    get() {
-        // TODO
+    get(projectId, data=null) {
+        if (data) {
+            return Promise.resolve(new Project(data));
+        } else {
+            return FetchUtils.get('/api/projects/'
+                    + encodeURIComponent(projectId) + '/')
+                .then(result => new Project(result));
+        }
     }
 }
 

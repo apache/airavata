@@ -8,23 +8,22 @@
       <h6 style="color: #666666;">APPLICATIONS</h6>
       <div class="container-fluid">
         <div class="row">
-            <DashboardItem
-              v-for="item in applications" v-bind:dashboard_item="item" v-bind:key="item.title"
-              v-on:edit="clickHandler(item)">
-            </DashboardItem>
+            <application-card v-for="item in applications" v-bind:app-module="item"
+                v-bind:key="item.appModuleId" v-on:app-selected="clickHandler(item)">
+            </application-card>
         </div>
       </div>
     </div>
   </div>
 </template>
 <script>
-  import DashboardItem from '../DashboardItem.vue'
   import NewApplication from '../admin/NewApplication.vue'
   import Loading from '../Loading.vue'
 
   import Utils from '../../utils'
   import {mapActions} from 'vuex'
 
+  import { components as comps } from 'django-airavata-common-ui'
 
   export default {
     data:function () {
@@ -33,7 +32,8 @@
       };
     },
     components:{
-      DashboardItem,NewApplication,Loading
+      NewApplication, Loading,
+      'application-card': comps.ApplicationCard,
     },
     mounted:function () {
       this.fetchApplications();

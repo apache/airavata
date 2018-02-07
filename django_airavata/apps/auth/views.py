@@ -33,6 +33,7 @@ def handle_login(request):
     try:
         if user is not None:
             login(request, user)
+            # TODO: handle 'next' query param
             return redirect(settings.LOGIN_REDIRECT_URL)
         else:
             # TODO: add error message that login failed

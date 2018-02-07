@@ -1,4 +1,5 @@
 
+import ApplicationDeploymentDescription from '../models/ApplicationDeploymentDescription'
 import ApplicationModule from '../models/ApplicationModule'
 import FetchUtils from '../utils/FetchUtils'
 
@@ -20,8 +21,14 @@ class ApplicationModuleService {
         // TODO
     }
 
-    get() {
-        // TODO
+    get(appModuleId) {
+        return FetchUtils.get('/api/applications/' + encodeURIComponent(appModuleId) + '/')
+            .then(json => new ApplicationModule(json));
+    }
+
+    getApplicationDeployments(appModuleId) {
+        return FetchUtils.get('/api/applications/' + encodeURIComponent(appModuleId) + '/application_deployments/')
+            .then(json => json.map(result => new ApplicationDeploymentDescription(result)));
     }
 }
 

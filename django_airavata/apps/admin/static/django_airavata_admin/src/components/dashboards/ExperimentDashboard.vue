@@ -6,9 +6,9 @@
       </div>
       <div class="container-fluid">
         <div class="row">
-          <DashboardItem
-            v-for="item in applications" v-bind:dashboard_item="item" v-bind:key="item.title" v-bind:height="height">
-          </DashboardItem>
+          <application-card
+            v-for="item in applications" v-bind:app-module="item" v-bind:key="item.appModuleId">
+          </application-card>
         </div>
       </div>
     </main>
@@ -27,14 +27,16 @@
   </div>
 </template>
 <script>
-  import DashboardItem from '../DashboardItem.vue'
   import RecentExperiment from '../RecentExperiment.vue'
   import Utils from '../../utils.js'
+
+  import { components as comps } from 'django-airavata-common-ui'
 
   export default{
     'name':'main-section',
     components: {
-      DashboardItem, RecentExperiment
+      RecentExperiment,
+      'application-card': comps.ApplicationCard,
     },
     data:function () {
 

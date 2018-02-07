@@ -140,6 +140,9 @@ body {
     box-shadow: 0 2px 0 #eee;
     margin-bottom: 30px;
 }
+.card.border-default {
+    border: 1px solid rgba(0,0,0,.125)    
+}
 
 /**
  * Make a small card text modifier so we can still use

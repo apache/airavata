@@ -1,0 +1,19 @@
+{% extends './base.html' %}
+
+{% load static %}
+
+{% block css %}
+{{ block.super }}
+<link rel=stylesheet type=text/css href="{% static 'django_airavata_workspace/dist/view-experiment.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div id="view-experiment" data-full-experiment-data="{{ full_experiment_data }}" data-launching="{{ launching }}"></div>
+
+{% endblock content %}
+
+{% block scripts %}
+{{ block.super }}
+<script src="{% static "django_airavata_workspace/dist/view-experiment.js" %}"></script>
+{% endblock %}

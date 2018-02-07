@@ -38,11 +38,32 @@ export default {
             }
         })
     },
+    put: function (url, body, mediaType = "application/json") {
+        var headers = this.createHeaders(mediaType)
+        return fetch(url, {
+            method: 'put',
+            body: typeof body !== 'string' ? JSON.stringify(body) : body,
+            headers: headers,
+            credentials: "same-origin"
+        }).then((response) => {
+            if (response.ok) {
+                return Promise.resolve(response.json())
+            } else {
+                let error = new Error(response.statusText);
+                return response.json().then(json => {
+                    error.data = json;
+                })
+                .then(() => Promise.reject(error),() => Promise.reject(error));
+            }
+        })
+    },
     get: function (url, queryParams = "", mediaType = "application/json") {
         if (queryParams && typeof(queryParams) != "string") {
             queryParams = Object.keys(queryParams).map(key => encodeURIComponent(key) + "=" + encodeURIComponent(queryParams[key])).join("&")
         }
-        url=url+"?"+queryParams
+        if (queryParams) {
+            url=url+"?"+queryParams
+        }
         var headers = this.createHeaders(mediaType)
         return fetch(url, {
             method: 'get',

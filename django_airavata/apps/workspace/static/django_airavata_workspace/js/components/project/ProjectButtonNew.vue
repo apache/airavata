@@ -69,7 +69,7 @@ export default {
     },
     computed: {
         newProjectValidationData: function() {
-            return this.userBeginsInput ? this.newProject.validateForCreate() : null;
+            return this.userBeginsInput ? this.newProject.validate() : null;
         },
         newProjectNameState: function() {
             if (this.newProjectServerValidationData && 'name' in this.newProjectServerValidationData) {
