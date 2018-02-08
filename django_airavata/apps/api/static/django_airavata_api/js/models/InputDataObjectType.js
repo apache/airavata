@@ -1,10 +1,14 @@
 
 import BaseModel from './BaseModel';
+import DataType from './DataType'
 
 const FIELDS = [
     'name',
     'value',
-    'type',
+    {
+        name: 'type',
+        type: DataType,
+    },
     'applicationArgument',
     'standardInput',
     'userFriendlyDescription',

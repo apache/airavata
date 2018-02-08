@@ -1,6 +1,7 @@
 
 import ApplicationInterfaceDefinition from './models/ApplicationInterfaceDefinition'
 import ApplicationModule from './models/ApplicationModule'
+import DataType from './models/DataType'
 import Experiment from './models/Experiment'
 import InputDataObjectType from './models/InputDataObjectType'
 import OutputDataObjectType from './models/OutputDataObjectType'
@@ -23,6 +24,7 @@ import PaginationIterator from './utils/PaginationIterator'
 exports.models = {
     ApplicationInterfaceDefinition,
     ApplicationModule,
+    DataType,
     Experiment,
     FullExperiment,
     InputDataObjectType,

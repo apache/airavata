@@ -21,9 +21,13 @@ export default {
     },
     post: function (url, body, mediaType = "application/json") {
         var headers = this.createHeaders(mediaType)
+        // Browsers automatically handle content type for FormData request bodies
+        if (body instanceof FormData) {
+            headers.delete("Content-Type");
+        }
         return fetch(url, {
             method: 'post',
-            body: typeof body !== 'string' ? JSON.stringify(body) : body,
+            body: body,
             headers: headers,
             credentials: "same-origin"
         }).then((response) => {
@@ -42,7 +46,7 @@ export default {
         var headers = this.createHeaders(mediaType)
         return fetch(url, {
             method: 'put',
-            body: typeof body !== 'string' ? JSON.stringify(body) : body,
+            body: body,
             headers: headers,
             credentials: "same-origin"
         }).then((response) => {
