@@ -23,18 +23,24 @@
                v-on:click="data.gridFTPEndPoints.push('')"/>
       </div>
     </div>
+    <div class="new-application-tab-main">
+      <tab-action-console v-if="editable" v-bind:save="save" v-bind:cancel="cancel"
+                          v-bind:sectionName="'Queues'" v-bind:enableCancel="false"></tab-action-console>
+    </div>
   </div>
 </template>
 
 <script>
   import {createNamespacedHelpers} from 'vuex'
   import dataMovementMixin from './data_movement_mixin'
+  import TabActionConsole from '../../TabActionConsole'
 
   const {mapGetters, mapMutations} = createNamespacedHelpers('computeResource/dataMovement')
 
   export default {
     name: "grid-f-t-p-data-movement",
     mixins: [dataMovementMixin],
+    components: {TabActionConsole},
     computed: {
       ...mapGetters({
         storeData: 'gridData'

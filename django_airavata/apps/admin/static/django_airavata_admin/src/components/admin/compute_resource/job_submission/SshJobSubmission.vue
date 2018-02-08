@@ -3,7 +3,7 @@
     <div class="entry">
       <div class="entry">
         <div class="heading">Select Security Protocol</div>
-        <select v-model="data.securityProtocol"  v-bind:disabled="editable?'':'disabled'">
+        <select v-model="data.securityProtocol" v-bind:disabled="editable?'':'disabled'">
           <option value="0">USERNAME_PASSWORD</option>
           <option value="1">SSH_KEYS</option>
           <option value="2">GSI</option>
@@ -22,7 +22,7 @@
       </div>
       <div class="entry">
         <div class="heading">Monitor Mode</div>
-        <select v-model="data.monitorMode"  v-bind:disabled="editable?'':'disabled'">
+        <select v-model="data.monitorMode" v-bind:disabled="editable?'':'disabled'">
           <option value="0">POLL_JOB_MANAGER</option>
           <option value="1">CLOUD_JOB_MONITOR</option>
           <option value="2">JOB_EMAIL_NOTIFICATION_MONITOR</option>
@@ -34,12 +34,17 @@
       <resource-job-manager v-bind:updateData="updateResourceJobManager"
                             v-bind:data="data.resourceJobManager" v-bind:id="id"></resource-job-manager>
     </div>
+    <div class="new-application-tab-main">
+      <tab-action-console v-if="editable" v-bind:save="save" v-bind:cancel="cancel"
+                          v-bind:sectionName="'Queues'" v-bind:enableCancel="false"></tab-action-console>
+    </div>
   </div>
 </template>
 
 
 <script>
   import ResourceJobManager from './ResourceJobManager'
+  import TabActionConsole from '../../TabActionConsole'
 
   import JobSubmissionMixin from './job_submission_mixin'
   import {createNamespacedHelpers} from 'vuex'
@@ -48,11 +53,11 @@
   export default {
     name: "ssh-job-submission",
     mixins: [JobSubmissionMixin],
-    components: {ResourceJobManager},
+    components: {ResourceJobManager, TabActionConsole},
     methods: {
       ...mapActions(["save"]), ...mapMutations(["updateStore", "resetStore", "updateResourceJobManager"])
     }, computed: {
-      ...mapGetters({'storeData':"data"})
+      ...mapGetters({'storeData': "data"})
     }
   }
 </script>

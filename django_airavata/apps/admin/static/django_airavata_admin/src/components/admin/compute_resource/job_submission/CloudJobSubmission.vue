@@ -33,21 +33,27 @@
         </select>
       </div>
     </div>
+    <div class="new-application-tab-main">
+      <tab-action-console v-if="editable" v-bind:save="save" v-bind:cancel="cancel"
+                          v-bind:sectionName="'Queues'" v-bind:enableCancel="false"></tab-action-console>
+    </div>
   </div>
 </template>
 
 <script>
   import JobSubmissionMixin from './job_submission_mixin'
   import {createNamespacedHelpers} from 'vuex'
+  import TabActionConsole from '../../TabActionConsole'
 
   const {mapGetters, mapActions, mapMutations} = createNamespacedHelpers('computeResource/cloudJobSubmission')
   export default {
     name: "cloud-job-submission",
     mixins: [JobSubmissionMixin],
+    components: {TabActionConsole},
     methods: {
       ...mapActions(["save"]), ...mapMutations(["updateStore", "resetStore"])
     }, computed: {
-      ...mapGetters({'storeData':"data"})
+      ...mapGetters({'storeData': "data"})
     }
   }
 </script>

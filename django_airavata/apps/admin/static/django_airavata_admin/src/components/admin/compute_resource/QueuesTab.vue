@@ -62,7 +62,7 @@
                v-on:click="data.batchQueues.push(createBatchQueue)"/>
       </div>
     </div>
-     <div class="new-application-tab-main">
+    <div class="new-application-tab-main">
       <tab-action-console v-if="editable" v-bind:save="save" v-bind:cancel="cancel"
                           v-bind:sectionName="'Queues'"></tab-action-console>
     </div>
@@ -82,9 +82,9 @@
     components: {
       TabSubSection, TabActionConsole, BooleanRadioButton
     },
-    data:function () {
+    data: function () {
       return {
-        fields:['batchQueues']
+        fields: ['batchQueues']
       }
     },
     methods: {

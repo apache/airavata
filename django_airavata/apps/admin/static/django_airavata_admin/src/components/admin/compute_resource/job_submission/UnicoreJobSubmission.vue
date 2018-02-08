@@ -17,11 +17,17 @@
         <input type="text" v-model="data.unicoreEndPointURL"/>
       </div>
     </div>
+    <div class="new-application-tab-main">
+      <tab-action-console v-if="editable" v-bind:save="save" v-bind:cancel="cancel"
+                          v-bind:sectionName="'Queues'" v-bind:enableCancel="false"></tab-action-console>
+    </div>
   </div>
 </template>
 
 
 <script>
+  import TabActionConsole from '../../TabActionConsole'
+
   import JobSubmissionMixin from './job_submission_mixin'
   import {createNamespacedHelpers} from 'vuex'
 
@@ -29,10 +35,11 @@
   export default {
     name: "unicore-job-submission",
     mixins: [JobSubmissionMixin],
+    components: { TabActionConsole},
     methods: {
       ...mapActions(["save"]), ...mapMutations(["updateStore", "resetStore"])
-    },  computed: {
-      ...mapGetters({'storeData':"data"})
+    }, computed: {
+      ...mapGetters({'storeData': "data"})
     }
   }
 </script>

@@ -14,6 +14,10 @@
     <resource-job-manager v-bind:updateData="updateResourceJobManager"
                           v-bind:data="data.resourceJobManager" v-bind:id="id"></resource-job-manager>
   </div>
+   <div class="new-application-tab-main">
+      <tab-action-console v-if="editable" v-bind:save="save" v-bind:cancel="cancel"
+                          v-bind:sectionName="'Queues'" v-bind:enableCancel="false"></tab-action-console>
+    </div>
 </template>
 
 
@@ -21,12 +25,13 @@
   import JobSubmissionMixin from './job_submission_mixin'
   import {createNamespacedHelpers} from 'vuex'
   import ResourceJobManager from './ResourceJobManager'
+  import TabActionConsole from '../../TabActionConsole'
 
   const {mapGetters, mapActions, mapMutations} = createNamespacedHelpers('computeResource/localJobSubmission')
   export default {
     name: "local-job-submission",
     mixins: [JobSubmissionMixin],
-    components: {ResourceJobManager},
+    components: {ResourceJobManager,TabActionConsole},
     methods: {
       ...mapActions(["save"]), ...mapMutations(["updateStore", "resetStore", "updateResourceJobManager"])
     }, computed: {

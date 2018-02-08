@@ -17,22 +17,28 @@
         <div class="entry" v-for="entryPoint,index in data.globusGateKeeperEndPoint">
           <input type="text" v-model="data.globusGateKeeperEndPoint[index]"/>
         </div>
-        <div class="deployment-entry"  v-if="editable">
+        <div class="deployment-entry" v-if="editable">
           <input type="button" class="deployment btn" v-if="view" value="Add Entry Point"
                  v-on:click="data.globusGateKeeperEndPoint.push('')"/>
         </div>
       </div>
+    </div>
+    <div class="new-application-tab-main">
+      <tab-action-console v-if="editable" v-bind:save="save" v-bind:cancel="cancel"
+                          v-bind:sectionName="'Queues'" v-bind:enableCancel="false"></tab-action-console>
     </div>
   </div>
 </template>
 <script>
   import JobSubmissionMixin from './job_submission_mixin'
   import {createNamespacedHelpers} from 'vuex'
+  import TabActionConsole from '../../TabActionConsole'
 
   const {mapGetters, mapActions, mapMutations} = createNamespacedHelpers('computeResource/globusJobSubmission')
   export default {
     name: "globus-job-submission",
     mixins: [JobSubmissionMixin],
+    components: {TabActionConsole},
     methods: {
       ...mapActions(["save"]), ...mapMutations(["updateStore", "resetStore"])
     }, computed: {

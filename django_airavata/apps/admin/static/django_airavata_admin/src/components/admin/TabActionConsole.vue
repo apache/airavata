@@ -1,7 +1,7 @@
 <template>
   <div class="btns">
     <transition name="fade"><label v-if="msg" class="msg" v-bind:class="status">{{msg}}</label></transition>
-    <input class="vbtn vbtn-cancel" type="button" value="Cancel" v-on:click="cancel"/>
+    <input class="vbtn vbtn-cancel" type="button" value="Cancel" v-on:click="cancel" v-if="enableCancel"/>
     <input class="vbtn vbtn-default" type="button" value="Save" v-on:click="saveFn"/>
   </div>
 </template>
@@ -26,6 +26,10 @@
       sectionName:{
         type:String,
         default:""
+      },
+      enableCancel:{
+        type:Boolean,
+        default:true
       }
     },
     methods: {

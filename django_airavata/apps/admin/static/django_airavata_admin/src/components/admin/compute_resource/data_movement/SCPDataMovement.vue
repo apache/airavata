@@ -19,17 +19,23 @@
       <div class="heading">SSH Port</div>
       <input type="number" v-model="data.sshPort"/>
     </div>
+    <div class="new-application-tab-main">
+      <tab-action-console v-if="editable" v-bind:save="save" v-bind:cancel="cancel"
+                          v-bind:sectionName="'Queues'" v-bind:enableCancel="false"></tab-action-console>
+    </div>
   </div>
 </template>
 
 <script>
   import {createNamespacedHelpers} from 'vuex'
   import dataMovementMixin from './data_movement_mixin'
+  import TabActionConsole from '../../TabActionConsole'
 
   const {mapGetters, mapActions, mapMutations} = createNamespacedHelpers('computeResource/dataMovement')
   export default {
     name: "s-c-p-data-movement",
     mixins: [dataMovementMixin],
+    components: {TabActionConsole},
     computed: {
       ...mapGetters({
         storeData: 'scpData'

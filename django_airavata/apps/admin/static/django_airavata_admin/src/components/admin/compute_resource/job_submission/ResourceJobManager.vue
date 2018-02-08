@@ -40,6 +40,10 @@
                v-on:click="parallelismPrefix.push({name:'',value:''})" v-if="editable"/>
       </div>
     </div>
+     <div class="new-application-tab-main">
+      <tab-action-console v-if="editable" v-bind:save="save" v-bind:cancel="cancel"
+                          v-bind:sectionName="'Queues'"></tab-action-console>
+    </div>
   </div>
 </template>
 
