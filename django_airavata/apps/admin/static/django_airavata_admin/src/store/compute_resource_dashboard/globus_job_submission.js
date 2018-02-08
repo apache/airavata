@@ -1,4 +1,5 @@
 import Vue from "vue";
+import DjangoAiravataAPI from 'django-airavata-api'
 
 var defaultData = function (id = null) {
   return {
@@ -10,7 +11,8 @@ var defaultData = function (id = null) {
 export default {
   namespaced: true,
   state: {
-    data: {}
+    data: {},
+    fetch: false,
   },
   mutations: {
     updateStore: function (state, {data, id}) {
@@ -27,11 +29,16 @@ export default {
       }
     },
     addEmptyData: function (state, id) {
+      if (state.fetch && state.data[id] == null) {
+      }
       state.data[id] = defaultData()
     }
   },
   getters: {
     data: (state) => id => {
+      if (state.fetch && state.data[id] == null) {
+        state.data[id] = DjangoAiravataAPI.services.GlobusJobSubmissionService.retrieve(id)
+      }
       return state.data[id]
     },
   },

@@ -5,6 +5,7 @@ import localJobSubmission from './local_job_submission'
 import sshJobSubmission from './ssh_job_submission'
 import unicoreJobSubmission from './unicore_job_submission'
 import dataMovement from './data_movement'
+import DjangoAiravataAPI from 'django-airavata-api'
 
 let batchQueues = function () {
   return {
@@ -22,19 +23,19 @@ let batchQueues = function () {
     isDefaultQueue: false
   }
 }
-let jobSubmission = function (id,protocol) {
+let jobSubmission = function (id, protocol) {
   return {
-      jobSubmissionInterfaceId: id,
-      jobSubmissionProtocol: protocol,
-      priorityOrder: null,
-    }
+    jobSubmissionInterfaceId: id,
+    jobSubmissionProtocol: protocol,
+    priorityOrder: null,
+  }
 }
 
-let dataMovementDefault=function (id, protocol) {
+let dataMovementDefault = function (id, protocol) {
   return {
-    dataMovementInterfaceId:id,
-    dataMovementProtocol:protocol,
-    priorityOrder :null
+    dataMovementInterfaceId: id,
+    dataMovementProtocol: protocol,
+    priorityOrder: null
   }
 }
 
@@ -54,21 +55,29 @@ let defaultData = function () {
       4: ''
     },
     jobSubmissionInterfaces: [],
-    dataMovementInterfaces:[],
-    gatewayUsageReporting:false,
-    gatewayUsageModuleLoadCommand:null,
-    gatewayUsageExecutable:null
+    dataMovementInterfaces: [],
+    gatewayUsageReporting: false,
+    gatewayUsageModuleLoadCommand: null,
+    gatewayUsageExecutable: null
   }
 }
 
 export default {
   namespaced: true,
-  modules: {cloudJobSubmission, globusJobSubmission, localJobSubmission, sshJobSubmission, unicoreJobSubmission,dataMovement},
+  modules: {
+    cloudJobSubmission,
+    globusJobSubmission,
+    localJobSubmission,
+    sshJobSubmission,
+    unicoreJobSubmission,
+    dataMovement
+  },
   state: {
     data: defaultData(),
-    fetch: false,
-    onlyView: true,
-    counter:0
+    fetch: true,
+    editable: false,
+    counter: 0,
+    id: null
   },
   mutations: {
     updateStore: function (state, data) {
@@ -84,25 +93,41 @@ export default {
         }
       }
     },
-    addJobSubmission:function (state,{id=null,protocol=null}) {
-      state.data.jobSubmissionInterfaces.push(jobSubmission(id,protocol))
+    addJobSubmission: function (state, {id = null, protocol = null}) {
+      state.data.jobSubmissionInterfaces.push(jobSubmission(id, protocol))
     },
-    addDataMovement:function (state,{id=null,protocol=null}) {
-      state.data.dataMovementInterfaces.push(dataMovementDefault(id,protocol))
+    addDataMovement: function (state, {id = null, protocol = null}) {
+      state.data.dataMovementInterfaces.push(dataMovementDefault(id, protocol))
     },
+    fetch: function ({state, rootState}, value) {
+      state.fetch = value
+      rootState.computeResource.cloudJobSubmission.fetch = value
+      rootState.computeResource.dataMovement.fetch = value
+      rootState.computeResource.globusJobSubmission.fetch = value
+      rootState.computeResource.localJobSubmission.fetch = value
+      rootState.computeResource.sshJobSubmission.fetch = value
+      rootState.computeResource.unicoreJobSubmission.fetch = value
+    },
+    setComputeResourceId: function (state, id) {
+      state.id = id
+    }
   },
   getters: {
     data: (state) => {
       if (state.fetch) {
         state.fetch = false
-      }3
+        console.log("before")
+        state.data = DjangoAiravataAPI.services.ComputeResourceService.retrieve(state.id)
+        console.log("after")
+
+      }
       return state.data
     },
-    counter:(state)=>()=>{
+    counter: (state) => () => {
       state.counter++
       return state.counter
     },
-    view: (state) => state.onlyView,
+    editable: (state) => state.editable,
     createBatchQueue: (state) => batchQueues(),
     createJobSubmission: (state) => jobSubmission()
   },

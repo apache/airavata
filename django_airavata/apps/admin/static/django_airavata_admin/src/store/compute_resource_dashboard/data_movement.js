@@ -1,4 +1,5 @@
 import Vue from "vue";
+import DjangoAiravataAPI from 'django-airavata-api'
 
 var localDataMovement = function () {
   return {
@@ -36,7 +37,8 @@ export default {
     local: {},
     unicore: {},
     scp: {},
-    grid: {}
+    grid: {},
+    fetch: true,
   },
   mutations: {
     updateLocal: function (state, {data, id}) {
@@ -76,15 +78,27 @@ export default {
   },
   getters: {
     localData: (state) => id => {
+      if (state.fetch && state.local[id]) {
+      }
       return state.local[id]
     },
     unicoreData: (state) => id => {
+      if (state.fetch && !(id in state.unicore)) {
+        state.unicore[id] = DjangoAiravataAPI.services.UnicoreDataMovementService.retrieve(id)
+      }
       return state.unicore[id]
     },
     gridData: (state) => id => {
+      if (state.fetch && !(id in state.grid)) {
+        console.log("Fetch")
+        state.grid[id] = DjangoAiravataAPI.services.GridFTPDataMovementService.retrieve(id)
+      }
       return state.grid[id]
     },
     scpData: (state) => id => {
+      if (state.fetch && !(id in state.scp)) {
+        state.scp[id] = DjangoAiravataAPI.services.SCPDataMovementService.retrieve(id)
+      }
       return state.scp[id]
     },
 

@@ -24,7 +24,7 @@
       </div>
     </div>
     <div class="new-application-tab-main">
-      <tab-action-console v-if="view" v-bind:save="save" v-bind:cancel="cancel"
+      <tab-action-console v-if="editable" v-bind:save="save" v-bind:cancel="cancel"
                           v-bind:sectionName="'File Systems'"></tab-action-console>
     </div>
   </div>

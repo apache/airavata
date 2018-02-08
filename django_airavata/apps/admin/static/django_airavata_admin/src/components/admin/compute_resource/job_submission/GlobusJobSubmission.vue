@@ -3,7 +3,7 @@
     <div class="entry">
       <div class="entry">
         <div class="heading">Select Security Protocol</div>
-        <select v-model="data.securityProtocol">
+        <select v-model="data.securityProtocol" v-bind:disabled="editable?'':'disabled'">
           <option value="0">USERNAME_PASSWORD</option>
           <option value="1">SSH_KEYS</option>
           <option value="2">GSI</option>
@@ -17,7 +17,7 @@
         <div class="entry" v-for="entryPoint,index in data.globusGateKeeperEndPoint">
           <input type="text" v-model="data.globusGateKeeperEndPoint[index]"/>
         </div>
-        <div class="deployment-entry">
+        <div class="deployment-entry"  v-if="editable">
           <input type="button" class="deployment btn" v-if="view" value="Add Entry Point"
                  v-on:click="data.globusGateKeeperEndPoint.push('')"/>
         </div>

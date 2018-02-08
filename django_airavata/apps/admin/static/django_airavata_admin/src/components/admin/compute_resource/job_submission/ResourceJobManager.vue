@@ -3,7 +3,7 @@
     <div class="entry">
       <div class="entry">
         <div class="heading">Resource Job Manager Type</div>
-        <select v-model="data.resourceJobManagerType">
+        <select v-model="data.resourceJobManagerType" v-bind:disabled="editable?'':'disabled'">
           <option value="0">FORK</option>
           <option value="1">PBS</option>
           <option value="2">SLURM</option>
@@ -28,7 +28,7 @@
           <input type="text" placeholder="Value" v-model="cmd.value"/>
         </div>
         <input type="button" class="deployment btn" value="Add Command"
-               v-on:click="jobManagerCommands.push({name:'',value:''})"/>
+               v-on:click="jobManagerCommands.push({name:'',value:''})" v-if="editable"/>
       </div>
       <div class="deployment-entry">
         <h4>Parallelism Prefixes</h4>
@@ -37,13 +37,16 @@
           <input type="text" placeholder="Value" v-model="cmd.value"/>
         </div>
         <input type="button" class="deployment btn" value="Add Command"
-               v-on:click="parallelismPrefix.push({name:'',value:''})"/>
+               v-on:click="parallelismPrefix.push({name:'',value:''})" v-if="editable"/>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+  import {createNamespacedHelpers} from 'vuex'
+
+  const {mapGetters} = createNamespacedHelpers('computeResource')
   export default {
     name: "resource-job-manager",
     data: function () {
@@ -75,6 +78,10 @@
       this.data.parallelismPrefix = this.parallelismPrefix.reduce(reducer, {});
       console.log(this.data);
       this.updateData({data: this.data, id: this.id})
+    }, computed: {
+      ...mapGetters({
+        editable: 'editable',
+      })
     },
     watch: {
       data: function (newValue) {

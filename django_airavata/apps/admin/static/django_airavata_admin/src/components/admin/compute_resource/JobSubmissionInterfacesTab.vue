@@ -2,7 +2,7 @@
   <div class="main_section">
     <div class="new-application-tab-main">
       <h4>Job Submission Interfaces</h4>
-      <div class="entry">
+      <div class="entry"  v-if="editable">
         <div class="heading">Add Job Submission</div>
         <select v-model="jobSubmission">
           <option value="0">Local</option>

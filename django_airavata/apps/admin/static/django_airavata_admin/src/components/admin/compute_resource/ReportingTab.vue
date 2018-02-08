@@ -17,18 +17,24 @@
         <input type="text" v-model="data.gatewayUsageExecutable"/>
       </div>
     </div>
+    <div class="new-application-tab-main">
+      <tab-action-console v-if="editable" v-bind:save="save" v-bind:cancel="cancel"
+                          v-bind:sectionName="'Reporting'"></tab-action-console>
+    </div>
   </div>
 </template>
 
 <script>
   import BooleanRadioButton from '../BooleanRadioButton'
+  import TabActionConsole from '../TabActionConsole'
+
   import tabMixin from '../../tabs/tab_mixin'
   import computeResourceTabMixin from './compute_resource_tab_mixin'
 
   export default {
     name: "reporting-tab",
     components: {
-      BooleanRadioButton
+      BooleanRadioButton,TabActionConsole
     },
     mixins: [tabMixin, computeResourceTabMixin],
     methods: {

@@ -2,7 +2,7 @@
   <div>
     <div class="entry">
       <div class="heading">Select Security Protocol</div>
-      <select v-model="data.securityProtocol">
+      <select v-model="data.securityProtocol" v-bind:disabled="editable?'':'disabled'">
         <option value="0">USERNAME_PASSWORD</option>
         <option value="1">SSH_KEYS</option>
         <option value="2">GSI</option>
@@ -37,7 +37,7 @@
     },
     methods: {
       ...mapMutations({
-        updateStore: 'updateSCP'
+        updateData: 'updateSCP'
       })
     }
   }

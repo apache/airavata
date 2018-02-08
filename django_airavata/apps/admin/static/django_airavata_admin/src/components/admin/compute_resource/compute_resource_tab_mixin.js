@@ -6,9 +6,17 @@ export default {
   computed: {
     ...mapGetters({
       storeData: 'data',
-      view: 'view',
+      editable: 'editable',
       createBatchQueue: 'createBatchQueue'
     })
+  },
+  mounted: function () {
+    this.tabCreation()
+    if (this.editable == false) {
+      let inputNodes = document.querySelectorAll('.main_section input,textarea')
+      inputNodes.forEach((node) => node.readOnly = true)
+    }
+
   },
   methods: {
     ...mapMutations(['updateStore', 'resetStore']),
@@ -16,6 +24,7 @@ export default {
     cancel: function () {
       this.resetStore({resetFields: this.fields});
       this.tabCreation();
-    }
+    },
+
   }
 }

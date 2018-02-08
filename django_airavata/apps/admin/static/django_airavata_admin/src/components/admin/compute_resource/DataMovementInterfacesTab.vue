@@ -2,9 +2,9 @@
   <div class="main_section">
     <div class="new-application-tab-main">
       <h4>Data Movement Interfaces</h4>
-      <div class="entry">
+      <div class="entry" v-if="editable">
         <div class="heading">Add Job Submission</div>
-        <select v-model="dataMovement">
+        <select v-model="dataMovement" v-bind:disabled="editable?'':'disabled'">
           <option value="0">LOCAL</option>
           <option value="1">SCP</option>
           <option value="3">GridFTP</option>
@@ -18,10 +18,14 @@
     </div>
     <div class="new-application-tab-main">
       <tab-sub-section v-for="interface,index in data.dataMovementInterfaces" v-bind:key="index">
-        <l-o-c-a-l-data-movement v-if="interface.dataMovementProtocol == 0" v-bind:id="interface.dataMovementInterfaceId"></l-o-c-a-l-data-movement>
-        <s-c-p-data-movement v-else-if="interface.dataMovementProtocol == 1" v-bind:id="interface.dataMovementInterfaceId"></s-c-p-data-movement>
-        <grid-f-t-p-data-movement v-else-if="interface.dataMovementProtocol == 3" v-bind:id="interface.dataMovementInterfaceId"></grid-f-t-p-data-movement>
-        <unicore-data-movement v-else-if="interface.dataMovementProtocol == 4" v-bind:id="interface.dataMovementInterfaceId"></unicore-data-movement>
+        <l-o-c-a-l-data-movement v-if="interface.dataMovementProtocol == 0"
+                                 v-bind:id="interface.dataMovementInterfaceId"></l-o-c-a-l-data-movement>
+        <s-c-p-data-movement v-else-if="interface.dataMovementProtocol == 1"
+                             v-bind:id="interface.dataMovementInterfaceId"></s-c-p-data-movement>
+        <grid-f-t-p-data-movement v-else-if="interface.dataMovementProtocol == 3"
+                                  v-bind:id="interface.dataMovementInterfaceId"></grid-f-t-p-data-movement>
+        <unicore-data-movement v-else-if="interface.dataMovementProtocol == 4"
+                               v-bind:id="interface.dataMovementInterfaceId"></unicore-data-movement>
       </tab-sub-section>
     </div>
   </div>
@@ -49,7 +53,7 @@
     },
     mixins: [tabMixin, computeResourceTabMixin],
     computed: {
-      ...mapGetters({counter:'computeResource/counter'})
+      ...mapGetters({counter: 'computeResource/counter'})
     },
     data: function () {
       return {
@@ -90,7 +94,7 @@
 </script>
 
 <style scoped>
- .submission-btn input {
+  .submission-btn input {
     margin-top: 10px;
   }
 </style>

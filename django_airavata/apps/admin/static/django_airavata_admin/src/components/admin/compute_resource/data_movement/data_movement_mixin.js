@@ -1,7 +1,6 @@
 import {createNamespacedHelpers} from 'vuex'
 
-const {mapGetters, mapActions, mapMutations} = createNamespacedHelpers('computeResource/dataMovement')
-
+const {mapGetters} = createNamespacedHelpers('computeResource')
 export default {
   props: {
     id: {
@@ -13,8 +12,13 @@ export default {
       data: {}
     }
   },
+  computed: {
+    ...mapGetters({
+      editable: 'editable',
+    })
+  },
   mounted: function () {
-    console.log("Before",this.id,this.storeData)
+    console.log("Before data", this.id, this.storeData)
     this.data = this.storeData(this.id)
   },
   beforeDestroy: function () {

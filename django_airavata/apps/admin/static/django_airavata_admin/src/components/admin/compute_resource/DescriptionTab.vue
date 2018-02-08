@@ -13,7 +13,7 @@
         </div>
       </div>
       <div class="deployment-entry">
-        <input type="button" class="deployment btn" v-if="view" value="Add Aliases"
+        <input type="button" class="deployment btn" v-if="editable" value="Add Aliases"
                v-on:click="data.hostAliases.push('')"/>
       </div>
     </div>
@@ -25,7 +25,7 @@
         </div>
       </div>
       <div class="deployment-entry">
-        <input type="button" class="deployment btn" v-if="view" value="Add IP Addresses"
+        <input type="button" class="deployment btn" v-if="editable" value="Add IP Addresses"
                v-on:click="data.ipAddresses.push('')"/>
       </div>
     </div>
@@ -41,7 +41,7 @@
       </div>
     </div>
     <div class="new-application-tab-main">
-      <tab-action-console v-if="view" v-bind:save="save" v-bind:cancel="cancel"
+      <tab-action-console v-if="editable" v-bind:save="save" v-bind:cancel="cancel"
                           v-bind:sectionName="'Description'"></tab-action-console>
     </div>
   </div>

@@ -2,7 +2,7 @@
   <div>
     <div class="entry">
       <div class="heading">Select Security Protocol</div>
-      <select v-model="data.securityProtocol">
+      <select v-model="data.securityProtocol" v-bind:disabled="editable?'':'disabled'">
         <option value="0">USERNAME_PASSWORD</option>
         <option value="1">SSH_KEYS</option>
         <option value="2">GSI</option>
@@ -18,7 +18,7 @@
           <input type="text" v-model="data.gridFTPEndPoints[index]"/>
         </div>
       </div>
-      <div class="deployment-entry">
+      <div class="deployment-entry" v-if="editable">
         <input type="button" class="deployment btn" value="Add Endpoint"
                v-on:click="data.gridFTPEndPoints.push('')"/>
       </div>
@@ -30,7 +30,7 @@
   import {createNamespacedHelpers} from 'vuex'
   import dataMovementMixin from './data_movement_mixin'
 
-  const {mapGetters, mapActions, mapMutations} = createNamespacedHelpers('computeResource/dataMovement')
+  const {mapGetters, mapMutations} = createNamespacedHelpers('computeResource/dataMovement')
 
   export default {
     name: "grid-f-t-p-data-movement",
@@ -42,7 +42,7 @@
     },
     methods: {
       ...mapMutations({
-        updateStore: 'updateGrid'
+        updateData: 'updateGrid'
       })
     }
   }

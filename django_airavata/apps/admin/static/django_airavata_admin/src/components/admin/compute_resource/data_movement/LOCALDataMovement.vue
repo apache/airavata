@@ -18,7 +18,7 @@
     },
     methods: {
       ...mapMutations({
-        updateStore: 'updateLocal'
+        updateData: 'updateLocal'
       })
     }
   }

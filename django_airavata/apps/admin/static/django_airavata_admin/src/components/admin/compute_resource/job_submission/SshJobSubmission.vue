@@ -3,7 +3,7 @@
     <div class="entry">
       <div class="entry">
         <div class="heading">Select Security Protocol</div>
-        <select v-model="data.securityProtocol">
+        <select v-model="data.securityProtocol"  v-bind:disabled="editable?'':'disabled'">
           <option value="0">USERNAME_PASSWORD</option>
           <option value="1">SSH_KEYS</option>
           <option value="2">GSI</option>
@@ -22,7 +22,7 @@
       </div>
       <div class="entry">
         <div class="heading">Monitor Mode</div>
-        <select v-model="data.monitorMode">
+        <select v-model="data.monitorMode"  v-bind:disabled="editable?'':'disabled'">
           <option value="0">POLL_JOB_MANAGER</option>
           <option value="1">CLOUD_JOB_MONITOR</option>
           <option value="2">JOB_EMAIL_NOTIFICATION_MONITOR</option>

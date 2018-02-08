@@ -1,6 +1,6 @@
 <template>
   <div>
-    <tabbed-view v-bind:tabNames="tabNames" v-bind:defaultActiveTab="currentActiveTab" v-on:tabchange="tabEventHandler">
+    <tabbed-view v-bind:title="'Compute Resources'" v-bind:tabNames="tabNames" v-bind:defaultActiveTab="currentActiveTab" v-on:tabchange="tabEventHandler">
       <description-tab v-if="currentActiveTab==0"></description-tab>
       <queues-tab v-if="currentActiveTab==1"></queues-tab>
       <file-system-tab v-if="currentActiveTab==2"></file-system-tab>
