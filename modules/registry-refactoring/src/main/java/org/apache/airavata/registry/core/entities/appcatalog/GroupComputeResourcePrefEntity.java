@@ -15,10 +15,6 @@ public class GroupComputeResourcePrefEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "GATEWAY_ID")
-    @Id
-    private String gatewayID;
-
     @Column(name = "RESOURCE_ID")
     @Id
     private String computeResourceId;
@@ -83,14 +79,6 @@ public class GroupComputeResourcePrefEntity implements Serializable {
     private  GroupResourceProfileEntity groupResourceProfile;
 
     public GroupComputeResourcePrefEntity() {
-    }
-
-    public String getGatewayID() {
-        return gatewayID;
-    }
-
-    public void setGatewayID(String gatewayID) {
-        this.gatewayID = gatewayID;
     }
 
     public String getComputeResourceId() {
