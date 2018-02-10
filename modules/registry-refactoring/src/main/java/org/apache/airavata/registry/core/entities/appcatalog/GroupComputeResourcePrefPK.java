@@ -11,10 +11,6 @@ public class GroupComputeResourcePrefPK implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "GATEWAY_ID")
-    @Id
-    private String gatewayID;
-
     @Column(name = "RESOURCE_ID")
     @Id
     private String computeResourceId;
@@ -22,14 +18,6 @@ public class GroupComputeResourcePrefPK implements Serializable {
     @Column(name = "GROUP_RESOURCE_PROFILE_ID")
     @Id
     private String groupResourceProfileId;
-
-    public String getGatewayID() {
-        return gatewayID;
-    }
-
-    public void setGatewayID(String gatewayID) {
-        this.gatewayID = gatewayID;
-    }
 
     public String getComputeResourceId() {
         return computeResourceId;
