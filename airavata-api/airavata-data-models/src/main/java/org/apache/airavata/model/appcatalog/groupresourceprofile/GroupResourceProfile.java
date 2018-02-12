@@ -47,7 +47,7 @@ package org.apache.airavata.model.appcatalog.groupresourceprofile;
 public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResourceProfile, GroupResourceProfile._Fields>, java.io.Serializable, Cloneable, Comparable<GroupResourceProfile> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("GroupResourceProfile");
 
-  private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayID", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField GROUP_RESOURCE_PROFILE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("groupResourceProfileId", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField GROUP_RESOURCE_PROFILE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("groupResourceProfileName", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField COMPUTE_PREFERENCES_FIELD_DESC = new org.apache.thrift.protocol.TField("computePreferences", org.apache.thrift.protocol.TType.LIST, (short)4);
@@ -59,7 +59,7 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new GroupResourceProfileStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new GroupResourceProfileTupleSchemeFactory();
 
-  private java.lang.String gatewayID; // required
+  private java.lang.String gatewayId; // required
   private java.lang.String groupResourceProfileId; // required
   private java.lang.String groupResourceProfileName; // optional
   private java.util.List<GroupComputeResourcePreference> computePreferences; // optional
@@ -70,7 +70,7 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    GATEWAY_ID((short)1, "gatewayID"),
+    GATEWAY_ID((short)1, "gatewayId"),
     GROUP_RESOURCE_PROFILE_ID((short)2, "groupResourceProfileId"),
     GROUP_RESOURCE_PROFILE_NAME((short)3, "groupResourceProfileName"),
     COMPUTE_PREFERENCES((short)4, "computePreferences"),
@@ -155,7 +155,7 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayID", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.GROUP_RESOURCE_PROFILE_ID, new org.apache.thrift.meta_data.FieldMetaData("groupResourceProfileId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
@@ -182,11 +182,11 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
   }
 
   public GroupResourceProfile(
-    java.lang.String gatewayID,
+    java.lang.String gatewayId,
     java.lang.String groupResourceProfileId)
   {
     this();
-    this.gatewayID = gatewayID;
+    this.gatewayId = gatewayId;
     this.groupResourceProfileId = groupResourceProfileId;
   }
 
@@ -195,8 +195,8 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
    */
   public GroupResourceProfile(GroupResourceProfile other) {
     __isset_bitfield = other.__isset_bitfield;
-    if (other.isSetGatewayID()) {
-      this.gatewayID = other.gatewayID;
+    if (other.isSetGatewayId()) {
+      this.gatewayId = other.gatewayId;
     }
     if (other.isSetGroupResourceProfileId()) {
       this.groupResourceProfileId = other.groupResourceProfileId;
@@ -235,7 +235,7 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
 
   @Override
   public void clear() {
-    this.gatewayID = null;
+    this.gatewayId = null;
     this.groupResourceProfileId = null;
     this.groupResourceProfileName = null;
     this.computePreferences = null;
@@ -247,26 +247,26 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
     this.updatedTime = 0;
   }
 
-  public java.lang.String getGatewayID() {
-    return this.gatewayID;
+  public java.lang.String getGatewayId() {
+    return this.gatewayId;
   }
 
-  public void setGatewayID(java.lang.String gatewayID) {
-    this.gatewayID = gatewayID;
+  public void setGatewayId(java.lang.String gatewayId) {
+    this.gatewayId = gatewayId;
   }
 
-  public void unsetGatewayID() {
-    this.gatewayID = null;
+  public void unsetGatewayId() {
+    this.gatewayId = null;
   }
 
-  /** Returns true if field gatewayID is set (has been assigned a value) and false otherwise */
-  public boolean isSetGatewayID() {
-    return this.gatewayID != null;
+  /** Returns true if field gatewayId is set (has been assigned a value) and false otherwise */
+  public boolean isSetGatewayId() {
+    return this.gatewayId != null;
   }
 
-  public void setGatewayIDIsSet(boolean value) {
+  public void setGatewayIdIsSet(boolean value) {
     if (!value) {
-      this.gatewayID = null;
+      this.gatewayId = null;
     }
   }
 
@@ -478,9 +478,9 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
     switch (field) {
     case GATEWAY_ID:
       if (value == null) {
-        unsetGatewayID();
+        unsetGatewayId();
       } else {
-        setGatewayID((java.lang.String)value);
+        setGatewayId((java.lang.String)value);
       }
       break;
 
@@ -546,7 +546,7 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
   public java.lang.Object getFieldValue(_Fields field) {
     switch (field) {
     case GATEWAY_ID:
-      return getGatewayID();
+      return getGatewayId();
 
     case GROUP_RESOURCE_PROFILE_ID:
       return getGroupResourceProfileId();
@@ -581,7 +581,7 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
 
     switch (field) {
     case GATEWAY_ID:
-      return isSetGatewayID();
+      return isSetGatewayId();
     case GROUP_RESOURCE_PROFILE_ID:
       return isSetGroupResourceProfileId();
     case GROUP_RESOURCE_PROFILE_NAME:
@@ -615,12 +615,12 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
     if (this == that)
       return true;
 
-    boolean this_present_gatewayID = true && this.isSetGatewayID();
-    boolean that_present_gatewayID = true && that.isSetGatewayID();
-    if (this_present_gatewayID || that_present_gatewayID) {
-      if (!(this_present_gatewayID && that_present_gatewayID))
+    boolean this_present_gatewayId = true && this.isSetGatewayId();
+    boolean that_present_gatewayId = true && that.isSetGatewayId();
+    if (this_present_gatewayId || that_present_gatewayId) {
+      if (!(this_present_gatewayId && that_present_gatewayId))
         return false;
-      if (!this.gatewayID.equals(that.gatewayID))
+      if (!this.gatewayId.equals(that.gatewayId))
         return false;
     }
 
@@ -694,9 +694,9 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
   public int hashCode() {
     int hashCode = 1;
 
-    hashCode = hashCode * 8191 + ((isSetGatewayID()) ? 131071 : 524287);
-    if (isSetGatewayID())
-      hashCode = hashCode * 8191 + gatewayID.hashCode();
+    hashCode = hashCode * 8191 + ((isSetGatewayId()) ? 131071 : 524287);
+    if (isSetGatewayId())
+      hashCode = hashCode * 8191 + gatewayId.hashCode();
 
     hashCode = hashCode * 8191 + ((isSetGroupResourceProfileId()) ? 131071 : 524287);
     if (isSetGroupResourceProfileId())
@@ -737,12 +737,12 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
 
     int lastComparison = 0;
 
-    lastComparison = java.lang.Boolean.valueOf(isSetGatewayID()).compareTo(other.isSetGatewayID());
+    lastComparison = java.lang.Boolean.valueOf(isSetGatewayId()).compareTo(other.isSetGatewayId());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetGatewayID()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayID, other.gatewayID);
+    if (isSetGatewayId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayId, other.gatewayId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -837,11 +837,11 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
     java.lang.StringBuilder sb = new java.lang.StringBuilder("GroupResourceProfile(");
     boolean first = true;
 
-    sb.append("gatewayID:");
-    if (this.gatewayID == null) {
+    sb.append("gatewayId:");
+    if (this.gatewayId == null) {
       sb.append("null");
     } else {
-      sb.append(this.gatewayID);
+      sb.append(this.gatewayId);
     }
     first = false;
     if (!first) sb.append(", ");
@@ -910,8 +910,8 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetGatewayID()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayID' is unset! Struct:" + toString());
+    if (!isSetGatewayId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' is unset! Struct:" + toString());
     }
 
     if (!isSetGroupResourceProfileId()) {
@@ -959,8 +959,8 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
         switch (schemeField.id) {
           case 1: // GATEWAY_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.gatewayID = iprot.readString();
-              struct.setGatewayIDIsSet(true);
+              struct.gatewayId = iprot.readString();
+              struct.setGatewayIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1067,9 +1067,9 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.gatewayID != null) {
+      if (struct.gatewayId != null) {
         oprot.writeFieldBegin(GATEWAY_ID_FIELD_DESC);
-        oprot.writeString(struct.gatewayID);
+        oprot.writeString(struct.gatewayId);
         oprot.writeFieldEnd();
       }
       if (struct.groupResourceProfileId != null) {
@@ -1153,7 +1153,7 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, GroupResourceProfile struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-      oprot.writeString(struct.gatewayID);
+      oprot.writeString(struct.gatewayId);
       oprot.writeString(struct.groupResourceProfileId);
       java.util.BitSet optionals = new java.util.BitSet();
       if (struct.isSetGroupResourceProfileName()) {
@@ -1216,8 +1216,8 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, GroupResourceProfile struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-      struct.gatewayID = iprot.readString();
-      struct.setGatewayIDIsSet(true);
+      struct.gatewayId = iprot.readString();
+      struct.setGatewayIdIsSet(true);
       struct.groupResourceProfileId = iprot.readString();
       struct.setGroupResourceProfileIdIsSet(true);
       java.util.BitSet incoming = iprot.readBitSet(6);

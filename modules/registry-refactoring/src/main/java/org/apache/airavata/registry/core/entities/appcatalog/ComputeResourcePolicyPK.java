@@ -24,8 +24,8 @@ public class ComputeResourcePolicyPK implements Serializable {
     private String groupResourceProfileId;
 
     @Id
-    @Column(name = "QUEUE_NAME")
-    private String queuename;
+    @Column(name = "GATEWAY_ID")
+    private String gatewayId;
 
     public ComputeResourcePolicyPK() {
     }
@@ -54,11 +54,36 @@ public class ComputeResourcePolicyPK implements Serializable {
         this.groupResourceProfileId = groupResourceProfileId;
     }
 
-    public String getQueuename() {
-        return queuename;
+    public String getGatewayId() {
+        return gatewayId;
     }
 
-    public void setQueuename(String queuename) {
-        this.queuename = queuename;
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ComputeResourcePolicyPK that = (ComputeResourcePolicyPK) o;
+
+        if (resourcePolicyId != null ? !resourcePolicyId.equals(that.resourcePolicyId) : that.resourcePolicyId != null)
+            return false;
+        if (computeResourceId != null ? !computeResourceId.equals(that.computeResourceId) : that.computeResourceId != null)
+            return false;
+        if (groupResourceProfileId != null ? !groupResourceProfileId.equals(that.groupResourceProfileId) : that.groupResourceProfileId != null)
+            return false;
+        return gatewayId != null ? gatewayId.equals(that.gatewayId) : that.gatewayId == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = resourcePolicyId != null ? resourcePolicyId.hashCode() : 0;
+        result = 31 * result + (computeResourceId != null ? computeResourceId.hashCode() : 0);
+        result = 31 * result + (groupResourceProfileId != null ? groupResourceProfileId.hashCode() : 0);
+        result = 31 * result + (gatewayId != null ? gatewayId.hashCode() : 0);
+        return result;
     }
 }

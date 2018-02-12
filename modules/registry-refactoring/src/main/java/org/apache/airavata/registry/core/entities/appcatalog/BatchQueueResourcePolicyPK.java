@@ -20,6 +20,10 @@ public class BatchQueueResourcePolicyPK implements Serializable{
     private String computeResourceId;
 
     @Id
+    @Column(name = "GATEWAY_ID")
+    private String gatewayId;
+
+    @Id
     @Column(name = "GROUP_RESOURCE_PROFILE_ID")
     private String groupResourceProfileId;
 
@@ -28,6 +32,14 @@ public class BatchQueueResourcePolicyPK implements Serializable{
     private String queuename;
 
     public BatchQueueResourcePolicyPK() {
+    }
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
     }
 
     public String getResourcePolicyId() {
@@ -60,5 +72,30 @@ public class BatchQueueResourcePolicyPK implements Serializable{
 
     public void setQueuename(String queuename) {
         this.queuename = queuename;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        BatchQueueResourcePolicyPK that = (BatchQueueResourcePolicyPK) o;
+
+        if (resourcePolicyId != null ? !resourcePolicyId.equals(that.resourcePolicyId) : that.resourcePolicyId != null)
+            return false;
+        if (computeResourceId != null ? !computeResourceId.equals(that.computeResourceId) : that.computeResourceId != null)
+            return false;
+        if (groupResourceProfileId != null ? !groupResourceProfileId.equals(that.groupResourceProfileId) : that.groupResourceProfileId != null)
+            return false;
+        return queuename != null ? queuename.equals(that.queuename) : that.queuename == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = resourcePolicyId != null ? resourcePolicyId.hashCode() : 0;
+        result = 31 * result + (computeResourceId != null ? computeResourceId.hashCode() : 0);
+        result = 31 * result + (groupResourceProfileId != null ? groupResourceProfileId.hashCode() : 0);
+        result = 31 * result + (queuename != null ? queuename.hashCode() : 0);
+        return result;
     }
 }

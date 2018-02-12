@@ -47,7 +47,7 @@ include "data_movement_models.thrift"
 */
 
 struct GroupResourceProfile {
-    1: required string gatewayID,
+    1: required string gatewayId,
     2: required string groupResourceProfileId,
     3: optional string groupResourceProfileName,
     4: optional list<GroupComputeResourcePreference> computePreferences,
@@ -60,37 +60,40 @@ struct GroupResourceProfile {
 struct GroupComputeResourcePreference {
     1: required string computeResourceId,
     2: required string groupResourceProfileId,
-    3: required bool overridebyAiravata = 1,
-    4: optional string loginUserName,
-    5: optional compute_resource_model.JobSubmissionProtocol preferredJobSubmissionProtocol,
-    6: optional data_movement_models.DataMovementProtocol preferredDataMovementProtocol,
-    7: optional string preferredBatchQueue,
-    8: optional string scratchLocation,
-    9: optional string allocationProjectNumber,
-    10: optional string resourceSpecificCredentialStoreToken,
-    11: optional string usageReportingGatewayId,
-    12: optional string qualityOfService,
-    13: optional string reservation,
-    14: optional i64 reservationStartTime,
-    15: optional i64 reservationEndTime,
-    16: optional string sshAccountProvisioner,
-    17: optional map<string, string> sshAccountProvisionerConfig,
-    18: optional string sshAccountProvisionerAdditionalInfo
+    3: required string gatewayId,
+    4: required bool overridebyAiravata = 1,
+    5: optional string loginUserName,
+    6: optional compute_resource_model.JobSubmissionProtocol preferredJobSubmissionProtocol,
+    7: optional data_movement_models.DataMovementProtocol preferredDataMovementProtocol,
+    8: optional string preferredBatchQueue,
+    9: optional string scratchLocation,
+    10: optional string allocationProjectNumber,
+    11: optional string resourceSpecificCredentialStoreToken,
+    12: optional string usageReportingGatewayId,
+    13: optional string qualityOfService,
+    14: optional string reservation,
+    15: optional i64 reservationStartTime,
+    16: optional i64 reservationEndTime,
+    17: optional string sshAccountProvisioner,
+    18: optional map<string, string> sshAccountProvisionerConfig,
+    19: optional string sshAccountProvisionerAdditionalInfo
 }
 
 struct ComputeResourcePolicy {
     1: required string resourcePolicyId,
     2: required string computeResourceId,
     3: required string groupResourceProfileId,
-    4: optional list<string> allowedBatchQueues
+    4: required string gatewayId,
+    5: optional list<string> allowedBatchQueues
 }
 
 struct BatchQueueResourcePolicy {
     1: required string resourcePolicyId,
     2: required string computeResourceId,
     3: required string groupResourceProfileId,
-    4: optional string queuename,
-    5: optional i32 maxAllowedNodes,
-    6: optional i32 maxAllowedCores,
-    7: optional i32 maxAllowedWalltime
+    4: required string gatewayId,
+    5: optional string queuename,
+    6: optional i32 maxAllowedNodes,
+    7: optional i32 maxAllowedCores,
+    8: optional i32 maxAllowedWalltime
 }

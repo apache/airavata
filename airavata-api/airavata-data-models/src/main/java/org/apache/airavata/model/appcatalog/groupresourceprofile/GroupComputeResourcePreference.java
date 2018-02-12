@@ -30,28 +30,30 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
 
   private static final org.apache.thrift.protocol.TField COMPUTE_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("computeResourceId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField GROUP_RESOURCE_PROFILE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("groupResourceProfileId", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField OVERRIDEBY_AIRAVATA_FIELD_DESC = new org.apache.thrift.protocol.TField("overridebyAiravata", org.apache.thrift.protocol.TType.BOOL, (short)3);
-  private static final org.apache.thrift.protocol.TField LOGIN_USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("loginUserName", org.apache.thrift.protocol.TType.STRING, (short)4);
-  private static final org.apache.thrift.protocol.TField PREFERRED_JOB_SUBMISSION_PROTOCOL_FIELD_DESC = new org.apache.thrift.protocol.TField("preferredJobSubmissionProtocol", org.apache.thrift.protocol.TType.I32, (short)5);
-  private static final org.apache.thrift.protocol.TField PREFERRED_DATA_MOVEMENT_PROTOCOL_FIELD_DESC = new org.apache.thrift.protocol.TField("preferredDataMovementProtocol", org.apache.thrift.protocol.TType.I32, (short)6);
-  private static final org.apache.thrift.protocol.TField PREFERRED_BATCH_QUEUE_FIELD_DESC = new org.apache.thrift.protocol.TField("preferredBatchQueue", org.apache.thrift.protocol.TType.STRING, (short)7);
-  private static final org.apache.thrift.protocol.TField SCRATCH_LOCATION_FIELD_DESC = new org.apache.thrift.protocol.TField("scratchLocation", org.apache.thrift.protocol.TType.STRING, (short)8);
-  private static final org.apache.thrift.protocol.TField ALLOCATION_PROJECT_NUMBER_FIELD_DESC = new org.apache.thrift.protocol.TField("allocationProjectNumber", org.apache.thrift.protocol.TType.STRING, (short)9);
-  private static final org.apache.thrift.protocol.TField RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceSpecificCredentialStoreToken", org.apache.thrift.protocol.TType.STRING, (short)10);
-  private static final org.apache.thrift.protocol.TField USAGE_REPORTING_GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("usageReportingGatewayId", org.apache.thrift.protocol.TType.STRING, (short)11);
-  private static final org.apache.thrift.protocol.TField QUALITY_OF_SERVICE_FIELD_DESC = new org.apache.thrift.protocol.TField("qualityOfService", org.apache.thrift.protocol.TType.STRING, (short)12);
-  private static final org.apache.thrift.protocol.TField RESERVATION_FIELD_DESC = new org.apache.thrift.protocol.TField("reservation", org.apache.thrift.protocol.TType.STRING, (short)13);
-  private static final org.apache.thrift.protocol.TField RESERVATION_START_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("reservationStartTime", org.apache.thrift.protocol.TType.I64, (short)14);
-  private static final org.apache.thrift.protocol.TField RESERVATION_END_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("reservationEndTime", org.apache.thrift.protocol.TType.I64, (short)15);
-  private static final org.apache.thrift.protocol.TField SSH_ACCOUNT_PROVISIONER_FIELD_DESC = new org.apache.thrift.protocol.TField("sshAccountProvisioner", org.apache.thrift.protocol.TType.STRING, (short)16);
-  private static final org.apache.thrift.protocol.TField SSH_ACCOUNT_PROVISIONER_CONFIG_FIELD_DESC = new org.apache.thrift.protocol.TField("sshAccountProvisionerConfig", org.apache.thrift.protocol.TType.MAP, (short)17);
-  private static final org.apache.thrift.protocol.TField SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO_FIELD_DESC = new org.apache.thrift.protocol.TField("sshAccountProvisionerAdditionalInfo", org.apache.thrift.protocol.TType.STRING, (short)18);
+  private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField OVERRIDEBY_AIRAVATA_FIELD_DESC = new org.apache.thrift.protocol.TField("overridebyAiravata", org.apache.thrift.protocol.TType.BOOL, (short)4);
+  private static final org.apache.thrift.protocol.TField LOGIN_USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("loginUserName", org.apache.thrift.protocol.TType.STRING, (short)5);
+  private static final org.apache.thrift.protocol.TField PREFERRED_JOB_SUBMISSION_PROTOCOL_FIELD_DESC = new org.apache.thrift.protocol.TField("preferredJobSubmissionProtocol", org.apache.thrift.protocol.TType.I32, (short)6);
+  private static final org.apache.thrift.protocol.TField PREFERRED_DATA_MOVEMENT_PROTOCOL_FIELD_DESC = new org.apache.thrift.protocol.TField("preferredDataMovementProtocol", org.apache.thrift.protocol.TType.I32, (short)7);
+  private static final org.apache.thrift.protocol.TField PREFERRED_BATCH_QUEUE_FIELD_DESC = new org.apache.thrift.protocol.TField("preferredBatchQueue", org.apache.thrift.protocol.TType.STRING, (short)8);
+  private static final org.apache.thrift.protocol.TField SCRATCH_LOCATION_FIELD_DESC = new org.apache.thrift.protocol.TField("scratchLocation", org.apache.thrift.protocol.TType.STRING, (short)9);
+  private static final org.apache.thrift.protocol.TField ALLOCATION_PROJECT_NUMBER_FIELD_DESC = new org.apache.thrift.protocol.TField("allocationProjectNumber", org.apache.thrift.protocol.TType.STRING, (short)10);
+  private static final org.apache.thrift.protocol.TField RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceSpecificCredentialStoreToken", org.apache.thrift.protocol.TType.STRING, (short)11);
+  private static final org.apache.thrift.protocol.TField USAGE_REPORTING_GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("usageReportingGatewayId", org.apache.thrift.protocol.TType.STRING, (short)12);
+  private static final org.apache.thrift.protocol.TField QUALITY_OF_SERVICE_FIELD_DESC = new org.apache.thrift.protocol.TField("qualityOfService", org.apache.thrift.protocol.TType.STRING, (short)13);
+  private static final org.apache.thrift.protocol.TField RESERVATION_FIELD_DESC = new org.apache.thrift.protocol.TField("reservation", org.apache.thrift.protocol.TType.STRING, (short)14);
+  private static final org.apache.thrift.protocol.TField RESERVATION_START_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("reservationStartTime", org.apache.thrift.protocol.TType.I64, (short)15);
+  private static final org.apache.thrift.protocol.TField RESERVATION_END_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("reservationEndTime", org.apache.thrift.protocol.TType.I64, (short)16);
+  private static final org.apache.thrift.protocol.TField SSH_ACCOUNT_PROVISIONER_FIELD_DESC = new org.apache.thrift.protocol.TField("sshAccountProvisioner", org.apache.thrift.protocol.TType.STRING, (short)17);
+  private static final org.apache.thrift.protocol.TField SSH_ACCOUNT_PROVISIONER_CONFIG_FIELD_DESC = new org.apache.thrift.protocol.TField("sshAccountProvisionerConfig", org.apache.thrift.protocol.TType.MAP, (short)18);
+  private static final org.apache.thrift.protocol.TField SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO_FIELD_DESC = new org.apache.thrift.protocol.TField("sshAccountProvisionerAdditionalInfo", org.apache.thrift.protocol.TType.STRING, (short)19);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new GroupComputeResourcePreferenceStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new GroupComputeResourcePreferenceTupleSchemeFactory();
 
   private java.lang.String computeResourceId; // required
   private java.lang.String groupResourceProfileId; // required
+  private java.lang.String gatewayId; // required
   private boolean overridebyAiravata; // required
   private java.lang.String loginUserName; // optional
   private org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol preferredJobSubmissionProtocol; // optional
@@ -73,30 +75,31 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     COMPUTE_RESOURCE_ID((short)1, "computeResourceId"),
     GROUP_RESOURCE_PROFILE_ID((short)2, "groupResourceProfileId"),
-    OVERRIDEBY_AIRAVATA((short)3, "overridebyAiravata"),
-    LOGIN_USER_NAME((short)4, "loginUserName"),
+    GATEWAY_ID((short)3, "gatewayId"),
+    OVERRIDEBY_AIRAVATA((short)4, "overridebyAiravata"),
+    LOGIN_USER_NAME((short)5, "loginUserName"),
     /**
      * 
      * @see org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol
      */
-    PREFERRED_JOB_SUBMISSION_PROTOCOL((short)5, "preferredJobSubmissionProtocol"),
+    PREFERRED_JOB_SUBMISSION_PROTOCOL((short)6, "preferredJobSubmissionProtocol"),
     /**
      * 
      * @see org.apache.airavata.model.data.movement.DataMovementProtocol
      */
-    PREFERRED_DATA_MOVEMENT_PROTOCOL((short)6, "preferredDataMovementProtocol"),
-    PREFERRED_BATCH_QUEUE((short)7, "preferredBatchQueue"),
-    SCRATCH_LOCATION((short)8, "scratchLocation"),
-    ALLOCATION_PROJECT_NUMBER((short)9, "allocationProjectNumber"),
-    RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN((short)10, "resourceSpecificCredentialStoreToken"),
-    USAGE_REPORTING_GATEWAY_ID((short)11, "usageReportingGatewayId"),
-    QUALITY_OF_SERVICE((short)12, "qualityOfService"),
-    RESERVATION((short)13, "reservation"),
-    RESERVATION_START_TIME((short)14, "reservationStartTime"),
-    RESERVATION_END_TIME((short)15, "reservationEndTime"),
-    SSH_ACCOUNT_PROVISIONER((short)16, "sshAccountProvisioner"),
-    SSH_ACCOUNT_PROVISIONER_CONFIG((short)17, "sshAccountProvisionerConfig"),
-    SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO((short)18, "sshAccountProvisionerAdditionalInfo");
+    PREFERRED_DATA_MOVEMENT_PROTOCOL((short)7, "preferredDataMovementProtocol"),
+    PREFERRED_BATCH_QUEUE((short)8, "preferredBatchQueue"),
+    SCRATCH_LOCATION((short)9, "scratchLocation"),
+    ALLOCATION_PROJECT_NUMBER((short)10, "allocationProjectNumber"),
+    RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN((short)11, "resourceSpecificCredentialStoreToken"),
+    USAGE_REPORTING_GATEWAY_ID((short)12, "usageReportingGatewayId"),
+    QUALITY_OF_SERVICE((short)13, "qualityOfService"),
+    RESERVATION((short)14, "reservation"),
+    RESERVATION_START_TIME((short)15, "reservationStartTime"),
+    RESERVATION_END_TIME((short)16, "reservationEndTime"),
+    SSH_ACCOUNT_PROVISIONER((short)17, "sshAccountProvisioner"),
+    SSH_ACCOUNT_PROVISIONER_CONFIG((short)18, "sshAccountProvisionerConfig"),
+    SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO((short)19, "sshAccountProvisionerAdditionalInfo");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -115,37 +118,39 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
           return COMPUTE_RESOURCE_ID;
         case 2: // GROUP_RESOURCE_PROFILE_ID
           return GROUP_RESOURCE_PROFILE_ID;
-        case 3: // OVERRIDEBY_AIRAVATA
+        case 3: // GATEWAY_ID
+          return GATEWAY_ID;
+        case 4: // OVERRIDEBY_AIRAVATA
           return OVERRIDEBY_AIRAVATA;
-        case 4: // LOGIN_USER_NAME
+        case 5: // LOGIN_USER_NAME
           return LOGIN_USER_NAME;
-        case 5: // PREFERRED_JOB_SUBMISSION_PROTOCOL
+        case 6: // PREFERRED_JOB_SUBMISSION_PROTOCOL
           return PREFERRED_JOB_SUBMISSION_PROTOCOL;
-        case 6: // PREFERRED_DATA_MOVEMENT_PROTOCOL
+        case 7: // PREFERRED_DATA_MOVEMENT_PROTOCOL
           return PREFERRED_DATA_MOVEMENT_PROTOCOL;
-        case 7: // PREFERRED_BATCH_QUEUE
+        case 8: // PREFERRED_BATCH_QUEUE
           return PREFERRED_BATCH_QUEUE;
-        case 8: // SCRATCH_LOCATION
+        case 9: // SCRATCH_LOCATION
           return SCRATCH_LOCATION;
-        case 9: // ALLOCATION_PROJECT_NUMBER
+        case 10: // ALLOCATION_PROJECT_NUMBER
           return ALLOCATION_PROJECT_NUMBER;
-        case 10: // RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN
+        case 11: // RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN
           return RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN;
-        case 11: // USAGE_REPORTING_GATEWAY_ID
+        case 12: // USAGE_REPORTING_GATEWAY_ID
           return USAGE_REPORTING_GATEWAY_ID;
-        case 12: // QUALITY_OF_SERVICE
+        case 13: // QUALITY_OF_SERVICE
           return QUALITY_OF_SERVICE;
-        case 13: // RESERVATION
+        case 14: // RESERVATION
           return RESERVATION;
-        case 14: // RESERVATION_START_TIME
+        case 15: // RESERVATION_START_TIME
           return RESERVATION_START_TIME;
-        case 15: // RESERVATION_END_TIME
+        case 16: // RESERVATION_END_TIME
           return RESERVATION_END_TIME;
-        case 16: // SSH_ACCOUNT_PROVISIONER
+        case 17: // SSH_ACCOUNT_PROVISIONER
           return SSH_ACCOUNT_PROVISIONER;
-        case 17: // SSH_ACCOUNT_PROVISIONER_CONFIG
+        case 18: // SSH_ACCOUNT_PROVISIONER_CONFIG
           return SSH_ACCOUNT_PROVISIONER_CONFIG;
-        case 18: // SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO
+        case 19: // SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO
           return SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO;
         default:
           return null;
@@ -199,6 +204,8 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.GROUP_RESOURCE_PROFILE_ID, new org.apache.thrift.meta_data.FieldMetaData("groupResourceProfileId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.OVERRIDEBY_AIRAVATA, new org.apache.thrift.meta_data.FieldMetaData("overridebyAiravata", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.LOGIN_USER_NAME, new org.apache.thrift.meta_data.FieldMetaData("loginUserName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -245,11 +252,13 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
   public GroupComputeResourcePreference(
     java.lang.String computeResourceId,
     java.lang.String groupResourceProfileId,
+    java.lang.String gatewayId,
     boolean overridebyAiravata)
   {
     this();
     this.computeResourceId = computeResourceId;
     this.groupResourceProfileId = groupResourceProfileId;
+    this.gatewayId = gatewayId;
     this.overridebyAiravata = overridebyAiravata;
     setOverridebyAiravataIsSet(true);
   }
@@ -264,6 +273,9 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
     }
     if (other.isSetGroupResourceProfileId()) {
       this.groupResourceProfileId = other.groupResourceProfileId;
+    }
+    if (other.isSetGatewayId()) {
+      this.gatewayId = other.gatewayId;
     }
     this.overridebyAiravata = other.overridebyAiravata;
     if (other.isSetLoginUserName()) {
@@ -318,6 +330,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
   public void clear() {
     this.computeResourceId = null;
     this.groupResourceProfileId = null;
+    this.gatewayId = null;
     this.overridebyAiravata = true;
 
     this.loginUserName = null;
@@ -382,6 +395,29 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
   public void setGroupResourceProfileIdIsSet(boolean value) {
     if (!value) {
       this.groupResourceProfileId = null;
+    }
+  }
+
+  public java.lang.String getGatewayId() {
+    return this.gatewayId;
+  }
+
+  public void setGatewayId(java.lang.String gatewayId) {
+    this.gatewayId = gatewayId;
+  }
+
+  public void unsetGatewayId() {
+    this.gatewayId = null;
+  }
+
+  /** Returns true if field gatewayId is set (has been assigned a value) and false otherwise */
+  public boolean isSetGatewayId() {
+    return this.gatewayId != null;
+  }
+
+  public void setGatewayIdIsSet(boolean value) {
+    if (!value) {
+      this.gatewayId = null;
     }
   }
 
@@ -795,6 +831,14 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
       }
       break;
 
+    case GATEWAY_ID:
+      if (value == null) {
+        unsetGatewayId();
+      } else {
+        setGatewayId((java.lang.String)value);
+      }
+      break;
+
     case OVERRIDEBY_AIRAVATA:
       if (value == null) {
         unsetOverridebyAiravata();
@@ -934,6 +978,9 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
     case GROUP_RESOURCE_PROFILE_ID:
       return getGroupResourceProfileId();
 
+    case GATEWAY_ID:
+      return getGatewayId();
+
     case OVERRIDEBY_AIRAVATA:
       return isOverridebyAiravata();
 
@@ -997,6 +1044,8 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
       return isSetComputeResourceId();
     case GROUP_RESOURCE_PROFILE_ID:
       return isSetGroupResourceProfileId();
+    case GATEWAY_ID:
+      return isSetGatewayId();
     case OVERRIDEBY_AIRAVATA:
       return isSetOverridebyAiravata();
     case LOGIN_USER_NAME:
@@ -1063,6 +1112,15 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
       if (!(this_present_groupResourceProfileId && that_present_groupResourceProfileId))
         return false;
       if (!this.groupResourceProfileId.equals(that.groupResourceProfileId))
+        return false;
+    }
+
+    boolean this_present_gatewayId = true && this.isSetGatewayId();
+    boolean that_present_gatewayId = true && that.isSetGatewayId();
+    if (this_present_gatewayId || that_present_gatewayId) {
+      if (!(this_present_gatewayId && that_present_gatewayId))
+        return false;
+      if (!this.gatewayId.equals(that.gatewayId))
         return false;
     }
 
@@ -1225,6 +1283,10 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
     if (isSetGroupResourceProfileId())
       hashCode = hashCode * 8191 + groupResourceProfileId.hashCode();
 
+    hashCode = hashCode * 8191 + ((isSetGatewayId()) ? 131071 : 524287);
+    if (isSetGatewayId())
+      hashCode = hashCode * 8191 + gatewayId.hashCode();
+
     hashCode = hashCode * 8191 + ((overridebyAiravata) ? 131071 : 524287);
 
     hashCode = hashCode * 8191 + ((isSetLoginUserName()) ? 131071 : 524287);
@@ -1314,6 +1376,16 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
     }
     if (isSetGroupResourceProfileId()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.groupResourceProfileId, other.groupResourceProfileId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetGatewayId()).compareTo(other.isSetGatewayId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetGatewayId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayId, other.gatewayId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1514,6 +1586,14 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
     }
     first = false;
     if (!first) sb.append(", ");
+    sb.append("gatewayId:");
+    if (this.gatewayId == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.gatewayId);
+    }
+    first = false;
+    if (!first) sb.append(", ");
     sb.append("overridebyAiravata:");
     sb.append(this.overridebyAiravata);
     first = false;
@@ -1673,6 +1753,10 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'groupResourceProfileId' is unset! Struct:" + toString());
     }
 
+    if (!isSetGatewayId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' is unset! Struct:" + toString());
+    }
+
     if (!isSetOverridebyAiravata()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'overridebyAiravata' is unset! Struct:" + toString());
     }
@@ -1732,7 +1816,15 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // OVERRIDEBY_AIRAVATA
+          case 3: // GATEWAY_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.gatewayId = iprot.readString();
+              struct.setGatewayIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 4: // OVERRIDEBY_AIRAVATA
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.overridebyAiravata = iprot.readBool();
               struct.setOverridebyAiravataIsSet(true);
@@ -1740,7 +1832,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // LOGIN_USER_NAME
+          case 5: // LOGIN_USER_NAME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.loginUserName = iprot.readString();
               struct.setLoginUserNameIsSet(true);
@@ -1748,7 +1840,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // PREFERRED_JOB_SUBMISSION_PROTOCOL
+          case 6: // PREFERRED_JOB_SUBMISSION_PROTOCOL
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.preferredJobSubmissionProtocol = org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol.findByValue(iprot.readI32());
               struct.setPreferredJobSubmissionProtocolIsSet(true);
@@ -1756,7 +1848,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // PREFERRED_DATA_MOVEMENT_PROTOCOL
+          case 7: // PREFERRED_DATA_MOVEMENT_PROTOCOL
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.preferredDataMovementProtocol = org.apache.airavata.model.data.movement.DataMovementProtocol.findByValue(iprot.readI32());
               struct.setPreferredDataMovementProtocolIsSet(true);
@@ -1764,7 +1856,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // PREFERRED_BATCH_QUEUE
+          case 8: // PREFERRED_BATCH_QUEUE
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.preferredBatchQueue = iprot.readString();
               struct.setPreferredBatchQueueIsSet(true);
@@ -1772,7 +1864,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 8: // SCRATCH_LOCATION
+          case 9: // SCRATCH_LOCATION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.scratchLocation = iprot.readString();
               struct.setScratchLocationIsSet(true);
@@ -1780,7 +1872,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 9: // ALLOCATION_PROJECT_NUMBER
+          case 10: // ALLOCATION_PROJECT_NUMBER
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.allocationProjectNumber = iprot.readString();
               struct.setAllocationProjectNumberIsSet(true);
@@ -1788,7 +1880,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 10: // RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN
+          case 11: // RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.resourceSpecificCredentialStoreToken = iprot.readString();
               struct.setResourceSpecificCredentialStoreTokenIsSet(true);
@@ -1796,7 +1888,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 11: // USAGE_REPORTING_GATEWAY_ID
+          case 12: // USAGE_REPORTING_GATEWAY_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.usageReportingGatewayId = iprot.readString();
               struct.setUsageReportingGatewayIdIsSet(true);
@@ -1804,7 +1896,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 12: // QUALITY_OF_SERVICE
+          case 13: // QUALITY_OF_SERVICE
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.qualityOfService = iprot.readString();
               struct.setQualityOfServiceIsSet(true);
@@ -1812,7 +1904,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 13: // RESERVATION
+          case 14: // RESERVATION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.reservation = iprot.readString();
               struct.setReservationIsSet(true);
@@ -1820,7 +1912,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 14: // RESERVATION_START_TIME
+          case 15: // RESERVATION_START_TIME
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.reservationStartTime = iprot.readI64();
               struct.setReservationStartTimeIsSet(true);
@@ -1828,7 +1920,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 15: // RESERVATION_END_TIME
+          case 16: // RESERVATION_END_TIME
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.reservationEndTime = iprot.readI64();
               struct.setReservationEndTimeIsSet(true);
@@ -1836,7 +1928,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 16: // SSH_ACCOUNT_PROVISIONER
+          case 17: // SSH_ACCOUNT_PROVISIONER
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.sshAccountProvisioner = iprot.readString();
               struct.setSshAccountProvisionerIsSet(true);
@@ -1844,7 +1936,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 17: // SSH_ACCOUNT_PROVISIONER_CONFIG
+          case 18: // SSH_ACCOUNT_PROVISIONER_CONFIG
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
                 org.apache.thrift.protocol.TMap _map24 = iprot.readMapBegin();
@@ -1864,7 +1956,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 18: // SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO
+          case 19: // SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.sshAccountProvisionerAdditionalInfo = iprot.readString();
               struct.setSshAccountProvisionerAdditionalInfoIsSet(true);
@@ -1893,6 +1985,11 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
       if (struct.groupResourceProfileId != null) {
         oprot.writeFieldBegin(GROUP_RESOURCE_PROFILE_ID_FIELD_DESC);
         oprot.writeString(struct.groupResourceProfileId);
+        oprot.writeFieldEnd();
+      }
+      if (struct.gatewayId != null) {
+        oprot.writeFieldBegin(GATEWAY_ID_FIELD_DESC);
+        oprot.writeString(struct.gatewayId);
         oprot.writeFieldEnd();
       }
       oprot.writeFieldBegin(OVERRIDEBY_AIRAVATA_FIELD_DESC);
@@ -2026,6 +2123,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
       org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
       oprot.writeString(struct.computeResourceId);
       oprot.writeString(struct.groupResourceProfileId);
+      oprot.writeString(struct.gatewayId);
       oprot.writeBool(struct.overridebyAiravata);
       java.util.BitSet optionals = new java.util.BitSet();
       if (struct.isSetLoginUserName()) {
@@ -2135,6 +2233,8 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
       struct.setComputeResourceIdIsSet(true);
       struct.groupResourceProfileId = iprot.readString();
       struct.setGroupResourceProfileIdIsSet(true);
+      struct.gatewayId = iprot.readString();
+      struct.setGatewayIdIsSet(true);
       struct.overridebyAiravata = iprot.readBool();
       struct.setOverridebyAiravataIsSet(true);
       java.util.BitSet incoming = iprot.readBitSet(15);

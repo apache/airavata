@@ -7,7 +7,7 @@ import java.io.Serializable;
  * Created by skariyat on 2/9/18.
  */
 @Entity
-@Table(name = "GROUP_SSH_ACCOUNT_PROVISIONER_CONFIG")
+@Table(name = "GRP_SSH_ACC_PROV_CONFIG")
 @IdClass(GroupSSHAccountProvisionerConfigPK.class)
 public class GroupSSHAccountProvisionerConfig implements Serializable{
 
@@ -44,20 +44,12 @@ public class GroupSSHAccountProvisionerConfig implements Serializable{
     }
 
     public GroupSSHAccountProvisionerConfig( String configName, String configValue, GroupComputeResourcePrefEntity groupComputeResourcePref) {
-        this.gatewayId = groupComputeResourcePref.getGatewayID();
+        this.gatewayId = groupComputeResourcePref.getGatewayId();
         this.resourceId = groupComputeResourcePref.getComputeResourceId();
         this.groupResourceProfileId = groupComputeResourcePref.getGroupResourceProfileId();
         this.configName = configName;
         this.configValue = configValue;
         this.groupComputeResourcePref= groupComputeResourcePref;
-    }
-
-    public String getGatewayId() {
-        return gatewayId;
-    }
-
-    public void setGatewayId(String gatewayId) {
-        this.gatewayId = gatewayId;
     }
 
     public String getResourceId() {
@@ -90,6 +82,14 @@ public class GroupSSHAccountProvisionerConfig implements Serializable{
 
     public void setConfigValue(String configValue) {
         this.configValue = configValue;
+    }
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
     }
 
     public GroupComputeResourcePrefEntity getGroupComputeResourcePref() {
