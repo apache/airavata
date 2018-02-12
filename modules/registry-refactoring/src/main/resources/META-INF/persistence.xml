@@ -102,6 +102,11 @@
         <class>org.apache.airavata.registry.core.entities.appcatalog.GsisshPostjobcommandPK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.GsisshPrejobcommandPK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.GsisshExportPK</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.BatchQueueResourcePolicyEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.ComputeResourcePolicyEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.GroupComputeResourcePrefEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.GroupSSHAccountProvisionerConfig</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.GroupResourceProfileEntity</class>
         <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowInputPK</class>
         <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowOutputPK</class>
         <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowStatusPK</class>
@@ -117,7 +122,6 @@
         <class>org.apache.airavata.registry.core.entities.appcatalog.StorageInterfacePK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.JobManagerCommandPK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ParallelismCommandPK</class>
-
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 </persistence>

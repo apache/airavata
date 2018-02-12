@@ -22,7 +22,7 @@ public class DBConstants {
     }
 
     public static class GroupResourceProfile {
-        public static final String GATEWAY_ID = "gatewayID";
+        public static final String GATEWAY_ID = "gatewayId";
         public static final String GROUP_RESOURCE_PROFILE_ID = "groupResourceProfileId";
     }
 

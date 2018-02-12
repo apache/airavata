@@ -19,6 +19,18 @@ public class GroupComputeResourcePrefPK implements Serializable {
     @Id
     private String groupResourceProfileId;
 
+    @Id
+    @Column(name = "GATEWAY_ID")
+    private String gatewayId;
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
+
     public String getComputeResourceId() {
         return computeResourceId;
     }
@@ -33,5 +45,24 @@ public class GroupComputeResourcePrefPK implements Serializable {
 
     public void setGroupResourceProfileId(String groupResourceProfileId) {
         this.groupResourceProfileId = groupResourceProfileId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        GroupComputeResourcePrefPK that = (GroupComputeResourcePrefPK) o;
+
+        if (computeResourceId != null ? !computeResourceId.equals(that.computeResourceId) : that.computeResourceId != null)
+            return false;
+        return groupResourceProfileId != null ? groupResourceProfileId.equals(that.groupResourceProfileId) : that.groupResourceProfileId == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = computeResourceId != null ? computeResourceId.hashCode() : 0;
+        result = 31 * result + (groupResourceProfileId != null ? groupResourceProfileId.hashCode() : 0);
+        return result;
     }
 }

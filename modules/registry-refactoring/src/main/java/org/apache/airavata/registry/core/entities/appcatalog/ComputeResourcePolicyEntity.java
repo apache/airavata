@@ -19,6 +19,10 @@ public class ComputeResourcePolicyEntity implements Serializable {
     private String resourcePolicyId;
 
     @Id
+    @Column(name = "GATEWAY_ID")
+    private String gatewayId;
+
+    @Id
     @Column(name = "COMPUTE_RESOURCE_ID")
     private String computeResourceId;
 
@@ -30,7 +34,8 @@ public class ComputeResourcePolicyEntity implements Serializable {
     @CollectionTable(name="COMPUTE_RESOURCE_POLICY_QUEUES", joinColumns = {
             @JoinColumn(name = "RESOURCE_POLICY_ID"),
             @JoinColumn(name = "COMPUTE_RESOURCE_ID"),
-            @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID")})
+            @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID"),
+            @JoinColumn(name = "GATEWAY_ID")})
     @Column(name = "ALLOWED_BATCH_QUEUES")
     private List<String> allowedBatchQueues;
 
@@ -63,6 +68,14 @@ public class ComputeResourcePolicyEntity implements Serializable {
 
     public void setGroupResourceProfileId(String groupResourceProfileId) {
         this.groupResourceProfileId = groupResourceProfileId;
+    }
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
     }
 
     public List<String> getAllowedBatchQueues() {

@@ -69,4 +69,25 @@ public class GroupSSHAccountProvisionerConfigPK implements Serializable{
     public void setConfigName(String configName) {
         this.configName = configName;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        GroupSSHAccountProvisionerConfigPK that = (GroupSSHAccountProvisionerConfigPK) o;
+
+        if (resourceId != null ? !resourceId.equals(that.resourceId) : that.resourceId != null) return false;
+        if (groupResourceProfileId != null ? !groupResourceProfileId.equals(that.groupResourceProfileId) : that.groupResourceProfileId != null)
+            return false;
+        return configName != null ? configName.equals(that.configName) : that.configName == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = resourceId != null ? resourceId.hashCode() : 0;
+        result = 31 * result + (groupResourceProfileId != null ? groupResourceProfileId.hashCode() : 0);
+        result = 31 * result + (configName != null ? configName.hashCode() : 0);
+        return result;
+    }
 }

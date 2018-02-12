@@ -31,10 +31,11 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
   private static final org.apache.thrift.protocol.TField RESOURCE_POLICY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("resourcePolicyId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField COMPUTE_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("computeResourceId", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField GROUP_RESOURCE_PROFILE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("groupResourceProfileId", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField QUEUENAME_FIELD_DESC = new org.apache.thrift.protocol.TField("queuename", org.apache.thrift.protocol.TType.STRING, (short)4);
-  private static final org.apache.thrift.protocol.TField MAX_ALLOWED_NODES_FIELD_DESC = new org.apache.thrift.protocol.TField("maxAllowedNodes", org.apache.thrift.protocol.TType.I32, (short)5);
-  private static final org.apache.thrift.protocol.TField MAX_ALLOWED_CORES_FIELD_DESC = new org.apache.thrift.protocol.TField("maxAllowedCores", org.apache.thrift.protocol.TType.I32, (short)6);
-  private static final org.apache.thrift.protocol.TField MAX_ALLOWED_WALLTIME_FIELD_DESC = new org.apache.thrift.protocol.TField("maxAllowedWalltime", org.apache.thrift.protocol.TType.I32, (short)7);
+  private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField QUEUENAME_FIELD_DESC = new org.apache.thrift.protocol.TField("queuename", org.apache.thrift.protocol.TType.STRING, (short)5);
+  private static final org.apache.thrift.protocol.TField MAX_ALLOWED_NODES_FIELD_DESC = new org.apache.thrift.protocol.TField("maxAllowedNodes", org.apache.thrift.protocol.TType.I32, (short)6);
+  private static final org.apache.thrift.protocol.TField MAX_ALLOWED_CORES_FIELD_DESC = new org.apache.thrift.protocol.TField("maxAllowedCores", org.apache.thrift.protocol.TType.I32, (short)7);
+  private static final org.apache.thrift.protocol.TField MAX_ALLOWED_WALLTIME_FIELD_DESC = new org.apache.thrift.protocol.TField("maxAllowedWalltime", org.apache.thrift.protocol.TType.I32, (short)8);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new BatchQueueResourcePolicyStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new BatchQueueResourcePolicyTupleSchemeFactory();
@@ -42,6 +43,7 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
   private java.lang.String resourcePolicyId; // required
   private java.lang.String computeResourceId; // required
   private java.lang.String groupResourceProfileId; // required
+  private java.lang.String gatewayId; // required
   private java.lang.String queuename; // optional
   private int maxAllowedNodes; // optional
   private int maxAllowedCores; // optional
@@ -52,10 +54,11 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
     RESOURCE_POLICY_ID((short)1, "resourcePolicyId"),
     COMPUTE_RESOURCE_ID((short)2, "computeResourceId"),
     GROUP_RESOURCE_PROFILE_ID((short)3, "groupResourceProfileId"),
-    QUEUENAME((short)4, "queuename"),
-    MAX_ALLOWED_NODES((short)5, "maxAllowedNodes"),
-    MAX_ALLOWED_CORES((short)6, "maxAllowedCores"),
-    MAX_ALLOWED_WALLTIME((short)7, "maxAllowedWalltime");
+    GATEWAY_ID((short)4, "gatewayId"),
+    QUEUENAME((short)5, "queuename"),
+    MAX_ALLOWED_NODES((short)6, "maxAllowedNodes"),
+    MAX_ALLOWED_CORES((short)7, "maxAllowedCores"),
+    MAX_ALLOWED_WALLTIME((short)8, "maxAllowedWalltime");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -76,13 +79,15 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
           return COMPUTE_RESOURCE_ID;
         case 3: // GROUP_RESOURCE_PROFILE_ID
           return GROUP_RESOURCE_PROFILE_ID;
-        case 4: // QUEUENAME
+        case 4: // GATEWAY_ID
+          return GATEWAY_ID;
+        case 5: // QUEUENAME
           return QUEUENAME;
-        case 5: // MAX_ALLOWED_NODES
+        case 6: // MAX_ALLOWED_NODES
           return MAX_ALLOWED_NODES;
-        case 6: // MAX_ALLOWED_CORES
+        case 7: // MAX_ALLOWED_CORES
           return MAX_ALLOWED_CORES;
-        case 7: // MAX_ALLOWED_WALLTIME
+        case 8: // MAX_ALLOWED_WALLTIME
           return MAX_ALLOWED_WALLTIME;
         default:
           return null;
@@ -138,6 +143,8 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.GROUP_RESOURCE_PROFILE_ID, new org.apache.thrift.meta_data.FieldMetaData("groupResourceProfileId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.QUEUENAME, new org.apache.thrift.meta_data.FieldMetaData("queuename", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.MAX_ALLOWED_NODES, new org.apache.thrift.meta_data.FieldMetaData("maxAllowedNodes", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -156,12 +163,14 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
   public BatchQueueResourcePolicy(
     java.lang.String resourcePolicyId,
     java.lang.String computeResourceId,
-    java.lang.String groupResourceProfileId)
+    java.lang.String groupResourceProfileId,
+    java.lang.String gatewayId)
   {
     this();
     this.resourcePolicyId = resourcePolicyId;
     this.computeResourceId = computeResourceId;
     this.groupResourceProfileId = groupResourceProfileId;
+    this.gatewayId = gatewayId;
   }
 
   /**
@@ -177,6 +186,9 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
     }
     if (other.isSetGroupResourceProfileId()) {
       this.groupResourceProfileId = other.groupResourceProfileId;
+    }
+    if (other.isSetGatewayId()) {
+      this.gatewayId = other.gatewayId;
     }
     if (other.isSetQueuename()) {
       this.queuename = other.queuename;
@@ -195,6 +207,7 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
     this.resourcePolicyId = null;
     this.computeResourceId = null;
     this.groupResourceProfileId = null;
+    this.gatewayId = null;
     this.queuename = null;
     setMaxAllowedNodesIsSet(false);
     this.maxAllowedNodes = 0;
@@ -270,6 +283,29 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
   public void setGroupResourceProfileIdIsSet(boolean value) {
     if (!value) {
       this.groupResourceProfileId = null;
+    }
+  }
+
+  public java.lang.String getGatewayId() {
+    return this.gatewayId;
+  }
+
+  public void setGatewayId(java.lang.String gatewayId) {
+    this.gatewayId = gatewayId;
+  }
+
+  public void unsetGatewayId() {
+    this.gatewayId = null;
+  }
+
+  /** Returns true if field gatewayId is set (has been assigned a value) and false otherwise */
+  public boolean isSetGatewayId() {
+    return this.gatewayId != null;
+  }
+
+  public void setGatewayIdIsSet(boolean value) {
+    if (!value) {
+      this.gatewayId = null;
     }
   }
 
@@ -388,6 +424,14 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
       }
       break;
 
+    case GATEWAY_ID:
+      if (value == null) {
+        unsetGatewayId();
+      } else {
+        setGatewayId((java.lang.String)value);
+      }
+      break;
+
     case QUEUENAME:
       if (value == null) {
         unsetQueuename();
@@ -434,6 +478,9 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
     case GROUP_RESOURCE_PROFILE_ID:
       return getGroupResourceProfileId();
 
+    case GATEWAY_ID:
+      return getGatewayId();
+
     case QUEUENAME:
       return getQueuename();
 
@@ -463,6 +510,8 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
       return isSetComputeResourceId();
     case GROUP_RESOURCE_PROFILE_ID:
       return isSetGroupResourceProfileId();
+    case GATEWAY_ID:
+      return isSetGatewayId();
     case QUEUENAME:
       return isSetQueuename();
     case MAX_ALLOWED_NODES:
@@ -514,6 +563,15 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
       if (!(this_present_groupResourceProfileId && that_present_groupResourceProfileId))
         return false;
       if (!this.groupResourceProfileId.equals(that.groupResourceProfileId))
+        return false;
+    }
+
+    boolean this_present_gatewayId = true && this.isSetGatewayId();
+    boolean that_present_gatewayId = true && that.isSetGatewayId();
+    if (this_present_gatewayId || that_present_gatewayId) {
+      if (!(this_present_gatewayId && that_present_gatewayId))
+        return false;
+      if (!this.gatewayId.equals(that.gatewayId))
         return false;
     }
 
@@ -572,6 +630,10 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
     if (isSetGroupResourceProfileId())
       hashCode = hashCode * 8191 + groupResourceProfileId.hashCode();
 
+    hashCode = hashCode * 8191 + ((isSetGatewayId()) ? 131071 : 524287);
+    if (isSetGatewayId())
+      hashCode = hashCode * 8191 + gatewayId.hashCode();
+
     hashCode = hashCode * 8191 + ((isSetQueuename()) ? 131071 : 524287);
     if (isSetQueuename())
       hashCode = hashCode * 8191 + queuename.hashCode();
@@ -625,6 +687,16 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
     }
     if (isSetGroupResourceProfileId()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.groupResourceProfileId, other.groupResourceProfileId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetGatewayId()).compareTo(other.isSetGatewayId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetGatewayId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayId, other.gatewayId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -712,6 +784,14 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
       sb.append(this.groupResourceProfileId);
     }
     first = false;
+    if (!first) sb.append(", ");
+    sb.append("gatewayId:");
+    if (this.gatewayId == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.gatewayId);
+    }
+    first = false;
     if (isSetQueuename()) {
       if (!first) sb.append(", ");
       sb.append("queuename:");
@@ -756,6 +836,10 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
 
     if (!isSetGroupResourceProfileId()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'groupResourceProfileId' is unset! Struct:" + toString());
+    }
+
+    if (!isSetGatewayId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -821,7 +905,15 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // QUEUENAME
+          case 4: // GATEWAY_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.gatewayId = iprot.readString();
+              struct.setGatewayIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 5: // QUEUENAME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.queuename = iprot.readString();
               struct.setQueuenameIsSet(true);
@@ -829,7 +921,7 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // MAX_ALLOWED_NODES
+          case 6: // MAX_ALLOWED_NODES
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.maxAllowedNodes = iprot.readI32();
               struct.setMaxAllowedNodesIsSet(true);
@@ -837,7 +929,7 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // MAX_ALLOWED_CORES
+          case 7: // MAX_ALLOWED_CORES
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.maxAllowedCores = iprot.readI32();
               struct.setMaxAllowedCoresIsSet(true);
@@ -845,7 +937,7 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // MAX_ALLOWED_WALLTIME
+          case 8: // MAX_ALLOWED_WALLTIME
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.maxAllowedWalltime = iprot.readI32();
               struct.setMaxAllowedWalltimeIsSet(true);
@@ -879,6 +971,11 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
       if (struct.groupResourceProfileId != null) {
         oprot.writeFieldBegin(GROUP_RESOURCE_PROFILE_ID_FIELD_DESC);
         oprot.writeString(struct.groupResourceProfileId);
+        oprot.writeFieldEnd();
+      }
+      if (struct.gatewayId != null) {
+        oprot.writeFieldBegin(GATEWAY_ID_FIELD_DESC);
+        oprot.writeString(struct.gatewayId);
         oprot.writeFieldEnd();
       }
       if (struct.queuename != null) {
@@ -923,6 +1020,7 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
       oprot.writeString(struct.resourcePolicyId);
       oprot.writeString(struct.computeResourceId);
       oprot.writeString(struct.groupResourceProfileId);
+      oprot.writeString(struct.gatewayId);
       java.util.BitSet optionals = new java.util.BitSet();
       if (struct.isSetQueuename()) {
         optionals.set(0);
@@ -960,6 +1058,8 @@ public class BatchQueueResourcePolicy implements org.apache.thrift.TBase<BatchQu
       struct.setComputeResourceIdIsSet(true);
       struct.groupResourceProfileId = iprot.readString();
       struct.setGroupResourceProfileIdIsSet(true);
+      struct.gatewayId = iprot.readString();
+      struct.setGatewayIdIsSet(true);
       java.util.BitSet incoming = iprot.readBitSet(4);
       if (incoming.get(0)) {
         struct.queuename = iprot.readString();

@@ -18,6 +18,10 @@ public class BatchQueueResourcePolicyEntity implements Serializable {
     private String resourcePolicyId;
 
     @Id
+    @Column(name = "GATEWAY_ID")
+    private String gatewayId;
+
+    @Id
     @Column(name = "COMPUTE_RESOURCE_ID")
     private String computeResourceId;
 
@@ -30,13 +34,13 @@ public class BatchQueueResourcePolicyEntity implements Serializable {
     private String queuename;
 
     @Column(name = "MAX_ALLOWED_NODES")
-    private String maxAllowedNodes;
+    private int maxAllowedNodes;
 
     @Column(name = "MAX_ALLOWED_CORES")
-    private String maxAllowedCores;
+    private int maxAllowedCores;
 
     @Column(name = "MAX_ALLOWED_WALLTIME")
-    private String maxAllowedWalltime;
+    private int maxAllowedWalltime;
 
     @ManyToOne(targetEntity = GroupResourceProfileEntity.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID")
@@ -69,6 +73,14 @@ public class BatchQueueResourcePolicyEntity implements Serializable {
         this.groupResourceProfileId = groupResourceProfileId;
     }
 
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
+
     public String getQueuename() {
         return queuename;
     }
@@ -77,27 +89,27 @@ public class BatchQueueResourcePolicyEntity implements Serializable {
         this.queuename = queuename;
     }
 
-    public String getMaxAllowedNodes() {
+    public int getMaxAllowedNodes() {
         return maxAllowedNodes;
     }
 
-    public void setMaxAllowedNodes(String maxAllowedNodes) {
+    public void setMaxAllowedNodes(int maxAllowedNodes) {
         this.maxAllowedNodes = maxAllowedNodes;
     }
 
-    public String getMaxAllowedCores() {
+    public int getMaxAllowedCores() {
         return maxAllowedCores;
     }
 
-    public void setMaxAllowedCores(String maxAllowedCores) {
+    public void setMaxAllowedCores(int maxAllowedCores) {
         this.maxAllowedCores = maxAllowedCores;
     }
 
-    public String getMaxAllowedWalltime() {
+    public int getMaxAllowedWalltime() {
         return maxAllowedWalltime;
     }
 
-    public void setMaxAllowedWalltime(String maxAllowedWalltime) {
+    public void setMaxAllowedWalltime(int maxAllowedWalltime) {
         this.maxAllowedWalltime = maxAllowedWalltime;
     }
 

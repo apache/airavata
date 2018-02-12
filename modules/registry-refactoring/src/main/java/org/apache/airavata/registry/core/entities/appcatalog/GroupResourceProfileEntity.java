@@ -16,7 +16,7 @@ public class GroupResourceProfileEntity implements Serializable {
 
     @Id
     @Column(name = "GATEWAY_ID")
-    private String gatewayID;
+    private String gatewayId;
 
     @Id
     @Column(name = "GROUP_RESOURCE_PROFILE_ID")
@@ -26,14 +26,14 @@ public class GroupResourceProfileEntity implements Serializable {
     private String groupResourceProfileName;
 
     @Column(name = "CREATION_TIME")
-    private String creationTime;
+    private Long creationTime;
 
     @Column(name = "UPDATE_TIME")
-    private String updatedTime;
+    private Long updatedTime;
 
     @OneToMany(targetEntity = GroupComputeResourcePrefEntity.class, cascade = CascadeType.ALL,
             mappedBy = "groupResourceProfile", fetch = FetchType.EAGER)
-    private List<GroupComputeResourcePrefEntity> ComputeResourcePrefences;
+    private List<GroupComputeResourcePrefEntity> computePreferences;
 
     @OneToMany(targetEntity = ComputeResourcePolicyEntity.class, cascade = CascadeType.ALL,
             mappedBy = "groupResourceProfile", fetch = FetchType.EAGER)
@@ -44,14 +44,6 @@ public class GroupResourceProfileEntity implements Serializable {
     private List<BatchQueueResourcePolicyEntity> batchQueueResourcePolicies;
 
     public GroupResourceProfileEntity() {
-    }
-
-    public String getGatewayID() {
-        return gatewayID;
-    }
-
-    public void setGatewayID(String gatewayID) {
-        this.gatewayID = gatewayID;
     }
 
     public String getGroupResourceProfileId() {
@@ -70,28 +62,36 @@ public class GroupResourceProfileEntity implements Serializable {
         this.groupResourceProfileName = groupResourceProfileName;
     }
 
-    public String getCreationTime() {
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
+
+    public Long getCreationTime() {
         return creationTime;
     }
 
-    public void setCreationTime(String creationTime) {
+    public void setCreationTime(Long creationTime) {
         this.creationTime = creationTime;
     }
 
-    public String getUpdatedTime() {
+    public Long getUpdatedTime() {
         return updatedTime;
     }
 
-    public void setUpdatedTime(String updatedTime) {
+    public void setUpdatedTime(Long updatedTime) {
         this.updatedTime = updatedTime;
     }
 
-    public List<GroupComputeResourcePrefEntity> getComputeResourcePrefences() {
-        return ComputeResourcePrefences;
+    public List<GroupComputeResourcePrefEntity> getComputePreferences() {
+        return computePreferences;
     }
 
-    public void setComputeResourcePrefences(List<GroupComputeResourcePrefEntity> computeResourcePrefences) {
-        ComputeResourcePrefences = computeResourcePrefences;
+    public void setComputePreferences(List<GroupComputeResourcePrefEntity> computePreferences) {
+        this.computePreferences = computePreferences;
     }
 
     public List<ComputeResourcePolicyEntity> getComputeResourcePolicies() {

@@ -44,13 +44,13 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
 
     public GroupResourceProfile getGroupResourceProfile(String gatewayId, String groupResourceProfileId) {
         GroupResourceProfilePK groupResourceProfilePK = new GroupResourceProfilePK();
-        groupResourceProfilePK.setGatewayID(gatewayId);
+        groupResourceProfilePK.setGatewayId(gatewayId);
         groupResourceProfilePK.setGroupResourceProfileId(groupResourceProfileId);
         GroupResourceProfile groupResourceProfile = get(groupResourceProfilePK);
 
         if (groupResourceProfile.getComputePreferences()!= null && !groupResourceProfile.getComputePreferences().isEmpty()){
             for (GroupComputeResourcePreference preference: groupResourceProfile.getComputePreferences()){
-                preference.setSshAccountProvisionerConfig(getSSHProvConfig(preference.getComputeResourceId(), groupResourceProfileId));
+                preference.setSshAccountProvisionerConfig(getSSHProvConfig(preference.getComputeResourceId(), groupResourceProfileId, gatewayId));
             }
         }
         return groupResourceProfile;
@@ -58,14 +58,14 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
 
     public boolean removeGroupResourceProfile(String gatewayId, String groupResourceProfileId) {
         GroupResourceProfilePK groupResourceProfilePK = new GroupResourceProfilePK();
-        groupResourceProfilePK.setGatewayID(gatewayId);
+        groupResourceProfilePK.setGatewayId(gatewayId);
         groupResourceProfilePK.setGroupResourceProfileId(groupResourceProfileId);
         return delete(groupResourceProfilePK);
     }
 
     public boolean isGroupResourceProfileExists(String gatewayId, String groupResourceProfileId) {
         GroupResourceProfilePK groupResourceProfilePK = new GroupResourceProfilePK();
-        groupResourceProfilePK.setGatewayID(gatewayId);
+        groupResourceProfilePK.setGatewayId(gatewayId);
         groupResourceProfilePK.setGroupResourceProfileId(groupResourceProfileId);
         return isExists(groupResourceProfilePK);
     }
@@ -78,7 +78,7 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
             for (GroupResourceProfile groupResourceProfile: groupResourceProfileList) {
                 if (groupResourceProfile.getComputePreferences() != null && !groupResourceProfile.getComputePreferences().isEmpty()) {
                     for (GroupComputeResourcePreference computeResourcePreference: groupResourceProfile.getComputePreferences()) {
-                        computeResourcePreference.setSshAccountProvisionerConfig(getSSHProvConfig(computeResourcePreference.getComputeResourceId(), groupResourceProfile.getGroupResourceProfileId()));
+                        computeResourcePreference.setSshAccountProvisionerConfig(getSSHProvConfig(computeResourcePreference.getComputeResourceId(), groupResourceProfile.getGroupResourceProfileId(), gatewayId));
                     }
                 }
             }
@@ -86,82 +86,91 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
         return groupResourceProfileList;
     }
 
-    public boolean removeGroupComputeResourcePreference(String computeResourceId, String groupResourceProfileId) {
+    public boolean removeGroupComputeResourcePreference(String computeResourceId, String groupResourceProfileId, String gatewayId) {
         GroupComputeResourcePrefPK groupComputeResourcePrefPK = new GroupComputeResourcePrefPK();
         groupComputeResourcePrefPK.setComputeResourceId(computeResourceId);
         groupComputeResourcePrefPK.setGroupResourceProfileId(groupResourceProfileId);
+        groupComputeResourcePrefPK.setGatewayId(gatewayId);
 
         return (new GrpComputePrefRepository().delete(groupComputeResourcePrefPK));
     }
 
-    public boolean removeComputeResourcePolicy(String resourcePolicyId, String computeResourceId, String groupResourceProfileId) {
+    public boolean removeComputeResourcePolicy(String resourcePolicyId, String computeResourceId, String groupResourceProfileId, String gatewayId) {
         ComputeResourcePolicyPK computeResourcePolicyPK = new ComputeResourcePolicyPK();
         computeResourcePolicyPK.setComputeResourceId(computeResourceId);
         computeResourcePolicyPK.setGroupResourceProfileId(groupResourceProfileId);
         computeResourcePolicyPK.setResourcePolicyId(resourcePolicyId);
+        computeResourcePolicyPK.setGatewayId(gatewayId);
 
         return (new ComputeResourcePolicyRepository().delete(computeResourcePolicyPK));
     }
 
-    public boolean removeBatchQueueResourcePolicy(String resourcePolicyId, String computeResourceId, String groupResourceProfileId, String queueName) {
+    public boolean removeBatchQueueResourcePolicy(String resourcePolicyId, String computeResourceId, String groupResourceProfileId, String queueName, String gatewayId) {
         BatchQueueResourcePolicyPK batchQueueResourcePolicyPK = new BatchQueueResourcePolicyPK();
         batchQueueResourcePolicyPK.setComputeResourceId(computeResourceId);
         batchQueueResourcePolicyPK.setGroupResourceProfileId(groupResourceProfileId);
         batchQueueResourcePolicyPK.setResourcePolicyId(resourcePolicyId);
         batchQueueResourcePolicyPK.setQueuename(queueName);
+        batchQueueResourcePolicyPK.setGatewayId(gatewayId);
 
         return (new BatchQueuePolicyRepository().delete(batchQueueResourcePolicyPK));
     }
 
-    public GroupComputeResourcePreference getGroupComputeResourcePreference(String computeResourceId, String groupResourceProfileId) {
+    public GroupComputeResourcePreference getGroupComputeResourcePreference(String computeResourceId, String groupResourceProfileId, String gatewayId) {
         GroupComputeResourcePrefPK groupComputeResourcePrefPK = new GroupComputeResourcePrefPK();
         groupComputeResourcePrefPK.setGroupResourceProfileId(groupResourceProfileId);
         groupComputeResourcePrefPK.setComputeResourceId(computeResourceId);
+        groupComputeResourcePrefPK.setGatewayId(gatewayId);
 
         return (new GrpComputePrefRepository().get(groupComputeResourcePrefPK));
     }
 
-    public ComputeResourcePolicy getComputeResourcePolicy(String groupResourceProfileId, String computeResourceId, String resourcePolicyId) {
+    public ComputeResourcePolicy getComputeResourcePolicy(String groupResourceProfileId, String computeResourceId, String resourcePolicyId, String gatewayId) {
         ComputeResourcePolicyPK computeResourcePolicyPK = new ComputeResourcePolicyPK();
         computeResourcePolicyPK.setResourcePolicyId(resourcePolicyId);
         computeResourcePolicyPK.setGroupResourceProfileId(groupResourceProfileId);
         computeResourcePolicyPK.setComputeResourceId(computeResourceId);
+        computeResourcePolicyPK.setGatewayId(gatewayId);
 
         return (new ComputeResourcePolicyRepository().get(computeResourcePolicyPK));
     }
 
-    public BatchQueueResourcePolicy getBatchQueueResourcePolicy(String groupResourceProfileId, String computeResourceId, String resourcePolicyId, String queueName) {
+    public BatchQueueResourcePolicy getBatchQueueResourcePolicy(String groupResourceProfileId, String computeResourceId, String resourcePolicyId, String queueName, String gatewayId) {
         BatchQueueResourcePolicyPK batchQueueResourcePolicyPK = new BatchQueueResourcePolicyPK();
         batchQueueResourcePolicyPK.setResourcePolicyId(resourcePolicyId);
         batchQueueResourcePolicyPK.setGroupResourceProfileId(groupResourceProfileId);
         batchQueueResourcePolicyPK.setQueuename(queueName);
         batchQueueResourcePolicyPK.setComputeResourceId(computeResourceId);
+        batchQueueResourcePolicyPK.setGatewayId(gatewayId);
 
         return (new BatchQueuePolicyRepository().get(batchQueueResourcePolicyPK));
     }
 
-    public List<GroupComputeResourcePreference> getAllGroupComputeResourcePreferences(String groupResourceProfileId) {
+    public List<GroupComputeResourcePreference> getAllGroupComputeResourcePreferences(String groupResourceProfileId, String gatewayId) {
         Map<String,Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.GroupResourceProfile.GROUP_RESOURCE_PROFILE_ID, groupResourceProfileId);
+        queryParameters.put(DBConstants.GroupResourceProfile.GATEWAY_ID, gatewayId);
         List<GroupComputeResourcePreference> groupComputeResourcePreferenceList = (new GrpComputePrefRepository().select(QueryConstants.FIND_ALL_GROUP_COMPUTE_PREFERENCES, -1, 0, queryParameters));
 
         if (groupComputeResourcePreferenceList != null && !groupComputeResourcePreferenceList.isEmpty()) {
             for (GroupComputeResourcePreference computeResourcePreference: groupComputeResourcePreferenceList) {
-                computeResourcePreference.setSshAccountProvisionerConfig(getSSHProvConfig(computeResourcePreference.getComputeResourceId(), groupResourceProfileId));
+                computeResourcePreference.setSshAccountProvisionerConfig(getSSHProvConfig(computeResourcePreference.getComputeResourceId(), groupResourceProfileId, gatewayId));
             }
         }
         return groupComputeResourcePreferenceList;
     }
 
-    public List<BatchQueueResourcePolicy> getAllGroupBatchQueueResourcePolicies(String groupResourceProfileId) {
+    public List<BatchQueueResourcePolicy> getAllGroupBatchQueueResourcePolicies(String groupResourceProfileId, String gatewayId) {
         Map<String,Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.GroupResourceProfile.GROUP_RESOURCE_PROFILE_ID, groupResourceProfileId);
+        queryParameters.put(DBConstants.GroupResourceProfile.GATEWAY_ID, gatewayId);
         return (new BatchQueuePolicyRepository().select(QueryConstants.FIND_ALL_GROUP_BATCH_QUEUE_RESOURCE_POLICY, -1, 0, queryParameters));
     }
 
-    public List<ComputeResourcePolicy> getAllGroupComputeResourcePolicies(String groupResourceProfileId) {
+    public List<ComputeResourcePolicy> getAllGroupComputeResourcePolicies(String groupResourceProfileId, String gatewayId) {
         Map<String,Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.GroupResourceProfile.GROUP_RESOURCE_PROFILE_ID, groupResourceProfileId);
+        queryParameters.put(DBConstants.GroupResourceProfile.GATEWAY_ID, gatewayId);
         return (new ComputeResourcePolicyRepository().select(QueryConstants.FIND_ALL_GROUP_COMPUTE_RESOURCE_POLICY, -1, 0, queryParameters));
     }
 
@@ -181,10 +190,11 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
         }
     }
 
-    private Map<String,String> getSSHProvConfig(String computeResourceId, String groupResourceProfileId) {
+    private Map<String,String> getSSHProvConfig(String computeResourceId, String groupResourceProfileId, String gatewayId) {
         GroupComputeResourcePrefPK groupComputeResourcePrefPK = new GroupComputeResourcePrefPK();
         groupComputeResourcePrefPK.setComputeResourceId(computeResourceId);
         groupComputeResourcePrefPK.setGroupResourceProfileId(groupResourceProfileId);
+        groupComputeResourcePrefPK.setGatewayId(gatewayId);
 
         GroupComputeResourcePrefEntity computeResourcePreferenceEntity = execute(entityManager -> entityManager
                 .find(GroupComputeResourcePrefEntity.class, groupComputeResourcePrefPK));
