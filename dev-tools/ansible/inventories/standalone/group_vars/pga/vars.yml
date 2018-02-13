@@ -43,7 +43,7 @@ tenant_domain: "{{ gateway_id }}"
 admin_username: "default-admin"
 admin_password: "123456"
 oauth_client_key: "pga"
-oauth_client_secret: "3aee1937-b868-440d-b0b6-cb0aa0b0873b"
+oauth_client_secret: "6dd5c5ea-50ce-4a52-8c7c-b11ea80799ac"
 oidc_discovery_url: "https://{{ groups['keycloak'][0] }}/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
 
 auth_options:
