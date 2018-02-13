@@ -207,21 +207,21 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
     if (other.isSetComputePreferences()) {
       java.util.List<GroupComputeResourcePreference> __this__computePreferences = new java.util.ArrayList<GroupComputeResourcePreference>(other.computePreferences.size());
       for (GroupComputeResourcePreference other_element : other.computePreferences) {
-        __this__computePreferences.add(new GroupComputeResourcePreference(other_element));
+        __this__computePreferences.add(other_element);
       }
       this.computePreferences = __this__computePreferences;
     }
     if (other.isSetComputeResourcePolicies()) {
       java.util.List<ComputeResourcePolicy> __this__computeResourcePolicies = new java.util.ArrayList<ComputeResourcePolicy>(other.computeResourcePolicies.size());
       for (ComputeResourcePolicy other_element : other.computeResourcePolicies) {
-        __this__computeResourcePolicies.add(new ComputeResourcePolicy(other_element));
+        __this__computeResourcePolicies.add(other_element);
       }
       this.computeResourcePolicies = __this__computeResourcePolicies;
     }
     if (other.isSetBatchQueueResourcePolicies()) {
       java.util.List<BatchQueueResourcePolicy> __this__batchQueueResourcePolicies = new java.util.ArrayList<BatchQueueResourcePolicy>(other.batchQueueResourcePolicies.size());
       for (BatchQueueResourcePolicy other_element : other.batchQueueResourcePolicies) {
-        __this__batchQueueResourcePolicies.add(new BatchQueueResourcePolicy(other_element));
+        __this__batchQueueResourcePolicies.add(other_element);
       }
       this.batchQueueResourcePolicies = __this__batchQueueResourcePolicies;
     }

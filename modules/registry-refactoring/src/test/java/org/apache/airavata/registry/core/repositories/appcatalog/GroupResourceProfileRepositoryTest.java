@@ -177,11 +177,7 @@ public class GroupResourceProfileRepositoryTest {
 
         groupResourceProfileRepository.addGroupResourceProfile(groupResourceProfile);
 
-        GroupResourceProfilePK groupResourceProfilePK = new GroupResourceProfilePK();
-        groupResourceProfilePK.setGatewayId(gatewayId);
-        groupResourceProfilePK.setGroupResourceProfileId(groupResourceProfileId);
-
-        if (groupResourceProfileRepository.isExists(groupResourceProfilePK)) {
+        if (groupResourceProfileRepository.isGroupResourceProfileExists(gatewayId, groupResourceProfileId)) {
             GroupResourceProfile getGroupResourceProfile = groupResourceProfileRepository.getGroupResourceProfile(gatewayId, groupResourceProfileId);
 
             assertTrue(getGroupResourceProfile.getGatewayId().equals(gatewayId));
