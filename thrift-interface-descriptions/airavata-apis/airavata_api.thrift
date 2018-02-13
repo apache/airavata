@@ -40,6 +40,7 @@ include "../data-models/resource-catalog-models/account_provisioning_model.thrif
 include "../data-models/resource-catalog-models/compute_resource_model.thrift"
 include "../data-models/resource-catalog-models/storage_resource_model.thrift"
 include "../data-models/resource-catalog-models/gateway_resource_profile_model.thrift"
+include "../data-models/resource-catalog-models/group_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/user_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/data_movement_models.thrift"
 include "../data-models/workflow-models/workflow_data_model.thrift"
@@ -3462,6 +3463,91 @@ service Airavata {
                                                  2: airavata_errors.AiravataClientException ace,
                                                  3: airavata_errors.AiravataSystemException ase,
                                                  4: airavata_errors.AuthorizationException ae)
+
+
+ void createGroupResourceProfile(1: required security_model.AuthzToken authzToken, 2: required group_resource_profile_model.GroupResourceProfile groupResourceProfile)
+                                                                         throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                 2: airavata_errors.AiravataClientException ace,
+                                                                                 3: airavata_errors.AiravataSystemException ase,
+                                                                                 4: airavata_errors.AuthorizationException ae)
+
+ void updateGroupResourceProfile(1: required security_model.AuthzToken authzToken, 2: required group_resource_profile_model.GroupResourceProfile groupResourceProfile)
+                                                                                           throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                                   2: airavata_errors.AiravataClientException ace,
+                                                                                                   3: airavata_errors.AiravataSystemException ase,
+                                                                                                   4: airavata_errors.AuthorizationException ae)
+
+ group_resource_profile_model.GroupResourceProfile getGroupResourceProfile(1: required security_model.AuthzToken authzToken, 2: required string gatewayId, 3: required string groupResourceProfileId)
+                                                                         throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                 2: airavata_errors.AiravataClientException ace,
+                                                                                 3: airavata_errors.AiravataSystemException ase,
+                                                                                 4: airavata_errors.AuthorizationException ae)
+
+ bool removeGroupResourceProfile(1: required security_model.AuthzToken authzToken, 2: required string gatewayId, 3: required string groupResourceProfileId)
+                                                                                    throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                             2: airavata_errors.AiravataClientException ace,
+                                                                                             3: airavata_errors.AiravataSystemException ase,
+                                                                                             4: airavata_errors.AuthorizationException ae)
+
+ list<group_resource_profile_model.GroupResourceProfile> getGroupResourceList(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ bool removeGroupComputePrefs(1: required security_model.AuthzToken authzToken, 2: required string computeResourceId, 3: required string groupResourceProfileId, 4: required string gatewayId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ bool removeGroupComputeResourcePolicy(1: required security_model.AuthzToken authzToken, 2: required string resourcePolicyId, 3: required string computeResourceId, 4: required string groupResourceProfileId, 5: required string gatewayId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ bool removeGroupBatchQueueResourcePolicy(1: required security_model.AuthzToken authzToken, 2: required string resourcePolicyId, 3: required string computeResourceId, 4: required string groupResourceProfileId, 5: required string queuename 6: required string gatewayId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ group_resource_profile_model.GroupComputeResourcePreference getGroupComputeResourcePreference(1: required security_model.AuthzToken authzToken, 2: required string computeResourceId, 3: required string groupResourceProfileId, 4: required string gatewayId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ group_resource_profile_model.ComputeResourcePolicy getGroupComputeResourcePolicy(1: required security_model.AuthzToken authzToken, 2: required string groupResourceProfileId, 3: required string computeResourceId, 4: required string resourcePolicyId, 5: required string gatewayId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ group_resource_profile_model.BatchQueueResourcePolicy getBatchQueueResourcePolicy(1: required security_model.AuthzToken authzToken, 2: required string groupResourceProfileId, 3: required string computeResourceId, 4: required string resourcePolicyId, 5: required string queuename, 6: required string gatewayId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ list<group_resource_profile_model.GroupComputeResourcePreference> getGroupComputeResourcePrefList(1: required security_model.AuthzToken authzToken, 2: required string groupResourceProfileId, 3: required string gatewayId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ list<group_resource_profile_model.BatchQueueResourcePolicy> getGroupBatchQueueResourcePolicyList(1: required security_model.AuthzToken authzToken, 2: required string groupResourceProfileId, 3: required string gatewayId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
+
+ list<group_resource_profile_model.ComputeResourcePolicy> getGroupComputeResourcePolicyList(1: required security_model.AuthzToken authzToken, 2: required string groupResourceProfileId, 3: required string gatewayId)
+                                                                                 throws (1: airavata_errors.InvalidRequestException ire,
+                                                                                         2: airavata_errors.AiravataClientException ace,
+                                                                                         3: airavata_errors.AiravataSystemException ase,
+                                                                                         4: airavata_errors.AuthorizationException ae)
  //
  //End of API
  }
