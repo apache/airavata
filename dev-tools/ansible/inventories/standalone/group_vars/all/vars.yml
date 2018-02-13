@@ -34,11 +34,11 @@ user_home: "/home/{{ user }}"
 # deployment related variables
 deployment_dir: "{{ user_home }}/master-deployment"
 airavata_source_dir: "{{ user_home }}/master-source"
-airavata_repo: "https://github.com/apache/airavata.git"
+airavata_repo: "https://github.com/DImuthuUpe/airavata.git"
 airavata_dist: "apache-airavata-server-0.17-SNAPSHOT"
 airavata_dist_name: "{{ airavata_dist }}-bin.tar.gz"
 old_airavata_dist: "apache-airavata-server-0.17-SNAPSHOT"
-git_branch: master
+git_branch: "remotes/origin/ansible-standalone"
 
 # Database related variables
 db_server: "{{ groups['database'][0] }}"
@@ -95,13 +95,15 @@ registry_host: "{{ groups['api-orch'][0] }}"
 registry_port: 8970
 default_gateway: "default"
 registry_bind_host: "{{ registry_host }}"
+default_registry_user : "default-admin"
+default_registry_password : "123456"
 
 # Credential and keystore related variables
 keystore_src_path: "{{inventory_dir}}/files/airavata.jks"
 keystore_passwd: "password"
 client_truststore_src_path: "{{inventory_dir}}/files/client_truststore.jks"
 client_truststore_passwd: "password"
-cred_keystore_src_path: "{{inventory_dir}}/files/cred_store.jceks"
+cred_keystore_src_path: "{{inventory_dir}}/files/cred_store.jks"
 cred_keystore_passwd: "123456"
 cred_keystore_alias: "seckey"
 cred_store_server_host: "{{ groups['api-orch'][0] }}"
