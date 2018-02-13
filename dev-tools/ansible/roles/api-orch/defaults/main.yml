@@ -36,3 +36,6 @@ cred_store_server_bind_host: "{{ ansible_default_ipv4.address }}"
 registry_bind_host: "{{ ansible_default_ipv4.address }}"
 sharing_registry_bind_host: "{{ ansible_default_ipv4.address }}"
 profile_service_bind_host: "{{ ansible_default_ipv4.address }}"
+
+default_registry_user : "admin"
+default_registry_password : "admin"
