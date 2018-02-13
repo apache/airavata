@@ -16,6 +16,7 @@ from rest_framework.utils.urls import replace_query_param, remove_query_param
 from rest_framework import status
 
 from django.conf import settings
+from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse, Http404
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
@@ -28,6 +29,7 @@ from airavata.model.application.io.ttypes import DataType
 
 from collections import OrderedDict
 import logging
+import os
 
 log = logging.getLogger(__name__)
 
@@ -262,8 +264,22 @@ class ExperimentViewSet(APIBackedViewSet):
 
     def perform_create(self, serializer):
         experiment = serializer.save()
-        experiment.userConfigurationData.storageId = settings.GATEWAY_DATA_STORE_RESOURCE_ID
-        experiment_id = self.request.airavata_client.createExperiment(self.authz_token, self.gateway_id, experiment)
+        experiment.userConfigurationData.storageId =\
+            settings.GATEWAY_DATA_STORE_RESOURCE_ID
+        # Set the experimentDataDir
+        # TODO: move this to a common code location
+        project = self.request.airavata_client.getProject(
+            self.authz_token, experiment.projectId)
+        experiment_data_storage = FileSystemStorage(
+            location=settings.GATEWAY_DATA_STORE_DIR)
+        exp_dir = os.path.join(
+            settings.GATEWAY_DATA_STORE_DIR,
+            experiment_data_storage.get_valid_name(self.username),
+            experiment_data_storage.get_valid_name(project.name),
+            experiment_data_storage.get_valid_name(experiment.experimentName))
+        experiment.userConfigurationData.experimentDataDir = exp_dir
+        experiment_id = self.request.airavata_client.createExperiment(
+            self.authz_token, self.gateway_id, experiment)
         experiment.experimentId = experiment_id
 
     def perform_update(self, serializer):
