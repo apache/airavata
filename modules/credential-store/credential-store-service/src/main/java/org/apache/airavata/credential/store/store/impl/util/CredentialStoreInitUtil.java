@@ -20,7 +20,13 @@
 package org.apache.airavata.credential.store.store.impl.util;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.credential.store.credential.impl.password.PasswordCredential;
+import org.apache.airavata.credential.store.store.impl.SSHCredentialWriter;
+import org.apache.airavata.credential.store.util.TokenGenerator;
+import org.apache.airavata.registry.core.app.catalog.resources.AppCatalogResource;
+import org.apache.airavata.registry.core.app.catalog.resources.GatewayProfileResource;
 import org.apache.derby.drda.NetworkServerControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +42,12 @@ public class CredentialStoreInitUtil {
     public static final String CREDENTIALS = "CREDENTIALS";
     public static final String START_DERBY_ENABLE = "start.derby.server.mode";
     public static final String DERBY_SERVER_MODE_SYS_PROPERTY = "derby.drda.startNetworkServer";
+
+    public static final String CRED_STORE_JDBC_URL = "credential.store.jdbc.url";
+    public static final String CRED_STORE_JDBC_DRIVER = "credential.store.jdbc.driver";
+    public static final String CRED_STORE_JDBC_USER = "credential.store.jdbc.user";
+    public static final String CRED_STORE_JDBC_PASSWORD = "credential.store.jdbc.password";
+
     private static NetworkServerControl server;
     private static JdbcStorage db;
     private static String jdbcURl;
@@ -70,6 +82,29 @@ public class CredentialStoreInitUtil {
             } else {
                 logger.info("Database already created for Credential Store !!!");
             }
+
+            GatewayProfileResource gatewayProfileResource = new GatewayProfileResource();
+            AppCatalogResource acr = gatewayProfileResource.get(ServerSettings.getDefaultUserGateway());
+
+            if (acr != null && GatewayProfileResource.class.cast(acr).getIdentityServerPwdCredToken() == null) {
+                org.apache.airavata.credential.store.credential.impl.password.PasswordCredential passwordCredential = new PasswordCredential();
+                passwordCredential.setGateway(ServerSettings.getDefaultUserGateway());
+                passwordCredential.setPortalUserName(ServerSettings.getIamServerSuperAdminUsername());
+                passwordCredential.setUserName(ServerSettings.getIamServerSuperAdminUsername());
+                passwordCredential.setPassword(ServerSettings.getIamServerSuperAdminPassword());
+                passwordCredential.setDescription("Credentials for default tenant");
+
+                String token = TokenGenerator.generateToken(ServerSettings.getDefaultUserGateway(), null);
+                passwordCredential.setToken(token);
+                DBUtil dbUtil = new DBUtil(ServerSettings.getSetting(CRED_STORE_JDBC_URL), ServerSettings.getSetting(CRED_STORE_JDBC_USER),
+                        ServerSettings.getSetting(CRED_STORE_JDBC_PASSWORD), ServerSettings.getSetting(CRED_STORE_JDBC_DRIVER));
+                SSHCredentialWriter sshCredentialWriter = new SSHCredentialWriter(dbUtil);
+                sshCredentialWriter.writeCredentials(passwordCredential);
+                GatewayProfileResource gwr = GatewayProfileResource.class.cast(acr);
+                gwr.setIdentityServerPwdCredToken(token);
+                gwr.save();
+            }
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RuntimeException("Database failure", e);

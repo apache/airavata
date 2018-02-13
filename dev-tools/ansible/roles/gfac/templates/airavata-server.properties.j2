@@ -290,7 +290,7 @@ keystore.path={{ keystores_location }}/{{ keystore_src_path | basename }}
 keystore.password={{ keystore_passwd }}
 #### trust store configuration ####
 trust.store={{ keystores_location }}/{{ client_truststore_src_path | basename }}
-trust.store.password=airavata
+trust.store.password={{ client_truststore_passwd }}
 #### authorization cache related configuration ####
 authz.cache.enabled=true
 authz.cache.manager.class=org.apache.airavata.service.security.authzcache.DefaultAuthzCacheManager
