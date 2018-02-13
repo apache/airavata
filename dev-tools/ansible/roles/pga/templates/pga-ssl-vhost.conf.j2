@@ -1,4 +1,4 @@
-<VirtualHost *:80>
+<VirtualHost *:8008>
     ServerName {{ vhost_servername }}
     {% if vhost_serveralias is defined %}
     ServerAlias {{ vhost_serveralias }}
@@ -10,7 +10,7 @@
     RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
 </VirtualHost>
 
-<VirtualHost *:443>
+<VirtualHost *:8443>
     ServerName {{ vhost_servername }}
     {% if vhost_serveralias is defined %}
     ServerAlias {{ vhost_serveralias }}
