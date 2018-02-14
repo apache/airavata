@@ -46,7 +46,10 @@ export default {
   getters: {
     data: state => id => {
       if (state.fetch && state.data[id] == null) {
-        state.data[id] = DjangoAiravataAPI.services.LocaJobSubmissionService.retrieve(id)
+        return DjangoAiravataAPI.services.LocaJobSubmissionService.retrieve(id).then(value => {
+          state.data[id] = value;
+          return Promise.resolve(value);
+        });
       }
       return state.data[id]
     },

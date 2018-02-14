@@ -84,20 +84,28 @@ export default {
     },
     unicoreData: (state) => id => {
       if (state.fetch && !(id in state.unicore)) {
-        state.unicore[id] = DjangoAiravataAPI.services.UnicoreDataMovementService.retrieve(id)
+        return DjangoAiravataAPI.services.UnicoreDataMovementService.retrieve(id).then(value => {
+          state.unicore[id] = value;
+          return Promise.resolve(value);
+        });
       }
       return state.unicore[id]
     },
     gridData: (state) => id => {
       if (state.fetch && !(id in state.grid)) {
-        console.log("Fetch")
-        state.grid[id] = DjangoAiravataAPI.services.GridFTPDataMovementService.retrieve(id)
+        return DjangoAiravataAPI.services.GridFTPDataMovementService.retrieve(id).then(value => {
+          state.grid[id] = value;
+          return Promise.resolve(value);
+        });
       }
       return state.grid[id]
     },
     scpData: (state) => id => {
       if (state.fetch && !(id in state.scp)) {
-        state.scp[id] = DjangoAiravataAPI.services.SCPDataMovementService.retrieve(id)
+        return DjangoAiravataAPI.services.SCPDataMovementService.retrieve(id).then(value => {
+          state.scp[id] = value;
+          return Promise.resolve(value);
+        });
       }
       return state.scp[id]
     },

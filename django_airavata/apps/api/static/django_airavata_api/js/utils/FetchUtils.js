@@ -70,6 +70,7 @@ export default {
             headers: headers,
             credentials: "same-origin"
         }).then((response) => {
+            console.log("FetchUtils",response);
             if (response.ok) {
                 return Promise.resolve(response.json())
             } else {

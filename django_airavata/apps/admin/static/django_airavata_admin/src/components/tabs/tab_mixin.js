@@ -1,15 +1,14 @@
 export default {
   mounted: function () {
+    console.log("mounted")
     this.tabCreation()
   },
   beforeDestroy: function () {
     this.tabDestruction()
   },
-  data:function () {
+  data: function () {
     return {
-      data:{
-
-      }
+      data: {}
     }
   },
   methods: {
@@ -18,6 +17,12 @@ export default {
     },
     tabDestruction: function () {
       this.updateStore(this.data)
+    },
+  },
+  watch: {
+    storeData: function (newValue, oldValue) {
+      console.log("Store Data Change")
+      this.tabCreation();
     }
   }
 

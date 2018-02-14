@@ -18,8 +18,8 @@ export default {
     })
   },
   mounted: function () {
-    console.log("Before data", this.id, this.storeData)
-    this.data = this.storeData(this.id)
+    let storeData = this.storeData(this.id)
+    storeData.then((value) => this.data = value);
   },
   beforeDestroy: function () {
     this.updateData({data: this.data, id: this.id})

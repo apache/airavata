@@ -14,7 +14,8 @@ export default {
     }
   },
   mounted: function () {
-    this.data = this.storeData(this.id)
+    let storeData = this.storeData(this.id)
+    storeData.then((value) => this.data = value);
   }, computed: {
     ...mapGetters({
       editable: 'editable',

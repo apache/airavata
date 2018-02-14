@@ -6,6 +6,7 @@ import sshJobSubmission from './ssh_job_submission'
 import unicoreJobSubmission from './unicore_job_submission'
 import dataMovement from './data_movement'
 import DjangoAiravataAPI from 'django-airavata-api'
+import Utils from '../../utils'
 
 let batchQueues = function () {
   return {
@@ -99,15 +100,6 @@ export default {
     addDataMovement: function (state, {id = null, protocol = null}) {
       state.data.dataMovementInterfaces.push(dataMovementDefault(id, protocol))
     },
-    fetch: function ({state, rootState}, value) {
-      state.fetch = value
-      rootState.computeResource.cloudJobSubmission.fetch = value
-      rootState.computeResource.dataMovement.fetch = value
-      rootState.computeResource.globusJobSubmission.fetch = value
-      rootState.computeResource.localJobSubmission.fetch = value
-      rootState.computeResource.sshJobSubmission.fetch = value
-      rootState.computeResource.unicoreJobSubmission.fetch = value
-    },
     setComputeResourceId: function (state, id) {
       state.id = id
     }
@@ -117,7 +109,9 @@ export default {
       if (state.fetch) {
         state.fetch = false
         console.log("before")
-        state.data = DjangoAiravataAPI.services.ComputeResourceService.retrieve(state.id)
+        DjangoAiravataAPI.services.ComputeResourceService.retrieve(state.id).then((value) => {
+          Vue.set(state, 'data', value);
+        })
         console.log("after")
 
       }
@@ -134,6 +128,15 @@ export default {
   actions: {
     save: function ({commit, state, rootState}) {
     },
-
+    fetch: function ({commit, state, rootState}, value) {
+      console.log(state, rootState)
+      state.fetch = value
+      rootState.computeResource.cloudJobSubmission.fetch = value
+      rootState.computeResource.dataMovement.fetch = value
+      rootState.computeResource.globusJobSubmission.fetch = value
+      rootState.computeResource.localJobSubmission.fetch = value
+      rootState.computeResource.sshJobSubmission.fetch = value
+      rootState.computeResource.unicoreJobSubmission.fetch = value
+    }
   }
 }

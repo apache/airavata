@@ -1,3 +1,4 @@
+
 import Vue from 'vue';
 import VueResource from 'vue-resource';
 import VueRouter from 'vue-router';
@@ -6,6 +7,7 @@ import ExperimentsDashboard from './components/dashboards/ExperimentDashboard.vu
 import AdminDashboard from './components/dashboards/AdminDashboard.vue';
 import CredentialStore from './components/dashboards/CredentialStore.vue'
 import Loading from './components/Loading.vue'
+import ComputeResourceDashboardHome from './components/dashboards/ComputeResourceDashboardHome'
 import ComputeResourceDashboard from './components/dashboards/ComputeResourceDashboard'
 
 import router from './router';
@@ -24,7 +26,7 @@ export function initializeApacheAiravataDashboard(dashboardName) {
     router,
     store,
     template:template ,
-    components: {ExperimentsDashboard, AdminDashboard,CredentialStore,Loading,ComputeResourceDashboard}
+    components: {ExperimentsDashboard, AdminDashboard,CredentialStore,Loading,ComputeResourceDashboardHome,ComputeResourceDashboard}
 
   })
   Vue.config.devtools = true

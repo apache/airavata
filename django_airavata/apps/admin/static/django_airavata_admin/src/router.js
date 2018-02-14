@@ -4,8 +4,9 @@ import ExperimentsDashboard from './components/dashboards/ExperimentDashboard.vu
 import ApplicationDetails from './components/admin/ApplicationDetails.vue'
 import ApplicationInterface from './components/admin/ApplicationInterface.vue'
 import ApplicationDeployments from './components/admin/ApplicationDeployments.vue'
-import ComputeResourceDashboard from './components/tabs/TabbedView'
-import ComputeResourceHome from './components/admin/compute_resource/ComputeResourceHome'
+import ComputeResourceDashboard from './components/dashboards/ComputeResourceDashboard'
+import ComputeResourceDashboardHome from './components/dashboards/ComputeResourceDashboardHome'
+import ComputeResourceDetails from './components/admin/compute_resource/ComputeResourceDetails'
 import VueRouter from 'vue-router'
 
 
@@ -26,15 +27,11 @@ const routes = [
         path: 'deployments',
         component: ApplicationDeployments,
         name: 'deployments'
-
       }
     ]
   },
-  {path: '/', component: AdminDashboardHome},
+  {path: '/admin', component: AdminDashboardHome},
   {path: '/experiments', component: ExperimentsDashboard},
-  {path: '/compute/resources', component: ComputeResourceDashboard},
-  {path: '/compute/resource/details', component: ComputeResourceHome,name:'compute_resource_details'}
-
 ];
 export default new VueRouter({
   routes: routes

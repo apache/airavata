@@ -12,3 +12,7 @@ def admin_home(request):
 @login_required
 def credential_store(request):
     return render(request, 'admin/credential_store.html')
+
+@login_required
+def compute_resource(request):
+    return render(request, 'admin/compute_resource.html')
