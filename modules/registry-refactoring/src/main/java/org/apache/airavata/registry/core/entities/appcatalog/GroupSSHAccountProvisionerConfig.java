@@ -14,10 +14,6 @@ public class GroupSSHAccountProvisionerConfig implements Serializable{
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "GATEWAY_ID")
-    private String gatewayId;
-
-    @Id
     @Column(name = "RESOURCE_ID")
     private String resourceId;
 
@@ -34,7 +30,6 @@ public class GroupSSHAccountProvisionerConfig implements Serializable{
 
     @ManyToOne(targetEntity = GroupComputeResourcePrefEntity.class, cascade= CascadeType.MERGE)
     @JoinColumns({
-            @JoinColumn(name = "GATEWAY_ID", referencedColumnName = "GATEWAY_ID", nullable = false),
             @JoinColumn(name = "RESOURCE_ID", referencedColumnName = "RESOURCE_ID", nullable = false),
             @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID", referencedColumnName = "GROUP_RESOURCE_PROFILE_ID", nullable = false)
     })
@@ -44,7 +39,6 @@ public class GroupSSHAccountProvisionerConfig implements Serializable{
     }
 
     public GroupSSHAccountProvisionerConfig( String configName, String configValue, GroupComputeResourcePrefEntity groupComputeResourcePref) {
-        this.gatewayId = groupComputeResourcePref.getGatewayId();
         this.resourceId = groupComputeResourcePref.getComputeResourceId();
         this.groupResourceProfileId = groupComputeResourcePref.getGroupResourceProfileId();
         this.configName = configName;
@@ -82,14 +76,6 @@ public class GroupSSHAccountProvisionerConfig implements Serializable{
 
     public void setConfigValue(String configValue) {
         this.configValue = configValue;
-    }
-
-    public String getGatewayId() {
-        return gatewayId;
-    }
-
-    public void setGatewayId(String gatewayId) {
-        this.gatewayId = gatewayId;
     }
 
     public GroupComputeResourcePrefEntity getGroupComputeResourcePref() {

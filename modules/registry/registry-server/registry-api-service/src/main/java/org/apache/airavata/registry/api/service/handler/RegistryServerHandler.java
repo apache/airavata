@@ -1989,7 +1989,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public void updateGroupResourceProfile(GroupResourceProfile groupResourceProfile) throws RegistryServiceException, TException {
         try {
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-            if (!groupResourceProfileRepository.isGroupResourceProfileExists(groupResourceProfile.getGatewayId(), groupResourceProfile.getGroupResourceProfileId())) {
+            if (!groupResourceProfileRepository.isGroupResourceProfileExists(groupResourceProfile.getGroupResourceProfileId())) {
                 logger.error("Cannot update. No group resource profile found with matching gatewayId and groupResourceProfileId");
                 RegistryServiceException exception =  new RegistryServiceException();
                 exception.setMessage("Cannot update. No group resource profile found with matching gatewayId and groupResourceProfileId");
@@ -2006,17 +2006,17 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public GroupResourceProfile getGroupResourceProfile(String gatewayId, String groupResourceProfileId) throws RegistryServiceException, TException {
+    public GroupResourceProfile getGroupResourceProfile(String groupResourceProfileId) throws RegistryServiceException, TException {
         try {
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-            if (!groupResourceProfileRepository.isGroupResourceProfileExists(gatewayId, groupResourceProfileId)) {
+            if (!groupResourceProfileRepository.isGroupResourceProfileExists(groupResourceProfileId)) {
                 logger.error("No group resource profile found with matching gatewayId and groupResourceProfileId");
                 RegistryServiceException exception =  new RegistryServiceException();
                 exception.setMessage("No group resource profile found with matching gatewayId and groupResourceProfileId");
                 throw exception;
             }
 
-            return groupResourceProfileRepository.getGroupResourceProfile(gatewayId, groupResourceProfileId);
+            return groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
         } catch (Exception e) {
             logger.error("Error while retrieving group resource profile...", e);
             RegistryServiceException exception = new RegistryServiceException();
@@ -2026,16 +2026,16 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public boolean removeGroupResourceProfile(String gatewayId, String groupResourceProfileId) throws RegistryServiceException, TException {
+    public boolean removeGroupResourceProfile(String groupResourceProfileId) throws RegistryServiceException, TException {
         try {
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-            if (!groupResourceProfileRepository.isGroupResourceProfileExists(gatewayId, groupResourceProfileId)) {
+            if (!groupResourceProfileRepository.isGroupResourceProfileExists(groupResourceProfileId)) {
                 logger.error("Cannot Remove. No group resource profile found with matching gatewayId and groupResourceProfileId");
                 RegistryServiceException exception =  new RegistryServiceException();
                 exception.setMessage("Cannot Remove. No group resource profile found with matching gatewayId and groupResourceProfileId");
                 throw exception;
             }
-            return groupResourceProfileRepository.removeGroupResourceProfile(gatewayId, groupResourceProfileId);
+            return groupResourceProfileRepository.removeGroupResourceProfile(groupResourceProfileId);
         } catch (Exception e) {
             logger.error("Error while removing group resource profile...", e);
             RegistryServiceException exception = new RegistryServiceException();
@@ -2058,10 +2058,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public boolean removeGroupComputePrefs(String computeResourceId, String groupResourceProfileId, String gatewayId) throws RegistryServiceException, TException {
+    public boolean removeGroupComputePrefs(String computeResourceId, String groupResourceProfileId) throws RegistryServiceException, TException {
         try {
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-            groupResourceProfileRepository.removeGroupComputeResourcePreference(computeResourceId, groupResourceProfileId, gatewayId);
+            groupResourceProfileRepository.removeGroupComputeResourcePreference(computeResourceId, groupResourceProfileId);
             logger.debug("Removed compute resource preferences with compute resource ID: "+ computeResourceId);
             return true;
         } catch (Exception e) {
@@ -2073,10 +2073,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public boolean removeGroupComputeResourcePolicy(String resourcePolicyId, String computeResourceId, String groupResourceProfileId, String gatewayId) throws RegistryServiceException, TException {
+    public boolean removeGroupComputeResourcePolicy(String resourcePolicyId) throws RegistryServiceException, TException {
         try {
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-            groupResourceProfileRepository.removeComputeResourcePolicy(resourcePolicyId, computeResourceId, groupResourceProfileId, gatewayId);
+            groupResourceProfileRepository.removeComputeResourcePolicy(resourcePolicyId);
             logger.debug("Removed compute resource policy with resource policy ID: "+ resourcePolicyId);
             return true;
         } catch (Exception e) {
@@ -2088,10 +2088,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public boolean removeGroupBatchQueueResourcePolicy(String resourcePolicyId, String computeResourceId, String groupResourceProfileId, String queuename, String gatewayId) throws RegistryServiceException, TException {
+    public boolean removeGroupBatchQueueResourcePolicy(String resourcePolicyId) throws RegistryServiceException, TException {
         try {
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-            groupResourceProfileRepository.removeBatchQueueResourcePolicy(resourcePolicyId, computeResourceId, groupResourceProfileId, queuename, gatewayId);
+            groupResourceProfileRepository.removeBatchQueueResourcePolicy(resourcePolicyId);
             logger.debug("Removed batch resource policy with resource policy ID: "+ resourcePolicyId);
             return true;
         } catch (Exception e) {
@@ -2103,11 +2103,11 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public GroupComputeResourcePreference getGroupComputeResourcePreference(String computeResourceId, String groupResourceProfileId, String gatewayId) throws RegistryServiceException, TException {
+    public GroupComputeResourcePreference getGroupComputeResourcePreference(String computeResourceId, String groupResourceProfileId) throws RegistryServiceException, TException {
         try {
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
             GroupComputeResourcePreference groupComputeResourcePreference = groupResourceProfileRepository.getGroupComputeResourcePreference(
-                                                                        computeResourceId, groupResourceProfileId, gatewayId);
+                                                                        computeResourceId, groupResourceProfileId);
             if (!(groupComputeResourcePreference != null)) {
                 logger.error("GroupComputeResourcePreference not found");
                 RegistryServiceException exception =  new RegistryServiceException();
@@ -2124,11 +2124,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public ComputeResourcePolicy getGroupComputeResourcePolicy(String groupResourceProfileId, String computeResourceId, String resourcePolicyId, String gatewayId) throws RegistryServiceException, TException {
+    public ComputeResourcePolicy getGroupComputeResourcePolicy(String resourcePolicyId) throws RegistryServiceException, TException {
         try {
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-            ComputeResourcePolicy computeResourcePolicy = groupResourceProfileRepository.getComputeResourcePolicy(groupResourceProfileId,
-                                                            computeResourceId, resourcePolicyId, gatewayId);
+            ComputeResourcePolicy computeResourcePolicy = groupResourceProfileRepository.getComputeResourcePolicy(resourcePolicyId);
             if (!(computeResourcePolicy != null)) {
                 logger.error("Group Compute Resource policy not found");
                 RegistryServiceException exception =  new RegistryServiceException();
@@ -2145,11 +2144,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public BatchQueueResourcePolicy getBatchQueueResourcePolicy(String groupResourceProfileId, String computeResourceId, String resourcePolicyId, String queuename, String gatewayId) throws RegistryServiceException, TException {
+    public BatchQueueResourcePolicy getBatchQueueResourcePolicy(String resourcePolicyId) throws RegistryServiceException, TException {
         try {
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-            BatchQueueResourcePolicy batchQueueResourcePolicy = groupResourceProfileRepository.getBatchQueueResourcePolicy(groupResourceProfileId,
-                                                                computeResourceId, resourcePolicyId, queuename, gatewayId);
+            BatchQueueResourcePolicy batchQueueResourcePolicy = groupResourceProfileRepository.getBatchQueueResourcePolicy(resourcePolicyId);
             if(!(batchQueueResourcePolicy != null)) {
                 logger.error("Group Batch Queue Resource policy not found");
                 RegistryServiceException exception =  new RegistryServiceException();
@@ -2166,10 +2164,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public List<GroupComputeResourcePreference> getGroupComputeResourcePrefList(String groupResourceProfileId, String gatewayId) throws RegistryServiceException, TException {
+    public List<GroupComputeResourcePreference> getGroupComputeResourcePrefList(String groupResourceProfileId) throws RegistryServiceException, TException {
         try {
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-            return groupResourceProfileRepository.getAllGroupComputeResourcePreferences(groupResourceProfileId, gatewayId);
+            return groupResourceProfileRepository.getAllGroupComputeResourcePreferences(groupResourceProfileId);
         } catch (Exception e) {
             logger.error("Error while retrieving retrieving Group Compute Resource Preference list", e);
             RegistryServiceException exception = new RegistryServiceException();
@@ -2179,10 +2177,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public List<BatchQueueResourcePolicy> getGroupBatchQueueResourcePolicyList(String groupResourceProfileId, String gatewayId) throws RegistryServiceException, TException {
+    public List<BatchQueueResourcePolicy> getGroupBatchQueueResourcePolicyList(String groupResourceProfileId) throws RegistryServiceException, TException {
         try {
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-            return groupResourceProfileRepository.getAllGroupBatchQueueResourcePolicies(groupResourceProfileId, gatewayId);
+            return groupResourceProfileRepository.getAllGroupBatchQueueResourcePolicies(groupResourceProfileId);
         } catch (Exception e) {
             logger.error("Error while retrieving retrieving Group Batch Queue Resource policy list", e);
             RegistryServiceException exception = new RegistryServiceException();
@@ -2192,10 +2190,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public List<ComputeResourcePolicy> getGroupComputeResourcePolicyList(String groupResourceProfileId, String gatewayId) throws RegistryServiceException, TException {
+    public List<ComputeResourcePolicy> getGroupComputeResourcePolicyList(String groupResourceProfileId) throws RegistryServiceException, TException {
         try {
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-            return groupResourceProfileRepository.getAllGroupComputeResourcePolicies(groupResourceProfileId, gatewayId);
+            return groupResourceProfileRepository.getAllGroupComputeResourcePolicies(groupResourceProfileId);
         } catch (Exception e) {
             logger.error("Error while retrieving retrieving Group Compute Resource policy list", e);
             RegistryServiceException exception = new RegistryServiceException();

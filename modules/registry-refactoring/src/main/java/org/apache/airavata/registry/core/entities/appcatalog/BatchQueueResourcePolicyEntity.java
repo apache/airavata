@@ -17,19 +17,12 @@ public class BatchQueueResourcePolicyEntity implements Serializable {
     @Column(name = "RESOURCE_POLICY_ID")
     private String resourcePolicyId;
 
-    @Id
-    @Column(name = "GATEWAY_ID")
-    private String gatewayId;
-
-    @Id
     @Column(name = "COMPUTE_RESOURCE_ID")
     private String computeResourceId;
 
-    @Id
     @Column(name = "GROUP_RESOURCE_PROFILE_ID")
     private String groupResourceProfileId;
 
-    @Id
     @Column(name = "QUEUE_NAME")
     private String queuename;
 
@@ -71,14 +64,6 @@ public class BatchQueueResourcePolicyEntity implements Serializable {
 
     public void setGroupResourceProfileId(String groupResourceProfileId) {
         this.groupResourceProfileId = groupResourceProfileId;
-    }
-
-    public String getGatewayId() {
-        return gatewayId;
-    }
-
-    public void setGatewayId(String gatewayId) {
-        this.gatewayId = gatewayId;
     }
 
     public String getQueuename() {

@@ -6,7 +6,6 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResou
 import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
-import org.apache.airavata.registry.core.entities.appcatalog.GroupResourceProfilePK;
 import org.apache.airavata.registry.core.repositories.util.Initialize;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.junit.After;
@@ -47,7 +46,7 @@ public class GroupResourceProfileRepositoryTest {
     @After
     public void tearDown() throws Exception {
         System.out.println("********** TEAR DOWN ************");
-        groupResourceProfileRepository.removeGroupResourceProfile(gatewayId, groupResourceProfileId);
+        groupResourceProfileRepository.removeGroupResourceProfile(groupResourceProfileId);
         initialize.stopDerbyServer();
     }
 
@@ -116,12 +115,10 @@ public class GroupResourceProfileRepositoryTest {
         groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_NAME");
 
         GroupComputeResourcePreference groupComputeResourcePreference1 = new GroupComputeResourcePreference();
-        groupComputeResourcePreference1.setGatewayId(gatewayId);
         groupComputeResourcePreference1.setComputeResourceId(resourceId1);
         groupComputeResourcePreference1.setGroupResourceProfileId(groupResourceProfileId);
 
         GroupComputeResourcePreference groupComputeResourcePreference2 = new GroupComputeResourcePreference();
-        groupComputeResourcePreference2.setGatewayId(gatewayId);
         groupComputeResourcePreference2.setComputeResourceId(resourceId2);
         groupComputeResourcePreference2.setGroupResourceProfileId(groupResourceProfileId);
 
@@ -135,14 +132,12 @@ public class GroupResourceProfileRepositoryTest {
         computeResourcePolicy.setComputeResourceId(resourceId1);
         computeResourcePolicy.setResourcePolicyId("TEST_COM_RESOURCE_POLICY_ID1");
         computeResourcePolicy.setGroupResourceProfileId(groupResourceProfileId);
-        computeResourcePolicy.setGatewayId(gatewayId);
         computeResourcePolicy.addToAllowedBatchQueues("queue1");
 
         ComputeResourcePolicy computeResourcePolicy2 = new ComputeResourcePolicy();
         computeResourcePolicy2.setComputeResourceId(resourceId2);
         computeResourcePolicy2.setResourcePolicyId("TEST_COM_RESOURCE_POLICY_ID2");
         computeResourcePolicy2.setGroupResourceProfileId(groupResourceProfileId);
-        computeResourcePolicy2.setGatewayId(gatewayId);
         computeResourcePolicy2.addToAllowedBatchQueues("cmqueue1");
 
         List<ComputeResourcePolicy> computeResourcePolicyList =  new ArrayList<>();
@@ -156,7 +151,6 @@ public class GroupResourceProfileRepositoryTest {
         batchQueueResourcePolicy.setGroupResourceProfileId(groupResourceProfileId);
         batchQueueResourcePolicy.setResourcePolicyId("TEST_BQ_RESOURCE_POLICY_ID1");
         batchQueueResourcePolicy.setQueuename("queue1");
-        batchQueueResourcePolicy.setGatewayId(gatewayId);
         batchQueueResourcePolicy.setMaxAllowedCores(2);
         batchQueueResourcePolicy.setMaxAllowedWalltime(10);
 
@@ -165,7 +159,6 @@ public class GroupResourceProfileRepositoryTest {
         batchQueueResourcePolicy2.setGroupResourceProfileId(groupResourceProfileId);
         batchQueueResourcePolicy2.setResourcePolicyId("TEST_BQ_RESOURCE_POLICY_ID2");
         batchQueueResourcePolicy2.setQueuename("cmqueue1");
-        batchQueueResourcePolicy2.setGatewayId(gatewayId);
         batchQueueResourcePolicy2.setMaxAllowedCores(3);
         batchQueueResourcePolicy2.setMaxAllowedWalltime(12);
 
@@ -177,8 +170,8 @@ public class GroupResourceProfileRepositoryTest {
 
         groupResourceProfileRepository.addGroupResourceProfile(groupResourceProfile);
 
-        if (groupResourceProfileRepository.isGroupResourceProfileExists(gatewayId, groupResourceProfileId)) {
-            GroupResourceProfile getGroupResourceProfile = groupResourceProfileRepository.getGroupResourceProfile(gatewayId, groupResourceProfileId);
+        if (groupResourceProfileRepository.isGroupResourceProfileExists(groupResourceProfileId)) {
+            GroupResourceProfile getGroupResourceProfile = groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
 
             assertTrue(getGroupResourceProfile.getGatewayId().equals(gatewayId));
             assertTrue(getGroupResourceProfile.getGroupResourceProfileId().equals(groupResourceProfileId));
@@ -188,21 +181,21 @@ public class GroupResourceProfileRepositoryTest {
             assertTrue(getGroupResourceProfile.getBatchQueueResourcePolicies().size() == 2);
         }
 
-        assertTrue(groupResourceProfileRepository.getGroupComputeResourcePreference(resourceId1,groupResourceProfileId,gatewayId) != null);
+        assertTrue(groupResourceProfileRepository.getGroupComputeResourcePreference(resourceId1,groupResourceProfileId) != null);
 
-        ComputeResourcePolicy getComputeResourcePolicy = groupResourceProfileRepository.getComputeResourcePolicy(groupResourceProfileId, resourceId1, "TEST_COM_RESOURCE_POLICY_ID1", gatewayId);
+        ComputeResourcePolicy getComputeResourcePolicy = groupResourceProfileRepository.getComputeResourcePolicy( "TEST_COM_RESOURCE_POLICY_ID1");
         assertTrue(getComputeResourcePolicy.getAllowedBatchQueues().get(0).equals("queue1"));
 
-        BatchQueueResourcePolicy getBatchQueuePolicy = groupResourceProfileRepository.getBatchQueueResourcePolicy(groupResourceProfileId, resourceId2, "TEST_BQ_RESOURCE_POLICY_ID2", "cmqueue1", gatewayId);
+        BatchQueueResourcePolicy getBatchQueuePolicy = groupResourceProfileRepository.getBatchQueueResourcePolicy("TEST_BQ_RESOURCE_POLICY_ID2");
         assertTrue(getBatchQueuePolicy != null);
         assertTrue(getBatchQueuePolicy.getMaxAllowedCores() == 3);
         assertTrue(getBatchQueuePolicy.getMaxAllowedWalltime() == 12);
 
         assertTrue(groupResourceProfileRepository.getAllGroupResourceProfiles(gatewayId).size() == 1);
-        assertTrue(groupResourceProfileRepository.getAllGroupComputeResourcePreferences(groupResourceProfileId, gatewayId).size() == 2);
-        assertTrue(groupResourceProfileRepository.getAllGroupComputeResourcePolicies(groupResourceProfileId, gatewayId).size() == 2);
-        assertTrue(groupResourceProfileRepository.getAllGroupBatchQueueResourcePolicies(groupResourceProfileId, gatewayId).size() == 2);
+        assertTrue(groupResourceProfileRepository.getAllGroupComputeResourcePreferences(groupResourceProfileId).size() == 2);
+        assertTrue(groupResourceProfileRepository.getAllGroupComputeResourcePolicies(groupResourceProfileId).size() == 2);
+        assertTrue(groupResourceProfileRepository.getAllGroupBatchQueueResourcePolicies(groupResourceProfileId).size() == 2);
 
-        groupResourceProfileRepository.removeGroupResourceProfile(gatewayId, groupResourceProfileId);
+        groupResourceProfileRepository.removeGroupResourceProfile(groupResourceProfileId);
     }
 }
