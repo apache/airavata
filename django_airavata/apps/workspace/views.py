@@ -6,11 +6,14 @@ from urllib.parse import urlparse
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import SuspiciousFileOperation
 from django.core.files.storage import FileSystemStorage
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse, FileResponse
+from django.http.response import HttpResponseBadRequest
 from django.shortcuts import render
 from rest_framework.renderers import JSONRenderer
 
+from airavata.model.application.io.ttypes import DataType
 from airavata.model.data.replica.ttypes import (DataProductModel,
                                                 DataProductType,
                                                 DataReplicaLocationModel,

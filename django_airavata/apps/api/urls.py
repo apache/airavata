@@ -33,7 +33,9 @@ urlpatterns = [
     url(r'^application/deployment$', views.FetchApplicationDeployment.as_view(), name="app_deployment"),
     url(r'^credentials/ssh/keys', views.FetchSSHPubKeys.as_view(), name="ssh_keys"),
     url(r'^credentials/ssh/key/delete', views.DeleteSSHPubKey.as_view(), name="ssh_key_deletion"),
-    url(r'^credentials/ssh/key/create', views.GenerateRegisterSSHKeys.as_view(), name="ssh_key_creation")
+    url(r'^credentials/ssh/key/create', views.GenerateRegisterSSHKeys.as_view(), name="ssh_key_creation"),
+    url(r'^upload$', views.upload_input_file, name='upload_input_file'),
+    url(r'^download/(?P<data_product_uri>.+)$', views.download_file, name='download_file'),
 ]
 
 

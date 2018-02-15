@@ -1,4 +1,5 @@
 
+from . import datastore
 from . import serializers
 from . import thrift_utils
 
@@ -16,10 +17,10 @@ from rest_framework.utils.urls import replace_query_param, remove_query_param
 from rest_framework import status
 
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.storage import FileSystemStorage
-from django.http import JsonResponse, Http404
-from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
+from django.http import FileResponse, Http404, JsonResponse
 
 from airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule, ApplicationDeploymentDescription
 from airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDescription
@@ -32,6 +33,7 @@ import logging
 import os
 
 log = logging.getLogger(__name__)
+
 
 class GenericAPIBackedViewSet(GenericViewSet):
 
@@ -267,16 +269,11 @@ class ExperimentViewSet(APIBackedViewSet):
         experiment.userConfigurationData.storageId =\
             settings.GATEWAY_DATA_STORE_RESOURCE_ID
         # Set the experimentDataDir
-        # TODO: move this to a common code location
         project = self.request.airavata_client.getProject(
             self.authz_token, experiment.projectId)
-        experiment_data_storage = FileSystemStorage(
-            location=settings.GATEWAY_DATA_STORE_DIR)
-        exp_dir = os.path.join(
-            settings.GATEWAY_DATA_STORE_DIR,
-            experiment_data_storage.get_valid_name(self.username),
-            experiment_data_storage.get_valid_name(project.name),
-            experiment_data_storage.get_valid_name(experiment.experimentName))
+        exp_dir = datastore.get_experiment_dir(self.username,
+                                               project.name,
+                                               experiment.experimentName)
         experiment.userConfigurationData.experimentDataDir = exp_dir
         experiment_id = self.request.airavata_client.createExperiment(
             self.authz_token, self.gateway_id, experiment)
@@ -626,3 +623,42 @@ class DeleteSSHPubKey(APIView):
     def post(self, request, format=None):
         gateway_id = settings.GATEWAY_ID
         return Response(request.airavata_client.deleteSSHPubKey(request.authz_token,request.data['token'],gateway_id))
+
+
+@login_required
+def upload_input_file(request):
+    try:
+        username = request.user.username
+        project_id = request.POST['project-id']
+        project = request.airavata_client.getProject(
+            request.authz_token, project_id)
+        exp_name = request.POST['experiment-name']
+        input_file = request.FILES['file']
+        data_product = datastore.save(username, project.name, exp_name,
+                                      input_file)
+        data_product_uri = request.airavata_client.registerDataProduct(
+            request.authz_token, data_product)
+        return JsonResponse({'uploaded': True,
+                             'data-product-uri': data_product_uri})
+    except Exception as e:
+        resp = JsonResponse({'uploaded': False, 'error': str(e)})
+        resp.status_code = 500
+        return resp
+
+
+@login_required
+def download_file(request, data_product_uri):
+    # TODO check that user has access to this file using sharing API
+    data_product = request.airavata_client.getDataProduct(
+        request.authz_token, data_product_uri)
+    if not data_product:
+        raise Http404("data product does not exist")
+    try:
+        data_file = datastore.open(data_product)
+        response = FileResponse(data_file,
+                                content_type="application/octet-stream")
+        response['Content-Disposition'] = ('attachment; filename="{}"'
+                                           .format(data_product.productName))
+        return response
+    except ObjectDoesNotExist as e:
+        raise Http404(str(e)) from e

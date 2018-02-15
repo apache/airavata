@@ -12,5 +12,4 @@ urlpatterns = [
     url(r'^applications/(?P<app_module_id>[^/]+)/create_experiment$',
         views.create_experiment, name='create_experiment'),
     url(r'^dashboard$', views.dashboard, name='dashboard'),
-    url(r'^upload$', views.upload_input_file, name='upload_input_file'),
 ]

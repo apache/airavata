@@ -29,7 +29,7 @@
                                     <th scope="row">Outputs</th>
                                     <td>
                                         <template v-for="output in localFullExperiment.outputDataProducts">
-                                            {{ output.filename }}
+                                            <a :href="'/api/download/' + encodeURIComponent(output.productUri)">{{ output.filename }}</a>
                                         </template>
                                     </td>
                                 </tr>
@@ -115,7 +115,7 @@
                                     <th scope="row">Inputs</th>
                                     <td>
                                         <template v-for="input in localFullExperiment.inputDataProducts">
-                                            {{ input.filename }}
+                                            <a :href="'/api/download/' + encodeURIComponent(input.productUri)">{{ input.filename }}</a>
                                         </template>
                                     </td>
                                 </tr>

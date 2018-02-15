@@ -182,7 +182,7 @@ export default {
                     data.append('file', input.value);
                     data.append('project-id', this.localExperiment.projectId);
                     data.append('experiment-name', this.localExperiment.experimentName);
-                    let uploadRequest = apiUtils.FetchUtils.post('/workspace/upload', data)
+                    let uploadRequest = apiUtils.FetchUtils.post('/api/upload', data)
                         .then(result => input.value = result['data-product-uri'])
                     uploads.push(uploadRequest);
                 }
