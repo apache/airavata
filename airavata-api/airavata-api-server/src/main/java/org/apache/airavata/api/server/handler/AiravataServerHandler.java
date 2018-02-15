@@ -172,10 +172,10 @@ public class AiravataServerHandler implements Airavata.Iface {
                 client.createEntityType(entityType);
 
                 entityType = new EntityType();
-                entityType.setEntityTypeId(domain.domainId+":APPLICATION");
+                entityType.setEntityTypeId(domain.domainId+":APPLICATION-DEPLOYMENT");
                 entityType.setDomainId(domain.domainId);
-                entityType.setName("APPLICATION");
-                entityType.setDescription("Application entity type");
+                entityType.setName("APPLICATION-DEPLOYMENT");
+                entityType.setDescription("Application Deployment entity type");
                 client.createEntityType(entityType);
 
                 //Creating Permission Types for each domain
@@ -274,10 +274,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             sharingClient.createEntityType(entityType);
 
             entityType = new EntityType();
-            entityType.setEntityTypeId(domain.domainId+":APPLICATION");
+            entityType.setEntityTypeId(domain.domainId+":APPLICATION-DEPLOYMENT");
             entityType.setDomainId(domain.domainId);
-            entityType.setName("APPLICATION");
-            entityType.setDescription("Application entity type");
+            entityType.setName("APPLICATION-DEPLOYMENT");
+            entityType.setDescription("Application Deployment entity type");
             sharingClient.createEntityType(entityType);
 
             //Creating Permission Types for each domain

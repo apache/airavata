@@ -38,6 +38,8 @@ public class AiravataDataMigrator {
 
         SharingRegistryServerHandler sharingRegistryServerHandler = new SharingRegistryServerHandler();
 
+        String applicationDeploymentOwner = args[0];
+
         String query = "SELECT * FROM GATEWAY";
         Statement statement = expCatConnection.createStatement();
         ResultSet rs = statement.executeQuery(query);
@@ -79,10 +81,10 @@ public class AiravataDataMigrator {
                     sharingRegistryServerHandler.createEntityType(entityType);
 
                 entityType = new EntityType();
-                entityType.setEntityTypeId(domain.domainId+":APPLICATION");
+                entityType.setEntityTypeId(domain.domainId+":APPLICATION-DEPLOYMENT");
                 entityType.setDomainId(domain.domainId);
-                entityType.setName("APPLICATION");
-                entityType.setDescription("Application entity type");
+                entityType.setName("APPLICATION-DEPLOYMENT");
+                entityType.setDescription("Application Deployment entity type");
                 if (!sharingRegistryServerHandler.isEntityTypeExists(entityType.domainId, entityType.entityTypeId))
                     sharingRegistryServerHandler.createEntityType(entityType);
 
@@ -189,19 +191,19 @@ public class AiravataDataMigrator {
             }
         }
 
-        //Creating application entries
-        query = "SELECT * FROM APPLICATION";
+        //Creating application deployment entries
+        query = "SELECT * FROM APPLICATION_DEPLOYMENT";
         statement = expCatConnection.createStatement();
         rs = statement.executeQuery(query);
         while(rs.next()){
             try {
                 Entity entity = new Entity();
-                entity.setEntityId(rs.getString("APPLICATION_ID"));
+                entity.setEntityId(rs.getString("DEPLOYMENT_ID"));
                 entity.setDomainId(rs.getString("GATEWAY_ID"));
-                entity.setEntityTypeId(rs.getString("GATEWAY_ID") + ":APPLICATION");
-                entity.setOwnerId(rs.getString("USER_NAME") + "@" + rs.getString("GATEWAY_ID"));
-                entity.setName(rs.getString("APPLICATION_NAME"));
-                entity.setDescription(rs.getString("DESCRIPTION"));
+                entity.setEntityTypeId(rs.getString("GATEWAY_ID") + ":APPLICATION-DEPLOYMENT");
+                entity.setOwnerId(applicationDeploymentOwner);
+                entity.setName(rs.getString("DEPLOYMENT_ID"));
+                entity.setDescription(rs.getString("APPLICATION_DESC"));
                 if(entity.getDescription() == null)
                     entity.setFullText(entity.getName());
                 else
@@ -211,7 +213,7 @@ public class AiravataDataMigrator {
 
                 if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
                     sharingRegistryServerHandler.createEntity(entity);
-            }catch (Exception ex){
+            } catch (Exception ex){
                 ex.printStackTrace();
             }
         }
