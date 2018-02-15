@@ -29,7 +29,12 @@
                                     <th scope="row">Outputs</th>
                                     <td>
                                         <template v-for="output in localFullExperiment.outputDataProducts">
-                                            <span v-if="output.downloadURL"><a :href="output.downloadURL">{{ output.filename }}</a></span>
+                                            <span v-if="output.downloadURL">
+                                                <a :href="output.downloadURL">
+                                                    <i class="fa fa-download"></i>
+                                                    {{ output.filename }}
+                                                </a>
+                                            </span>
                                             <span v-else>{{ output.filename }}</span>
                                         </template>
                                     </td>
@@ -115,7 +120,12 @@
                                     <th scope="row">Inputs</th>
                                     <td>
                                         <template v-for="input in localFullExperiment.inputDataProducts">
-                                            <span v-if="input.downloadURL"><a :href="input.downloadURL">{{ input.filename }}</a></span>
+                                            <span v-if="input.downloadURL">
+                                                <a :href="input.downloadURL">
+                                                    <i class="fa fa-download"></i>
+                                                    {{ input.filename }}
+                                                </a>
+                                            </span>
                                             <span v-else>{{ input.filename }}</span>
                                         </template>
                                     </td>
