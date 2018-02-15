@@ -130,6 +130,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "django_airavata", "static")]
 
+# Data storage
+FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o777
 
 # Django REST Framework configuration
 REST_FRAMEWORK = {

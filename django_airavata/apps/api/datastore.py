@@ -41,7 +41,7 @@ def save(username, project_name, experiment_name, file):
     """Save file to username/project name/experiment_name in data store."""
     exp_dir = os.path.join(
         experiment_data_storage.get_valid_name(username),
-        experiment_data_storage.get_valid_name(project.name),
+        experiment_data_storage.get_valid_name(project_name),
         experiment_data_storage.get_valid_name(experiment_name))
     file_path = os.path.join(
         exp_dir,
@@ -70,12 +70,18 @@ def save(username, project_name, experiment_name, file):
 
 
 def get_experiment_dir(username, project_name, experiment_name):
-    experiment_dir = os.path.join(
-        settings.GATEWAY_DATA_STORE_DIR,
+    """Return an experiment directory (full path) for the given experiment."""
+    experiment_dir_name = os.path.join(
         experiment_data_storage.get_valid_name(username),
         experiment_data_storage.get_valid_name(project_name),
         experiment_data_storage.get_valid_name(experiment_name))
-    # TODO: make sure experiment_dir has the appropriate permissions and exists
+    experiment_dir = experiment_data_storage.path(experiment_dir_name)
+    if not experiment_data_storage.exists(experiment_dir):
+        os.mkdir(experiment_dir,
+                 mode=experiment_data_storage.directory_permissions_mode)
+        # os.mkdir mode isn't always respected so need to chmod to be sure
+        os.chmod(experiment_dir,
+                 mode=experiment_data_storage.directory_permissions_mode)
     return experiment_dir
 
 
@@ -84,7 +90,6 @@ def _get_replica_filepath(data_product):
                          for rep in data_product.replicaLocations
                          if rep.replicaLocationCategory ==
                          ReplicaLocationCategory.GATEWAY_DATA_STORE]
-    print(replica_filepaths)
     replica_filepath = (replica_filepaths[0]
                         if len(replica_filepaths) > 0 else None)
     if replica_filepath:
