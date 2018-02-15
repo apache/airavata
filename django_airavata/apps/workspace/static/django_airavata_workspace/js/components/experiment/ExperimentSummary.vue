@@ -79,7 +79,7 @@
                                             <tr v-for="(jobDetail, index) in localFullExperiment.jobDetails">
                                                 <td>{{ jobDetail.jobName }}</td>
                                                 <td>{{ jobDetail.jobId }}</td>
-                                                <td>{{ jobDetail.jobStatuses[0].jobState.name }}</td>
+                                                <td>{{ jobDetail.jobStatusStateName }}</td>
                                                 <td><span :title="jobDetail.creationTime.toString()">{{ jobCreationTimes[index] }}</span></td>
                                             </tr>
                                         </table>
