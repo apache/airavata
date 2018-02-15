@@ -647,12 +647,17 @@ def upload_input_file(request):
 
 
 @login_required
-def download_file(request, data_product_uri):
+def download_file(request):
     # TODO check that user has access to this file using sharing API
-    data_product = request.airavata_client.getDataProduct(
-        request.authz_token, data_product_uri)
-    if not data_product:
-        raise Http404("data product does not exist")
+    data_product_uri = request.GET.get('data-product-uri', '')
+    data_product = None
+    try:
+        data_product = request.airavata_client.getDataProduct(
+            request.authz_token, data_product_uri)
+    except Exception as e:
+        log.warning("Failed to load DataProduct for {}"
+                    .format(data_product_uri), exc_info=True)
+        raise Http404("data product does not exist") from e
     try:
         data_file = datastore.open(data_product)
         response = FileResponse(data_file,

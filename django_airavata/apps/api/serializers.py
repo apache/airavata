@@ -2,7 +2,7 @@
 import copy
 import datetime
 import logging
-from urllib.parse import quote
+from urllib.parse import quote, urlencode
 
 from django.conf import settings
 from django.urls import reverse
@@ -313,7 +313,10 @@ class DataProductSerializer(
         """Getter for downloadURL field."""
         if datastore.exists(data_product):
             request = self.context['request']
-            return request.build_absolute_uri(reverse('django_airavata_api:download_file', args=[data_product.productUri]))
+            return (request.build_absolute_uri(
+                reverse('django_airavata_api:download_file'))
+                + '?'
+                + urlencode({'data-product-uri': data_product.productUri}))
         return None
 
 

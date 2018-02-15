@@ -35,7 +35,7 @@ urlpatterns = [
     url(r'^credentials/ssh/key/delete', views.DeleteSSHPubKey.as_view(), name="ssh_key_deletion"),
     url(r'^credentials/ssh/key/create', views.GenerateRegisterSSHKeys.as_view(), name="ssh_key_creation"),
     url(r'^upload$', views.upload_input_file, name='upload_input_file'),
-    url(r'^download/(?P<data_product_uri>.+)$', views.download_file, name='download_file'),
+    url(r'^download', views.download_file, name='download_file'),
 ]
 
 
