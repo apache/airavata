@@ -29,7 +29,8 @@
                                     <th scope="row">Outputs</th>
                                     <td>
                                         <template v-for="output in localFullExperiment.outputDataProducts">
-                                            <a :href="'/api/download/' + encodeURIComponent(output.productUri)">{{ output.filename }}</a>
+                                            <span v-if="output.downloadURL"><a :href="output.downloadURL">{{ output.filename }}</a></span>
+                                            <span v-else>{{ output.filename }}</span>
                                         </template>
                                     </td>
                                 </tr>
@@ -111,11 +112,11 @@
                                     <td>{{ experiment.userConfigurationData.computationalResourceScheduling.queueName }}</td>
                                 </tr>
                                 <tr>
-                                    <!-- TODO -->
                                     <th scope="row">Inputs</th>
                                     <td>
                                         <template v-for="input in localFullExperiment.inputDataProducts">
-                                            <a :href="'/api/download/' + encodeURIComponent(input.productUri)">{{ input.filename }}</a>
+                                            <span v-if="input.downloadURL"><a :href="input.downloadURL">{{ input.filename }}</a></span>
+                                            <span v-else>{{ input.filename }}</span>
                                         </template>
                                     </td>
                                 </tr>

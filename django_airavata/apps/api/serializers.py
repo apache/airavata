@@ -5,6 +5,7 @@ import logging
 from urllib.parse import quote
 
 from django.conf import settings
+from django.urls import reverse
 from rest_framework import serializers
 
 from airavata.model.appcatalog.appdeployment.ttypes import (ApplicationDeploymentDescription,
@@ -25,6 +26,7 @@ from airavata.model.job.ttypes import JobModel
 from airavata.model.status.ttypes import ExperimentStatus
 from airavata.model.workspace.ttypes import Project
 
+from . import datastore
 from . import thrift_utils
 
 log = logging.getLogger(__name__)
@@ -305,6 +307,14 @@ class DataProductSerializer(
     creationTime = UTCPosixTimestampDateTimeField()
     lastModifiedTime = UTCPosixTimestampDateTimeField()
     replicaLocations = DataReplicaLocationSerializer(many=True)
+    downloadURL = serializers.SerializerMethodField()
+
+    def get_downloadURL(self, data_product):
+        """Getter for downloadURL field."""
+        if datastore.exists(data_product):
+            request = self.context['request']
+            return request.build_absolute_uri(reverse('django_airavata_api:download_file', args=[data_product.productUri]))
+        return None
 
 
 # TODO move this into airavata_sdk?

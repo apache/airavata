@@ -27,6 +27,7 @@ const FIELDS = [
         type: DataReplicaLocation,
         list: true
     },
+    'downloadURL',
 ];
 
 const FILENAME_REGEX = /[^/]+$/;
