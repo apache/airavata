@@ -23,10 +23,6 @@ public class GroupComputeResourcePrefEntity implements Serializable {
     @Id
     private String groupResourceProfileId;
 
-    @Id
-    @Column(name = "GATEWAY_ID")
-    private String gatewayId;
-
     @Column(name = "ALLOCATION_PROJECT_NUMBER")
     private String allocationProjectNumber;
 
@@ -76,21 +72,10 @@ public class GroupComputeResourcePrefEntity implements Serializable {
     private List<GroupSSHAccountProvisionerConfig> groupSSHAccountProvisionerConfigs;
 
     @ManyToOne(targetEntity = GroupResourceProfileEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumns({
-            @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID"),
-            @JoinColumn(name = "GATEWAY_ID")
-    })
+    @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID")
     private  GroupResourceProfileEntity groupResourceProfile;
 
     public GroupComputeResourcePrefEntity() {
-    }
-
-    public String getGatewayId() {
-        return gatewayId;
-    }
-
-    public void setGatewayId(String gatewayId) {
-        this.gatewayId = gatewayId;
     }
 
     public String getComputeResourceId() {

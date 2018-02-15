@@ -15,12 +15,11 @@ public class GroupResourceProfileEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "GATEWAY_ID")
-    private String gatewayId;
-
-    @Id
     @Column(name = "GROUP_RESOURCE_PROFILE_ID")
     private String groupResourceProfileId;
+
+    @Column(name = "GATEWAY_ID")
+    private String gatewayId;
 
     @Column(name = "GROUP_RESOURCE_PROFILE_NAME")
     private String groupResourceProfileName;

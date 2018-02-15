@@ -2450,40 +2450,40 @@ service RegistryService {
                void updateGroupResourceProfile(1: required group_resource_profile_model.GroupResourceProfile groupResourceProfile)
                                           throws (1: registry_api_errors.RegistryServiceException rse)
 
-               group_resource_profile_model.GroupResourceProfile getGroupResourceProfile(1: required string gatewayId, 2: required string groupResourceProfileId)
+               group_resource_profile_model.GroupResourceProfile getGroupResourceProfile(1: required string groupResourceProfileId)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 
-               bool removeGroupResourceProfile(1: required string gatewayId, 2: required string groupResourceProfileId)
+               bool removeGroupResourceProfile(1: required string groupResourceProfileId)
                                     throws (1: registry_api_errors.RegistryServiceException rse)
 
                list<group_resource_profile_model.GroupResourceProfile> getGroupResourceList(1: required string gatewayId)
                                 throws (1: registry_api_errors.RegistryServiceException rse)
 
-               bool removeGroupComputePrefs(1: required string computeResourceId, 2: required string groupResourceProfileId, 3: required string gatewayId)
+               bool removeGroupComputePrefs(1: required string computeResourceId, 2: required string groupResourceProfileId)
                                 throws (1: registry_api_errors.RegistryServiceException rse)
 
-               bool removeGroupComputeResourcePolicy(1: required string resourcePolicyId, 2: required string computeResourceId, 3: required string groupResourceProfileId, 4: required string gatewayId)
+               bool removeGroupComputeResourcePolicy(1: required string resourcePolicyId)
                                 throws (1: registry_api_errors.RegistryServiceException rse)
 
-               bool removeGroupBatchQueueResourcePolicy(1: required string resourcePolicyId, 2: required string computeResourceId, 3: required string groupResourceProfileId, 4: required string queuename 5: required string gatewayId)
+               bool removeGroupBatchQueueResourcePolicy(1: required string resourcePolicyId)
                                 throws (1: registry_api_errors.RegistryServiceException rse)
 
-               group_resource_profile_model.GroupComputeResourcePreference getGroupComputeResourcePreference(1: required string computeResourceId, 2: required string groupResourceProfileId, 3: required string gatewayId)
+               group_resource_profile_model.GroupComputeResourcePreference getGroupComputeResourcePreference(1: required string computeResourceId, 2: required string groupResourceProfileId)
                                 throws (1: registry_api_errors.RegistryServiceException rse)
 
-               group_resource_profile_model.ComputeResourcePolicy getGroupComputeResourcePolicy(1: required string groupResourceProfileId, 2: required string computeResourceId, 3: required string resourcePolicyId, 4: required string gatewayId)
+               group_resource_profile_model.ComputeResourcePolicy getGroupComputeResourcePolicy(1: required string resourcePolicyId)
                                 throws (1: registry_api_errors.RegistryServiceException rse)
 
-               group_resource_profile_model.BatchQueueResourcePolicy getBatchQueueResourcePolicy(1: required string groupResourceProfileId, 2: required string computeResourceId, 3: required string resourcePolicyId, 4: required string queuename, 5: required string gatewayId)
+               group_resource_profile_model.BatchQueueResourcePolicy getBatchQueueResourcePolicy(1: required string resourcePolicyId)
                                 throws (1: registry_api_errors.RegistryServiceException rse)
 
-               list<group_resource_profile_model.GroupComputeResourcePreference> getGroupComputeResourcePrefList( 1: required string groupResourceProfileId, 2: required string gatewayId)
+               list<group_resource_profile_model.GroupComputeResourcePreference> getGroupComputeResourcePrefList( 1: required string groupResourceProfileId)
                                 throws (1: registry_api_errors.RegistryServiceException rse)
 
-               list<group_resource_profile_model.BatchQueueResourcePolicy> getGroupBatchQueueResourcePolicyList(1: required string groupResourceProfileId, 2: required string gatewayId)
+               list<group_resource_profile_model.BatchQueueResourcePolicy> getGroupBatchQueueResourcePolicyList(1: required string groupResourceProfileId)
                                 throws (1: registry_api_errors.RegistryServiceException rse)
 
-               list<group_resource_profile_model.ComputeResourcePolicy> getGroupComputeResourcePolicyList(1: required string groupResourceProfileId, 2: required string gatewayId)
+               list<group_resource_profile_model.ComputeResourcePolicy> getGroupComputeResourcePolicyList(1: required string groupResourceProfileId)
                                 throws (1: registry_api_errors.RegistryServiceException rse)
 
 }

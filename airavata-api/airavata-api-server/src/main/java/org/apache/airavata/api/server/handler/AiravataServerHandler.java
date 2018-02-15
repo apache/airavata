@@ -4818,10 +4818,10 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public GroupResourceProfile getGroupResourceProfile(AuthzToken authzToken, String gatewayId, String groupResourceProfileId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public GroupResourceProfile getGroupResourceProfile(AuthzToken authzToken, String groupResourceProfileId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
-            GroupResourceProfile groupResourceProfile = regClient.getGroupResourceProfile(gatewayId, groupResourceProfileId);
+            GroupResourceProfile groupResourceProfile = regClient.getGroupResourceProfile( groupResourceProfileId);
             registryClientPool.returnResource(regClient);
             return groupResourceProfile;
         } catch (Exception e) {
@@ -4836,10 +4836,10 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public boolean removeGroupResourceProfile(AuthzToken authzToken, String gatewayId, String groupResourceProfileId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public boolean removeGroupResourceProfile(AuthzToken authzToken, String groupResourceProfileId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
-            boolean result = regClient.removeGroupResourceProfile(gatewayId, groupResourceProfileId);
+            boolean result = regClient.removeGroupResourceProfile(groupResourceProfileId);
             registryClientPool.returnResource(regClient);
             return result;
         } catch (Exception e) {
@@ -4872,10 +4872,10 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public boolean removeGroupComputePrefs(AuthzToken authzToken, String computeResourceId, String groupResourceProfileId, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public boolean removeGroupComputePrefs(AuthzToken authzToken, String computeResourceId, String groupResourceProfileId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
-            boolean result = regClient.removeGroupComputePrefs(computeResourceId, groupResourceProfileId, gatewayId);
+            boolean result = regClient.removeGroupComputePrefs(computeResourceId, groupResourceProfileId);
             registryClientPool.returnResource(regClient);
             return result;
         } catch (Exception e) {
@@ -4890,14 +4890,14 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public boolean removeGroupComputeResourcePolicy(AuthzToken authzToken, String resourcePolicyId, String computeResourceId, String groupResourceProfileId, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public boolean removeGroupComputeResourcePolicy(AuthzToken authzToken, String resourcePolicyId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
-            boolean result = regClient.removeGroupComputeResourcePolicy(resourcePolicyId, computeResourceId, groupResourceProfileId, gatewayId);
+            boolean result = regClient.removeGroupComputeResourcePolicy(resourcePolicyId);
             registryClientPool.returnResource(regClient);
             return result;
         } catch (Exception e) {
-            String msg = "Error removing group compute resource policy. GroupResourceProfileId: "+ groupResourceProfileId;
+            String msg = "Error removing group compute resource policy. ResourcePolicyId: "+ resourcePolicyId;
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(msg+" More info : " + e.getMessage());
@@ -4908,14 +4908,14 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public boolean removeGroupBatchQueueResourcePolicy(AuthzToken authzToken, String resourcePolicyId, String computeResourceId, String groupResourceProfileId, String queuename, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public boolean removeGroupBatchQueueResourcePolicy(AuthzToken authzToken, String resourcePolicyId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
-            boolean result = regClient.removeGroupBatchQueueResourcePolicy(resourcePolicyId, computeResourceId, groupResourceProfileId, queuename, gatewayId);
+            boolean result = regClient.removeGroupBatchQueueResourcePolicy(resourcePolicyId);
             registryClientPool.returnResource(regClient);
             return result;
         } catch (Exception e) {
-            String msg = "Error removing batch queue resource policy. GroupResourceProfileId: "+ groupResourceProfileId;
+            String msg = "Error removing batch queue resource policy. ResourcePolicyId: "+ resourcePolicyId;
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(msg+" More info : " + e.getMessage());
@@ -4926,10 +4926,10 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public GroupComputeResourcePreference getGroupComputeResourcePreference(AuthzToken authzToken, String computeResourceId, String groupResourceProfileId, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public GroupComputeResourcePreference getGroupComputeResourcePreference(AuthzToken authzToken, String computeResourceId, String groupResourceProfileId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
-            GroupComputeResourcePreference groupComputeResourcePreference = regClient.getGroupComputeResourcePreference(computeResourceId, groupResourceProfileId, gatewayId);
+            GroupComputeResourcePreference groupComputeResourcePreference = regClient.getGroupComputeResourcePreference(computeResourceId, groupResourceProfileId);
             registryClientPool.returnResource(regClient);
             return groupComputeResourcePreference;
         } catch (Exception e) {
@@ -4944,14 +4944,14 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public ComputeResourcePolicy getGroupComputeResourcePolicy(AuthzToken authzToken, String groupResourceProfileId, String computeResourceId, String resourcePolicyId, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public ComputeResourcePolicy getGroupComputeResourcePolicy(AuthzToken authzToken, String resourcePolicyId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
-            ComputeResourcePolicy computeResourcePolicy = regClient.getGroupComputeResourcePolicy(groupResourceProfileId, computeResourceId, resourcePolicyId, gatewayId);
+            ComputeResourcePolicy computeResourcePolicy = regClient.getGroupComputeResourcePolicy(resourcePolicyId);
             registryClientPool.returnResource(regClient);
             return computeResourcePolicy;
         } catch (Exception e) {
-            String msg = "Error retrieving Group compute resource policy. GroupResourceProfileId: "+ groupResourceProfileId;
+            String msg = "Error retrieving Group compute resource policy. ResourcePolicyId: "+ resourcePolicyId;
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(msg+" More info : " + e.getMessage());
@@ -4962,14 +4962,14 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public BatchQueueResourcePolicy getBatchQueueResourcePolicy(AuthzToken authzToken, String groupResourceProfileId, String computeResourceId, String resourcePolicyId, String queuename, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public BatchQueueResourcePolicy getBatchQueueResourcePolicy(AuthzToken authzToken, String resourcePolicyId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
-            BatchQueueResourcePolicy batchQueueResourcePolicy = regClient.getBatchQueueResourcePolicy(groupResourceProfileId, computeResourceId, resourcePolicyId, queuename, gatewayId);
+            BatchQueueResourcePolicy batchQueueResourcePolicy = regClient.getBatchQueueResourcePolicy(resourcePolicyId);
             registryClientPool.returnResource(regClient);
             return batchQueueResourcePolicy;
         } catch (Exception e) {
-            String msg = "Error retrieving Group batch queue resource policy. GroupResourceProfileId: "+ groupResourceProfileId;
+            String msg = "Error retrieving Group batch queue resource policy. ResourcePolicyId: "+ resourcePolicyId;
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(msg+" More info : " + e.getMessage());
@@ -4980,10 +4980,10 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public List<GroupComputeResourcePreference> getGroupComputeResourcePrefList(AuthzToken authzToken, String groupResourceProfileId, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public List<GroupComputeResourcePreference> getGroupComputeResourcePrefList(AuthzToken authzToken, String groupResourceProfileId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
-            List<GroupComputeResourcePreference> groupComputeResourcePreferenceList = regClient.getGroupComputeResourcePrefList(groupResourceProfileId, gatewayId);
+            List<GroupComputeResourcePreference> groupComputeResourcePreferenceList = regClient.getGroupComputeResourcePrefList(groupResourceProfileId);
             registryClientPool.returnResource(regClient);
             return groupComputeResourcePreferenceList;
         } catch (Exception e) {
@@ -4998,10 +4998,10 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public List<BatchQueueResourcePolicy> getGroupBatchQueueResourcePolicyList(AuthzToken authzToken, String groupResourceProfileId, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public List<BatchQueueResourcePolicy> getGroupBatchQueueResourcePolicyList(AuthzToken authzToken, String groupResourceProfileId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
-            List<BatchQueueResourcePolicy> batchQueueResourcePolicyList = regClient.getGroupBatchQueueResourcePolicyList(groupResourceProfileId, gatewayId);
+            List<BatchQueueResourcePolicy> batchQueueResourcePolicyList = regClient.getGroupBatchQueueResourcePolicyList(groupResourceProfileId);
             registryClientPool.returnResource(regClient);
             return batchQueueResourcePolicyList;
         } catch (Exception e) {
@@ -5016,10 +5016,10 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     @SecurityCheck
-    public List<ComputeResourcePolicy> getGroupComputeResourcePolicyList(AuthzToken authzToken, String groupResourceProfileId, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+    public List<ComputeResourcePolicy> getGroupComputeResourcePolicyList(AuthzToken authzToken, String groupResourceProfileId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
         try {
-            List<ComputeResourcePolicy> computeResourcePolicyList = regClient.getGroupComputeResourcePolicyList(groupResourceProfileId, gatewayId);
+            List<ComputeResourcePolicy> computeResourcePolicyList = regClient.getGroupComputeResourcePolicyList(groupResourceProfileId);
             registryClientPool.returnResource(regClient);
             return computeResourcePolicyList;
         } catch (Exception e) {

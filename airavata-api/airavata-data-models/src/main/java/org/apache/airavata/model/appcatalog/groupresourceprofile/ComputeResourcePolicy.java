@@ -31,8 +31,7 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
   private static final org.apache.thrift.protocol.TField RESOURCE_POLICY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("resourcePolicyId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField COMPUTE_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("computeResourceId", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField GROUP_RESOURCE_PROFILE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("groupResourceProfileId", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)4);
-  private static final org.apache.thrift.protocol.TField ALLOWED_BATCH_QUEUES_FIELD_DESC = new org.apache.thrift.protocol.TField("allowedBatchQueues", org.apache.thrift.protocol.TType.LIST, (short)5);
+  private static final org.apache.thrift.protocol.TField ALLOWED_BATCH_QUEUES_FIELD_DESC = new org.apache.thrift.protocol.TField("allowedBatchQueues", org.apache.thrift.protocol.TType.LIST, (short)4);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new ComputeResourcePolicyStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new ComputeResourcePolicyTupleSchemeFactory();
@@ -40,7 +39,6 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
   private java.lang.String resourcePolicyId; // required
   private java.lang.String computeResourceId; // required
   private java.lang.String groupResourceProfileId; // required
-  private java.lang.String gatewayId; // required
   private java.util.List<java.lang.String> allowedBatchQueues; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -48,8 +46,7 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
     RESOURCE_POLICY_ID((short)1, "resourcePolicyId"),
     COMPUTE_RESOURCE_ID((short)2, "computeResourceId"),
     GROUP_RESOURCE_PROFILE_ID((short)3, "groupResourceProfileId"),
-    GATEWAY_ID((short)4, "gatewayId"),
-    ALLOWED_BATCH_QUEUES((short)5, "allowedBatchQueues");
+    ALLOWED_BATCH_QUEUES((short)4, "allowedBatchQueues");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -70,9 +67,7 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
           return COMPUTE_RESOURCE_ID;
         case 3: // GROUP_RESOURCE_PROFILE_ID
           return GROUP_RESOURCE_PROFILE_ID;
-        case 4: // GATEWAY_ID
-          return GATEWAY_ID;
-        case 5: // ALLOWED_BATCH_QUEUES
+        case 4: // ALLOWED_BATCH_QUEUES
           return ALLOWED_BATCH_QUEUES;
         default:
           return null;
@@ -124,8 +119,6 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.GROUP_RESOURCE_PROFILE_ID, new org.apache.thrift.meta_data.FieldMetaData("groupResourceProfileId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.ALLOWED_BATCH_QUEUES, new org.apache.thrift.meta_data.FieldMetaData("allowedBatchQueues", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
@@ -139,14 +132,12 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
   public ComputeResourcePolicy(
     java.lang.String resourcePolicyId,
     java.lang.String computeResourceId,
-    java.lang.String groupResourceProfileId,
-    java.lang.String gatewayId)
+    java.lang.String groupResourceProfileId)
   {
     this();
     this.resourcePolicyId = resourcePolicyId;
     this.computeResourceId = computeResourceId;
     this.groupResourceProfileId = groupResourceProfileId;
-    this.gatewayId = gatewayId;
   }
 
   /**
@@ -161,9 +152,6 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
     }
     if (other.isSetGroupResourceProfileId()) {
       this.groupResourceProfileId = other.groupResourceProfileId;
-    }
-    if (other.isSetGatewayId()) {
-      this.gatewayId = other.gatewayId;
     }
     if (other.isSetAllowedBatchQueues()) {
       java.util.List<java.lang.String> __this__allowedBatchQueues = new java.util.ArrayList<java.lang.String>(other.allowedBatchQueues);
@@ -180,7 +168,6 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
     this.resourcePolicyId = null;
     this.computeResourceId = null;
     this.groupResourceProfileId = null;
-    this.gatewayId = null;
     this.allowedBatchQueues = null;
   }
 
@@ -253,29 +240,6 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
     }
   }
 
-  public java.lang.String getGatewayId() {
-    return this.gatewayId;
-  }
-
-  public void setGatewayId(java.lang.String gatewayId) {
-    this.gatewayId = gatewayId;
-  }
-
-  public void unsetGatewayId() {
-    this.gatewayId = null;
-  }
-
-  /** Returns true if field gatewayId is set (has been assigned a value) and false otherwise */
-  public boolean isSetGatewayId() {
-    return this.gatewayId != null;
-  }
-
-  public void setGatewayIdIsSet(boolean value) {
-    if (!value) {
-      this.gatewayId = null;
-    }
-  }
-
   public int getAllowedBatchQueuesSize() {
     return (this.allowedBatchQueues == null) ? 0 : this.allowedBatchQueues.size();
   }
@@ -340,14 +304,6 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
       }
       break;
 
-    case GATEWAY_ID:
-      if (value == null) {
-        unsetGatewayId();
-      } else {
-        setGatewayId((java.lang.String)value);
-      }
-      break;
-
     case ALLOWED_BATCH_QUEUES:
       if (value == null) {
         unsetAllowedBatchQueues();
@@ -370,9 +326,6 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
     case GROUP_RESOURCE_PROFILE_ID:
       return getGroupResourceProfileId();
 
-    case GATEWAY_ID:
-      return getGatewayId();
-
     case ALLOWED_BATCH_QUEUES:
       return getAllowedBatchQueues();
 
@@ -393,8 +346,6 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
       return isSetComputeResourceId();
     case GROUP_RESOURCE_PROFILE_ID:
       return isSetGroupResourceProfileId();
-    case GATEWAY_ID:
-      return isSetGatewayId();
     case ALLOWED_BATCH_QUEUES:
       return isSetAllowedBatchQueues();
     }
@@ -443,15 +394,6 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
         return false;
     }
 
-    boolean this_present_gatewayId = true && this.isSetGatewayId();
-    boolean that_present_gatewayId = true && that.isSetGatewayId();
-    if (this_present_gatewayId || that_present_gatewayId) {
-      if (!(this_present_gatewayId && that_present_gatewayId))
-        return false;
-      if (!this.gatewayId.equals(that.gatewayId))
-        return false;
-    }
-
     boolean this_present_allowedBatchQueues = true && this.isSetAllowedBatchQueues();
     boolean that_present_allowedBatchQueues = true && that.isSetAllowedBatchQueues();
     if (this_present_allowedBatchQueues || that_present_allowedBatchQueues) {
@@ -479,10 +421,6 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
     hashCode = hashCode * 8191 + ((isSetGroupResourceProfileId()) ? 131071 : 524287);
     if (isSetGroupResourceProfileId())
       hashCode = hashCode * 8191 + groupResourceProfileId.hashCode();
-
-    hashCode = hashCode * 8191 + ((isSetGatewayId()) ? 131071 : 524287);
-    if (isSetGatewayId())
-      hashCode = hashCode * 8191 + gatewayId.hashCode();
 
     hashCode = hashCode * 8191 + ((isSetAllowedBatchQueues()) ? 131071 : 524287);
     if (isSetAllowedBatchQueues())
@@ -525,16 +463,6 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
     }
     if (isSetGroupResourceProfileId()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.groupResourceProfileId, other.groupResourceProfileId);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = java.lang.Boolean.valueOf(isSetGatewayId()).compareTo(other.isSetGatewayId());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetGatewayId()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayId, other.gatewayId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -592,14 +520,6 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
       sb.append(this.groupResourceProfileId);
     }
     first = false;
-    if (!first) sb.append(", ");
-    sb.append("gatewayId:");
-    if (this.gatewayId == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.gatewayId);
-    }
-    first = false;
     if (isSetAllowedBatchQueues()) {
       if (!first) sb.append(", ");
       sb.append("allowedBatchQueues:");
@@ -626,10 +546,6 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
 
     if (!isSetGroupResourceProfileId()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'groupResourceProfileId' is unset! Struct:" + toString());
-    }
-
-    if (!isSetGatewayId()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -693,15 +609,7 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // GATEWAY_ID
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.gatewayId = iprot.readString();
-              struct.setGatewayIdIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 5: // ALLOWED_BATCH_QUEUES
+          case 4: // ALLOWED_BATCH_QUEUES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list34 = iprot.readListBegin();
@@ -747,11 +655,6 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
         oprot.writeString(struct.groupResourceProfileId);
         oprot.writeFieldEnd();
       }
-      if (struct.gatewayId != null) {
-        oprot.writeFieldBegin(GATEWAY_ID_FIELD_DESC);
-        oprot.writeString(struct.gatewayId);
-        oprot.writeFieldEnd();
-      }
       if (struct.allowedBatchQueues != null) {
         if (struct.isSetAllowedBatchQueues()) {
           oprot.writeFieldBegin(ALLOWED_BATCH_QUEUES_FIELD_DESC);
@@ -786,7 +689,6 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
       oprot.writeString(struct.resourcePolicyId);
       oprot.writeString(struct.computeResourceId);
       oprot.writeString(struct.groupResourceProfileId);
-      oprot.writeString(struct.gatewayId);
       java.util.BitSet optionals = new java.util.BitSet();
       if (struct.isSetAllowedBatchQueues()) {
         optionals.set(0);
@@ -812,8 +714,6 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
       struct.setComputeResourceIdIsSet(true);
       struct.groupResourceProfileId = iprot.readString();
       struct.setGroupResourceProfileIdIsSet(true);
-      struct.gatewayId = iprot.readString();
-      struct.setGatewayIdIsSet(true);
       java.util.BitSet incoming = iprot.readBitSet(1);
       if (incoming.get(0)) {
         {

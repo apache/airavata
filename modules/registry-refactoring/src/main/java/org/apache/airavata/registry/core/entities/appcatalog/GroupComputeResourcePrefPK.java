@@ -19,18 +19,6 @@ public class GroupComputeResourcePrefPK implements Serializable {
     @Id
     private String groupResourceProfileId;
 
-    @Id
-    @Column(name = "GATEWAY_ID")
-    private String gatewayId;
-
-    public String getGatewayId() {
-        return gatewayId;
-    }
-
-    public void setGatewayId(String gatewayId) {
-        this.gatewayId = gatewayId;
-    }
-
     public String getComputeResourceId() {
         return computeResourceId;
     }

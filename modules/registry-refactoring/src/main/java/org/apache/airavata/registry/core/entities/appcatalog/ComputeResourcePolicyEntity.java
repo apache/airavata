@@ -18,25 +18,16 @@ public class ComputeResourcePolicyEntity implements Serializable {
     @Column(name = "RESOURCE_POLICY_ID")
     private String resourcePolicyId;
 
-    @Id
-    @Column(name = "GATEWAY_ID")
-    private String gatewayId;
-
-    @Id
     @Column(name = "COMPUTE_RESOURCE_ID")
     private String computeResourceId;
 
-    @Id
     @Column(name = "GROUP_RESOURCE_PROFILE_ID")
     private String groupResourceProfileId;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="COMPUTE_RESOURCE_POLICY_QUEUES", joinColumns = {
-            @JoinColumn(name = "RESOURCE_POLICY_ID"),
-            @JoinColumn(name = "COMPUTE_RESOURCE_ID"),
-            @JoinColumn(name = "GROUP_RESOURCE_PROFILE_ID"),
-            @JoinColumn(name = "GATEWAY_ID")})
-    @Column(name = "ALLOWED_BATCH_QUEUES")
+            @JoinColumn(name = "RESOURCE_POLICY_ID")})
+    @Column(name = "QUEUE_NAME")
     private List<String> allowedBatchQueues;
 
     @ManyToOne(targetEntity = GroupResourceProfileEntity.class, cascade = CascadeType.MERGE)
@@ -68,14 +59,6 @@ public class ComputeResourcePolicyEntity implements Serializable {
 
     public void setGroupResourceProfileId(String groupResourceProfileId) {
         this.groupResourceProfileId = groupResourceProfileId;
-    }
-
-    public String getGatewayId() {
-        return gatewayId;
-    }
-
-    public void setGatewayId(String gatewayId) {
-        this.gatewayId = gatewayId;
     }
 
     public List<String> getAllowedBatchQueues() {

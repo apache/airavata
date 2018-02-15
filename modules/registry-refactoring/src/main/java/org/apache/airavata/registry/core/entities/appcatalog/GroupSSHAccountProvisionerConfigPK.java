@@ -12,10 +12,6 @@ public class GroupSSHAccountProvisionerConfigPK implements Serializable{
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "GATEWAY_ID")
-    private String gatewayId;
-
-    @Id
     @Column(name = "RESOURCE_ID")
     private String resourceId;
 
@@ -31,19 +27,10 @@ public class GroupSSHAccountProvisionerConfigPK implements Serializable{
     public GroupSSHAccountProvisionerConfigPK() {
     }
 
-    public GroupSSHAccountProvisionerConfigPK(String gatewayId, String resourceId, String groupResourceProfileId, String configName) {
-        this.gatewayId = gatewayId;
+    public GroupSSHAccountProvisionerConfigPK(String resourceId, String groupResourceProfileId, String configName) {
         this.resourceId = resourceId;
         this.groupResourceProfileId = groupResourceProfileId;
         this.configName = configName;
-    }
-
-    public String getGatewayId() {
-        return gatewayId;
-    }
-
-    public void setGatewayId(String gatewayId) {
-        this.gatewayId = gatewayId;
     }
 
     public String getResourceId() {
