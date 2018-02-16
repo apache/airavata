@@ -23,7 +23,9 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
+import org.apache.airavata.gfac.core.GFacConstants;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
@@ -44,9 +46,7 @@ import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.model.task.TaskTypes;
-import org.apache.airavata.registry.cpi.ExpCatChildDataType;
-import org.apache.airavata.registry.cpi.ExperimentCatalog;
-import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.api.RegistryService;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +82,7 @@ public class SCPDataStageTask implements Task {
 
         ProcessContext processContext = taskContext.getParentProcessContext();
         ProcessState processState = processContext.getProcessState();
+        RegistryService.Client registryClient = Factory.getRegistryServiceClient();
         try {
             subTaskModel = ((DataStagingTaskModel) taskContext.getSubTaskModel());
             if (processState == ProcessState.OUTPUT_DATA_STAGING) {
@@ -137,7 +138,7 @@ public class SCPDataStageTask implements Task {
                     sourceURI.getPath().length());
 
             Session remoteSession = Factory.getSSHSession(Factory.getComputerResourceSSHKeyAuthentication(processContext),
-                    processContext.getComputeResourceServerInfo());
+                    processContext.getComputeResourceServerInfo(registryClient));
             Session storageSession = Factory.getSSHSession(Factory.getStorageSSHKeyAuthentication(processContext),
                     processContext.getStorageResourceServerInfo());
 
@@ -166,8 +167,6 @@ public class SCPDataStageTask implements Task {
                 List<String> fileNames = taskContext.getParentProcessContext().getDataMovementRemoteCluster()
                         .getFileNameFromExtension(fileName, sourceParentPath, remoteSession);
 
-                ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
-
                 String experimentId = processContext.getExperimentId();
 
                 String processId = processContext.getProcessId();
@@ -189,14 +188,14 @@ public class SCPDataStageTask implements Task {
                     if (processState == ProcessState.OUTPUT_DATA_STAGING) {
                         processOutput.setName(fileName);
 
-                        experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_OUTPUT, Arrays.asList(processOutput), experimentId);
-                        experimentCatalog.add(ExpCatChildDataType.PROCESS_OUTPUT, Arrays.asList(processOutput), processId);
+                        registryClient.addExperimentProcessOutputs(GFacConstants.EXPERIMENT_OUTPUT, Arrays.asList(processOutput), experimentId);
+                        registryClient.addExperimentProcessOutputs(GFacConstants.PROCESS_OUTPUT, Arrays.asList(processOutput), processId);
 
                         taskContext.setProcessOutput(processOutput);
 
                         makeDir(taskContext, destinationURI);
                         // TODO - save updated subtask model with new destination
-                        outputDataStaging(taskContext, remoteSession, sourceURI, storageSession, destinationURI);
+                        outputDataStaging(registryClient, taskContext, remoteSession, sourceURI, storageSession, destinationURI);
                         status.setReason("Successfully staged output data");
                     }
                 }
@@ -212,7 +211,7 @@ public class SCPDataStageTask implements Task {
                 } else if (processState == ProcessState.OUTPUT_DATA_STAGING) {
                     makeDir(taskContext, destinationURI);
                     // TODO - save updated subtask model with new destination
-                    outputDataStaging(taskContext, remoteSession, sourceURI, storageSession, destinationURI);
+                    outputDataStaging(registryClient, taskContext, remoteSession, sourceURI, storageSession, destinationURI);
                     status.setReason("Successfully staged output data");
                 }
             }
@@ -225,8 +224,8 @@ public class SCPDataStageTask implements Task {
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
-            return status;
-        } catch (ApplicationSettingsException | FileNotFoundException e) {
+            throw new RuntimeException(msg, e);
+        } catch ( FileNotFoundException e) {
             String msg = "Failed while reading credentials";
             log.error(msg, e);
             status.setState(TaskState.FAILED);
@@ -235,6 +234,16 @@ public class SCPDataStageTask implements Task {
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
+        } catch (ApplicationSettingsException e) {
+            String msg = "Failed while reading credentials";
+            log.error(msg, e);
+            status.setState(TaskState.FAILED);
+            status.setReason(msg);
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setActualErrorMessage(e.getMessage());
+            errorModel.setUserFriendlyMessage(msg);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
+            throw new RuntimeException(msg, e);
         } catch (URISyntaxException e) {
             String msg = "Source or destination uri is not correct source : " + subTaskModel.getSource() + ", " +
                     "destination : " + subTaskModel.getDestination();
@@ -272,7 +281,7 @@ public class SCPDataStageTask implements Task {
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
-        } catch (RegistryException | GFacException e) {
+        } catch (GFacException e) {
             String msg = "Data staging failed";
             log.error(msg, e);
             status.setState(TaskState.FAILED);
@@ -281,6 +290,10 @@ public class SCPDataStageTask implements Task {
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
         }
         return status;
     }
@@ -301,8 +314,8 @@ public class SCPDataStageTask implements Task {
                 destinationURI.getPath(), destSession, RemoteCluster.DIRECTION.FROM, false);
     }
 
-    private void outputDataStaging(TaskContext taskContext, Session srcSession, URI sourceURI,  Session destSession, URI destinationURI)
-            throws AiravataException, IOException, JSchException, GFacException {
+    private void outputDataStaging(RegistryService.Client registryClient, TaskContext taskContext, Session srcSession, URI sourceURI,  Session destSession, URI destinationURI)
+            throws AiravataException, IOException, JSchException, GFacException, TException {
 
         /**
          * scp third party file transfer 'from' comute resource.
@@ -312,8 +325,8 @@ public class SCPDataStageTask implements Task {
             taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(), srcSession,
                     destinationURI.getPath(), destSession, RemoteCluster.DIRECTION.TO, true);
             // update output locations
-            GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.toString());
-            GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.toString());
+            GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), registryClient, taskContext.getProcessOutput().getName(), destinationURI.toString());
+            GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), registryClient, taskContext.getProcessOutput().getName(), destinationURI.toString());
         }else{
             log.warn("Destination file path contains unresolved wildcards. Path: " + destinationURI.toString());
         }

@@ -21,7 +21,12 @@ package org.apache.airavata.gfac.impl.task;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.gfac.core.*;
+import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.gfac.core.GFacException;
+import org.apache.airavata.gfac.core.GFacUtils;
+import org.apache.airavata.gfac.core.GroovyMap;
+import org.apache.airavata.gfac.core.JobManagerConfiguration;
+import org.apache.airavata.gfac.core.Script;
 import org.apache.airavata.gfac.core.cluster.JobSubmissionOutput;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.ProcessContext;
@@ -40,14 +45,21 @@ import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskTypes;
-import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.api.RegistryService;
 import org.apache.commons.io.FileUtils;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class LocalJobSubmissionTask implements JobSubmissionTask{
     private static final Logger log = LoggerFactory.getLogger(LocalJobSubmissionTask.class);
@@ -59,6 +71,7 @@ public class LocalJobSubmissionTask implements JobSubmissionTask{
 
     @Override
     public TaskStatus execute(TaskContext taskContext) {
+        RegistryService.Client registryClient = Factory.getRegistryServiceClient();
         TaskStatus taskStatus = new TaskStatus(TaskState.CREATED);
         try {
             ProcessContext processContext = taskContext.getParentProcessContext();
@@ -66,13 +79,13 @@ public class LocalJobSubmissionTask implements JobSubmissionTask{
             jobModel.setTaskId(taskContext.getTaskId());
 
             RemoteCluster remoteCluster = processContext.getJobSubmissionRemoteCluster();
-            GroovyMap groovyMap = GFacUtils.createGroovyMap(processContext,taskContext);
+            GroovyMap groovyMap = GFacUtils.createGroovyMap(processContext, registryClient, taskContext);
 
             String jobId = AiravataUtils.getId("JOB_ID_");
             jobModel.setJobName(groovyMap.get(Script.JOB_NAME).toString());
             jobModel.setJobId(jobId);
 
-            ResourceJobManager resourceJobManager = GFacUtils.getResourceJobManager(processContext);
+            ResourceJobManager resourceJobManager = GFacUtils.getResourceJobManager(processContext, registryClient);
             JobManagerConfiguration jConfig = null;
 
             if (resourceJobManager != null) {
@@ -84,7 +97,7 @@ public class LocalJobSubmissionTask implements JobSubmissionTask{
             if (jobFile != null && jobFile.exists()) {
                 jobModel.setJobDescription(FileUtils.readFileToString(jobFile));
 
-                GFacUtils.saveJobModel(processContext, jobModel);
+                GFacUtils.saveJobModel(processContext, registryClient, jobModel);
 
                 JobSubmissionOutput jobSubmissionOutput = remoteCluster.submitBatchJob(jobFile.getPath(),
                         processContext.getWorkingDir());
@@ -95,7 +108,7 @@ public class LocalJobSubmissionTask implements JobSubmissionTask{
                 jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                 jobModel.setJobStatuses(Arrays.asList(jobStatus));
                 //log job submit status
-                GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), jobModel);
+                GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), registryClient, jobModel);
 
                 //for local, job gets completed synchronously
                 //so changing job status to complete
@@ -112,7 +125,7 @@ public class LocalJobSubmissionTask implements JobSubmissionTask{
                 jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                 jobModel.setJobStatuses(Arrays.asList(jobStatus));
                 //log job complete status
-                GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), jobModel);
+                GFacUtils.saveJobStatus(taskContext.getParentProcessContext(), registryClient, jobModel);
 
 
                 taskStatus = new TaskStatus(TaskState.COMPLETED);
@@ -127,7 +140,7 @@ public class LocalJobSubmissionTask implements JobSubmissionTask{
                 }
             }
 
-        } catch (GFacException | IOException | AppCatalogException | ApplicationSettingsException e) {
+        } catch (GFacException | IOException | ApplicationSettingsException e) {
             String msg = "Error occurred while submitting a local job";
             log.error(msg, e);
             taskStatus.setReason(msg);
@@ -136,6 +149,12 @@ public class LocalJobSubmissionTask implements JobSubmissionTask{
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
             taskStatus.setState(TaskState.FAILED);
+        } catch (TException e) {
+            throw new RuntimeException("Error ", e);
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
         }
         return taskStatus;
     }

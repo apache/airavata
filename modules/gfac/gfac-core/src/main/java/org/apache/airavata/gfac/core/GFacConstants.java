@@ -78,5 +78,13 @@ public class GFacConstants {
     public static final String VALUE = "value";
     public static final String OUTPUT_DATA_DIR = "output.location";
 
+    public static final String EXPERIMENT_ERROR = "EXPERIMENT_ERROR";
+	public static final String PROCESS_ERROR = "PROCESS_ERROR";
+	public static final String TASK_ERROR = "TASK_ERROR";
+	public static final String EXPERIMENT_OUTPUT = "EXPERIMENT_OUTPUT";
+	public static final String PROCESS_OUTPUT = "PROCESS_OUTPUT";
+
+	public static final String TASK_ID = "taskId";
+	public static final String PROCESS_ID = "processId";
 
 }
