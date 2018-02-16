@@ -44,7 +44,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
   private static final org.apache.thrift.protocol.TField RESERVATION_START_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("reservationStartTime", org.apache.thrift.protocol.TType.I64, (short)14);
   private static final org.apache.thrift.protocol.TField RESERVATION_END_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("reservationEndTime", org.apache.thrift.protocol.TType.I64, (short)15);
   private static final org.apache.thrift.protocol.TField SSH_ACCOUNT_PROVISIONER_FIELD_DESC = new org.apache.thrift.protocol.TField("sshAccountProvisioner", org.apache.thrift.protocol.TType.STRING, (short)16);
-  private static final org.apache.thrift.protocol.TField SSH_ACCOUNT_PROVISIONER_CONFIG_FIELD_DESC = new org.apache.thrift.protocol.TField("sshAccountProvisionerConfig", org.apache.thrift.protocol.TType.MAP, (short)17);
+  private static final org.apache.thrift.protocol.TField GROUP_SSHACCOUNT_PROVISIONER_CONFIGS_FIELD_DESC = new org.apache.thrift.protocol.TField("groupSSHAccountProvisionerConfigs", org.apache.thrift.protocol.TType.LIST, (short)17);
   private static final org.apache.thrift.protocol.TField SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO_FIELD_DESC = new org.apache.thrift.protocol.TField("sshAccountProvisionerAdditionalInfo", org.apache.thrift.protocol.TType.STRING, (short)18);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new GroupComputeResourcePreferenceStandardSchemeFactory();
@@ -66,7 +66,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
   private long reservationStartTime; // optional
   private long reservationEndTime; // optional
   private java.lang.String sshAccountProvisioner; // optional
-  private java.util.Map<java.lang.String,java.lang.String> sshAccountProvisionerConfig; // optional
+  private java.util.List<GroupAccountSSHProvisionerConfig> groupSSHAccountProvisionerConfigs; // optional
   private java.lang.String sshAccountProvisionerAdditionalInfo; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -95,7 +95,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
     RESERVATION_START_TIME((short)14, "reservationStartTime"),
     RESERVATION_END_TIME((short)15, "reservationEndTime"),
     SSH_ACCOUNT_PROVISIONER((short)16, "sshAccountProvisioner"),
-    SSH_ACCOUNT_PROVISIONER_CONFIG((short)17, "sshAccountProvisionerConfig"),
+    GROUP_SSHACCOUNT_PROVISIONER_CONFIGS((short)17, "groupSSHAccountProvisionerConfigs"),
     SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO((short)18, "sshAccountProvisionerAdditionalInfo");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
@@ -143,8 +143,8 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
           return RESERVATION_END_TIME;
         case 16: // SSH_ACCOUNT_PROVISIONER
           return SSH_ACCOUNT_PROVISIONER;
-        case 17: // SSH_ACCOUNT_PROVISIONER_CONFIG
-          return SSH_ACCOUNT_PROVISIONER_CONFIG;
+        case 17: // GROUP_SSHACCOUNT_PROVISIONER_CONFIGS
+          return GROUP_SSHACCOUNT_PROVISIONER_CONFIGS;
         case 18: // SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO
           return SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO;
         default:
@@ -191,7 +191,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
   private static final int __RESERVATIONSTARTTIME_ISSET_ID = 1;
   private static final int __RESERVATIONENDTIME_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.LOGIN_USER_NAME,_Fields.PREFERRED_JOB_SUBMISSION_PROTOCOL,_Fields.PREFERRED_DATA_MOVEMENT_PROTOCOL,_Fields.PREFERRED_BATCH_QUEUE,_Fields.SCRATCH_LOCATION,_Fields.ALLOCATION_PROJECT_NUMBER,_Fields.RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN,_Fields.USAGE_REPORTING_GATEWAY_ID,_Fields.QUALITY_OF_SERVICE,_Fields.RESERVATION,_Fields.RESERVATION_START_TIME,_Fields.RESERVATION_END_TIME,_Fields.SSH_ACCOUNT_PROVISIONER,_Fields.SSH_ACCOUNT_PROVISIONER_CONFIG,_Fields.SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO};
+  private static final _Fields optionals[] = {_Fields.LOGIN_USER_NAME,_Fields.PREFERRED_JOB_SUBMISSION_PROTOCOL,_Fields.PREFERRED_DATA_MOVEMENT_PROTOCOL,_Fields.PREFERRED_BATCH_QUEUE,_Fields.SCRATCH_LOCATION,_Fields.ALLOCATION_PROJECT_NUMBER,_Fields.RESOURCE_SPECIFIC_CREDENTIAL_STORE_TOKEN,_Fields.USAGE_REPORTING_GATEWAY_ID,_Fields.QUALITY_OF_SERVICE,_Fields.RESERVATION,_Fields.RESERVATION_START_TIME,_Fields.RESERVATION_END_TIME,_Fields.SSH_ACCOUNT_PROVISIONER,_Fields.GROUP_SSHACCOUNT_PROVISIONER_CONFIGS,_Fields.SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -227,10 +227,9 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     tmpMap.put(_Fields.SSH_ACCOUNT_PROVISIONER, new org.apache.thrift.meta_data.FieldMetaData("sshAccountProvisioner", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.SSH_ACCOUNT_PROVISIONER_CONFIG, new org.apache.thrift.meta_data.FieldMetaData("sshAccountProvisionerConfig", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING), 
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+    tmpMap.put(_Fields.GROUP_SSHACCOUNT_PROVISIONER_CONFIGS, new org.apache.thrift.meta_data.FieldMetaData("groupSSHAccountProvisionerConfigs", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT            , "GroupAccountSSHProvisionerConfig"))));
     tmpMap.put(_Fields.SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO, new org.apache.thrift.meta_data.FieldMetaData("sshAccountProvisionerAdditionalInfo", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
@@ -301,9 +300,12 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
     if (other.isSetSshAccountProvisioner()) {
       this.sshAccountProvisioner = other.sshAccountProvisioner;
     }
-    if (other.isSetSshAccountProvisionerConfig()) {
-      java.util.Map<java.lang.String,java.lang.String> __this__sshAccountProvisionerConfig = new java.util.HashMap<java.lang.String,java.lang.String>(other.sshAccountProvisionerConfig);
-      this.sshAccountProvisionerConfig = __this__sshAccountProvisionerConfig;
+    if (other.isSetGroupSSHAccountProvisionerConfigs()) {
+      java.util.List<GroupAccountSSHProvisionerConfig> __this__groupSSHAccountProvisionerConfigs = new java.util.ArrayList<GroupAccountSSHProvisionerConfig>(other.groupSSHAccountProvisionerConfigs.size());
+      for (GroupAccountSSHProvisionerConfig other_element : other.groupSSHAccountProvisionerConfigs) {
+        __this__groupSSHAccountProvisionerConfigs.add(other_element);
+      }
+      this.groupSSHAccountProvisionerConfigs = __this__groupSSHAccountProvisionerConfigs;
     }
     if (other.isSetSshAccountProvisionerAdditionalInfo()) {
       this.sshAccountProvisionerAdditionalInfo = other.sshAccountProvisionerAdditionalInfo;
@@ -335,7 +337,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
     setReservationEndTimeIsSet(false);
     this.reservationEndTime = 0;
     this.sshAccountProvisioner = null;
-    this.sshAccountProvisionerConfig = null;
+    this.groupSSHAccountProvisionerConfigs = null;
     this.sshAccountProvisionerAdditionalInfo = null;
   }
 
@@ -720,37 +722,41 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
     }
   }
 
-  public int getSshAccountProvisionerConfigSize() {
-    return (this.sshAccountProvisionerConfig == null) ? 0 : this.sshAccountProvisionerConfig.size();
+  public int getGroupSSHAccountProvisionerConfigsSize() {
+    return (this.groupSSHAccountProvisionerConfigs == null) ? 0 : this.groupSSHAccountProvisionerConfigs.size();
   }
 
-  public void putToSshAccountProvisionerConfig(java.lang.String key, java.lang.String val) {
-    if (this.sshAccountProvisionerConfig == null) {
-      this.sshAccountProvisionerConfig = new java.util.HashMap<java.lang.String,java.lang.String>();
+  public java.util.Iterator<GroupAccountSSHProvisionerConfig> getGroupSSHAccountProvisionerConfigsIterator() {
+    return (this.groupSSHAccountProvisionerConfigs == null) ? null : this.groupSSHAccountProvisionerConfigs.iterator();
+  }
+
+  public void addToGroupSSHAccountProvisionerConfigs(GroupAccountSSHProvisionerConfig elem) {
+    if (this.groupSSHAccountProvisionerConfigs == null) {
+      this.groupSSHAccountProvisionerConfigs = new java.util.ArrayList<GroupAccountSSHProvisionerConfig>();
     }
-    this.sshAccountProvisionerConfig.put(key, val);
+    this.groupSSHAccountProvisionerConfigs.add(elem);
   }
 
-  public java.util.Map<java.lang.String,java.lang.String> getSshAccountProvisionerConfig() {
-    return this.sshAccountProvisionerConfig;
+  public java.util.List<GroupAccountSSHProvisionerConfig> getGroupSSHAccountProvisionerConfigs() {
+    return this.groupSSHAccountProvisionerConfigs;
   }
 
-  public void setSshAccountProvisionerConfig(java.util.Map<java.lang.String,java.lang.String> sshAccountProvisionerConfig) {
-    this.sshAccountProvisionerConfig = sshAccountProvisionerConfig;
+  public void setGroupSSHAccountProvisionerConfigs(java.util.List<GroupAccountSSHProvisionerConfig> groupSSHAccountProvisionerConfigs) {
+    this.groupSSHAccountProvisionerConfigs = groupSSHAccountProvisionerConfigs;
   }
 
-  public void unsetSshAccountProvisionerConfig() {
-    this.sshAccountProvisionerConfig = null;
+  public void unsetGroupSSHAccountProvisionerConfigs() {
+    this.groupSSHAccountProvisionerConfigs = null;
   }
 
-  /** Returns true if field sshAccountProvisionerConfig is set (has been assigned a value) and false otherwise */
-  public boolean isSetSshAccountProvisionerConfig() {
-    return this.sshAccountProvisionerConfig != null;
+  /** Returns true if field groupSSHAccountProvisionerConfigs is set (has been assigned a value) and false otherwise */
+  public boolean isSetGroupSSHAccountProvisionerConfigs() {
+    return this.groupSSHAccountProvisionerConfigs != null;
   }
 
-  public void setSshAccountProvisionerConfigIsSet(boolean value) {
+  public void setGroupSSHAccountProvisionerConfigsIsSet(boolean value) {
     if (!value) {
-      this.sshAccountProvisionerConfig = null;
+      this.groupSSHAccountProvisionerConfigs = null;
     }
   }
 
@@ -907,11 +913,11 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
       }
       break;
 
-    case SSH_ACCOUNT_PROVISIONER_CONFIG:
+    case GROUP_SSHACCOUNT_PROVISIONER_CONFIGS:
       if (value == null) {
-        unsetSshAccountProvisionerConfig();
+        unsetGroupSSHAccountProvisionerConfigs();
       } else {
-        setSshAccountProvisionerConfig((java.util.Map<java.lang.String,java.lang.String>)value);
+        setGroupSSHAccountProvisionerConfigs((java.util.List<GroupAccountSSHProvisionerConfig>)value);
       }
       break;
 
@@ -976,8 +982,8 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
     case SSH_ACCOUNT_PROVISIONER:
       return getSshAccountProvisioner();
 
-    case SSH_ACCOUNT_PROVISIONER_CONFIG:
-      return getSshAccountProvisionerConfig();
+    case GROUP_SSHACCOUNT_PROVISIONER_CONFIGS:
+      return getGroupSSHAccountProvisionerConfigs();
 
     case SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO:
       return getSshAccountProvisionerAdditionalInfo();
@@ -1025,8 +1031,8 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
       return isSetReservationEndTime();
     case SSH_ACCOUNT_PROVISIONER:
       return isSetSshAccountProvisioner();
-    case SSH_ACCOUNT_PROVISIONER_CONFIG:
-      return isSetSshAccountProvisionerConfig();
+    case GROUP_SSHACCOUNT_PROVISIONER_CONFIGS:
+      return isSetGroupSSHAccountProvisionerConfigs();
     case SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO:
       return isSetSshAccountProvisionerAdditionalInfo();
     }
@@ -1192,12 +1198,12 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
         return false;
     }
 
-    boolean this_present_sshAccountProvisionerConfig = true && this.isSetSshAccountProvisionerConfig();
-    boolean that_present_sshAccountProvisionerConfig = true && that.isSetSshAccountProvisionerConfig();
-    if (this_present_sshAccountProvisionerConfig || that_present_sshAccountProvisionerConfig) {
-      if (!(this_present_sshAccountProvisionerConfig && that_present_sshAccountProvisionerConfig))
+    boolean this_present_groupSSHAccountProvisionerConfigs = true && this.isSetGroupSSHAccountProvisionerConfigs();
+    boolean that_present_groupSSHAccountProvisionerConfigs = true && that.isSetGroupSSHAccountProvisionerConfigs();
+    if (this_present_groupSSHAccountProvisionerConfigs || that_present_groupSSHAccountProvisionerConfigs) {
+      if (!(this_present_groupSSHAccountProvisionerConfigs && that_present_groupSSHAccountProvisionerConfigs))
         return false;
-      if (!this.sshAccountProvisionerConfig.equals(that.sshAccountProvisionerConfig))
+      if (!this.groupSSHAccountProvisionerConfigs.equals(that.groupSSHAccountProvisionerConfigs))
         return false;
     }
 
@@ -1279,9 +1285,9 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
     if (isSetSshAccountProvisioner())
       hashCode = hashCode * 8191 + sshAccountProvisioner.hashCode();
 
-    hashCode = hashCode * 8191 + ((isSetSshAccountProvisionerConfig()) ? 131071 : 524287);
-    if (isSetSshAccountProvisionerConfig())
-      hashCode = hashCode * 8191 + sshAccountProvisionerConfig.hashCode();
+    hashCode = hashCode * 8191 + ((isSetGroupSSHAccountProvisionerConfigs()) ? 131071 : 524287);
+    if (isSetGroupSSHAccountProvisionerConfigs())
+      hashCode = hashCode * 8191 + groupSSHAccountProvisionerConfigs.hashCode();
 
     hashCode = hashCode * 8191 + ((isSetSshAccountProvisionerAdditionalInfo()) ? 131071 : 524287);
     if (isSetSshAccountProvisionerAdditionalInfo())
@@ -1458,12 +1464,12 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
         return lastComparison;
       }
     }
-    lastComparison = java.lang.Boolean.valueOf(isSetSshAccountProvisionerConfig()).compareTo(other.isSetSshAccountProvisionerConfig());
+    lastComparison = java.lang.Boolean.valueOf(isSetGroupSSHAccountProvisionerConfigs()).compareTo(other.isSetGroupSSHAccountProvisionerConfigs());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetSshAccountProvisionerConfig()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sshAccountProvisionerConfig, other.sshAccountProvisionerConfig);
+    if (isSetGroupSSHAccountProvisionerConfigs()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.groupSSHAccountProvisionerConfigs, other.groupSSHAccountProvisionerConfigs);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1639,13 +1645,13 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
       }
       first = false;
     }
-    if (isSetSshAccountProvisionerConfig()) {
+    if (isSetGroupSSHAccountProvisionerConfigs()) {
       if (!first) sb.append(", ");
-      sb.append("sshAccountProvisionerConfig:");
-      if (this.sshAccountProvisionerConfig == null) {
+      sb.append("groupSSHAccountProvisionerConfigs:");
+      if (this.groupSSHAccountProvisionerConfigs == null) {
         sb.append("null");
       } else {
-        sb.append(this.sshAccountProvisionerConfig);
+        sb.append(this.groupSSHAccountProvisionerConfigs);
       }
       first = false;
     }
@@ -1844,22 +1850,21 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 17: // SSH_ACCOUNT_PROVISIONER_CONFIG
-            if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+          case 17: // GROUP_SSHACCOUNT_PROVISIONER_CONFIGS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TMap _map24 = iprot.readMapBegin();
-                struct.sshAccountProvisionerConfig = new java.util.HashMap<java.lang.String,java.lang.String>(2*_map24.size);
-                java.lang.String _key25;
-                java.lang.String _val26;
-                for (int _i27 = 0; _i27 < _map24.size; ++_i27)
+                org.apache.thrift.protocol.TList _list24 = iprot.readListBegin();
+                struct.groupSSHAccountProvisionerConfigs = new java.util.ArrayList<GroupAccountSSHProvisionerConfig>(_list24.size);
+                GroupAccountSSHProvisionerConfig _elem25;
+                for (int _i26 = 0; _i26 < _list24.size; ++_i26)
                 {
-                  _key25 = iprot.readString();
-                  _val26 = iprot.readString();
-                  struct.sshAccountProvisionerConfig.put(_key25, _val26);
+                  _elem25 = new GroupAccountSSHProvisionerConfig();
+                  _elem25.read(iprot);
+                  struct.groupSSHAccountProvisionerConfigs.add(_elem25);
                 }
-                iprot.readMapEnd();
+                iprot.readListEnd();
               }
-              struct.setSshAccountProvisionerConfigIsSet(true);
+              struct.setGroupSSHAccountProvisionerConfigsIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1985,17 +1990,16 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
           oprot.writeFieldEnd();
         }
       }
-      if (struct.sshAccountProvisionerConfig != null) {
-        if (struct.isSetSshAccountProvisionerConfig()) {
-          oprot.writeFieldBegin(SSH_ACCOUNT_PROVISIONER_CONFIG_FIELD_DESC);
+      if (struct.groupSSHAccountProvisionerConfigs != null) {
+        if (struct.isSetGroupSSHAccountProvisionerConfigs()) {
+          oprot.writeFieldBegin(GROUP_SSHACCOUNT_PROVISIONER_CONFIGS_FIELD_DESC);
           {
-            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, struct.sshAccountProvisionerConfig.size()));
-            for (java.util.Map.Entry<java.lang.String, java.lang.String> _iter28 : struct.sshAccountProvisionerConfig.entrySet())
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.groupSSHAccountProvisionerConfigs.size()));
+            for (GroupAccountSSHProvisionerConfig _iter27 : struct.groupSSHAccountProvisionerConfigs)
             {
-              oprot.writeString(_iter28.getKey());
-              oprot.writeString(_iter28.getValue());
+              _iter27.write(oprot);
             }
-            oprot.writeMapEnd();
+            oprot.writeListEnd();
           }
           oprot.writeFieldEnd();
         }
@@ -2067,7 +2071,7 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
       if (struct.isSetSshAccountProvisioner()) {
         optionals.set(12);
       }
-      if (struct.isSetSshAccountProvisionerConfig()) {
+      if (struct.isSetGroupSSHAccountProvisionerConfigs()) {
         optionals.set(13);
       }
       if (struct.isSetSshAccountProvisionerAdditionalInfo()) {
@@ -2113,13 +2117,12 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
       if (struct.isSetSshAccountProvisioner()) {
         oprot.writeString(struct.sshAccountProvisioner);
       }
-      if (struct.isSetSshAccountProvisionerConfig()) {
+      if (struct.isSetGroupSSHAccountProvisionerConfigs()) {
         {
-          oprot.writeI32(struct.sshAccountProvisionerConfig.size());
-          for (java.util.Map.Entry<java.lang.String, java.lang.String> _iter29 : struct.sshAccountProvisionerConfig.entrySet())
+          oprot.writeI32(struct.groupSSHAccountProvisionerConfigs.size());
+          for (GroupAccountSSHProvisionerConfig _iter28 : struct.groupSSHAccountProvisionerConfigs)
           {
-            oprot.writeString(_iter29.getKey());
-            oprot.writeString(_iter29.getValue());
+            _iter28.write(oprot);
           }
         }
       }
@@ -2192,18 +2195,17 @@ public class GroupComputeResourcePreference implements org.apache.thrift.TBase<G
       }
       if (incoming.get(13)) {
         {
-          org.apache.thrift.protocol.TMap _map30 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.sshAccountProvisionerConfig = new java.util.HashMap<java.lang.String,java.lang.String>(2*_map30.size);
-          java.lang.String _key31;
-          java.lang.String _val32;
-          for (int _i33 = 0; _i33 < _map30.size; ++_i33)
+          org.apache.thrift.protocol.TList _list29 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.groupSSHAccountProvisionerConfigs = new java.util.ArrayList<GroupAccountSSHProvisionerConfig>(_list29.size);
+          GroupAccountSSHProvisionerConfig _elem30;
+          for (int _i31 = 0; _i31 < _list29.size; ++_i31)
           {
-            _key31 = iprot.readString();
-            _val32 = iprot.readString();
-            struct.sshAccountProvisionerConfig.put(_key31, _val32);
+            _elem30 = new GroupAccountSSHProvisionerConfig();
+            _elem30.read(iprot);
+            struct.groupSSHAccountProvisionerConfigs.add(_elem30);
           }
         }
-        struct.setSshAccountProvisionerConfigIsSet(true);
+        struct.setGroupSSHAccountProvisionerConfigsIsSet(true);
       }
       if (incoming.get(14)) {
         struct.sshAccountProvisionerAdditionalInfo = iprot.readString();

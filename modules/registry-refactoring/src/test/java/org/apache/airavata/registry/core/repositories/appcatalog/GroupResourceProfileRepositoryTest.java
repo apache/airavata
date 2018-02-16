@@ -2,10 +2,7 @@ package org.apache.airavata.registry.core.repositories.appcatalog;
 
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.BatchQueueResourcePolicy;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.ComputeResourcePolicy;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.*;
 import org.apache.airavata.registry.core.repositories.util.Initialize;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.junit.After;
@@ -114,9 +111,16 @@ public class GroupResourceProfileRepositoryTest {
         groupResourceProfile.setGroupResourceProfileId(groupResourceProfileId);
         groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_NAME");
 
+        GroupAccountSSHProvisionerConfig groupAccountSSHProvisionerConfig = new GroupAccountSSHProvisionerConfig();
+        groupAccountSSHProvisionerConfig.setGroupResourceProfileId(groupResourceProfileId);
+        groupAccountSSHProvisionerConfig.setResourceId(resourceId1);
+        groupAccountSSHProvisionerConfig.setConfigName("configName");
+        groupAccountSSHProvisionerConfig.setConfigValue("configvalue");
+
         GroupComputeResourcePreference groupComputeResourcePreference1 = new GroupComputeResourcePreference();
         groupComputeResourcePreference1.setComputeResourceId(resourceId1);
         groupComputeResourcePreference1.setGroupResourceProfileId(groupResourceProfileId);
+        groupComputeResourcePreference1.addToGroupSSHAccountProvisionerConfigs(groupAccountSSHProvisionerConfig);
 
         GroupComputeResourcePreference groupComputeResourcePreference2 = new GroupComputeResourcePreference();
         groupComputeResourcePreference2.setComputeResourceId(resourceId2);
@@ -182,6 +186,7 @@ public class GroupResourceProfileRepositoryTest {
         }
 
         assertTrue(groupResourceProfileRepository.getGroupComputeResourcePreference(resourceId1,groupResourceProfileId) != null);
+        assertTrue(groupResourceProfileRepository.getGroupComputeResourcePreference(resourceId1,groupResourceProfileId).getGroupSSHAccountProvisionerConfigs().size() == 1);
 
         ComputeResourcePolicy getComputeResourcePolicy = groupResourceProfileRepository.getComputeResourcePolicy( "TEST_COM_RESOURCE_POLICY_ID1");
         assertTrue(getComputeResourcePolicy.getAllowedBatchQueues().get(0).equals("queue1"));

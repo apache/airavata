@@ -6,11 +6,8 @@ import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeRes
 import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.registry.core.entities.appcatalog.*;
 import org.apache.airavata.registry.core.utils.DBConstants;
-import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.apache.airavata.registry.core.utils.QueryConstants;
-import org.dozer.Mapper;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,11 +31,6 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
 
         updatedGroupResourceProfile.setUpdatedTime(System.currentTimeMillis());
         GroupResourceProfile groupResourceProfile = update(updatedGroupResourceProfile);
-
-        List<GroupComputeResourcePreference> computeResourcePreferences = updatedGroupResourceProfile.getComputePreferences();
-        if (computeResourcePreferences != null && !computeResourcePreferences.isEmpty()) {
-            addSSHProvConfig(computeResourcePreferences);
-        }
         return groupResourceProfile.getGroupResourceProfileId();
     }
 
@@ -46,12 +38,6 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
         GroupResourceProfilePK groupResourceProfilePK = new GroupResourceProfilePK();
         groupResourceProfilePK.setGroupResourceProfileId(groupResourceProfileId);
         GroupResourceProfile groupResourceProfile = get(groupResourceProfilePK);
-
-        if (groupResourceProfile.getComputePreferences()!= null && !groupResourceProfile.getComputePreferences().isEmpty()){
-            for (GroupComputeResourcePreference preference: groupResourceProfile.getComputePreferences()){
-                preference.setSshAccountProvisionerConfig(getSSHProvConfig(preference.getComputeResourceId(), groupResourceProfileId));
-            }
-        }
         return groupResourceProfile;
     }
 
@@ -71,15 +57,6 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
         Map<String,Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.GroupResourceProfile.GATEWAY_ID, gatewayId);
         List<GroupResourceProfile> groupResourceProfileList = select(QueryConstants.FIND_ALL_GROUP_RESOURCE_PROFILES, -1, 0, queryParameters);
-        if (groupResourceProfileList != null && !groupResourceProfileList.isEmpty()) {
-            for (GroupResourceProfile groupResourceProfile: groupResourceProfileList) {
-                if (groupResourceProfile.getComputePreferences() != null && !groupResourceProfile.getComputePreferences().isEmpty()) {
-                    for (GroupComputeResourcePreference computeResourcePreference: groupResourceProfile.getComputePreferences()) {
-                        computeResourcePreference.setSshAccountProvisionerConfig(getSSHProvConfig(computeResourcePreference.getComputeResourceId(), groupResourceProfile.getGroupResourceProfileId()));
-                    }
-                }
-            }
-        }
         return groupResourceProfileList;
     }
 
@@ -132,11 +109,6 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
         queryParameters.put(DBConstants.GroupResourceProfile.GROUP_RESOURCE_PROFILE_ID, groupResourceProfileId);
         List<GroupComputeResourcePreference> groupComputeResourcePreferenceList = (new GrpComputePrefRepository().select(QueryConstants.FIND_ALL_GROUP_COMPUTE_PREFERENCES, -1, 0, queryParameters));
 
-        if (groupComputeResourcePreferenceList != null && !groupComputeResourcePreferenceList.isEmpty()) {
-            for (GroupComputeResourcePreference computeResourcePreference: groupComputeResourcePreferenceList) {
-                computeResourcePreference.setSshAccountProvisionerConfig(getSSHProvConfig(computeResourcePreference.getComputeResourceId(), groupResourceProfileId));
-            }
-        }
         return groupComputeResourcePreferenceList;
     }
 
@@ -150,40 +122,6 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
         Map<String,Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.GroupResourceProfile.GROUP_RESOURCE_PROFILE_ID, groupResourceProfileId);
         return (new ComputeResourcePolicyRepository().select(QueryConstants.FIND_ALL_GROUP_COMPUTE_RESOURCE_POLICY, -1, 0, queryParameters));
-    }
-
-    private void addSSHProvConfig(List<GroupComputeResourcePreference> computeResourcePreferences) {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        for (GroupComputeResourcePreference preference : computeResourcePreferences ) {
-            if (preference.getSshAccountProvisionerConfig() != null && !preference.getSshAccountProvisionerConfig().isEmpty()){
-                GroupComputeResourcePrefEntity computeResourcePreferenceEntity = mapper.map(preference, GroupComputeResourcePrefEntity.class);
-                List<GroupSSHAccountProvisionerConfig> configurations = new ArrayList<>();
-                for (String sshAccountProvisionerConfigName : preference.getSshAccountProvisionerConfig().keySet()) {
-                    String value = preference.getSshAccountProvisionerConfig().get(sshAccountProvisionerConfigName);
-                    configurations.add(new GroupSSHAccountProvisionerConfig(sshAccountProvisionerConfigName, value, computeResourcePreferenceEntity));
-                }
-                computeResourcePreferenceEntity.setGroupSSHAccountProvisionerConfigs(configurations);
-                execute(entityManager -> entityManager.merge(computeResourcePreferenceEntity));
-            }
-        }
-    }
-
-    private Map<String,String> getSSHProvConfig(String computeResourceId, String groupResourceProfileId) {
-        GroupComputeResourcePrefPK groupComputeResourcePrefPK = new GroupComputeResourcePrefPK();
-        groupComputeResourcePrefPK.setComputeResourceId(computeResourceId);
-        groupComputeResourcePrefPK.setGroupResourceProfileId(groupResourceProfileId);
-
-        GroupComputeResourcePrefEntity computeResourcePreferenceEntity = execute(entityManager -> entityManager
-                .find(GroupComputeResourcePrefEntity.class, groupComputeResourcePrefPK));
-
-        if (computeResourcePreferenceEntity.getGroupSSHAccountProvisionerConfigs()!= null && !computeResourcePreferenceEntity.getGroupSSHAccountProvisionerConfigs().isEmpty()){
-            Map<String,String> sshAccountProvisionerConfigurations = new HashMap<>();
-            for (GroupSSHAccountProvisionerConfig config : computeResourcePreferenceEntity.getGroupSSHAccountProvisionerConfigs()){
-                sshAccountProvisionerConfigurations.put(config.getConfigName(), config.getConfigValue());
-            }
-            return sshAccountProvisionerConfigurations;
-        }
-        return null;
     }
 
 }

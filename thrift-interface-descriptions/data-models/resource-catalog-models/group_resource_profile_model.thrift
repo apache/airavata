@@ -74,7 +74,7 @@ struct GroupComputeResourcePreference {
     14: optional i64 reservationStartTime,
     15: optional i64 reservationEndTime,
     16: optional string sshAccountProvisioner,
-    17: optional map<string, string> sshAccountProvisionerConfig,
+    17: optional list<GroupAccountSSHProvisionerConfig> groupSSHAccountProvisionerConfigs,
     18: optional string sshAccountProvisionerAdditionalInfo
 }
 
@@ -93,4 +93,11 @@ struct BatchQueueResourcePolicy {
     5: optional i32 maxAllowedNodes,
     6: optional i32 maxAllowedCores,
     7: optional i32 maxAllowedWalltime
+}
+
+struct GroupAccountSSHProvisionerConfig {
+    1: required string resourceId,
+    2: required string groupResourceProfileId,
+    3: required string configName,
+    4: optional string configValue
 }

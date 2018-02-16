@@ -38,14 +38,6 @@ public class GroupSSHAccountProvisionerConfig implements Serializable{
     public GroupSSHAccountProvisionerConfig() {
     }
 
-    public GroupSSHAccountProvisionerConfig( String configName, String configValue, GroupComputeResourcePrefEntity groupComputeResourcePref) {
-        this.resourceId = groupComputeResourcePref.getComputeResourceId();
-        this.groupResourceProfileId = groupComputeResourcePref.getGroupResourceProfileId();
-        this.configName = configName;
-        this.configValue = configValue;
-        this.groupComputeResourcePref= groupComputeResourcePref;
-    }
-
     public String getResourceId() {
         return resourceId;
     }
