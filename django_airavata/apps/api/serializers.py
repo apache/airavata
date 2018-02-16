@@ -115,17 +115,28 @@ class GroupSerializer(serializers.Serializer):
     id = serializers.CharField(default=GroupModel.thrift_spec[1][4], read_only=True)
     name = serializers.CharField(required=True)
     description = serializers.CharField(allow_null=True)
-    ownerId = GatewayUsernameDefaultField()
+    ownerId = serializers.CharField(read_only=True)
     members = serializers.ListSerializer(child=serializers.CharField())
+    isAdmin = serializers.SerializerMethodField()
+    isOwner = serializers.SerializerMethodField()
 
     def create(self, validated_data):
-        validated_data['ownerId'] = self.context['request'].user.username
+        validated_data['ownerId'] = self.context['request'].user.username + "@" + settings.GATEWAY_ID
         return GroupModel(**validated_data)
 
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
         instance.description = validated_data.get('description', instance.description)
         return instance
+
+    def get_isAdmin(self, group):
+        request = self.context['request']
+        return request.profile_service['group_manager'].hasAdminAccess(
+            request.authz_token, group.id, request.user.username + "@" + settings.GATEWAY_ID)
+
+    def get_isOwner(self, group):
+        request = self.context['request']
+        return group.ownerId == request.user.username + "@" + settings.GATEWAY_ID
 
 
 class ProjectSerializer(serializers.Serializer):

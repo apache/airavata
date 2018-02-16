@@ -1,7 +1,7 @@
 <template>
     <tr>
         <td>{{ group.name }}</td>
-        <td>{{ group.owner }}</td>
+        <td>{{ group.ownerId }}</td>
         <td>{{ group.description }}</td>
         <td><span v-html="action"></span></td>
     </tr>
@@ -15,6 +15,7 @@ export default {
     props: ['group', 'type'],
     computed: {
       action: function() {
+          // TODO: use (isOwner || isAdmin) here
           if(this.type == 'owner') {
             let deleteUrl = "/api/deleteGroup/"+this.group.groupID;
             let threeSpace = '&nbsp;&nbsp;&nbsp;'
