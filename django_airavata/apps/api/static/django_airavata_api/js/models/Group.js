@@ -8,6 +8,7 @@ const FIELDS = [
     'members',
     'isOwner',
     'isAdmin',
+    'isMember',
 ];
 
 export default class Group extends BaseModel {

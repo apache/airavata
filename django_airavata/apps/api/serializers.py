@@ -119,6 +119,7 @@ class GroupSerializer(serializers.Serializer):
     members = serializers.ListSerializer(child=serializers.CharField())
     isAdmin = serializers.SerializerMethodField()
     isOwner = serializers.SerializerMethodField()
+    isMember = serializers.SerializerMethodField()
 
     def create(self, validated_data):
         validated_data['ownerId'] = self.context['request'].user.username + "@" + settings.GATEWAY_ID
@@ -137,6 +138,11 @@ class GroupSerializer(serializers.Serializer):
     def get_isOwner(self, group):
         request = self.context['request']
         return group.ownerId == request.user.username + "@" + settings.GATEWAY_ID
+
+    def get_isMember(self, group):
+        request = self.context['request']
+        username = request.user.username + "@" + settings.GATEWAY_ID
+        return username in group.members
 
 
 class ProjectSerializer(serializers.Serializer):
