@@ -35,6 +35,7 @@ include "../data-models/app-catalog-models/application_deployment_model.thrift"
 include "../data-models/app-catalog-models/application_interface_model.thrift"
 include "../data-models/resource-catalog-models/compute_resource_model.thrift"
 include "../data-models/resource-catalog-models/storage_resource_model.thrift"
+include "../data-models/resource-catalog-models/group_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/gateway_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/user_resource_profile_model.thrift"
 include "../data-models/resource-catalog-models/data_movement_models.thrift"
@@ -2437,5 +2438,52 @@ service RegistryService {
               list<replica_catalog_models.DataProductModel> searchDataProductsByName(1: required  string gatewayId,
                2: required string userId, 3: required string productName, 4: required i32 limit, 5: required i32 offset)
                                           throws (1: registry_api_errors.RegistryServiceException rse)
+
+
+              /*
+               * Group Resource Profile API methods
+               *
+               */
+               void createGroupResourceProfile(1: required group_resource_profile_model.GroupResourceProfile groupResourceProfile)
+                        throws (1: registry_api_errors.RegistryServiceException rse)
+
+               void updateGroupResourceProfile(1: required group_resource_profile_model.GroupResourceProfile groupResourceProfile)
+                                          throws (1: registry_api_errors.RegistryServiceException rse)
+
+               group_resource_profile_model.GroupResourceProfile getGroupResourceProfile(1: required string groupResourceProfileId)
+                        throws (1: registry_api_errors.RegistryServiceException rse)
+
+               bool removeGroupResourceProfile(1: required string groupResourceProfileId)
+                                    throws (1: registry_api_errors.RegistryServiceException rse)
+
+               list<group_resource_profile_model.GroupResourceProfile> getGroupResourceList(1: required string gatewayId)
+                                throws (1: registry_api_errors.RegistryServiceException rse)
+
+               bool removeGroupComputePrefs(1: required string computeResourceId, 2: required string groupResourceProfileId)
+                                throws (1: registry_api_errors.RegistryServiceException rse)
+
+               bool removeGroupComputeResourcePolicy(1: required string resourcePolicyId)
+                                throws (1: registry_api_errors.RegistryServiceException rse)
+
+               bool removeGroupBatchQueueResourcePolicy(1: required string resourcePolicyId)
+                                throws (1: registry_api_errors.RegistryServiceException rse)
+
+               group_resource_profile_model.GroupComputeResourcePreference getGroupComputeResourcePreference(1: required string computeResourceId, 2: required string groupResourceProfileId)
+                                throws (1: registry_api_errors.RegistryServiceException rse)
+
+               group_resource_profile_model.ComputeResourcePolicy getGroupComputeResourcePolicy(1: required string resourcePolicyId)
+                                throws (1: registry_api_errors.RegistryServiceException rse)
+
+               group_resource_profile_model.BatchQueueResourcePolicy getBatchQueueResourcePolicy(1: required string resourcePolicyId)
+                                throws (1: registry_api_errors.RegistryServiceException rse)
+
+               list<group_resource_profile_model.GroupComputeResourcePreference> getGroupComputeResourcePrefList( 1: required string groupResourceProfileId)
+                                throws (1: registry_api_errors.RegistryServiceException rse)
+
+               list<group_resource_profile_model.BatchQueueResourcePolicy> getGroupBatchQueueResourcePolicyList(1: required string groupResourceProfileId)
+                                throws (1: registry_api_errors.RegistryServiceException rse)
+
+               list<group_resource_profile_model.ComputeResourcePolicy> getGroupComputeResourcePolicyList(1: required string groupResourceProfileId)
+                                throws (1: registry_api_errors.RegistryServiceException rse)
 
 }
