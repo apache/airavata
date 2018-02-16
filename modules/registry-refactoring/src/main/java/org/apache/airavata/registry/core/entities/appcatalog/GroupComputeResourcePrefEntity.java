@@ -68,7 +68,7 @@ public class GroupComputeResourcePrefEntity implements Serializable {
     @Column(name = "SSH_ACCOUNT_PROVISIONER_ADDITIONAL_INFO")
     private String sshAccountProvisionerAdditionalInfo;
 
-    @OneToMany(targetEntity = GroupSSHAccountProvisionerConfig.class, mappedBy = "groupComputeResourcePref", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(targetEntity = GroupSSHAccountProvisionerConfig.class, mappedBy = "groupComputeResourcePref", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<GroupSSHAccountProvisionerConfig> groupSSHAccountProvisionerConfigs;
 
     @ManyToOne(targetEntity = GroupResourceProfileEntity.class, cascade = CascadeType.MERGE)
