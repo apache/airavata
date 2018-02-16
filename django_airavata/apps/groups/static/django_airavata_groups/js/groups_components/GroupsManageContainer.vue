@@ -2,7 +2,7 @@
     <div>
         <div class="row">
             <div class="col">
-                <h1 class="h4 mb-4">Groups you own:</h1>
+                <h1 class="h4 mb-4">Groups</h1>
             </div>
             <div id="col-new-group" class="col-sm-2">
                 <b-button href="create" :variant="'primary'">Create New Group&nbsp;&nbsp;<i class="fa fa-plus" aria-hidden="true"></i></b-button>
@@ -15,14 +15,6 @@
                         <group-owner-list v-bind:groupsForOwners="groupsOwners"></group-owner-list>
                         <pager v-bind:paginator="groupOwnersPaginator"
                         v-on:next="nextOwnerGroups" v-on:previous="previousOwnerGroups"></pager>
-                    </div>
-                </div>
-                <h1 class="h4 mb-4">Groups you are a part of:</h1>
-                <div class="card">
-                    <div class="card-body">
-                        <group-member-list v-bind:groupsForMembers="groupsMembers"></group-member-list>
-                        <pager v-bind:paginator="groupMembersPaginator"
-                        v-on:next="nextMemberGroups" v-on:previous="previousMemberGroups"></pager>
                     </div>
                 </div>
             </div>
