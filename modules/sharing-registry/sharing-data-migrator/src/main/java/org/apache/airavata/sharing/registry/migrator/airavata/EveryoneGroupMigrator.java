@@ -36,6 +36,8 @@ public class EveryoneGroupMigrator {
         RegistryService.Client registryClient = RegistryServiceClientFactory.createRegistryClient("149.165.169.138",8970);
         SharingRegistryService.Client sharingClient = SharingRegistryServiceClientFactory.createSharingRegistryClient("149.165.169.138", 7878);
 
+        String groupOwner = args[0];
+
         List<Domain> domainList = sharingClient.getDomains(-1, 0);
         for (Domain domain : domainList) {
             String groupId = "everyone@" + domain.domainId;
@@ -48,6 +50,7 @@ public class EveryoneGroupMigrator {
                 userGroup.setUpdatedTime(System.currentTimeMillis());
                 userGroup.setName("everyone");
                 userGroup.setDescription("Default Group");
+                userGroup.setOwnerId(groupOwner);
                 userGroup.setGroupType(GroupType.DOMAIN_LEVEL_GROUP);
                 sharingClient.createGroup(userGroup);
 
