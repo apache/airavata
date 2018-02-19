@@ -22,6 +22,7 @@ package org.apache.airavata.gfac.impl.task.utils;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
@@ -34,6 +35,8 @@ import org.apache.airavata.gfac.impl.SSHUtils;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.task.DataStagingTaskModel;
+import org.apache.airavata.registry.api.RegistryService;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,13 +91,16 @@ public class StreamData extends TimerTask  {
             log.error("expId: {}, processId:{}, taskId: {}:- Couldn't stage file {} , Error occurred while connecting with credential store",
                     taskContext.getExperimentId(), taskContext.getProcessId(), taskContext.getTaskId(),
                     taskContext.getProcessOutput().getName());
+        } catch (TException e) {
+            throw new RuntimeException("Error ", e);
         }
     }
 
     public void runOutputStaging() throws URISyntaxException,
             IllegalAccessException,
             InstantiationException,
-            CredentialStoreException, AiravataException, IOException, JSchException {
+            CredentialStoreException, AiravataException, IOException, JSchException, TException {
+        RegistryService.Client registryClient = Factory.getRegistryServiceClient();
         try {
 
             URI sourceURI = new URI(subTaskModel.getSource());
@@ -114,18 +120,22 @@ public class StreamData extends TimerTask  {
             }
 
             Session srcSession = Factory.getSSHSession(Factory.getComputerResourceSSHKeyAuthentication(taskContext.getParentProcessContext()),
-                    taskContext.getParentProcessContext().getComputeResourceServerInfo());
+                    taskContext.getParentProcessContext().getComputeResourceServerInfo(registryClient));
             Session destSession = Factory.getSSHSession(Factory.getStorageSSHKeyAuthentication(taskContext.getParentProcessContext()),
                     taskContext.getParentProcessContext().getStorageResourceServerInfo());
             String targetPath = destinationURI.getPath().substring(0, destinationURI.getPath().lastIndexOf('/'));
 
             SSHUtils.makeDirectory(targetPath, destSession);
-            outputDataStaging(taskContext, srcSession, sourceURI, destSession, destinationURI);
+            outputDataStaging(registryClient, taskContext, srcSession, sourceURI, destSession, destinationURI);
         } catch (GFacException e) {
             log.error("expId: {}, processId:{}, taskId: {}:- Couldn't stage file {} , Error while output staging",
                     taskContext.getExperimentId(), taskContext.getProcessId(), taskContext.getTaskId(),
                     taskContext.getProcessOutput().getName());
             throw new AiravataException("Error while output staging",e);
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
         }
     }
 
@@ -144,8 +154,8 @@ public class StreamData extends TimerTask  {
 
     }
 
-    private void outputDataStaging(TaskContext taskContext, Session srcSession, URI sourceURI, Session destSession, URI destinationURI)
-            throws AiravataException, IOException, JSchException, GFacException {
+    private void outputDataStaging(RegistryService.Client registryClient, TaskContext taskContext, Session srcSession, URI sourceURI, Session destSession, URI destinationURI)
+            throws AiravataException, IOException, JSchException, GFacException, TException {
 
         /**
          * scp third party file transfer 'from' comute resource.
@@ -153,8 +163,8 @@ public class StreamData extends TimerTask  {
         taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(), srcSession,
                 destinationURI.getPath(), destSession, RemoteCluster.DIRECTION.TO, true);
         // update output locations
-        GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.getPath());
-        GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), destinationURI.getPath());
+        GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), registryClient, taskContext.getProcessOutput().getName(), destinationURI.getPath());
+        GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), registryClient, taskContext.getProcessOutput().getName(), destinationURI.getPath());
 
     }
 
