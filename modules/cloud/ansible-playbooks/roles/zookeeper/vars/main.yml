@@ -23,7 +23,7 @@ zookeeper_version: 3.4.8
 #zookeeper_conf_dir: /etc/zookeeper/conf
 zookeeper_log_dir: /var/log/zookeeper
 zookeeper_datastore_dir: /var/lib/zookeeper
-zookeeper_url: http://www.us.apache.org/dist/zookeeper/zookeeper-{{zookeeper_version}}/zookeeper-{{zookeeper_version}}.tar.gz
+zookeeper_url: http://archive.apache.org/dist/zookeeper/zookeeper-{{zookeeper_version}}/zookeeper-{{zookeeper_version}}.tar.gz
 zookeeper_dir: /opt/zookeeper
 #zookeeper_client_port: 2181
 
