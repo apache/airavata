@@ -361,7 +361,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     public List<UserGroup> getGroups(String domain, int offset, int limit) throws TException {
         try{
             HashMap<String, String> filters = new HashMap<>();
-            filters.put(DBConstants.UserTable.DOMAIN_ID, domain);
+            filters.put(DBConstants.UserGroupTable.DOMAIN_ID, domain);
+            // Only return groups with MULTI_USER cardinality which is the only type of cardinality allowed for client created groups
+            filters.put(DBConstants.UserGroupTable.GROUP_CARDINALITY, GroupCardinality.MULTI_USER.name());
             return (new UserGroupRepository()).select(filters, offset, limit);
         }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
