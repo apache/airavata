@@ -19,7 +19,7 @@
 #
 
 gfac_log_dir: "{{ gfac_dir }}/{{ airavata_dist }}/logs"
-mariadb_connector_jar_url: "http://downloads.mariadb.com/Connectors/java/connector-java-2.0.2/mariadb-java-client-2.0.2.jar"
+mariadb_connector_jar_url: "https://downloads.mariadb.com/Connectors/java/connector-java-2.0.2/mariadb-java-client-2.0.2.jar"
 
 default_registry_user : "admin"
 default_registry_password : "admin"
