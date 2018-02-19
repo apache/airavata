@@ -61,7 +61,7 @@ gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQClwPzT
 
 ## Portal related variables
 super_admin_portal: "true"
-admin_emails: "['dimuthu.upeksha2@gmail.com']"
+admin_emails: "['CHANGEME']"
 #example: admin_emails: "['emailaddress1@example.com', 'emailaddress2@example.com']"
 portal_email_username: ""
 portal_email_password: ""
