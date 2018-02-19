@@ -164,6 +164,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             userGroup.setGroupCardinality(GroupCardinality.SINGLE_USER);
             (new UserGroupRepository()).create(userGroup);
 
+            String groupId = "everyone@" + user.domainId;
+            addUsersToGroup(user.domainId, Arrays.asList(user.userId), groupId);
+
             return user.userId;
         }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
@@ -277,9 +280,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             group.setUpdatedTime(System.currentTimeMillis());
             (new UserGroupRepository()).create(group);
 
-            if(group.ownerId != null)
-                addUsersToGroup(group.domainId, Arrays.asList(group.ownerId), group.groupId);
-
+            addUsersToGroup(group.domainId, Arrays.asList(group.ownerId), group.groupId);
             return group.groupId;
         }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
