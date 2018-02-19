@@ -20,10 +20,7 @@
 package org.apache.airavata.common.utils;
 
 import org.apache.airavata.model.task.*;
-import org.apache.thrift.TBase;
-import org.apache.thrift.TDeserializer;
-import org.apache.thrift.TException;
-import org.apache.thrift.TSerializer;
+import org.apache.thrift.*;
 
 public class ThriftUtils {
 	public static byte[] serializeThriftObject(TBase object) throws TException {
@@ -56,6 +53,15 @@ public class ThriftUtils {
 				// TODO return Environment Clean up task  model
 			default:
 				return null;
+		}
+	}
+
+	public static void close(TServiceClient client) {
+		if (client.getOutputProtocol().getTransport().isOpen()) {
+			client.getOutputProtocol().getTransport().close();
+		}
+		if (client.getInputProtocol().getTransport().isOpen()) {
+			client.getInputProtocol().getTransport().close();
 		}
 	}
 }

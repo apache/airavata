@@ -19,16 +19,12 @@
  */
 package org.apache.airavata.orchestrator.core.utils;
 
-import java.io.IOException;
-import java.util.*;
-
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.*;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
@@ -39,12 +35,16 @@ import org.apache.airavata.model.data.movement.SecurityProtocol;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.orchestrator.core.OrchestratorConfiguration;
-import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
-import org.apache.airavata.registry.cpi.*;
-import org.apache.airavata.registry.cpi.ApplicationInterface;
+import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.*;
 
 /**
  * This contains orchestrator specific utilities
@@ -73,96 +73,92 @@ public class OrchestratorUtils {
         return orchestratorConfiguration;
     }
 
-    public static JobSubmissionProtocol getPreferredJobSubmissionProtocol(OrchestratorContext context,
-                                                                          ProcessModel model,
-                                                                          String gatewayId) throws RegistryException {
+    public static JobSubmissionProtocol getPreferredJobSubmissionProtocol(ProcessModel model,
+                                                                          String gatewayId) throws TException, OrchestratorException {
         try {
             String resourceHostId = model.getComputeResourceId();
-            return getComputeResourcePreference(context, gatewayId, resourceHostId).getPreferredJobSubmissionProtocol();
-        } catch (AppCatalogException e) {
-            logger.error("Error occurred while initializing app catalog", e);
-            throw new RegistryException("Error occurred while initializing app catalog", e);
+            return getComputeResourcePreference(gatewayId, resourceHostId).getPreferredJobSubmissionProtocol();
+        } catch (Exception e) {
+            logger.error("Error occurred while retrieving job submission", e);
+            throw new OrchestratorException("Error occurred while retrieving job submission", e);
         }
     }
 
-    public static ComputeResourcePreference getComputeResourcePreference(OrchestratorContext context,
-                                                                         String gatewayId,
+    public static ComputeResourcePreference getComputeResourcePreference(String gatewayId,
                                                                          String resourceHostId)
-            throws AppCatalogException, RegistryException {
-
-        GwyResourceProfile gatewayProfile = getGatewayProfile(context);
-        return gatewayProfile.getComputeResourcePreference(gatewayId
-                , resourceHostId);
-    }
-
-    public static GwyResourceProfile getGatewayProfile(OrchestratorContext context)
-            throws AppCatalogException, RegistryException {
-        return context.getRegistry().getAppCatalog().getGatewayProfile();
-    }
-
-    public static UsrResourceProfile getUserResourceProfile(OrchestratorContext context)
-            throws RegistryException, AppCatalogException {
-        return context.getRegistry().getAppCatalog().getUserResourceProfile();
-    }
-
-    public static String getApplicationInterfaceName(OrchestratorContext context, ProcessModel model)
-            throws RegistryException {
+            throws TException, ApplicationSettingsException {
+        final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
-            ApplicationInterface applicationInterface = context.getRegistry().getAppCatalog().getApplicationInterface();
-            ApplicationInterfaceDescription appInterface =
-                    applicationInterface.getApplicationInterface(model.getApplicationInterfaceId());
-            return appInterface.getApplicationName();
-        } catch (AppCatalogException e) {
-            throw new RegistryException("Error while retrieving application interface", e);
+            return registryClient.getGatewayComputeResourcePreference(gatewayId
+                    , resourceHostId);
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
         }
     }
 
-    public static DataMovementProtocol getPreferredDataMovementProtocol(OrchestratorContext context,
-                                                                        ProcessModel model,
-                                                                        String gatewayId) throws RegistryException {
+    public static String getApplicationInterfaceName(ProcessModel model)
+            throws TException, OrchestratorException {
+        final RegistryService.Client registryClient = getRegistryServiceClient();
+        try {
+            ApplicationInterfaceDescription appInterface = registryClient.getApplicationInterface(model.getApplicationInterfaceId());
+            return appInterface.getApplicationName();
+        } catch (Exception e) {
+            throw new OrchestratorException("Error while retrieving application interface", e);
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
+        }
+    }
+
+    public static DataMovementProtocol getPreferredDataMovementProtocol(ProcessModel model,
+                                                                        String gatewayId) throws TException, OrchestratorException {
         try {
             String resourceHostId = model.getComputeResourceId();
-            return getComputeResourcePreference(context, gatewayId, resourceHostId).getPreferredDataMovementProtocol();
-        } catch (AppCatalogException e) {
-            logger.error("Error occurred while initializing app catalog", e);
-            throw new RegistryException("Error occurred while initializing app catalog", e);
+            return getComputeResourcePreference(gatewayId, resourceHostId).getPreferredDataMovementProtocol();
+        } catch (ApplicationSettingsException e) {
+            logger.error("Error occurred while retrieving DataMovementProtocol", e);
+            throw new OrchestratorException("Error occurred while retrieving DataMovementProtocol", e);
         }
     }
 
-    public static ComputeResourcePreference getComputeResourcePreference(OrchestratorContext context,
-                                                                         ProcessModel processModel,
-                                                                         String gatewayId) throws RegistryException {
+    public static ComputeResourcePreference getComputeResourcePreference(ProcessModel processModel,
+                                                                         String gatewayId) throws TException, OrchestratorException {
         try {
-            return getComputeResourcePreference(context, gatewayId, processModel.getComputeResourceId());
-        } catch (AppCatalogException e) {
-            logger.error("Error occurred while initializing app catalog", e);
-            throw new RegistryException("Error occurred while initializing app catalog", e);
+            return getComputeResourcePreference(gatewayId, processModel.getComputeResourceId());
+        } catch (ApplicationSettingsException e) {
+            logger.error("Error occurred while retrieving ComputeResourcePreference", e);
+            throw new OrchestratorException("Error occurred while retrieving ComputeResourcePreference", e);
         }
     }
 
-    public static StoragePreference getStoragePreference(OrchestratorContext context,
-                                                         ProcessModel processModel,
-                                                         String gatewayId) throws RegistryException {
+    public static StoragePreference getStoragePreference(ProcessModel processModel,
+                                                         String gatewayId) throws OrchestratorException {
+        final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
-            GwyResourceProfile gatewayProfile = getGatewayProfile(context);
             String resourceHostId = processModel.getComputeResourceId();
-            return gatewayProfile.getStoragePreference(gatewayId, resourceHostId);
-        } catch (AppCatalogException e) {
-            logger.error("Error occurred while initializing app catalog", e);
-            throw new RegistryException("Error occurred while initializing app catalog", e);
+            return registryClient.getGatewayStoragePreference(gatewayId, resourceHostId);
+        } catch (Exception e) {
+            logger.error("Error occurred while retrieving StoragePreference", e);
+            throw new OrchestratorException("Error occurred while retrieving StoragePreference", e);
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
         }
     }
 
-    public static String getLoginUserName(OrchestratorContext context,
-                                          ProcessModel processModel,
-                                          String gatewayId) throws RegistryException, AiravataException {
+    public static String getLoginUserName(ProcessModel processModel,
+                                          String gatewayId) throws AiravataException, TException {
+        final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
-            ComputeResourcePreference computeResourcePreference = getComputeResourcePreference(context, gatewayId,
+            ComputeResourcePreference computeResourcePreference = getComputeResourcePreference(gatewayId,
                     processModel.getComputeResourceId());
             ComputationalResourceSchedulingModel processResourceSchedule = processModel.getProcessResourceSchedule();
             if (processModel.isUseUserCRPref()) {
-                UsrResourceProfile userResourceProfile = getUserResourceProfile(context);
-                UserComputeResourcePreference userComputeResourcePreference = userResourceProfile
+                UserComputeResourcePreference userComputeResourcePreference = registryClient
                         .getUserComputeResourcePreference(processModel.getUserName(), gatewayId,
                                 processModel.getComputeResourceId());
                 if (isValid(userComputeResourcePreference.getLoginUserName())) {
@@ -191,22 +187,25 @@ public class OrchestratorUtils {
                     throw new AiravataException("Login name is not found");
                 }
             }
-        } catch (AppCatalogException e) {
+        } catch (ApplicationSettingsException e) {
             logger.error("Error occurred while initializing app catalog to fetch login username", e);
-            throw new RegistryException("Error occurred while initializing app catalog to fetch login username", e);
+            throw new ApplicationSettingsException("Error occurred while initializing app catalog to fetch login username", e);
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
         }
     }
 
-    public static String getScratchLocation(OrchestratorContext context,
-                                            ProcessModel processModel,
-                                            String gatewayId) throws RegistryException, AiravataException {
+    public static String getScratchLocation(ProcessModel processModel,
+                                            String gatewayId) throws  AiravataException, TException {
+        final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
-            ComputeResourcePreference computeResourcePreference = getComputeResourcePreference(context, gatewayId,
+            ComputeResourcePreference computeResourcePreference = getComputeResourcePreference(gatewayId,
                     processModel.getComputeResourceId());
             ComputationalResourceSchedulingModel processResourceSchedule = processModel.getProcessResourceSchedule();
             if (processModel.isUseUserCRPref()) {
-                UsrResourceProfile userResourceProfile = getUserResourceProfile(context);
-                UserComputeResourcePreference userComputeResourcePreference = userResourceProfile
+                UserComputeResourcePreference userComputeResourcePreference = registryClient
                         .getUserComputeResourcePreference(processModel.getUserName(), gatewayId,
                                 processModel.getComputeResourceId());
                 if (isValid(userComputeResourcePreference.getScratchLocation())) {
@@ -235,21 +234,24 @@ public class OrchestratorUtils {
                     throw new AiravataException("Scratch location is not found");
                 }
             }
-        } catch (AppCatalogException e) {
+        } catch (AiravataException e) {
             logger.error("Error occurred while initializing app catalog to fetch scratch location", e);
-            throw new RegistryException("Error occurred while initializing app catalog to fetch scratch location", e);
+            throw new AiravataException("Error occurred while initializing app catalog to fetch scratch location", e);
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
         }
     }
 
-    public static JobSubmissionInterface getPreferredJobSubmissionInterface(OrchestratorContext context,
-                                                                            ProcessModel processModel,
-                                                                            String gatewayId) throws RegistryException {
+    public static JobSubmissionInterface getPreferredJobSubmissionInterface(ProcessModel processModel,
+                                                                            String gatewayId) throws OrchestratorException {
+        final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
             String resourceHostId = processModel.getComputeResourceId();
-            ComputeResourcePreference resourcePreference = getComputeResourcePreference(context, processModel, gatewayId);
+            ComputeResourcePreference resourcePreference = getComputeResourcePreference(processModel, gatewayId);
             JobSubmissionProtocol preferredJobSubmissionProtocol = resourcePreference.getPreferredJobSubmissionProtocol();
-            ComputeResourceDescription resourceDescription =
-                    context.getRegistry().getAppCatalog().getComputeResource().getComputeResource(resourceHostId);
+            ComputeResourceDescription resourceDescription = registryClient.getComputeResource(resourceHostId);
             List<JobSubmissionInterface> jobSubmissionInterfaces = resourceDescription.getJobSubmissionInterfaces();
             Map<JobSubmissionProtocol, List<JobSubmissionInterface>> orderedInterfaces = new HashMap<>();
             List<JobSubmissionInterface> interfaces = new ArrayList<>();
@@ -276,23 +278,26 @@ public class OrchestratorUtils {
                 Collections.sort(interfaces, (jobSubmissionInterface, jobSubmissionInterface2) ->
                         jobSubmissionInterface.getPriorityOrder() - jobSubmissionInterface2.getPriorityOrder());
             } else {
-                throw new RegistryException("Compute resource should have at least one job submission interface defined...");
+                throw new OrchestratorException("Compute resource should have at least one job submission interface defined...");
             }
             return interfaces.get(0);
-        } catch (AppCatalogException e) {
-            throw new RegistryException("Error occurred while retrieving data from app catalog", e);
+        } catch (Exception e) {
+            throw new OrchestratorException("Error occurred while retrieving data from app catalog", e);
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
         }
     }
 
-    public static DataMovementInterface getPrefferredDataMovementInterface(OrchestratorContext context,
-                                                                           ProcessModel processModel,
-                                                                           String gatewayId) throws RegistryException {
+    public static DataMovementInterface getPrefferredDataMovementInterface(ProcessModel processModel,
+                                                                           String gatewayId) throws OrchestratorException {
+        final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
             String resourceHostId = processModel.getComputeResourceId();
-            ComputeResourcePreference resourcePreference = getComputeResourcePreference(context, processModel, gatewayId);
+            ComputeResourcePreference resourcePreference = getComputeResourcePreference(processModel, gatewayId);
             DataMovementProtocol preferredDataMovementProtocol = resourcePreference.getPreferredDataMovementProtocol();
-            ComputeResourceDescription resourceDescription =
-                    context.getRegistry().getAppCatalog().getComputeResource().getComputeResource(resourceHostId);
+            ComputeResourceDescription resourceDescription = registryClient.getComputeResource(resourceHostId);
             List<DataMovementInterface> dataMovementInterfaces = resourceDescription.getDataMovementInterfaces();
             if (dataMovementInterfaces != null && !dataMovementInterfaces.isEmpty()) {
                 for (DataMovementInterface dataMovementInterface : dataMovementInterfaces){
@@ -303,127 +308,154 @@ public class OrchestratorUtils {
                     }
                 }
             } else {
-                throw new RegistryException("Compute resource should have at least one data movement interface defined...");
+                throw new OrchestratorException("Compute resource should have at least one data movement interface defined...");
             }
-        } catch (AppCatalogException e) {
-            throw new RegistryException("Error occurred while retrieving data from app catalog", e);
+        } catch (Exception e) {
+            throw new OrchestratorException("Error occurred while retrieving data from app catalog", e);
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
         }
         return null;
     }
 
-    public static int getDataMovementPort(OrchestratorContext context,
-                                          ProcessModel processModel,
-                                          String gatewayId) throws RegistryException{
+    public static int getDataMovementPort(ProcessModel processModel,
+                                          String gatewayId) throws TException, ApplicationSettingsException, OrchestratorException {
         try {
-            DataMovementProtocol protocol = getPreferredDataMovementProtocol(context, processModel, gatewayId);
-            DataMovementInterface dataMovementInterface = getPrefferredDataMovementInterface(context, processModel, gatewayId);
+            DataMovementProtocol protocol = getPreferredDataMovementProtocol(processModel, gatewayId);
+            DataMovementInterface dataMovementInterface = getPrefferredDataMovementInterface(processModel, gatewayId);
             if (protocol == DataMovementProtocol.SCP ) {
-                SCPDataMovement scpDataMovement = getSCPDataMovement(context, dataMovementInterface.getDataMovementInterfaceId());
+                SCPDataMovement scpDataMovement = getSCPDataMovement(dataMovementInterface.getDataMovementInterfaceId());
                 if (scpDataMovement != null) {
                     return scpDataMovement.getSshPort();
                 }
             }
-        } catch (RegistryException e) {
+        } catch (Exception e) {
             logger.error("Error occurred while retrieving security protocol", e);
         }
         return 0;
     }
 
 
-    public static SecurityProtocol getSecurityProtocol(OrchestratorContext context,
-                                                       ProcessModel processModel,
-                                                       String gatewayId) throws RegistryException{
+    public static SecurityProtocol getSecurityProtocol(ProcessModel processModel,
+                                                       String gatewayId) throws TException, ApplicationSettingsException, OrchestratorException {
         try {
-            JobSubmissionProtocol submissionProtocol = getPreferredJobSubmissionProtocol(context, processModel, gatewayId);
-            JobSubmissionInterface jobSubmissionInterface = getPreferredJobSubmissionInterface(context, processModel, gatewayId);
+            JobSubmissionProtocol submissionProtocol = getPreferredJobSubmissionProtocol(processModel, gatewayId);
+            JobSubmissionInterface jobSubmissionInterface = getPreferredJobSubmissionInterface(processModel, gatewayId);
             if (submissionProtocol == JobSubmissionProtocol.SSH ) {
-                SSHJobSubmission sshJobSubmission = getSSHJobSubmission(context, jobSubmissionInterface.getJobSubmissionInterfaceId());
+                SSHJobSubmission sshJobSubmission = getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
                 if (sshJobSubmission != null) {
                     return sshJobSubmission.getSecurityProtocol();
                 }
             } else if (submissionProtocol == JobSubmissionProtocol.LOCAL) {
-                LOCALSubmission localJobSubmission = getLocalJobSubmission(context, jobSubmissionInterface.getJobSubmissionInterfaceId());
+                LOCALSubmission localJobSubmission = getLocalJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
                 if (localJobSubmission != null) {
                     return localJobSubmission.getSecurityProtocol();
                 }
             } else if (submissionProtocol == JobSubmissionProtocol.SSH_FORK){
-                SSHJobSubmission sshJobSubmission = getSSHJobSubmission(context, jobSubmissionInterface.getJobSubmissionInterfaceId());
+                SSHJobSubmission sshJobSubmission = getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
                 if (sshJobSubmission != null) {
                     return sshJobSubmission.getSecurityProtocol();
                 }
             } else if (submissionProtocol == JobSubmissionProtocol.CLOUD) {
-                CloudJobSubmission cloudJobSubmission = getCloudJobSubmission(context, jobSubmissionInterface.getJobSubmissionInterfaceId());
+                CloudJobSubmission cloudJobSubmission = getCloudJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
                 if (cloudJobSubmission != null) {
                     return cloudJobSubmission.getSecurityProtocol();
                 }
             }
-        } catch (RegistryException e) {
+        } catch (OrchestratorException e) {
             logger.error("Error occurred while retrieving security protocol", e);
         }
         return null;
     }
 
-    public static LOCALSubmission getLocalJobSubmission(OrchestratorContext context,
-                                                        String submissionId) throws RegistryException {
+    public static LOCALSubmission getLocalJobSubmission(String submissionId) throws OrchestratorException {
+        final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
-            AppCatalog appCatalog = context.getRegistry().getAppCatalog();
-            return appCatalog.getComputeResource().getLocalJobSubmission(submissionId);
+            return registryClient.getLocalJobSubmission(submissionId);
         } catch (Exception e) {
             String errorMsg = "Error while retrieving local job submission with submission id : " + submissionId;
             logger.error(errorMsg, e);
-            throw new RegistryException(errorMsg, e);
+            throw new OrchestratorException(errorMsg, e);
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
         }
     }
 
-    public static UnicoreJobSubmission getUnicoreJobSubmission(OrchestratorContext context,
-                                                               String submissionId) throws RegistryException {
+    public static UnicoreJobSubmission getUnicoreJobSubmission(String submissionId) throws OrchestratorException {
+        final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
-            AppCatalog appCatalog = context.getRegistry().getAppCatalog();
-            return appCatalog.getComputeResource().getUNICOREJobSubmission(submissionId);
+            return registryClient.getUnicoreJobSubmission(submissionId);
         } catch (Exception e) {
             String errorMsg = "Error while retrieving UNICORE job submission with submission id : " + submissionId;
             logger.error(errorMsg, e);
-            throw new RegistryException(errorMsg, e);
+            throw new OrchestratorException(errorMsg, e);
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
         }
     }
 
-    public static SSHJobSubmission getSSHJobSubmission(OrchestratorContext context,
-                                                       String submissionId) throws RegistryException {
+    public static SSHJobSubmission getSSHJobSubmission(String submissionId) throws OrchestratorException {
+        final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
-            AppCatalog appCatalog = context.getRegistry().getAppCatalog();
-            return appCatalog.getComputeResource().getSSHJobSubmission(submissionId);
+            return registryClient.getSSHJobSubmission(submissionId);
         } catch (Exception e) {
             String errorMsg = "Error while retrieving SSH job submission with submission id : " + submissionId;
             logger.error(errorMsg, e);
-            throw new RegistryException(errorMsg, e);
+            throw new OrchestratorException(errorMsg, e);
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
         }
     }
 
-    public static CloudJobSubmission getCloudJobSubmission(OrchestratorContext context,
-                                                           String submissionId) throws RegistryException {
+    public static CloudJobSubmission getCloudJobSubmission(String submissionId) throws OrchestratorException {
+        final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
-            AppCatalog appCatalog = context.getRegistry().getAppCatalog();
-            return appCatalog.getComputeResource().getCloudJobSubmission(submissionId);
+            return registryClient.getCloudJobSubmission(submissionId);
         } catch (Exception e) {
             String errorMsg = "Error while retrieving SSH job submission with submission id : " + submissionId;
             logger.error(errorMsg, e);
-            throw new RegistryException(errorMsg, e);
+            throw new OrchestratorException(errorMsg, e);
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
         }
     }
 
-    public static SCPDataMovement getSCPDataMovement(OrchestratorContext context,
-                                                     String dataMoveId) throws RegistryException {
+    public static SCPDataMovement getSCPDataMovement(String dataMoveId) throws OrchestratorException {
+        final RegistryService.Client registryClient = getRegistryServiceClient();
         try {
-            AppCatalog appCatalog = context.getRegistry().getAppCatalog();
-            return appCatalog.getComputeResource().getSCPDataMovement(dataMoveId);
+            return registryClient.getSCPDataMovement(dataMoveId);
         } catch (Exception e) {
             String errorMsg = "Error while retrieving SCP Data movement with submission id : " + dataMoveId;
             logger.error(errorMsg, e);
-            throw new RegistryException(errorMsg, e);
+            throw new OrchestratorException(errorMsg, e);
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
         }
     }
 
     private static boolean isValid(String str) {
         return (str != null && !str.trim().isEmpty());
+    }
+
+    private static RegistryService.Client getRegistryServiceClient() {
+        try {
+            final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
+            final String serverHost = ServerSettings.getRegistryServerHost();
+            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
+        } catch (RegistryServiceException|ApplicationSettingsException e) {
+            throw new RuntimeException("Unable to create registry client...", e);
+        }
     }
 }

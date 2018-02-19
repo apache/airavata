@@ -20,6 +20,8 @@
 package org.apache.airavata.workflow.core;
 
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.ComponentState;
 import org.apache.airavata.model.ComponentStatus;
@@ -28,6 +30,9 @@ import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.messaging.event.ProcessIdentifier;
 import org.apache.airavata.model.messaging.event.ProcessStatusChangeEvent;
 import org.apache.airavata.model.status.ProcessState;
+import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
@@ -41,6 +46,7 @@ import org.apache.airavata.workflow.core.dag.nodes.InputNode;
 import org.apache.airavata.workflow.core.dag.nodes.OutputNode;
 import org.apache.airavata.workflow.core.dag.nodes.WorkflowNode;
 import org.apache.airavata.workflow.core.parser.WorkflowParser;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +83,7 @@ class WorkflowInterpreter {
     private String consumerId;
     private boolean continueWorkflow = true;
 
-    public WorkflowInterpreter(String experimentId, String credentialToken, String gatewayName, Publisher publisher) throws RegistryException {
+    public WorkflowInterpreter(String experimentId, String credentialToken, String gatewayName, Publisher publisher) throws RegistryException, TException, ApplicationSettingsException {
         this.gatewayName = gatewayName;
         setExperiment(experimentId);
         this.credentialToken = credentialToken;
@@ -200,13 +206,6 @@ class WorkflowInterpreter {
         this.inputNodes = inputNodes;
     }
 
-    private Registry getRegistry() throws RegistryException {
-        if (registry == null) {
-            registry = RegistryFactory.getRegistry();
-        }
-        return registry;
-    }
-
     /**
      * Package-Private method.
      * Remove the workflow node from waiting queue and add it to the ready queue.
@@ -248,8 +247,8 @@ class WorkflowInterpreter {
         return !continueWorkflow || (waitingList.isEmpty() && readyList.isEmpty() && processingQueue.isEmpty());
     }
 
-    private void setExperiment(String experimentId) throws RegistryException {
-        experiment = (ExperimentModel) getRegistry().getExperimentCatalog().get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+    private void setExperiment(String experimentId) throws RegistryException, TException, ApplicationSettingsException {
+        experiment = getRegistryServiceClient().getExperiment(experimentId);
         log.debug("Retrieve Experiment for experiment id : " + experimentId);
     }
 
@@ -340,6 +339,16 @@ class WorkflowInterpreter {
 
     private void updateWorkflowNodeStatus(ApplicationNode applicationNode, ComponentStatus componentStatus) throws RegistryException {
         // FIXME: save new workflow node status to registry.
+    }
+
+    private RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
+        final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
+        final String serverHost = ServerSettings.getRegistryServerHost();
+        try {
+            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
+        } catch (RegistryServiceException e) {
+            throw new TException("Unable to create registry client...", e);
+        }
     }
 
 }
