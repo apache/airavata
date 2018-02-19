@@ -55,4 +55,9 @@ public class DBConstants {
         public static final String RESOURCE_JOB_MANAGER_ID = "resourceJobManagerId";
     }
 
+    public static class GroupResourceProfile {
+        public static final String GATEWAY_ID = "gatewayId";
+        public static final String GROUP_RESOURCE_PROFILE_ID = "groupResourceProfileId";
+    }
+
 }
