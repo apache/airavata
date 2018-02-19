@@ -37,8 +37,8 @@
         owner={{ user }}
         group={{ group }}
 
-- name: git checkout from airavata github
-  git: repo=https://github.com/apache/airavata.git
+- name: git checkout from airavata github repo {{ airavata_repo }} branch {{ git_branch }}
+  git: repo="{{ airavata_repo }}"
        dest="{{ airavata_source_dir }}"
        version="{{ git_branch }}"
   register: checkout

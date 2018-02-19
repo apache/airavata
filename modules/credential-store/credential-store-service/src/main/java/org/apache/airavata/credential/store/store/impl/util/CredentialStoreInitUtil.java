@@ -20,7 +20,13 @@
 package org.apache.airavata.credential.store.store.impl.util;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.credential.store.credential.impl.password.PasswordCredential;
+import org.apache.airavata.credential.store.store.impl.SSHCredentialWriter;
+import org.apache.airavata.credential.store.util.TokenGenerator;
+import org.apache.airavata.registry.core.app.catalog.resources.AppCatalogResource;
+import org.apache.airavata.registry.core.app.catalog.resources.GatewayProfileResource;
 import org.apache.derby.drda.NetworkServerControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +42,7 @@ public class CredentialStoreInitUtil {
     public static final String CREDENTIALS = "CREDENTIALS";
     public static final String START_DERBY_ENABLE = "start.derby.server.mode";
     public static final String DERBY_SERVER_MODE_SYS_PROPERTY = "derby.drda.startNetworkServer";
+
     private static NetworkServerControl server;
     private static JdbcStorage db;
     private static String jdbcURl;
