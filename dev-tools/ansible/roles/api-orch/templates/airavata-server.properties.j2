@@ -46,8 +46,8 @@ jpa.cache.size=-1
 enable.sharing={{enable_sharing}}
 
 # Properties for default user mode
-default.registry.user=admin
-default.registry.password=admin
+default.registry.user={{ default_registry_user }}
+default.registry.password={{ default_registry_password }}
 default.registry.password.hash.method=SHA
 default.registry.gateway={{ default_gateway }}
 super.tenant.gatewayId={{ default_gateway }}
@@ -296,7 +296,7 @@ keystore.path={{ keystores_location }}/{{ keystore_src_path | basename }}
 keystore.password={{ keystore_passwd }}
 #### trust store configuration ####
 trust.store={{ keystores_location }}/{{ client_truststore_src_path | basename }}
-trust.store.password=airavata
+trust.store.password={{ client_truststore_passwd }}
 #### authorization cache related configuration ####
 authz.cache.enabled=true
 authz.cache.manager.class=org.apache.airavata.service.security.authzcache.DefaultAuthzCacheManager

@@ -2,7 +2,7 @@
 # When we also provide SSL we have to listen to the 
 # the HTTPS port in addition.
 #
-Listen 443 https
+Listen {{ pga_default_https_port }} https
 
 ##
 ##  SSL Global Context
@@ -53,7 +53,7 @@ SSLCryptoDevice builtin
 ## SSL Virtual Host Context
 ##
 
-<VirtualHost _default_:443>
+<VirtualHost _default_:{{ pga_default_https_port }}>
 
 # General setup for the virtual host, inherited from global configuration
 #DocumentRoot "/var/www/html"
