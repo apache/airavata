@@ -43,11 +43,6 @@ public class CredentialStoreInitUtil {
     public static final String START_DERBY_ENABLE = "start.derby.server.mode";
     public static final String DERBY_SERVER_MODE_SYS_PROPERTY = "derby.drda.startNetworkServer";
 
-    public static final String CRED_STORE_JDBC_URL = "credential.store.jdbc.url";
-    public static final String CRED_STORE_JDBC_DRIVER = "credential.store.jdbc.driver";
-    public static final String CRED_STORE_JDBC_USER = "credential.store.jdbc.user";
-    public static final String CRED_STORE_JDBC_PASSWORD = "credential.store.jdbc.password";
-
     private static NetworkServerControl server;
     private static JdbcStorage db;
     private static String jdbcURl;
@@ -97,35 +92,6 @@ public class CredentialStoreInitUtil {
             } catch (SQLException e) {
                 logger.error("Error while closing database connection...", e.getMessage(), e);
             }
-        }
-
-        try {
-
-            GatewayProfileResource gatewayProfileResource = new GatewayProfileResource();
-            AppCatalogResource acr = gatewayProfileResource.get(ServerSettings.getDefaultUserGateway());
-
-            if (acr != null && GatewayProfileResource.class.cast(acr).getIdentityServerPwdCredToken() == null) {
-                logger.info("Creating password credential for default gateway");
-                org.apache.airavata.credential.store.credential.impl.password.PasswordCredential passwordCredential = new PasswordCredential();
-                passwordCredential.setGateway(ServerSettings.getDefaultUserGateway());
-                passwordCredential.setPortalUserName(ServerSettings.getDefaultUser());
-                passwordCredential.setUserName(ServerSettings.getDefaultUser());
-                passwordCredential.setPassword(ServerSettings.getDefaultUserPassword());
-                passwordCredential.setDescription("Credentials for default tenant");
-
-                String token = TokenGenerator.generateToken(ServerSettings.getDefaultUserGateway(), null);
-                passwordCredential.setToken(token);
-                DBUtil dbUtil = new DBUtil(ServerSettings.getSetting(CRED_STORE_JDBC_URL), ServerSettings.getSetting(CRED_STORE_JDBC_USER),
-                        ServerSettings.getSetting(CRED_STORE_JDBC_PASSWORD), ServerSettings.getSetting(CRED_STORE_JDBC_DRIVER));
-                SSHCredentialWriter sshCredentialWriter = new SSHCredentialWriter(dbUtil);
-                sshCredentialWriter.writeCredentials(passwordCredential);
-                GatewayProfileResource gwr = GatewayProfileResource.class.cast(acr);
-                gwr.setIdentityServerPwdCredToken(token);
-                gwr.save();
-            }
-        } catch (Exception e) {
-            logger.error("Failed to create the password credentials for the default gateway", e);
-
         }
 //        System.setProperty("appcatalog.initialize.state", "1");
     }
