@@ -20,10 +20,13 @@
 package org.apache.airavata.sharing.registry.migrator.airavata;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
 import org.apache.thrift.TException;
+//import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 
+import java.util.Arrays;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,6 +40,7 @@ public class AiravataDataMigrator {
         Connection expCatConnection = ConnectionFactory.getInstance().getExpCatConnection();
 
         SharingRegistryServerHandler sharingRegistryServerHandler = new SharingRegistryServerHandler();
+        //SharingRegistryService.Client sharingClient = SharingRegistryServiceClientFactory.createSharingRegistryClient("149.165.169.138", 7878);
 
         String applicationDeploymentOwner = args[0];
 
@@ -213,6 +217,9 @@ public class AiravataDataMigrator {
 
                 if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
                     sharingRegistryServerHandler.createEntity(entity);
+                String groupId = "everyone@" + entity.domainId;
+                sharingRegistryServerHandler.shareEntityWithGroups(entity.domainId, entity.entityId, Arrays.asList(groupId), entity.domainId+":READ", true);
+                //sharingClient.shareEntityWithGroups(entity.domainId, entity.entityId, Arrays.asList(groupId), entity.domainId+":READ", true);
             } catch (Exception ex){
                 ex.printStackTrace();
             }
