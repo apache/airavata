@@ -53,4 +53,8 @@
   service: name=firewalld state=started
   become: yes
 
+- name: open firewall port 22 for SSH connections
+  firewalld: port="22/tcp"
+             zone=public permanent=true state=enabled immediate=yes
+  become_user: root
 ...
