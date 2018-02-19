@@ -1,4 +1,4 @@
-<VirtualHost *:8008>
+<VirtualHost *:{{pga_default_http_port}}>
     ServerName {{ vhost_servername }}
     {% if vhost_serveralias is defined %}
     ServerAlias {{ vhost_serveralias }}
@@ -10,7 +10,7 @@
     RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
 </VirtualHost>
 
-<VirtualHost *:8443>
+<VirtualHost *:{{pga_default_https_port}}>
     ServerName {{ vhost_servername }}
     {% if vhost_serveralias is defined %}
     ServerAlias {{ vhost_serveralias }}
