@@ -45,12 +45,12 @@
 
 - name: set api-orch private ip
   set_fact:
-    api_server_host: "{{ ansible_default_ipv4.address }}"
-    orchestrator_host: "{{ ansible_default_ipv4.address }}"
-    cred_store_server_host: "{{ ansible_default_ipv4.address }}"
-    registry_host: "{{ ansible_default_ipv4.address }}"
-    sharing_registry_host: "{{ ansible_default_ipv4.address }}"
-    profile_service_host: "{{ ansible_default_ipv4.address }}"
+    api_server_host: "{{ api_server_bind_host }}"
+    orchestrator_host: "{{ orchestrator_bind_host }}"
+    cred_store_server_host: "{{ cred_store_server_bind_host }}"
+    registry_host: "{{ registry_bind_host }}"
+    sharing_registry_host: "{{ sharing_registry_bind_host }}"
+    profile_service_host: "{{ profile_service_bind_host }}"
 
 
 - name: Copy Airavata server properties file

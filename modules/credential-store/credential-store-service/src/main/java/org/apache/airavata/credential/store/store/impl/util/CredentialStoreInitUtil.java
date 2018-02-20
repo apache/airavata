@@ -36,6 +36,7 @@ public class CredentialStoreInitUtil {
     public static final String CREDENTIALS = "CREDENTIALS";
     public static final String START_DERBY_ENABLE = "start.derby.server.mode";
     public static final String DERBY_SERVER_MODE_SYS_PROPERTY = "derby.drda.startNetworkServer";
+
     private static NetworkServerControl server;
     private static JdbcStorage db;
     private static String jdbcURl;
