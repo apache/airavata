@@ -378,11 +378,12 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
     }
 
     @Override
-    public List<ApplicationDeploymentDescription> getAllApplicationDeployements(String gatewayId) throws AppCatalogException {
+    public List<ApplicationDeploymentDescription> getAllApplicationDeployements(String gatewayId, List<String> accessibleAppIds) throws AppCatalogException {
         List<ApplicationDeploymentDescription> deploymentDescriptions = new ArrayList<ApplicationDeploymentDescription>();
         try {
             AppDeploymentResource resource = new AppDeploymentResource();
             resource.setGatewayId(gatewayId);
+            resource.setAccessibleAppIds(accessibleAppIds);
             List<AppCatalogResource> resources = resource.getAll();
             if (resources != null && !resources.isEmpty()){
                 deploymentDescriptions = AppCatalogThriftConversion.getAppDepDescList(resources);

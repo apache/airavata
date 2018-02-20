@@ -55,10 +55,13 @@ public class AppDeploymentResource extends AppCatAbstractResource {
     private AppModuleResource moduleResource;
     private Timestamp createdTime;
     private Timestamp updatedTime;
+    private List<String> accessibleAppIds;
 
-    public String getGatewayId() {
-        return gatewayId;
-    }
+    public List<String> getAccessibleAppIds() { return accessibleAppIds; }
+
+    public void setAccessibleAppIds(List<String> accessibleAppIds) { this.accessibleAppIds = accessibleAppIds; }
+
+    public String getGatewayId() { return gatewayId; }
 
     public void setGatewayId(String gatewayId) {
         this.gatewayId = gatewayId;
@@ -314,6 +317,7 @@ public class AppDeploymentResource extends AppCatAbstractResource {
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APPLICATION_DEPLOYMENT);
             generator.setParameter(ApplicationDeploymentConstants.GATEWAY_ID, gatewayId);
+            generator.setParameter(ApplicationDeploymentConstants.ACCESSIBLE_APP_IDS, accessibleAppIds);
             Query q = generator.selectQuery(em);
             List results = q.getResultList();
                 if (results.size() != 0) {
