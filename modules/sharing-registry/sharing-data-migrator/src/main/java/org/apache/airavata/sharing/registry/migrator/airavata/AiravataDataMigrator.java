@@ -20,6 +20,8 @@
 package org.apache.airavata.sharing.registry.migrator.airavata;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.model.group.ResourcePermissionType;
+import org.apache.airavata.model.group.ResourceType;
 import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
@@ -85,7 +87,7 @@ public class AiravataDataMigrator {
                     sharingRegistryServerHandler.createEntityType(entityType);
 
                 entityType = new EntityType();
-                entityType.setEntityTypeId(domain.domainId+":APPLICATION-DEPLOYMENT");
+                entityType.setEntityTypeId(domain.domainId+":"+ ResourceType.APPLICATION_DEPLOYMENT.name());
                 entityType.setDomainId(domain.domainId);
                 entityType.setName("APPLICATION-DEPLOYMENT");
                 entityType.setDescription("Application Deployment entity type");
@@ -204,7 +206,7 @@ public class AiravataDataMigrator {
                 Entity entity = new Entity();
                 entity.setEntityId(rs.getString("DEPLOYMENT_ID"));
                 entity.setDomainId(rs.getString("GATEWAY_ID"));
-                entity.setEntityTypeId(rs.getString("GATEWAY_ID") + ":APPLICATION-DEPLOYMENT");
+                entity.setEntityTypeId(rs.getString("GATEWAY_ID") + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
                 entity.setOwnerId(applicationDeploymentOwner);
                 entity.setName(rs.getString("DEPLOYMENT_ID"));
                 entity.setDescription(rs.getString("APPLICATION_DESC"));
@@ -218,7 +220,7 @@ public class AiravataDataMigrator {
                 if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
                     sharingRegistryServerHandler.createEntity(entity);
                 String groupId = "everyone@" + entity.domainId;
-                sharingClient.shareEntityWithGroups(entity.domainId, entity.entityId, Arrays.asList(groupId), entity.domainId+":READ", true);
+                sharingClient.shareEntityWithGroups(entity.domainId, entity.entityId, Arrays.asList(groupId), entity.domainId+":"+ ResourcePermissionType.EXEC, true);
             } catch (Exception ex){
                 ex.printStackTrace();
             }
