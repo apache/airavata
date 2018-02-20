@@ -863,15 +863,15 @@ service RegistryService {
              *
              * @param gatewayId
              *    ID of the gateway which need to list all available application deployment documentation.
-             * @param accessibleAppIds
-             *    Application IDs which are accessible to the current user.
+             * @param accessibleAppDeploymentIds
+             *    Application Deployment IDs which are accessible to the current user.
              *
              * @return list
              *    Returns the list of all Application Module Objects.
              *
             */
             list<application_deployment_model.ApplicationModule> getAccessibleAppModules (1: required string gatewayId
-                    2: required list<string> accessibleAppIds)
+                    2: required list<string> accessibleAppDeploymentIds)
                   throws (1: registry_api_errors.RegistryServiceException rse)
 
             /**
@@ -980,15 +980,15 @@ service RegistryService {
              * @param gatewayId
              *    ID of the gateway which need to list all available application deployment documentation.
              *
-             * @param accessibleAppIds
-             *    Application IDs which are accessible to the current user.
+             * @param accessibleAppDeploymentIds
+             *    Application Deployment IDs which are accessible to the current user.
              *
-             * @return list<applicationDeployment.
+             * @return list<applicationDeployment>
              *    Returns the list of all application Deployment Objects.
              *
             */
             list<application_deployment_model.ApplicationDeploymentDescription> getAccessibleApplicationDeployments(1: required string gatewayId,
-                        2: required list<string> accessibleAppIds)
+                        2: required list<string> accessibleAppDeploymentIds)
                 	throws (1: registry_api_errors.RegistryServiceException rse)
 
             /**
