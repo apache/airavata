@@ -204,7 +204,6 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
         public static final String MODULE_NAME = "moduleName";
         public static final String MODULE_VERSION = "moduleVersion";
         public static final String MODULE_DESC = "moduleDesc";
-        public static final String ACCESSIBLE_APP_IDS = "accessibleAppIds";
     }
 
     public final class ApplicationDeploymentConstants {
@@ -216,7 +215,6 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
         public static final String APPLICATION_DESC = "applicationDesc";
         public static final String ENV_MODULE_LOAD_CMD = "envModuleLoaString";
         public static final String PARALLELISM = "parallelism";
-        public static final String ACCESSIBLE_APP_IDS = "accessibleAppIds";
     }
 
     public final class LibraryPrepandPathConstants {
