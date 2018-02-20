@@ -21,6 +21,7 @@ package org.apache.airavata.registry.core.app.catalog.util;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,7 +75,12 @@ public class AppCatalogQueryGenerator {
                 if (!matchString.equals("")){
                     matchString+=" AND ";
                 }
-                matchString+=TABLE_OBJ+"."+colName+" =:"+paramName;
+                if (matches.get(colName) instanceof List){
+                    matchString+=TABLE_OBJ+"."+colName+" IN :" + paramName;
+                }
+                else{
+                    matchString+=TABLE_OBJ+"."+colName+" =:"+paramName;
+                }
                 paramCount++;
             }
             queryString+=" WHERE "+matchString;
