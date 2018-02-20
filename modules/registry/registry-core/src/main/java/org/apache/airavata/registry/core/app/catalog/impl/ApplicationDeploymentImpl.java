@@ -378,12 +378,30 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
     }
 
     @Override
-    public List<ApplicationDeploymentDescription> getAllApplicationDeployements(String gatewayId, List<String> accessibleAppIds) throws AppCatalogException {
+    public List<ApplicationDeploymentDescription> getAllApplicationDeployements(String gatewayId) throws AppCatalogException {
         List<ApplicationDeploymentDescription> deploymentDescriptions = new ArrayList<ApplicationDeploymentDescription>();
         try {
             AppDeploymentResource resource = new AppDeploymentResource();
             resource.setGatewayId(gatewayId);
-            resource.setAccessibleAppIds(accessibleAppIds);
+            List<AppCatalogResource> resources = resource.getAll();
+            if (resources != null && !resources.isEmpty()){
+                deploymentDescriptions = AppCatalogThriftConversion.getAppDepDescList(resources);
+            }
+
+        }catch (Exception e){
+            logger.error("Error while retrieving app deployment list...", e);
+            throw new AppCatalogException(e);
+        }
+        return deploymentDescriptions;
+    }
+
+    @Override
+    public List<ApplicationDeploymentDescription> getAccessibleApplicationDeployements (String gatewayId, List<String> accessibleAppIds) throws AppCatalogException {
+        List<ApplicationDeploymentDescription> deploymentDescriptions = new ArrayList<ApplicationDeploymentDescription>();
+        try {
+            AppDeploymentResource resource = new AppDeploymentResource();
+            resource.setGatewayId(gatewayId);
+            resource.setAccessibleAppDeploymentIds(accessibleAppIds);
             List<AppCatalogResource> resources = resource.getAll();
             if (resources != null && !resources.isEmpty()){
                 deploymentDescriptions = AppCatalogThriftConversion.getAppDepDescList(resources);

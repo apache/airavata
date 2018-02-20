@@ -323,7 +323,24 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
     }
 
     @Override
-    public List<ApplicationModule> getAllApplicationModules(String gatewayId, List<String> accessibleAppIds) throws AppCatalogException {
+    public List<ApplicationModule> getAllApplicationModules(String gatewayId) throws AppCatalogException {
+        List<ApplicationModule> applicationModules = new ArrayList<ApplicationModule>();
+        try {
+            AppModuleResource resource = new AppModuleResource();
+            resource.setGatewayId(gatewayId);
+            List<AppCatalogResource> resources = resource.getAll();
+            if (resources != null && !resources.isEmpty()){
+                applicationModules = AppCatalogThriftConversion.getAppModules(resources);
+            }
+        }catch (Exception e){
+            logger.error("Error while retrieving compute resource list...", e);
+            throw new AppCatalogException(e);
+        }
+        return applicationModules;
+    }
+
+    @Override
+    public List<ApplicationModule> getAccessibleApplicationModules(String gatewayId, List<String> accessibleAppIds) throws AppCatalogException {
         List<ApplicationModule> applicationModules = new ArrayList<ApplicationModule>();
         try {
             AppModuleResource resource = new AppModuleResource();
@@ -334,7 +351,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                 applicationModules = AppCatalogThriftConversion.getAppModules(resources);
             }
         }catch (Exception e){
-            logger.error("Error while retrieving compute resource list...", e);
+            logger.error("Error while retrieving application module list...", e);
             throw new AppCatalogException(e);
         }
         return applicationModules;
