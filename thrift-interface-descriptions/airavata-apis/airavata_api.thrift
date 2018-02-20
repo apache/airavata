@@ -1404,13 +1404,15 @@ service Airavata {
    *
    * @param gatewayId
    *    ID of the gateway which need to list all accessible application deployment documentation.
+   * @param permissionType
+   *    ResourcePermissionType to check for this user
    *
    * @return list
    *    Returns the list of all Application Module Objects that are accessible to the user.
    *
   */
   list<application_deployment_model.ApplicationModule> getAccessibleAppModules (1: required security_model.AuthzToken authzToken,
-                2: required string gatewayId)
+                2: required string gatewayId, 3: required group_manager_model.ResourcePermissionType permissionType)
         throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
                 3: airavata_errors.AiravataSystemException ase,
@@ -1546,13 +1548,15 @@ service Airavata {
    *
    * @param gatewayId
    *    ID of the gateway which need to list all accessible application deployment documentation.
+   * @param permissionType
+   *    ResourcePermissionType to check for this user
    *
    * @return list<applicationDeployment.
    *    Returns the list of all application Deployment Objects that are accessible to the user.
    *
   */
   list<application_deployment_model.ApplicationDeploymentDescription> getAccessibleApplicationDeployments(1: required security_model.AuthzToken authzToken,
-                  2: required string gatewayId)
+                  2: required string gatewayId, 3: required group_manager_model.ResourcePermissionType permissionType)
         throws (1: airavata_errors.InvalidRequestException ire,
                   2: airavata_errors.AiravataClientException ace,
                   3: airavata_errors.AiravataSystemException ase,
