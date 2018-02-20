@@ -345,7 +345,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
         try {
             AppModuleResource resource = new AppModuleResource();
             resource.setGatewayId(gatewayId);
-            resource.setAccessibleAppIds(accessibleAppIds);
+            resource.setAccessibleAppDeploymentIds(accessibleAppIds);
             List<AppCatalogResource> resources = resource.getAll();
             if (resources != null && !resources.isEmpty()){
                 applicationModules = AppCatalogThriftConversion.getAppModules(resources);
