@@ -510,7 +510,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 ProcessModel processModel = createAndSavePostProcessingProcess(experiment, gatewayId);
                 String token = getCredentialsStoreToken(experiment, gatewayId);
                 OrchestratorServerThreadPoolExecutor.getCachedThreadPool()
-                        .execute(MDCUtil.wrapWithMDC(new PostProcessingProcessRunner(processModel.getProcessId(), token, gatewayId)));
+                        .execute(MDCUtil.wrapWithMDC(new PostProcessingProcessRunner(processModel.getProcessId(), gatewayId, token)));
                 return true;
             default:
                 log.warn("Invalid state for experiment with id {}", experimentId);
