@@ -41,6 +41,7 @@ public class ComputeResourceEntity implements Serializable {
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
 
+    //TODO boolean
     @Column(name = "ENABLED")
     private short enabled;
 
