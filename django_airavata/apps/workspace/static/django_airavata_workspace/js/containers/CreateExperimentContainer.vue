@@ -50,7 +50,7 @@ export default {
             });
         services.ApplicationInterfaceService.getForAppModuleId(this.appModuleId)
             .then(appInterface => {
-                this.experiment.experimentInputs = appInterface.getOrderedApplicationInputs().map(input => input.clone());
+                this.experiment.populateInputsOutputsFromApplicationInterface(appInterface);
                 this.appInterface = appInterface;
                 this.experiment.executionId = this.appInterface.applicationInterfaceId;
             });
