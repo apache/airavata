@@ -36,6 +36,7 @@ import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescr
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.application.io.DataType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
@@ -289,6 +290,13 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         }
 
         ProcessModel processModel = ExperimentModelUtil.cloneProcessFromExperiment(experiment);
+
+        // Here we have to override the outputs fetched from the original experiment as the values of those outputs
+        // are updated according to replica catalog values once a out staging task is executed.
+
+        List<OutputDataObjectType> applicationOutputs = appCatalog.getApplicationInterface().getApplicationOutputs(experiment.getExecutionId());
+        processModel.setProcessOutputs(applicationOutputs);
+
         processModel.setProcessType(ProcessType.FORCE_POST_PROCESING);
 
         String processId = (String)experimentCatalog.add(ExpCatChildDataType.PROCESS, processModel, experiment.getExperimentId());
