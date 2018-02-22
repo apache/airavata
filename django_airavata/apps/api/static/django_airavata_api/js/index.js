@@ -17,6 +17,7 @@ import ExperimentSearchService from './services/ExperimentSearchService'
 import FullExperimentService from './services/FullExperimentService'
 import ProjectService from './services/ProjectService'
 import GroupService from './services/GroupService'
+import UserProfileService from './services/UserProfileService'
 
 import FetchUtils from './utils/FetchUtils'
 import PaginationIterator from './utils/PaginationIterator'
@@ -42,6 +43,7 @@ exports.services = {
     FullExperimentService,
     ProjectService,
     GroupService,
+    UserProfileService,
 }
 
 exports.utils = {

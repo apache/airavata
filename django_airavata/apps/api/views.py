@@ -674,3 +674,13 @@ def download_file(request):
         return response
     except ObjectDoesNotExist as e:
         raise Http404(str(e)) from e
+
+
+class UserProfileViewSet(mixins.ListModelMixin, GenericAPIBackedViewSet):
+
+    serializer_class = serializers.UserProfileSerializer
+
+    def get_list(self):
+        user_profile_client = self.request.profile_service['user_profile']
+        return user_profile_client.getAllUserProfilesInGateway(
+            self.authz_token, self.gateway_id, 0, -1)

@@ -24,6 +24,7 @@ from airavata.model.experiment.ttypes import (ExperimentModel,
 from airavata.model.group.ttypes import GroupModel
 from airavata.model.job.ttypes import JobModel
 from airavata.model.status.ttypes import ExperimentStatus
+from airavata.model.user.ttypes import UserProfile
 from airavata.model.workspace.ttypes import Project
 
 from . import datastore
@@ -384,3 +385,9 @@ class ExperimentSummarySerializer(
     statusUpdateTime = UTCPosixTimestampDateTimeField()
     url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:experiment-detail', lookup_field='experimentId', lookup_url_kwarg='experiment_id')
     project = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-detail', lookup_field='projectId', lookup_url_kwarg='project_id')
+
+
+class UserProfileSerializer(
+        thrift_utils.create_serializer_class(UserProfile)):
+    creationTime = UTCPosixTimestampDateTimeField()
+    lastAccessTime = UTCPosixTimestampDateTimeField()

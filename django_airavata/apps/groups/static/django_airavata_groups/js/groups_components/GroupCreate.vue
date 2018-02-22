@@ -32,56 +32,60 @@ import { models, services } from 'django-airavata-api'
 import Autocomplete from './Autocomplete.vue'
 
 export default {
-  data () {
-    return {
-      selection: '',
-      suggestions: [
-          { id: 1, name: 'Stephen' },
-          { id: 2, name: 'marcus@seagrid' },
-          { id: 3, name: 'marlonpierce@seagrid' },
-          { id: 4, name: 'Suresh' },
-          { id: 5, name: 'Eroma' },
-          { id: 6, name: 'Sachin' },
-          { id: 7, name: 'Jerrin' },
-          { id: 8, name: 'Eldho' },
-          { id: 9, name: 'Dimuthu' },
-          { id: 10, name: 'Ameya' },
-          { id: 11, name: 'Sneha' },
-        ],
-      newGroup: new models.Group(),
-      show: true,
-      selected: [],
-      showDismissibleAlert: {'variant':'success', 'message':'no data', 'dismissable':false},
-    }
-  },
-  components: {
-    Autocomplete
-  },
-  methods: {
-    submitForm () {
-      var temp = [];
-      for(var i=0;i<this.selected.length;i++) {
-        temp.push(this.selected[i].name);
-      }
-      this.newGroup.members = temp;
-      console.log(JSON.stringify(this.newGroup));
-      services.GroupService.create(this.newGroup)
-          .then(result => {
-              console.log(result.json());
-              this.showDismissibleAlert.dismissable = true;
-              this.showDismissibleAlert.message = "Successfully created a new group";
-              this.showDismissibleAlert.variant = "success";
-              this.newGroup = new models.Group();
-          })
-          .catch(error => {
-              this.showDismissibleAlert.dismissable = true;
-              this.showDismissibleAlert.message = "Error: "+error.data;
-              this.showDismissibleAlert.variant = "danger";
-          });
+    data () {
+        return {
+            selection: '',
+            newGroup: new models.Group(),
+            show: true,
+            selected: [],
+            showDismissibleAlert: {'variant':'success', 'message':'no data', 'dismissable':false},
+            userProfiles: [],
+        }
     },
-    updateSelectedValue(data) {
-      this.selected = data;
-    }
-  }
+    components: {
+        Autocomplete
+    },
+    methods: {
+        submitForm () {
+            var temp = [];
+            for(var i=0;i<this.selected.length;i++) {
+                temp.push(this.selected[i].id);
+            }
+            this.newGroup.members = temp;
+            console.log(JSON.stringify(this.newGroup));
+            services.GroupService.create(this.newGroup)
+            .then(result => {
+                console.log(result.json());
+                this.showDismissibleAlert.dismissable = true;
+                this.showDismissibleAlert.message = "Successfully created a new group";
+                this.showDismissibleAlert.variant = "success";
+                this.newGroup = new models.Group();
+            })
+            .catch(error => {
+                this.showDismissibleAlert.dismissable = true;
+                this.showDismissibleAlert.message = "Error: "+error.data;
+                this.showDismissibleAlert.variant = "danger";
+            });
+        },
+        updateSelectedValue(data) {
+            this.selected = data;
+        },
+    },
+    computed: {
+        suggestions: function() {
+            return this.userProfiles.map(userProfile => {
+                return {
+                    id: userProfile.airavataInternalUserId,
+                    name: userProfile.firstName + ' ' + userProfile.lastName + ' (' + userProfile.userId + ')'
+                }
+            })
+        }
+    },
+    mounted: function () {
+        services.UserProfileService.list()
+            .then(userProfiles => {
+                this.userProfiles = userProfiles;
+            });
+    },
 }
 </script>
