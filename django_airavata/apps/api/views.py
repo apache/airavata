@@ -648,6 +648,7 @@ def upload_input_file(request):
         return JsonResponse({'uploaded': True,
                              'data-product-uri': data_product_uri})
     except Exception as e:
+        log.error("Failed to upload file", exc_info=True)
         resp = JsonResponse({'uploaded': False, 'error': str(e)})
         resp.status_code = 500
         return resp
