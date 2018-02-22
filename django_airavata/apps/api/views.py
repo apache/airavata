@@ -209,16 +209,16 @@ class GroupViewSet(APIBackedViewSet):
         return GroupResultsIterator()
 
     def get_instance(self, lookup_value):
-        return self.request.airavata_client.getGroup(self.authz_token, self.gateway_id, lookup_value)
+        return self.request.profile_service['group_manager'].getGroup(self.authz_token, lookup_value)
 
     def perform_create(self, serializer):
         group = serializer.save()
         group_id = self.request.profile_service['group_manager'].createGroup(self.authz_token, group)
-        group.groupID = group_id
+        group.id = group_id
 
     def perform_update(self, serializer):
         group = serializer.save()
-        self.request.airavata_client.updateGroup(self.authz_token, group)
+        self.request.profile_service['group_manager'].updateGroup(self.authz_token, group)
 
 
 class ProjectViewSet(APIBackedViewSet):
