@@ -164,6 +164,7 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             userGroup.setGroupCardinality(GroupCardinality.SINGLE_USER);
             (new UserGroupRepository()).create(userGroup);
 
+            // Add user to the domain's "everyone" group
             String groupId = "everyone@" + user.domainId;
             addUsersToGroup(user.domainId, Arrays.asList(user.userId), groupId);
 
