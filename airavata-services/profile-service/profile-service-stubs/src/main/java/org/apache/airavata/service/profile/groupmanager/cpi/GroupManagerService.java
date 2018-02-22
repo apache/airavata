@@ -40,6 +40,10 @@ public class GroupManagerService {
 
     public java.util.List<org.apache.airavata.model.group.GroupModel> getAllGroupsUserBelongs(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String userName) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
+    public boolean addUsersToGroup(org.apache.airavata.model.security.AuthzToken authzToken, java.util.List<java.lang.String> userIds, java.lang.String groupId) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
+
+    public boolean removeUsersFromGroup(org.apache.airavata.model.security.AuthzToken authzToken, java.util.List<java.lang.String> userIds, java.lang.String groupId) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
+
     public boolean transferGroupOwnership(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.lang.String newOwnerId) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
 
     public boolean addGroupAdmins(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.util.List<java.lang.String> adminIds) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException;
@@ -65,6 +69,10 @@ public class GroupManagerService {
     public void getGroups(org.apache.airavata.model.security.AuthzToken authzToken, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.model.group.GroupModel>> resultHandler) throws org.apache.thrift.TException;
 
     public void getAllGroupsUserBelongs(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String userName, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.model.group.GroupModel>> resultHandler) throws org.apache.thrift.TException;
+
+    public void addUsersToGroup(org.apache.airavata.model.security.AuthzToken authzToken, java.util.List<java.lang.String> userIds, java.lang.String groupId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
+
+    public void removeUsersFromGroup(org.apache.airavata.model.security.AuthzToken authzToken, java.util.List<java.lang.String> userIds, java.lang.String groupId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
 
     public void transferGroupOwnership(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.lang.String newOwnerId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException;
 
@@ -276,6 +284,68 @@ public class GroupManagerService {
         throw result.ae;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getAllGroupsUserBelongs failed: unknown result");
+    }
+
+    public boolean addUsersToGroup(org.apache.airavata.model.security.AuthzToken authzToken, java.util.List<java.lang.String> userIds, java.lang.String groupId) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
+    {
+      send_addUsersToGroup(authzToken, userIds, groupId);
+      return recv_addUsersToGroup();
+    }
+
+    public void send_addUsersToGroup(org.apache.airavata.model.security.AuthzToken authzToken, java.util.List<java.lang.String> userIds, java.lang.String groupId) throws org.apache.thrift.TException
+    {
+      addUsersToGroup_args args = new addUsersToGroup_args();
+      args.setAuthzToken(authzToken);
+      args.setUserIds(userIds);
+      args.setGroupId(groupId);
+      sendBase("addUsersToGroup", args);
+    }
+
+    public boolean recv_addUsersToGroup() throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
+    {
+      addUsersToGroup_result result = new addUsersToGroup_result();
+      receiveBase(result, "addUsersToGroup");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.gse != null) {
+        throw result.gse;
+      }
+      if (result.ae != null) {
+        throw result.ae;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "addUsersToGroup failed: unknown result");
+    }
+
+    public boolean removeUsersFromGroup(org.apache.airavata.model.security.AuthzToken authzToken, java.util.List<java.lang.String> userIds, java.lang.String groupId) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
+    {
+      send_removeUsersFromGroup(authzToken, userIds, groupId);
+      return recv_removeUsersFromGroup();
+    }
+
+    public void send_removeUsersFromGroup(org.apache.airavata.model.security.AuthzToken authzToken, java.util.List<java.lang.String> userIds, java.lang.String groupId) throws org.apache.thrift.TException
+    {
+      removeUsersFromGroup_args args = new removeUsersFromGroup_args();
+      args.setAuthzToken(authzToken);
+      args.setUserIds(userIds);
+      args.setGroupId(groupId);
+      sendBase("removeUsersFromGroup", args);
+    }
+
+    public boolean recv_removeUsersFromGroup() throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
+    {
+      removeUsersFromGroup_result result = new removeUsersFromGroup_result();
+      receiveBase(result, "removeUsersFromGroup");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.gse != null) {
+        throw result.gse;
+      }
+      if (result.ae != null) {
+        throw result.ae;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "removeUsersFromGroup failed: unknown result");
     }
 
     public boolean transferGroupOwnership(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.lang.String newOwnerId) throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException
@@ -661,6 +731,82 @@ public class GroupManagerService {
       }
     }
 
+    public void addUsersToGroup(org.apache.airavata.model.security.AuthzToken authzToken, java.util.List<java.lang.String> userIds, java.lang.String groupId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      addUsersToGroup_call method_call = new addUsersToGroup_call(authzToken, userIds, groupId, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class addUsersToGroup_call extends org.apache.thrift.async.TAsyncMethodCall<java.lang.Boolean> {
+      private org.apache.airavata.model.security.AuthzToken authzToken;
+      private java.util.List<java.lang.String> userIds;
+      private java.lang.String groupId;
+      public addUsersToGroup_call(org.apache.airavata.model.security.AuthzToken authzToken, java.util.List<java.lang.String> userIds, java.lang.String groupId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.authzToken = authzToken;
+        this.userIds = userIds;
+        this.groupId = groupId;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("addUsersToGroup", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        addUsersToGroup_args args = new addUsersToGroup_args();
+        args.setAuthzToken(authzToken);
+        args.setUserIds(userIds);
+        args.setGroupId(groupId);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public java.lang.Boolean getResult() throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new java.lang.IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_addUsersToGroup();
+      }
+    }
+
+    public void removeUsersFromGroup(org.apache.airavata.model.security.AuthzToken authzToken, java.util.List<java.lang.String> userIds, java.lang.String groupId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      removeUsersFromGroup_call method_call = new removeUsersFromGroup_call(authzToken, userIds, groupId, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class removeUsersFromGroup_call extends org.apache.thrift.async.TAsyncMethodCall<java.lang.Boolean> {
+      private org.apache.airavata.model.security.AuthzToken authzToken;
+      private java.util.List<java.lang.String> userIds;
+      private java.lang.String groupId;
+      public removeUsersFromGroup_call(org.apache.airavata.model.security.AuthzToken authzToken, java.util.List<java.lang.String> userIds, java.lang.String groupId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.authzToken = authzToken;
+        this.userIds = userIds;
+        this.groupId = groupId;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("removeUsersFromGroup", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        removeUsersFromGroup_args args = new removeUsersFromGroup_args();
+        args.setAuthzToken(authzToken);
+        args.setUserIds(userIds);
+        args.setGroupId(groupId);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public java.lang.Boolean getResult() throws org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException, org.apache.airavata.model.error.AuthorizationException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new java.lang.IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_removeUsersFromGroup();
+      }
+    }
+
     public void transferGroupOwnership(org.apache.airavata.model.security.AuthzToken authzToken, java.lang.String groupId, java.lang.String newOwnerId, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
       checkReady();
       transferGroupOwnership_call method_call = new transferGroupOwnership_call(authzToken, groupId, newOwnerId, resultHandler, this, ___protocolFactory, ___transport);
@@ -870,6 +1016,8 @@ public class GroupManagerService {
       processMap.put("getGroup", new getGroup());
       processMap.put("getGroups", new getGroups());
       processMap.put("getAllGroupsUserBelongs", new getAllGroupsUserBelongs());
+      processMap.put("addUsersToGroup", new addUsersToGroup());
+      processMap.put("removeUsersFromGroup", new removeUsersFromGroup());
       processMap.put("transferGroupOwnership", new transferGroupOwnership());
       processMap.put("addGroupAdmins", new addGroupAdmins());
       processMap.put("removeGroupAdmins", new removeGroupAdmins());
@@ -1036,6 +1184,60 @@ public class GroupManagerService {
       }
     }
 
+    public static class addUsersToGroup<I extends Iface> extends org.apache.thrift.ProcessFunction<I, addUsersToGroup_args> {
+      public addUsersToGroup() {
+        super("addUsersToGroup");
+      }
+
+      public addUsersToGroup_args getEmptyArgsInstance() {
+        return new addUsersToGroup_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public addUsersToGroup_result getResult(I iface, addUsersToGroup_args args) throws org.apache.thrift.TException {
+        addUsersToGroup_result result = new addUsersToGroup_result();
+        try {
+          result.success = iface.addUsersToGroup(args.authzToken, args.userIds, args.groupId);
+          result.setSuccessIsSet(true);
+        } catch (org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException gse) {
+          result.gse = gse;
+        } catch (org.apache.airavata.model.error.AuthorizationException ae) {
+          result.ae = ae;
+        }
+        return result;
+      }
+    }
+
+    public static class removeUsersFromGroup<I extends Iface> extends org.apache.thrift.ProcessFunction<I, removeUsersFromGroup_args> {
+      public removeUsersFromGroup() {
+        super("removeUsersFromGroup");
+      }
+
+      public removeUsersFromGroup_args getEmptyArgsInstance() {
+        return new removeUsersFromGroup_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public removeUsersFromGroup_result getResult(I iface, removeUsersFromGroup_args args) throws org.apache.thrift.TException {
+        removeUsersFromGroup_result result = new removeUsersFromGroup_result();
+        try {
+          result.success = iface.removeUsersFromGroup(args.authzToken, args.userIds, args.groupId);
+          result.setSuccessIsSet(true);
+        } catch (org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException gse) {
+          result.gse = gse;
+        } catch (org.apache.airavata.model.error.AuthorizationException ae) {
+          result.ae = ae;
+        }
+        return result;
+      }
+    }
+
     public static class transferGroupOwnership<I extends Iface> extends org.apache.thrift.ProcessFunction<I, transferGroupOwnership_args> {
       public transferGroupOwnership() {
         super("transferGroupOwnership");
@@ -1190,6 +1392,8 @@ public class GroupManagerService {
       processMap.put("getGroup", new getGroup());
       processMap.put("getGroups", new getGroups());
       processMap.put("getAllGroupsUserBelongs", new getAllGroupsUserBelongs());
+      processMap.put("addUsersToGroup", new addUsersToGroup());
+      processMap.put("removeUsersFromGroup", new removeUsersFromGroup());
       processMap.put("transferGroupOwnership", new transferGroupOwnership());
       processMap.put("addGroupAdmins", new addGroupAdmins());
       processMap.put("removeGroupAdmins", new removeGroupAdmins());
@@ -1611,6 +1815,146 @@ public class GroupManagerService {
 
       public void start(I iface, getAllGroupsUserBelongs_args args, org.apache.thrift.async.AsyncMethodCallback<java.util.List<org.apache.airavata.model.group.GroupModel>> resultHandler) throws org.apache.thrift.TException {
         iface.getAllGroupsUserBelongs(args.authzToken, args.userName,resultHandler);
+      }
+    }
+
+    public static class addUsersToGroup<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, addUsersToGroup_args, java.lang.Boolean> {
+      public addUsersToGroup() {
+        super("addUsersToGroup");
+      }
+
+      public addUsersToGroup_args getEmptyArgsInstance() {
+        return new addUsersToGroup_args();
+      }
+
+      public org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> getResultHandler(final org.apache.thrift.server.AbstractNonblockingServer.AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean>() { 
+          public void onComplete(java.lang.Boolean o) {
+            addUsersToGroup_result result = new addUsersToGroup_result();
+            result.success = o;
+            result.setSuccessIsSet(true);
+            try {
+              fcall.sendResponse(fb, result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+            } catch (org.apache.thrift.transport.TTransportException e) {
+              _LOGGER.error("TTransportException writing to internal frame buffer", e);
+              fb.close();
+            } catch (java.lang.Exception e) {
+              _LOGGER.error("Exception writing to internal frame buffer", e);
+              onError(e);
+            }
+          }
+          public void onError(java.lang.Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TSerializable msg;
+            addUsersToGroup_result result = new addUsersToGroup_result();
+            if (e instanceof org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException) {
+              result.gse = (org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException) e;
+              result.setGseIsSet(true);
+              msg = result;
+            } else if (e instanceof org.apache.airavata.model.error.AuthorizationException) {
+              result.ae = (org.apache.airavata.model.error.AuthorizationException) e;
+              result.setAeIsSet(true);
+              msg = result;
+            } else if (e instanceof org.apache.thrift.transport.TTransportException) {
+              _LOGGER.error("TTransportException inside handler", e);
+              fb.close();
+              return;
+            } else if (e instanceof org.apache.thrift.TApplicationException) {
+              _LOGGER.error("TApplicationException inside handler", e);
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TApplicationException)e;
+            } else {
+              _LOGGER.error("Exception inside handler", e);
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+            } catch (java.lang.Exception ex) {
+              _LOGGER.error("Exception writing to internal frame buffer", ex);
+              fb.close();
+            }
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, addUsersToGroup_args args, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
+        iface.addUsersToGroup(args.authzToken, args.userIds, args.groupId,resultHandler);
+      }
+    }
+
+    public static class removeUsersFromGroup<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, removeUsersFromGroup_args, java.lang.Boolean> {
+      public removeUsersFromGroup() {
+        super("removeUsersFromGroup");
+      }
+
+      public removeUsersFromGroup_args getEmptyArgsInstance() {
+        return new removeUsersFromGroup_args();
+      }
+
+      public org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> getResultHandler(final org.apache.thrift.server.AbstractNonblockingServer.AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean>() { 
+          public void onComplete(java.lang.Boolean o) {
+            removeUsersFromGroup_result result = new removeUsersFromGroup_result();
+            result.success = o;
+            result.setSuccessIsSet(true);
+            try {
+              fcall.sendResponse(fb, result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+            } catch (org.apache.thrift.transport.TTransportException e) {
+              _LOGGER.error("TTransportException writing to internal frame buffer", e);
+              fb.close();
+            } catch (java.lang.Exception e) {
+              _LOGGER.error("Exception writing to internal frame buffer", e);
+              onError(e);
+            }
+          }
+          public void onError(java.lang.Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TSerializable msg;
+            removeUsersFromGroup_result result = new removeUsersFromGroup_result();
+            if (e instanceof org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException) {
+              result.gse = (org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException) e;
+              result.setGseIsSet(true);
+              msg = result;
+            } else if (e instanceof org.apache.airavata.model.error.AuthorizationException) {
+              result.ae = (org.apache.airavata.model.error.AuthorizationException) e;
+              result.setAeIsSet(true);
+              msg = result;
+            } else if (e instanceof org.apache.thrift.transport.TTransportException) {
+              _LOGGER.error("TTransportException inside handler", e);
+              fb.close();
+              return;
+            } else if (e instanceof org.apache.thrift.TApplicationException) {
+              _LOGGER.error("TApplicationException inside handler", e);
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TApplicationException)e;
+            } else {
+              _LOGGER.error("Exception inside handler", e);
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+            } catch (java.lang.Exception ex) {
+              _LOGGER.error("Exception writing to internal frame buffer", ex);
+              fb.close();
+            }
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, removeUsersFromGroup_args args, org.apache.thrift.async.AsyncMethodCallback<java.lang.Boolean> resultHandler) throws org.apache.thrift.TException {
+        iface.removeUsersFromGroup(args.authzToken, args.userIds, args.groupId,resultHandler);
       }
     }
 
@@ -8289,6 +8633,2368 @@ public class GroupManagerService {
     }
   }
 
+  public static class addUsersToGroup_args implements org.apache.thrift.TBase<addUsersToGroup_args, addUsersToGroup_args._Fields>, java.io.Serializable, Cloneable, Comparable<addUsersToGroup_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("addUsersToGroup_args");
+
+    private static final org.apache.thrift.protocol.TField AUTHZ_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("authzToken", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField USER_IDS_FIELD_DESC = new org.apache.thrift.protocol.TField("userIds", org.apache.thrift.protocol.TType.LIST, (short)2);
+    private static final org.apache.thrift.protocol.TField GROUP_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("groupId", org.apache.thrift.protocol.TType.STRING, (short)3);
+
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new addUsersToGroup_argsStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new addUsersToGroup_argsTupleSchemeFactory();
+
+    public org.apache.airavata.model.security.AuthzToken authzToken; // required
+    public java.util.List<java.lang.String> userIds; // required
+    public java.lang.String groupId; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      AUTHZ_TOKEN((short)1, "authzToken"),
+      USER_IDS((short)2, "userIds"),
+      GROUP_ID((short)3, "groupId");
+
+      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+
+      static {
+        for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // AUTHZ_TOKEN
+            return AUTHZ_TOKEN;
+          case 2: // USER_IDS
+            return USER_IDS;
+          case 3: // GROUP_ID
+            return GROUP_ID;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(java.lang.String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final java.lang.String _fieldName;
+
+      _Fields(short thriftId, java.lang.String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public java.lang.String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.AUTHZ_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("authzToken", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.security.AuthzToken.class)));
+      tmpMap.put(_Fields.USER_IDS, new org.apache.thrift.meta_data.FieldMetaData("userIds", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+      tmpMap.put(_Fields.GROUP_ID, new org.apache.thrift.meta_data.FieldMetaData("groupId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(addUsersToGroup_args.class, metaDataMap);
+    }
+
+    public addUsersToGroup_args() {
+    }
+
+    public addUsersToGroup_args(
+      org.apache.airavata.model.security.AuthzToken authzToken,
+      java.util.List<java.lang.String> userIds,
+      java.lang.String groupId)
+    {
+      this();
+      this.authzToken = authzToken;
+      this.userIds = userIds;
+      this.groupId = groupId;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public addUsersToGroup_args(addUsersToGroup_args other) {
+      if (other.isSetAuthzToken()) {
+        this.authzToken = new org.apache.airavata.model.security.AuthzToken(other.authzToken);
+      }
+      if (other.isSetUserIds()) {
+        java.util.List<java.lang.String> __this__userIds = new java.util.ArrayList<java.lang.String>(other.userIds);
+        this.userIds = __this__userIds;
+      }
+      if (other.isSetGroupId()) {
+        this.groupId = other.groupId;
+      }
+    }
+
+    public addUsersToGroup_args deepCopy() {
+      return new addUsersToGroup_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.authzToken = null;
+      this.userIds = null;
+      this.groupId = null;
+    }
+
+    public org.apache.airavata.model.security.AuthzToken getAuthzToken() {
+      return this.authzToken;
+    }
+
+    public addUsersToGroup_args setAuthzToken(org.apache.airavata.model.security.AuthzToken authzToken) {
+      this.authzToken = authzToken;
+      return this;
+    }
+
+    public void unsetAuthzToken() {
+      this.authzToken = null;
+    }
+
+    /** Returns true if field authzToken is set (has been assigned a value) and false otherwise */
+    public boolean isSetAuthzToken() {
+      return this.authzToken != null;
+    }
+
+    public void setAuthzTokenIsSet(boolean value) {
+      if (!value) {
+        this.authzToken = null;
+      }
+    }
+
+    public int getUserIdsSize() {
+      return (this.userIds == null) ? 0 : this.userIds.size();
+    }
+
+    public java.util.Iterator<java.lang.String> getUserIdsIterator() {
+      return (this.userIds == null) ? null : this.userIds.iterator();
+    }
+
+    public void addToUserIds(java.lang.String elem) {
+      if (this.userIds == null) {
+        this.userIds = new java.util.ArrayList<java.lang.String>();
+      }
+      this.userIds.add(elem);
+    }
+
+    public java.util.List<java.lang.String> getUserIds() {
+      return this.userIds;
+    }
+
+    public addUsersToGroup_args setUserIds(java.util.List<java.lang.String> userIds) {
+      this.userIds = userIds;
+      return this;
+    }
+
+    public void unsetUserIds() {
+      this.userIds = null;
+    }
+
+    /** Returns true if field userIds is set (has been assigned a value) and false otherwise */
+    public boolean isSetUserIds() {
+      return this.userIds != null;
+    }
+
+    public void setUserIdsIsSet(boolean value) {
+      if (!value) {
+        this.userIds = null;
+      }
+    }
+
+    public java.lang.String getGroupId() {
+      return this.groupId;
+    }
+
+    public addUsersToGroup_args setGroupId(java.lang.String groupId) {
+      this.groupId = groupId;
+      return this;
+    }
+
+    public void unsetGroupId() {
+      this.groupId = null;
+    }
+
+    /** Returns true if field groupId is set (has been assigned a value) and false otherwise */
+    public boolean isSetGroupId() {
+      return this.groupId != null;
+    }
+
+    public void setGroupIdIsSet(boolean value) {
+      if (!value) {
+        this.groupId = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, java.lang.Object value) {
+      switch (field) {
+      case AUTHZ_TOKEN:
+        if (value == null) {
+          unsetAuthzToken();
+        } else {
+          setAuthzToken((org.apache.airavata.model.security.AuthzToken)value);
+        }
+        break;
+
+      case USER_IDS:
+        if (value == null) {
+          unsetUserIds();
+        } else {
+          setUserIds((java.util.List<java.lang.String>)value);
+        }
+        break;
+
+      case GROUP_ID:
+        if (value == null) {
+          unsetGroupId();
+        } else {
+          setGroupId((java.lang.String)value);
+        }
+        break;
+
+      }
+    }
+
+    public java.lang.Object getFieldValue(_Fields field) {
+      switch (field) {
+      case AUTHZ_TOKEN:
+        return getAuthzToken();
+
+      case USER_IDS:
+        return getUserIds();
+
+      case GROUP_ID:
+        return getGroupId();
+
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new java.lang.IllegalArgumentException();
+      }
+
+      switch (field) {
+      case AUTHZ_TOKEN:
+        return isSetAuthzToken();
+      case USER_IDS:
+        return isSetUserIds();
+      case GROUP_ID:
+        return isSetGroupId();
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(java.lang.Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof addUsersToGroup_args)
+        return this.equals((addUsersToGroup_args)that);
+      return false;
+    }
+
+    public boolean equals(addUsersToGroup_args that) {
+      if (that == null)
+        return false;
+      if (this == that)
+        return true;
+
+      boolean this_present_authzToken = true && this.isSetAuthzToken();
+      boolean that_present_authzToken = true && that.isSetAuthzToken();
+      if (this_present_authzToken || that_present_authzToken) {
+        if (!(this_present_authzToken && that_present_authzToken))
+          return false;
+        if (!this.authzToken.equals(that.authzToken))
+          return false;
+      }
+
+      boolean this_present_userIds = true && this.isSetUserIds();
+      boolean that_present_userIds = true && that.isSetUserIds();
+      if (this_present_userIds || that_present_userIds) {
+        if (!(this_present_userIds && that_present_userIds))
+          return false;
+        if (!this.userIds.equals(that.userIds))
+          return false;
+      }
+
+      boolean this_present_groupId = true && this.isSetGroupId();
+      boolean that_present_groupId = true && that.isSetGroupId();
+      if (this_present_groupId || that_present_groupId) {
+        if (!(this_present_groupId && that_present_groupId))
+          return false;
+        if (!this.groupId.equals(that.groupId))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int hashCode = 1;
+
+      hashCode = hashCode * 8191 + ((isSetAuthzToken()) ? 131071 : 524287);
+      if (isSetAuthzToken())
+        hashCode = hashCode * 8191 + authzToken.hashCode();
+
+      hashCode = hashCode * 8191 + ((isSetUserIds()) ? 131071 : 524287);
+      if (isSetUserIds())
+        hashCode = hashCode * 8191 + userIds.hashCode();
+
+      hashCode = hashCode * 8191 + ((isSetGroupId()) ? 131071 : 524287);
+      if (isSetGroupId())
+        hashCode = hashCode * 8191 + groupId.hashCode();
+
+      return hashCode;
+    }
+
+    @Override
+    public int compareTo(addUsersToGroup_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = java.lang.Boolean.valueOf(isSetAuthzToken()).compareTo(other.isSetAuthzToken());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAuthzToken()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authzToken, other.authzToken);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetUserIds()).compareTo(other.isSetUserIds());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetUserIds()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userIds, other.userIds);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetGroupId()).compareTo(other.isSetGroupId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetGroupId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.groupId, other.groupId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      scheme(iprot).read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      scheme(oprot).write(oprot, this);
+    }
+
+    @Override
+    public java.lang.String toString() {
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("addUsersToGroup_args(");
+      boolean first = true;
+
+      sb.append("authzToken:");
+      if (this.authzToken == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.authzToken);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("userIds:");
+      if (this.userIds == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.userIds);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("groupId:");
+      if (this.groupId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.groupId);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      if (authzToken == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'authzToken' was not present! Struct: " + toString());
+      }
+      if (userIds == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'userIds' was not present! Struct: " + toString());
+      }
+      if (groupId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'groupId' was not present! Struct: " + toString());
+      }
+      // check for sub-struct validity
+      if (authzToken != null) {
+        authzToken.validate();
+      }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class addUsersToGroup_argsStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public addUsersToGroup_argsStandardScheme getScheme() {
+        return new addUsersToGroup_argsStandardScheme();
+      }
+    }
+
+    private static class addUsersToGroup_argsStandardScheme extends org.apache.thrift.scheme.StandardScheme<addUsersToGroup_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, addUsersToGroup_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // AUTHZ_TOKEN
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+                struct.authzToken.read(iprot);
+                struct.setAuthzTokenIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // USER_IDS
+              if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+                {
+                  org.apache.thrift.protocol.TList _list16 = iprot.readListBegin();
+                  struct.userIds = new java.util.ArrayList<java.lang.String>(_list16.size);
+                  java.lang.String _elem17;
+                  for (int _i18 = 0; _i18 < _list16.size; ++_i18)
+                  {
+                    _elem17 = iprot.readString();
+                    struct.userIds.add(_elem17);
+                  }
+                  iprot.readListEnd();
+                }
+                struct.setUserIdsIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // GROUP_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.groupId = iprot.readString();
+                struct.setGroupIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, addUsersToGroup_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.authzToken != null) {
+          oprot.writeFieldBegin(AUTHZ_TOKEN_FIELD_DESC);
+          struct.authzToken.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.userIds != null) {
+          oprot.writeFieldBegin(USER_IDS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.userIds.size()));
+            for (java.lang.String _iter19 : struct.userIds)
+            {
+              oprot.writeString(_iter19);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+        if (struct.groupId != null) {
+          oprot.writeFieldBegin(GROUP_ID_FIELD_DESC);
+          oprot.writeString(struct.groupId);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class addUsersToGroup_argsTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public addUsersToGroup_argsTupleScheme getScheme() {
+        return new addUsersToGroup_argsTupleScheme();
+      }
+    }
+
+    private static class addUsersToGroup_argsTupleScheme extends org.apache.thrift.scheme.TupleScheme<addUsersToGroup_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, addUsersToGroup_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        struct.authzToken.write(oprot);
+        {
+          oprot.writeI32(struct.userIds.size());
+          for (java.lang.String _iter20 : struct.userIds)
+          {
+            oprot.writeString(_iter20);
+          }
+        }
+        oprot.writeString(struct.groupId);
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, addUsersToGroup_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+        struct.authzToken.read(iprot);
+        struct.setAuthzTokenIsSet(true);
+        {
+          org.apache.thrift.protocol.TList _list21 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.userIds = new java.util.ArrayList<java.lang.String>(_list21.size);
+          java.lang.String _elem22;
+          for (int _i23 = 0; _i23 < _list21.size; ++_i23)
+          {
+            _elem22 = iprot.readString();
+            struct.userIds.add(_elem22);
+          }
+        }
+        struct.setUserIdsIsSet(true);
+        struct.groupId = iprot.readString();
+        struct.setGroupIdIsSet(true);
+      }
+    }
+
+    private static <S extends org.apache.thrift.scheme.IScheme> S scheme(org.apache.thrift.protocol.TProtocol proto) {
+      return (org.apache.thrift.scheme.StandardScheme.class.equals(proto.getScheme()) ? STANDARD_SCHEME_FACTORY : TUPLE_SCHEME_FACTORY).getScheme();
+    }
+  }
+
+  public static class addUsersToGroup_result implements org.apache.thrift.TBase<addUsersToGroup_result, addUsersToGroup_result._Fields>, java.io.Serializable, Cloneable, Comparable<addUsersToGroup_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("addUsersToGroup_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)0);
+    private static final org.apache.thrift.protocol.TField GSE_FIELD_DESC = new org.apache.thrift.protocol.TField("gse", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField AE_FIELD_DESC = new org.apache.thrift.protocol.TField("ae", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new addUsersToGroup_resultStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new addUsersToGroup_resultTupleSchemeFactory();
+
+    public boolean success; // required
+    public org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException gse; // required
+    public org.apache.airavata.model.error.AuthorizationException ae; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      GSE((short)1, "gse"),
+      AE((short)2, "ae");
+
+      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+
+      static {
+        for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // GSE
+            return GSE;
+          case 2: // AE
+            return AE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(java.lang.String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final java.lang.String _fieldName;
+
+      _Fields(short thriftId, java.lang.String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public java.lang.String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    private static final int __SUCCESS_ISSET_ID = 0;
+    private byte __isset_bitfield = 0;
+    public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+      tmpMap.put(_Fields.GSE, new org.apache.thrift.meta_data.FieldMetaData("gse", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException.class)));
+      tmpMap.put(_Fields.AE, new org.apache.thrift.meta_data.FieldMetaData("ae", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.error.AuthorizationException.class)));
+      metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(addUsersToGroup_result.class, metaDataMap);
+    }
+
+    public addUsersToGroup_result() {
+    }
+
+    public addUsersToGroup_result(
+      boolean success,
+      org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException gse,
+      org.apache.airavata.model.error.AuthorizationException ae)
+    {
+      this();
+      this.success = success;
+      setSuccessIsSet(true);
+      this.gse = gse;
+      this.ae = ae;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public addUsersToGroup_result(addUsersToGroup_result other) {
+      __isset_bitfield = other.__isset_bitfield;
+      this.success = other.success;
+      if (other.isSetGse()) {
+        this.gse = new org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException(other.gse);
+      }
+      if (other.isSetAe()) {
+        this.ae = new org.apache.airavata.model.error.AuthorizationException(other.ae);
+      }
+    }
+
+    public addUsersToGroup_result deepCopy() {
+      return new addUsersToGroup_result(this);
+    }
+
+    @Override
+    public void clear() {
+      setSuccessIsSet(false);
+      this.success = false;
+      this.gse = null;
+      this.ae = null;
+    }
+
+    public boolean isSuccess() {
+      return this.success;
+    }
+
+    public addUsersToGroup_result setSuccess(boolean success) {
+      this.success = success;
+      setSuccessIsSet(true);
+      return this;
+    }
+
+    public void unsetSuccess() {
+      __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __SUCCESS_ISSET_ID, value);
+    }
+
+    public org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException getGse() {
+      return this.gse;
+    }
+
+    public addUsersToGroup_result setGse(org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException gse) {
+      this.gse = gse;
+      return this;
+    }
+
+    public void unsetGse() {
+      this.gse = null;
+    }
+
+    /** Returns true if field gse is set (has been assigned a value) and false otherwise */
+    public boolean isSetGse() {
+      return this.gse != null;
+    }
+
+    public void setGseIsSet(boolean value) {
+      if (!value) {
+        this.gse = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AuthorizationException getAe() {
+      return this.ae;
+    }
+
+    public addUsersToGroup_result setAe(org.apache.airavata.model.error.AuthorizationException ae) {
+      this.ae = ae;
+      return this;
+    }
+
+    public void unsetAe() {
+      this.ae = null;
+    }
+
+    /** Returns true if field ae is set (has been assigned a value) and false otherwise */
+    public boolean isSetAe() {
+      return this.ae != null;
+    }
+
+    public void setAeIsSet(boolean value) {
+      if (!value) {
+        this.ae = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, java.lang.Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((java.lang.Boolean)value);
+        }
+        break;
+
+      case GSE:
+        if (value == null) {
+          unsetGse();
+        } else {
+          setGse((org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException)value);
+        }
+        break;
+
+      case AE:
+        if (value == null) {
+          unsetAe();
+        } else {
+          setAe((org.apache.airavata.model.error.AuthorizationException)value);
+        }
+        break;
+
+      }
+    }
+
+    public java.lang.Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return isSuccess();
+
+      case GSE:
+        return getGse();
+
+      case AE:
+        return getAe();
+
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new java.lang.IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case GSE:
+        return isSetGse();
+      case AE:
+        return isSetAe();
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(java.lang.Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof addUsersToGroup_result)
+        return this.equals((addUsersToGroup_result)that);
+      return false;
+    }
+
+    public boolean equals(addUsersToGroup_result that) {
+      if (that == null)
+        return false;
+      if (this == that)
+        return true;
+
+      boolean this_present_success = true;
+      boolean that_present_success = true;
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (this.success != that.success)
+          return false;
+      }
+
+      boolean this_present_gse = true && this.isSetGse();
+      boolean that_present_gse = true && that.isSetGse();
+      if (this_present_gse || that_present_gse) {
+        if (!(this_present_gse && that_present_gse))
+          return false;
+        if (!this.gse.equals(that.gse))
+          return false;
+      }
+
+      boolean this_present_ae = true && this.isSetAe();
+      boolean that_present_ae = true && that.isSetAe();
+      if (this_present_ae || that_present_ae) {
+        if (!(this_present_ae && that_present_ae))
+          return false;
+        if (!this.ae.equals(that.ae))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int hashCode = 1;
+
+      hashCode = hashCode * 8191 + ((success) ? 131071 : 524287);
+
+      hashCode = hashCode * 8191 + ((isSetGse()) ? 131071 : 524287);
+      if (isSetGse())
+        hashCode = hashCode * 8191 + gse.hashCode();
+
+      hashCode = hashCode * 8191 + ((isSetAe()) ? 131071 : 524287);
+      if (isSetAe())
+        hashCode = hashCode * 8191 + ae.hashCode();
+
+      return hashCode;
+    }
+
+    @Override
+    public int compareTo(addUsersToGroup_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = java.lang.Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetGse()).compareTo(other.isSetGse());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetGse()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gse, other.gse);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetAe()).compareTo(other.isSetAe());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAe()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ae, other.ae);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      scheme(iprot).read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      scheme(oprot).write(oprot, this);
+      }
+
+    @Override
+    public java.lang.String toString() {
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("addUsersToGroup_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      sb.append(this.success);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("gse:");
+      if (this.gse == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.gse);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ae:");
+      if (this.ae == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ae);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+      try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bitfield = 0;
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class addUsersToGroup_resultStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public addUsersToGroup_resultStandardScheme getScheme() {
+        return new addUsersToGroup_resultStandardScheme();
+      }
+    }
+
+    private static class addUsersToGroup_resultStandardScheme extends org.apache.thrift.scheme.StandardScheme<addUsersToGroup_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, addUsersToGroup_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+                struct.success = iprot.readBool();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // GSE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.gse = new org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException();
+                struct.gse.read(iprot);
+                struct.setGseIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // AE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+                struct.ae.read(iprot);
+                struct.setAeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, addUsersToGroup_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.isSetSuccess()) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeBool(struct.success);
+          oprot.writeFieldEnd();
+        }
+        if (struct.gse != null) {
+          oprot.writeFieldBegin(GSE_FIELD_DESC);
+          struct.gse.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ae != null) {
+          oprot.writeFieldBegin(AE_FIELD_DESC);
+          struct.ae.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class addUsersToGroup_resultTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public addUsersToGroup_resultTupleScheme getScheme() {
+        return new addUsersToGroup_resultTupleScheme();
+      }
+    }
+
+    private static class addUsersToGroup_resultTupleScheme extends org.apache.thrift.scheme.TupleScheme<addUsersToGroup_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, addUsersToGroup_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        java.util.BitSet optionals = new java.util.BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetGse()) {
+          optionals.set(1);
+        }
+        if (struct.isSetAe()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetSuccess()) {
+          oprot.writeBool(struct.success);
+        }
+        if (struct.isSetGse()) {
+          struct.gse.write(oprot);
+        }
+        if (struct.isSetAe()) {
+          struct.ae.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, addUsersToGroup_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        java.util.BitSet incoming = iprot.readBitSet(3);
+        if (incoming.get(0)) {
+          struct.success = iprot.readBool();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.gse = new org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException();
+          struct.gse.read(iprot);
+          struct.setGseIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+          struct.ae.read(iprot);
+          struct.setAeIsSet(true);
+        }
+      }
+    }
+
+    private static <S extends org.apache.thrift.scheme.IScheme> S scheme(org.apache.thrift.protocol.TProtocol proto) {
+      return (org.apache.thrift.scheme.StandardScheme.class.equals(proto.getScheme()) ? STANDARD_SCHEME_FACTORY : TUPLE_SCHEME_FACTORY).getScheme();
+    }
+  }
+
+  public static class removeUsersFromGroup_args implements org.apache.thrift.TBase<removeUsersFromGroup_args, removeUsersFromGroup_args._Fields>, java.io.Serializable, Cloneable, Comparable<removeUsersFromGroup_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("removeUsersFromGroup_args");
+
+    private static final org.apache.thrift.protocol.TField AUTHZ_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("authzToken", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField USER_IDS_FIELD_DESC = new org.apache.thrift.protocol.TField("userIds", org.apache.thrift.protocol.TType.LIST, (short)2);
+    private static final org.apache.thrift.protocol.TField GROUP_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("groupId", org.apache.thrift.protocol.TType.STRING, (short)3);
+
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new removeUsersFromGroup_argsStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new removeUsersFromGroup_argsTupleSchemeFactory();
+
+    public org.apache.airavata.model.security.AuthzToken authzToken; // required
+    public java.util.List<java.lang.String> userIds; // required
+    public java.lang.String groupId; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      AUTHZ_TOKEN((short)1, "authzToken"),
+      USER_IDS((short)2, "userIds"),
+      GROUP_ID((short)3, "groupId");
+
+      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+
+      static {
+        for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // AUTHZ_TOKEN
+            return AUTHZ_TOKEN;
+          case 2: // USER_IDS
+            return USER_IDS;
+          case 3: // GROUP_ID
+            return GROUP_ID;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(java.lang.String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final java.lang.String _fieldName;
+
+      _Fields(short thriftId, java.lang.String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public java.lang.String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.AUTHZ_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("authzToken", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.security.AuthzToken.class)));
+      tmpMap.put(_Fields.USER_IDS, new org.apache.thrift.meta_data.FieldMetaData("userIds", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+      tmpMap.put(_Fields.GROUP_ID, new org.apache.thrift.meta_data.FieldMetaData("groupId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(removeUsersFromGroup_args.class, metaDataMap);
+    }
+
+    public removeUsersFromGroup_args() {
+    }
+
+    public removeUsersFromGroup_args(
+      org.apache.airavata.model.security.AuthzToken authzToken,
+      java.util.List<java.lang.String> userIds,
+      java.lang.String groupId)
+    {
+      this();
+      this.authzToken = authzToken;
+      this.userIds = userIds;
+      this.groupId = groupId;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public removeUsersFromGroup_args(removeUsersFromGroup_args other) {
+      if (other.isSetAuthzToken()) {
+        this.authzToken = new org.apache.airavata.model.security.AuthzToken(other.authzToken);
+      }
+      if (other.isSetUserIds()) {
+        java.util.List<java.lang.String> __this__userIds = new java.util.ArrayList<java.lang.String>(other.userIds);
+        this.userIds = __this__userIds;
+      }
+      if (other.isSetGroupId()) {
+        this.groupId = other.groupId;
+      }
+    }
+
+    public removeUsersFromGroup_args deepCopy() {
+      return new removeUsersFromGroup_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.authzToken = null;
+      this.userIds = null;
+      this.groupId = null;
+    }
+
+    public org.apache.airavata.model.security.AuthzToken getAuthzToken() {
+      return this.authzToken;
+    }
+
+    public removeUsersFromGroup_args setAuthzToken(org.apache.airavata.model.security.AuthzToken authzToken) {
+      this.authzToken = authzToken;
+      return this;
+    }
+
+    public void unsetAuthzToken() {
+      this.authzToken = null;
+    }
+
+    /** Returns true if field authzToken is set (has been assigned a value) and false otherwise */
+    public boolean isSetAuthzToken() {
+      return this.authzToken != null;
+    }
+
+    public void setAuthzTokenIsSet(boolean value) {
+      if (!value) {
+        this.authzToken = null;
+      }
+    }
+
+    public int getUserIdsSize() {
+      return (this.userIds == null) ? 0 : this.userIds.size();
+    }
+
+    public java.util.Iterator<java.lang.String> getUserIdsIterator() {
+      return (this.userIds == null) ? null : this.userIds.iterator();
+    }
+
+    public void addToUserIds(java.lang.String elem) {
+      if (this.userIds == null) {
+        this.userIds = new java.util.ArrayList<java.lang.String>();
+      }
+      this.userIds.add(elem);
+    }
+
+    public java.util.List<java.lang.String> getUserIds() {
+      return this.userIds;
+    }
+
+    public removeUsersFromGroup_args setUserIds(java.util.List<java.lang.String> userIds) {
+      this.userIds = userIds;
+      return this;
+    }
+
+    public void unsetUserIds() {
+      this.userIds = null;
+    }
+
+    /** Returns true if field userIds is set (has been assigned a value) and false otherwise */
+    public boolean isSetUserIds() {
+      return this.userIds != null;
+    }
+
+    public void setUserIdsIsSet(boolean value) {
+      if (!value) {
+        this.userIds = null;
+      }
+    }
+
+    public java.lang.String getGroupId() {
+      return this.groupId;
+    }
+
+    public removeUsersFromGroup_args setGroupId(java.lang.String groupId) {
+      this.groupId = groupId;
+      return this;
+    }
+
+    public void unsetGroupId() {
+      this.groupId = null;
+    }
+
+    /** Returns true if field groupId is set (has been assigned a value) and false otherwise */
+    public boolean isSetGroupId() {
+      return this.groupId != null;
+    }
+
+    public void setGroupIdIsSet(boolean value) {
+      if (!value) {
+        this.groupId = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, java.lang.Object value) {
+      switch (field) {
+      case AUTHZ_TOKEN:
+        if (value == null) {
+          unsetAuthzToken();
+        } else {
+          setAuthzToken((org.apache.airavata.model.security.AuthzToken)value);
+        }
+        break;
+
+      case USER_IDS:
+        if (value == null) {
+          unsetUserIds();
+        } else {
+          setUserIds((java.util.List<java.lang.String>)value);
+        }
+        break;
+
+      case GROUP_ID:
+        if (value == null) {
+          unsetGroupId();
+        } else {
+          setGroupId((java.lang.String)value);
+        }
+        break;
+
+      }
+    }
+
+    public java.lang.Object getFieldValue(_Fields field) {
+      switch (field) {
+      case AUTHZ_TOKEN:
+        return getAuthzToken();
+
+      case USER_IDS:
+        return getUserIds();
+
+      case GROUP_ID:
+        return getGroupId();
+
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new java.lang.IllegalArgumentException();
+      }
+
+      switch (field) {
+      case AUTHZ_TOKEN:
+        return isSetAuthzToken();
+      case USER_IDS:
+        return isSetUserIds();
+      case GROUP_ID:
+        return isSetGroupId();
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(java.lang.Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof removeUsersFromGroup_args)
+        return this.equals((removeUsersFromGroup_args)that);
+      return false;
+    }
+
+    public boolean equals(removeUsersFromGroup_args that) {
+      if (that == null)
+        return false;
+      if (this == that)
+        return true;
+
+      boolean this_present_authzToken = true && this.isSetAuthzToken();
+      boolean that_present_authzToken = true && that.isSetAuthzToken();
+      if (this_present_authzToken || that_present_authzToken) {
+        if (!(this_present_authzToken && that_present_authzToken))
+          return false;
+        if (!this.authzToken.equals(that.authzToken))
+          return false;
+      }
+
+      boolean this_present_userIds = true && this.isSetUserIds();
+      boolean that_present_userIds = true && that.isSetUserIds();
+      if (this_present_userIds || that_present_userIds) {
+        if (!(this_present_userIds && that_present_userIds))
+          return false;
+        if (!this.userIds.equals(that.userIds))
+          return false;
+      }
+
+      boolean this_present_groupId = true && this.isSetGroupId();
+      boolean that_present_groupId = true && that.isSetGroupId();
+      if (this_present_groupId || that_present_groupId) {
+        if (!(this_present_groupId && that_present_groupId))
+          return false;
+        if (!this.groupId.equals(that.groupId))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int hashCode = 1;
+
+      hashCode = hashCode * 8191 + ((isSetAuthzToken()) ? 131071 : 524287);
+      if (isSetAuthzToken())
+        hashCode = hashCode * 8191 + authzToken.hashCode();
+
+      hashCode = hashCode * 8191 + ((isSetUserIds()) ? 131071 : 524287);
+      if (isSetUserIds())
+        hashCode = hashCode * 8191 + userIds.hashCode();
+
+      hashCode = hashCode * 8191 + ((isSetGroupId()) ? 131071 : 524287);
+      if (isSetGroupId())
+        hashCode = hashCode * 8191 + groupId.hashCode();
+
+      return hashCode;
+    }
+
+    @Override
+    public int compareTo(removeUsersFromGroup_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = java.lang.Boolean.valueOf(isSetAuthzToken()).compareTo(other.isSetAuthzToken());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAuthzToken()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authzToken, other.authzToken);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetUserIds()).compareTo(other.isSetUserIds());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetUserIds()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userIds, other.userIds);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetGroupId()).compareTo(other.isSetGroupId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetGroupId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.groupId, other.groupId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      scheme(iprot).read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      scheme(oprot).write(oprot, this);
+    }
+
+    @Override
+    public java.lang.String toString() {
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("removeUsersFromGroup_args(");
+      boolean first = true;
+
+      sb.append("authzToken:");
+      if (this.authzToken == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.authzToken);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("userIds:");
+      if (this.userIds == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.userIds);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("groupId:");
+      if (this.groupId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.groupId);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      if (authzToken == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'authzToken' was not present! Struct: " + toString());
+      }
+      if (userIds == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'userIds' was not present! Struct: " + toString());
+      }
+      if (groupId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'groupId' was not present! Struct: " + toString());
+      }
+      // check for sub-struct validity
+      if (authzToken != null) {
+        authzToken.validate();
+      }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class removeUsersFromGroup_argsStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public removeUsersFromGroup_argsStandardScheme getScheme() {
+        return new removeUsersFromGroup_argsStandardScheme();
+      }
+    }
+
+    private static class removeUsersFromGroup_argsStandardScheme extends org.apache.thrift.scheme.StandardScheme<removeUsersFromGroup_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, removeUsersFromGroup_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // AUTHZ_TOKEN
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+                struct.authzToken.read(iprot);
+                struct.setAuthzTokenIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // USER_IDS
+              if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+                {
+                  org.apache.thrift.protocol.TList _list24 = iprot.readListBegin();
+                  struct.userIds = new java.util.ArrayList<java.lang.String>(_list24.size);
+                  java.lang.String _elem25;
+                  for (int _i26 = 0; _i26 < _list24.size; ++_i26)
+                  {
+                    _elem25 = iprot.readString();
+                    struct.userIds.add(_elem25);
+                  }
+                  iprot.readListEnd();
+                }
+                struct.setUserIdsIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // GROUP_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.groupId = iprot.readString();
+                struct.setGroupIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, removeUsersFromGroup_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.authzToken != null) {
+          oprot.writeFieldBegin(AUTHZ_TOKEN_FIELD_DESC);
+          struct.authzToken.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.userIds != null) {
+          oprot.writeFieldBegin(USER_IDS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.userIds.size()));
+            for (java.lang.String _iter27 : struct.userIds)
+            {
+              oprot.writeString(_iter27);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+        if (struct.groupId != null) {
+          oprot.writeFieldBegin(GROUP_ID_FIELD_DESC);
+          oprot.writeString(struct.groupId);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class removeUsersFromGroup_argsTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public removeUsersFromGroup_argsTupleScheme getScheme() {
+        return new removeUsersFromGroup_argsTupleScheme();
+      }
+    }
+
+    private static class removeUsersFromGroup_argsTupleScheme extends org.apache.thrift.scheme.TupleScheme<removeUsersFromGroup_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, removeUsersFromGroup_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        struct.authzToken.write(oprot);
+        {
+          oprot.writeI32(struct.userIds.size());
+          for (java.lang.String _iter28 : struct.userIds)
+          {
+            oprot.writeString(_iter28);
+          }
+        }
+        oprot.writeString(struct.groupId);
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, removeUsersFromGroup_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        struct.authzToken = new org.apache.airavata.model.security.AuthzToken();
+        struct.authzToken.read(iprot);
+        struct.setAuthzTokenIsSet(true);
+        {
+          org.apache.thrift.protocol.TList _list29 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.userIds = new java.util.ArrayList<java.lang.String>(_list29.size);
+          java.lang.String _elem30;
+          for (int _i31 = 0; _i31 < _list29.size; ++_i31)
+          {
+            _elem30 = iprot.readString();
+            struct.userIds.add(_elem30);
+          }
+        }
+        struct.setUserIdsIsSet(true);
+        struct.groupId = iprot.readString();
+        struct.setGroupIdIsSet(true);
+      }
+    }
+
+    private static <S extends org.apache.thrift.scheme.IScheme> S scheme(org.apache.thrift.protocol.TProtocol proto) {
+      return (org.apache.thrift.scheme.StandardScheme.class.equals(proto.getScheme()) ? STANDARD_SCHEME_FACTORY : TUPLE_SCHEME_FACTORY).getScheme();
+    }
+  }
+
+  public static class removeUsersFromGroup_result implements org.apache.thrift.TBase<removeUsersFromGroup_result, removeUsersFromGroup_result._Fields>, java.io.Serializable, Cloneable, Comparable<removeUsersFromGroup_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("removeUsersFromGroup_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)0);
+    private static final org.apache.thrift.protocol.TField GSE_FIELD_DESC = new org.apache.thrift.protocol.TField("gse", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField AE_FIELD_DESC = new org.apache.thrift.protocol.TField("ae", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+
+    private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new removeUsersFromGroup_resultStandardSchemeFactory();
+    private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new removeUsersFromGroup_resultTupleSchemeFactory();
+
+    public boolean success; // required
+    public org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException gse; // required
+    public org.apache.airavata.model.error.AuthorizationException ae; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      GSE((short)1, "gse"),
+      AE((short)2, "ae");
+
+      private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
+
+      static {
+        for (_Fields field : java.util.EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // GSE
+            return GSE;
+          case 2: // AE
+            return AE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new java.lang.IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(java.lang.String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final java.lang.String _fieldName;
+
+      _Fields(short thriftId, java.lang.String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public java.lang.String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    private static final int __SUCCESS_ISSET_ID = 0;
+    private byte __isset_bitfield = 0;
+    public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+      tmpMap.put(_Fields.GSE, new org.apache.thrift.meta_data.FieldMetaData("gse", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException.class)));
+      tmpMap.put(_Fields.AE, new org.apache.thrift.meta_data.FieldMetaData("ae", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.error.AuthorizationException.class)));
+      metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(removeUsersFromGroup_result.class, metaDataMap);
+    }
+
+    public removeUsersFromGroup_result() {
+    }
+
+    public removeUsersFromGroup_result(
+      boolean success,
+      org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException gse,
+      org.apache.airavata.model.error.AuthorizationException ae)
+    {
+      this();
+      this.success = success;
+      setSuccessIsSet(true);
+      this.gse = gse;
+      this.ae = ae;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public removeUsersFromGroup_result(removeUsersFromGroup_result other) {
+      __isset_bitfield = other.__isset_bitfield;
+      this.success = other.success;
+      if (other.isSetGse()) {
+        this.gse = new org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException(other.gse);
+      }
+      if (other.isSetAe()) {
+        this.ae = new org.apache.airavata.model.error.AuthorizationException(other.ae);
+      }
+    }
+
+    public removeUsersFromGroup_result deepCopy() {
+      return new removeUsersFromGroup_result(this);
+    }
+
+    @Override
+    public void clear() {
+      setSuccessIsSet(false);
+      this.success = false;
+      this.gse = null;
+      this.ae = null;
+    }
+
+    public boolean isSuccess() {
+      return this.success;
+    }
+
+    public removeUsersFromGroup_result setSuccess(boolean success) {
+      this.success = success;
+      setSuccessIsSet(true);
+      return this;
+    }
+
+    public void unsetSuccess() {
+      __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __SUCCESS_ISSET_ID, value);
+    }
+
+    public org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException getGse() {
+      return this.gse;
+    }
+
+    public removeUsersFromGroup_result setGse(org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException gse) {
+      this.gse = gse;
+      return this;
+    }
+
+    public void unsetGse() {
+      this.gse = null;
+    }
+
+    /** Returns true if field gse is set (has been assigned a value) and false otherwise */
+    public boolean isSetGse() {
+      return this.gse != null;
+    }
+
+    public void setGseIsSet(boolean value) {
+      if (!value) {
+        this.gse = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AuthorizationException getAe() {
+      return this.ae;
+    }
+
+    public removeUsersFromGroup_result setAe(org.apache.airavata.model.error.AuthorizationException ae) {
+      this.ae = ae;
+      return this;
+    }
+
+    public void unsetAe() {
+      this.ae = null;
+    }
+
+    /** Returns true if field ae is set (has been assigned a value) and false otherwise */
+    public boolean isSetAe() {
+      return this.ae != null;
+    }
+
+    public void setAeIsSet(boolean value) {
+      if (!value) {
+        this.ae = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, java.lang.Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((java.lang.Boolean)value);
+        }
+        break;
+
+      case GSE:
+        if (value == null) {
+          unsetGse();
+        } else {
+          setGse((org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException)value);
+        }
+        break;
+
+      case AE:
+        if (value == null) {
+          unsetAe();
+        } else {
+          setAe((org.apache.airavata.model.error.AuthorizationException)value);
+        }
+        break;
+
+      }
+    }
+
+    public java.lang.Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return isSuccess();
+
+      case GSE:
+        return getGse();
+
+      case AE:
+        return getAe();
+
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new java.lang.IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case GSE:
+        return isSetGse();
+      case AE:
+        return isSetAe();
+      }
+      throw new java.lang.IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(java.lang.Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof removeUsersFromGroup_result)
+        return this.equals((removeUsersFromGroup_result)that);
+      return false;
+    }
+
+    public boolean equals(removeUsersFromGroup_result that) {
+      if (that == null)
+        return false;
+      if (this == that)
+        return true;
+
+      boolean this_present_success = true;
+      boolean that_present_success = true;
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (this.success != that.success)
+          return false;
+      }
+
+      boolean this_present_gse = true && this.isSetGse();
+      boolean that_present_gse = true && that.isSetGse();
+      if (this_present_gse || that_present_gse) {
+        if (!(this_present_gse && that_present_gse))
+          return false;
+        if (!this.gse.equals(that.gse))
+          return false;
+      }
+
+      boolean this_present_ae = true && this.isSetAe();
+      boolean that_present_ae = true && that.isSetAe();
+      if (this_present_ae || that_present_ae) {
+        if (!(this_present_ae && that_present_ae))
+          return false;
+        if (!this.ae.equals(that.ae))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int hashCode = 1;
+
+      hashCode = hashCode * 8191 + ((success) ? 131071 : 524287);
+
+      hashCode = hashCode * 8191 + ((isSetGse()) ? 131071 : 524287);
+      if (isSetGse())
+        hashCode = hashCode * 8191 + gse.hashCode();
+
+      hashCode = hashCode * 8191 + ((isSetAe()) ? 131071 : 524287);
+      if (isSetAe())
+        hashCode = hashCode * 8191 + ae.hashCode();
+
+      return hashCode;
+    }
+
+    @Override
+    public int compareTo(removeUsersFromGroup_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = java.lang.Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetGse()).compareTo(other.isSetGse());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetGse()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gse, other.gse);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = java.lang.Boolean.valueOf(isSetAe()).compareTo(other.isSetAe());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAe()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ae, other.ae);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      scheme(iprot).read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      scheme(oprot).write(oprot, this);
+      }
+
+    @Override
+    public java.lang.String toString() {
+      java.lang.StringBuilder sb = new java.lang.StringBuilder("removeUsersFromGroup_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      sb.append(this.success);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("gse:");
+      if (this.gse == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.gse);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ae:");
+      if (this.ae == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ae);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {
+      try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bitfield = 0;
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class removeUsersFromGroup_resultStandardSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public removeUsersFromGroup_resultStandardScheme getScheme() {
+        return new removeUsersFromGroup_resultStandardScheme();
+      }
+    }
+
+    private static class removeUsersFromGroup_resultStandardScheme extends org.apache.thrift.scheme.StandardScheme<removeUsersFromGroup_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, removeUsersFromGroup_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+                struct.success = iprot.readBool();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // GSE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.gse = new org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException();
+                struct.gse.read(iprot);
+                struct.setGseIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // AE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+                struct.ae.read(iprot);
+                struct.setAeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, removeUsersFromGroup_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.isSetSuccess()) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeBool(struct.success);
+          oprot.writeFieldEnd();
+        }
+        if (struct.gse != null) {
+          oprot.writeFieldBegin(GSE_FIELD_DESC);
+          struct.gse.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ae != null) {
+          oprot.writeFieldBegin(AE_FIELD_DESC);
+          struct.ae.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class removeUsersFromGroup_resultTupleSchemeFactory implements org.apache.thrift.scheme.SchemeFactory {
+      public removeUsersFromGroup_resultTupleScheme getScheme() {
+        return new removeUsersFromGroup_resultTupleScheme();
+      }
+    }
+
+    private static class removeUsersFromGroup_resultTupleScheme extends org.apache.thrift.scheme.TupleScheme<removeUsersFromGroup_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, removeUsersFromGroup_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol oprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        java.util.BitSet optionals = new java.util.BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetGse()) {
+          optionals.set(1);
+        }
+        if (struct.isSetAe()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetSuccess()) {
+          oprot.writeBool(struct.success);
+        }
+        if (struct.isSetGse()) {
+          struct.gse.write(oprot);
+        }
+        if (struct.isSetAe()) {
+          struct.ae.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, removeUsersFromGroup_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
+        java.util.BitSet incoming = iprot.readBitSet(3);
+        if (incoming.get(0)) {
+          struct.success = iprot.readBool();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.gse = new org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException();
+          struct.gse.read(iprot);
+          struct.setGseIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ae = new org.apache.airavata.model.error.AuthorizationException();
+          struct.ae.read(iprot);
+          struct.setAeIsSet(true);
+        }
+      }
+    }
+
+    private static <S extends org.apache.thrift.scheme.IScheme> S scheme(org.apache.thrift.protocol.TProtocol proto) {
+      return (org.apache.thrift.scheme.StandardScheme.class.equals(proto.getScheme()) ? STANDARD_SCHEME_FACTORY : TUPLE_SCHEME_FACTORY).getScheme();
+    }
+  }
+
   public static class transferGroupOwnership_args implements org.apache.thrift.TBase<transferGroupOwnership_args, transferGroupOwnership_args._Fields>, java.io.Serializable, Cloneable, Comparable<transferGroupOwnership_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("transferGroupOwnership_args");
 
@@ -9923,13 +12629,13 @@ public class GroupManagerService {
             case 3: // ADMIN_IDS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list16 = iprot.readListBegin();
-                  struct.adminIds = new java.util.ArrayList<java.lang.String>(_list16.size);
-                  java.lang.String _elem17;
-                  for (int _i18 = 0; _i18 < _list16.size; ++_i18)
+                  org.apache.thrift.protocol.TList _list32 = iprot.readListBegin();
+                  struct.adminIds = new java.util.ArrayList<java.lang.String>(_list32.size);
+                  java.lang.String _elem33;
+                  for (int _i34 = 0; _i34 < _list32.size; ++_i34)
                   {
-                    _elem17 = iprot.readString();
-                    struct.adminIds.add(_elem17);
+                    _elem33 = iprot.readString();
+                    struct.adminIds.add(_elem33);
                   }
                   iprot.readListEnd();
                 }
@@ -9967,9 +12673,9 @@ public class GroupManagerService {
           oprot.writeFieldBegin(ADMIN_IDS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.adminIds.size()));
-            for (java.lang.String _iter19 : struct.adminIds)
+            for (java.lang.String _iter35 : struct.adminIds)
             {
-              oprot.writeString(_iter19);
+              oprot.writeString(_iter35);
             }
             oprot.writeListEnd();
           }
@@ -9996,9 +12702,9 @@ public class GroupManagerService {
         oprot.writeString(struct.groupId);
         {
           oprot.writeI32(struct.adminIds.size());
-          for (java.lang.String _iter20 : struct.adminIds)
+          for (java.lang.String _iter36 : struct.adminIds)
           {
-            oprot.writeString(_iter20);
+            oprot.writeString(_iter36);
           }
         }
       }
@@ -10012,13 +12718,13 @@ public class GroupManagerService {
         struct.groupId = iprot.readString();
         struct.setGroupIdIsSet(true);
         {
-          org.apache.thrift.protocol.TList _list21 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.adminIds = new java.util.ArrayList<java.lang.String>(_list21.size);
-          java.lang.String _elem22;
-          for (int _i23 = 0; _i23 < _list21.size; ++_i23)
+          org.apache.thrift.protocol.TList _list37 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.adminIds = new java.util.ArrayList<java.lang.String>(_list37.size);
+          java.lang.String _elem38;
+          for (int _i39 = 0; _i39 < _list37.size; ++_i39)
           {
-            _elem22 = iprot.readString();
-            struct.adminIds.add(_elem22);
+            _elem38 = iprot.readString();
+            struct.adminIds.add(_elem38);
           }
         }
         struct.setAdminIdsIsSet(true);
@@ -11104,13 +13810,13 @@ public class GroupManagerService {
             case 3: // ADMIN_IDS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list24 = iprot.readListBegin();
-                  struct.adminIds = new java.util.ArrayList<java.lang.String>(_list24.size);
-                  java.lang.String _elem25;
-                  for (int _i26 = 0; _i26 < _list24.size; ++_i26)
+                  org.apache.thrift.protocol.TList _list40 = iprot.readListBegin();
+                  struct.adminIds = new java.util.ArrayList<java.lang.String>(_list40.size);
+                  java.lang.String _elem41;
+                  for (int _i42 = 0; _i42 < _list40.size; ++_i42)
                   {
-                    _elem25 = iprot.readString();
-                    struct.adminIds.add(_elem25);
+                    _elem41 = iprot.readString();
+                    struct.adminIds.add(_elem41);
                   }
                   iprot.readListEnd();
                 }
@@ -11148,9 +13854,9 @@ public class GroupManagerService {
           oprot.writeFieldBegin(ADMIN_IDS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.adminIds.size()));
-            for (java.lang.String _iter27 : struct.adminIds)
+            for (java.lang.String _iter43 : struct.adminIds)
             {
-              oprot.writeString(_iter27);
+              oprot.writeString(_iter43);
             }
             oprot.writeListEnd();
           }
@@ -11177,9 +13883,9 @@ public class GroupManagerService {
         oprot.writeString(struct.groupId);
         {
           oprot.writeI32(struct.adminIds.size());
-          for (java.lang.String _iter28 : struct.adminIds)
+          for (java.lang.String _iter44 : struct.adminIds)
           {
-            oprot.writeString(_iter28);
+            oprot.writeString(_iter44);
           }
         }
       }
@@ -11193,13 +13899,13 @@ public class GroupManagerService {
         struct.groupId = iprot.readString();
         struct.setGroupIdIsSet(true);
         {
-          org.apache.thrift.protocol.TList _list29 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.adminIds = new java.util.ArrayList<java.lang.String>(_list29.size);
-          java.lang.String _elem30;
-          for (int _i31 = 0; _i31 < _list29.size; ++_i31)
+          org.apache.thrift.protocol.TList _list45 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.adminIds = new java.util.ArrayList<java.lang.String>(_list45.size);
+          java.lang.String _elem46;
+          for (int _i47 = 0; _i47 < _list45.size; ++_i47)
           {
-            _elem30 = iprot.readString();
-            struct.adminIds.add(_elem30);
+            _elem46 = iprot.readString();
+            struct.adminIds.add(_elem46);
           }
         }
         struct.setAdminIdsIsSet(true);

@@ -112,7 +112,7 @@ public abstract class AppCatAbstractRepository<T, E, Id> {
         try {
             entityManager = AppCatalogJPAUtils.getEntityManager();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to get App Catalog EntityManager", e);
         }
         try {
             entityManager.getTransaction().begin();
