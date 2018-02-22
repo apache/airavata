@@ -1809,14 +1809,15 @@ public class AiravataServerHandler implements Airavata.Iface {
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
             ExperimentModel experiment = regClient.getExperiment(airavataExperimentId);
-            String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
-            String appInterfaceId = experiment.getExecutionId();
-            ApplicationInterfaceDescription applicationInterfaceDescription = regClient.getApplicationInterface(appInterfaceId);
-            List<String> entityIds = applicationInterfaceDescription.getApplicationModules();
-            if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId, entityIds.get(0),gatewayId + ":READ")) {
-                logger.error(airavataExperimentId, "User does not have access to application module {}.", entityIds.get(0));
-                throw new AuthorizationException("User does not have permission to access this resource");
-            }
+            // TODO: fix checking if the user has access to the deployment of this application, should check for entity type APPLICATION_DEPLOYMENT and permission type EXEC
+//            String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+//            String appInterfaceId = experiment.getExecutionId();
+//            ApplicationInterfaceDescription applicationInterfaceDescription = regClient.getApplicationInterface(appInterfaceId);
+//            List<String> entityIds = applicationInterfaceDescription.getApplicationModules();
+//            if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId, entityIds.get(0),gatewayId + ":READ")) {
+//                logger.error(airavataExperimentId, "User does not have access to application module {}.", entityIds.get(0));
+//                throw new AuthorizationException("User does not have permission to access this resource");
+//            }
             if (experiment == null) {
                 logger.error(airavataExperimentId, "Error while launching experiment, experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
