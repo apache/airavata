@@ -48,8 +48,8 @@ import de.fzj.unicore.bes.faults.UnknownActivityIdentifierFault;
 import de.fzj.unicore.uas.client.StorageClient;
 import de.fzj.unicore.wsrflite.xmlbeans.WSUtilities;
 import eu.unicore.util.httpclient.DefaultClientConfiguration;
-import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
@@ -62,11 +62,14 @@ import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.gfac.impl.SSHUtils;
-import org.apache.airavata.gfac.impl.task.utils.bes.*;
+import org.apache.airavata.gfac.impl.task.utils.bes.DataTransferrer;
+import org.apache.airavata.gfac.impl.task.utils.bes.JSDLGenerator;
+import org.apache.airavata.gfac.impl.task.utils.bes.SecurityUtils;
+import org.apache.airavata.gfac.impl.task.utils.bes.StorageCreator;
+import org.apache.airavata.gfac.impl.task.utils.bes.UNICORESecurityContext;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
-import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
@@ -78,11 +81,15 @@ import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskTypes;
-import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
-import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.api.RegistryService;
+import org.apache.thrift.TException;
 import org.apache.xmlbeans.XmlCursor;
-import org.ggf.schemas.bes.x2006.x08.besFactory.*;
+import org.ggf.schemas.bes.x2006.x08.besFactory.ActivityStateEnumeration;
+import org.ggf.schemas.bes.x2006.x08.besFactory.ActivityStatusType;
+import org.ggf.schemas.bes.x2006.x08.besFactory.CreateActivityDocument;
+import org.ggf.schemas.bes.x2006.x08.besFactory.CreateActivityResponseDocument;
+import org.ggf.schemas.bes.x2006.x08.besFactory.GetActivityStatusesDocument;
+import org.ggf.schemas.bes.x2006.x08.besFactory.GetActivityStatusesResponseDocument;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,155 +131,163 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
         ProcessContext processContext = taskContext.getParentProcessContext();
         // FIXME - use original output dir
         setInputOutputLocations(processContext);
+        RegistryService.Client registryClient = Factory.getRegistryServiceClient();
         try {
-            // con't reuse if UserDN has been changed.
-            secProperties = getSecurityConfig(processContext);
-            // try secProperties = secProperties.clone() if we can't use already initialized ClientConfigurations.
-        } catch (GFacException e) {
-            String msg = "Unicorn security context initialization error";
-            log.error(msg, e);
-            taskStatus.setState(TaskState.FAILED);
-            taskStatus.setReason(msg);
-            return taskStatus;
-        }
-
-        try {
-            JobSubmissionProtocol protocol = processContext.getJobSubmissionProtocol();
-            JobSubmissionInterface jobSubmissionInterface = GFacUtils.getPreferredJobSubmissionInterface(processContext);
-            String factoryUrl = null;
-            if (protocol.equals(JobSubmissionProtocol.UNICORE)) {
-                UnicoreJobSubmission unicoreJobSubmission = GFacUtils.getUnicoreJobSubmission(
-                        jobSubmissionInterface.getJobSubmissionInterfaceId());
-                factoryUrl = unicoreJobSubmission.getUnicoreEndPointURL();
+            try {
+                // con't reuse if UserDN has been changed.
+                secProperties = getSecurityConfig(registryClient, processContext);
+                // try secProperties = secProperties.clone() if we can't use already initialized ClientConfigurations.
+            } catch (GFacException e) {
+                String msg = "Unicorn security context initialization error";
+                log.error(msg, e);
+                taskStatus.setState(TaskState.FAILED);
+                taskStatus.setReason(msg);
+                return taskStatus;
+            } catch (TException e) {
+                throw new RuntimeException("Error ", e);
             }
-            EndpointReferenceType eprt = EndpointReferenceType.Factory.newInstance();
-            eprt.addNewAddress().setStringValue(factoryUrl);
-            String userDN = processContext.getProcessModel().getUserDn();
-
-            CreateActivityDocument cad = CreateActivityDocument.Factory.newInstance();
-
-            // create storage
-            StorageCreator storageCreator = new StorageCreator(secProperties, factoryUrl, 5, null);
-            sc = storageCreator.createStorage();
-
-            JobDefinitionType jobDefinition = JSDLGenerator.buildJSDLInstance(processContext, sc.getUrl()).getJobDefinition();
-            cad.addNewCreateActivity().addNewActivityDocument().setJobDefinition(jobDefinition);
-
-            log.info("Submitted JSDL: " + jobDefinition.getJobDescription());
-
-            // copy files to local
-            copyInputFilesToLocal(taskContext);
-            // upload files if any
-            DataTransferrer dt = new DataTransferrer(processContext, sc);
-            dt.uploadLocalFiles();
-
-            JobModel jobDetails = new JobModel();
-            jobDetails.setTaskId(taskContext.getTaskId());
-            jobDetails.setProcessId(taskContext.getProcessId());
-            FactoryClient factory = new FactoryClient(eprt, secProperties);
-
-            log.info("Activity Submitting to {} ... \n", factoryUrl);
-            CreateActivityResponseDocument response = factory.createActivity(cad);
-            log.info("Activity Submitted to {} ... \n", factoryUrl);
-
-            EndpointReferenceType activityEpr = response.getCreateActivityResponse().getActivityIdentifier();
-
-            log.info("Activity : " + activityEpr.getAddress().getStringValue() + " Submitted.");
-
-            // factory.waitWhileActivityIsDone(activityEpr, 1000);
-            jobId = WSUtilities.extractResourceID(activityEpr);
-            if (jobId == null) {
-                jobId = new Long(Calendar.getInstance().getTimeInMillis())
-                        .toString();
-            }
-            log.info("JobID: " + jobId);
-            jobDetails.setJobId(jobId);
-            jobDetails.setJobDescription(activityEpr.toString());
-            jobDetails.setJobStatuses(Arrays.asList(new JobStatus(JobState.SUBMITTED)));
-            processContext.setJobModel(jobDetails);
-            GFacUtils.saveJobModel(processContext, jobDetails);
-            GFacUtils.saveJobStatus(processContext, jobDetails);
-            log.info(formatStatusMessage(activityEpr.getAddress()
-                    .getStringValue(), factory.getActivityStatus(activityEpr)
-                    .toString()));
-
-            waitUntilDone(eprt, activityEpr, processContext, secProperties);
-
-            ActivityStatusType activityStatus = null;
-            activityStatus = getStatus(factory, activityEpr);
-            log.info(formatStatusMessage(activityEpr.getAddress().getStringValue(), activityStatus.getState().toString()));
-            ActivityClient activityClient;
-            activityClient = new ActivityClient(activityEpr, secProperties);
-            // now use the activity working directory property
-            dt.setStorageClient(activityClient.getUspaceClient());
-
-            List<OutputDataObjectType> copyOutput = null;
-
-            if ((activityStatus.getState() == ActivityStateEnumeration.FAILED)) {
-                String error = activityStatus.getFault().getFaultcode()
-                        .getLocalPart()
-                        + "\n"
-                        + activityStatus.getFault().getFaultstring()
-                        + "\n EXITCODE: " + activityStatus.getExitCode();
-                log.error(error);
-
-                JobState applicationJobStatus = JobState.FAILED;
-                jobDetails.setJobStatuses(Arrays.asList(new JobStatus(applicationJobStatus)));
-                sendNotification(processContext, jobDetails);
-                try {Thread.sleep(5000);} catch (InterruptedException e) {}
-
-                //What if job is failed before execution and there are not stdouts generated yet?
-                log.debug("Downloading any standard output and error files, if they were produced.");
-                copyOutput = dt.downloadRemoteFiles();
-
-            } else if (activityStatus.getState() == ActivityStateEnumeration.CANCELLED) {
-                JobState applicationJobStatus = JobState.CANCELED;
-                jobDetails.setJobStatuses(Arrays.asList(new JobStatus(applicationJobStatus)));
-                GFacUtils.saveJobStatus(processContext, jobDetails);
-                throw new GFacException(
-                        processContext.getExperimentId() + "Job Canceled");
-            } else if (activityStatus.getState() == ActivityStateEnumeration.FINISHED) {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException ignored) {
+            try {
+                JobSubmissionProtocol protocol = processContext.getJobSubmissionProtocol();
+                JobSubmissionInterface jobSubmissionInterface = GFacUtils.getPreferredJobSubmissionInterface(processContext, registryClient);
+                String factoryUrl = null;
+                if (protocol.equals(JobSubmissionProtocol.UNICORE)) {
+                    UnicoreJobSubmission unicoreJobSubmission = GFacUtils.getUnicoreJobSubmission(
+                            registryClient, jobSubmissionInterface.getJobSubmissionInterfaceId());
+                    factoryUrl = unicoreJobSubmission.getUnicoreEndPointURL();
                 }
-                JobState applicationJobStatus = JobState.COMPLETE;
-                jobDetails.setJobStatuses(Arrays.asList(new JobStatus(applicationJobStatus)));
-                GFacUtils.saveJobStatus(processContext, jobDetails);
-                log.info("Job Id: {}, exit code: {}, exit status: {}", jobDetails.getJobId(),
-                        activityStatus.getExitCode(), ActivityStateEnumeration.FINISHED.toString());
+                EndpointReferenceType eprt = EndpointReferenceType.Factory.newInstance();
+                eprt.addNewAddress().setStringValue(factoryUrl);
+                String userDN = processContext.getProcessModel().getUserDn();
+
+                CreateActivityDocument cad = CreateActivityDocument.Factory.newInstance();
+
+                // create storage
+                StorageCreator storageCreator = new StorageCreator(secProperties, factoryUrl, 5, null);
+                sc = storageCreator.createStorage();
+
+                JobDefinitionType jobDefinition = JSDLGenerator.buildJSDLInstance(processContext, sc.getUrl()).getJobDefinition();
+                cad.addNewCreateActivity().addNewActivityDocument().setJobDefinition(jobDefinition);
+
+                log.info("Submitted JSDL: " + jobDefinition.getJobDescription());
+
+                // copy files to local
+                copyInputFilesToLocal(taskContext);
+                // upload files if any
+                DataTransferrer dt = new DataTransferrer(processContext, sc);
+                dt.uploadLocalFiles();
+
+                JobModel jobDetails = new JobModel();
+                jobDetails.setTaskId(taskContext.getTaskId());
+                jobDetails.setProcessId(taskContext.getProcessId());
+                FactoryClient factory = new FactoryClient(eprt, secProperties);
+
+                log.info("Activity Submitting to {} ... \n", factoryUrl);
+                CreateActivityResponseDocument response = factory.createActivity(cad);
+                log.info("Activity Submitted to {} ... \n", factoryUrl);
+
+                EndpointReferenceType activityEpr = response.getCreateActivityResponse().getActivityIdentifier();
+
+                log.info("Activity : " + activityEpr.getAddress().getStringValue() + " Submitted.");
+
+                // factory.waitWhileActivityIsDone(activityEpr, 1000);
+                jobId = WSUtilities.extractResourceID(activityEpr);
+                if (jobId == null) {
+                    jobId = new Long(Calendar.getInstance().getTimeInMillis())
+                            .toString();
+                }
+                log.info("JobID: " + jobId);
+                jobDetails.setJobId(jobId);
+                jobDetails.setJobDescription(activityEpr.toString());
+                jobDetails.setJobStatuses(Arrays.asList(new JobStatus(JobState.SUBMITTED)));
+                processContext.setJobModel(jobDetails);
+                GFacUtils.saveJobModel(processContext, registryClient, jobDetails);
+                GFacUtils.saveJobStatus(processContext, registryClient, jobDetails);
+                log.info(formatStatusMessage(activityEpr.getAddress()
+                        .getStringValue(), factory.getActivityStatus(activityEpr)
+                        .toString()));
+
+                waitUntilDone(registryClient, eprt, activityEpr, processContext, secProperties);
+
+                ActivityStatusType activityStatus = null;
+                activityStatus = getStatus(factory, activityEpr);
+                log.info(formatStatusMessage(activityEpr.getAddress().getStringValue(), activityStatus.getState().toString()));
+                ActivityClient activityClient;
+                activityClient = new ActivityClient(activityEpr, secProperties);
+                // now use the activity working directory property
+                dt.setStorageClient(activityClient.getUspaceClient());
+
+                List<OutputDataObjectType> copyOutput = null;
+
+                if ((activityStatus.getState() == ActivityStateEnumeration.FAILED)) {
+                    String error = activityStatus.getFault().getFaultcode()
+                            .getLocalPart()
+                            + "\n"
+                            + activityStatus.getFault().getFaultstring()
+                            + "\n EXITCODE: " + activityStatus.getExitCode();
+                    log.error(error);
+
+                    JobState applicationJobStatus = JobState.FAILED;
+                    jobDetails.setJobStatuses(Arrays.asList(new JobStatus(applicationJobStatus)));
+                    sendNotification(registryClient, processContext, jobDetails);
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                    }
+
+                    //What if job is failed before execution and there are not stdouts generated yet?
+                    log.debug("Downloading any standard output and error files, if they were produced.");
+                    copyOutput = dt.downloadRemoteFiles();
+
+                } else if (activityStatus.getState() == ActivityStateEnumeration.CANCELLED) {
+                    JobState applicationJobStatus = JobState.CANCELED;
+                    jobDetails.setJobStatuses(Arrays.asList(new JobStatus(applicationJobStatus)));
+                    GFacUtils.saveJobStatus(processContext, registryClient, jobDetails);
+                    throw new GFacException(
+                            processContext.getExperimentId() + "Job Canceled");
+                } else if (activityStatus.getState() == ActivityStateEnumeration.FINISHED) {
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException ignored) {
+                    }
+                    JobState applicationJobStatus = JobState.COMPLETE;
+                    jobDetails.setJobStatuses(Arrays.asList(new JobStatus(applicationJobStatus)));
+                    GFacUtils.saveJobStatus(processContext, registryClient, jobDetails);
+                    log.info("Job Id: {}, exit code: {}, exit status: {}", jobDetails.getJobId(),
+                            activityStatus.getExitCode(), ActivityStateEnumeration.FINISHED.toString());
 
 //                if (activityStatus.getExitCode() == 0) {
 //                } else {
 //                    dt.downloadStdOuts();
 //                }
-                copyOutput = dt.downloadRemoteFiles();
-            }
-            if (copyOutput != null) {
-                copyOutputFilesToStorage(taskContext, copyOutput);
-                for (OutputDataObjectType outputDataObjectType : copyOutput) {
-                    GFacUtils.saveExperimentOutput(processContext, outputDataObjectType.getName(), outputDataObjectType.getValue());
+                    copyOutput = dt.downloadRemoteFiles();
                 }
-            }
+                if (copyOutput != null) {
+                    copyOutputFilesToStorage(registryClient, taskContext, copyOutput);
+                    for (OutputDataObjectType outputDataObjectType : copyOutput) {
+                        GFacUtils.saveExperimentOutput(processContext, registryClient, outputDataObjectType.getName(), outputDataObjectType.getValue());
+                    }
+                }
 //            dt.publishFinalOutputs();
-            taskStatus.setState(TaskState.COMPLETED);
-        } catch (AppCatalogException e) {
-            log.error("Error while retrieving UNICORE job submission.." , e);
-            taskStatus.setState(TaskState.FAILED);
-        } catch (Exception e) {
-            log.error("BES task failed... ", e);
-            taskStatus.setState(TaskState.FAILED);
-        }
+                taskStatus.setState(TaskState.COMPLETED);
+            } catch (Exception e) {
+                log.error("BES task failed... ", e);
+                taskStatus.setState(TaskState.FAILED);
+            }
 
-        return taskStatus;
+            return taskStatus;
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
+        }
     }
 
-    private void copyOutputFilesToStorage(TaskContext taskContext, List<OutputDataObjectType> copyOutput) throws GFacException {
+    private void copyOutputFilesToStorage(RegistryService.Client registryClient, TaskContext taskContext, List<OutputDataObjectType> copyOutput) throws GFacException, TException {
         ProcessContext pc = taskContext.getParentProcessContext();
         String remoteFilePath = null, fileName = null, localFilePath = null;
         try {
             authenticationInfo = Factory.getStorageSSHKeyAuthentication(pc);
-            ServerInfo serverInfo = pc.getComputeResourceServerInfo();
+            ServerInfo serverInfo = pc.getComputeResourceServerInfo(registryClient);
             Session sshSession = Factory.getSSHSession(authenticationInfo, serverInfo);
             for (OutputDataObjectType output : copyOutput) {
                 switch (output.getType()) {
@@ -347,12 +362,12 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
         processContext.setOutputDir(localPath);
     }
 
-    private DefaultClientConfiguration getSecurityConfig(ProcessContext pc) throws GFacException {
+    private DefaultClientConfiguration getSecurityConfig(RegistryService.Client registryClient, ProcessContext pc) throws GFacException, TException {
         DefaultClientConfiguration clientConfig = null;
         try {
             UNICORESecurityContext unicoreSecurityContext = SecurityUtils.getSecurityContext(pc);
-            UserConfigurationDataModel userConfigDataModel = (UserConfigurationDataModel) pc.getExperimentCatalog().
-                    get(ExperimentCatalogModelType.USER_CONFIGURATION_DATA, pc.getExperimentId());
+            UserConfigurationDataModel userConfigDataModel =  registryClient.
+                    getUserConfigurationData(pc.getExperimentId());
             // FIXME - remove following setter lines, and use original value comes with user configuration data model.
             userConfigDataModel.setGenerateCert(true);
 //            userConfigDataModel.setUserDN("CN=swus3, O=Ultrascan Gateway, C=DE");
@@ -361,8 +376,6 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             } else {
                 clientConfig = unicoreSecurityContext.getDefaultConfiguration(false);
             }
-        } catch (RegistryException e) {
-            throw new GFacException("Error! reading user configuration data from registry", e);
         } catch (ApplicationSettingsException e) {
             throw new GFacException("Error! retrieving default client configurations", e);
         }
@@ -374,7 +387,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
         return String.format("Activity %s is %s.\n", activityUrl, status);
     }
 
-    protected void waitUntilDone(EndpointReferenceType factoryEpr, EndpointReferenceType activityEpr, ProcessContext processContext, DefaultClientConfiguration secProperties) throws Exception {
+    protected void waitUntilDone(RegistryService.Client registryClient, EndpointReferenceType factoryEpr, EndpointReferenceType activityEpr, ProcessContext processContext, DefaultClientConfiguration secProperties) throws Exception {
 
         try {
             FactoryClient factoryClient = new FactoryClient(factoryEpr, secProperties);
@@ -388,7 +401,7 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
 
                 ActivityStatusType activityStatusType = getStatus(factoryClient, activityEpr);
                 applicationJobStatus = getApplicationJobStatus(activityStatusType);
-                sendNotification(processContext,processContext.getJobModel());
+                sendNotification(registryClient, processContext,processContext.getJobModel());
                 // GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId,
                 // applicationJobStatus);
                 try {
@@ -403,8 +416,8 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
         }
     }
 
-    private void sendNotification(ProcessContext processContext,  JobModel jobModel) throws GFacException {
-        GFacUtils.saveJobStatus(processContext, jobModel);
+    private void sendNotification(RegistryService.Client registryClient, ProcessContext processContext,  JobModel jobModel) throws GFacException {
+        GFacUtils.saveJobStatus(processContext, registryClient, jobModel);
     }
 
     @Override
@@ -502,8 +515,15 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
             String interfaceId = processContext.getApplicationInterfaceDescription().getApplicationInterfaceId();
             String factoryUrl = null;
             if (protocol.equals(JobSubmissionProtocol.UNICORE)) {
-                UnicoreJobSubmission unicoreJobSubmission = GFacUtils.getUnicoreJobSubmission(interfaceId);
-                factoryUrl = unicoreJobSubmission.getUnicoreEndPointURL();
+                RegistryService.Client registryClient = Factory.getRegistryServiceClient();
+                try {
+                    UnicoreJobSubmission unicoreJobSubmission = GFacUtils.getUnicoreJobSubmission(registryClient, interfaceId);
+                    factoryUrl = unicoreJobSubmission.getUnicoreEndPointURL();
+                } finally {
+                    if (registryClient != null) {
+                        ThriftUtils.close(registryClient);
+                    }
+                }
             }
             EndpointReferenceType epr = EndpointReferenceType.Factory
                     .newInstance();

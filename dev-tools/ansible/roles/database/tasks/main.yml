@@ -113,7 +113,7 @@
 - include: secure_install.yml
 
 - name: create databases
-  mysql_db: name="{{ item }}" state=present
+  mysql_db: name="{{ item }}" state=present encoding=utf8
   with_items:
     - "{{ mysql_databases }}"
 

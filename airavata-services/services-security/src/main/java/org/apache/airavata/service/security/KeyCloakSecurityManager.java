@@ -67,7 +67,10 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
     private final static String SHARING_RESOURCE_METHODS = "/airavata/shareResourceWithUsers|/airavata/revokeSharingOfResourceFromUsers|/airavata/getAllAccessibleUsers";
     private final static String SSH_ACCOUNT_PROVISIONER_METHODS =
             "/airavata/getSSHAccountProvisioners|/airavata/doesUserHaveSSHAccount|/airavata" +
-                    "/setupUserComputeResourcePreferencesForSSH";
+                    "/setupUserComputeResourcePreferencesForSSH|" +
+                    // getGatewayResourceProfile is needed to look up whether ssh account provisioning is
+                    // configured for a gateway's compute resource preference
+                    "/airavata/getGatewayResourceProfile";
 
     public KeyCloakSecurityManager() throws AiravataSecurityException {
         rolePermissionConfig.put("admin", "/airavata/.*");
@@ -95,7 +98,7 @@ public class KeyCloakSecurityManager implements AiravataSecurityManager {
                 "|/airavata/getComputeResource|/airavata/getAllComputeResourceNames|/airavata/getWorkflow|/airavata/getWorkflowTemplateId" +
                 "|/airavata/isWorkflowExistWithName|/airavata/registerDataProduct|/airavata/getDataProduct|/airavata/registerReplicaLocation" +
                 "|/airavata/getParentDataProduct|/airavata/getChildDataProducts|/airavata/getAllAccessibleUsers" +
-                "|/airavata/getExperimentByAdmin|/airavata/cloneExperimentByAdmin" +
+                "|/airavata/getExperimentByAdmin|/airavata/cloneExperimentByAdmin|/airavata/getAllCredentialSummaryForGateway" +
                 "|" + USER_RESOURCE_PROFILE_USER_METHODS + "|/airavata/getAllUserResourceProfiles" +
                 "|" + SHARING_RESOURCE_METHODS + "|/airavata/getGateway|" + SSH_ACCOUNT_PROVISIONER_METHODS);
         rolePermissionConfig.put("gateway-user", "/airavata/getAPIVersion|/airavata/getNotification|/airavata/getAllNotifications|" +

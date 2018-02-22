@@ -91,7 +91,7 @@ public class DataStreamingTask implements Task {
             return null;
         } catch (TException e) {
             log.error("Error while creating data streaming task", e);
-            return null;
+            throw new RuntimeException("Error while creating data streaming task", e);
         }
     }
 
