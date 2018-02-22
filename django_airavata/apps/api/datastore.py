@@ -77,8 +77,8 @@ def get_experiment_dir(username, project_name, experiment_name):
         experiment_data_storage.get_valid_name(experiment_name))
     experiment_dir = experiment_data_storage.path(experiment_dir_name)
     if not experiment_data_storage.exists(experiment_dir):
-        os.mkdir(experiment_dir,
-                 mode=experiment_data_storage.directory_permissions_mode)
+        os.makedirs(experiment_dir,
+                    mode=experiment_data_storage.directory_permissions_mode)
         # os.mkdir mode isn't always respected so need to chmod to be sure
         os.chmod(experiment_dir,
                  mode=experiment_data_storage.directory_permissions_mode)
