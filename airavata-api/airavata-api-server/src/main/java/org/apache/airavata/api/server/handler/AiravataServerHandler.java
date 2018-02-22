@@ -299,6 +299,20 @@ public class AiravataServerHandler implements Airavata.Iface {
             permissionType.setDescription("Write permission type");
             sharingClient.createPermissionType(permissionType);
 
+            //Create an "everyone" group for the domain
+            String groupId = "everyone@" + domain.domainId;
+            UserGroup userGroup = new UserGroup();
+            userGroup.setGroupId(groupId);
+            userGroup.setDomainId(domain.domainId);
+            userGroup.setGroupCardinality(GroupCardinality.MULTI_USER);
+            userGroup.setCreatedTime(System.currentTimeMillis());
+            userGroup.setUpdatedTime(System.currentTimeMillis());
+            userGroup.setOwnerId(authzToken.getClaimsMap().get(Constants.USER_NAME));
+            userGroup.setName("everyone");
+            userGroup.setDescription("Default Group");
+            userGroup.setGroupType(GroupType.DOMAIN_LEVEL_GROUP);
+            sharingClient.createGroup(userGroup);
+
             registryClientPool.returnResource(registryClient);
             sharingClientPool.returnResource(sharingClient);
 
