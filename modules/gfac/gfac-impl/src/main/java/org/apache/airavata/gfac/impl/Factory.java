@@ -72,15 +72,14 @@ import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.AppCatalog;
-import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.airavata.registry.cpi.ExperimentCatalog;
-import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -175,12 +174,14 @@ public abstract class Factory {
 		return gfacContext;
 	}
 
-	public static ExperimentCatalog getDefaultExpCatalog() throws RegistryException {
-		return RegistryFactory.getDefaultExpCatalog();
-	}
-
-	public static AppCatalog getDefaultAppCatalog() throws AppCatalogException {
-		return RegistryFactory.getAppCatalog();
+	public static RegistryService.Client getRegistryServiceClient() {
+		try {
+			final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
+			final String serverHost = ServerSettings.getRegistryServerHost();
+			return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
+		} catch (RegistryServiceException|ApplicationSettingsException e) {
+			throw new RuntimeException("Unable to create registry client...", e);
+		}
 	}
 
 	public static Publisher getStatusPublisher() throws AiravataException {
@@ -270,11 +271,10 @@ public abstract class Factory {
 	 * @param processContext
 	 * @return
 	 * @throws GFacException
-	 * @throws AppCatalogException
 	 * @throws AiravataException
 	 */
-	public static RemoteCluster getJobSubmissionRemoteCluster(ProcessContext processContext)
-			throws GFacException, AppCatalogException, AiravataException, CredentialStoreException {
+	public static RemoteCluster getJobSubmissionRemoteCluster(ProcessContext processContext, RegistryService.Client registryClient)
+			throws GFacException, AiravataException, CredentialStoreException, TException {
 
         String computeResourceId = processContext.getComputeResourceId();
         JobSubmissionProtocol jobSubmissionProtocol = processContext.getJobSubmissionProtocol();
@@ -291,14 +291,14 @@ public abstract class Factory {
             JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(processContext.getResourceJobManager());
             if (jobSubmissionProtocol == JobSubmissionProtocol.LOCAL ||
                     jobSubmissionProtocol == JobSubmissionProtocol.LOCAL_FORK) {
-				remoteCluster = new LocalRemoteCluster(processContext.getComputeResourceServerInfo(),
+				remoteCluster = new LocalRemoteCluster(processContext.getComputeResourceServerInfo(registryClient),
 						jobManagerConfiguration,
 						null);
 			} else if (jobSubmissionProtocol == JobSubmissionProtocol.SSH ||
                     jobSubmissionProtocol == JobSubmissionProtocol.SSH_FORK
 					|| jobSubmissionProtocol == JobSubmissionProtocol.CLOUD) {
 
-				remoteCluster = new HPCRemoteCluster(processContext.getComputeResourceServerInfo(),
+				remoteCluster = new HPCRemoteCluster(processContext.getComputeResourceServerInfo(registryClient),
 						jobManagerConfiguration,
 						Factory.getComputerResourceSSHKeyAuthentication(processContext));
 			}else {
@@ -315,7 +315,7 @@ public abstract class Factory {
 							getJobManagerConfiguration(processContext.getResourceJobManager());
                     if (jobSubmissionProtocol == JobSubmissionProtocol.SSH ||
                             jobSubmissionProtocol == JobSubmissionProtocol.SSH_FORK) {
-						remoteCluster = new HPCRemoteCluster(processContext.getComputeResourceServerInfo(),
+						remoteCluster = new HPCRemoteCluster(processContext.getComputeResourceServerInfo(registryClient),
 								jobManagerConfiguration,
 								Factory.getComputerResourceSSHKeyAuthentication(processContext));
 					}

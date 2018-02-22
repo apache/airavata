@@ -291,6 +291,8 @@ generate_python_stubs() {
 
     $THRIFT_EXEC ${THRIFT_ARGS} --gen py ${SHARING_API_THRIFT_FILE}  || fail unable to generate Python thrift classes
 
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen py ${PROFILE_SERVICE_THRIFT_FILE} || fail unable to generate Python thrift classes
+
     # For the generated CPP classes add the ASF V2 License header
     #add_license_header #PYTHON_GEN_DIR
 

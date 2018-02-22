@@ -54,6 +54,8 @@ workflow_catalog: "workflow_catalog"
 credential_store: "credential_store"
 profile_service: "profile_service"
 
+mysql_connector_jar: "mysql-connector-java-5.1.37-bin.jar"
+
 # Rabbitmq related vareables
 rabbitmq_server: "{{ groups['rabbitmq'][0] }}"
 rabbitmq_vhost: "master"
@@ -71,7 +73,7 @@ api_server_name: "apiserver-node0"
 api_server_host: "{{ groups['api-orch'][0] }}"
 api_server_port: "8930"
 api_secured: "false"
-tls_enable: "false"
+tls_enable: "true"
 api_server_tls_port: "9930"
 enable_sharing: "true"
 iam_server_url: "CHANGEME"
@@ -93,8 +95,11 @@ registry_port: 8970
 default_gateway: "default"
 
 # Credential and keystore related variables
+keystore_src_path: "{{inventory_dir}}/files/airavata.jks"
 keystore_passwd: "airavata"
+client_truststore_src_path: "{{inventory_dir}}/files/client_truststore.jks"
 client_truststore_passwd: "airavata"
+cred_keystore_src_path: "{{inventory_dir}}/files/airavata_sym.jks"
 cred_keystore_passwd: "airavata"
 cred_keystore_alias: "airavata"
 cred_store_server_host: "{{ groups['api-orch'][0] }}"
@@ -115,9 +120,11 @@ monitor_email_password: "CHANGEME"
 # PGA variables
 pga_repo: "https://github.com/apache/airavata-php-gateway.git"
 user_data_dir: "/var/www/portals/gateway-user-data"
+real_user_data_dir: "/data/gateway-user-data"
 ## Airavata Client related variables
+#airavata_server: "tls://gw77.iu.xsede.org"
 airavata_server: "tls://{{ groups['api-orch'][0] }}"
-airavata_port: "8930"
+airavata_port: "9930"
 airavata_profile_service_server: "{{ groups['api-orch'][0] }}"
 auth_verify_peer: "true"
 oauth_service_url: "{{ iam_server_url }}"

@@ -20,7 +20,7 @@
 
 ---
 pga_repo: "https://github.com/apache/airavata-php-gateway.git"
-git_branch: "develop"
+pga_git_branch: "develop"
 user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/dev-scigap"

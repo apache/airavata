@@ -26,8 +26,7 @@ import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
 import org.apache.airavata.orchestrator.cpi.Orchestrator;
-import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,25 +65,20 @@ public abstract class AbstractOrchestrator implements Orchestrator {
 	public void setAiravataUserName(String airavataUserName) {
 		this.airavataUserName = airavataUserName;
 	}
-	public AbstractOrchestrator() throws OrchestratorException {
+	public AbstractOrchestrator() throws OrchestratorException, TException {
         try {
             /* Initializing the OrchestratorConfiguration object */
         	orchestratorConfiguration = OrchestratorUtils.loadOrchestratorConfiguration();
             setGatewayProperties();
             orchestratorContext = new OrchestratorContext();
             orchestratorContext.setOrchestratorConfiguration(orchestratorConfiguration);
-            orchestratorContext.setRegistry(RegistryFactory.getRegistry());
         }  catch (IOException e) {
             logger.error("Failed to initializing Orchestrator - Error parsing configuration files");
             OrchestratorException orchestratorException = new OrchestratorException(e);
             throw orchestratorException;
 		} catch (ApplicationSettingsException e) {
 			throw new OrchestratorException(e);
-		} catch (RegistryException e) {
-            logger.error("Failed to initializing Orchestrator - Error initializing registry");
-            OrchestratorException orchestratorException = new OrchestratorException(e);
-            throw orchestratorException;
-        }
+		}
     }
 	
     protected void setGatewayProperties() {
@@ -93,6 +87,7 @@ public abstract class AbstractOrchestrator implements Orchestrator {
             setGatewayName(ServerSettings.getDefaultUserGateway());
         }  catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
+            throw new RuntimeException("Error while setting gateway properties.", e);
         }
     }
 
