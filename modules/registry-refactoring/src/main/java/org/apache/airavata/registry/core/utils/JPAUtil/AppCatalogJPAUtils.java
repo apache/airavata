@@ -2,26 +2,30 @@ package org.apache.airavata.registry.core.utils.JPAUtil;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.registry.core.utils.Committer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceUnit;
 import java.util.HashMap;
 import java.util.Map;
 
 public class AppCatalogJPAUtils {
 
     private final static Logger logger = LoggerFactory.getLogger(AppCatalogJPAUtils.class);
-    private static final String PERSISTENCE_UNIT_NAME = "appcatalog_data";
+    // TODO: we can rename this back to appcatalog_data once we completely replace the other appcatalog_data persistence context in airavata-registry-core
+    private static final String PERSISTENCE_UNIT_NAME = "appcatalog_data_new";
     private static final String APPCATALOG_JDBC_DRIVER = "appcatalog.jdbc.driver";
     private static final String APPCATALOG_JDBC_URL = "appcatalog.jdbc.url";
     private static final String APPCATALOG_JDBC_USER = "appcatalog.jdbc.user";
     private static final String APPCATALOG_JDBC_PWD = "appcatalog.jdbc.password";
     private static final String APPCATALOG_VALIDATION_QUERY = "appcatalog.validationQuery";
-    @PersistenceUnit(unitName = "appcatalog_data")
+    @PersistenceUnit(unitName = PERSISTENCE_UNIT_NAME)
     protected static EntityManagerFactory factory;
-    @PersistenceContext(unitName = "appcatalog_data")
+    @PersistenceContext(unitName = PERSISTENCE_UNIT_NAME)
     private static EntityManager appCatEntityManager;
 
     public static EntityManager getEntityManager() throws ApplicationSettingsException {
