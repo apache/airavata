@@ -172,11 +172,56 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     }
 
     @Override
+    public boolean addUsersToGroup(AuthzToken authzToken, List<String> userIds, String groupId) throws GroupManagerServiceException, AuthorizationException, TException {
+        try {
+            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+            String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
+            String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            if (!(sharingClient.hasOwnerAccess(domainId, groupId, username)
+                    || sharingClient.hasAdminAccess(domainId, groupId, username))) {
+                throw new GroupManagerServiceException("User does not have access to add users to the group");
+            }
+            return sharingClient.addUsersToGroup(domainId, userIds, groupId);
+
+        } catch (Exception e) {
+            String msg = "Error adding users to group. Group ID: " + groupId ;
+            logger.error(msg, e);
+            GroupManagerServiceException exception = new GroupManagerServiceException();
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public boolean removeUsersFromGroup(AuthzToken authzToken, List<String> userIds, String groupId) throws GroupManagerServiceException, AuthorizationException, TException {
+        try {
+            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+            String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
+            String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            if (!(sharingClient.hasOwnerAccess(domainId, groupId, username)
+                    || sharingClient.hasAdminAccess(domainId, groupId, username))) {
+                throw new GroupManagerServiceException("User does not have access to remove users to the group");
+            }
+            return sharingClient.removeUsersFromGroup(domainId, userIds, groupId);
+        } catch (Exception e) {
+            String msg = "Error remove users to group. Group ID: " + groupId ;
+            logger.error(msg, e);
+            GroupManagerServiceException exception = new GroupManagerServiceException();
+            exception.setMessage(msg + " More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
     @SecurityCheck
     public boolean transferGroupOwnership(AuthzToken authzToken, String groupId, String newOwnerId) throws GroupManagerServiceException, AuthorizationException, TException {
-        //TODO verify that user is owner
        try{
            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+           String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
+           String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+           if (!(sharingClient.hasOwnerAccess(domainId, groupId, username))) {
+               throw new GroupManagerServiceException("User does not have Owner permission to transfer group ownership");
+           }
            return sharingClient.transferGroupOwnership(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, newOwnerId);
        }
        catch (Exception e) {
@@ -192,9 +237,13 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     @Override
     @SecurityCheck
     public boolean addGroupAdmins(AuthzToken authzToken, String groupId, List<String> adminIds) throws GroupManagerServiceException, AuthorizationException, TException {
-        //TODO verify that user is owner
         try {
             SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+            String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
+            String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            if (!(sharingClient.hasOwnerAccess(domainId, groupId, username))) {
+                throw new GroupManagerServiceException("User does not have Owner permission to add group admins");
+            }
             return sharingClient.addGroupAdmins(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, adminIds);
         }
         catch (Exception e) {
@@ -209,9 +258,13 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     @Override
     @SecurityCheck
     public boolean removeGroupAdmins(AuthzToken authzToken, String groupId, List<String> adminIds) throws GroupManagerServiceException, AuthorizationException, TException {
-        //TODO verify that user is owner
         try {
             SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+            String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
+            String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            if (!(sharingClient.hasOwnerAccess(domainId, groupId, username))) {
+                throw new GroupManagerServiceException("User does not have Owner permission to remove group admins");
+            }
             return sharingClient.removeGroupAdmins(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, adminIds);
         }
         catch (Exception e) {
