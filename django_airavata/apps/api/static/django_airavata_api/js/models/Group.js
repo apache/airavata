@@ -24,13 +24,4 @@ export default class Group extends BaseModel {
         }
         return null;
     }
-
-    toJSONForCreate() {
-        // Remaining fields just get defaulted
-        return JSON.stringify(this, ["name", "description", "members"]);
-    }
-
-    toJSONForUpdate() {
-        return JSON.stringify(this, ["id", "name", "description"]);
-    }
 }

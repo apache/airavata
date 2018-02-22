@@ -55,11 +55,8 @@ export default {
             console.log(JSON.stringify(this.newGroup));
             services.GroupService.create(this.newGroup)
             .then(result => {
-                console.log(result.json());
-                this.showDismissibleAlert.dismissable = true;
-                this.showDismissibleAlert.message = "Successfully created a new group";
-                this.showDismissibleAlert.variant = "success";
-                this.newGroup = new models.Group();
+                // TODO: redirect to the group view page
+                window.location.assign("/groups/");
             })
             .catch(error => {
                 this.showDismissibleAlert.dismissable = true;
