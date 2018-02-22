@@ -1,12 +1,12 @@
 <template>
     <div style="position:relative">
-        <span class="selected-cards" style="position:relative" v-for="item in selected" v-bind:key="item.id">
-          <b-button disabled variant="warning">
-             {{ item.name }}&nbsp;&nbsp;<b-badge variant="light"><a href="#" @click="removeClick(item)">x</a></b-badge>
-          </b-button>&nbsp;&nbsp;
+        <span class="selected-cards" style="position:relative">
+          <b-button variant="warning" v-for="item in selected" v-bind:key="item.id" @click="removeClick(item)">
+             {{ item.name }} <b-badge variant="light"><a href="#">x</a></b-badge>
+          </b-button>
         </span>
         <hr>
-        <input class="form-control" type="text" :value="value" placeholder="Type to get suggestions..." @input="updateValue($event.target.value)"
+        <input class="form-control" type="text" :value="searchValue" placeholder="Type to get suggestions..." @input="updateSearchValue($event.target.value)"
           @keydown.enter = 'enter'
           @keydown.down = 'down'
           @keydown.up = 'up'
@@ -25,8 +25,8 @@ export default {
 
   props: {
     value: {
-      type: String,
-      required: true
+      type: Array,
+      required: false
     },
 
     suggestions: {
@@ -39,19 +39,25 @@ export default {
     return {
       open: false,
       current: 0,
-      selected: [],
+      localValue: this.value ? this.value.slice() : [],
+      searchValue: '',
     }
   },
 
   computed: {
     filtered () {
       return this.suggestions.filter((data) => {
-        return data.name.indexOf(this.value) >= 0
+        return data.name.indexOf(this.searchValue) >= 0
       })
     },
+    selected () {
+        return this.suggestions.filter((suggestion) => {
+            return this.localValue.indexOf(suggestion.id) >= 0;
+        });
+    }
   },
   methods: {
-    updateValue (value) {
+    updateSearchValue (value) {
       if (this.open === false) {
         this.open = true
         this.current = 0
@@ -59,16 +65,15 @@ export default {
       if(value===''){
         this.open = false;
       }
-      this.$emit('input', value)
+      this.searchValue = value;
     },
     enter () {
-      // this.$emit('input', this.filtered[this.current].name)
-      this.$emit('input','');
       var index = this.suggestions.indexOf(this.filtered[this.current].name);
-      if(this.selected.indexOf(this.filtered[this.current])==-1){
-        this.selected.push(this.filtered[this.current]);
+      if(this.localValue.indexOf(this.filtered[this.current].id)==-1){
+        this.localValue.push(this.filtered[this.current].id);
       }
-      this.$emit('updateSelected',this.selected);
+      this.$emit('input',this.localValue);
+      this.searchValue = '';
       this.open = false
     },
     up () {
@@ -85,20 +90,24 @@ export default {
       return index === this.current
     },
     suggestionClick (index) {
-      // this.$emit('input', this.filtered[index].name)
-      this.$emit('input','');
-      if(this.selected.indexOf(this.filtered[index])==-1) {
-        this.selected.push(this.filtered[index]);
+      if(this.localValue.indexOf(this.filtered[index].id)==-1) {
+        this.localValue.push(this.filtered[index].id);
       }
-      this.$emit('updateSelected',this.selected);
+      this.$emit('input',this.localValue);
+      this.searchValue = '';
       this.open = false;
     },
     removeClick(data) {
-      var index = this.selected.indexOf(data);
-      this.selected.splice(index,1);
-      this.$emit('updateSelected',this.selected);
+      var index = this.localValue.indexOf(data.id);
+      this.localValue.splice(index,1);
+      this.$emit('input',this.localValue);
     }
   }
 }
 
 </script>
+<style>
+.selected-cards > button + button {
+    margin-left: 10px;
+}
+</style>
