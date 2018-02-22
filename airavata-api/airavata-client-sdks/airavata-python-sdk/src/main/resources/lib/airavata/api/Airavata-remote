@@ -79,12 +79,14 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  ApplicationModule getApplicationModule(AuthzToken authzToken, string appModuleId)')
     print('  bool updateApplicationModule(AuthzToken authzToken, string appModuleId, ApplicationModule applicationModule)')
     print('   getAllAppModules(AuthzToken authzToken, string gatewayId)')
+    print('   getAccessibleAppModules(AuthzToken authzToken, string gatewayId, ResourcePermissionType permissionType)')
     print('  bool deleteApplicationModule(AuthzToken authzToken, string appModuleId)')
     print('  string registerApplicationDeployment(AuthzToken authzToken, string gatewayId, ApplicationDeploymentDescription applicationDeployment)')
     print('  ApplicationDeploymentDescription getApplicationDeployment(AuthzToken authzToken, string appDeploymentId)')
     print('  bool updateApplicationDeployment(AuthzToken authzToken, string appDeploymentId, ApplicationDeploymentDescription applicationDeployment)')
     print('  bool deleteApplicationDeployment(AuthzToken authzToken, string appDeploymentId)')
     print('   getAllApplicationDeployments(AuthzToken authzToken, string gatewayId)')
+    print('   getAccessibleApplicationDeployments(AuthzToken authzToken, string gatewayId, ResourcePermissionType permissionType)')
     print('   getAppModuleDeployedResources(AuthzToken authzToken, string appModuleId)')
     print('  string registerApplicationInterface(AuthzToken authzToken, string gatewayId, ApplicationInterfaceDescription applicationInterface)')
     print('  string cloneApplicationInterface(AuthzToken authzToken, string existingAppInterfaceID, string newApplicationName, string gatewayId)')
@@ -191,6 +193,20 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  bool shareResourceWithUsers(AuthzToken authzToken, string resourceId, ResourceType resourceType,  userPermissionList)')
     print('  bool revokeSharingOfResourceFromUsers(AuthzToken authzToken, string resourceId, ResourceType resourceType,  userPermissionList)')
     print('   getAllAccessibleUsers(AuthzToken authzToken, string resourceId, ResourceType resourceType, ResourcePermissionType permissionType)')
+    print('  void createGroupResourceProfile(AuthzToken authzToken, GroupResourceProfile groupResourceProfile)')
+    print('  void updateGroupResourceProfile(AuthzToken authzToken, GroupResourceProfile groupResourceProfile)')
+    print('  GroupResourceProfile getGroupResourceProfile(AuthzToken authzToken, string groupResourceProfileId)')
+    print('  bool removeGroupResourceProfile(AuthzToken authzToken, string groupResourceProfileId)')
+    print('   getGroupResourceList(AuthzToken authzToken, string gatewayId)')
+    print('  bool removeGroupComputePrefs(AuthzToken authzToken, string computeResourceId, string groupResourceProfileId)')
+    print('  bool removeGroupComputeResourcePolicy(AuthzToken authzToken, string resourcePolicyId)')
+    print('  bool removeGroupBatchQueueResourcePolicy(AuthzToken authzToken, string resourcePolicyId)')
+    print('  GroupComputeResourcePreference getGroupComputeResourcePreference(AuthzToken authzToken, string computeResourceId, string groupResourceProfileId)')
+    print('  ComputeResourcePolicy getGroupComputeResourcePolicy(AuthzToken authzToken, string resourcePolicyId)')
+    print('  BatchQueueResourcePolicy getBatchQueueResourcePolicy(AuthzToken authzToken, string resourcePolicyId)')
+    print('   getGroupComputeResourcePrefList(AuthzToken authzToken, string groupResourceProfileId)')
+    print('   getGroupBatchQueueResourcePolicyList(AuthzToken authzToken, string groupResourceProfileId)')
+    print('   getGroupComputeResourcePolicyList(AuthzToken authzToken, string groupResourceProfileId)')
     print('')
     sys.exit(0)
 
@@ -600,6 +616,12 @@ elif cmd == 'getAllAppModules':
         sys.exit(1)
     pp.pprint(client.getAllAppModules(eval(args[0]), args[1],))
 
+elif cmd == 'getAccessibleAppModules':
+    if len(args) != 3:
+        print('getAccessibleAppModules requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.getAccessibleAppModules(eval(args[0]), args[1], eval(args[2]),))
+
 elif cmd == 'deleteApplicationModule':
     if len(args) != 2:
         print('deleteApplicationModule requires 2 args')
@@ -635,6 +657,12 @@ elif cmd == 'getAllApplicationDeployments':
         print('getAllApplicationDeployments requires 2 args')
         sys.exit(1)
     pp.pprint(client.getAllApplicationDeployments(eval(args[0]), args[1],))
+
+elif cmd == 'getAccessibleApplicationDeployments':
+    if len(args) != 3:
+        print('getAccessibleApplicationDeployments requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.getAccessibleApplicationDeployments(eval(args[0]), args[1], eval(args[2]),))
 
 elif cmd == 'getAppModuleDeployedResources':
     if len(args) != 2:
@@ -1271,6 +1299,90 @@ elif cmd == 'getAllAccessibleUsers':
         print('getAllAccessibleUsers requires 4 args')
         sys.exit(1)
     pp.pprint(client.getAllAccessibleUsers(eval(args[0]), args[1], eval(args[2]), eval(args[3]),))
+
+elif cmd == 'createGroupResourceProfile':
+    if len(args) != 2:
+        print('createGroupResourceProfile requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.createGroupResourceProfile(eval(args[0]), eval(args[1]),))
+
+elif cmd == 'updateGroupResourceProfile':
+    if len(args) != 2:
+        print('updateGroupResourceProfile requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.updateGroupResourceProfile(eval(args[0]), eval(args[1]),))
+
+elif cmd == 'getGroupResourceProfile':
+    if len(args) != 2:
+        print('getGroupResourceProfile requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getGroupResourceProfile(eval(args[0]), args[1],))
+
+elif cmd == 'removeGroupResourceProfile':
+    if len(args) != 2:
+        print('removeGroupResourceProfile requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.removeGroupResourceProfile(eval(args[0]), args[1],))
+
+elif cmd == 'getGroupResourceList':
+    if len(args) != 2:
+        print('getGroupResourceList requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getGroupResourceList(eval(args[0]), args[1],))
+
+elif cmd == 'removeGroupComputePrefs':
+    if len(args) != 3:
+        print('removeGroupComputePrefs requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.removeGroupComputePrefs(eval(args[0]), args[1], args[2],))
+
+elif cmd == 'removeGroupComputeResourcePolicy':
+    if len(args) != 2:
+        print('removeGroupComputeResourcePolicy requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.removeGroupComputeResourcePolicy(eval(args[0]), args[1],))
+
+elif cmd == 'removeGroupBatchQueueResourcePolicy':
+    if len(args) != 2:
+        print('removeGroupBatchQueueResourcePolicy requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.removeGroupBatchQueueResourcePolicy(eval(args[0]), args[1],))
+
+elif cmd == 'getGroupComputeResourcePreference':
+    if len(args) != 3:
+        print('getGroupComputeResourcePreference requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.getGroupComputeResourcePreference(eval(args[0]), args[1], args[2],))
+
+elif cmd == 'getGroupComputeResourcePolicy':
+    if len(args) != 2:
+        print('getGroupComputeResourcePolicy requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getGroupComputeResourcePolicy(eval(args[0]), args[1],))
+
+elif cmd == 'getBatchQueueResourcePolicy':
+    if len(args) != 2:
+        print('getBatchQueueResourcePolicy requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getBatchQueueResourcePolicy(eval(args[0]), args[1],))
+
+elif cmd == 'getGroupComputeResourcePrefList':
+    if len(args) != 2:
+        print('getGroupComputeResourcePrefList requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getGroupComputeResourcePrefList(eval(args[0]), args[1],))
+
+elif cmd == 'getGroupBatchQueueResourcePolicyList':
+    if len(args) != 2:
+        print('getGroupBatchQueueResourcePolicyList requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getGroupBatchQueueResourcePolicyList(eval(args[0]), args[1],))
+
+elif cmd == 'getGroupComputeResourcePolicyList':
+    if len(args) != 2:
+        print('getGroupComputeResourcePolicyList requires 2 args')
+        sys.exit(1)
+    pp.pprint(client.getGroupComputeResourcePolicyList(eval(args[0]), args[1],))
 
 else:
     print('Unrecognized method %s' % cmd)
