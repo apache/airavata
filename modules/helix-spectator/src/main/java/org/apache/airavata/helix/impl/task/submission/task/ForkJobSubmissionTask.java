@@ -3,6 +3,7 @@ package org.apache.airavata.helix.impl.task.submission.task;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.JobSubmissionOutput;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.helix.impl.task.submission.GroovyMapBuilder;
 import org.apache.airavata.helix.impl.task.submission.GroovyMapData;
 import org.apache.airavata.helix.impl.task.submission.SubmissionUtil;
 import org.apache.airavata.helix.task.api.TaskHelper;
@@ -23,23 +24,23 @@ public class ForkJobSubmissionTask extends JobSubmissionTask {
     public TaskResult onRun(TaskHelper taskHelper) {
 
         try {
-            GroovyMapData groovyMapData = new GroovyMapData();
+            GroovyMapData mapData = new GroovyMapBuilder(getTaskContext()).build();
 
             JobModel jobModel = new JobModel();
             jobModel.setProcessId(getProcessId());
-            jobModel.setWorkingDir(groovyMapData.getWorkingDirectory());
+            jobModel.setWorkingDir(mapData.getWorkingDirectory());
             jobModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
             jobModel.setTaskId(getTaskId());
-            jobModel.setJobName(groovyMapData.getJobName());
+            jobModel.setJobName(mapData.getJobName());
 
-            File jobFile = SubmissionUtil.createJobFile(groovyMapData);
+            if (mapData != null) {
+                //jobModel.setJobDescription(FileUtils.readFileToString(jobFile));
+                AgentAdaptor adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(
+                        getTaskContext().getComputeResourceId(),
+                        getTaskContext().getJobSubmissionProtocol().name(),
+                        getTaskContext().getComputeResourceCredentialToken());
 
-            if (jobFile != null && jobFile.exists()) {
-                jobModel.setJobDescription(FileUtils.readFileToString(jobFile));
-                AgentAdaptor adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(getComputeResourceId(),
-                        getJobSubmissionProtocol().name(), getComputeResourceCredentialToken());
-
-                JobSubmissionOutput submissionOutput = submitBatchJob(adaptor, jobFile, groovyMapData.getWorkingDirectory());
+                JobSubmissionOutput submissionOutput = submitBatchJob(adaptor, mapData, mapData.getWorkingDirectory());
 
                 jobModel.setExitCode(submissionOutput.getExitCode());
                 jobModel.setStdErr(submissionOutput.getStdErr());

@@ -20,7 +20,7 @@ public class SimpleWorkflow {
         defaultJobSubmissionTask.setGatewayId("default");
         defaultJobSubmissionTask.setExperimentId("Clone_of_Mothur-Test1_0c9f627e-2c32-403e-a28a-2a8b10c21c1a");
         defaultJobSubmissionTask.setProcessId("PROCESS_438a87cc-2dec-4edc-bfeb-31128df91bb6");
-        defaultJobSubmissionTask.setTaskId(UUID.randomUUID().toString());
+        defaultJobSubmissionTask.setTaskId("TASK_612844a4-aedb-41a5-824f-9b20c76867f7");
 
         List<AbstractTask> tasks = new ArrayList<>();
         tasks.add(defaultJobSubmissionTask);
