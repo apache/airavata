@@ -51,7 +51,7 @@ public class ComputeResourceEntity implements Serializable {
     private String gatewayUsageModuleLoadCommand;
 
     @Column(name = "GATEWAY_USAGE_REPORTING")
-    private short gatewayUsageReporting;
+    private boolean gatewayUsageReporting;
 
     @Column(name = "HOST_NAME")
     private String hostName;
@@ -126,11 +126,11 @@ public class ComputeResourceEntity implements Serializable {
         this.gatewayUsageExecutable = gatewayUsageExecutable;
     }
 
-    public short getGatewayUsageReporting() {
+    public boolean isGatewayUsageReporting() {
         return gatewayUsageReporting;
     }
 
-    public void setGatewayUsageReporting(short gatewayUsageReporting) {
+    public void setGatewayUsageReporting(boolean gatewayUsageReporting) {
         this.gatewayUsageReporting = gatewayUsageReporting;
     }
 

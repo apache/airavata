@@ -47,6 +47,7 @@ public class ComputeResourceRepositoryTest {
 
         description.setHostName("localhost");
         description.setResourceDescription("test compute resource");
+        description.setGatewayUsageReporting(true);
         List<String> ipdaresses = new ArrayList<String>();
         ipdaresses.add("222.33.43.444");
         ipdaresses.add("23.344.44.454");
@@ -152,6 +153,7 @@ public class ComputeResourceRepositoryTest {
             }
             System.out.println("**********Resource name ************* : " +  host.getHostName());
             assertTrue(host.getHostName().equals("localhost"));
+            assertTrue(host.isGatewayUsageReporting());
         }
 
         // Verify updating compute resource

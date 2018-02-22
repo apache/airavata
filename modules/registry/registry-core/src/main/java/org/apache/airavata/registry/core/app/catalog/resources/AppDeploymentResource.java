@@ -317,7 +317,9 @@ public class AppDeploymentResource extends AppCatAbstractResource {
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APPLICATION_DEPLOYMENT);
             generator.setParameter(ApplicationDeploymentConstants.GATEWAY_ID, gatewayId);
-            generator.setParameter(ApplicationDeploymentConstants.DEPLOYMENT_ID, accessibleAppDeploymentIds);
+            if (accessibleAppDeploymentIds != null && !accessibleAppDeploymentIds.isEmpty()) {
+                generator.setParameter(ApplicationDeploymentConstants.DEPLOYMENT_ID, accessibleAppDeploymentIds);
+            }
             Query q = generator.selectQuery(em);
             List results = q.getResultList();
                 if (results.size() != 0) {
