@@ -4,11 +4,14 @@ import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.airavata.agents.api.JobSubmissionOutput;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.impl.task.AiravataTask;
+import org.apache.airavata.helix.impl.task.submission.GroovyMapData;
 import org.apache.airavata.helix.impl.task.submission.config.JobFactory;
 import org.apache.airavata.helix.impl.task.submission.config.JobManagerConfiguration;
 import org.apache.airavata.helix.impl.task.submission.config.RawCommandInfo;
 import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
@@ -23,9 +26,11 @@ import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.registry.cpi.*;
+import org.apache.commons.io.FileUtils;
 import org.apache.helix.HelixManager;
 
 import java.io.File;
+import java.security.SecureRandom;
 import java.util.*;
 
 public abstract class JobSubmissionTask extends AiravataTask {
@@ -38,10 +43,19 @@ public abstract class JobSubmissionTask extends AiravataTask {
     }
 
     //////////////////////
-    protected JobSubmissionOutput submitBatchJob(AgentAdaptor agentAdaptor, File jobFile, String workingDirectory) throws Exception {
+    protected JobSubmissionOutput submitBatchJob(AgentAdaptor agentAdaptor, GroovyMapData groovyMapData, String workingDirectory) throws Exception {
         JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                getAppCatalog(), getJobSubmissionProtocol(), getPreferredJobSubmissionInterface()));
-        RawCommandInfo submitCommand = jobManagerConfiguration.getSubmitCommand(workingDirectory, jobFile.getPath());
+                getAppCatalog(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
+
+        String scriptAsString = groovyMapData.getAsString(jobManagerConfiguration.getJobDescriptionTemplateName());
+
+        int number = new SecureRandom().nextInt();
+        number = (number < 0 ? -number : number);
+        File tempJobFile = new File(getLocalDataDir(), "job_" + Integer.toString(number) + jobManagerConfiguration.getScriptExtension());
+        FileUtils.writeStringToFile(tempJobFile, scriptAsString);
+
+        // TODO transfer file
+        RawCommandInfo submitCommand = jobManagerConfiguration.getSubmitCommand(workingDirectory, tempJobFile.getPath());
         CommandOutput commandOutput = agentAdaptor.executeCommand(submitCommand.getRawCommand(), workingDirectory);
 
         JobSubmissionOutput jsoutput = new JobSubmissionOutput();
@@ -63,12 +77,17 @@ public abstract class JobSubmissionTask extends AiravataTask {
         jsoutput.setStdOut(commandOutput.getStdOut());
         jsoutput.setStdErr(commandOutput.getStdError());
         return jsoutput;
+    }
 
+    public File getLocalDataDir() {
+        String outputPath = ServerSettings.getLocalDataLocation();
+        outputPath = (outputPath.endsWith(File.separator) ? outputPath : outputPath + File.separator);
+        return new File(outputPath + getProcessId());
     }
 
     public JobStatus getJobStatus(AgentAdaptor agentAdaptor, String jobID) throws Exception {
         JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                getAppCatalog(), getJobSubmissionProtocol(), getPreferredJobSubmissionInterface()));
+                getAppCatalog(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
         CommandOutput commandOutput = agentAdaptor.executeCommand(jobManagerConfiguration.getMonitorCommand(jobID).getRawCommand(), null);
 
         return jobManagerConfiguration.getParser().parseJobStatus(jobID, commandOutput.getStdOut());
@@ -77,7 +96,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
 
     public String getJobIdByJobName(AgentAdaptor agentAdaptor, String jobName, String userName) throws Exception {
         JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                getAppCatalog(), getJobSubmissionProtocol(), getPreferredJobSubmissionInterface()));
+                getAppCatalog(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
 
         RawCommandInfo jobIdMonitorCommand = jobManagerConfiguration.getJobIdMonitorCommand(jobName, userName);
         CommandOutput commandOutput = agentAdaptor.executeCommand(jobIdMonitorCommand.getRawCommand(), null);
@@ -158,45 +177,5 @@ public abstract class JobSubmissionTask extends AiravataTask {
     }
 
     ///////////// required for groovy map
-
-    private String workingDir;
-    private String scratchLocation;
-    private UserComputeResourcePreference userComputeResourcePreference;
-
-    public String getWorkingDir() {
-        if (workingDir == null) {
-            if (getProcessModel().getProcessResourceSchedule().getStaticWorkingDir() != null){
-                workingDir = getProcessModel().getProcessResourceSchedule().getStaticWorkingDir();
-            }else {
-                String scratchLocation = getScratchLocation();
-                workingDir = (scratchLocation.endsWith("/") ? scratchLocation + getProcessId() : scratchLocation + "/" +
-                        getProcessId());
-            }
-        }
-        return workingDir;
-    }
-
-    public String getScratchLocation() {
-        if (scratchLocation == null) {
-            if (isUseUserCRPref() &&
-                    userComputeResourcePreference != null &&
-                    isValid(userComputeResourcePreference.getScratchLocation())) {
-                scratchLocation = userComputeResourcePreference.getScratchLocation();
-            } else if (isValid(processModel.getProcessResourceSchedule().getOverrideScratchLocation())) {
-                scratchLocation = processModel.getProcessResourceSchedule().getOverrideScratchLocation();
-            }else {
-                scratchLocation = gatewayComputeResourcePreference.getScratchLocation();
-            }
-        }
-        return scratchLocation;
-    }
-
-    protected UserComputeResourcePreference userComputeResourcePreference() throws AppCatalogException {
-        UserComputeResourcePreference userComputeResourcePreference =
-                getAppCatalog().getUserResourceProfile().getUserComputeResourcePreference(
-                        getProcessModel().getUserName(),
-                        getGatewayId(),
-                        getProcessModel().getComputeResourceId());
-    }
 
 }

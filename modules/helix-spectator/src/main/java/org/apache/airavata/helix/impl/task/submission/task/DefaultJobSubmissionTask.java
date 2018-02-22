@@ -3,6 +3,7 @@ package org.apache.airavata.helix.impl.task.submission.task;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.JobSubmissionOutput;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.helix.impl.task.submission.GroovyMapBuilder;
 import org.apache.airavata.helix.impl.task.submission.GroovyMapData;
 import org.apache.airavata.helix.impl.task.submission.SubmissionUtil;
 import org.apache.airavata.helix.impl.task.submission.config.RawCommandInfo;
@@ -36,25 +37,24 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
     @Override
     public TaskResult onRun(TaskHelper taskHelper) {
         try {
-            GroovyMapData groovyMapData = new GroovyMapData();
 
+            GroovyMapData mapData = new GroovyMapBuilder(getTaskContext()).build();
 
             JobModel jobModel = new JobModel();
             jobModel.setProcessId(getProcessId());
-            jobModel.setWorkingDir(groovyMapData.getWorkingDirectory());
+            jobModel.setWorkingDir(mapData.getWorkingDirectory());
             jobModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
             jobModel.setTaskId(getTaskId());
-            jobModel.setJobName(groovyMapData.getJobName());
+            jobModel.setJobName(mapData.getJobName());
 
-            File jobFile = SubmissionUtil.createJobFile(groovyMapData);
+            if (mapData != null) {
+                //jobModel.setJobDescription(FileUtils.readFileToString(jobFile));
+                AgentAdaptor adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(
+                        getTaskContext().getComputeResourceId(),
+                        getTaskContext().getJobSubmissionProtocol().name(),
+                        getTaskContext().getComputeResourceCredentialToken());
 
-
-            if (jobFile != null && jobFile.exists()) {
-                jobModel.setJobDescription(FileUtils.readFileToString(jobFile));
-                AgentAdaptor adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(getComputeResourceId(),
-                        getJobSubmissionProtocol().name(), getComputeResourceCredentialToken());
-
-                JobSubmissionOutput submissionOutput = submitBatchJob(adaptor, jobFile, groovyMapData.getWorkingDirectory());
+                JobSubmissionOutput submissionOutput = submitBatchJob(adaptor, mapData, mapData.getWorkingDirectory());
 
                 jobModel.setExitCode(submissionOutput.getExitCode());
                 jobModel.setStdErr(submissionOutput.getStdErr());
@@ -137,7 +137,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                         String loadCommand = getComputeResourceDescription().getGatewayUsageModuleLoadCommand();
                         String usageExecutable = getComputeResourceDescription().getGatewayUsageExecutable();
                         ExperimentModel experiment = (ExperimentModel)getExperimentCatalog().get(ExperimentCatalogModelType.EXPERIMENT, getExperimentId());
-                        String username = experiment.getUserName() + "@" + getGatewayComputeResourcePreference().getUsageReportingGatewayId();
+                        String username = experiment.getUserName() + "@" + getTaskContext().getGatewayComputeResourcePreference().getUsageReportingGatewayId();
                         RawCommandInfo rawCommandInfo = new RawCommandInfo(loadCommand + " && " + usageExecutable + " -gateway_user " +  username  +
                                 " -submit_time \"`date '+%F %T %:z'`\"  -jobid " + jobId );
                         adaptor.executeCommand(rawCommandInfo.getRawCommand(), null);
@@ -150,7 +150,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                 } else {
                     int verificationTryCount = 0;
                     while (verificationTryCount++ < 3) {
-                        String verifyJobId = verifyJobSubmission(adaptor, jobModel.getJobName(), getComputeResourceLoginUserName());
+                        String verifyJobId = verifyJobSubmission(adaptor, jobModel.getJobName(), getTaskContext().getComputeResourceLoginUserName());
                         if (verifyJobId != null && !verifyJobId.isEmpty()) {
                             // JobStatus either changed from SUBMITTED to QUEUED or directly to QUEUED
                             jobId = verifyJobId;
@@ -194,17 +194,12 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                 }
 
             }  else {
+                return onFail("Job data is null", true, null);
+                //  taskStatus.setReason("JobFile is null");
                 //taskStatus.setState(TaskState.FAILED);
-                if (jobFile == null) {
-                    return onFail("Job file is null", true, null);
-                  //  taskStatus.setReason("JobFile is null");
-                } else {
-                    //taskStatus.setReason("Job file doesn't exist");
-                    return onFail("Job file doesn't exist", true, null);
-                }
             }
         } catch (Exception e) {
-            return onFail("Task failed due to unexpected issue", false, null);
+            return onFail("Task failed due to unexpected issue", false, e);
         }
         // TODO get rid of this
         return onFail("Task moved to an unknown state", false, null);

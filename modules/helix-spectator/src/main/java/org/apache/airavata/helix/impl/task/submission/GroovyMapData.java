@@ -1,6 +1,14 @@
 package org.apache.airavata.helix.impl.task.submission;
 
+import com.google.common.collect.ImmutableMap;
+import groovy.lang.Writable;
+import groovy.text.GStringTemplateEngine;
+import groovy.text.TemplateEngine;
+import org.apache.airavata.common.utils.ApplicationSettings;
+
+import java.io.File;
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +43,7 @@ public class GroovyMapData {
     private String applicationName;
 
     @ScriptTag(name = "queueSpecificMacros")
-    private String queueSpecificMacros;
+    private List<String> queueSpecificMacros;
 
     @ScriptTag(name = "accountString")
     private String accountString;
@@ -206,13 +214,12 @@ public class GroovyMapData {
         return this;
     }
 
-    public String getQueueSpecificMacros() {
+    public List<String> getQueueSpecificMacros() {
         return queueSpecificMacros;
     }
 
-    public GroovyMapData setQueueSpecificMacros(String queueSpecificMacros) {
+    public void setQueueSpecificMacros(List<String> queueSpecificMacros) {
         this.queueSpecificMacros = queueSpecificMacros;
-        return this;
     }
 
     public String getAccountString() {
@@ -411,5 +418,41 @@ public class GroovyMapData {
     public GroovyMapData setChassisName(String chassisName) {
         this.chassisName = chassisName;
         return this;
+    }
+
+    public Map toImmutableMap() {
+
+        Map<String, Object> dataMap = new HashMap<>();
+        Field[] declaredFields = this.getClass().getDeclaredFields();
+        for (Field field : declaredFields) {
+            field.setAccessible(true);
+            if (field.getAnnotation(ScriptTag.class) != null) {
+                try {
+                    dataMap.put(field.getAnnotation(ScriptTag.class).name(), field.get(this));
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return dataMap;
+    }
+
+    public String getAsString(String templateName) throws Exception {
+        URL templateUrl = ApplicationSettings.loadFile(templateName);
+        if (templateUrl == null) {
+            String error = "Template file '" + templateName + "' not found";
+            throw new Exception(error);
+        }
+        File template = new File(templateUrl.getPath());
+        TemplateEngine engine = new GStringTemplateEngine();
+        Writable make;
+        try {
+
+            make = engine.createTemplate(template).make(toImmutableMap());
+        } catch (Exception e) {
+            throw new Exception("Error while generating script using groovy map");
+        }
+        return make.toString();
     }
 }

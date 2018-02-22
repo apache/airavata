@@ -39,10 +39,8 @@ public abstract class AiravataTask extends AbstractTask {
     private ProcessModel processModel;
 
     private ComputeResourceDescription computeResourceDescription;
-    private ComputeResourcePreference gatewayComputeResourcePreference;
-    private UserComputeResourcePreference userComputeResourcePreference;
-    private UserResourceProfile userResourceProfile;
-    private GatewayResourceProfile gatewayResourceProfile;
+
+    private TaskContext taskContext;
 
     @TaskParam(name = "Process Id")
     private String processId;
@@ -87,21 +85,27 @@ public abstract class AiravataTask extends AbstractTask {
 
             this.computeResourceDescription = getAppCatalog().getComputeResource().getComputeResource(getProcessModel()
                     .getComputeResourceId());
-            this.gatewayComputeResourcePreference = getAppCatalog().getGatewayProfile()
-                    .getComputeResourcePreference(getGatewayId(), computeResourceDescription.getComputeResourceId());
 
-            this.userComputeResourcePreference = getAppCatalog().getUserResourceProfile()
-                    .getUserComputeResourcePreference(getProcessModel().getUserName(), getGatewayId(), getProcessModel()
-                            .getComputeResourceId());
+            TaskContext.TaskContextBuilder taskContextBuilder = new TaskContext.TaskContextBuilder(getProcessId(), getGatewayId(), getTaskId());
+            taskContextBuilder.setAppCatalog(getAppCatalog());
+            taskContextBuilder.setExperimentCatalog(getExperimentCatalog());
+            taskContextBuilder.setProcessModel(getProcessModel());
+            taskContextBuilder.setStatusPublisher(getStatusPublisher());
 
-            this.userResourceProfile = getAppCatalog().getUserResourceProfile()
-                    .getUserResourceProfile(getProcessModel().getUserName(), getGatewayId());
+            taskContextBuilder.setGatewayResourceProfile(appCatalog.getGatewayProfile().getGatewayProfile(gatewayId));
+            taskContextBuilder.setGatewayComputeResourcePreference(
+                            appCatalog.getGatewayProfile()
+                                    .getComputeResourcePreference(gatewayId, processModel.getComputeResourceId()));
+            taskContextBuilder.setGatewayStorageResourcePreference(
+                            appCatalog.getGatewayProfile()
+                                    .getStoragePreference(gatewayId, processModel.getStorageResourceId()));
 
-            this.gatewayResourceProfile = getAppCatalog().getGatewayProfile().getGatewayProfile(getGatewayId());
-
+            this.taskContext = taskContextBuilder.build();
         } catch (AppCatalogException e) {
             e.printStackTrace();
         } catch (RegistryException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -125,112 +129,7 @@ public abstract class AiravataTask extends AbstractTask {
         msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
     }
 
-
-    ///////////////////
-
-    public String getComputeResourceId() {
-        if (isUseUserCRPref() &&
-                userComputeResourcePreference != null &&
-                isValid(userComputeResourcePreference.getComputeResourceId())) {
-            return userComputeResourcePreference.getComputeResourceId();
-        } else {
-            return gatewayComputeResourcePreference.getComputeResourceId();
-        }
-    }
-
-    public String getComputeResourceCredentialToken(){
-        if (isUseUserCRPref()) {
-            if (userComputeResourcePreference != null &&
-                    isValid(userComputeResourcePreference.getResourceSpecificCredentialStoreToken())) {
-                return userComputeResourcePreference.getResourceSpecificCredentialStoreToken();
-            } else {
-                return userResourceProfile.getCredentialStoreToken();
-            }
-        } else {
-            if (isValid(gatewayComputeResourcePreference.getResourceSpecificCredentialStoreToken())) {
-                return gatewayComputeResourcePreference.getResourceSpecificCredentialStoreToken();
-            } else {
-                return gatewayResourceProfile.getCredentialStoreToken();
-            }
-        }
-    }
-
-    public String getComputeResourceLoginUserName(){
-        if (isUseUserCRPref() &&
-                userComputeResourcePreference != null &&
-                isValid(userComputeResourcePreference.getLoginUserName())) {
-            return userComputeResourcePreference.getLoginUserName();
-        } else if (isValid(getProcessModel().getProcessResourceSchedule().getOverrideLoginUserName())) {
-            return getProcessModel().getProcessResourceSchedule().getOverrideLoginUserName();
-        } else {
-            return gatewayComputeResourcePreference.getLoginUserName();
-        }
-    }
-
-    public JobSubmissionInterface getPreferredJobSubmissionInterface() throws AppCatalogException {
-        try {
-            JobSubmissionProtocol preferredJobSubmissionProtocol = getJobSubmissionProtocol();
-            ComputeResourceDescription resourceDescription = getComputeResourceDescription();
-            List<JobSubmissionInterface> jobSubmissionInterfaces = resourceDescription.getJobSubmissionInterfaces();
-            Map<JobSubmissionProtocol, List<JobSubmissionInterface>> orderedInterfaces = new HashMap<>();
-            List<JobSubmissionInterface> interfaces = new ArrayList<>();
-            if (jobSubmissionInterfaces != null && !jobSubmissionInterfaces.isEmpty()) {
-                for (JobSubmissionInterface submissionInterface : jobSubmissionInterfaces){
-
-                    if (preferredJobSubmissionProtocol != null){
-                        if (preferredJobSubmissionProtocol.toString().equals(submissionInterface.getJobSubmissionProtocol().toString())){
-                            if (orderedInterfaces.containsKey(submissionInterface.getJobSubmissionProtocol())){
-                                List<JobSubmissionInterface> interfaceList = orderedInterfaces.get(submissionInterface.getJobSubmissionProtocol());
-                                interfaceList.add(submissionInterface);
-                            }else {
-                                interfaces.add(submissionInterface);
-                                orderedInterfaces.put(submissionInterface.getJobSubmissionProtocol(), interfaces);
-                            }
-                        }
-                    }else {
-                        Collections.sort(jobSubmissionInterfaces, new Comparator<JobSubmissionInterface>() {
-                            @Override
-                            public int compare(JobSubmissionInterface jobSubmissionInterface, JobSubmissionInterface jobSubmissionInterface2) {
-                                return jobSubmissionInterface.getPriorityOrder() - jobSubmissionInterface2.getPriorityOrder();
-                            }
-                        });
-                    }
-                }
-                interfaces = orderedInterfaces.get(preferredJobSubmissionProtocol);
-                Collections.sort(interfaces, new Comparator<JobSubmissionInterface>() {
-                    @Override
-                    public int compare(JobSubmissionInterface jobSubmissionInterface, JobSubmissionInterface jobSubmissionInterface2) {
-                        return jobSubmissionInterface.getPriorityOrder() - jobSubmissionInterface2.getPriorityOrder();
-                    }
-                });
-            } else {
-                throw new AppCatalogException("Compute resource should have at least one job submission interface defined...");
-            }
-            return interfaces.get(0);
-        } catch (AppCatalogException e) {
-            throw new AppCatalogException("Error occurred while retrieving data from app catalog", e);
-        }
-    }
-
     //////////////////////////
-
-
-    protected boolean isValid(String str) {
-        return str != null && !str.trim().isEmpty();
-    }
-
-    public boolean isUseUserCRPref() {
-        return getProcessModel().isUseUserCRPref();
-    }
-
-    public JobSubmissionProtocol getJobSubmissionProtocol() {
-        return getGatewayComputeResourcePreference().getPreferredJobSubmissionProtocol();
-    }
-
-    public ComputeResourcePreference getGatewayComputeResourcePreference() {
-        return gatewayComputeResourcePreference;
-    }
-
 
     public ComputeResourceDescription getComputeResourceDescription() {
         return computeResourceDescription;
@@ -238,25 +137,17 @@ public abstract class AiravataTask extends AbstractTask {
 
     ////////////////////////
 
-    
-    public void setAppCatalog(AppCatalog appCatalog) {
-        this.appCatalog = appCatalog;
+
+    public TaskContext getTaskContext() {
+        return taskContext;
     }
 
     public ExperimentCatalog getExperimentCatalog() {
         return experimentCatalog;
     }
 
-    public void setExperimentCatalog(ExperimentCatalog experimentCatalog) {
-        this.experimentCatalog = experimentCatalog;
-    }
-
     public Publisher getStatusPublisher() {
         return statusPublisher;
-    }
-
-    public void setStatusPublisher(Publisher statusPublisher) {
-        this.statusPublisher = statusPublisher;
     }
 
     public String getProcessId() {
@@ -287,7 +178,4 @@ public abstract class AiravataTask extends AbstractTask {
         return processModel;
     }
 
-    public void setProcessModel(ProcessModel processModel) {
-        this.processModel = processModel;
-    }
 }

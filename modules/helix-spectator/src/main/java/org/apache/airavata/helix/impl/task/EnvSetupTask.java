@@ -23,8 +23,10 @@ public class EnvSetupTask extends AiravataTask {
     public TaskResult onRun(TaskHelper taskHelper) {
         try {
             publishTaskState(TaskState.EXECUTING);
-            AgentAdaptor adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(getComputeResourceId(),
-                    getJobSubmissionProtocol().name(), getComputeResourceCredentialToken());
+            AgentAdaptor adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(
+                    getTaskContext().getComputeResourceId(),
+                    getTaskContext().getJobSubmissionProtocol().name(),
+                    getTaskContext().getComputeResourceCredentialToken());
 
             adaptor.createDirectory(workingDirectory);
             publishTaskState(TaskState.COMPLETED);

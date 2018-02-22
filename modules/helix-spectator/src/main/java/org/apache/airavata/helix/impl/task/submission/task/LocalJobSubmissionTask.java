@@ -3,6 +3,7 @@ package org.apache.airavata.helix.impl.task.submission.task;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.JobSubmissionOutput;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.helix.impl.task.submission.GroovyMapBuilder;
 import org.apache.airavata.helix.impl.task.submission.GroovyMapData;
 import org.apache.airavata.helix.impl.task.submission.SubmissionUtil;
 import org.apache.airavata.helix.impl.task.submission.task.JobSubmissionTask;
@@ -41,10 +42,13 @@ public class LocalJobSubmissionTask extends JobSubmissionTask {
                 jobModel.setJobDescription(FileUtils.readFileToString(jobFile));
                 saveJobModel(jobModel);
 
-                AgentAdaptor adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(getComputeResourceId(),
-                        getJobSubmissionProtocol().name(), getComputeResourceCredentialToken());
+                AgentAdaptor adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(
+                        getTaskContext().getComputeResourceId(),
+                        getTaskContext().getJobSubmissionProtocol().name(),
+                        getTaskContext().getComputeResourceCredentialToken());
 
-                JobSubmissionOutput submissionOutput = submitBatchJob(adaptor, jobFile, groovyMapData.getWorkingDirectory());
+                GroovyMapData mapData = new GroovyMapBuilder(getTaskContext()).build();
+                JobSubmissionOutput submissionOutput = submitBatchJob(adaptor, mapData, groovyMapData.getWorkingDirectory());
 
                 JobStatus jobStatus = new JobStatus();
                 jobStatus.setJobState(JobState.SUBMITTED);
