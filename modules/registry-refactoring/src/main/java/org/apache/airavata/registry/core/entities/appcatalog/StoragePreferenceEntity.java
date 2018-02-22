@@ -41,10 +41,10 @@ public class StoragePreferenceEntity implements Serializable {
     private String storageResourceId;
 
     @Column(name = "FS_ROOT_LOCATION")
-    private String fsRootLocation;
+    private String fileSystemRootLocation;
 
     @Column(name = "LOGIN_USERNAME")
-    private String loginUsername;
+    private String loginUserName;
 
     @Column(name = "RESOURCE_CS_TOKEN")
     private String resourceSpecificCredentialStoreToken;
@@ -72,20 +72,20 @@ public class StoragePreferenceEntity implements Serializable {
         this.storageResourceId = storageResourceId;
     }
 
-    public String getFsRootLocation() {
-        return fsRootLocation;
+    public String getFileSystemRootLocation() {
+        return fileSystemRootLocation;
     }
 
-    public void setFsRootLocation(String fsRootLocation) {
-        this.fsRootLocation = fsRootLocation;
+    public void setFileSystemRootLocation(String fileSystemRootLocation) {
+        this.fileSystemRootLocation = fileSystemRootLocation;
     }
 
-    public String getLoginUsername() {
-        return loginUsername;
+    public String getLoginUserName() {
+        return loginUserName;
     }
 
-    public void setLoginUsername(String loginUsername) {
-        this.loginUsername = loginUsername;
+    public void setLoginUserName(String loginUserName) {
+        this.loginUserName = loginUserName;
     }
 
     public String getResourceSpecificCredentialStoreToken() {
