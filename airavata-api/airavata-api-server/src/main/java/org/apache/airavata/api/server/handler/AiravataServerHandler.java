@@ -132,6 +132,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class AiravataServerHandler implements Airavata.Iface {
     private static final Logger logger = LoggerFactory.getLogger(AiravataServerHandler.class);
@@ -276,6 +277,13 @@ public class AiravataServerHandler implements Airavata.Iface {
                 entityType.setDescription("Application Deployment entity type");
                 client.createEntityType(entityType);
 
+                entityType = new EntityType();
+                entityType.setEntityTypeId(domain.domainId+":"+ResourceType.GROUP_RESOURCE_PROFILE.name());
+                entityType.setDomainId(domain.domainId);
+                entityType.setName(ResourceType.GROUP_RESOURCE_PROFILE.name());
+                entityType.setDescription("Group Resource Profile entity type");
+                client.createEntityType(entityType);
+
                 //Creating Permission Types for each domain
                 PermissionType permissionType = new PermissionType();
                 permissionType.setPermissionTypeId(domain.domainId + ":READ");
@@ -376,6 +384,13 @@ public class AiravataServerHandler implements Airavata.Iface {
             entityType.setDomainId(domain.domainId);
             entityType.setName("APPLICATION-DEPLOYMENT");
             entityType.setDescription("Application Deployment entity type");
+            sharingClient.createEntityType(entityType);
+
+            entityType = new EntityType();
+            entityType.setEntityTypeId(domain.domainId+":"+ResourceType.GROUP_RESOURCE_PROFILE.name());
+            entityType.setDomainId(domain.domainId);
+            entityType.setName(ResourceType.GROUP_RESOURCE_PROFILE.name());
+            entityType.setDescription("Group Resource Profile entity type");
             sharingClient.createEntityType(entityType);
 
             //Creating Permission Types for each domain
@@ -5073,16 +5088,40 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public List<GroupResourceProfile> getGroupResourceList(AuthzToken authzToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
+        String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
         try {
-            List<GroupResourceProfile> groupResourceProfileList = regClient.getGroupResourceList(gatewayId);
-            registryClientPool.returnResource(regClient);
-            return groupResourceProfileList;
+            if (ServerSettings.isEnableSharing()) {
+                List<String> accessibleGroupResProfileIds = new ArrayList<>();
+                List<SearchCriteria> filters = new ArrayList<>();
+                SearchCriteria searchCriteria = new SearchCriteria();
+                searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+                searchCriteria.setSearchCondition(SearchCondition.EQUAL);
+                searchCriteria.setValue(gatewayId + ":" + ResourceType.GROUP_RESOURCE_PROFILE.name());
+                filters.add(searchCriteria);
+                sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                        userName + "@" + gatewayId, filters, 0, -1).stream().forEach(p -> accessibleGroupResProfileIds
+                        .add(p.entityId));
+                // TODO: push accessibleGroupResProfileIds filtering down
+                List<GroupResourceProfile> groupResourceProfileList = regClient.getGroupResourceList(gatewayId);
+                registryClientPool.returnResource(regClient);
+                sharingClientPool.returnResource(sharingClient);
+                return groupResourceProfileList.stream()
+                        .filter(grp -> accessibleGroupResProfileIds.contains(grp.getGroupResourceProfileId()))
+                        .collect(Collectors.toList());
+            } else {
+                List<GroupResourceProfile> groupResourceProfileList = regClient.getGroupResourceList(gatewayId);
+                registryClientPool.returnResource(regClient);
+                sharingClientPool.returnResource(sharingClient);
+                return groupResourceProfileList;
+            }
         } catch (Exception e) {
             String msg = "Error retrieving list group resource profile list. GatewayId: "+ gatewayId;
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(msg+" More info : " + e.getMessage());
             registryClientPool.returnBrokenResource(regClient);
+            sharingClientPool.returnBrokenResource(sharingClient);
             throw exception;
         }
     }

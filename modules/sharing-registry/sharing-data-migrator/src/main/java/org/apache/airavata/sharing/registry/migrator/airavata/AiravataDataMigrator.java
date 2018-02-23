@@ -94,6 +94,14 @@ public class AiravataDataMigrator {
                 if (!sharingRegistryServerHandler.isEntityTypeExists(entityType.domainId, entityType.entityTypeId))
                     sharingRegistryServerHandler.createEntityType(entityType);
 
+                entityType = new EntityType();
+                entityType.setEntityTypeId(domain.domainId+":"+ResourceType.GROUP_RESOURCE_PROFILE.name());
+                entityType.setDomainId(domain.domainId);
+                entityType.setName(ResourceType.GROUP_RESOURCE_PROFILE.name());
+                entityType.setDescription("Group Resource Profile entity type");
+                if (!sharingRegistryServerHandler.isEntityTypeExists(entityType.domainId, entityType.entityTypeId))
+                    sharingRegistryServerHandler.createEntityType(entityType);
+
                 //Creating Permission Types for each domain
                 PermissionType permissionType = new PermissionType();
                 permissionType.setPermissionTypeId(domain.domainId+":READ");
