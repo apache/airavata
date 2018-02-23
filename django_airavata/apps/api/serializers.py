@@ -117,7 +117,7 @@ class GroupSerializer(serializers.Serializer):
     url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:group-detail', lookup_field='id', lookup_url_kwarg='group_id')
     id = serializers.CharField(default=GroupModel.thrift_spec[1][4], read_only=True)
     name = serializers.CharField(required=True)
-    description = serializers.CharField(allow_null=True)
+    description = serializers.CharField(allow_null=True, allow_blank=True)
     ownerId = serializers.CharField(read_only=True)
     members = serializers.ListSerializer(child=serializers.CharField())
     isAdmin = serializers.SerializerMethodField()

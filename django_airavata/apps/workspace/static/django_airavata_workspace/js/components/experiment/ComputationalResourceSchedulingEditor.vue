@@ -24,6 +24,8 @@
                     v-model="localComputationalResourceScheduling"
                     v-if="appDeploymentId"
                     :app-deployment-id="appDeploymentId"
+                    :compute-resource-policy="selectedComputeResourcePolicy"
+                    :batch-queue-resource-policies="batchQueueResourcePolicies"
                     @input="queueSettingsChanged">
                 </queue-settings-editor>
             </div>
@@ -57,6 +59,8 @@ export default {
             localComputationalResourceScheduling: this.value.clone(),
             computeResources: {},
             applicationDeployments: [],
+            groupResourceProfiles: [],
+            selectedGroupResourceProfile: null,
             appDeploymentId: null,
             resourceHostId: null,
             // TODO: replace this with Loading spinner, better mechanism
@@ -69,12 +73,14 @@ export default {
     mounted: function () {
         this.loadApplicationDeployments(this.appModuleId);
         this.loadComputeResourcesForApplicationInterface(this.appInterfaceId);
+        this.loadGroupResourceProfiles();
     },
     computed: {
         computeResourceOptions: function() {
             const computeResourceOptions = [];
             for (let computeResourceId in this.computeResources) {
-                if (this.computeResources.hasOwnProperty(computeResourceId)) {
+                if (this.computeResources.hasOwnProperty(computeResourceId)
+                    && this.isComputeHostInGroupResourceProfile(computeResourceId)) {
                     computeResourceOptions.push({
                         value: computeResourceId,
                         text: this.computeResources[computeResourceId],
@@ -86,6 +92,22 @@ export default {
         },
         loading: function() {
             return this.loadingCount > 0;
+        },
+        selectedComputeResourcePolicy: function() {
+            if (this.groupResourceProfile === null) {
+                return null;
+            }
+            return this.groupResourceProfile.computeResourcePolicies.find(crp => {
+                return crp.computeResourceId === this.localComputationalResourceScheduling.resourceHostId;
+            });
+        },
+        batchQueueResourcePolicies: function() {
+            if (this.groupResourceProfile === null) {
+                return null;
+            }
+            return this.groupResourceProfile.batchQueueResourcePolicies.filter(bqrp => {
+                return bqrp.computeResourceId === this.localComputationalResourceScheduling.resourceHostId;
+            });
         }
     },
     methods: {
@@ -112,6 +134,27 @@ export default {
             services.ApplicationInterfaceService.getComputeResources(appInterfaceId)
                 .then(computeResources => this.computeResources = computeResources)
                 .then(()=> {this.loadingCount--;}, () => {this.loadingCount--;});
+        },
+        loadGroupResourceProfiles: function() {
+            this.loadingCount++;
+            services.GroupResourceProfileService.list()
+                .then(groupResourceProfiles => {
+                    this.groupResourceProfiles = groupResourceProfiles;
+                    if (this.groupResourceProfiles && this.groupResourceProfiles.length > 0) {
+                        // Just pick the first one for now
+                        this.groupResourceProfile = this.groupResourceProfiles[0];
+                    }
+                })
+                .then(()=> {this.loadingCount--;}, () => {this.loadingCount--;});
+        },
+        isComputeHostInGroupResourceProfile: function(computeHostId) {
+            // TODO: for now don't require a GroupResourceProfile
+            if (this.groupResourceProfile === null) {
+                return true;
+            }
+            return this.groupResourceProfile.computePreferences.some(cp => {
+                return cp.computeResourceId === computeHostId;
+            })
         },
         queueSettingsChanged: function() {
             // QueueSettingsEditor updates the full
