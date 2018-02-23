@@ -473,7 +473,7 @@ public class GFacUtils {
         groovyMap.add(Script.INPUTS, inputValues);
 
         List<String> inputValuesAll = getProcessInputValues(processModel.getProcessInputs(), false);
-        inputValues.addAll(getProcessOutputValues(processModel.getProcessOutputs(), false));
+        inputValuesAll.addAll(getProcessOutputValues(processModel.getProcessOutputs(), false));
         groovyMap.add(Script.INPUTS_ALL, inputValuesAll);
 
         groovyMap.add(Script.USER_NAME, processContext.getJobSubmissionRemoteCluster().getServerInfo().getUserName());
