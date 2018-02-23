@@ -15,6 +15,8 @@ from airavata.model.appcatalog.appdeployment.ttypes import (ApplicationDeploymen
 from airavata.model.appcatalog.appinterface.ttypes import \
     ApplicationInterfaceDescription
 from airavata.model.appcatalog.computeresource.ttypes import BatchQueue
+from airavata.model.appcatalog.groupresourceprofile.ttypes import \
+    GroupResourceProfile
 from airavata.model.application.io.ttypes import (InputDataObjectType,
                                                   OutputDataObjectType)
 from airavata.model.data.replica.ttypes import (DataProductModel,
@@ -399,3 +401,9 @@ class UserProfileSerializer(
         thrift_utils.create_serializer_class(UserProfile)):
     creationTime = UTCPosixTimestampDateTimeField()
     lastAccessTime = UTCPosixTimestampDateTimeField()
+
+
+class GroupResourceProfileSerializer(
+        thrift_utils.create_serializer_class(GroupResourceProfile)):
+    creationTime = UTCPosixTimestampDateTimeField()
+    updatedTime = UTCPosixTimestampDateTimeField()

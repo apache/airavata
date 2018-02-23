@@ -692,3 +692,11 @@ class UserProfileViewSet(mixins.ListModelMixin, GenericAPIBackedViewSet):
         user_profile_client = self.request.profile_service['user_profile']
         return user_profile_client.getAllUserProfilesInGateway(
             self.authz_token, self.gateway_id, 0, -1)
+
+
+class GroupResourceProfileViewSet(ReadOnlyAPIBackedViewSet):
+    serializer_class = serializers.GroupResourceProfileSerializer
+
+    def get_list(self):
+        return self.request.airavata_client.getGroupResourceList(
+            self.authz_token, self.gateway_id)

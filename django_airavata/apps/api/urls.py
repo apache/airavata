@@ -20,6 +20,8 @@ router.register(r'applications', views.ApplicationModuleViewSet, base_name='appl
 router.register(r'application-deployments', views.ApplicationDeploymentViewSet, base_name='application-deployment')
 router.register(r'user-profiles', views.UserProfileViewSet,
                 base_name='user-profile')
+router.register(r'group-resource-profiles', views.GroupResourceProfileViewSet,
+                base_name='group-resource-profile')
 
 app_name = 'django_airavata_api'
 urlpatterns = [
