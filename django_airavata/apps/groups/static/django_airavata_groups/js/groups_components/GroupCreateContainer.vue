@@ -1,5 +1,5 @@
 <template>
-    <group-editor :group="newGroup"></group-editor>
+    <group-editor :group="newGroup" @saved="handleSaved"></group-editor>
 </template>
 
 <script>
