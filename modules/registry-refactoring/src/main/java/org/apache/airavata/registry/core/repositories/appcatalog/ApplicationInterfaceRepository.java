@@ -24,13 +24,10 @@ import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDes
 import org.apache.airavata.model.appcatalog.appinterface.application_interface_modelConstants;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
-import org.apache.airavata.registry.core.utils.DBConstants;
-import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
-import org.apache.airavata.registry.core.utils.QueryConstants;
+import org.apache.airavata.registry.core.utils.*;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ApplicationInterface;
 import org.apache.airavata.registry.core.entities.appcatalog.*;
-import org.apache.airavata.registry.core.utils.AppCatalogUtils;
 import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,226 +44,85 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
         super(ApplicationInterfaceDescription.class, ApplicationInterfaceEntity.class);
     }
 
-    @Override
-    public String addApplicationModule(ApplicationModule applicationModule, String gatewayId) throws AppCatalogException {
+    protected String saveApplicationInterfaceDescriptorData(
+            ApplicationInterfaceDescription applicationInterfaceDescription) throws AppCatalogException {
+        ApplicationInterfaceEntity applicationInterfaceEntity = saveApplicationInterface(applicationInterfaceDescription);
+        return applicationInterfaceEntity.getInterfaceId();
+    }
+
+    protected ApplicationInterfaceEntity saveApplicationInterface(
+            ApplicationInterfaceDescription applicationInterfaceDescription) throws AppCatalogException {
+        String applicationInterfaceId = applicationInterfaceDescription.getApplicationInterfaceId();
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        ApplicationInterfaceEntity applicationInterfaceEntity = mapper.map(applicationInterfaceDescription, ApplicationInterfaceEntity.class);
+        if (applicationInterfaceEntity.getApplicationInputs() != null) {
+            applicationInterfaceEntity.getApplicationInputs().forEach(applicationInputEntity -> applicationInputEntity.setInterfaceId(applicationInterfaceId));
+        }
+        if (applicationInterfaceEntity.getApplicationOutputs() != null) {
+            applicationInterfaceEntity.getApplicationOutputs().forEach(applicationOutputEntity -> applicationOutputEntity.setInterfaceId(applicationInterfaceId));
+        }
+        return execute(entityManager -> entityManager.merge(applicationInterfaceEntity));
+    }
+
+    protected String saveApplicationModuleData(
+            ApplicationModule applicationModule) throws AppCatalogException {
+        ApplicationModuleEntity applicationModuleEntity = saveApplicationModule(applicationModule);
+        return applicationModule.getAppModuleId();
+    }
+
+    protected ApplicationModuleEntity saveApplicationModule(
+            ApplicationModule applicationModule) throws AppCatalogException {
         Mapper mapper = ObjectMapperSingleton.getInstance();
         ApplicationModuleEntity applicationModuleEntity = mapper.map(applicationModule, ApplicationModuleEntity.class);
-        applicationModuleEntity.setModuleName(applicationModule.getAppModuleName());
-        applicationModuleEntity.setGatewayId(gatewayId);
         if (!applicationModuleEntity.getModuleId().equals("") && !applicationModule.getAppModuleId().equals(application_interface_modelConstants.DEFAULT_ID)) {
             applicationModuleEntity.setModuleId(applicationModule.getAppModuleId());
         } else {
             applicationModuleEntity.setModuleId(applicationModule.getAppModuleName());
         }
-        applicationModuleEntity.setModuleDesc(applicationModule.getAppModuleDescription());
-        applicationModuleEntity.setModuleVersion(applicationModule.getAppModuleVersion());
-        execute(entityManager -> entityManager.merge(applicationModuleEntity));
-        applicationModule.setAppModuleId(applicationModuleEntity.getModuleId());
-        return applicationModuleEntity.getModuleId();
+        return execute(entityManager -> entityManager.merge(applicationModuleEntity));
+    }
+
+    @Override
+    public String addApplicationModule(ApplicationModule applicationModule, String gatewayId) throws AppCatalogException {
+        return saveApplicationModuleData(applicationModule);
     }
 
     @Override
     public String addApplicationInterface(ApplicationInterfaceDescription applicationInterfaceDescription, String gatewayId) throws AppCatalogException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        ApplicationInterfaceEntity applicationInterfaceEntity = mapper.map(applicationInterfaceDescription, ApplicationInterfaceEntity.class);
-        applicationInterfaceEntity.setApplicationName(applicationInterfaceDescription.getApplicationName());
-        if (!applicationInterfaceDescription.getApplicationInterfaceId().equals("") && !applicationInterfaceDescription.getApplicationInterfaceId().equals(application_interface_modelConstants.DEFAULT_ID)){
-            applicationInterfaceEntity.setInterfaceId(applicationInterfaceDescription.getApplicationInterfaceId());
-        } else {
-            applicationInterfaceEntity.setInterfaceId(AppCatalogUtils.getID(applicationInterfaceDescription.getApplicationName()));
-        }
-        applicationInterfaceEntity.setApplicationDescription(applicationInterfaceDescription.getApplicationDescription());
-        applicationInterfaceEntity.setGatewayId(gatewayId);
-        applicationInterfaceEntity.setArchiveWorkingDirectory(applicationInterfaceDescription.isArchiveWorkingDirectory());
-        applicationInterfaceEntity.setHasOptionalFileInputs(applicationInterfaceDescription.isHasOptionalFileInputs());
-        execute(entityManager -> entityManager.merge(applicationInterfaceEntity));
-        applicationInterfaceDescription.setApplicationInterfaceId(applicationInterfaceEntity.getInterfaceId());
-
-        List<String> applicationModules = applicationInterfaceDescription.getApplicationModules();
-        if (applicationModules != null && !applicationModules.isEmpty()){
-            for (String moduleId : applicationModules){
-                ApplicationModuleEntity applicationModuleEntity = new ApplicationModuleEntity();
-                AppModuleMappingEntity appModuleMappingEntity = new AppModuleMappingEntity();
-                appModuleMappingEntity.setInterfaceId(applicationInterfaceEntity.getInterfaceId());
-                appModuleMappingEntity.setModuleId(moduleId);
-                appModuleMappingEntity.setApplicationModule((ApplicationModuleEntity) applicationModuleEntity.get(moduleId));
-                appModuleMappingEntity.setApplicationInterface(applicationInterfaceEntity);
-                execute(entityManager -> entityManager.merge(appModuleMappingEntity));
-            }
-        }
-
-        List<InputDataObjectType> applicationInputs = applicationInterfaceDescription.getApplicationInputs();
-        if (applicationInputs != null && !applicationInputs.isEmpty()){
-            for (InputDataObjectType input : applicationInputs){
-                ApplicationInputEntity applicationInputEntity = new ApplicationInputEntity();
-                applicationInputEntity.setInputKey(input.getName());
-                applicationInputEntity.setInterfaceId(applicationInterfaceEntity.getInterfaceId());
-                applicationInputEntity.setApplicationInterface(applicationInterfaceEntity);
-                applicationInputEntity.setUserFriendlyDesc(input.getUserFriendlyDescription());
-                applicationInputEntity.setInputValue(input.getValue());
-                applicationInputEntity.setDataType(input.getType().toString());
-                applicationInputEntity.setMetadata(input.getMetaData());
-                applicationInputEntity.setStandardInput(input.isStandardInput());
-                applicationInputEntity.setAppArgument(input.getApplicationArgument());
-                applicationInputEntity.setInputOrder(input.getInputOrder());
-                applicationInputEntity.setIsRequired(input.isIsRequired());
-                applicationInputEntity.setRequiredToCommandline(input.isRequiredToAddedToCommandLine());
-                execute(entityManager -> entityManager.merge(applicationInputEntity));
-            }
-        }
-
-        List<OutputDataObjectType> applicationOutputs = applicationInterfaceDescription.getApplicationOutputs();
-        if (applicationOutputs != null && !applicationOutputs.isEmpty()) {
-            for (OutputDataObjectType output : applicationOutputs) {
-                ApplicationOutputEntity applicationOutputEntity = new ApplicationOutputEntity();
-                applicationOutputEntity.setOutputKey(output.getName());
-                applicationOutputEntity.setInterfaceId(applicationInterfaceEntity.getInterfaceId());
-                applicationOutputEntity.setApplicationInterface(applicationInterfaceEntity);
-                applicationOutputEntity.setOutputValue(output.getValue());
-                applicationOutputEntity.setDataType(output.getType().toString());
-                applicationOutputEntity.setIsRequired(output.isIsRequired());
-                applicationOutputEntity.setRequiredToCommandline(output.isRequiredToAddedToCommandLine());
-                applicationOutputEntity.setDataMovement(output.isDataMovement());
-                applicationOutputEntity.setDataNameLocation(output.getLocation());
-                applicationOutputEntity.setAppArgument(output.getApplicationArgument());
-                applicationOutputEntity.setSearchQuery(output.getSearchQuery());
-                applicationOutputEntity.setOutputStreaming(output.isOutputStreaming());
-                execute(entityManager -> entityManager.merge(applicationOutputEntity));
-            }
-        }
-        return applicationInterfaceEntity.getInterfaceId();
+        return saveApplicationInterfaceDescriptorData(applicationInterfaceDescription);
     }
 
     @Override
     public void addApplicationModuleMapping(String moduleId, String interfaceId) throws AppCatalogException {
-        ApplicationModuleEntity applicationModuleEntity = new ApplicationModuleEntity();
-        ApplicationInterfaceEntity applicationInterfaceEntity = new ApplicationInterfaceEntity();
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        ApplicationModule applicationModule = getApplicationModule(moduleId);
+        ApplicationInterfaceDescription applicationInterfaceDescription = getApplicationInterface(interfaceId);
+        ApplicationModuleEntity applicationModuleEntity = mapper.map(applicationModule, ApplicationModuleEntity.class);
+        ApplicationInterfaceEntity applicationInterfaceEntity = mapper.map(applicationInterfaceDescription, ApplicationInterfaceEntity.class);
         AppModuleMappingEntity appModuleMappingEntity = new AppModuleMappingEntity();
         appModuleMappingEntity.setModuleId(moduleId);
         appModuleMappingEntity.setInterfaceId(interfaceId);
-        appModuleMappingEntity.setApplicationModule(get(moduleId));
-        appModuleMappingEntity.setApplicationInterface(get(interfaceId));
+        appModuleMappingEntity.setApplicationModule(applicationModuleEntity);
+        appModuleMappingEntity.setApplicationInterface(applicationInterfaceEntity);
         execute(entityManager -> entityManager.merge(appModuleMappingEntity));
     }
 
     @Override
-    public void updateApplicationModule(String moduleId, ApplicationModule updatedModule) throws AppCatalogException {
-        ApplicationModuleEntity applicationModuleEntity = new ApplicationModuleEntity();
-        ApplicationModuleEntity existingModule = get(moduleId);
-        existingModule.setModuleName(updatedModule.getAppModuleName());
-        existingModule.setModuleDesc(updatedModule.getAppModuleDescription());
-        existingModule.setModuleVersion(updatedModule.getAppModuleVersion());
-        execute(entityManager -> entityManager.merge(existingModule));
+    public void updateApplicationModule(String moduleId, ApplicationModule updatedApplicationModule) throws AppCatalogException {
+        saveApplicationModuleData(updatedApplicationModule);
     }
 
     @Override
-    public void updateApplicationInterface(String interfaceId, ApplicationInterfaceDescription updatedInterface) throws AppCatalogException {
-        Mapper mapper = ObjectMapperSingleton.getInstance();
-        ApplicationInterfaceEntity applicationInterfaceEntity = mapper.map(updatedInterface, ApplicationInterfaceEntity.class);
-        ApplicationInterfaceEntity existingInterface = get(interfaceId);
-        existingInterface.setApplicationName(applicationInterfaceEntity.getApplicationName());
-        existingInterface.setApplicationDescription(applicationInterfaceEntity.getApplicationDescription());
-        existingInterface.setHasOptionalFileInputs(applicationInterfaceEntity.getHasOptionalFileInputs());
-        existingInterface.setArchiveWorkingDirectory(applicationInterfaceEntity.getArchiveWorkingDirectory());
-        execute(entityManager -> entityManager.merge(existingInterface));
-
-        // remove existing modules before adding
-        Map<String, String> ids = new HashMap<>();
-        ids.put(AppCatAbstractResource.AppModuleMappingConstants.INTERFACE_ID, interfaceId);
-        AppModuleMappingEntity appModuleMappingEntity = new AppModuleMappingEntity();
-        appModuleMappingEntity.remove(ids);
-        List<String> applicationModules = updatedInterface.getApplicationModules();
-        if (applicationModules != null && !applicationModules.isEmpty()) {
-            for (String moduleId : applicationModules) {
-                ApplicationModuleEntity applicationModuleEntity = new ApplicationModuleEntity();
-                appModuleMappingEntity = new AppModuleMappingEntity();
-                ids = new HashMap<>();
-                ids.put(AppCatAbstractResource.AppModuleMappingConstants.MODULE_ID, moduleId);
-                ids.put(AppCatAbstractResource.AppModuleMappingConstants.INTERFACE_ID, interfaceId);
-                AppModuleMappingEntity existingMapping;
-                if (!appModuleMappingEntity.isExists(ids)) {
-                    existingMapping = new AppModuleMappingAppCatalogResourceAppCat();
-                } else {
-                    existingMapping = (AppModuleMappingAppCatalogResourceAppCat) appModuleMappingEntity.get(ids);
-                }
-                existingMapping.setInterfaceId(interfaceId);
-                existingMapping.setModuleId(moduleId);
-                existingMapping.setApplicationModule((ApplicationModuleEntity) applicationModuleEntity.get(moduleId));
-                existingMapping.setApplicationInterface(existingInterface);
-                execute(entityManager -> entityManager.merge(existingMapping));
-            }
-        }
-
-        // remove existing application inputs
-        ApplicationInputEntity applicationInputEntity = new ApplicationInputEntity();
-        ids = new HashMap<>();
-        ids.put(AppCatAbstractResource.AppInputConstants.INTERFACE_ID, interfaceId);
-        applicationInputEntity.remove(ids);
-        List<InputDataObjectType> applicationInputs = updatedInterface.getApplicationInputs();
-        if (applicationInputs != null && !applicationInputs.isEmpty()) {
-            for (InputDataObjectType input : applicationInputs) {
-                applicationInputEntity = new ApplicationInputEntity();
-                ids = new HashMap<>();
-                ids.put(AppCatAbstractResource.AppInputConstants.INTERFACE_ID, interfaceId);
-                ids.put(AppCatAbstractResource.AppInputConstants.INPUT_KEY, input.getName());
-                if (applicationInputEntity.isExists(ids)) {
-                    applicationInputEntity = (ApplicationInputEntity) applicationInputEntity.get(ids);
-                }
-                applicationInputEntity.setInputKey(input.getName());
-                applicationInputEntity.setInterfaceId(interfaceId);
-                applicationInputEntity.setApplicationInterface(existingInterface);
-                applicationInputEntity.setUserFriendlyDesc(input.getUserFriendlyDescription());
-                applicationInputEntity.setInputValue(input.getValue());
-                applicationInputEntity.setDataType(input.getType().toString());
-                applicationInputEntity.setMetadata(input.getMetaData());
-                applicationInputEntity.setStandardInput(input.isStandardInput());
-                applicationInputEntity.setAppArgument(input.getApplicationArgument());
-                applicationInputEntity.setInputOrder(input.getInputOrder());
-                applicationInputEntity.setIsRequired(input.isIsRequired());
-                applicationInputEntity.setRequiredToCommandline(input.isRequiredToAddedToCommandLine());
-                applicationInputEntity.setDataStaged(input.isDataStaged());
-                applicationInputEntity.setIsReadOnly(input.isIsReadOnly());
-                execute(entityManager -> entityManager.merge(applicationInputEntity));
-            }
-        }
-
-        // remove existing app outputs before adding
-        ApplicationOutputEntity applicationOutputEntity = new ApplicationOutputEntity();
-        ids = new HashMap<>();
-        ids.put(AppCatAbstractResource.AppOutputConstants.INTERFACE_ID, interfaceId);
-        applicationOutputEntity.remove(ids);
-        List<OutputDataObjectType> applicationOutputs = updatedInterface.getApplicationOutputs();
-        if (applicationOutputs != null && !applicationOutputs.isEmpty()) {
-            for (OutputDataObjectType output : applicationOutputs) {
-                applicationOutputEntity = new ApplicationOutputEntity();
-                ids = new HashMap<>();
-                ids.put(AppCatAbstractResource.AppOutputConstants.INTERFACE_ID, interfaceId);
-                ids.put(AppCatAbstractResource.AppOutputConstants.OUTPUT_KEY, output.getName());
-                if (applicationOutputEntity.isExists(ids)) {
-                    applicationOutputEntity = (ApplicationOutputEntity) applicationOutputEntity.get(ids);
-                }
-                applicationOutputEntity.setOutputKey(output.getName());
-                applicationOutputEntity.setInterfaceId(interfaceId);
-                applicationOutputEntity.setApplicationInterface(existingInterface);
-                applicationOutputEntity.setOutputValue(output.getValue());
-                applicationOutputEntity.setDataType(output.getType().toString());
-                applicationOutputEntity.setIsRequired(output.isIsRequired());
-                applicationOutputEntity.setRequiredToCommandline(output.isRequiredToAddedToCommandLine());
-                applicationOutputEntity.setDataMovement(output.isDataMovement());
-                applicationOutputEntity.setDataNameLocation(output.getLocation());
-                applicationOutputEntity.setAppArgument(output.getApplicationArgument());
-                applicationOutputEntity.setSearchQuery(output.getSearchQuery());
-                applicationOutputEntity.setOutputStreaming(output.isOutputStreaming());
-                execute(entityManager -> entityManager.merge(applicationOutputEntity));
-            }
-        }
+    public void updateApplicationInterface(String interfaceId, ApplicationInterfaceDescription updatedApplicationInterfaceDescription) throws AppCatalogException {
+        saveApplicationInterfaceDescriptorData(updatedApplicationInterfaceDescription);
     }
 
     @Override
     public ApplicationModule getApplicationModule(String moduleId) throws AppCatalogException {
+        ApplicationModuleRepository applicationModuleRepository = new ApplicationModuleRepository();
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.ApplicationModule.APPLICATION_MODULE_ID, moduleId);
-        ApplicationModule applicationModule = (ApplicationModule) select(QueryConstants.FIND_APPLICATION_MODULE, -1, 0, queryParameters);
+        ApplicationModule applicationModule = (ApplicationModule) applicationModuleRepository.select(QueryConstants.FIND_APPLICATION_MODULE, -1, 0, queryParameters);
         return applicationModule;
     }
 
@@ -280,10 +136,11 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
 
     @Override
     public List<ApplicationModule> getApplicationModules(Map<String, String> filters) throws AppCatalogException {
+        ApplicationModuleRepository applicationModuleRepository = new ApplicationModuleRepository();
         if(filters.containsKey(DBConstants.ApplicationModule.APPLICATION_MODULE_NAME)) {
             Map<String, Object> queryParameters = new HashMap<>();
             queryParameters.put(DBConstants.ApplicationModule.APPLICATION_MODULE_NAME, filters.get(DBConstants.ApplicationModule.APPLICATION_MODULE_NAME));
-            List<ApplicationModule> applicationModuleList = select(QueryConstants.FIND_APPLICATION_MODULES_FOR_APPLICATION_MODULE_NAME, -1,0, queryParameters);
+            List<ApplicationModule> applicationModuleList = applicationModuleRepository.select(QueryConstants.FIND_APPLICATION_MODULES_FOR_APPLICATION_MODULE_NAME, -1,0, queryParameters);
             return applicationModuleList;
         } else {
             logger.error("Unsupported field name for app module.", new IllegalArgumentException());
@@ -293,9 +150,10 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
 
     @Override
     public List<ApplicationModule> getAllApplicationModules(String gatewayId) throws AppCatalogException {
+        ApplicationModuleRepository applicationModuleRepository = new ApplicationModuleRepository();
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.ApplicationModule.GATEWAY_ID, gatewayId);
-        List<ApplicationModule> applicationModuleList = select(QueryConstants.FIND_APPLICATION_MODULES_FOR_GATEWAY_ID, -1, 0, queryParameters);
+        List<ApplicationModule> applicationModuleList = applicationModuleRepository.select(QueryConstants.FIND_APPLICATION_MODULES_FOR_GATEWAY_ID, -1, 0, queryParameters);
         return applicationModuleList;
     }
 
@@ -335,16 +193,18 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
     @Override
     public List<InputDataObjectType> getApplicationInputs(String interfaceId) throws AppCatalogException {
         Map<String, Object> queryParameters = new HashMap<>();
-        queryParameters.put(DBConstants.ApplicationInputs.APPLICATION_INTERFACE_ID, interfaceId);
-        List<InputDataObjectType> applicationInputsList = select(QueryConstants.FIND_APPLICATION_INPUTS, -1, 0, queryParameters);
+        queryParameters.put(DBConstants.ApplicationInput.APPLICATION_INTERFACE_ID, interfaceId);
+        ApplicationInputRepository applicationInputRepository = new ApplicationInputRepository();
+        List<InputDataObjectType> applicationInputsList = applicationInputRepository.select(QueryConstants.FIND_APPLICATION_INPUTS, -1, 0, queryParameters);
         return applicationInputsList;
     }
 
     @Override
     public List<OutputDataObjectType> getApplicationOutputs(String interfaceId) throws AppCatalogException {
         Map<String, Object> queryParameters = new HashMap<>();
-        queryParameters.put(DBConstants.ApplicationInputs.APPLICATION_INTERFACE_ID, interfaceId);
-        List<OutputDataObjectType> applicationOutputsList = select(QueryConstants.FIND_APPLICATION_OUTPUTS, -1, 0, queryParameters);
+        queryParameters.put(DBConstants.ApplicationOutput.APPLICATION_INTERFACE_ID, interfaceId);
+        ApplicationOutputRepository applicationOutputRepository = new ApplicationOutputRepository();
+        List<OutputDataObjectType> applicationOutputsList = applicationOutputRepository.select(QueryConstants.FIND_APPLICATION_OUTPUTS, -1, 0, queryParameters);
         return applicationOutputsList;
     }
 
@@ -355,7 +215,8 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
 
     @Override
     public boolean removeApplicationModule(String moduleId) throws AppCatalogException {
-        return delete(moduleId);
+        ApplicationModuleRepository applicationModuleRepository = new ApplicationModuleRepository();
+        return applicationModuleRepository.delete(moduleId);
     }
 
     @Override
@@ -365,7 +226,8 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
 
     @Override
     public boolean isApplicationModuleExists(String moduleId) throws AppCatalogException {
-        return isExists(moduleId);
+        ApplicationModuleRepository applicationModuleRepository = new ApplicationModuleRepository();
+        return applicationModuleRepository.isExists(moduleId);
     }
 
 }
