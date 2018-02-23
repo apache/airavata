@@ -94,18 +94,18 @@ export default {
             return this.loadingCount > 0;
         },
         selectedComputeResourcePolicy: function() {
-            if (this.groupResourceProfile === null) {
+            if (this.selectedGroupResourceProfile === null) {
                 return null;
             }
-            return this.groupResourceProfile.computeResourcePolicies.find(crp => {
+            return this.selectedGroupResourceProfile.computeResourcePolicies.find(crp => {
                 return crp.computeResourceId === this.localComputationalResourceScheduling.resourceHostId;
             });
         },
         batchQueueResourcePolicies: function() {
-            if (this.groupResourceProfile === null) {
+            if (this.selectedGroupResourceProfile === null) {
                 return null;
             }
-            return this.groupResourceProfile.batchQueueResourcePolicies.filter(bqrp => {
+            return this.selectedGroupResourceProfile.batchQueueResourcePolicies.filter(bqrp => {
                 return bqrp.computeResourceId === this.localComputationalResourceScheduling.resourceHostId;
             });
         }
@@ -142,17 +142,17 @@ export default {
                     this.groupResourceProfiles = groupResourceProfiles;
                     if (this.groupResourceProfiles && this.groupResourceProfiles.length > 0) {
                         // Just pick the first one for now
-                        this.groupResourceProfile = this.groupResourceProfiles[0];
+                        this.selectedGroupResourceProfile = this.groupResourceProfiles[0];
                     }
                 })
                 .then(()=> {this.loadingCount--;}, () => {this.loadingCount--;});
         },
         isComputeHostInGroupResourceProfile: function(computeHostId) {
             // TODO: for now don't require a GroupResourceProfile
-            if (this.groupResourceProfile === null) {
+            if (this.selectedGroupResourceProfile === null) {
                 return true;
             }
-            return this.groupResourceProfile.computePreferences.some(cp => {
+            return this.selectedGroupResourceProfile.computePreferences.some(cp => {
                 return cp.computeResourceId === computeHostId;
             })
         },

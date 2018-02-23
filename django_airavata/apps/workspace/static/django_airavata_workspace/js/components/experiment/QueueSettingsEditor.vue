@@ -172,9 +172,9 @@ export default {
         queueChanged: function(queueName) {
 
             const queueDefault = this.queueDefaults.find(queue => queue.queueName === queueName);
-            this.localComputationalResourceScheduling.totalCPUCount = this.getDefaultCPUCount(defaultQueue);
-            this.localComputationalResourceScheduling.nodeCount = this.getDefaultNodeCount(defaultQueue);
-            this.localComputationalResourceScheduling.wallTimeLimit = this.getDefaultWalltime(defaultQueue);
+            this.localComputationalResourceScheduling.totalCPUCount = this.getDefaultCPUCount(queueDefault);
+            this.localComputationalResourceScheduling.nodeCount = this.getDefaultNodeCount(queueDefault);
+            this.localComputationalResourceScheduling.wallTimeLimit = this.getDefaultWalltime(queueDefault);
             this.emitValueChanged();
         },
         emitValueChanged: function() {
