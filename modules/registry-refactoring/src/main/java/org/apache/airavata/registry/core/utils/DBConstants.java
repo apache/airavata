@@ -23,12 +23,12 @@ public class DBConstants {
         public static final String GATEWAY_ID = "gatewayId";
     }
 
-    public static class ApplicationInputs {
+    public static class ApplicationInput {
         public static final String APPLICATION_INTERFACE_ID = "interfaceId";
         public static final String INPUT_KEY = "inputKey";
     }
 
-    public static class ApplicationOutputs {
+    public static class ApplicationOutput {
         public static final String APPLICATION_INTERFACE_ID = "interfaceId";
         public static final String OUTPUT_KEY = "outputKey";
     }
@@ -58,6 +58,36 @@ public class DBConstants {
     public static class GroupResourceProfile {
         public static final String GATEWAY_ID = "gatewayId";
         public static final String GROUP_RESOURCE_PROFILE_ID = "groupResourceProfileId";
+    }
+
+    public final class PreJobCommand {
+        public static final String APPLICATION_DEPLOYMENT_ID = "deploymentId";
+        public static final String COMMAND = "command";
+    }
+
+    public final class PostJobCommand {
+        public static final String APPLICATION_DEPLOYMENT_ID = "deploymentId";
+        public static final String COMMAND = "command";
+    }
+
+    public final class LibraryPrepandPathConstants {
+        public static final String APPLICATION_DEPLOYMENT_ID = "deploymentID";
+        public static final String NAME = "name";
+    }
+
+    public final class LibraryApendPath {
+        public static final String APPLICATION_DEPLOYMENT_ID = "deploymentID";
+        public static final String NAME = "name";
+    }
+
+    public final class AppEnvironment {
+        public static final String APPLICATION_DEPLOYMENT_ID = "deploymentID";
+        public static final String NAME = "name";
+    }
+
+    public final class ModuleLoadCmd {
+        public static final String APPLICATION_DEPLOYMENT_ID = "appDeploymentId";
+        public static final String COMMAND = "cmd";
     }
 
 }
