@@ -151,7 +151,7 @@ class GroupSerializer(serializers.Serializer):
     def get_isMember(self, group):
         request = self.context['request']
         username = request.user.username + "@" + settings.GATEWAY_ID
-        return username in group.members
+        return group.members and username in group.members
 
 
 class ProjectSerializer(serializers.Serializer):
