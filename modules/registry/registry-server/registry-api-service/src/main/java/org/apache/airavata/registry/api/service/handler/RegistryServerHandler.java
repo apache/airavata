@@ -3874,7 +3874,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
             AiravataClientException, AiravataSystemException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
-            return appCatalog.getApplicationInterface().getApplicationOutputs(appInterfaceId);
+            List<OutputDataObjectType> applicationOutputs = new ApplicationInterfaceRepository().getApplicationOutputs(appInterfaceId);
+            logger.debug("Airavata retrieved application outputs for application interface id : " + appInterfaceId);
+            return applicationOutputs;
         } catch (AppCatalogException e) {
             logger.error(appInterfaceId, "Error while retrieving application outputs...", e);
             AiravataSystemException exception = new AiravataSystemException();
