@@ -192,8 +192,8 @@ public class GfacServerHandler implements GfacService.Iface {
             log.info("Message Received with message id {} and with message type: {}" + messageContext.getMessageId(), messageContext.getType());
 
             if (messageContext.getType().equals(MessageType.LAUNCHPROCESS)) {
-	            ProcessStatus status = new ProcessStatus();
-	            status.setState(ProcessState.STARTED);
+                ProcessStatus status = new ProcessStatus();
+                status.setState(ProcessState.STARTED);
                 RegistryService.Client registryClient = Factory.getRegistryServiceClient();
                 try {
                     ProcessSubmitEvent event = new ProcessSubmitEvent();
@@ -201,33 +201,33 @@ public class GfacServerHandler implements GfacService.Iface {
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                     ThriftUtils.createThriftFromBytes(bytes, event);
 
-	                if (messageContext.isRedeliver()) {
-	                    log.debug("Message " + messageContext.getMessageId() + " is a redeliver one");
-		                // check the process is already active in this instance.
-		                if (Factory.getGfacContext().getProcess(event.getProcessId()) != null) {
-			                // update deliver tag
-			                try {
-				                updateDeliveryTag(curatorClient, gfacServerName, event, messageContext );
-				                log.debug("Updated delivery tag for message" + messageContext.getMessageId());
-				                return;
-			                } catch (Exception e) {
-				                log.error("Error while updating delivery tag for redelivery message , messageId : " +
-						                messageContext.getMessageId(), e);
-				                processLaunchSubscriber.sendAck(messageContext.getDeliveryTag());
-				                return;
-			                }
-		                } else {
-			                // read process status from registry
-			                ProcessStatus processStatus = registryClient.getProcessStatus(event.getProcessId());
-			                status.setState(processStatus.getState());
-			                // write server name to zookeeper , this is happen inside createProcessZKNode(...) method 
-		                }
-	                }
+                    if (messageContext.isRedeliver()) {
+                        log.debug("Message " + messageContext.getMessageId() + " is a redeliver one");
+                        // check the process is already active in this instance.
+                        if (Factory.getGfacContext().getProcess(event.getProcessId()) != null) {
+                            // update deliver tag
+                            try {
+                                updateDeliveryTag(curatorClient, gfacServerName, event, messageContext );
+                                log.debug("Updated delivery tag for message" + messageContext.getMessageId());
+                                return;
+                            } catch (Exception e) {
+                                log.error("Error while updating delivery tag for redelivery message , messageId : " +
+                                        messageContext.getMessageId(), e);
+                                processLaunchSubscriber.sendAck(messageContext.getDeliveryTag());
+                                return;
+                            }
+                        } else {
+                            // read process status from registry
+                            ProcessStatus processStatus = registryClient.getProcessStatus(event.getProcessId());
+                            status.setState(processStatus.getState());
+                            // write server name to zookeeper , this is happen inside createProcessZKNode(...) method
+                        }
+                    }
                     // update process status
-	                status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
-	                registryClient.updateProcessStatus(status, event
-			                .getProcessId());
-	                publishProcessStatus(event, status);
+                    status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
+                    registryClient.updateProcessStatus(status, event
+                            .getProcessId());
+                    publishProcessStatus(event, status);
                     MDC.put(MDCConstants.EXPERIMENT_ID, event.getExperimentId());
 
                     try {
