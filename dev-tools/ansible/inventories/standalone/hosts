@@ -1,0 +1,24 @@
+---
+# inventory file
+# NOTE: update the CHANGEMEs to the actual ip address or hostname.
+
+[zookeeper]
+192.168.99.102 ansible_connection=ssh ansible_user=root
+
+[rabbitmq]
+192.168.99.102 ansible_connection=ssh ansible_user=root
+
+[database]
+192.168.99.102 ansible_connection=ssh ansible_user=root
+
+[api-orch]
+192.168.99.102 ansible_connection=ssh ansible_user=root
+
+[gfac]
+192.168.99.102 ansible_connection=ssh ansible_user=root
+
+[pga]
+192.168.99.102 ansible_user=root
+
+[keycloak]
+192.168.99.102 ansible_connection=ssh ansible_user=root

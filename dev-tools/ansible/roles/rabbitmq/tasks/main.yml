@@ -29,12 +29,6 @@
   yum: name=https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.3/rabbitmq-server-3.6.3-1.noarch.rpm state=present
   become: yes
 
-  # add hostname to /etc/hosts file
-- name: get ip4 address
-  # command: dig +short myip.opendns.com @resolver1.opendns.com
-  command: hostname -i
-  register: _ip4
-
 - name: open rabbitmq ports
   firewalld: port={{ item }} zone=public permanent=true state=enabled immediate=yes
   with_items:
@@ -43,7 +37,7 @@
   become: yes
 
 - name: Edit /etc/hosts file
-  lineinfile: dest=/etc/hosts line="{{ _ip4.stdout }} {{ ansible_fqdn }}"
+  lineinfile: dest=/etc/hosts line="{{ ansible_default_ipv4.address }} {{ ansible_fqdn.split('.')[0] }}"
   notify:
     - restart rabbitmq
   become: yes
