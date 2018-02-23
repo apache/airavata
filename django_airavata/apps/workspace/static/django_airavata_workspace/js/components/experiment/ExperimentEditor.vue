@@ -149,7 +149,6 @@ export default {
                         .then(experiment => {
                             this.localExperiment = experiment;
                             console.log(experiment);
-                            alert('Experiment saved!');
                             this.$emit('saved', experiment);
                         });
                 })
@@ -165,7 +164,6 @@ export default {
                             this.localExperiment = experiment;
                             return services.ExperimentService.launch(experiment.experimentId)
                             .then(result => {
-                                alert('Experiment launched!');
                                 this.$emit('savedAndLaunched', experiment);
                             });
                         })
