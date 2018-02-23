@@ -43,14 +43,11 @@ public interface QueryConstants {
 
     // Application Inputs Queries
     String FIND_APPLICATION_INPUTS = "SELECT AI FROM " + ApplicationInputEntity.class.getSimpleName() + " AI " +
-            "WHERE AI.interfaceId LIKE : " + DBConstants.ApplicationInputs.APPLICATION_INTERFACE_ID;
+            "WHERE AI.interfaceId LIKE : " + DBConstants.ApplicationInput.APPLICATION_INTERFACE_ID;
 
     // Application Outputs Queries
     String FIND_APPLICATION_OUTPUTS = "SELECT AI FROM " + ApplicationOutputEntity.class.getSimpleName() + " AI " +
-            "WHERE AI.interfaceId LIKE : " + DBConstants.ApplicationOutputs.APPLICATION_INTERFACE_ID;
-
-    // App Module Mapping Queries
-
+            "WHERE AI.interfaceId LIKE : " + DBConstants.ApplicationOutput.APPLICATION_INTERFACE_ID;
 
     String FIND_ALL_GATEWAY_PROFILES = "SELECT G FROM " + GatewayProfileEntity.class.getSimpleName() + " G";
     String FIND_ALL_COMPUTE_RESOURCE_PREFERENCES = "SELECT DISTINCT CR FROM " + ComputeResourcePreferenceEntity.class.getSimpleName() + " CR " +
