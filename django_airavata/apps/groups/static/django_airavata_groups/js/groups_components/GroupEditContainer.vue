@@ -1,5 +1,5 @@
 <template>
-    <group-editor v-if="group" :group="group"></group-editor>
+    <group-editor v-if="group" :group="group" @saved="handleSaved"></group-editor>
 </template>
 
 <script>
@@ -26,6 +26,9 @@ export default {
         GroupEditor,
     },
     methods: {
+        handleSaved: function(group) {
+            window.location.assign("/groups/");
+        }
     },
     computed: {
     },

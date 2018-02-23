@@ -4,7 +4,7 @@
       {{ showDismissibleAlert.message }}
     </b-alert>
 
-    <b-form v-if="show">
+    <b-form>
 
       <b-form-group id="group1" label="Group Name:" label-for="group_name" description="Name should only contain Alpha Characters">
         <b-form-input id="group_name" type="text" v-model="localGroup.name" required placeholder="Enter group name">
@@ -40,10 +40,7 @@ export default {
     },
     data () {
         return {
-            selection: '',
             localGroup: this.group.clone(),
-            show: true,
-            selected: [],
             showDismissibleAlert: {'variant':'success', 'message':'no data', 'dismissable':false},
             userProfiles: [],
         }
@@ -53,23 +50,18 @@ export default {
     },
     methods: {
         submitForm () {
-            var temp = [];
-            for(var i=0;i<this.selected.length;i++) {
-                temp.push(this.selected[i].id);
-            }
-            this.localGroup.members = temp;
-            services.GroupService.create(this.localGroup)
-            .then(group => {
-                this.$emit('saved', result);
-            })
-            .catch(error => {
-                this.showDismissibleAlert.dismissable = true;
-                this.showDismissibleAlert.message = "Error: "+error.data;
-                this.showDismissibleAlert.variant = "danger";
-            });
-        },
-        updateSelectedValue(data) {
-            this.selected = data;
+            let saveOperation = (this.localGroup.id)
+                ? services.GroupService.update(this.localGroup)
+                : services.GroupService.create(this.localGroup);
+            saveOperation
+                .then(group => {
+                    this.$emit('saved', group);
+                })
+                .catch(error => {
+                    this.showDismissibleAlert.dismissable = true;
+                    this.showDismissibleAlert.message = "Error: "+error.data;
+                    this.showDismissibleAlert.variant = "danger";
+                });
         },
     },
     computed: {

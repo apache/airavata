@@ -22,6 +22,9 @@ export default {
         GroupEditor,
     },
     methods: {
+        handleSaved: function(group) {
+            window.location.assign("/groups/");
+        }
     },
     computed: {
     },

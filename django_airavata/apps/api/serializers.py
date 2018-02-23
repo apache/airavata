@@ -129,6 +129,14 @@ class GroupSerializer(serializers.Serializer):
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
         instance.description = validated_data.get('description', instance.description)
+        # Calculate added and removed members
+        old_members = set(instance.members)
+        new_members = set(validated_data.get('members', instance.members))
+        removed_members = old_members - new_members
+        added_members = new_members - old_members
+        instance._removed_members = list(removed_members)
+        instance._added_members = list(added_members)
+        instance.members = validated_data.get('members', instance.members)
         return instance
 
     def get_isAdmin(self, group):

@@ -218,7 +218,14 @@ class GroupViewSet(APIBackedViewSet):
 
     def perform_update(self, serializer):
         group = serializer.save()
-        self.request.profile_service['group_manager'].updateGroup(self.authz_token, group)
+        group_manager_client = self.request.profile_service['group_manager']
+        if len(group._added_members) > 0:
+            group_manager_client.addUsersToGroup(
+                self.authz_token, group._added_members, group.id)
+        if len(group._removed_members) > 0:
+            group_manager_client.removeUsersFromGroup(
+                self.authz_token, group._removed_members, group.id)
+        group_manager_client.updateGroup(self.authz_token, group)
 
 
 class ProjectViewSet(APIBackedViewSet):
