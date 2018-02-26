@@ -59,7 +59,7 @@ public class OrchestratorUtils {
 	}
 
 
-	private static RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
+	private static RegistryService.Client getRegistryServiceClient() throws ApplicationSettingsException {
 		final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
 		final String serverHost = ServerSettings.getRegistryServerHost();
 		try {

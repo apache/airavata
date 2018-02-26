@@ -20,7 +20,6 @@
 package org.apache.airavata.gfac.impl.task;
 
 import org.apache.airavata.gfac.core.GFacException;
-import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
@@ -93,7 +92,6 @@ public class DataStageTask implements Task {
 				errorModel.setActualErrorMessage(e.getMessage());
 				errorModel.setUserFriendlyMessage(msg);
 				taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
-				throw new RuntimeException(msg, e);
 			} catch (URISyntaxException e) {
 				String msg = "source or destination is not a valid URI";
 				log.error(msg, e);
