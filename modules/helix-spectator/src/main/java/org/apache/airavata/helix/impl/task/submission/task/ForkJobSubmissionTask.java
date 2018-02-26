@@ -36,9 +36,11 @@ public class ForkJobSubmissionTask extends JobSubmissionTask {
             if (mapData != null) {
                 //jobModel.setJobDescription(FileUtils.readFileToString(jobFile));
                 AgentAdaptor adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(
+                        getTaskContext().getGatewayId(),
                         getTaskContext().getComputeResourceId(),
                         getTaskContext().getJobSubmissionProtocol().name(),
-                        getTaskContext().getComputeResourceCredentialToken());
+                        getTaskContext().getComputeResourceCredentialToken(),
+                        getTaskContext().getComputeResourceLoginUserName());
 
                 JobSubmissionOutput submissionOutput = submitBatchJob(adaptor, mapData, mapData.getWorkingDirectory());
 

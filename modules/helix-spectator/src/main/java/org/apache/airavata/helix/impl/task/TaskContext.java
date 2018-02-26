@@ -85,7 +85,7 @@ public class TaskContext {
      * Note: process context property use lazy loading approach. In runtime you will see some properties as null
      * unless you have access it previously. Once that property access using the api,it will be set to correct value.
      */
-    private TaskContext(String taskId, String processId, String gatewayId) {
+    private TaskContext(String processId, String gatewayId, String taskId) {
         this.processId = processId;
         this.gatewayId = gatewayId;
         this.taskId = taskId;
@@ -784,7 +784,12 @@ public class TaskContext {
             ctx.setGatewayResourceProfile(gatewayResourceProfile);
             ctx.setGatewayComputeResourcePreference(gatewayComputeResourcePreference);
             ctx.setGatewayStorageResourcePreference(gatewayStorageResourcePreference);
-
+            ctx.setApplicationDeploymentDescription(appCatalog.getApplicationDeployment()
+                    .getApplicationDeployement(processModel.getApplicationDeploymentId()));
+            ctx.setApplicationInterfaceDescription(appCatalog.getApplicationInterface()
+                    .getApplicationInterface(processModel.getApplicationInterfaceId()));
+            ctx.setComputeResourceDescription(appCatalog.getComputeResource().getComputeResource
+                    (ctx.getComputeResourceId()));
             return ctx;
         }
 

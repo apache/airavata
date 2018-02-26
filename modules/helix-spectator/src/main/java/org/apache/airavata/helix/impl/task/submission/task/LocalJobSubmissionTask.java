@@ -43,10 +43,12 @@ public class LocalJobSubmissionTask extends JobSubmissionTask {
                 saveJobModel(jobModel);
 
                 AgentAdaptor adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(
+                        getTaskContext().getGatewayId(),
                         getTaskContext().getComputeResourceId(),
                         getTaskContext().getJobSubmissionProtocol().name(),
-                        getTaskContext().getComputeResourceCredentialToken());
-
+                        getTaskContext().getComputeResourceCredentialToken(),
+                        getTaskContext().getComputeResourceLoginUserName());
+                
                 GroovyMapData mapData = new GroovyMapBuilder(getTaskContext()).build();
                 JobSubmissionOutput submissionOutput = submitBatchJob(adaptor, mapData, groovyMapData.getWorkingDirectory());
 

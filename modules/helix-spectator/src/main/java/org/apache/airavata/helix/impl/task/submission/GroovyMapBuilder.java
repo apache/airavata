@@ -2,17 +2,21 @@ package org.apache.airavata.helix.impl.task.submission;
 
 import groovy.text.GStringTemplateEngine;
 import groovy.text.TemplateEngine;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.CommandObject;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
+import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.task.JobSubmissionTaskModel;
+import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.thrift.TException;
@@ -38,6 +42,8 @@ public class GroovyMapBuilder {
 
     public GroovyMapData build() throws Exception {
         GroovyMapData mapData = new GroovyMapData();
+
+        setMailAddresses(taskContext, mapData);
         mapData.setInputDir(taskContext.getInputDir());
         mapData.setOutputDir(taskContext.getOutputDir());
         mapData.setExecutablePath(taskContext.getApplicationDeploymentDescription().getExecutablePath());
@@ -51,6 +57,7 @@ public class GroovyMapBuilder {
         mapData.setAccountString(taskContext.getAllocationProjectNumber());
         mapData.setReservation(taskContext.getReservation());
         mapData.setJobName("A" + String.valueOf(generateJobName()));
+        mapData.setWorkingDirectory(taskContext.getWorkingDir());
 
         List<String> inputValues = getProcessInputValues(taskContext.getProcessModel().getProcessInputs(), true);
         inputValues.addAll(getProcessOutputValues(taskContext.getProcessModel().getProcessOutputs(), true));
@@ -330,6 +337,71 @@ public class GroovyMapBuilder {
             throw new IllegalArgumentException("Error while parsing command " + value
                     + " , Invalid command or incomplete bind map");
         }
+    }
+
+    private static void setMailAddresses(TaskContext taskContext, GroovyMapData groovyMap) throws AppCatalogException,
+            ApplicationSettingsException {
+
+        ProcessModel processModel =  taskContext.getProcessModel();
+        String emailIds = null;
+        if (isEmailBasedJobMonitor(taskContext)) {
+            emailIds = ServerSettings.getEmailBasedMonitorAddress();
+        }
+        if (ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_ENABLE).equalsIgnoreCase("true")) {
+            String userJobNotifEmailIds = ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_EMAILIDS);
+            if (userJobNotifEmailIds != null && !userJobNotifEmailIds.isEmpty()) {
+                if (emailIds != null && !emailIds.isEmpty()) {
+                    emailIds += ("," + userJobNotifEmailIds);
+                } else {
+                    emailIds = userJobNotifEmailIds;
+                }
+            }
+            if (processModel.isEnableEmailNotification()) {
+                List<String> emailList = processModel.getEmailAddresses();
+                String elist = listToCsv(emailList, ',');
+                if (elist != null && !elist.isEmpty()) {
+                    if (emailIds != null && !emailIds.isEmpty()) {
+                        emailIds = emailIds + "," + elist;
+                    } else {
+                        emailIds = elist;
+                    }
+                }
+            }
+        }
+        if (emailIds != null && !emailIds.isEmpty()) {
+            logger.info("Email list: " + emailIds);
+            groovyMap.setMailAddress(emailIds);
+        }
+    }
+
+    public static boolean isEmailBasedJobMonitor(TaskContext taskContext) throws AppCatalogException {
+        JobSubmissionProtocol jobSubmissionProtocol = taskContext.getPreferredJobSubmissionProtocol();
+        JobSubmissionInterface jobSubmissionInterface = taskContext.getPreferredJobSubmissionInterface();
+        if (jobSubmissionProtocol == JobSubmissionProtocol.SSH) {
+            String jobSubmissionInterfaceId = jobSubmissionInterface.getJobSubmissionInterfaceId();
+            SSHJobSubmission sshJobSubmission = taskContext.getAppCatalog().getComputeResource().getSSHJobSubmission(jobSubmissionInterfaceId);
+            MonitorMode monitorMode = sshJobSubmission.getMonitorMode();
+            return monitorMode != null && monitorMode == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR;
+        } else {
+            return false;
+        }
+    }
+
+    public static String listToCsv(List<String> listOfStrings, char separator) {
+        StringBuilder sb = new StringBuilder();
+
+        // all but last
+        for (int i = 0; i < listOfStrings.size() - 1; i++) {
+            sb.append(listOfStrings.get(i));
+            sb.append(separator);
+        }
+
+        // last string, no separator
+        if (listOfStrings.size() > 0) {
+            sb.append(listOfStrings.get(listOfStrings.size() - 1));
+        }
+
+        return sb.toString();
     }
 
 }

@@ -13,7 +13,6 @@ import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.airavata.registry.cpi.ComputeResource;
 
 import java.io.*;
 import java.util.Arrays;
@@ -130,47 +129,64 @@ public class SshAgentAdaptor implements AgentAdaptor {
 
     public CommandOutput executeCommand(String command, String workingDirectory) throws AgentException {
         StandardOutReader commandOutput = new StandardOutReader();
+        ChannelExec channelExec = null;
         try {
-            ChannelExec channelExec = ((ChannelExec) session.openChannel("exec"));
+            channelExec = ((ChannelExec) session.openChannel("exec"));
             channelExec.setCommand(command);
             channelExec.setInputStream(null);
-            channelExec.setErrStream(commandOutput.getStandardError());
+            InputStream out = channelExec.getInputStream();
+            InputStream err = channelExec.getErrStream();
             channelExec.connect();
-            commandOutput.onOutput(channelExec);
+
+            commandOutput.setExitCode(channelExec.getExitStatus());
+            commandOutput.readStdOutFromStream(out);
+            commandOutput.readStdErrFromStream(err);
             return commandOutput;
         } catch (JSchException e) {
+            e.printStackTrace();
             throw new AgentException(e);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new AgentException(e);
+        } finally {
+            if (channelExec != null) {
+                channelExec.disconnect();
+            }
         }
     }
 
     public void createDirectory(String path) throws AgentException {
+        String command = "mkdir -p " + path;
+        ChannelExec channelExec = null;
         try {
-            String command = "mkdir -p " + path;
-            Channel channel = session.openChannel("exec");
+            channelExec = (ChannelExec)session.openChannel("exec");
             StandardOutReader stdOutReader = new StandardOutReader();
 
-            ((ChannelExec) channel).setCommand(command);
+            channelExec.setCommand(command);
+            InputStream out = channelExec.getInputStream();
+            InputStream err = channelExec.getErrStream();
+            channelExec.connect();
 
-            ((ChannelExec) channel).setErrStream(stdOutReader.getStandardError());
-            try {
-                channel.connect();
-            } catch (JSchException e) {
+            stdOutReader.readStdOutFromStream(out);
+            stdOutReader.readStdErrFromStream(err);
 
-                channel.disconnect();
-                System.out.println("Unable to retrieve command output. Command - " + command +
-                        " on server - " + session.getHost() + ":" + session.getPort() +
-                        " connecting user name - "
-                        + session.getUserName());
-                throw new AgentException(e);
+
+            if (stdOutReader.getStdError() != null && stdOutReader.getStdError().contains("mkdir:")) {
+                throw new AgentException(stdOutReader.getStdError());
             }
-            stdOutReader.onOutput(channel);
-            if (stdOutReader.getStdErrorString().contains("mkdir:")) {
-                throw new AgentException(stdOutReader.getStdErrorString());
-            }
-
-            channel.disconnect();
         } catch (JSchException e) {
+            System.out.println("Unable to retrieve command output. Command - " + command +
+                    " on server - " + session.getHost() + ":" + session.getPort() +
+                    " connecting user name - "
+                    + session.getUserName());
             throw new AgentException(e);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new AgentException(e);
+        } finally {
+            if (channelExec != null) {
+                channelExec.disconnect();
+            }
         }
     }
 
@@ -182,20 +198,22 @@ public class SshAgentAdaptor implements AgentAdaptor {
         }
         boolean ptimestamp = true;
 
+        ChannelExec channelExec = null;
         try {
             // exec 'scp -t rfile' remotely
             String command = "scp " + (ptimestamp ? "-p" : "") + " -t " + remoteFile;
-            Channel channel = session.openChannel("exec");
+            channelExec = (ChannelExec)session.openChannel("exec");
 
             StandardOutReader stdOutReader = new StandardOutReader();
-            ((ChannelExec) channel).setErrStream(stdOutReader.getStandardError());
-            ((ChannelExec) channel).setCommand(command);
+            //channelExec.setErrStream(stdOutReader.getStandardError());
+            channelExec.setCommand(command);
 
             // get I/O streams for remote scp
-            OutputStream out = channel.getOutputStream();
-            InputStream in = channel.getInputStream();
+            OutputStream out = channelExec.getOutputStream();
+            InputStream in = channelExec.getInputStream();
+            InputStream err = channelExec.getErrStream();
 
-            channel.connect();
+            channelExec.connect();
 
             if (checkAck(in) != 0) {
                 String error = "Error Reading input Stream";
@@ -255,12 +273,10 @@ public class SshAgentAdaptor implements AgentAdaptor {
                 throw new AgentException(error);
             }
             out.close();
-            stdOutReader.onOutput(channel);
+            stdOutReader.readStdErrFromStream(err);
 
-
-            channel.disconnect();
-            if (stdOutReader.getStdErrorString().contains("scp:")) {
-                throw new AgentException(stdOutReader.getStdErrorString());
+            if (stdOutReader.getStdError().contains("scp:")) {
+                throw new AgentException(stdOutReader.getStdError());
             }
             //since remote file is always a file  we just return the file
             //return remoteFile;
@@ -273,43 +289,47 @@ public class SshAgentAdaptor implements AgentAdaptor {
         } catch (IOException e) {
             e.printStackTrace();
             throw new AgentException(e);
+        } finally {
+            if (channelExec != null) {
+                channelExec.disconnect();
+            }
         }
     }
 
     @Override
     public List<String> listDirectory(String path) throws AgentException {
-
+        String command = "ls " + path;
+        ChannelExec channelExec = null;
         try {
-            String command = "ls " + path;
-            Channel channel = session.openChannel("exec");
+            channelExec = (ChannelExec)session.openChannel("exec");
             StandardOutReader stdOutReader = new StandardOutReader();
 
-            ((ChannelExec) channel).setCommand(command);
+            channelExec.setCommand(command);
 
+            InputStream out = channelExec.getInputStream();
+            InputStream err = channelExec.getErrStream();
 
-            ((ChannelExec) channel).setErrStream(stdOutReader.getStandardError());
-            try {
-                channel.connect();
-            } catch (JSchException e) {
+            channelExec.connect();
 
-                channel.disconnect();
-//            session.disconnect();
-
-                throw new AgentException("Unable to retrieve command output. Command - " + command +
-                        " on server - " + session.getHost() + ":" + session.getPort() +
-                        " connecting user name - "
-                        + session.getUserName(), e);
+            stdOutReader.readStdOutFromStream(out);
+            stdOutReader.readStdErrFromStream(err);
+            if (stdOutReader.getStdError().contains("ls:")) {
+                throw new AgentException(stdOutReader.getStdError());
             }
-            stdOutReader.onOutput(channel);
-            stdOutReader.getStdOutputString();
-            if (stdOutReader.getStdErrorString().contains("ls:")) {
-                throw new AgentException(stdOutReader.getStdErrorString());
-            }
-            channel.disconnect();
-            return Arrays.asList(stdOutReader.getStdOutputString().split("\n"));
+            return Arrays.asList(stdOutReader.getStdOut().split("\n"));
 
         } catch (JSchException e) {
+            throw new AgentException("Unable to retrieve command output. Command - " + command +
+                    " on server - " + session.getHost() + ":" + session.getPort() +
+                    " connecting user name - "
+                    + session.getUserName(), e);
+        } catch (IOException e) {
+            e.printStackTrace();
             throw new AgentException(e);
+        } finally {
+            if (channelExec != null) {
+                channelExec.disconnect();
+            }
         }
     }
 
