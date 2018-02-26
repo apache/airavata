@@ -125,8 +125,13 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
         } catch (ApplicationSettingsException e) {
             String msg = "Error occurred while creating job descriptor";
             log.error(msg, e);
-            throw new RuntimeException(msg, e);
-        } catch (GFacException e) {
+            taskStatus.setState(TaskState.FAILED);
+            taskStatus.setReason(msg);
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setActualErrorMessage(e.getMessage());
+            errorModel.setUserFriendlyMessage(msg);
+            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
+        } catch (GFacException | TException e) {
             String msg = "Error occurred while submitting the job";
             log.error(msg, e);
             taskStatus.setState(TaskState.FAILED);
@@ -144,8 +149,6 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
-        } catch (TException e) {
-            throw new RuntimeException("Error while cancelling job submission", e);
         } finally {
             if (registryClient != null) {
                 ThriftUtils.close(registryClient);

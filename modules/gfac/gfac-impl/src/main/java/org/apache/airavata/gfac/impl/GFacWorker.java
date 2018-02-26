@@ -148,11 +148,9 @@ public class GFacWorker implements Runnable {
 				GFacUtils.saveAndPublishProcessStatus(processContext, registryClient);
                 GFacUtils.saveExperimentError(processContext, registryClient, errorModel);
                 GFacUtils.saveProcessError(processContext, registryClient, errorModel);
-			} catch (GFacException e1) {
+			} catch (GFacException|TException e1) {
 				log.error("expId: {}, processId: {} :- Couldn't save and publish process status {}", processContext
 						.getExperimentId(), processContext.getProcessId(), processContext.getProcessState());
-			} catch (TException e1) {
-				throw new RuntimeException("Error", e);
 			}
 			sendAck();
 		} finally {

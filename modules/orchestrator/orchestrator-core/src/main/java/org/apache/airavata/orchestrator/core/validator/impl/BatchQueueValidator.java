@@ -198,7 +198,7 @@ public class BatchQueueValidator implements JobMetadataValidator {
         return validatorResultList;
     }
 
-    private RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
+    private RegistryService.Client getRegistryServiceClient() throws ApplicationSettingsException {
         final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
         final String serverHost = ServerSettings.getRegistryServerHost();
         try {

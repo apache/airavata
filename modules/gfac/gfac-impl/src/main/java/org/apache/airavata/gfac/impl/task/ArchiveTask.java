@@ -88,7 +88,6 @@ public class ArchiveTask implements Task {
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
-            throw new RuntimeException(msg, e);
         }
 
         RegistryService.Client registryClient = Factory.getRegistryServiceClient();
@@ -159,7 +158,7 @@ public class ArchiveTask implements Task {
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
-        } catch ( URISyntaxException | GFacException e) {
+        } catch ( URISyntaxException | GFacException | TException e) {
             String msg = "Error! Archive task failed";
             log.error(msg, e);
             status.setState(TaskState.FAILED);
@@ -169,8 +168,6 @@ public class ArchiveTask implements Task {
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
-        } catch (TException e) {
-            throw new RuntimeException("Error ", e);
         } finally {
             if (registryClient != null) {
                 ThriftUtils.close(registryClient);
