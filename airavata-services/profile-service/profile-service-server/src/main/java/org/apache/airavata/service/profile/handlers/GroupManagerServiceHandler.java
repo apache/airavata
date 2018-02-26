@@ -44,10 +44,9 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             sharingUserGroup.setDescription(groupModel.getDescription());
             sharingUserGroup.setGroupType(GroupType.USER_LEVEL_GROUP);
             sharingUserGroup.setGroupCardinality(GroupCardinality.MULTI_USER);
-            String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            String gatewayId = getDomainId(authzToken);
             sharingUserGroup.setDomainId(gatewayId);
-            String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
-            sharingUserGroup.setOwnerId(username + "@" + gatewayId);
+            sharingUserGroup.setOwnerId(getUserId(authzToken));
 
             String groupId = sharingClient.createGroup(sharingUserGroup);
             sharingClient.addUsersToGroup(gatewayId, groupModel.getMembers(), groupId);
@@ -74,7 +73,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             sharingUserGroup.setName(groupModel.getName());
             sharingUserGroup.setDescription(groupModel.getDescription());
             sharingUserGroup.setGroupType(GroupType.USER_LEVEL_GROUP);
-            sharingUserGroup.setDomainId(authzToken.getClaimsMap().get(Constants.GATEWAY_ID));
+            sharingUserGroup.setDomainId(getDomainId(authzToken));
 
             //adding and removal of users should be handle separately
             sharingClient.updateGroup(sharingUserGroup);
@@ -96,7 +95,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             //TODO Validations for authorization (user must be owner or admin)
             SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
 
-            sharingClient.deleteGroup(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId);
+            sharingClient.deleteGroup(getDomainId(authzToken), groupId);
             return true;
         }
         catch (Exception e) {
@@ -113,7 +112,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     public GroupModel getGroup(AuthzToken authzToken, String groupId) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
             SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
-            final String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            final String domainId = getDomainId(authzToken);
             UserGroup userGroup = sharingClient.getGroup(domainId, groupId);
 
             GroupModel groupModel = convertToGroupModel(userGroup, sharingClient);
@@ -132,7 +131,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     @Override
     @SecurityCheck
     public List<GroupModel> getGroups(AuthzToken authzToken) throws GroupManagerServiceException, AuthorizationException, TException {
-        final String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+        final String domainId = getDomainId(authzToken);
         SharingRegistryService.Client sharingClient = null;
         try {
             sharingClient = getSharingRegistryServiceClient();
@@ -157,7 +156,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
         try {
             SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
             List<GroupModel> groupModels = new ArrayList<GroupModel>();
-            final String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+            final String domainId = getDomainId(authzToken);
             List<UserGroup> userGroups = sharingClient.getAllMemberGroupsForUser(domainId, userName);
 
             return convertToGroupModels(userGroups, sharingClient);
@@ -175,10 +174,10 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     public boolean addUsersToGroup(AuthzToken authzToken, List<String> userIds, String groupId) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
             SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
-            String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
-            String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            if (!(sharingClient.hasOwnerAccess(domainId, groupId, username)
-                    || sharingClient.hasAdminAccess(domainId, groupId, username))) {
+            String userId = getUserId(authzToken);
+            String domainId = getDomainId(authzToken);
+            if (!(sharingClient.hasOwnerAccess(domainId, groupId, userId)
+                    || sharingClient.hasAdminAccess(domainId, groupId, userId))) {
                 throw new GroupManagerServiceException("User does not have access to add users to the group");
             }
             return sharingClient.addUsersToGroup(domainId, userIds, groupId);
@@ -196,10 +195,10 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     public boolean removeUsersFromGroup(AuthzToken authzToken, List<String> userIds, String groupId) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
             SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
-            String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
-            String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            if (!(sharingClient.hasOwnerAccess(domainId, groupId, username)
-                    || sharingClient.hasAdminAccess(domainId, groupId, username))) {
+            String userId = getUserId(authzToken);
+            String domainId = getDomainId(authzToken);
+            if (!(sharingClient.hasOwnerAccess(domainId, groupId, userId)
+                    || sharingClient.hasAdminAccess(domainId, groupId, userId))) {
                 throw new GroupManagerServiceException("User does not have access to remove users to the group");
             }
             return sharingClient.removeUsersFromGroup(domainId, userIds, groupId);
@@ -217,12 +216,12 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     public boolean transferGroupOwnership(AuthzToken authzToken, String groupId, String newOwnerId) throws GroupManagerServiceException, AuthorizationException, TException {
        try{
            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
-           String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
-           String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-           if (!(sharingClient.hasOwnerAccess(domainId, groupId, username))) {
+           String userId = getUserId(authzToken);
+           String domainId = getDomainId(authzToken);
+           if (!(sharingClient.hasOwnerAccess(domainId, groupId, userId))) {
                throw new GroupManagerServiceException("User does not have Owner permission to transfer group ownership");
            }
-           return sharingClient.transferGroupOwnership(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, newOwnerId);
+           return sharingClient.transferGroupOwnership(getDomainId(authzToken), groupId, newOwnerId);
        }
        catch (Exception e) {
            String msg = "Error Transferring Group Ownership";
@@ -239,12 +238,12 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     public boolean addGroupAdmins(AuthzToken authzToken, String groupId, List<String> adminIds) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
             SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
-            String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
-            String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            if (!(sharingClient.hasOwnerAccess(domainId, groupId, username))) {
+            String userId = getUserId(authzToken);
+            String domainId = getDomainId(authzToken);
+            if (!(sharingClient.hasOwnerAccess(domainId, groupId, userId))) {
                 throw new GroupManagerServiceException("User does not have Owner permission to add group admins");
             }
-            return sharingClient.addGroupAdmins(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, adminIds);
+            return sharingClient.addGroupAdmins(getDomainId(authzToken), groupId, adminIds);
         }
         catch (Exception e) {
             String msg = "Error Adding Admins to Group. Group ID: " + groupId;
@@ -260,12 +259,12 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     public boolean removeGroupAdmins(AuthzToken authzToken, String groupId, List<String> adminIds) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
             SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
-            String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
-            String domainId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
-            if (!(sharingClient.hasOwnerAccess(domainId, groupId, username))) {
+            String userId = getUserId(authzToken);
+            String domainId = getDomainId(authzToken);
+            if (!(sharingClient.hasOwnerAccess(domainId, groupId, userId))) {
                 throw new GroupManagerServiceException("User does not have Owner permission to remove group admins");
             }
-            return sharingClient.removeGroupAdmins(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, adminIds);
+            return sharingClient.removeGroupAdmins(getDomainId(authzToken), groupId, adminIds);
         }
         catch (Exception e) {
             String msg = "Error Removing Admins from the Group. Group ID: " + groupId;
@@ -281,7 +280,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     public boolean hasAdminAccess(AuthzToken authzToken, String groupId, String adminId) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
             SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
-            return sharingClient.hasAdminAccess(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, adminId);
+            return sharingClient.hasAdminAccess(getDomainId(authzToken), groupId, adminId);
         }
         catch (Exception e) {
             String msg = "Error Checking Admin Access for the Group. Group ID: " + groupId + " Admin ID: " + adminId;
@@ -297,7 +296,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     public boolean hasOwnerAccess(AuthzToken authzToken, String groupId, String ownerId) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
             SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
-            return sharingClient.hasOwnerAccess(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, ownerId);
+            return sharingClient.hasOwnerAccess(getDomainId(authzToken), groupId, ownerId);
         }
         catch (Exception e) {
             String msg = "Error Checking Owner Access for the Group. Group ID: " + groupId + " Owner ID: " + ownerId;
@@ -317,6 +316,14 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
         } catch (SharingRegistryException e) {
             throw new TException("Unable to create sharing registry client...", e);
         }
+    }
+
+    private String getDomainId(AuthzToken authzToken) {
+        return authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+    }
+
+    private String getUserId(AuthzToken authzToken) {
+        return authzToken.getClaimsMap().get(Constants.USER_NAME) + "@" + getDomainId(authzToken);
     }
 
     private List<GroupModel> convertToGroupModels(List<UserGroup> userGroups, SharingRegistryService.Client sharingClient) throws TException {

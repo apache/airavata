@@ -26,35 +26,11 @@ namespace py airavata.model.appcatalog.groupresourceprofile
 include "compute_resource_model.thrift"
 include "data_movement_models.thrift"
 
-/**
- * Group Resource Profile
- *
- * gatewayID:
- *  Unique identifier for the gateway assigned by Airavata. Corelate this to Airavata Admin API Gateway Registration.
- *
- * groupResourceProfileId:
- *
- * computeResourcePreferences:
- *  List of resource preferences for each of the registered compute resources.
- *
- * computeResourcePolicies:
- *  List of enforced policies for each of the registered compute resources.
- *
- * batchQueueResourcePolicies:
- *  List of enforced policies on registered batch queues
- *
- *
-*/
-
-struct GroupResourceProfile {
-    1: required string gatewayId,
+struct GroupAccountSSHProvisionerConfig {
+    1: required string resourceId,
     2: required string groupResourceProfileId,
-    3: optional string groupResourceProfileName,
-    4: optional list<GroupComputeResourcePreference> computePreferences,
-    5: optional list<ComputeResourcePolicy> computeResourcePolicies,
-    6: optional list<BatchQueueResourcePolicy> batchQueueResourcePolicies
-    7: optional i64 creationTime,
-    8: optional i64 updatedTime
+    3: required string configName,
+    4: optional string configValue
 }
 
 struct GroupComputeResourcePreference {
@@ -95,9 +71,33 @@ struct BatchQueueResourcePolicy {
     7: optional i32 maxAllowedWalltime
 }
 
-struct GroupAccountSSHProvisionerConfig {
-    1: required string resourceId,
+/**
+ * Group Resource Profile
+ *
+ * gatewayID:
+ *  Unique identifier for the gateway assigned by Airavata. Corelate this to Airavata Admin API Gateway Registration.
+ *
+ * groupResourceProfileId:
+ *
+ * computeResourcePreferences:
+ *  List of resource preferences for each of the registered compute resources.
+ *
+ * computeResourcePolicies:
+ *  List of enforced policies for each of the registered compute resources.
+ *
+ * batchQueueResourcePolicies:
+ *  List of enforced policies on registered batch queues
+ *
+ *
+*/
+
+struct GroupResourceProfile {
+    1: required string gatewayId,
     2: required string groupResourceProfileId,
-    3: required string configName,
-    4: optional string configValue
+    3: optional string groupResourceProfileName,
+    4: optional list<GroupComputeResourcePreference> computePreferences,
+    5: optional list<ComputeResourcePolicy> computeResourcePolicies,
+    6: optional list<BatchQueueResourcePolicy> batchQueueResourcePolicies
+    7: optional i64 creationTime,
+    8: optional i64 updatedTime
 }

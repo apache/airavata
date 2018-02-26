@@ -30,6 +30,8 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  GroupModel getGroup(AuthzToken authzToken, string groupId)')
     print('   getGroups(AuthzToken authzToken)')
     print('   getAllGroupsUserBelongs(AuthzToken authzToken, string userName)')
+    print('  bool addUsersToGroup(AuthzToken authzToken,  userIds, string groupId)')
+    print('  bool removeUsersFromGroup(AuthzToken authzToken,  userIds, string groupId)')
     print('  bool transferGroupOwnership(AuthzToken authzToken, string groupId, string newOwnerId)')
     print('  bool addGroupAdmins(AuthzToken authzToken, string groupId,  adminIds)')
     print('  bool removeGroupAdmins(AuthzToken authzToken, string groupId,  adminIds)')
@@ -149,6 +151,18 @@ elif cmd == 'getAllGroupsUserBelongs':
         print('getAllGroupsUserBelongs requires 2 args')
         sys.exit(1)
     pp.pprint(client.getAllGroupsUserBelongs(eval(args[0]), args[1],))
+
+elif cmd == 'addUsersToGroup':
+    if len(args) != 3:
+        print('addUsersToGroup requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.addUsersToGroup(eval(args[0]), eval(args[1]), args[2],))
+
+elif cmd == 'removeUsersFromGroup':
+    if len(args) != 3:
+        print('removeUsersFromGroup requires 3 args')
+        sys.exit(1)
+    pp.pprint(client.removeUsersFromGroup(eval(args[0]), eval(args[1]), args[2],))
 
 elif cmd == 'transferGroupOwnership':
     if len(args) != 3:

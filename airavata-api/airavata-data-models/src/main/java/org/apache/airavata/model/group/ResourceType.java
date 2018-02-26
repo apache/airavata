@@ -24,16 +24,13 @@
 package org.apache.airavata.model.group;
 
 
-import java.util.Map;
-import java.util.HashMap;
-import org.apache.thrift.TEnum;
-
 public enum ResourceType implements org.apache.thrift.TEnum {
   PROJECT(0),
   EXPERIMENT(1),
   DATA(2),
   APPLICATION_DEPLOYMENT(3),
-  OTHER(4);
+  GROUP_RESOURCE_PROFILE(4),
+  OTHER(5);
 
   private final int value;
 
@@ -63,6 +60,8 @@ public enum ResourceType implements org.apache.thrift.TEnum {
       case 3:
         return APPLICATION_DEPLOYMENT;
       case 4:
+        return GROUP_RESOURCE_PROFILE;
+      case 5:
         return OTHER;
       default:
         return null;

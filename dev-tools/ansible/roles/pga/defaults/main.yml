@@ -45,6 +45,8 @@ httpd_log_dir:
 pga_vhost_template: "pga-vhost.conf.j2"
 pga_ssl_vhost_template: "pga-ssl-vhost.conf.j2"
 pga_config_template: "pga_config.php.j2"
+pga_default_conf_template: "default.conf.j2"
+pga_ssl_conf_template: "ssl.conf.j2"
 
 ## WSO2 IS related variables
 tenant_domain: "prod.testdrive"
@@ -58,7 +60,7 @@ admin_role_name: "admin"
 admin_readonly_role_name: "admin-read-only"
 user_role_name: "gateway-user"
 initial_role_name: "user-pending"
-auth_verify_peer: "true"
+auth_verify_peer: "false"
 auth_options:
   - name: "{{ portal_title }}"
     oauth_grant_type: "password"
@@ -68,6 +70,8 @@ oauth_callback_url: "http://{{ vhost_servername }}/callback-url"
 
 ## Airavata Client related variables
 #airavata_server: "tls://gw77.iu.xsede.org"
+pga_repo: "https://github.com/apache/airavata-php-gateway.git"
+pga_git_branch: "master"
 airavata_server: "{{ groups['api-orch'][0] }}"
 airavata_port: "8930"
 airavata_profile_service_server: "{{ airavata_server }}"
@@ -82,10 +86,13 @@ data_sharing_enabled: "true"
 ## Portal related variables
 super_admin_portal: "true"
 admin_emails: "'sgg@iu.edu'"
-portal_email_username: "pga.airavata@gmail.com"
-portal_email_password: "airavata12"
+portal_email_username: "ansibletestairavata@gmail.com"
+portal_email_password: "ansibletestairavata12"
 portal_theme: "base"
 portal_theme_repo: ""
 portal_title: "Airavata PHP Gateway"
 pga_google_analytics_id: ""
+
+pga_default_http_port: 80
+pga_default_https_port: 443
 ...
