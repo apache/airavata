@@ -27,14 +27,21 @@ import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
 import org.apache.thrift.TException;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
+import org.apache.airavata.credential.store.cpi.CredentialStoreService;
+import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
+import org.apache.airavata.credential.store.exception.CredentialStoreException;
+import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.credential.store.PasswordCredential;
+import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.airavata.registry.api.RegistryService;
 
-import java.util.Arrays;
+import java.util.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
 
 public class AiravataDataMigrator {
 
@@ -43,8 +50,6 @@ public class AiravataDataMigrator {
 
         SharingRegistryServerHandler sharingRegistryServerHandler = new SharingRegistryServerHandler();
         SharingRegistryService.Client sharingClient = SharingRegistryServiceClientFactory.createSharingRegistryClient("149.165.169.138", 7878);
-
-        String applicationDeploymentOwner = args[0];
 
         String query = "SELECT * FROM GATEWAY";
         Statement statement = expCatConnection.createStatement();
@@ -108,6 +113,14 @@ public class AiravataDataMigrator {
                 permissionType.setDomainId(domain.domainId);
                 permissionType.setName("WRITE");
                 permissionType.setDescription("Write permission type");
+                if (!sharingRegistryServerHandler.isPermissionExists(permissionType.domainId, permissionType.permissionTypeId))
+                    sharingRegistryServerHandler.createPermissionType(permissionType);
+
+                permissionType = new PermissionType();
+                permissionType.setPermissionTypeId(domain.domainId+":EXEC");
+                permissionType.setDomainId(domain.domainId);
+                permissionType.setName("EXEC");
+                permissionType.setDescription("Execute permission type");
                 if (!sharingRegistryServerHandler.isPermissionExists(permissionType.domainId, permissionType.permissionTypeId))
                     sharingRegistryServerHandler.createPermissionType(permissionType);
             }catch (Exception ex){
@@ -197,17 +210,56 @@ public class AiravataDataMigrator {
             }
         }
 
+        //Creating the everyone group
+        List<Domain> domainList = sharingClient.getDomains(-1, 0);
+        for (Domain domain : domainList) {
+            CredentialStoreService.Client credentialStoreServiceClient = getCredentialStoreServiceClient();
+            GatewayResourceProfile gatewayResourceProfile = getRegistryServiceClient().getGatewayResourceProfile(domain.domainId);
+            PasswordCredential credential = credentialStoreServiceClient.getPasswordCredential(
+                    gatewayResourceProfile.getIdentityServerPwdCredToken(), gatewayResourceProfile.getGatewayID());
+            String groupOwner = credential.getLoginUserName();
+
+            String groupId = "everyone@" + domain.domainId;
+            if (!sharingClient.isGroupExists(domain.domainId, groupId)) {
+                UserGroup userGroup = new UserGroup();
+                userGroup.setGroupId(groupId);
+                userGroup.setDomainId(domain.domainId);
+                userGroup.setGroupCardinality(GroupCardinality.MULTI_USER);
+                userGroup.setCreatedTime(System.currentTimeMillis());
+                userGroup.setUpdatedTime(System.currentTimeMillis());
+                userGroup.setName("everyone");
+                userGroup.setDescription("Default Group");
+                userGroup.setOwnerId(groupOwner + "@" + domain.domainId);
+                userGroup.setGroupType(GroupType.DOMAIN_LEVEL_GROUP);
+                sharingClient.createGroup(userGroup);
+
+                List<User> userList = sharingClient.getUsers(domain.domainId, -1, 0);
+                List<String> users = new ArrayList<>();
+                for (User user : userList) {
+                    users.add(user.getUserId());
+                }
+                sharingClient.addUsersToGroup(domain.domainId, users, groupId);
+            }
+        }
+
         //Creating application deployment entries
         query = "SELECT * FROM APPLICATION_DEPLOYMENT";
         statement = expCatConnection.createStatement();
         rs = statement.executeQuery(query);
         while(rs.next()){
             try {
+                CredentialStoreService.Client credentialStoreServiceClient = getCredentialStoreServiceClient();
+                GatewayResourceProfile gatewayResourceProfile = getRegistryServiceClient().
+                        getGatewayResourceProfile(rs.getString("GATEWAY_ID"));
+                PasswordCredential credential = credentialStoreServiceClient.getPasswordCredential(
+                        gatewayResourceProfile.getIdentityServerPwdCredToken(), gatewayResourceProfile.getGatewayID());
+                String applicationDeploymentOwner = credential.getLoginUserName();
+
                 Entity entity = new Entity();
                 entity.setEntityId(rs.getString("DEPLOYMENT_ID"));
                 entity.setDomainId(rs.getString("GATEWAY_ID"));
                 entity.setEntityTypeId(rs.getString("GATEWAY_ID") + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
-                entity.setOwnerId(applicationDeploymentOwner);
+                entity.setOwnerId(applicationDeploymentOwner + "@" + rs.getString("GATEWAY_ID"));
                 entity.setName(rs.getString("DEPLOYMENT_ID"));
                 entity.setDescription(rs.getString("APPLICATION_DESC"));
                 if(entity.getDescription() == null)
@@ -227,5 +279,27 @@ public class AiravataDataMigrator {
         }
 
         expCatConnection.close();
+
     }
+
+    private static CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
+        final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
+        final String serverHost = ServerSettings.getCredentialStoreServerHost();
+        try {
+            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
+        } catch (CredentialStoreException e) {
+            throw new TException("Unable to create credential store client...", e);
+        }
+    }
+
+    private static RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
+        final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
+        final String serverHost = ServerSettings.getRegistryServerHost();
+        try {
+            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
+        } catch (RegistryServiceException e) {
+            throw new TException("Unable to create registry client...", e);
+        }
+    }
+
 }
