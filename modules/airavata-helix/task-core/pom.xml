@@ -28,6 +28,11 @@
             <artifactId>agent-api</artifactId>
             <version>0.17-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>ssh-agent</artifactId>
+            <version>0.17-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <!--<build>

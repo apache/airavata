@@ -1,6 +1,7 @@
 package org.apache.airavata.helix.core.support;
 
 import org.apache.airavata.agents.api.*;
+import org.apache.airavata.helix.agent.ssh.SshAgentAdaptor;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
 
 import java.io.File;
@@ -29,19 +30,9 @@ public class AdaptorSupportImpl implements AdaptorSupport {
     public void initializeAdaptor() {
     }
 
-    public CommandOutput executeCommand(String command, String workingDirectory, String computeResourceId, String protocol, String authToken) throws AgentException {
-        return fetchAdaptor(computeResourceId, protocol, authToken).executeCommand(command, workingDirectory);
-    }
-
-    public void createDirectory(String path, String computeResourceId, String protocol, String authToken) throws AgentException {
-        fetchAdaptor(computeResourceId, protocol, authToken).createDirectory(path);
-    }
-
-    public void copyFile(String sourceFile, String destinationFile, String computeResourceId, String protocol, String authToken) throws AgentException {
-        fetchAdaptor(computeResourceId, protocol, authToken).copyFile(sourceFile, destinationFile);
-    }
-
-    public AgentAdaptor fetchAdaptor(String computeResource, String protocol, String authToken) throws AgentException {
-         return agentStore.fetchAdaptor(computeResource, protocol, authToken);
+    public AgentAdaptor fetchAdaptor(String gatewayId, String computeResource, String protocol, String authToken, String userId) throws AgentException {
+        SshAgentAdaptor agentAdaptor = new SshAgentAdaptor();
+        agentAdaptor.init(computeResource, gatewayId, userId, authToken);
+        return agentAdaptor;
     }
 }

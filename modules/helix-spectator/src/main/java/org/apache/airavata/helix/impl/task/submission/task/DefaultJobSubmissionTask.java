@@ -50,9 +50,11 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
             if (mapData != null) {
                 //jobModel.setJobDescription(FileUtils.readFileToString(jobFile));
                 AgentAdaptor adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(
+                        getTaskContext().getGatewayId(),
                         getTaskContext().getComputeResourceId(),
                         getTaskContext().getJobSubmissionProtocol().name(),
-                        getTaskContext().getComputeResourceCredentialToken());
+                        getTaskContext().getComputeResourceCredentialToken(),
+                        getTaskContext().getComputeResourceLoginUserName());
 
                 JobSubmissionOutput submissionOutput = submitBatchJob(adaptor, mapData, mapData.getWorkingDirectory());
 
@@ -69,6 +71,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                         statusList.add(new JobStatus(JobState.FAILED));
                         statusList.get(0).setReason(submissionOutput.getFailureReason());
                         jobModel.setJobStatuses(statusList);
+                        jobModel.setJobDescription("Sample description");
                         saveJobModel(jobModel);
                         logger.error("expId: " + getExperimentId() + ", processid: " + getProcessId()+ ", taskId: " +
                                 getTaskId() + " :- Job submission failed for job name " + jobModel.getJobName());
@@ -83,6 +86,8 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                         //taskStatus.setReason("Job submission command didn't return a jobId");
                         //taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                         //taskContext.setTaskStatus(taskStatus);
+                        logger.error("Standard error message : " + submissionOutput.getStdErr());
+                        logger.error("Standard out message : " + submissionOutput.getStdOut());
                         return onFail("Job submission command didn't return a jobId", false, null);
 
                     } else {
@@ -116,6 +121,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
 
                     //TODO save task status??
                 } else if (jobId != null && !jobId.isEmpty()) {
+                    logger.info("Received job id " + jobId + " from compute resource");
                     jobModel.setJobId(jobId);
                     saveJobModel(jobModel);
                     JobStatus jobStatus = new JobStatus();

@@ -1,10 +1,11 @@
 package org.apache.airavata.helix.impl.task.submission;
 
-import com.google.common.collect.ImmutableMap;
 import groovy.lang.Writable;
 import groovy.text.GStringTemplateEngine;
 import groovy.text.TemplateEngine;
 import org.apache.airavata.common.utils.ApplicationSettings;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -14,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 public class GroovyMapData {
+
+    private static final Logger logger = LogManager.getLogger(GroovyMapData.class);
 
     @ScriptTag(name = "inputDir")
     private String inputDir;
@@ -452,6 +455,11 @@ public class GroovyMapData {
             make = engine.createTemplate(template).make(toImmutableMap());
         } catch (Exception e) {
             throw new Exception("Error while generating script using groovy map");
+        }
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("Groovy map as string for template " + templateName);
+            logger.trace(make.toString());
         }
         return make.toString();
     }

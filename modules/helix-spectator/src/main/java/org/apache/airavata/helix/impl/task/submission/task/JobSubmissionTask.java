@@ -28,6 +28,8 @@ import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.helix.HelixManager;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.security.SecureRandom;
@@ -35,7 +37,7 @@ import java.util.*;
 
 public abstract class JobSubmissionTask extends AiravataTask {
 
-
+    private static final Logger logger = LogManager.getLogger(JobSubmissionTask.class);
 
     @Override
     public void init(HelixManager manager, String workflowName, String jobName, String taskName) {
@@ -52,10 +54,19 @@ public abstract class JobSubmissionTask extends AiravataTask {
         int number = new SecureRandom().nextInt();
         number = (number < 0 ? -number : number);
         File tempJobFile = new File(getLocalDataDir(), "job_" + Integer.toString(number) + jobManagerConfiguration.getScriptExtension());
-        FileUtils.writeStringToFile(tempJobFile, scriptAsString);
 
+        FileUtils.writeStringToFile(tempJobFile, scriptAsString);
+        logger.info("Job submission file for process " + getProcessId() + " was created at : " + tempJobFile.getAbsolutePath());
+
+        logger.info("Copying file form " + tempJobFile.getAbsolutePath() + " to remote path " + workingDirectory +
+                " of compute resource " + getTaskContext().getComputeResourceId());
+        agentAdaptor.copyFile(tempJobFile.getAbsolutePath(), workingDirectory);
         // TODO transfer file
         RawCommandInfo submitCommand = jobManagerConfiguration.getSubmitCommand(workingDirectory, tempJobFile.getPath());
+
+        logger.debug("Submit command for process id " + getProcessId() + " : " + submitCommand.getRawCommand());
+        logger.debug("Working directory for process id " + getProcessId() + " : " + workingDirectory);
+
         CommandOutput commandOutput = agentAdaptor.executeCommand(submitCommand.getRawCommand(), workingDirectory);
 
         JobSubmissionOutput jsoutput = new JobSubmissionOutput();
