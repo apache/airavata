@@ -433,7 +433,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             userGroup.setGroupCardinality(GroupCardinality.MULTI_USER);
             userGroup.setCreatedTime(System.currentTimeMillis());
             userGroup.setUpdatedTime(System.currentTimeMillis());
-            userGroup.setOwnerId(authzToken.getClaimsMap().get(Constants.USER_NAME));
+            userGroup.setOwnerId(authzToken.getClaimsMap().get(Constants.USER_NAME) + "@" + domain.domainId);
             userGroup.setName("everyone");
             userGroup.setDescription("Default Group");
             userGroup.setGroupType(GroupType.DOMAIN_LEVEL_GROUP);
