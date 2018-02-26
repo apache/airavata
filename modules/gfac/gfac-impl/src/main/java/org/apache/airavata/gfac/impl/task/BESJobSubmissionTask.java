@@ -137,14 +137,12 @@ public class BESJobSubmissionTask implements JobSubmissionTask {
                 // con't reuse if UserDN has been changed.
                 secProperties = getSecurityConfig(registryClient, processContext);
                 // try secProperties = secProperties.clone() if we can't use already initialized ClientConfigurations.
-            } catch (GFacException e) {
+            } catch (GFacException | TException e) {
                 String msg = "Unicorn security context initialization error";
                 log.error(msg, e);
                 taskStatus.setState(TaskState.FAILED);
                 taskStatus.setReason(msg);
                 return taskStatus;
-            } catch (TException e) {
-                throw new RuntimeException("Error ", e);
             }
             try {
                 JobSubmissionProtocol protocol = processContext.getJobSubmissionProtocol();

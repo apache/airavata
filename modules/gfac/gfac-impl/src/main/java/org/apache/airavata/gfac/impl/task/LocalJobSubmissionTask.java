@@ -140,7 +140,7 @@ public class LocalJobSubmissionTask implements JobSubmissionTask{
                 }
             }
 
-        } catch (GFacException | IOException | ApplicationSettingsException e) {
+        } catch (GFacException | IOException | ApplicationSettingsException | TException e) {
             String msg = "Error occurred while submitting a local job";
             log.error(msg, e);
             taskStatus.setReason(msg);
@@ -149,8 +149,6 @@ public class LocalJobSubmissionTask implements JobSubmissionTask{
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
             taskStatus.setState(TaskState.FAILED);
-        } catch (TException e) {
-            throw new RuntimeException("Error ", e);
         } finally {
             if (registryClient != null) {
                 ThriftUtils.close(registryClient);

@@ -224,7 +224,6 @@ public class SCPDataStageTask implements Task {
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
-            throw new RuntimeException(msg, e);
         } catch ( FileNotFoundException e) {
             String msg = "Failed while reading credentials";
             log.error(msg, e);
@@ -243,7 +242,6 @@ public class SCPDataStageTask implements Task {
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
-            throw new RuntimeException(msg, e);
         } catch (URISyntaxException e) {
             String msg = "Source or destination uri is not correct source : " + subTaskModel.getSource() + ", " +
                     "destination : " + subTaskModel.getDestination();
