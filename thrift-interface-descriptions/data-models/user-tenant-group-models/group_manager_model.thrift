@@ -31,6 +31,7 @@ enum ResourceType {
     EXPERIMENT,
     DATA,
     APPLICATION_DEPLOYMENT,
+    GROUP_RESOURCE_PROFILE,
     OTHER
 }
 

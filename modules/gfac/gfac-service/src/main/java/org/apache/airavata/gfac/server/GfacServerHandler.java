@@ -189,45 +189,52 @@ public class GfacServerHandler implements GfacService.Iface {
 
         public void onMessage(MessageContext messageContext) {
             MDC.put(MDCConstants.GATEWAY_ID, messageContext.getGatewayId());
-            log.info(" Message Received with message id {} and with message type: {}" + messageContext.getMessageId(), messageContext.getType());
+            log.info("Message Received with message id {} and with message type: {}" + messageContext.getMessageId(), messageContext.getType());
+
             if (messageContext.getType().equals(MessageType.LAUNCHPROCESS)) {
-	            ProcessStatus status = new ProcessStatus();
-	            status.setState(ProcessState.STARTED);
+                ProcessStatus status = new ProcessStatus();
+                status.setState(ProcessState.STARTED);
                 RegistryService.Client registryClient = Factory.getRegistryServiceClient();
                 try {
                     ProcessSubmitEvent event = new ProcessSubmitEvent();
                     TBase messageEvent = messageContext.getEvent();
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                     ThriftUtils.createThriftFromBytes(bytes, event);
-	                if (messageContext.isRedeliver()) {
-		                // check the process is already active in this instance.
-		                if (Factory.getGfacContext().getProcess(event.getProcessId()) != null) {
-			                // update deliver tag
-			                try {
-				                updateDeliveryTag(curatorClient, gfacServerName, event, messageContext );
-				                return;
-			                } catch (Exception e) {
-				                log.error("Error while updating delivery tag for redelivery message , messageId : " +
-						                messageContext.getMessageId(), e);
-				                processLaunchSubscriber.sendAck(messageContext.getDeliveryTag());
-			                }
-		                } else {
-			                // read process status from registry
-			                ProcessStatus processStatus = registryClient.getProcessStatus(event.getProcessId());
-			                status.setState(processStatus.getState());
-			                // write server name to zookeeper , this is happen inside createProcessZKNode(...) method 
-		                }
-	                }
+
+                    if (messageContext.isRedeliver()) {
+                        log.debug("Message " + messageContext.getMessageId() + " is a redeliver one");
+                        // check the process is already active in this instance.
+                        if (Factory.getGfacContext().getProcess(event.getProcessId()) != null) {
+                            // update deliver tag
+                            try {
+                                updateDeliveryTag(curatorClient, gfacServerName, event, messageContext );
+                                log.debug("Updated delivery tag for message" + messageContext.getMessageId());
+                                return;
+                            } catch (Exception e) {
+                                log.error("Error while updating delivery tag for redelivery message , messageId : " +
+                                        messageContext.getMessageId(), e);
+                                processLaunchSubscriber.sendAck(messageContext.getDeliveryTag());
+                                return;
+                            }
+                        } else {
+                            // read process status from registry
+                            ProcessStatus processStatus = registryClient.getProcessStatus(event.getProcessId());
+                            status.setState(processStatus.getState());
+                            // write server name to zookeeper , this is happen inside createProcessZKNode(...) method
+                        }
+                    }
                     // update process status
-	                status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
-	                registryClient.updateProcessStatus(status, event
-			                .getProcessId());
-	                publishProcessStatus(event, status);
+                    status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
+                    registryClient.updateProcessStatus(status, event
+                            .getProcessId());
+                    publishProcessStatus(event, status);
                     MDC.put(MDCConstants.EXPERIMENT_ID, event.getExperimentId());
+
                     try {
                         createProcessZKNode(curatorClient, gfacServerName, event, messageContext);
                         boolean isCancel = setCancelWatcher(curatorClient, event.getExperimentId(), event.getProcessId());
                         if (isCancel) {
+                            log.info("Staring to cancel the process " + event.getProcessId() + " of experiment " + event.getExperimentId());
                             if (status.getState() == ProcessState.STARTED) {
                                 status.setState(ProcessState.CANCELLING);
                                 status.setReason("Process Cancel is triggered");
@@ -243,26 +250,38 @@ public class GfacServerHandler implements GfacService.Iface {
                                 publishProcessStatus(event, status);
                                 processLaunchSubscriber.sendAck(messageContext.getDeliveryTag());
                                 return;
+
                             } else {
                                 setCancelData(event.getExperimentId(),event.getProcessId());
                             }
                         }
+
                         try {
+                            log.info("Submitting process " + event.getProcessId() + " of experiment " + event.getExperimentId());
                             submitProcess(event.getProcessId(), event.getGatewayId(), event.getTokenId());
+                            log.info("Process " + event.getProcessId() + " of experiment " + event.getExperimentId() + " successfully submitted");
+
                         } catch (TException e) {
-                            submissionErrorHandling(status, event, e);
-                            processLaunchSubscriber.sendAck(messageContext.getDeliveryTag());
-                            throw new RuntimeException("Error ", e);
+                            log.error("Submission of process " + event.getProcessId() + " failed", e);
+                            try {
+                                submissionErrorHandling(status, event, e);
+                            } catch (Exception ex) {
+                                // ignore silently as we have nothing to do in this stage other than printing the log
+                                log.error("Failed to submit error of process " + event.getProcessId(), ex);
+                            } finally {
+                                processLaunchSubscriber.sendAck(messageContext.getDeliveryTag());
+                            }
                         }
+
                     } catch (Exception e) {
-                        log.error(e.getMessage(), e);
+                        log.error("Failed to prepare the process " + event.getProcessId() + " for submission", e);
                         processLaunchSubscriber.sendAck(messageContext.getDeliveryTag());
                     }
-                } catch (TException e) {
-                    log.error(e.getMessage(), e); //nobody is listening so nothing to throw
-                    throw new RuntimeException("Error ", e);
-                } catch (AiravataException e) {
-	                log.error("Error while publishing process status", e);
+
+                } catch (Exception e) {
+                    log.error("Unknown error while handling the meassage" , e); //nobody is listening so nothing to throw
+                    processLaunchSubscriber.sendAck(messageContext.getDeliveryTag());
+
                 } finally {
                     if (registryClient != null) {
                         ThriftUtils.close(registryClient);
