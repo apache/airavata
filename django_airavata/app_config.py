@@ -30,3 +30,9 @@ class AiravataAppConfig(AppConfig, ABC):
     def fa_icon_class(self):
         """Font Awesome icon class name."""
         pass
+
+    @property
+    @abstractmethod
+    def app_description(self):
+        """Some user friendly text to briefly describe the application."""
+        pass

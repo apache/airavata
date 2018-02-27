@@ -9,3 +9,6 @@ class WorkspaceConfig(AiravataAppConfig):
     app_order = 0
     url_home = 'django_airavata_workspace:dashboard'
     fa_icon_class = 'fa-flask'
+    app_description = """
+        Launch applications and manage your experiments and projects.
+    """
