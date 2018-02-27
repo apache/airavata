@@ -50,6 +50,7 @@ public class AiravataDataMigrator {
 
         SharingRegistryServerHandler sharingRegistryServerHandler = new SharingRegistryServerHandler();
         SharingRegistryService.Client sharingClient = SharingRegistryServiceClientFactory.createSharingRegistryClient("149.165.169.138", 7878);
+        CredentialStoreService.Client credentialStoreServiceClient = getCredentialStoreServiceClient();
 
         String query = "SELECT * FROM GATEWAY";
         Statement statement = expCatConnection.createStatement();
@@ -221,7 +222,6 @@ public class AiravataDataMigrator {
         //Creating the everyone group
         List<Domain> domainList = sharingClient.getDomains(-1, 0);
         for (Domain domain : domainList) {
-            CredentialStoreService.Client credentialStoreServiceClient = getCredentialStoreServiceClient();
             GatewayResourceProfile gatewayResourceProfile = getRegistryServiceClient().getGatewayResourceProfile(domain.domainId);
             PasswordCredential credential = credentialStoreServiceClient.getPasswordCredential(
                     gatewayResourceProfile.getIdentityServerPwdCredToken(), gatewayResourceProfile.getGatewayID());
@@ -256,7 +256,6 @@ public class AiravataDataMigrator {
         rs = statement.executeQuery(query);
         while(rs.next()){
             try {
-                CredentialStoreService.Client credentialStoreServiceClient = getCredentialStoreServiceClient();
                 GatewayResourceProfile gatewayResourceProfile = getRegistryServiceClient().
                         getGatewayResourceProfile(rs.getString("GATEWAY_ID"));
                 PasswordCredential credential = credentialStoreServiceClient.getPasswordCredential(

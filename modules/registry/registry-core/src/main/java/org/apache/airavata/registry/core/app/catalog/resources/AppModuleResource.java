@@ -44,11 +44,16 @@ public class AppModuleResource extends AppCatAbstractResource {
     private Timestamp createdTime;
     private Timestamp updatedTime;
     private String gatewayId;
-    private List<String> accessibleAppDeploymentIds;
+    private List<String> accessibleApplicationDeploymentIds;
+    private List<String> accessibleComputeResourceIds;
 
-    public List<String> getAccessibleAppDeploymentIds() { return accessibleAppDeploymentIds; }
+    public List<String> getAccessibleApplicationDeploymentIds() { return accessibleApplicationDeploymentIds; }
 
-    public void setAccessibleAppDeploymentIds(List<String> accessibleAppDeploymentIds) { this.accessibleAppDeploymentIds = accessibleAppDeploymentIds; }
+    public void setAccessibleApplicationDeploymentIds(List<String> accessibleApplicationDeploymentIds) { this.accessibleApplicationDeploymentIds = accessibleApplicationDeploymentIds; }
+
+    public List<String> getAccessibleComputeResourceIds() { return accessibleComputeResourceIds; }
+
+    public void setAccessibleComputeResourceIds(List<String> accessibleComputeResourceIds) { this.accessibleComputeResourceIds = accessibleComputeResourceIds; }
 
     public String getGatewayId() {
         return gatewayId;
@@ -234,7 +239,7 @@ public class AppModuleResource extends AppCatAbstractResource {
             String queryString = "SELECT appModule " +
                     "FROM " + APPLICATION_MODULE + " appModule " +
                     "WHERE appModule." + ApplicationModuleConstants.GATEWAY_ID + " = :" + ApplicationModuleConstants.GATEWAY_ID + " ";
-            if (accessibleAppDeploymentIds != null && !accessibleAppDeploymentIds.isEmpty()) {
+            if (accessibleApplicationDeploymentIds != null && !accessibleApplicationDeploymentIds.isEmpty()) {
                 queryString += "  AND appModule." + ApplicationModuleConstants.MODULE_ID + " IN (" +
                         "    SELECT appDeploy." + ApplicationDeploymentConstants.APP_MODULE_ID + " " +
                         "    FROM " + APPLICATION_DEPLOYMENT + " appDeploy " +
@@ -242,8 +247,11 @@ public class AppModuleResource extends AppCatAbstractResource {
             }
             Query q =  em.createQuery(queryString);
             q.setParameter(ApplicationModuleConstants.GATEWAY_ID, gatewayId);
-            if (accessibleAppDeploymentIds != null && !accessibleAppDeploymentIds.isEmpty()) {
-                q.setParameter(ApplicationDeploymentConstants.DEPLOYMENT_ID, accessibleAppDeploymentIds);
+            if (accessibleApplicationDeploymentIds != null && !accessibleApplicationDeploymentIds.isEmpty()) {
+                q.setParameter(ApplicationDeploymentConstants.DEPLOYMENT_ID, accessibleApplicationDeploymentIds);
+            }
+            if (accessibleComputeResourceIds != null && !accessibleComputeResourceIds.isEmpty()) {
+                q.setParameter(ApplicationDeploymentConstants.COMPUTE_HOST_ID, accessibleComputeResourceIds);
             }
             List<?> results = q.getResultList();
             for (Object result : results) {
