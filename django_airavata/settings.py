@@ -73,7 +73,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django_airavata.context_processors.airavata_app_registry',
-                'django_airavata.context_processors.resolver_match',
+                # 'django_airavata.context_processors.resolver_match',
             ],
         },
     },

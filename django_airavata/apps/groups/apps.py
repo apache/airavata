@@ -8,3 +8,4 @@ class GroupsConfig(AiravataAppConfig):
     url_app_name = label
     app_order = 10
     url_home = url_app_name + ':manage'
+    fa_icon_class = 'fa-users'

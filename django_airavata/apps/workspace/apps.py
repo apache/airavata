@@ -8,3 +8,4 @@ class WorkspaceConfig(AiravataAppConfig):
     url_app_name = label
     app_order = 0
     url_home = 'django_airavata_workspace:dashboard'
+    fa_icon_class = 'fa-flask'

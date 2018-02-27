@@ -24,3 +24,9 @@ class AiravataAppConfig(AppConfig, ABC):
     def url_home(self):
         """Named route of home page for this application."""
         pass
+
+    @property
+    @abstractmethod
+    def fa_icon_class(self):
+        """Font Awesome icon class name."""
+        pass
