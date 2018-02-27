@@ -19,15 +19,18 @@ import java.util.Map;
  */
 public class TaskUtil {
 
-    public static <T extends AbstractTask> List<OutPort> getOutPortsOfTask(T task) throws IllegalAccessException {
-        Field[] fields = task.getClass().getDeclaredFields();
+    public static <T extends AbstractTask> List<OutPort> getOutPortsOfTask(T taskObj) throws IllegalAccessException {
+
         List<OutPort> outPorts = new ArrayList<>();
-        for (Field field : fields) {
-            TaskOutPort outPortAnnotation = field.getAnnotation(TaskOutPort.class);
-            if (outPortAnnotation != null) {
-                field.setAccessible(true);
-                OutPort outPort = (OutPort) field.get(task);
-                outPorts.add(outPort);
+        for (Class<?> c = taskObj.getClass(); c != null; c = c.getSuperclass()) {
+            Field[] fields = c.getDeclaredFields();
+            for (Field field : fields) {
+                TaskOutPort outPortAnnotation = field.getAnnotation(TaskOutPort.class);
+                if (outPortAnnotation != null) {
+                    field.setAccessible(true);
+                    OutPort outPort = (OutPort) field.get(taskObj);
+                    outPorts.add(outPort);
+                }
             }
         }
         return outPorts;

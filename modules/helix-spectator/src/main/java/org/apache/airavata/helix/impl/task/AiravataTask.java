@@ -51,14 +51,13 @@ public abstract class AiravataTask extends AbstractTask {
     @TaskParam(name = "gatewayId")
     private String gatewayId;
 
-    @TaskOutPort(name = "Success Port")
-    private OutPort onSuccess;
-
+    @TaskOutPort(name = "Next Task")
+    private OutPort nextTask;
 
     protected TaskResult onSuccess(String message) {
         String successMessage = "Task " + getTaskId() + " completed." + message != null ? " Message : " + message : "";
         logger.info(successMessage);
-        return onSuccess.invoke(new TaskResult(TaskResult.Status.COMPLETED, message));
+        return nextTask.invoke(new TaskResult(TaskResult.Status.COMPLETED, message));
     }
 
     protected TaskResult onFail(String reason, boolean fatal, Throwable error) {
@@ -178,4 +177,7 @@ public abstract class AiravataTask extends AbstractTask {
         return processModel;
     }
 
+    public void setNextTask(OutPort nextTask) {
+        this.nextTask = nextTask;
+    }
 }
