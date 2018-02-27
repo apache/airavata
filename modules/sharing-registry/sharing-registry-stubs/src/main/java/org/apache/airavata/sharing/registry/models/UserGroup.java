@@ -33,6 +33,7 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
   private static final org.apache.thrift.protocol.TField GROUP_CARDINALITY_FIELD_DESC = new org.apache.thrift.protocol.TField("groupCardinality", org.apache.thrift.protocol.TType.I32, (short)7);
   private static final org.apache.thrift.protocol.TField CREATED_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("createdTime", org.apache.thrift.protocol.TType.I64, (short)8);
   private static final org.apache.thrift.protocol.TField UPDATED_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("updatedTime", org.apache.thrift.protocol.TType.I64, (short)9);
+  private static final org.apache.thrift.protocol.TField GROUP_VISIBILITY_FIELD_DESC = new org.apache.thrift.protocol.TField("groupVisibility", org.apache.thrift.protocol.TType.I32, (short)10);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new UserGroupStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new UserGroupTupleSchemeFactory();
@@ -54,6 +55,11 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
   public GroupCardinality groupCardinality; // optional
   public long createdTime; // optional
   public long updatedTime; // optional
+  /**
+   * 
+   * @see GroupVisibility
+   */
+  public GroupVisibility groupVisibility; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -73,7 +79,12 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
      */
     GROUP_CARDINALITY((short)7, "groupCardinality"),
     CREATED_TIME((short)8, "createdTime"),
-    UPDATED_TIME((short)9, "updatedTime");
+    UPDATED_TIME((short)9, "updatedTime"),
+    /**
+     * 
+     * @see GroupVisibility
+     */
+    GROUP_VISIBILITY((short)10, "groupVisibility");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -106,6 +117,8 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
           return CREATED_TIME;
         case 9: // UPDATED_TIME
           return UPDATED_TIME;
+        case 10: // GROUP_VISIBILITY
+          return GROUP_VISIBILITY;
         default:
           return null;
       }
@@ -149,7 +162,7 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
   private static final int __CREATEDTIME_ISSET_ID = 0;
   private static final int __UPDATEDTIME_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.GROUP_ID,_Fields.DOMAIN_ID,_Fields.NAME,_Fields.DESCRIPTION,_Fields.OWNER_ID,_Fields.GROUP_TYPE,_Fields.GROUP_CARDINALITY,_Fields.CREATED_TIME,_Fields.UPDATED_TIME};
+  private static final _Fields optionals[] = {_Fields.GROUP_ID,_Fields.DOMAIN_ID,_Fields.NAME,_Fields.DESCRIPTION,_Fields.OWNER_ID,_Fields.GROUP_TYPE,_Fields.GROUP_CARDINALITY,_Fields.CREATED_TIME,_Fields.UPDATED_TIME,_Fields.GROUP_VISIBILITY};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -171,6 +184,8 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     tmpMap.put(_Fields.UPDATED_TIME, new org.apache.thrift.meta_data.FieldMetaData("updatedTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
+    tmpMap.put(_Fields.GROUP_VISIBILITY, new org.apache.thrift.meta_data.FieldMetaData("groupVisibility", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, GroupVisibility.class)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(UserGroup.class, metaDataMap);
   }
@@ -206,6 +221,9 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
     }
     this.createdTime = other.createdTime;
     this.updatedTime = other.updatedTime;
+    if (other.isSetGroupVisibility()) {
+      this.groupVisibility = other.groupVisibility;
+    }
   }
 
   public UserGroup deepCopy() {
@@ -225,6 +243,7 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
     this.createdTime = 0;
     setUpdatedTimeIsSet(false);
     this.updatedTime = 0;
+    this.groupVisibility = null;
   }
 
   public java.lang.String getGroupId() {
@@ -457,6 +476,38 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
     __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __UPDATEDTIME_ISSET_ID, value);
   }
 
+  /**
+   * 
+   * @see GroupVisibility
+   */
+  public GroupVisibility getGroupVisibility() {
+    return this.groupVisibility;
+  }
+
+  /**
+   * 
+   * @see GroupVisibility
+   */
+  public UserGroup setGroupVisibility(GroupVisibility groupVisibility) {
+    this.groupVisibility = groupVisibility;
+    return this;
+  }
+
+  public void unsetGroupVisibility() {
+    this.groupVisibility = null;
+  }
+
+  /** Returns true if field groupVisibility is set (has been assigned a value) and false otherwise */
+  public boolean isSetGroupVisibility() {
+    return this.groupVisibility != null;
+  }
+
+  public void setGroupVisibilityIsSet(boolean value) {
+    if (!value) {
+      this.groupVisibility = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case GROUP_ID:
@@ -531,6 +582,14 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
       }
       break;
 
+    case GROUP_VISIBILITY:
+      if (value == null) {
+        unsetGroupVisibility();
+      } else {
+        setGroupVisibility((GroupVisibility)value);
+      }
+      break;
+
     }
   }
 
@@ -563,6 +622,9 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
     case UPDATED_TIME:
       return getUpdatedTime();
 
+    case GROUP_VISIBILITY:
+      return getGroupVisibility();
+
     }
     throw new java.lang.IllegalStateException();
   }
@@ -592,6 +654,8 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
       return isSetCreatedTime();
     case UPDATED_TIME:
       return isSetUpdatedTime();
+    case GROUP_VISIBILITY:
+      return isSetGroupVisibility();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -692,6 +756,15 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
         return false;
     }
 
+    boolean this_present_groupVisibility = true && this.isSetGroupVisibility();
+    boolean that_present_groupVisibility = true && that.isSetGroupVisibility();
+    if (this_present_groupVisibility || that_present_groupVisibility) {
+      if (!(this_present_groupVisibility && that_present_groupVisibility))
+        return false;
+      if (!this.groupVisibility.equals(that.groupVisibility))
+        return false;
+    }
+
     return true;
   }
 
@@ -734,6 +807,10 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
     hashCode = hashCode * 8191 + ((isSetUpdatedTime()) ? 131071 : 524287);
     if (isSetUpdatedTime())
       hashCode = hashCode * 8191 + org.apache.thrift.TBaseHelper.hashCode(updatedTime);
+
+    hashCode = hashCode * 8191 + ((isSetGroupVisibility()) ? 131071 : 524287);
+    if (isSetGroupVisibility())
+      hashCode = hashCode * 8191 + groupVisibility.getValue();
 
     return hashCode;
   }
@@ -832,6 +909,16 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
     }
     if (isSetUpdatedTime()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.updatedTime, other.updatedTime);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetGroupVisibility()).compareTo(other.isSetGroupVisibility());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetGroupVisibility()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.groupVisibility, other.groupVisibility);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -935,6 +1022,16 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
       if (!first) sb.append(", ");
       sb.append("updatedTime:");
       sb.append(this.updatedTime);
+      first = false;
+    }
+    if (isSetGroupVisibility()) {
+      if (!first) sb.append(", ");
+      sb.append("groupVisibility:");
+      if (this.groupVisibility == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.groupVisibility);
+      }
       first = false;
     }
     sb.append(")");
@@ -1054,6 +1151,14 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 10: // GROUP_VISIBILITY
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.groupVisibility = org.apache.airavata.sharing.registry.models.GroupVisibility.findByValue(iprot.readI32());
+              struct.setGroupVisibilityIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1128,6 +1233,13 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
         oprot.writeI64(struct.updatedTime);
         oprot.writeFieldEnd();
       }
+      if (struct.groupVisibility != null) {
+        if (struct.isSetGroupVisibility()) {
+          oprot.writeFieldBegin(GROUP_VISIBILITY_FIELD_DESC);
+          oprot.writeI32(struct.groupVisibility.getValue());
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1173,7 +1285,10 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
       if (struct.isSetUpdatedTime()) {
         optionals.set(8);
       }
-      oprot.writeBitSet(optionals, 9);
+      if (struct.isSetGroupVisibility()) {
+        optionals.set(9);
+      }
+      oprot.writeBitSet(optionals, 10);
       if (struct.isSetGroupId()) {
         oprot.writeString(struct.groupId);
       }
@@ -1201,12 +1316,15 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
       if (struct.isSetUpdatedTime()) {
         oprot.writeI64(struct.updatedTime);
       }
+      if (struct.isSetGroupVisibility()) {
+        oprot.writeI32(struct.groupVisibility.getValue());
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, UserGroup struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-      java.util.BitSet incoming = iprot.readBitSet(9);
+      java.util.BitSet incoming = iprot.readBitSet(10);
       if (incoming.get(0)) {
         struct.groupId = iprot.readString();
         struct.setGroupIdIsSet(true);
@@ -1242,6 +1360,10 @@ public class UserGroup implements org.apache.thrift.TBase<UserGroup, UserGroup._
       if (incoming.get(8)) {
         struct.updatedTime = iprot.readI64();
         struct.setUpdatedTimeIsSet(true);
+      }
+      if (incoming.get(9)) {
+        struct.groupVisibility = org.apache.airavata.sharing.registry.models.GroupVisibility.findByValue(iprot.readI32());
+        struct.setGroupVisibilityIsSet(true);
       }
     }
   }

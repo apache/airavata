@@ -95,6 +95,14 @@ enum GroupType {
 }
 
 /**
+* <p>Group Visibility can be either private or public.</p>
+**/
+enum GroupVisibility {
+    PRIVATE,
+    PUBLIC
+}
+
+/**
 *<p>User group is a collection of users.</p>
 * <li><b>groupId</b> : Group id provided by the client</li>
 * <li><b>domainId</b> : Domain id for this user group</li>
@@ -115,7 +123,8 @@ struct UserGroup {
  6: optional GroupType groupType,
  7: optional GroupCardinality groupCardinality,
  8: optional i64 createdTime,
- 9: optional i64 updatedTime
+ 9: optional i64 updatedTime,
+ 10: optional GroupVisibility groupVisibility
 }
 
 /**
