@@ -227,6 +227,11 @@ class GroupViewSet(APIBackedViewSet):
                 self.authz_token, group._removed_members, group.id)
         group_manager_client.updateGroup(self.authz_token, group)
 
+    def perform_destroy(self, group):
+        group_manager_client = self.request.profile_service['group_manager']
+        group_manager_client.deleteGroup(
+            self.authz_token, group.id, group.ownerId)
+
 
 class ProjectViewSet(APIBackedViewSet):
 

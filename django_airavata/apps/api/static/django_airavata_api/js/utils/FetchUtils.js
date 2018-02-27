@@ -85,4 +85,23 @@ export default {
             }
         })
     },
+    delete: function(url) {
+        var headers = this.createHeaders()
+        return fetch(url, {
+            method: 'delete',
+            headers: headers,
+            credentials: "same-origin"
+        }).then((response) => {
+            // Not expecting a response body
+            if (response.ok && response.status === 204) {
+                return Promise.resolve();
+            } else {
+                let error = new Error(response.statusText);
+                return response.json().then(json => {
+                    error.data = json;
+                })
+                .then(() => Promise.reject(error),() => Promise.reject(error));
+            }
+        })
+    }
 }

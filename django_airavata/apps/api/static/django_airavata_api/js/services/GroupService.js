@@ -36,6 +36,11 @@ class GroupService {
                 .then(result => new Group(result));
         }
     }
+
+    delete(groupId) {
+        return FetchUtils.delete('/api/groups/'
+                                 + encodeURIComponent(groupId) + '/');
+    }
 }
 
 // Export as a singleton
