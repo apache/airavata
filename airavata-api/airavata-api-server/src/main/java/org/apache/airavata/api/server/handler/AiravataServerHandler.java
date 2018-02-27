@@ -4976,9 +4976,13 @@ public class AiravataServerHandler implements Airavata.Iface {
                 else if(userPermission.getValue().equals(ResourcePermissionType.READ))
                     sharingClient.shareEntityWithUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "READ", true);
-                else
+                else if(userPermission.getValue().equals(ResourcePermissionType.EXEC))
                     sharingClient.shareEntityWithUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "EXEC", true);
+                else {
+                    logger.error("Invalid ResourcePermissionType : " + userPermission.getValue().toString());
+                    throw new AiravataClientException(AiravataErrorType.UNSUPPORTED_OPERATION);
+                }
             }
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
@@ -5009,10 +5013,13 @@ public class AiravataServerHandler implements Airavata.Iface {
                 else if(userPermission.getValue().equals(ResourcePermissionType.READ))
                     sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "READ");
-                else
+                else if(userPermission.getValue().equals(ResourcePermissionType.EXEC))
                     sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "EXEC");
-
+                else {
+                    logger.error("Invalid ResourcePermissionType : " + userPermission.getValue().toString());
+                    throw new AiravataClientException(AiravataErrorType.UNSUPPORTED_OPERATION);
+                }
             }
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
