@@ -146,6 +146,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 return false;
             }
 
+            //TODO
+
             ComputeResourcePreference computeResourcePreference = registryClient.getGatewayComputeResourcePreference
 							(gatewayId,
 							experiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId());
