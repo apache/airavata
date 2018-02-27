@@ -2302,7 +2302,15 @@ public class AiravataServerHandler implements Airavata.Iface {
                 sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         userName + "@" + gatewayId, sharingFilters, 0, -1).forEach(a -> accessibleAppDeploymentIds.add(a.entityId));
             }
-            List<ApplicationModule> result = regClient.getAccessibleAppModules(gatewayId, accessibleAppDeploymentIds);
+            List<String> accessibleComputeResourceIds = new ArrayList<>();
+            List<GroupResourceProfile> groupResourceProfileList = getGroupResourceList(authzToken, gatewayId);
+            for(GroupResourceProfile groupResourceProfile : groupResourceProfileList) {
+                List<GroupComputeResourcePreference> groupComputeResourcePreferenceList = groupResourceProfile.getComputePreferences();
+                for(GroupComputeResourcePreference groupComputeResourcePreference : groupComputeResourcePreferenceList) {
+                    accessibleComputeResourceIds.add(groupComputeResourcePreference.getComputeResourceId());
+                }
+            }
+            List<ApplicationModule> result = regClient.getAccessibleAppModules(gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
             return result;
