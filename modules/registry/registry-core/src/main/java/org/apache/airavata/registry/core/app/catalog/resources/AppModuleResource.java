@@ -21,6 +21,7 @@ package org.apache.airavata.registry.core.app.catalog.resources;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.registry.core.app.catalog.model.ApplicationDeployment;
 import org.apache.airavata.registry.core.app.catalog.model.ApplicationModule;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogJPAUtils;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogQueryGenerator;
@@ -243,7 +244,8 @@ public class AppModuleResource extends AppCatAbstractResource {
                 queryString += "  AND appModule." + ApplicationModuleConstants.MODULE_ID + " IN (" +
                         "    SELECT appDeploy." + ApplicationDeploymentConstants.APP_MODULE_ID + " " +
                         "    FROM " + APPLICATION_DEPLOYMENT + " appDeploy " +
-                        "    WHERE appDeploy." + ApplicationDeploymentConstants.DEPLOYMENT_ID + " IN :" + ApplicationDeploymentConstants.DEPLOYMENT_ID + ")";
+                        "    WHERE appDeploy." + ApplicationDeploymentConstants.DEPLOYMENT_ID + " IN :" + ApplicationDeploymentConstants.DEPLOYMENT_ID +
+                        "    AND appDeploy." + ApplicationDeploymentConstants.COMPUTE_HOST_ID + " IN : " + ApplicationDeploymentConstants.COMPUTE_HOST_ID + ")";
             }
             Query q =  em.createQuery(queryString);
             q.setParameter(ApplicationModuleConstants.GATEWAY_ID, gatewayId);
