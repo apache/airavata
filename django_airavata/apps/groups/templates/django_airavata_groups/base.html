@@ -8,7 +8,7 @@
 
 {% block nav-items %}
 
-        <a href="{% url 'django_airavata_groups:manage' %}" class="c-nav__item {% if request.active_nav_item == 'Groups' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title=Groups>
+        <a href="{% url 'django_airavata_groups:manage' %}" class="c-nav__item {% if request.active_nav_item == 'manage' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title=Groups>
             <i class="fa fa-users"></i> <span class=sr-only>Groups</span>
         </a>
         

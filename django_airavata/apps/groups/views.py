@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 @login_required
 def groups_manage(request):
 
+    request.active_nav_item = "manage"
     gateway_id = settings.GATEWAY_ID
     username = request.user.username
     authz_token = request.authz_token
