@@ -46,6 +46,8 @@ import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupResourceProfile;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
@@ -122,6 +124,11 @@ public class GFacEngineImpl implements GFacEngine {
             if (processModel.isUseUserCRPref()) {
                 setUserResourceProfile(gatewayId, processContext, registryClient);
                 setUserComputeResourcePreference(gatewayId, processContext, registryClient);
+            }
+
+            if (processModel.isSetGroupResourceProfileId()) {
+                setGroupResourceProfile(processModel.getGroupResourceProfileId(), processContext, registryClient);
+                setGroupComputeResourcePreference(processModel.getGroupResourceProfileId(), processContext, registryClient);
             }
 
             String scratchLocation = processContext.getScratchLocation();
@@ -229,6 +236,19 @@ public class GFacEngineImpl implements GFacEngine {
                         gatewayId,
                         processModel.getComputeResourceId());
         processContext.setUserComputeResourcePreference(userComputeResourcePreference);
+    }
+
+    private void setGroupResourceProfile(String groupResourceProfileId, ProcessContext processContext, RegistryService.Client registryClient) throws TException {
+        GroupResourceProfile groupResourceProfile = registryClient.getGroupResourceProfile(groupResourceProfileId);
+        processContext.setGroupResourceProfile(groupResourceProfile);
+    }
+
+    private void setGroupComputeResourcePreference(String groupResourceProfileId, ProcessContext processContext, RegistryService.Client registryClient) throws TException {
+        ProcessModel processModel = processContext.getProcessModel();
+        GroupComputeResourcePreference groupComputeResourcePreference =registryClient.getGroupComputeResourcePreference(
+                                                                            processModel.getComputeResourceId(),
+                                                                            groupResourceProfileId);
+        processContext.setGroupComputeResourcePreference(groupComputeResourcePreference);
     }
 
     private void checkRecoveryWithCancel(ProcessContext processContext) throws Exception {

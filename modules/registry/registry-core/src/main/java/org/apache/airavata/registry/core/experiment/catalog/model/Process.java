@@ -55,6 +55,7 @@ public class Process {
     private String userDn;
     private boolean generateCert;
     private boolean useUserCRPref;
+    private String groupResourceProfileId;
 
     @Id
     @Column(name = "PROCESS_ID")
@@ -319,5 +320,14 @@ public class Process {
 
     public void setUseUserCRPref(boolean useUserCRPref) {
         this.useUserCRPref = useUserCRPref;
+    }
+
+    @Column(name = "CREATE TABLE PROCESS_INPUT")
+    public String getGroupResourceProfileId() {
+        return groupResourceProfileId;
+    }
+
+    public void setGroupResourceProfileId(String groupResourceProfileId) {
+        this.groupResourceProfileId = groupResourceProfileId;
     }
 }
