@@ -133,8 +133,8 @@ public class GroupResourceProfileValidator implements JobMetadataValidator {
         if (experimentWallTimeLimit > batchQueueResourcePolicy.getMaxAllowedWalltime()) {
             wallTimeResult.setResult(false);
             wallTimeResult.setErrorDetails("Job Execution walltime " + experimentWallTimeLimit +
-                    "exceeds the allowable walltime for the group resource profile" + batchQueueResourcePolicy.getMaxAllowedWalltime() +
-                    "for queue " + batchQueueResourcePolicy.getQueuename());
+                    " exceeds the allowable walltime for the group resource profile " + batchQueueResourcePolicy.getMaxAllowedWalltime() +
+                    " for queue " + batchQueueResourcePolicy.getQueuename());
         } else {
             wallTimeResult.setResult(true);
             wallTimeResult.setErrorDetails("");
@@ -145,8 +145,8 @@ public class GroupResourceProfileValidator implements JobMetadataValidator {
         if (experimentNodeCount > batchQueueResourcePolicy.getMaxAllowedNodes()) {
             nodeCountResult.setResult(false);
             nodeCountResult.setErrorDetails("Job Execution node count " + experimentNodeCount +
-                    "exceeds the allowable node count for the group resource profile " + batchQueueResourcePolicy.getMaxAllowedNodes() +
-                    "for queue " + batchQueueResourcePolicy.getQueuename());
+                    " exceeds the allowable node count for the group resource profile " + batchQueueResourcePolicy.getMaxAllowedNodes() +
+                    " for queue " + batchQueueResourcePolicy.getQueuename());
         } else {
             nodeCountResult.setResult(true);
             nodeCountResult.setErrorDetails("");
@@ -157,8 +157,8 @@ public class GroupResourceProfileValidator implements JobMetadataValidator {
         if (experimentCPUCount > batchQueueResourcePolicy.getMaxAllowedCores()) {
             cpuCountResult.setResult(false);
             cpuCountResult.setErrorDetails("Job Execution cpu count " + experimentCPUCount +
-                    "exceeds the allowable cpu count for the group resource profile" + batchQueueResourcePolicy.getMaxAllowedCores() +
-                    "for queue " + batchQueueResourcePolicy.getQueuename());
+                    " exceeds the allowable cpu count for the group resource profile " + batchQueueResourcePolicy.getMaxAllowedCores() +
+                    " for queue " + batchQueueResourcePolicy.getQueuename());
         } else {
             cpuCountResult.setResult(true);
             cpuCountResult.setErrorDetails("");
