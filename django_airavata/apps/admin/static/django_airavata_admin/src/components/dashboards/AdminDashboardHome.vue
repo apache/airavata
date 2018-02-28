@@ -1,18 +1,21 @@
 <template>
-  <div class="new_app">
-    <div class="new_app_header">
-      <h4 style="display: inline-block">Application Catalog</h4>
-      <label v-on:click="newApplicationHandler()">New Application <span>+</span></label>
-    </div>
-    <div class="applications">
-      <h6 style="color: #666666;">APPLICATIONS</h6>
-      <div class="container-fluid">
-        <div class="row">
-            <application-card v-for="item in applications" v-bind:app-module="item"
-                v-bind:key="item.appModuleId" v-on:app-selected="clickHandler(item)">
-            </application-card>
-        </div>
+  <div>
+    <div class="row">
+      <div class="col">
+        <h1 class="h4 mb-5">Application Catalog</h1>
       </div>
+      <div id="col-new-application" class="col">
+        <button class="btn btn-primary" type="button"
+            v-on:click="newApplicationHandler()">
+          New Application <i aria-hidden="true" class="fa fa-plus"></i>
+        </button>
+      </div>
+    </div>
+    <h2 class="h6 mb-2 text-muted text-uppercase">Applications</h2>
+    <div class="row">
+        <application-card v-for="item in applications" v-bind:app-module="item"
+            v-bind:key="item.appModuleId" v-on:app-selected="clickHandler(item)">
+        </application-card>
     </div>
   </div>
 </template>
@@ -71,44 +74,7 @@
   }
 </script>
 <style>
-  .new_app {
-    margin: 45px;
-    width: 100%;
-    background-color: white;
-  }
-
-  .new_app_header{
-    width: 100%;
-    display: inline;
-  }
-
-  .new_app_header label{
-    background-color: #2e73bc;
-    color: white;
-    border: solid #2e73bc 1px ;
-    border-radius: 3px;
-    float: right;
-    padding-right: 15px;
-    padding-left: 15px;
-    padding-bottom: 8px;
-    padding-top: 3px;
-    text-align: center;
-  }
-
-  .new_app_header label:hover{
-    cursor: pointer;
-  }
-
-  .new_app_header label span{
-    font-weight: 900;
-    font-size: 25px;
-  }
-
-  .applications{
-    margin-top: 50px;
-  }
-
-  .ssh,.generate input{
-      text-align: center;
+  #col-new-application {
+      text-align: right;
   }
 </style>
