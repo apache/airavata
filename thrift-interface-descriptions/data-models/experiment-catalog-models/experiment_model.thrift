@@ -65,6 +65,7 @@ struct UserConfigurationDataModel {
     8: optional string storageId;
     9: optional string experimentDataDir;
     10: optional bool useUserCRPref;
+    11: optional string groupResourceProfileId
 }
 
 /**
