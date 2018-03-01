@@ -20,7 +20,6 @@
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
 import org.apache.airavata.model.appcatalog.appdeployment.*;
-import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 import org.apache.airavata.registry.core.entities.appcatalog.*;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
@@ -114,6 +113,17 @@ public class ApplicationDeploymentRepository extends AppCatAbstractRepository<Ap
         queryParameters.put(DBConstants.ApplicationDeployment.GATEWAY_ID, gatewayId);
         List<ApplicationDeploymentDescription> applicationDeploymentDescriptionList = select(QueryConstants.FIND_APPLICATION_DEPLOYMENTS_FOR_GATEWAY_ID, -1, 0, queryParameters);
         return applicationDeploymentDescriptionList;
+    }
+
+    @Override
+    public List<ApplicationDeploymentDescription> getAccessibleApplicationDeployements(String gatewayId, List<String> accessibleAppIds) throws AppCatalogException {
+        List<ApplicationDeploymentDescription> accessibleApplicationDeployments = new ArrayList<>();
+        for(ApplicationDeploymentDescription description : getAllApplicationDeployements(gatewayId)) {
+            if(accessibleAppIds.contains(description.getAppDeploymentId())) {
+                accessibleApplicationDeployments.add(description);
+            }
+        }
+        return accessibleApplicationDeployments;
     }
 
     @Override
