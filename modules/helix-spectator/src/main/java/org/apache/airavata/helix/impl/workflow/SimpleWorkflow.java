@@ -4,6 +4,8 @@ import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.EnvSetupTask;
+import org.apache.airavata.helix.impl.task.InputDataStagingTask;
+import org.apache.airavata.helix.impl.task.OutputDataStagingTask;
 import org.apache.airavata.helix.impl.task.submission.task.DefaultJobSubmissionTask;
 import org.apache.airavata.helix.workflow.WorkflowManager;
 import org.apache.airavata.model.experiment.ExperimentModel;
@@ -37,14 +39,25 @@ public class SimpleWorkflow {
         String[] taskIds = taskDag.split(",");
         final List<AiravataTask> allTasks = new ArrayList<>();
 
+        boolean jobSubmissionFound = false;
+
         for (String taskId : taskIds) {
             Optional<TaskModel> model = taskList.stream().filter(taskModel -> taskModel.getTaskId().equals(taskId)).findFirst();
-            model.ifPresent(taskModel -> {
+
+            if (model.isPresent()) {
+                TaskModel taskModel = model.get();
                 AiravataTask airavataTask = null;
                 if (taskModel.getTaskType() == TaskTypes.ENV_SETUP) {
                     airavataTask = new EnvSetupTask();
                 } else if (taskModel.getTaskType() == TaskTypes.JOB_SUBMISSION) {
                     airavataTask = new DefaultJobSubmissionTask();
+                    jobSubmissionFound = true;
+                } else if (taskModel.getTaskType() == TaskTypes.DATA_STAGING) {
+                    if (jobSubmissionFound) {
+                        airavataTask = new OutputDataStagingTask();
+                    } else {
+                        airavataTask = new InputDataStagingTask();
+                    }
                 }
 
                 if (airavataTask != null) {
@@ -57,7 +70,7 @@ public class SimpleWorkflow {
                     }
                     allTasks.add(airavataTask);
                 }
-            });
+            }
         }
 
 /*        DefaultJobSubmissionTask defaultJobSubmissionTask = new DefaultJobSubmissionTask();

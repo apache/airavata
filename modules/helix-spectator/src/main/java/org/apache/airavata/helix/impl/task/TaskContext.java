@@ -511,7 +511,11 @@ public class TaskContext {
         this.currentExecutingTaskModel = currentExecutingTaskModel;
     }
 
-    public StorageResourceDescription getStorageResource() {
+    public StorageResourceDescription getStorageResource() throws AppCatalogException {
+        if (storageResource == null) {
+            this.storageResource = appCatalog.getStorageResource()
+                    .getStorageResource(processModel.getStorageResourceId());
+        }
         return storageResource;
     }
 

@@ -17,7 +17,11 @@ public interface AgentAdaptor {
 
     public void createDirectory(String path) throws AgentException;
 
-    public void copyFile(String sourceFile, String destinationFile) throws AgentException;
+    public void copyFileTo(String localFile, String remoteFile) throws AgentException;
+
+    public void copyFileFrom(String remoteFile, String localFile) throws AgentException;
 
     public List<String> listDirectory(String path) throws AgentException;
+
+    public List<String> getFileNameFromExtension(String fileName, String parentPath) throws AgentException;
 }

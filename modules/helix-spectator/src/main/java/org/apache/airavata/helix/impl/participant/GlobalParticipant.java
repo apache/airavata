@@ -16,7 +16,8 @@ public class GlobalParticipant extends HelixParticipant {
 
     private String[] taskClasses = {
         "org.apache.airavata.helix.impl.task.EnvSetupTask",
-        "org.apache.airavata.helix.impl.task.DataStagingTask",
+        "org.apache.airavata.helix.impl.task.InputDataStagingTask",
+        "org.apache.airavata.helix.impl.task.OutputDataStagingTask",
         "org.apache.airavata.helix.impl.task.submission.task.ForkJobSubmissionTask",
         "org.apache.airavata.helix.impl.task.submission.task.DefaultJobSubmissionTask",
         "org.apache.airavata.helix.impl.task.submission.task.LocalJobSubmissionTask"
