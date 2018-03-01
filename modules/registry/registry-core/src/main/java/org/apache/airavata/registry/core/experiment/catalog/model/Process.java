@@ -322,7 +322,7 @@ public class Process {
         this.useUserCRPref = useUserCRPref;
     }
 
-    @Column(name = "CREATE TABLE PROCESS_INPUT")
+    @Column(name = "GROUP_RESOURCE_PROFILE_ID")
     public String getGroupResourceProfileId() {
         return groupResourceProfileId;
     }
