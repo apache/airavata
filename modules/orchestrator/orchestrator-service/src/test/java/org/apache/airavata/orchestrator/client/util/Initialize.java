@@ -19,11 +19,6 @@
  */
 package org.apache.airavata.orchestrator.client.util;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
-import org.apache.airavata.registry.core.experiment.catalog.resources.*;
-import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.derby.drda.NetworkServerControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +27,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Statement;
 import java.util.StringTokenizer;
 
 public class Initialize {
@@ -86,110 +83,6 @@ public class Initialize {
             }
         }
         return false;
-    }
-
-    public void initializeDB() throws SQLException{
-        String jdbcUrl = null;
-        String jdbcUser = null;
-        String jdbcPassword = null;
-        try{
-            jdbcUrl = ServerSettings.getSetting("registry.jdbc.url");
-            jdbcUser = ServerSettings.getSetting("registry.jdbc.user");
-            jdbcPassword = ServerSettings.getSetting("registry.jdbc.password");
-            jdbcUrl = jdbcUrl + "?" + "user=" + jdbcUser + "&" + "password=" + jdbcPassword;
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read properties", e);
-        }
-        startDerbyInServerMode();
-        if(!isServerStarted(server, 20)){
-           throw new RuntimeException("Derby server cound not started within five seconds...");
-        }
-
-        Connection conn = null;
-        try {
-            Class.forName(Utils.getJDBCDriver()).newInstance();
-            conn = DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcPassword);
-            if (!isDatabaseStructureCreated(PERSISTANT_DATA, conn)) {
-                executeSQLScript(conn);
-                logger.info("New Database created for Registry");
-            } else {
-                logger.debug("Database already created for Registry!");
-            }
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw new RuntimeException("Database failure", e);
-        } finally {
-            try {
-                if (conn != null){
-                    if (!conn.getAutoCommit()) {
-                        conn.commit();
-                    }
-                    conn.close();
-                }
-            } catch (SQLException e) {
-                logger.error(e.getMessage(), e);
-            }
-        }
-
-        try{
-            GatewayResource gatewayResource = new GatewayResource();
-            gatewayResource.setGatewayId(ServerSettings.getSetting("default.registry.gateway"));
-            gatewayResource.setGatewayName(ServerSettings.getSetting("default.registry.gateway"));
-            gatewayResource.setDomain("test-domain");
-            gatewayResource.setEmailAddress("test-email");
-            gatewayResource.save();
-            
-            UserResource userResource = new UserResource();
-            userResource.setUserName(ServerSettings.getSetting("default.registry.user"));
-            userResource.setPassword(ServerSettings.getSetting("default.registry.password"));
-            userResource.save();
-
-            WorkerResource workerResource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
-            workerResource.setUser(userResource.getUserName());
-            workerResource.save();
-            
-            ProjectResource projectResource = (ProjectResource)workerResource.create(ResourceType.PROJECT);
-            projectResource.setGatewayId(gatewayResource.getGatewayId());
-            projectResource.setId("default");
-            projectResource.setName("default");
-            projectResource.setWorker(workerResource);
-            projectResource.save();
-        
-          
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to read properties", e);
-            throw new SQLException(e.getMessage(), e);
-        } catch (RegistryException e) {
-            logger.error("Unable to save data to registry", e);
-            throw new SQLException(e.getMessage(), e);
-        }
-    }
-
-    public static boolean isDatabaseStructureCreated(String tableName, Connection conn) {
-        try {
-            System.out.println("Running a query to test the database tables existence.");
-            // check whether the tables are already created with a query
-            Statement statement = null;
-            try {
-                statement = conn.createStatement();
-                ResultSet rs = statement.executeQuery("select * from " + tableName);
-                if (rs != null) {
-                    rs.close();
-                }
-            } finally {
-                try {
-                    if (statement != null) {
-                        statement.close();
-                    }
-                } catch (SQLException e) {
-                    return false;
-                }
-            }
-        } catch (SQLException e) {
-            return false;
-        }
-
-        return true;
     }
 
     private void executeSQLScript(Connection conn) throws Exception {
@@ -296,24 +189,6 @@ public class Initialize {
                 }
             }
         }
-    }
-
-    private void startDerbyInServerMode() {
-        try {
-            System.setProperty(DERBY_SERVER_MODE_SYS_PROPERTY, "true");
-            server = new NetworkServerControl(InetAddress.getByName(Utils.getHost()),
-                    20000,
-                    Utils.getJDBCUser(), Utils.getJDBCPassword());
-            java.io.PrintWriter consoleWriter = new java.io.PrintWriter(System.out, true);
-            server.start(consoleWriter);
-        } catch (IOException e) {
-            logger.error("Unable to start Apache derby in the server mode! Check whether " +
-                    "specified port is available");
-        } catch (Exception e) {
-            logger.error("Unable to start Apache derby in the server mode! Check whether " +
-                    "specified port is available");
-        }
-
     }
 
     public void stopDerbyServer() throws SQLException{

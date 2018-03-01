@@ -612,13 +612,13 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
           case 4: // ALLOWED_BATCH_QUEUES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list32 = iprot.readListBegin();
-                struct.allowedBatchQueues = new java.util.ArrayList<java.lang.String>(_list32.size);
-                java.lang.String _elem33;
-                for (int _i34 = 0; _i34 < _list32.size; ++_i34)
+                org.apache.thrift.protocol.TList _list8 = iprot.readListBegin();
+                struct.allowedBatchQueues = new java.util.ArrayList<java.lang.String>(_list8.size);
+                java.lang.String _elem9;
+                for (int _i10 = 0; _i10 < _list8.size; ++_i10)
                 {
-                  _elem33 = iprot.readString();
-                  struct.allowedBatchQueues.add(_elem33);
+                  _elem9 = iprot.readString();
+                  struct.allowedBatchQueues.add(_elem9);
                 }
                 iprot.readListEnd();
               }
@@ -660,9 +660,9 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
           oprot.writeFieldBegin(ALLOWED_BATCH_QUEUES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.allowedBatchQueues.size()));
-            for (java.lang.String _iter35 : struct.allowedBatchQueues)
+            for (java.lang.String _iter11 : struct.allowedBatchQueues)
             {
-              oprot.writeString(_iter35);
+              oprot.writeString(_iter11);
             }
             oprot.writeListEnd();
           }
@@ -697,9 +697,9 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
       if (struct.isSetAllowedBatchQueues()) {
         {
           oprot.writeI32(struct.allowedBatchQueues.size());
-          for (java.lang.String _iter36 : struct.allowedBatchQueues)
+          for (java.lang.String _iter12 : struct.allowedBatchQueues)
           {
-            oprot.writeString(_iter36);
+            oprot.writeString(_iter12);
           }
         }
       }
@@ -717,13 +717,13 @@ public class ComputeResourcePolicy implements org.apache.thrift.TBase<ComputeRes
       java.util.BitSet incoming = iprot.readBitSet(1);
       if (incoming.get(0)) {
         {
-          org.apache.thrift.protocol.TList _list37 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.allowedBatchQueues = new java.util.ArrayList<java.lang.String>(_list37.size);
-          java.lang.String _elem38;
-          for (int _i39 = 0; _i39 < _list37.size; ++_i39)
+          org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.allowedBatchQueues = new java.util.ArrayList<java.lang.String>(_list13.size);
+          java.lang.String _elem14;
+          for (int _i15 = 0; _i15 < _list13.size; ++_i15)
           {
-            _elem38 = iprot.readString();
-            struct.allowedBatchQueues.add(_elem38);
+            _elem14 = iprot.readString();
+            struct.allowedBatchQueues.add(_elem14);
           }
         }
         struct.setAllowedBatchQueuesIsSet(true);

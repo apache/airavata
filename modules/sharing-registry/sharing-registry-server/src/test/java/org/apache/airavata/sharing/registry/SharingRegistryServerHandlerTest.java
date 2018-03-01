@@ -150,6 +150,7 @@ public class SharingRegistryServerHandlerTest {
         Assert.assertFalse(sharingRegistryServerHandler.hasAdminAccess(domainId, groupId1, userId2));
 
         // transfer group ownership
+        sharingRegistryServerHandler.addUsersToGroup(domainId, Arrays.asList(userId2), groupId1);
         Assert.assertTrue(sharingRegistryServerHandler.transferGroupOwnership(domainId, groupId1, userId2));
         Assert.assertTrue(sharingRegistryServerHandler.hasOwnerAccess(domainId, groupId1, userId2));
         Assert.assertTrue(sharingRegistryServerHandler.transferGroupOwnership(domainId, groupId1, userId1));

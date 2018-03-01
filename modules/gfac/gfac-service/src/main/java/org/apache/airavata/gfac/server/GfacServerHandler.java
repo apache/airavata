@@ -30,6 +30,7 @@ import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.common.utils.ZkConstants;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
+import org.apache.airavata.gfac.core.GFacConstants;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.cpi.GfacService;
@@ -48,11 +49,7 @@ import org.apache.airavata.model.messaging.event.ProcessSubmitEvent;
 import org.apache.airavata.model.messaging.event.TaskSubmitEvent;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
-import org.apache.airavata.registry.cpi.AppCatalog;
-import org.apache.airavata.registry.cpi.ExpCatChildDataType;
-import org.apache.airavata.registry.cpi.ExperimentCatalog;
-import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
-import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.api.RegistryService;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.utils.ZKPaths;
 import org.apache.thrift.TBase;
@@ -77,8 +74,6 @@ public class GfacServerHandler implements GfacService.Iface {
     private final static Logger log = LoggerFactory.getLogger(GfacServerHandler.class);
     private Subscriber processLaunchSubscriber;
     private static int requestCount=0;
-    private ExperimentCatalog experimentCatalog;
-    private AppCatalog appCatalog;
     private String airavataUserName;
     private CuratorFramework curatorClient;
     private Publisher statusPublisher;
@@ -194,111 +189,136 @@ public class GfacServerHandler implements GfacService.Iface {
 
         public void onMessage(MessageContext messageContext) {
             MDC.put(MDCConstants.GATEWAY_ID, messageContext.getGatewayId());
-            log.info(" Message Received with message id {} and with message type: {}" + messageContext.getMessageId(), messageContext.getType());
+            log.info("Message Received with message id {} and with message type: {}" + messageContext.getMessageId(), messageContext.getType());
+
             if (messageContext.getType().equals(MessageType.LAUNCHPROCESS)) {
-	            ProcessStatus status = new ProcessStatus();
-	            status.setState(ProcessState.STARTED);
+                ProcessStatus status = new ProcessStatus();
+                status.setState(ProcessState.STARTED);
+                RegistryService.Client registryClient = Factory.getRegistryServiceClient();
                 try {
                     ProcessSubmitEvent event = new ProcessSubmitEvent();
                     TBase messageEvent = messageContext.getEvent();
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                     ThriftUtils.createThriftFromBytes(bytes, event);
-	                if (messageContext.isRedeliver()) {
-		                // check the process is already active in this instance.
-		                if (Factory.getGfacContext().getProcess(event.getProcessId()) != null) {
-			                // update deliver tag
-			                try {
-				                updateDeliveryTag(curatorClient, gfacServerName, event, messageContext );
-				                return;
-			                } catch (Exception e) {
-				                log.error("Error while updating delivery tag for redelivery message , messageId : " +
-						                messageContext.getMessageId(), e);
-				                processLaunchSubscriber.sendAck(messageContext.getDeliveryTag());
-			                }
-		                } else {
-			                // read process status from registry
-			                ProcessStatus processStatus = ((ProcessStatus) Factory.getDefaultExpCatalog().get
-					                (ExperimentCatalogModelType.PROCESS_STATUS, event.getProcessId()));
-			                status.setState(processStatus.getState());
-			                // write server name to zookeeper , this is happen inside createProcessZKNode(...) method 
-		                }
-	                }
+
+                    if (messageContext.isRedeliver()) {
+                        log.debug("Message " + messageContext.getMessageId() + " is a redeliver one");
+                        // check the process is already active in this instance.
+                        if (Factory.getGfacContext().getProcess(event.getProcessId()) != null) {
+                            // update deliver tag
+                            try {
+                                updateDeliveryTag(curatorClient, gfacServerName, event, messageContext );
+                                log.debug("Updated delivery tag for message" + messageContext.getMessageId());
+                                return;
+                            } catch (Exception e) {
+                                log.error("Error while updating delivery tag for redelivery message , messageId : " +
+                                        messageContext.getMessageId(), e);
+                                processLaunchSubscriber.sendAck(messageContext.getDeliveryTag());
+                                return;
+                            }
+                        } else {
+                            // read process status from registry
+                            ProcessStatus processStatus = registryClient.getProcessStatus(event.getProcessId());
+                            status.setState(processStatus.getState());
+                            // write server name to zookeeper , this is happen inside createProcessZKNode(...) method
+                        }
+                    }
                     // update process status
-	                status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
-	                Factory.getDefaultExpCatalog().update(ExperimentCatalogModelType.PROCESS_STATUS, status, event
-			                .getProcessId());
-	                publishProcessStatus(event, status);
+                    status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
+                    registryClient.updateProcessStatus(status, event
+                            .getProcessId());
+                    publishProcessStatus(event, status);
                     MDC.put(MDCConstants.EXPERIMENT_ID, event.getExperimentId());
+
                     try {
                         createProcessZKNode(curatorClient, gfacServerName, event, messageContext);
                         boolean isCancel = setCancelWatcher(curatorClient, event.getExperimentId(), event.getProcessId());
                         if (isCancel) {
+                            log.info("Staring to cancel the process " + event.getProcessId() + " of experiment " + event.getExperimentId());
                             if (status.getState() == ProcessState.STARTED) {
                                 status.setState(ProcessState.CANCELLING);
                                 status.setReason("Process Cancel is triggered");
                                 status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                                Factory.getDefaultExpCatalog()
-                                        .update(ExperimentCatalogModelType.PROCESS_STATUS, status, event.getProcessId());
+                                registryClient.updateProcessStatus(status, event.getProcessId());
                                 publishProcessStatus(event, status);
 
                                 // do cancel operation here
 
                                 status.setState(ProcessState.CANCELED);
                                 status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                                Factory.getDefaultExpCatalog()
-                                        .update(ExperimentCatalogModelType.PROCESS_STATUS, status, event.getProcessId());
+                                registryClient.updateProcessStatus(status, event.getProcessId());
                                 publishProcessStatus(event, status);
                                 processLaunchSubscriber.sendAck(messageContext.getDeliveryTag());
                                 return;
+
                             } else {
                                 setCancelData(event.getExperimentId(),event.getProcessId());
                             }
                         }
+
                         try {
+                            log.info("Submitting process " + event.getProcessId() + " of experiment " + event.getExperimentId());
                             submitProcess(event.getProcessId(), event.getGatewayId(), event.getTokenId());
+                            log.info("Process " + event.getProcessId() + " of experiment " + event.getExperimentId() + " successfully submitted");
+
                         } catch (TException e) {
-                            submissionErrorHandling(status, event, e);
-                            processLaunchSubscriber.sendAck(messageContext.getDeliveryTag());
+                            log.error("Submission of process " + event.getProcessId() + " failed", e);
+                            try {
+                                submissionErrorHandling(status, event, e);
+                            } catch (Exception ex) {
+                                // ignore silently as we have nothing to do in this stage other than printing the log
+                                log.error("Failed to submit error of process " + event.getProcessId(), ex);
+                            } finally {
+                                processLaunchSubscriber.sendAck(messageContext.getDeliveryTag());
+                            }
                         }
+
                     } catch (Exception e) {
-                        log.error(e.getMessage(), e);
+                        log.error("Failed to prepare the process " + event.getProcessId() + " for submission", e);
                         processLaunchSubscriber.sendAck(messageContext.getDeliveryTag());
                     }
-                } catch (TException e) {
-                    log.error(e.getMessage(), e); //nobody is listening so nothing to throw
-                } catch (RegistryException e) {
-                    log.error("Error while updating experiment status", e);
-                } catch (AiravataException e) {
-	                log.error("Error while publishing process status", e);
+
+                } catch (Exception e) {
+                    log.error("Unknown error while handling the meassage" , e); //nobody is listening so nothing to throw
+                    processLaunchSubscriber.sendAck(messageContext.getDeliveryTag());
+
                 } finally {
+                    if (registryClient != null) {
+                        ThriftUtils.close(registryClient);
+                    }
                     MDC.clear();
                 }
             }
         }
     }
 
-    private void submissionErrorHandling(ProcessStatus status, ProcessSubmitEvent event, TException e) throws RegistryException, AiravataException {
+    private void submissionErrorHandling(ProcessStatus status, ProcessSubmitEvent event, TException e) throws  AiravataException, TException {
         StringWriter errors = new StringWriter();
         e.printStackTrace(new PrintWriter(errors));
         ErrorModel errorModel = new ErrorModel();
         errorModel.setUserFriendlyMessage("Process execution failed");
         errorModel.setActualErrorMessage(errors.toString());
         errorModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
+        RegistryService.Client registryClient = Factory.getRegistryServiceClient();
 
-        errorModel.setErrorId(AiravataUtils.getId("PROCESS_ERROR"));
-        Factory.getDefaultExpCatalog()
-                .add(ExpCatChildDataType.PROCESS_ERROR, errorModel, event.getProcessId());
+        try {
+            errorModel.setErrorId(AiravataUtils.getId("PROCESS_ERROR"));
+            registryClient.addErrors(GFacConstants.PROCESS_ERROR, errorModel, event.getProcessId());
 
-        errorModel.setErrorId(AiravataUtils.getId("EXP_ERROR"));
-        Factory.getDefaultExpCatalog()
-                .add(ExpCatChildDataType.EXPERIMENT_ERROR, errorModel, event.getExperimentId());
+            errorModel.setErrorId(AiravataUtils.getId("EXP_ERROR"));
+            registryClient.addErrors(GFacConstants.EXPERIMENT_ERROR, errorModel, event.getExperimentId());
 
-        status.setState(ProcessState.FAILED);
-        status.setReason("Process execution failed");
-        status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-        Factory.getDefaultExpCatalog()
-                .update(ExperimentCatalogModelType.PROCESS_STATUS, status, event.getProcessId());
-        publishProcessStatus(event, status);
+            status.setState(ProcessState.FAILED);
+            status.setReason("Process execution failed");
+            status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            registryClient
+                    .updateProcessStatus(status, event.getProcessId());
+            publishProcessStatus(event, status);
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
+        }
     }
 
     private void setCancelData(String experimentId, String processId) throws Exception {

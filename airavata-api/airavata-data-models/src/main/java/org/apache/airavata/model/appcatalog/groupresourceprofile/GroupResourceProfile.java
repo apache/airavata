@@ -163,13 +163,13 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.COMPUTE_PREFERENCES, new org.apache.thrift.meta_data.FieldMetaData("computePreferences", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT            , "GroupComputeResourcePreference"))));
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, GroupComputeResourcePreference.class))));
     tmpMap.put(_Fields.COMPUTE_RESOURCE_POLICIES, new org.apache.thrift.meta_data.FieldMetaData("computeResourcePolicies", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT            , "ComputeResourcePolicy"))));
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ComputeResourcePolicy.class))));
     tmpMap.put(_Fields.BATCH_QUEUE_RESOURCE_POLICIES, new org.apache.thrift.meta_data.FieldMetaData("batchQueueResourcePolicies", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT            , "BatchQueueResourcePolicy"))));
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, BatchQueueResourcePolicy.class))));
     tmpMap.put(_Fields.CREATION_TIME, new org.apache.thrift.meta_data.FieldMetaData("creationTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     tmpMap.put(_Fields.UPDATED_TIME, new org.apache.thrift.meta_data.FieldMetaData("updatedTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -207,21 +207,21 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
     if (other.isSetComputePreferences()) {
       java.util.List<GroupComputeResourcePreference> __this__computePreferences = new java.util.ArrayList<GroupComputeResourcePreference>(other.computePreferences.size());
       for (GroupComputeResourcePreference other_element : other.computePreferences) {
-        __this__computePreferences.add(other_element);
+        __this__computePreferences.add(new GroupComputeResourcePreference(other_element));
       }
       this.computePreferences = __this__computePreferences;
     }
     if (other.isSetComputeResourcePolicies()) {
       java.util.List<ComputeResourcePolicy> __this__computeResourcePolicies = new java.util.ArrayList<ComputeResourcePolicy>(other.computeResourcePolicies.size());
       for (ComputeResourcePolicy other_element : other.computeResourcePolicies) {
-        __this__computeResourcePolicies.add(other_element);
+        __this__computeResourcePolicies.add(new ComputeResourcePolicy(other_element));
       }
       this.computeResourcePolicies = __this__computeResourcePolicies;
     }
     if (other.isSetBatchQueueResourcePolicies()) {
       java.util.List<BatchQueueResourcePolicy> __this__batchQueueResourcePolicies = new java.util.ArrayList<BatchQueueResourcePolicy>(other.batchQueueResourcePolicies.size());
       for (BatchQueueResourcePolicy other_element : other.batchQueueResourcePolicies) {
-        __this__batchQueueResourcePolicies.add(other_element);
+        __this__batchQueueResourcePolicies.add(new BatchQueueResourcePolicy(other_element));
       }
       this.batchQueueResourcePolicies = __this__batchQueueResourcePolicies;
     }
@@ -984,14 +984,14 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
           case 4: // COMPUTE_PREFERENCES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
-                struct.computePreferences = new java.util.ArrayList<GroupComputeResourcePreference>(_list0.size);
-                GroupComputeResourcePreference _elem1;
-                for (int _i2 = 0; _i2 < _list0.size; ++_i2)
+                org.apache.thrift.protocol.TList _list16 = iprot.readListBegin();
+                struct.computePreferences = new java.util.ArrayList<GroupComputeResourcePreference>(_list16.size);
+                GroupComputeResourcePreference _elem17;
+                for (int _i18 = 0; _i18 < _list16.size; ++_i18)
                 {
-                  _elem1 = new GroupComputeResourcePreference();
-                  _elem1.read(iprot);
-                  struct.computePreferences.add(_elem1);
+                  _elem17 = new GroupComputeResourcePreference();
+                  _elem17.read(iprot);
+                  struct.computePreferences.add(_elem17);
                 }
                 iprot.readListEnd();
               }
@@ -1003,14 +1003,14 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
           case 5: // COMPUTE_RESOURCE_POLICIES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list3 = iprot.readListBegin();
-                struct.computeResourcePolicies = new java.util.ArrayList<ComputeResourcePolicy>(_list3.size);
-                ComputeResourcePolicy _elem4;
-                for (int _i5 = 0; _i5 < _list3.size; ++_i5)
+                org.apache.thrift.protocol.TList _list19 = iprot.readListBegin();
+                struct.computeResourcePolicies = new java.util.ArrayList<ComputeResourcePolicy>(_list19.size);
+                ComputeResourcePolicy _elem20;
+                for (int _i21 = 0; _i21 < _list19.size; ++_i21)
                 {
-                  _elem4 = new ComputeResourcePolicy();
-                  _elem4.read(iprot);
-                  struct.computeResourcePolicies.add(_elem4);
+                  _elem20 = new ComputeResourcePolicy();
+                  _elem20.read(iprot);
+                  struct.computeResourcePolicies.add(_elem20);
                 }
                 iprot.readListEnd();
               }
@@ -1022,14 +1022,14 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
           case 6: // BATCH_QUEUE_RESOURCE_POLICIES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list6 = iprot.readListBegin();
-                struct.batchQueueResourcePolicies = new java.util.ArrayList<BatchQueueResourcePolicy>(_list6.size);
-                BatchQueueResourcePolicy _elem7;
-                for (int _i8 = 0; _i8 < _list6.size; ++_i8)
+                org.apache.thrift.protocol.TList _list22 = iprot.readListBegin();
+                struct.batchQueueResourcePolicies = new java.util.ArrayList<BatchQueueResourcePolicy>(_list22.size);
+                BatchQueueResourcePolicy _elem23;
+                for (int _i24 = 0; _i24 < _list22.size; ++_i24)
                 {
-                  _elem7 = new BatchQueueResourcePolicy();
-                  _elem7.read(iprot);
-                  struct.batchQueueResourcePolicies.add(_elem7);
+                  _elem23 = new BatchQueueResourcePolicy();
+                  _elem23.read(iprot);
+                  struct.batchQueueResourcePolicies.add(_elem23);
                 }
                 iprot.readListEnd();
               }
@@ -1089,9 +1089,9 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
           oprot.writeFieldBegin(COMPUTE_PREFERENCES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.computePreferences.size()));
-            for (GroupComputeResourcePreference _iter9 : struct.computePreferences)
+            for (GroupComputeResourcePreference _iter25 : struct.computePreferences)
             {
-              _iter9.write(oprot);
+              _iter25.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1103,9 +1103,9 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
           oprot.writeFieldBegin(COMPUTE_RESOURCE_POLICIES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.computeResourcePolicies.size()));
-            for (ComputeResourcePolicy _iter10 : struct.computeResourcePolicies)
+            for (ComputeResourcePolicy _iter26 : struct.computeResourcePolicies)
             {
-              _iter10.write(oprot);
+              _iter26.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1117,9 +1117,9 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
           oprot.writeFieldBegin(BATCH_QUEUE_RESOURCE_POLICIES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.batchQueueResourcePolicies.size()));
-            for (BatchQueueResourcePolicy _iter11 : struct.batchQueueResourcePolicies)
+            for (BatchQueueResourcePolicy _iter27 : struct.batchQueueResourcePolicies)
             {
-              _iter11.write(oprot);
+              _iter27.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1181,27 +1181,27 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
       if (struct.isSetComputePreferences()) {
         {
           oprot.writeI32(struct.computePreferences.size());
-          for (GroupComputeResourcePreference _iter12 : struct.computePreferences)
+          for (GroupComputeResourcePreference _iter28 : struct.computePreferences)
           {
-            _iter12.write(oprot);
+            _iter28.write(oprot);
           }
         }
       }
       if (struct.isSetComputeResourcePolicies()) {
         {
           oprot.writeI32(struct.computeResourcePolicies.size());
-          for (ComputeResourcePolicy _iter13 : struct.computeResourcePolicies)
+          for (ComputeResourcePolicy _iter29 : struct.computeResourcePolicies)
           {
-            _iter13.write(oprot);
+            _iter29.write(oprot);
           }
         }
       }
       if (struct.isSetBatchQueueResourcePolicies()) {
         {
           oprot.writeI32(struct.batchQueueResourcePolicies.size());
-          for (BatchQueueResourcePolicy _iter14 : struct.batchQueueResourcePolicies)
+          for (BatchQueueResourcePolicy _iter30 : struct.batchQueueResourcePolicies)
           {
-            _iter14.write(oprot);
+            _iter30.write(oprot);
           }
         }
       }
@@ -1227,42 +1227,42 @@ public class GroupResourceProfile implements org.apache.thrift.TBase<GroupResour
       }
       if (incoming.get(1)) {
         {
-          org.apache.thrift.protocol.TList _list15 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.computePreferences = new java.util.ArrayList<GroupComputeResourcePreference>(_list15.size);
-          GroupComputeResourcePreference _elem16;
-          for (int _i17 = 0; _i17 < _list15.size; ++_i17)
+          org.apache.thrift.protocol.TList _list31 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.computePreferences = new java.util.ArrayList<GroupComputeResourcePreference>(_list31.size);
+          GroupComputeResourcePreference _elem32;
+          for (int _i33 = 0; _i33 < _list31.size; ++_i33)
           {
-            _elem16 = new GroupComputeResourcePreference();
-            _elem16.read(iprot);
-            struct.computePreferences.add(_elem16);
+            _elem32 = new GroupComputeResourcePreference();
+            _elem32.read(iprot);
+            struct.computePreferences.add(_elem32);
           }
         }
         struct.setComputePreferencesIsSet(true);
       }
       if (incoming.get(2)) {
         {
-          org.apache.thrift.protocol.TList _list18 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.computeResourcePolicies = new java.util.ArrayList<ComputeResourcePolicy>(_list18.size);
-          ComputeResourcePolicy _elem19;
-          for (int _i20 = 0; _i20 < _list18.size; ++_i20)
+          org.apache.thrift.protocol.TList _list34 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.computeResourcePolicies = new java.util.ArrayList<ComputeResourcePolicy>(_list34.size);
+          ComputeResourcePolicy _elem35;
+          for (int _i36 = 0; _i36 < _list34.size; ++_i36)
           {
-            _elem19 = new ComputeResourcePolicy();
-            _elem19.read(iprot);
-            struct.computeResourcePolicies.add(_elem19);
+            _elem35 = new ComputeResourcePolicy();
+            _elem35.read(iprot);
+            struct.computeResourcePolicies.add(_elem35);
           }
         }
         struct.setComputeResourcePoliciesIsSet(true);
       }
       if (incoming.get(3)) {
         {
-          org.apache.thrift.protocol.TList _list21 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.batchQueueResourcePolicies = new java.util.ArrayList<BatchQueueResourcePolicy>(_list21.size);
-          BatchQueueResourcePolicy _elem22;
-          for (int _i23 = 0; _i23 < _list21.size; ++_i23)
+          org.apache.thrift.protocol.TList _list37 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.batchQueueResourcePolicies = new java.util.ArrayList<BatchQueueResourcePolicy>(_list37.size);
+          BatchQueueResourcePolicy _elem38;
+          for (int _i39 = 0; _i39 < _list37.size; ++_i39)
           {
-            _elem22 = new BatchQueueResourcePolicy();
-            _elem22.read(iprot);
-            struct.batchQueueResourcePolicies.add(_elem22);
+            _elem38 = new BatchQueueResourcePolicy();
+            _elem38.read(iprot);
+            struct.batchQueueResourcePolicies.add(_elem38);
           }
         }
         struct.setBatchQueueResourcePoliciesIsSet(true);

@@ -290,7 +290,7 @@ keystore.path={{ keystores_location }}/{{ keystore }}
 keystore.password={{ keystore_passwd }}
 #### trust store configuration ####
 trust.store={{ keystores_location }}/{{ client_truststore }}
-trust.store.password=airavata
+trust.store.password={{ client_truststore_passwd }}
 #### remote authorization server url ####
 remote.oauth.authorization.server=https://idp.scigap.org:9443/services/
 #### xacml based authorization policy ####

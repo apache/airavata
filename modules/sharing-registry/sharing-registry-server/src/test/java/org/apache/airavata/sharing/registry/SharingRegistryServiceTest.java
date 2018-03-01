@@ -189,6 +189,7 @@ public class SharingRegistryServiceTest {
         Assert.assertFalse(sharingServiceClient.hasAdminAccess(domainId, "test-group-1", "test-user-2"));
 
         // transfer group ownership
+        sharingServiceClient.addUsersToGroup(domainId, Arrays.asList("test-user-2"), "test-group-1");
         Assert.assertTrue(sharingServiceClient.transferGroupOwnership(domainId, "test-group-1", "test-user-2"));
         Assert.assertTrue(sharingServiceClient.hasOwnerAccess(domainId, "test-group-1", "test-user-2"));
         Assert.assertTrue(sharingServiceClient.transferGroupOwnership(domainId, "test-group-1", "test-user-1"));

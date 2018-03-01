@@ -40,6 +40,7 @@ import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProf
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.data.movement.DMType;
 import org.apache.airavata.model.data.movement.*;
 import org.apache.airavata.model.data.replica.DataProductModel;
@@ -49,10 +50,7 @@ import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.status.ExperimentState;
-import org.apache.airavata.model.status.ExperimentStatus;
-import org.apache.airavata.model.status.JobStatus;
-import org.apache.airavata.model.status.QueueStatusModel;
+import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
@@ -62,6 +60,7 @@ import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.api.registry_apiConstants;
 import org.apache.airavata.registry.core.app.catalog.resources.*;
+import org.apache.airavata.registry.core.app.catalog.util.AppCatalogJPAUtils;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
@@ -765,6 +764,338 @@ public class RegistryServerHandler implements RegistryService.Iface {
         }
     }
 
+    @Override
+    public void addExperimentProcessOutputs(String outputType, List<OutputDataObjectType> outputs, String id) throws RegistryServiceException, TException {
+
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            if (ExpCatChildDataType.PROCESS_OUTPUT.equals(ExpCatChildDataType.valueOf(outputType))) {
+                experimentCatalog.add(ExpCatChildDataType.PROCESS_OUTPUT, outputs, id);
+            }
+            else if(ExpCatChildDataType.EXPERIMENT_OUTPUT.equals(ExpCatChildDataType.valueOf(outputType))) {
+                experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_OUTPUT, outputs, id);
+            }
+        } catch (Exception e) {
+            logger.error(id, "Error while adding outputs", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding outputs. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public void addErrors(String errorType, ErrorModel errorModel, String id) throws RegistryServiceException, TException {
+
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            if (ExpCatChildDataType.EXPERIMENT_ERROR.equals(ExpCatChildDataType.valueOf(errorType))) {
+                experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_ERROR, errorModel, id);
+            }
+            else if (ExpCatChildDataType.TASK_ERROR.equals(ExpCatChildDataType.valueOf(errorType))) {
+                experimentCatalog.add(ExpCatChildDataType.TASK_ERROR, errorModel, id);
+            }
+            else if (ExpCatChildDataType.PROCESS_ERROR.equals(ExpCatChildDataType.valueOf(errorType))) {
+                experimentCatalog.add(ExpCatChildDataType.PROCESS_ERROR, errorModel, id);
+            }
+        } catch (Exception e) {
+            logger.error(id, "Error while adding error", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding error. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public void addTaskStatus(TaskStatus taskStatus, String taskId) throws RegistryServiceException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            experimentCatalog.add(ExpCatChildDataType.TASK_STATUS, taskStatus, taskId);
+        } catch (Exception e) {
+            logger.error(taskId, "Error while adding task status", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding task status. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public void addProcessStatus(ProcessStatus processStatus, String processId) throws RegistryServiceException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            experimentCatalog.add(ExpCatChildDataType.PROCESS_STATUS, processStatus, processId);
+        } catch (Exception e) {
+            logger.error(processId, "Error while adding process status", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding process status. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public void updateProcessStatus(ProcessStatus processStatus, String processId) throws RegistryServiceException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            experimentCatalog.update(ExperimentCatalogModelType.PROCESS_STATUS, processStatus, processId);
+        } catch (Exception e) {
+            logger.error(processId, "Error while updating process status", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updating process status. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public void updateExperimentStatus(ExperimentStatus experimentStatus, String experimentId) throws RegistryServiceException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT_STATUS, experimentStatus, experimentId);
+        } catch (Exception e) {
+            logger.error(experimentId, "Error while updating experiment status", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updating experiment status. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public void addJobStatus(JobStatus jobStatus, String taskId, String jobId) throws RegistryServiceException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            CompositeIdentifier ids = new CompositeIdentifier(taskId, jobId);
+            experimentCatalog.add(ExpCatChildDataType.JOB_STATUS, jobStatus, ids);
+        } catch (Exception e) {
+            logger.error(jobId, "Error while adding job status", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding job status. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public void addJob(JobModel jobModel, String processId) throws RegistryServiceException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            experimentCatalog.add(ExpCatChildDataType.JOB, jobModel, processId);
+        } catch (Exception e) {
+            logger.error(processId, "Error while adding job ", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding job. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public String addProcess(ProcessModel processModel, String experimentId) throws RegistryServiceException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            return (String)experimentCatalog.add(ExpCatChildDataType.PROCESS, processModel, experimentId);
+        } catch (Exception e) {
+            logger.error(experimentId, "Error while adding process ", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding process. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public void updateProcess(ProcessModel processModel, String processId) throws RegistryServiceException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processId);
+        } catch (Exception e) {
+            logger.error(processId, "Error while updating process ", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updating process. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public String addTask(TaskModel taskModel, String processId) throws RegistryServiceException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            return (String)experimentCatalog.add(ExpCatChildDataType.TASK, taskModel, processId);
+        } catch (Exception e) {
+            logger.error(processId, "Error while adding task ", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding task. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public UserConfigurationDataModel getUserConfigurationData(String experimentId) throws RegistryServiceException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            return (UserConfigurationDataModel) experimentCatalog.get(ExperimentCatalogModelType.USER_CONFIGURATION_DATA, experimentId);
+        }
+        catch (Exception e) {
+            logger.error(experimentId, "Error while getting user configuration ", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding task. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public ProcessModel getProcess(String processId) throws RegistryServiceException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            return (ProcessModel) experimentCatalog.get(ExperimentCatalogModelType.PROCESS, processId);
+        } catch (Exception e) {
+            logger.error(processId, "Error while retrieving user configuration ", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving user configuration. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public List<ProcessModel> getProcessList(String experimentId) throws RegistryServiceException, TException {
+        try {
+            List<ProcessModel> processModels = new ArrayList<ProcessModel>();
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            List<Object> processList = experimentCatalog.get(ExperimentCatalogModelType.PROCESS, Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, experimentId);
+
+            if (processList != null && !processList.isEmpty()) {
+                for (Object processObject : processList) {
+                    ProcessModel processModel = (ProcessModel)processObject;
+                    processModels.add(processModel);
+                }
+            }
+            return processModels;
+
+        } catch (Exception e) {
+            logger.error(experimentId, "Error while retrieving process list ", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving process list. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public ProcessStatus getProcessStatus(String processId) throws RegistryServiceException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            return (ProcessStatus) experimentCatalog.get(ExperimentCatalogModelType.PROCESS_STATUS, processId);
+        } catch (Exception e) {
+            logger.error(processId, "Error while retrieving process status", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving process status. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     *
+     * queryType can be PROCESS_ID or TASK_ID
+     */
+    @Override
+    public boolean isJobExist(String queryType, String id) throws RegistryServiceException, TException {
+        try {
+            JobModel jobModel = fetchJobModel(queryType, id);
+            return jobModel != null;
+        } catch (Exception e) {
+            logger.error(id, "Error while retrieving job", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving job. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     *
+     * queryType can be PROCESS_ID or TASK_ID
+     */
+    @Override
+    public JobModel getJob(String queryType, String id) throws RegistryServiceException, TException {
+        try {
+            JobModel jobModel = fetchJobModel(queryType, id);
+            if (jobModel != null) return jobModel;
+            throw new Exception("Job not found for queryType: " + queryType + ", id: " + id);
+        } catch (Exception e) {
+            logger.error(id, "Error while retrieving job", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving job. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    private JobModel fetchJobModel(String queryType, String id) throws RegistryException {
+        experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+        if (queryType.equals(Constants.FieldConstants.JobConstants.TASK_ID)) {
+            List<Object> jobs = experimentCatalog.get(ExperimentCatalogModelType.JOB, Constants.FieldConstants.JobConstants.TASK_ID, id);
+            JobModel jobModel = null;
+            if (jobs != null) {
+                for (Object object : jobs) {
+                    jobModel = ((JobModel) object);
+                    if (jobModel.getJobId() != null || !jobModel.equals("")) {
+                        return jobModel;
+                    }
+                }
+            }
+        }
+        else if (queryType.equals(Constants.FieldConstants.JobConstants.PROCESS_ID)) {
+            List<Object> objects = experimentCatalog.get(ExperimentCatalogModelType.JOB,
+                    Constants.FieldConstants.JobConstants.PROCESS_ID, id);
+            JobModel jobModel = null;
+            if (objects != null) {
+                for (Object object : objects) {
+                    jobModel = ((JobModel) object);
+                    if (jobModel.getJobId() != null || !jobModel.equals("")) {
+                        return jobModel;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<OutputDataObjectType> getProcessOutputs(String processId) throws RegistryServiceException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            return (List<OutputDataObjectType> )experimentCatalog.get(ExperimentCatalogModelType.PROCESS_OUTPUT, processId);
+        } catch (Exception e) {
+            logger.error(processId, "Error while retrieving process outputs", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving process outputs. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public List<String> getProcessIds(String experimentId) throws RegistryServiceException, TException {
+        try {
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            return experimentCatalog.getIds(ExperimentCatalogModelType.PROCESS, AbstractExpCatResource.ProcessConstants.EXPERIMENT_ID, experimentId);
+        } catch (Exception e) {
+            logger.error(experimentId, "Error while retrieving process ids", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving process ids. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
     /**
      * Get Job Details for all the jobs within an Experiment.
      * This method to be used when need to get the job details for one or many jobs of an Experiment.
@@ -845,6 +1176,33 @@ public class RegistryServerHandler implements RegistryService.Iface {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             List<ApplicationModule> moduleList = new ApplicationInterfaceRepository().getAllApplicationModules(gatewayId);
+            logger.debug("Airavata retrieved modules for gateway id : " + gatewayId);
+            return moduleList;
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving all application modules...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving all application modules. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Fetch all Application Module Descriptions.
+     *
+     * @param gatewayId ID of the gateway which need to list all available application deployment documentation.
+     * @param accessibleAppIds App IDs that are accessible to the user
+     * @return list
+     * Returns the list of all Application Module Objects that are accessible to the user.
+     */
+    @Override
+    public List<ApplicationModule> getAccessibleAppModules(String gatewayId, List<String> accessibleAppIds) throws RegistryServiceException, TException {
+        if (!isGatewayExistInternal(gatewayId)){
+            logger.error("Gateway does not exist.Please provide a valid gateway id...");
+            throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+        }
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            List<ApplicationModule> moduleList = appCatalog.getApplicationInterface().getAccessibleApplicationModules(gatewayId, accessibleAppIds);
             logger.debug("Airavata retrieved modules for gateway id : " + gatewayId);
             return moduleList;
         } catch (AppCatalogException e) {
@@ -948,6 +1306,33 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     /**
+     * Fetch all Application Deployment Descriptions.
+     *
+     * @param gatewayId ID of the gateway which need to list all available application deployment documentation.
+     * @param accessibleAppIds App IDs that are accessible to the user
+     * @return list<applicationDeployment.
+     * Returns the list of all application Deployment Objects  that are accessible to the user.
+     */
+    @Override
+    public List<ApplicationDeploymentDescription> getAccessibleApplicationDeployments(String gatewayId, List<String> accessibleAppIds) throws RegistryServiceException, TException {
+        if (!isGatewayExistInternal(gatewayId)){
+            logger.error("Gateway does not exist.Please provide a valid gateway id...");
+            throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
+        }
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            List<ApplicationDeploymentDescription> deployements = appCatalog.getApplicationDeployment().getAccessibleApplicationDeployements(gatewayId, accessibleAppIds);
+            logger.debug("Airavata retrieved application deployments for gateway id : " + gatewayId);
+            return deployements;
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving application deployments...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving application deployments. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
      * Fetch a list of Deployed Compute Hosts.
      *
      * @param appModuleId The identifier for the requested application module
@@ -967,6 +1352,22 @@ public class RegistryServerHandler implements RegistryService.Iface {
             }
             logger.debug("Airavata retrieved application deployments for module id : " + appModuleId);
             return appDeployments;
+        } catch (AppCatalogException e) {
+            logger.error(appModuleId, "Error while retrieving application deployments...", e);
+            RegistryServiceException exception = new RegistryServiceException();
+            exception.setMessage("Error while retrieving application deployment. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public List<ApplicationDeploymentDescription> getApplicationDeployments(String appModuleId) throws RegistryServiceException, TException {
+        try {
+            appCatalog = RegistryFactory.getAppCatalog();
+            Map<String, String> filters = new HashMap<String, String>();
+            filters.put(AppCatAbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, appModuleId);
+            List<ApplicationDeploymentDescription> applicationDeployments = appCatalog.getApplicationDeployment().getApplicationDeployements(filters);
+            return applicationDeployments;
         } catch (AppCatalogException e) {
             logger.error(appModuleId, "Error while retrieving application deployments...", e);
             RegistryServiceException exception = new RegistryServiceException();
