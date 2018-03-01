@@ -166,7 +166,23 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
 
             // Add user to the domain's "everyone" group
             String groupId = "everyone@" + user.domainId;
-            addUsersToGroup(user.domainId, Arrays.asList(user.userId), groupId);
+            if (isGroupExists(user.domainId, groupId)) {
+                addUsersToGroup(user.domainId, Arrays.asList(user.userId), groupId);
+            }
+            else {
+                //Create an "everyone" group for the domain
+                UserGroup everyone = new UserGroup();
+                everyone.setGroupId(groupId);
+                everyone.setDomainId(user.domainId);
+                everyone.setGroupCardinality(GroupCardinality.MULTI_USER);
+                everyone.setCreatedTime(System.currentTimeMillis());
+                everyone.setUpdatedTime(System.currentTimeMillis());
+                everyone.setOwnerId(user.userId);
+                everyone.setName("everyone");
+                everyone.setDescription("Default Group");
+                everyone.setGroupType(GroupType.DOMAIN_LEVEL_GROUP);
+                createGroup(everyone);
+            }
 
             return user.userId;
         }catch (Throwable ex) {
