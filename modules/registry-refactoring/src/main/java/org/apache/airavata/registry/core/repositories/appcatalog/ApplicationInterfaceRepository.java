@@ -67,7 +67,7 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
     protected String saveApplicationModuleData(
             ApplicationModule applicationModule) throws AppCatalogException {
         ApplicationModuleEntity applicationModuleEntity = saveApplicationModule(applicationModule);
-        return applicationModule.getAppModuleId();
+        return applicationModuleEntity.getModuleId();
     }
 
     protected ApplicationModuleEntity saveApplicationModule(
@@ -176,6 +176,17 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
         queryParameters.put(DBConstants.ApplicationInterface.GATEWAY_ID, gatewayId);
         List<ApplicationInterfaceDescription> applicationInterfaceDescriptionList = select(QueryConstants.FIND_APPLICATION_INTERFACES_FOR_GATEWAY_ID, -1, 0, queryParameters);
         return applicationInterfaceDescriptionList;
+    }
+
+    @Override
+    public List<ApplicationModule> getAccessibleApplicationModules(String gatewayId, List<String> accessibleAppIds) throws AppCatalogException {
+        List<ApplicationModule> accessibleApplicationModules = new ArrayList<>();
+        for(ApplicationModule module : getAllApplicationModules(gatewayId)) {
+            if(accessibleAppIds.contains(module.getAppModuleId())) {
+                accessibleApplicationModules.add(module);
+            }
+        }
+        return accessibleApplicationModules;
     }
 
     @Override
