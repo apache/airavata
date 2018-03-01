@@ -52,6 +52,7 @@ public class UserConfigurationDataResource extends AbstractExpCatResource {
     private String overrideAllocationProjectNumber;
     private String storageId;
     private String experimentDataDir;
+    private String groupResourceProfileId;
     private boolean useUserCRPref;
 
     public String getExperimentId() {
@@ -214,6 +215,14 @@ public class UserConfigurationDataResource extends AbstractExpCatResource {
         this.experimentDataDir = experimentDataDir;
     }
 
+    public String getGroupResourceProfileId() {
+        return groupResourceProfileId;
+    }
+
+    public void setGroupResourceProfileId(String groupResourceProfileId) {
+        this.groupResourceProfileId = groupResourceProfileId;
+    }
+
     public boolean getUseUserCRPref() {
         return useUserCRPref;
     }
@@ -289,6 +298,7 @@ public class UserConfigurationDataResource extends AbstractExpCatResource {
             userConfigurationData.setTotalPhysicalMemory(totalPhysicalMemory);
             userConfigurationData.setStorageId(storageId);
             userConfigurationData.setExperimentDataDir(experimentDataDir);
+            userConfigurationData.setGroupResourceProfileId(groupResourceProfileId);
             userConfigurationData.setUseUserCRPref(useUserCRPref);
             if (existingConf == null) {
                 em.persist(userConfigurationData);
