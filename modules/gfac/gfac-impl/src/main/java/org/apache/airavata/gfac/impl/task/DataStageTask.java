@@ -20,7 +20,6 @@
 package org.apache.airavata.gfac.impl.task;
 
 import org.apache.airavata.gfac.core.GFacException;
-import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;

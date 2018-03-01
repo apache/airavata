@@ -361,7 +361,9 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     public List<UserGroup> getGroups(String domain, int offset, int limit) throws TException {
         try{
             HashMap<String, String> filters = new HashMap<>();
-            filters.put(DBConstants.UserTable.DOMAIN_ID, domain);
+            filters.put(DBConstants.UserGroupTable.DOMAIN_ID, domain);
+            // Only return groups with MULTI_USER cardinality which is the only type of cardinality allowed for client created groups
+            filters.put(DBConstants.UserGroupTable.GROUP_CARDINALITY, GroupCardinality.MULTI_USER.name());
             return (new UserGroupRepository()).select(filters, offset, limit);
         }catch (Throwable ex) {
             logger.error(ex.getMessage(), ex);
@@ -392,6 +394,12 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     @Override
     public boolean removeUsersFromGroup(String domainId, List<String> userIds, String groupId) throws SharingRegistryException, TException {
         try{
+            for (String userId: userIds) {
+                if (hasOwnerAccess(domainId, groupId, userId)) {
+                    throw new SharingRegistryException("List of User Ids contains Owner Id. Cannot remove owner from the group");
+                }
+            }
+
             for(int i=0; i < userIds.size(); i++){
                 GroupMembershipPK groupMembershipPK = new GroupMembershipPK();
                 groupMembershipPK.setParentId(groupId);
@@ -409,6 +417,11 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
     @Override
     public boolean transferGroupOwnership(String domainId, String groupId, String newOwnerId) throws SharingRegistryException, TException {
         try {
+            List<User> groupUser = getGroupMembersOfTypeUser(domainId, groupId, 0, -1);
+            if (!isUserBelongsToGroup(groupUser, newOwnerId)) {
+                throw new SharingRegistryException("New group owner is not part of the group");
+            }
+
             if (hasOwnerAccess(domainId, groupId, newOwnerId)) {
                 throw new DuplicateEntryException("User already the current owner of the group");
             }
@@ -436,6 +449,15 @@ public class SharingRegistryServerHandler implements SharingRegistryService.Ifac
             logger.error(ex.getMessage(), ex);
             throw new SharingRegistryException().setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
+    }
+
+    private boolean isUserBelongsToGroup(List<User> groupUser, String newOwnerId) {
+        for (User user: groupUser) {
+            if (user.getUserId().equals(newOwnerId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

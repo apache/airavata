@@ -22,7 +22,7 @@
 
 # Setup keycloak user and database
 - name: create keycloak database
-  mysql_db: name="keycloak" state=present
+  mysql_db: name="keycloak" state=present encoding=utf8
   when: "'keycloak' in groups"
 
 - name: give access to {{ keycloak_db_username }} from remote

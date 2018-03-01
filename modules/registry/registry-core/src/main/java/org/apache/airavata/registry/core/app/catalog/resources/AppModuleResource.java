@@ -44,6 +44,11 @@ public class AppModuleResource extends AppCatAbstractResource {
     private Timestamp createdTime;
     private Timestamp updatedTime;
     private String gatewayId;
+    private List<String> accessibleAppDeploymentIds;
+
+    public List<String> getAccessibleAppDeploymentIds() { return accessibleAppDeploymentIds; }
+
+    public void setAccessibleAppDeploymentIds(List<String> accessibleAppDeploymentIds) { this.accessibleAppDeploymentIds = accessibleAppDeploymentIds; }
 
     public String getGatewayId() {
         return gatewayId;
@@ -225,9 +230,21 @@ public class AppModuleResource extends AppCatAbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APPLICATION_MODULE);
-            generator.setParameter(ApplicationModuleConstants.GATEWAY_ID, gatewayId);
-            Query q = generator.selectQuery(em);
+
+            String queryString = "SELECT appModule " +
+                    "FROM " + APPLICATION_MODULE + " appModule " +
+                    "WHERE appModule." + ApplicationModuleConstants.GATEWAY_ID + " = :" + ApplicationModuleConstants.GATEWAY_ID + " ";
+            if (accessibleAppDeploymentIds != null && !accessibleAppDeploymentIds.isEmpty()) {
+                queryString += "  AND appModule." + ApplicationModuleConstants.MODULE_ID + " IN (" +
+                        "    SELECT appDeploy." + ApplicationDeploymentConstants.APP_MODULE_ID + " " +
+                        "    FROM " + APPLICATION_DEPLOYMENT + " appDeploy " +
+                        "    WHERE appDeploy." + ApplicationDeploymentConstants.DEPLOYMENT_ID + " IN :" + ApplicationDeploymentConstants.DEPLOYMENT_ID + ")";
+            }
+            Query q =  em.createQuery(queryString);
+            q.setParameter(ApplicationModuleConstants.GATEWAY_ID, gatewayId);
+            if (accessibleAppDeploymentIds != null && !accessibleAppDeploymentIds.isEmpty()) {
+                q.setParameter(ApplicationDeploymentConstants.DEPLOYMENT_ID, accessibleAppDeploymentIds);
+            }
             List<?> results = q.getResultList();
             for (Object result : results) {
                 ApplicationModule module = (ApplicationModule) result;

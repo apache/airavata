@@ -20,10 +20,15 @@
 package org.apache.airavata.sharing.registry.migrator.airavata;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.model.group.ResourcePermissionType;
+import org.apache.airavata.model.group.ResourceType;
+import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
 import org.apache.airavata.sharing.registry.models.*;
 import org.apache.airavata.sharing.registry.server.SharingRegistryServerHandler;
 import org.apache.thrift.TException;
+import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
 
+import java.util.Arrays;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,6 +42,9 @@ public class AiravataDataMigrator {
         Connection expCatConnection = ConnectionFactory.getInstance().getExpCatConnection();
 
         SharingRegistryServerHandler sharingRegistryServerHandler = new SharingRegistryServerHandler();
+        SharingRegistryService.Client sharingClient = SharingRegistryServiceClientFactory.createSharingRegistryClient("149.165.169.138", 7878);
+
+        String applicationDeploymentOwner = args[0];
 
         String query = "SELECT * FROM GATEWAY";
         Statement statement = expCatConnection.createStatement();
@@ -75,6 +83,22 @@ public class AiravataDataMigrator {
                 entityType.setDomainId(domain.domainId);
                 entityType.setName("FILE");
                 entityType.setDescription("File entity type");
+                if (!sharingRegistryServerHandler.isEntityTypeExists(entityType.domainId, entityType.entityTypeId))
+                    sharingRegistryServerHandler.createEntityType(entityType);
+
+                entityType = new EntityType();
+                entityType.setEntityTypeId(domain.domainId+":"+ ResourceType.APPLICATION_DEPLOYMENT.name());
+                entityType.setDomainId(domain.domainId);
+                entityType.setName("APPLICATION-DEPLOYMENT");
+                entityType.setDescription("Application Deployment entity type");
+                if (!sharingRegistryServerHandler.isEntityTypeExists(entityType.domainId, entityType.entityTypeId))
+                    sharingRegistryServerHandler.createEntityType(entityType);
+
+                entityType = new EntityType();
+                entityType.setEntityTypeId(domain.domainId+":"+ResourceType.GROUP_RESOURCE_PROFILE.name());
+                entityType.setDomainId(domain.domainId);
+                entityType.setName(ResourceType.GROUP_RESOURCE_PROFILE.name());
+                entityType.setDescription("Group Resource Profile entity type");
                 if (!sharingRegistryServerHandler.isEntityTypeExists(entityType.domainId, entityType.entityTypeId))
                     sharingRegistryServerHandler.createEntityType(entityType);
 
@@ -177,6 +201,35 @@ public class AiravataDataMigrator {
                 if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
                     sharingRegistryServerHandler.createEntity(entity);
             }catch (Exception ex){
+                ex.printStackTrace();
+            }
+        }
+
+        //Creating application deployment entries
+        query = "SELECT * FROM APPLICATION_DEPLOYMENT";
+        statement = expCatConnection.createStatement();
+        rs = statement.executeQuery(query);
+        while(rs.next()){
+            try {
+                Entity entity = new Entity();
+                entity.setEntityId(rs.getString("DEPLOYMENT_ID"));
+                entity.setDomainId(rs.getString("GATEWAY_ID"));
+                entity.setEntityTypeId(rs.getString("GATEWAY_ID") + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
+                entity.setOwnerId(applicationDeploymentOwner);
+                entity.setName(rs.getString("DEPLOYMENT_ID"));
+                entity.setDescription(rs.getString("APPLICATION_DESC"));
+                if(entity.getDescription() == null)
+                    entity.setFullText(entity.getName());
+                else
+                    entity.setFullText(entity.getName() + " " + entity.getDescription());
+                Map<String, String> metadata = new HashMap<>();
+                metadata.put("CREATION_TIME", rs.getDate("CREATION_TIME").toString());
+
+                if (!sharingRegistryServerHandler.isEntityExists(entity.domainId, entity.entityId))
+                    sharingRegistryServerHandler.createEntity(entity);
+                String groupId = "everyone@" + entity.domainId;
+                sharingClient.shareEntityWithGroups(entity.domainId, entity.entityId, Arrays.asList(groupId), entity.domainId+":"+ ResourcePermissionType.EXEC, true);
+            } catch (Exception ex){
                 ex.printStackTrace();
             }
         }

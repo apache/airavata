@@ -109,11 +109,12 @@ gfac_dir: "{{ deployment_dir }}/gfac-instance"
 gfac_log_dir: "{{ gfac_dir }}/logs"
 
 # Monitoring variables
-monitor_email_address: "gw56jobs@scigap.org"
+monitor_email_address: "devjobs@scigap.org"
 monitor_email_password: "{{ vault_monitor_email_password }}"
 
 # PGA variables
 pga_repo: "https://github.com/apache/airavata-php-gateway.git"
+pga_git_branch: "develop"
 user_data_dir: "/var/www/portals/gateway-user-data"
 real_user_data_dir: "/data/gateway-user-data"
 ## Airavata Client related variables

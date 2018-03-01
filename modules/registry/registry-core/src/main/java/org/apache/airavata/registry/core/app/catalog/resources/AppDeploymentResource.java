@@ -55,10 +55,13 @@ public class AppDeploymentResource extends AppCatAbstractResource {
     private AppModuleResource moduleResource;
     private Timestamp createdTime;
     private Timestamp updatedTime;
+    private List<String> accessibleAppDeploymentIds;
 
-    public String getGatewayId() {
-        return gatewayId;
-    }
+    public List<String> getAccessibleAppDeploymentIds() { return accessibleAppDeploymentIds; }
+
+    public void setAccessibleAppDeploymentIds(List<String> accessibleAppDeploymentIds) { this.accessibleAppDeploymentIds = accessibleAppDeploymentIds; }
+
+    public String getGatewayId() { return gatewayId; }
 
     public void setGatewayId(String gatewayId) {
         this.gatewayId = gatewayId;
@@ -314,6 +317,9 @@ public class AppDeploymentResource extends AppCatAbstractResource {
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APPLICATION_DEPLOYMENT);
             generator.setParameter(ApplicationDeploymentConstants.GATEWAY_ID, gatewayId);
+            if (accessibleAppDeploymentIds != null && !accessibleAppDeploymentIds.isEmpty()) {
+                generator.setParameter(ApplicationDeploymentConstants.DEPLOYMENT_ID, accessibleAppDeploymentIds);
+            }
             Query q = generator.selectQuery(em);
             List results = q.getResultList();
                 if (results.size() != 0) {

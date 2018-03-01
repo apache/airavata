@@ -1,0 +1,141 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+ansible_connection: ssh
+ansible_user: centos
+
+user: airavata
+group: airavata
+user_home: "/home/{{ user }}"
+
+# deployment related variables
+deployment_dir: "{{ user_home }}/develop-deployment"
+airavata_source_dir: "{{ user_home }}/develop-source"
+airavata_repo: "https://github.com/apache/airavata.git"
+airavata_dist: "apache-airavata-server-0.17-SNAPSHOT"
+airavata_dist_name: "{{ airavata_dist }}-bin.tar.gz"
+old_airavata_dist: "apache-airavata-server-0.17-SNAPSHOT"
+git_branch: group-based-auth
+
+# Database related variables
+db_server: "{{ groups['database'][0] }}"
+db_server_port: "3306"
+db_user: "airavata"
+db_password: "{{ vault_db_password }}"
+mysql_root_password: "{{ vault_mysql_root_password }}"
+app_catalog: "app_catalog"
+exp_catalog: "experiment_catalog"
+replica_catalog: "replica_catalog"
+sharing_catalog: "sharing_catalog"
+workflow_catalog: "workflow_catalog"
+credential_store: "credential_store"
+profile_service: "profile_service"
+
+mysql_connector_jar: "mysql-connector-java-5.1.37-bin.jar"
+
+# Rabbitmq related vareables
+rabbitmq_server: "{{ groups['rabbitmq'][0] }}"
+rabbitmq_vhost: "develop"
+rabbitmq_user: "airavata"
+rabbitmq_password: "{{ vault_rabbitmq_password }}"
+rabbitmq_port: "5672"
+rabbitmq_broker_url: "amqp://{{ rabbitmq_user }}:{{ rabbitmq_password }}@{{ rabbitmq_server}}:{{ rabbitmq_port }}/{{ rabbitmq_vhost }}"
+
+# Zoookeeper related variables
+zookeeper_client_port: 2181
+zookeeper_url: "{{ groups['zookeeper'][0] }}:{{ zookeeper_client_port }}"
+
+# API Server related variables
+api_server_name: "apiserver-node0"
+api_server_host: "{{ groups['api-orch'][0] }}"
+api_server_port: "8930"
+api_secured: "true"
+tls_enable: "true"
+api_server_tls_port: "9930"
+enable_sharing: "true"
+iam_server_url: "https://iamdev.scigap.org/auth"
+iam_server_super_admin_username: "admin"
+iam_server_super_admin_password: "{{ vault_iam_server_super_admin_password }}"
+
+# Orchestrator  related variables
+orchestrator_name: "orchestrator-node0"
+orchestrator_host: "{{ groups['api-orch'][0] }}"
+orchestrator_port: "8940"
+api_orch_dir: "{{ deployment_dir }}/api-orchestrator"
+api_orch_log_dir: "{{ api_orch_dir }}/logs"
+
+# registry related variables
+registry_name: regserver-node0
+registry_host: "{{ groups['api-orch'][0] }}"
+registry_port: 8970
+#registry_dir: "{{ deployment_dir }}/registry"
+default_gateway: "default"
+
+# Credential and keystore related variables
+keystore_src_path: "{{inventory_dir}}/files/airavata.jks"
+keystore_passwd: "{{ vault_keystore_passwd }}"
+client_truststore_src_path: "{{inventory_dir}}/files/client_truststore.jks"
+client_truststore_passwd: "{{ vault_client_truststore_passwd }}"
+cred_keystore_src_path: "{{inventory_dir}}/files/airavata_sym.jks"
+cred_keystore_passwd: "{{ vault_cred_keystore_passwd }}"
+cred_keystore_alias: "airavata"
+cred_store_server_host: "{{ groups['api-orch'][0] }}"
+cred_store_port: "8960"
+keystores_location: "{{ deployment_dir }}/keystores"
+
+# Gfac related variables
+gfac_name: "gfac-node0"
+gfac_host: "{{ groups['gfac'][0] }}"
+gfac_port: "8950"
+gfac_dir: "{{ deployment_dir }}/gfac-instance"
+gfac_log_dir: "{{ gfac_dir }}/logs"
+
+# Monitoring variables
+monitor_email_address: "devjobs@scigap.org"
+monitor_email_password: "{{ vault_monitor_email_password }}"
+
+# PGA variables
+pga_repo: "https://github.com/apache/airavata-php-gateway.git"
+user_data_dir: "/var/www/portals/gateway-user-data"
+real_user_data_dir: "/data/gateway-user-data"
+## Airavata Client related variables
+airavata_server: "tls://{{ groups['api-orch'][0] }}"
+airavata_port: "9930"
+airavata_profile_service_server: "{{ groups['api-orch'][0] }}"
+auth_verify_peer: "true"
+oauth_service_url: "{{ iam_server_url }}"
+
+# Sharing Registry related variables
+sharing_registry_host: "{{ groups['api-orch'][0] }}"
+sharing_registry_port: 7878
+
+# Profile Service related variables
+profile_service_host: "{{ groups['api-orch'][0] }}"
+profile_service_port: 8962
+
+# Keycloak
+keycloak_ssl_keystore_file: "{{ inventory_dir }}/files/keycloak.jks"
+keycloak_ssl_keystore_password: "{{ vault_keycloak_ssl_keystore_password }}"
+keycloak_db_host: "{{ groups['database'][0] }}"
+keycloak_db_username: "keycloak"
+keycloak_db_password: "{{ vault_keycloak_db_password }}"
+keycloak_master_account_username: "admin"
+keycloak_master_account_password: "{{ vault_keycloak_master_account_password }}"

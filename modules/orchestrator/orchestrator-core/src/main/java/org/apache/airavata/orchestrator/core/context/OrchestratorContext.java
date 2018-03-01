@@ -21,14 +21,12 @@ package org.apache.airavata.orchestrator.core.context;
 
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.orchestrator.core.OrchestratorConfiguration;
-import org.apache.airavata.registry.cpi.Registry;
 
 /**
  * This is the context object used in orchestrator which
  */
 public class OrchestratorContext {
     private OrchestratorConfiguration orchestratorConfiguration;
-    private Registry registry;
     private Publisher publisher;
     private String gatewayId;
 
@@ -46,13 +44,6 @@ public class OrchestratorContext {
 
     public void setOrchestratorConfiguration(OrchestratorConfiguration orchestratorConfiguration) {
         this.orchestratorConfiguration = orchestratorConfiguration;
-    }
-    public Registry getRegistry() {
-        return registry;
-    }
-
-    public void setRegistry(Registry registry) {
-        this.registry = registry;
     }
 
     public String getGatewayId() {

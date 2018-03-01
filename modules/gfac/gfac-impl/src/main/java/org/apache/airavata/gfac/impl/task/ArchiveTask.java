@@ -43,6 +43,7 @@ import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.model.task.TaskTypes;
+import org.apache.airavata.registry.api.RegistryService;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,9 +88,9 @@ public class ArchiveTask implements Task {
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
-            return status;
         }
 
+        RegistryService.Client registryClient = Factory.getRegistryServiceClient();
         try {
             StorageResourceDescription storageResource = taskContext.getParentProcessContext().getStorageResource();
 
@@ -105,7 +106,7 @@ public class ArchiveTask implements Task {
             status = new TaskStatus(TaskState.COMPLETED);
 
             Session srcSession = Factory.getSSHSession(Factory.getComputerResourceSSHKeyAuthentication(processContext),
-                    processContext.getComputeResourceServerInfo());
+                    processContext.getComputeResourceServerInfo(registryClient));
             Session destSession =  Factory.getSSHSession(Factory.getStorageSSHKeyAuthentication(processContext),
                     processContext.getStorageResourceServerInfo());
 
@@ -157,7 +158,7 @@ public class ArchiveTask implements Task {
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
-        } catch ( URISyntaxException | GFacException e) {
+        } catch ( URISyntaxException | GFacException | TException e) {
             String msg = "Error! Archive task failed";
             log.error(msg, e);
             status.setState(TaskState.FAILED);
@@ -167,6 +168,10 @@ public class ArchiveTask implements Task {
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
+        } finally {
+            if (registryClient != null) {
+                ThriftUtils.close(registryClient);
+            }
         }
         return status;
     }
