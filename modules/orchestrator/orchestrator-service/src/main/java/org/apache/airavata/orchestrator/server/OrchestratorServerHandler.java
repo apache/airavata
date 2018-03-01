@@ -36,6 +36,7 @@ import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDes
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.appcatalog.groupresourceprofile.GroupComputeResourcePreference;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.data.replica.DataProductModel;
@@ -44,6 +45,7 @@ import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ExperimentState;
@@ -146,10 +148,20 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 return false;
             }
 
+			UserConfigurationDataModel userConfigurationData = experiment.getUserConfigurationData();
             ComputeResourcePreference computeResourcePreference = registryClient.getGatewayComputeResourcePreference
 							(gatewayId,
-							experiment.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId());
+							userConfigurationData.getComputationalResourceScheduling().getResourceHostId());
             String token = computeResourcePreference.getResourceSpecificCredentialStoreToken();
+
+			if (userConfigurationData.getGroupResourceProfileId() != null) {
+				GroupComputeResourcePreference groupComputeResourcePreference = registryClient.getGroupComputeResourcePreference(
+						userConfigurationData.getComputationalResourceScheduling().getResourceHostId(),
+						userConfigurationData.getGroupResourceProfileId());
+				if (groupComputeResourcePreference.getResourceSpecificCredentialStoreToken() != null) {
+					token = groupComputeResourcePreference.getResourceSpecificCredentialStoreToken();
+				}
+			}
             if (token == null || token.isEmpty()){
                 // try with gateway profile level token
                 GatewayResourceProfile gatewayProfile = registryClient.getGatewayResourceProfile(gatewayId);
