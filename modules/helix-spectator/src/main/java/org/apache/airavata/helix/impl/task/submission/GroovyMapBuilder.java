@@ -67,8 +67,7 @@ public class GroovyMapBuilder {
         inputValues.addAll(getProcessOutputValues(taskContext.getProcessModel().getProcessOutputs(), false));
         mapData.setInputsAll(inputValuesAll);
 
-        //mapData.setUserName(taskContext.geJo)
-
+        mapData.setUserName(taskContext.getComputeResourceLoginUserName());
         mapData.setShellName("/bin/bash");
 
         if (taskContext != null) {

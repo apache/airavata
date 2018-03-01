@@ -1,8 +1,6 @@
 package org.apache.airavata.helix.task.api.support;
 
-import org.apache.airavata.agents.api.AgentAdaptor;
-import org.apache.airavata.agents.api.CommandOutput;
-import org.apache.airavata.agents.api.JobSubmissionOutput;
+import org.apache.airavata.agents.api.*;
 
 import java.io.File;
 
@@ -16,5 +14,6 @@ public interface AdaptorSupport {
     public void initializeAdaptor();
 
     public AgentAdaptor fetchAdaptor(String gatewayId, String computeResource, String protocol, String authToken, String userId) throws Exception;
+    public StorageResourceAdaptor fetchStorageAdaptor(String gatewayId, String storageResourceId, String protocol,  String authToken, String userId) throws AgentException;
 
 }

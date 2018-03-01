@@ -1,5 +1,6 @@
 package org.apache.airavata.helix.task.api;
 
+import org.apache.airavata.agents.api.StorageResourceAdaptor;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
 
 /**

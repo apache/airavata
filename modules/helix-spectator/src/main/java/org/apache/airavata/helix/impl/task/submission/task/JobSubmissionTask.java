@@ -60,7 +60,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
 
         logger.info("Copying file form " + tempJobFile.getAbsolutePath() + " to remote path " + workingDirectory +
                 " of compute resource " + getTaskContext().getComputeResourceId());
-        agentAdaptor.copyFile(tempJobFile.getAbsolutePath(), workingDirectory);
+        agentAdaptor.copyFileTo(tempJobFile.getAbsolutePath(), workingDirectory);
         // TODO transfer file
         RawCommandInfo submitCommand = jobManagerConfiguration.getSubmitCommand(workingDirectory, tempJobFile.getPath());
 

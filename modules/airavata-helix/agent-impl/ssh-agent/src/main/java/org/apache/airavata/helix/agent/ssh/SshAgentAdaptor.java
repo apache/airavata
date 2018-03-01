@@ -190,7 +190,7 @@ public class SshAgentAdaptor implements AgentAdaptor {
         }
     }
 
-    public void copyFile(String localFile, String remoteFile) throws AgentException {
+    public void copyFileTo(String localFile, String remoteFile) throws AgentException {
         FileInputStream fis = null;
         String prefix = null;
         if (new File(localFile).isDirectory()) {
@@ -296,6 +296,127 @@ public class SshAgentAdaptor implements AgentAdaptor {
         }
     }
 
+    // TODO file not found does not return exception
+    public void copyFileFrom(String remoteFile, String localFile) throws AgentException {
+        FileOutputStream fos = null;
+        ChannelExec channelExec = null;
+        try {
+            String prefix = null;
+            if (new File(localFile).isDirectory()) {
+                prefix = localFile + File.separator;
+            }
+
+            StandardOutReader stdOutReader = new StandardOutReader();
+
+            // exec 'scp -f remotefile' remotely
+            String command = "scp -f " + remoteFile;
+            channelExec = (ChannelExec)session.openChannel("exec");
+            channelExec.setCommand(command);
+
+            //channelExec.setErrStream(stdOutReader.getStandardError());
+            // get I/O streams for remote scp
+            OutputStream out = channelExec.getOutputStream();
+            InputStream in = channelExec.getInputStream();
+            InputStream err = channelExec.getErrStream();
+
+            if (!channelExec.isClosed()){
+                channelExec.connect();
+            }
+
+            byte[] buf = new byte[1024];
+
+            // send '\0'
+            buf[0] = 0;
+            out.write(buf, 0, 1);
+            out.flush();
+
+            while (true) {
+                int c = checkAck(in);
+                if (c != 'C') {
+                    break;
+                }
+
+                // read '0644 '
+                in.read(buf, 0, 5);
+
+                long filesize = 0L;
+                while (true) {
+                    if (in.read(buf, 0, 1) < 0) {
+                        // error
+                        break;
+                    }
+                    if (buf[0] == ' ') break;
+                    filesize = filesize * 10L + (long) (buf[0] - '0');
+                }
+
+                String file = null;
+                for (int i = 0; ; i++) {
+                    in.read(buf, i, 1);
+                    if (buf[i] == (byte) 0x0a) {
+                        file = new String(buf, 0, i);
+                        break;
+                    }
+                }
+
+                //System.out.println("filesize="+filesize+", file="+file);
+
+                // send '\0'
+                buf[0] = 0;
+                out.write(buf, 0, 1);
+                out.flush();
+
+                // read a content of lfile
+                fos = new FileOutputStream(prefix == null ? localFile : prefix + file);
+                int foo;
+                while (true) {
+                    if (buf.length < filesize) foo = buf.length;
+                    else foo = (int) filesize;
+                    foo = in.read(buf, 0, foo);
+                    if (foo < 0) {
+                        // error
+                        break;
+                    }
+                    fos.write(buf, 0, foo);
+                    filesize -= foo;
+                    if (filesize == 0L) break;
+                }
+                fos.close();
+                fos = null;
+
+                if (checkAck(in) != 0) {
+                    String error = "Error transfering the file content";
+                    //log.error(error);
+                    throw new AgentException(error);
+                }
+
+                // send '\0'
+                buf[0] = 0;
+                out.write(buf, 0, 1);
+                out.flush();
+            }
+
+
+            stdOutReader.readStdErrFromStream(err);
+            if (stdOutReader.getStdError().contains("scp:")) {
+                throw new AgentException(stdOutReader.getStdError());
+            }
+
+        } catch (Exception e) {
+            //log.error(e.getMessage(), e);
+            throw new AgentException(e);
+        } finally {
+            try {
+                if (fos != null) fos.close();
+            } catch (Exception ee) {
+            }
+
+            if (channelExec != null) {
+                channelExec.disconnect();
+            }
+
+        }
+    }
+
     @Override
     public List<String> listDirectory(String path) throws AgentException {
         String command = "ls " + path;
@@ -331,6 +452,11 @@ public class SshAgentAdaptor implements AgentAdaptor {
                 channelExec.disconnect();
             }
         }
+    }
+
+    @Override
+    public List<String> getFileNameFromExtension(String fileName, String parentPath) throws AgentException {
+        throw new AgentException("Operation not implemented");
     }
 
     private static class DefaultUserInfo implements UserInfo, UIKeyboardInteractive {
