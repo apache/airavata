@@ -164,7 +164,7 @@ LOGGING = {
         },
     },
 }
-
+GATEWAY_DATA_STORE_DIR = '/tmp'
 # Allow all settings to be overridden by settings_local.py file
 try:
     from django_airavata.settings_local import *

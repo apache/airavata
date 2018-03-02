@@ -29,7 +29,7 @@
 
 import { models, services } from 'django-airavata-api'
 
-import Autocomplete from './Autocomplete.vue'
+import Autocomplete from '../utils/Autocomplete.vue'
 
 export default {
     props: {

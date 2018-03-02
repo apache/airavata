@@ -22,7 +22,7 @@
 import GroupListItem from './GroupListItem.vue'
 
 export default {
-    name: 'group-owner-list',
+    name: 'group-list',
     props: ['groupsForOwners'],
     data: function () {
         return {
