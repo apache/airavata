@@ -27,7 +27,7 @@ public class SimpleWorkflow {
 
     public static void main(String[] args) throws Exception {
 
-        String processId = "PROCESS_438a87cc-2dec-4edc-bfeb-31128df91bb6";
+        String processId = "PROCESS_5b252ad9-d630-4cf9-80e3-0c30c55d1001";
         AppCatalog appCatalog = RegistryFactory.getAppCatalog();
         ExperimentCatalog experimentCatalog = RegistryFactory.getDefaultExpCatalog();
 
@@ -51,10 +51,11 @@ public class SimpleWorkflow {
                     airavataTask = new EnvSetupTask();
                 } else if (taskModel.getTaskType() == TaskTypes.JOB_SUBMISSION) {
                     airavataTask = new DefaultJobSubmissionTask();
+                    airavataTask.setRetryCount(1);
                     jobSubmissionFound = true;
                 } else if (taskModel.getTaskType() == TaskTypes.DATA_STAGING) {
                     if (jobSubmissionFound) {
-                        airavataTask = new OutputDataStagingTask();
+                        //airavataTask = new OutputDataStagingTask();
                     } else {
                         airavataTask = new InputDataStagingTask();
                     }

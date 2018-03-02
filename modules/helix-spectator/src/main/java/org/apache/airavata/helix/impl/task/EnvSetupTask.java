@@ -28,7 +28,7 @@ public class EnvSetupTask extends AiravataTask {
             logger.info("Creating directory " + getTaskContext().getWorkingDir() + " on compute resource " + getTaskContext().getComputeResourceId());
             adaptor.createDirectory(getTaskContext().getWorkingDir());
             publishTaskState(TaskState.COMPLETED);
-            return onSuccess("Successfully completed");
+            return onSuccess("Envi setup task successfully completed " + getTaskId());
         } catch (Exception e) {
             try {
                 publishTaskState(TaskState.FAILED);

@@ -64,7 +64,7 @@ public class GroovyMapBuilder {
         mapData.setInputs(inputValues);
 
         List<String> inputValuesAll = getProcessInputValues(taskContext.getProcessModel().getProcessInputs(), false);
-        inputValues.addAll(getProcessOutputValues(taskContext.getProcessModel().getProcessOutputs(), false));
+        inputValuesAll.addAll(getProcessOutputValues(taskContext.getProcessModel().getProcessOutputs(), false));
         mapData.setInputsAll(inputValuesAll);
 
         mapData.setUserName(taskContext.getComputeResourceLoginUserName());
@@ -103,7 +103,7 @@ public class GroovyMapBuilder {
                 mapData.setQueueName(scheduling.getQueueName());
             }
             if (totalNodeCount > 0) {
-                mapData.setNodes(totalCPUCount);
+                mapData.setNodes(totalNodeCount);
             }
             if (totalCPUCount > 0) {
                 int ppn = totalCPUCount / totalNodeCount;
