@@ -132,13 +132,12 @@ public class SshAgentAdaptor implements AgentAdaptor {
         ChannelExec channelExec = null;
         try {
             channelExec = ((ChannelExec) session.openChannel("exec"));
-            channelExec.setCommand(command);
+            channelExec.setCommand("cd " + workingDirectory + "; " + command);
             channelExec.setInputStream(null);
             InputStream out = channelExec.getInputStream();
             InputStream err = channelExec.getErrStream();
             channelExec.connect();
 
-            commandOutput.setExitCode(channelExec.getExitStatus());
             commandOutput.readStdOutFromStream(out);
             commandOutput.readStdErrFromStream(err);
             return commandOutput;
@@ -150,6 +149,7 @@ public class SshAgentAdaptor implements AgentAdaptor {
             throw new AgentException(e);
         } finally {
             if (channelExec != null) {
+                commandOutput.setExitCode(channelExec.getExitStatus());
                 channelExec.disconnect();
             }
         }

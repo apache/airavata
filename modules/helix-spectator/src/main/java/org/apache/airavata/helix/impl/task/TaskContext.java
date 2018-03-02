@@ -13,6 +13,8 @@ import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescr
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
+import org.apache.airavata.model.application.io.DataType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
@@ -23,11 +25,13 @@ import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
+import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.*;
 
 public class TaskContext {
@@ -436,8 +440,38 @@ public class TaskContext {
         this.resourceJobManager = resourceJobManager;
     }
 
-    public ResourceJobManager getResourceJobManager() {
-        return resourceJobManager;
+    public ResourceJobManager getResourceJobManager() throws Exception {
+
+        if (this.resourceJobManager == null) {
+            JobSubmissionInterface jsInterface = getPreferredJobSubmissionInterface();
+
+            if (jsInterface == null) {
+                throw new Exception("Job Submission interface cannot be empty at this point");
+            } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH) {
+                SSHJobSubmission sshJobSubmission = getAppCatalog().getComputeResource().getSSHJobSubmission
+                        (jsInterface.getJobSubmissionInterfaceId());
+                // context method.
+                resourceJobManager = sshJobSubmission.getResourceJobManager();
+            } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.LOCAL) {
+                LOCALSubmission localSubmission = getAppCatalog().getComputeResource().getLocalJobSubmission
+                        (jsInterface.getJobSubmissionInterfaceId());
+                resourceJobManager = localSubmission.getResourceJobManager();
+            } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH_FORK) {
+                SSHJobSubmission sshJobSubmission = getAppCatalog().getComputeResource().getSSHJobSubmission
+                        (jsInterface.getJobSubmissionInterfaceId());
+                resourceJobManager = sshJobSubmission.getResourceJobManager();
+            } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.CLOUD) {
+                return null;
+            } else {
+                throw new Exception("Unsupported JobSubmissionProtocol - " + jsInterface.getJobSubmissionProtocol()
+                        .name());
+            }
+
+            if (resourceJobManager == null) {
+                throw new Exception("Resource Job Manager is empty.");
+            }
+        }
+        return this.resourceJobManager;
     }
 
     public String getLocalWorkingDir() {
@@ -794,6 +828,36 @@ public class TaskContext {
                     .getApplicationInterface(processModel.getApplicationInterfaceId()));
             ctx.setComputeResourceDescription(appCatalog.getComputeResource().getComputeResource
                     (ctx.getComputeResourceId()));
+
+            List<OutputDataObjectType> applicationOutputs = ctx.getApplicationInterfaceDescription().getApplicationOutputs();
+            if (applicationOutputs != null && !applicationOutputs.isEmpty()) {
+                for (OutputDataObjectType outputDataObjectType : applicationOutputs) {
+                    if (outputDataObjectType.getType().equals(DataType.STDOUT)) {
+                        if (outputDataObjectType.getValue() == null || outputDataObjectType.getValue().equals("")) {
+                            String stdOut = (ctx.getWorkingDir().endsWith(File.separator) ? ctx.getWorkingDir() : ctx.getWorkingDir() + File.separator)
+                                    + ctx.getApplicationInterfaceDescription().getApplicationName() + ".stdout";
+                            outputDataObjectType.setValue(stdOut);
+                            ctx.setStdoutLocation(stdOut);
+                        } else {
+                            ctx.setStdoutLocation(outputDataObjectType.getValue());
+                        }
+                    }
+                    if (outputDataObjectType.getType().equals(DataType.STDERR)) {
+                        if (outputDataObjectType.getValue() == null || outputDataObjectType.getValue().equals("")) {
+                            String stderrLocation = (ctx.getWorkingDir().endsWith(File.separator) ? ctx.getWorkingDir() : ctx.getWorkingDir() + File.separator)
+                                    + ctx.getApplicationInterfaceDescription().getApplicationName() + ".stderr";
+                            outputDataObjectType.setValue(stderrLocation);
+                            ctx.setStderrLocation(stderrLocation);
+                        } else {
+                            ctx.setStderrLocation(outputDataObjectType.getValue());
+                        }
+                    }
+                }
+            }
+
+            // TODO move this to some where else as this is not the correct place to do so
+            experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processId);
+            processModel.setProcessOutputs(applicationOutputs);
             return ctx;
         }
 

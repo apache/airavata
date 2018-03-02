@@ -46,6 +46,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
             jobModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
             jobModel.setTaskId(getTaskId());
             jobModel.setJobName(mapData.getJobName());
+            jobModel.setJobDescription("Sample description");
 
             if (mapData != null) {
                 //jobModel.setJobDescription(FileUtils.readFileToString(jobFile));
@@ -71,10 +72,11 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                         statusList.add(new JobStatus(JobState.FAILED));
                         statusList.get(0).setReason(submissionOutput.getFailureReason());
                         jobModel.setJobStatuses(statusList);
-                        jobModel.setJobDescription("Sample description");
                         saveJobModel(jobModel);
                         logger.error("expId: " + getExperimentId() + ", processid: " + getProcessId()+ ", taskId: " +
-                                getTaskId() + " :- Job submission failed for job name " + jobModel.getJobName());
+                                getTaskId() + " :- Job submission failed for job name " + jobModel.getJobName()
+                                + ". Exit code : " + submissionOutput.getExitCode() + ", Submission failed : "
+                                + submissionOutput.isJobSubmissionFailed());
 
                         ErrorModel errorModel = new ErrorModel();
                         errorModel.setUserFriendlyMessage(submissionOutput.getFailureReason());

@@ -181,9 +181,9 @@ public abstract class JobSubmissionTask extends AiravataTask {
             MessageContext msgCtx = new MessageContext(jobStatusChangeEvent, MessageType.JOB, AiravataUtils.getId
                     (MessageType.JOB.name()), getGatewayId());
             msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-            getStatusPublisher().publish(msgCtx);
+            //getStatusPublisher().publish(msgCtx);
         } catch (Exception e) {
-            throw new Exception("Error persisting job status" + e.getLocalizedMessage(), e);
+            throw new Exception("Error persisting job status " + e.getLocalizedMessage(), e);
         }
     }
 

@@ -61,7 +61,7 @@ public class WorkflowManager {
             JobConfig.Builder job = new JobConfig.Builder()
                     .addTaskConfigs(taskBuilds)
                     .setFailureThreshold(0)
-                    .setMaxAttemptsPerTask(3);
+                    .setMaxAttemptsPerTask(data.getRetryCount());
 
             if (!globalParticipant) {
                 job.setInstanceGroupTag(taskType);
