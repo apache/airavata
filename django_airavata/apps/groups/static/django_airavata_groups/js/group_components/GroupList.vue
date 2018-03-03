@@ -7,7 +7,7 @@
                 <th>Name</th>
                 <th>Owner</th>
                 <th>Description</th>
-                <th>Actions</th>
+                <th id="group-list-actions-header">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -47,3 +47,9 @@ export default {
     }
 }
 </script>
+
+<style>
+#group-list-actions-header {
+    min-width: 150px;
+}
+</style>
