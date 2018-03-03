@@ -4,7 +4,7 @@
 
 <script>
 
-import GroupEditor from './GroupEditor.vue';
+import GroupEditor from '../group_components/GroupEditor.vue';
 
 import { models, services } from 'django-airavata-api'
 import { components as comps } from 'django-airavata-common-ui'
