@@ -2,6 +2,7 @@ package org.apache.airavata.job.monitor;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.job.monitor.kafka.MessageProducer;
 import org.apache.airavata.job.monitor.parser.EmailParser;
 import org.apache.airavata.job.monitor.parser.JobStatusResult;
 import org.apache.airavata.job.monitor.parser.ResourceConfig;
@@ -48,6 +49,7 @@ public class EmailBasedMonitor implements Runnable {
     private Map<String, Boolean> canceledJobs = new ConcurrentHashMap<>();
     private Timer timer;
     private Map<ResourceJobManagerType, ResourceConfig> resourceConfigs = new HashMap<>();
+    private MessageProducer messageProducer = new MessageProducer();
 
 
     public EmailBasedMonitor() throws Exception {
@@ -235,8 +237,9 @@ public class EmailBasedMonitor implements Runnable {
             try {
                 JobStatusResult jobStatusResult = parse(message);
                 log.info(jobStatusResult.getJobId() + ", " + jobStatusResult.getJobName() + ", " + jobStatusResult.getState().getValue());
-                //processedMessages.add(message);
-                unreadMessages.add(message);
+                messageProducer.submitMessageToQueue(jobStatusResult);
+                processedMessages.add(message);
+                //unreadMessages.add(message);
             } catch (Exception e) {
                 unreadMessages.add(message);
             }
