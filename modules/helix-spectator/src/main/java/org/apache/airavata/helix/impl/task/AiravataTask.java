@@ -79,7 +79,7 @@ public abstract class AiravataTask extends AbstractTask {
         super.init(manager, workflowName, jobName, taskName);
         try {
             appCatalog = RegistryFactory.getAppCatalog();
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            experimentCatalog = RegistryFactory.getExperimentCatalog(getGatewayId());
             processModel = (ProcessModel) experimentCatalog.get(ExperimentCatalogModelType.PROCESS, processId);
 
             this.computeResourceDescription = getAppCatalog().getComputeResource().getComputeResource(getProcessModel()

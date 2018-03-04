@@ -23,7 +23,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class SimpleWorkflow {
+public class PreWorkflowManager {
 
     public static void main(String[] args) throws Exception {
 

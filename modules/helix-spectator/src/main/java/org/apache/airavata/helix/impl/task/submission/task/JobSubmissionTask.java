@@ -3,6 +3,7 @@ package org.apache.airavata.helix.impl.task.submission.task;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.airavata.agents.api.JobSubmissionOutput;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.impl.task.AiravataTask;
@@ -27,9 +28,15 @@ import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.commons.io.FileUtils;
+import org.apache.curator.RetryPolicy;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.helix.HelixManager;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.ZooDefs;
 
 import java.io.File;
 import java.security.SecureRandom;
@@ -39,9 +46,34 @@ public abstract class JobSubmissionTask extends AiravataTask {
 
     private static final Logger logger = LogManager.getLogger(JobSubmissionTask.class);
 
+    private CuratorFramework curatorClient = null;
+
     @Override
     public void init(HelixManager manager, String workflowName, String jobName, String taskName) {
         super.init(manager, workflowName, jobName, taskName);
+        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
+        try {
+            this.curatorClient = CuratorFrameworkFactory.newClient(ServerSettings.getZookeeperConnection(), retryPolicy);
+            this.curatorClient.start();
+        } catch (ApplicationSettingsException e) {
+            e.printStackTrace();
+            logger.error("Failed to create curator client ", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public CuratorFramework getCuratorClient() {
+        return curatorClient;
+    }
+
+    // TODO perform exception handling
+    protected void createMonitoringNode(String jobId) throws Exception {
+        logger.info("Creating zookeeper paths for job monitoring for job id : " + jobId + ", process : "
+                + getProcessId() + ", gateway : " + getGatewayId());
+        this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/monitoring/" + jobId + "/lock", new byte[0]);
+        this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/monitoring/" + jobId + "/gateway", getGatewayId().getBytes());
+        this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/monitoring/" + jobId + "/process", getProcessId().getBytes());
+        this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/monitoring/" + jobId + "/status", "pending".getBytes());
     }
 
     //////////////////////

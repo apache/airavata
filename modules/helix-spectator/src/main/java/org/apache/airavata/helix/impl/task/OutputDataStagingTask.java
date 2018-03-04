@@ -28,6 +28,7 @@ public class OutputDataStagingTask extends DataStagingTask {
     @Override
     public TaskResult onRun(TaskHelper taskHelper) {
 
+        logger.info("Starting output data staging task " + getTaskId());
         try {
             // Get and validate data staging task model
             DataStagingTaskModel dataStagingTaskModel = getDataStagingTaskModel();
@@ -56,14 +57,37 @@ public class OutputDataStagingTask extends DataStagingTask {
             String sourceFileName;
             try {
                 sourceURI = new URI(dataStagingTaskModel.getSource());
-                destinationURI = new URI(dataStagingTaskModel.getDestination());
+                sourceFileName = sourceURI.getPath().substring(sourceURI.getPath().lastIndexOf(File.separator) + 1,
+                        sourceURI.getPath().length());
+
+                if (dataStagingTaskModel.getDestination().startsWith("dummy")) {
+                    String inputPath  = getTaskContext().getStorageFileSystemRootLocation();
+                    inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
+                    String experimentDataDir = getProcessModel().getExperimentDataDir();
+                    String filePath;
+                    if(experimentDataDir != null && !experimentDataDir.isEmpty()) {
+                        if(!experimentDataDir.endsWith(File.separator)){
+                            experimentDataDir += File.separator;
+                        }
+                        if (experimentDataDir.startsWith(File.separator)) {
+                            filePath = experimentDataDir + sourceFileName;
+                        } else {
+                            filePath = inputPath + experimentDataDir + sourceFileName;
+                        }
+                    } else {
+                        filePath = inputPath + getProcessId() + File.separator + sourceFileName;
+                    }
+
+                    destinationURI = new URI("file", getTaskContext().getStorageResourceLoginUserName(),
+                            storageResource.getHostName(), 22, filePath, null, null);
+
+                } else {
+                    destinationURI = new URI(dataStagingTaskModel.getDestination());
+                }
 
                 if (logger.isDebugEnabled()) {
                     logger.debug("Source file " + sourceURI.getPath() + ", destination uri " + destinationURI.getPath() + " for task " + getTaskId());
                 }
-
-                sourceFileName = sourceURI.getPath().substring(sourceURI.getPath().lastIndexOf(File.separator) + 1,
-                        sourceURI.getPath().length());
             } catch (URISyntaxException e) {
                 throw new TaskOnFailException("Failed to obtain source URI for output data staging task " + getTaskId(), true, e);
             }
@@ -162,6 +186,26 @@ public class OutputDataStagingTask extends DataStagingTask {
             throw new TaskOnFailException("Failed uploading the output file to " + destinationURI.getPath() + " from local path " +
                     localSourceFilePath, true, e);
         }
+    }
+
+    public URI getDestinationURIFromDummy(String hostName, String inputPath, String fileName) throws URISyntaxException {
+        String experimentDataDir = getProcessModel().getExperimentDataDir();
+        String filePath;
+        if(experimentDataDir != null && !experimentDataDir.isEmpty()) {
+            if(!experimentDataDir.endsWith(File.separator)){
+                experimentDataDir += File.separator;
+            }
+            if (experimentDataDir.startsWith(File.separator)) {
+                filePath = experimentDataDir + fileName;
+            } else {
+                filePath = inputPath + experimentDataDir + fileName;
+            }
+        } else {
+            filePath = inputPath + getProcessId() + File.separator + fileName;
+        }
+        //FIXME
+        return new URI("file", getTaskContext().getStorageResourceLoginUserName(), hostName, 22, filePath, null, null);
+
     }
 
     @Override

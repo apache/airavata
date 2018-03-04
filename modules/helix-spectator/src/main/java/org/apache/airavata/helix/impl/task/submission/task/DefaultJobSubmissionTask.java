@@ -36,6 +36,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
 
     @Override
     public TaskResult onRun(TaskHelper taskHelper) {
+
         try {
 
             GroovyMapData mapData = new GroovyMapBuilder(getTaskContext()).build();
@@ -126,6 +127,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                     logger.info("Received job id " + jobId + " from compute resource");
                     jobModel.setJobId(jobId);
                     saveJobModel(jobModel);
+
                     JobStatus jobStatus = new JobStatus();
                     jobStatus.setJobState(JobState.SUBMITTED);
                     jobStatus.setReason("Successfully Submitted to " + getComputeResourceDescription().getHostName());
@@ -139,6 +141,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                         jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                         jobModel.setJobStatuses(Arrays.asList(jobStatus));
                         saveJobStatus(jobModel);
+                        createMonitoringNode(jobId);
                     }
 
                     if (getComputeResourceDescription().isGatewayUsageReporting()){
