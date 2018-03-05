@@ -7,6 +7,7 @@ import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.registry.cpi.ExpCatChildDataType;
 import org.apache.airavata.registry.cpi.RegistryException;
@@ -29,6 +30,8 @@ public class OutputDataStagingTask extends DataStagingTask {
     public TaskResult onRun(TaskHelper taskHelper) {
 
         logger.info("Starting output data staging task " + getTaskId());
+        saveAndPublishProcessStatus(ProcessState.OUTPUT_DATA_STAGING);
+
         try {
             // Get and validate data staging task model
             DataStagingTaskModel dataStagingTaskModel = getDataStagingTaskModel();

@@ -5,24 +5,18 @@ import org.apache.airavata.agents.api.JobSubmissionOutput;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.helix.impl.task.submission.GroovyMapBuilder;
 import org.apache.airavata.helix.impl.task.submission.GroovyMapData;
-import org.apache.airavata.helix.impl.task.submission.SubmissionUtil;
 import org.apache.airavata.helix.impl.task.submission.config.RawCommandInfo;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.job.JobModel;
-import org.apache.airavata.model.status.JobState;
-import org.apache.airavata.model.status.JobStatus;
-import org.apache.airavata.model.status.TaskState;
-import org.apache.airavata.model.status.TaskStatus;
+import org.apache.airavata.model.status.*;
 import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
-import org.apache.commons.io.FileUtils;
 import org.apache.helix.task.TaskResult;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,6 +32,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
     public TaskResult onRun(TaskHelper taskHelper) {
 
         try {
+            saveAndPublishProcessStatus(ProcessState.EXECUTING);
 
             GroovyMapData mapData = new GroovyMapBuilder(getTaskContext()).build();
 
@@ -133,14 +128,14 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                     jobStatus.setReason("Successfully Submitted to " + getComputeResourceDescription().getHostName());
                     jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                     jobModel.setJobStatuses(Arrays.asList(jobStatus));
-                    saveJobStatus(jobModel);
+                    saveAndPublishJobStatus(jobModel);
 
                     if (verifyJobSubmissionByJobId(adaptor, jobId)) {
                         jobStatus.setJobState(JobState.QUEUED);
                         jobStatus.setReason("Verification step succeeded");
                         jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                         jobModel.setJobStatuses(Arrays.asList(jobStatus));
-                        saveJobStatus(jobModel);
+                        saveAndPublishJobStatus(jobModel);
                         createMonitoringNode(jobId);
                     }
 
@@ -172,7 +167,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                             jobStatus.setReason("Verification step succeeded");
                             jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                             jobModel.setJobStatuses(Arrays.asList(jobStatus));
-                            saveJobStatus(jobModel);
+                            saveAndPublishJobStatus(jobModel);
                             //taskStatus.setState(TaskState.COMPLETED);
                             //taskStatus.setReason("Submitted job to compute resource");
                             //taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());

@@ -3,6 +3,7 @@ package org.apache.airavata.helix.impl.task;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
+import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.helix.task.TaskResult;
@@ -17,6 +18,8 @@ public class EnvSetupTask extends AiravataTask {
     @Override
     public TaskResult onRun(TaskHelper taskHelper) {
         try {
+
+            saveAndPublishProcessStatus(ProcessState.CONFIGURING_WORKSPACE);
             publishTaskState(TaskState.EXECUTING);
             AgentAdaptor adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(
                     getTaskContext().getGatewayId(),

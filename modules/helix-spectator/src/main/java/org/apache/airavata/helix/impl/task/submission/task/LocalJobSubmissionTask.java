@@ -58,7 +58,7 @@ public class LocalJobSubmissionTask extends JobSubmissionTask {
                 jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                 jobModel.setJobStatuses(Arrays.asList(jobStatus));
 
-                saveJobStatus(jobModel);
+                saveAndPublishJobStatus(jobModel);
 
                 jobModel.setExitCode(submissionOutput.getExitCode());
                 jobModel.setStdErr(submissionOutput.getStdErr());
@@ -69,7 +69,7 @@ public class LocalJobSubmissionTask extends JobSubmissionTask {
                 jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                 jobModel.setJobStatuses(Arrays.asList(jobStatus));
 
-                saveJobStatus(jobModel);
+                saveAndPublishJobStatus(jobModel);
 
                 return null;
             }

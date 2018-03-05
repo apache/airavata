@@ -73,6 +73,8 @@ public abstract class JobSubmissionTask extends AiravataTask {
         this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/monitoring/" + jobId + "/lock", new byte[0]);
         this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/monitoring/" + jobId + "/gateway", getGatewayId().getBytes());
         this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/monitoring/" + jobId + "/process", getProcessId().getBytes());
+        this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/monitoring/" + jobId + "/task", getTaskId().getBytes());
+        this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/monitoring/" + jobId + "/experiment", getExperimentId().getBytes());
         this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/monitoring/" + jobId + "/status", "pending".getBytes());
     }
 
@@ -146,48 +148,11 @@ public abstract class JobSubmissionTask extends AiravataTask {
         return jobManagerConfiguration.getParser().parseJobId(jobName, commandOutput.getStdOut());
     }
 
-    ////////////////////////////////
-
-
-    /////////////////////////////////////////////
-    public void saveExperimentError(ErrorModel errorModel) throws Exception {
-        try {
-            errorModel.setErrorId(AiravataUtils.getId("EXP_ERROR"));
-            getExperimentCatalog().add(ExpCatChildDataType.EXPERIMENT_ERROR, errorModel, getExperimentId());
-        } catch (RegistryException e) {
-            String msg = "expId: " + getExperimentId() + " processId: " + getProcessId()
-                    + " : - Error while updating experiment errors";
-            throw new Exception(msg, e);
-        }
-    }
-
-    public void saveProcessError(ErrorModel errorModel) throws Exception {
-        try {
-            errorModel.setErrorId(AiravataUtils.getId("PROCESS_ERROR"));
-            getExperimentCatalog().add(ExpCatChildDataType.PROCESS_ERROR, errorModel, getProcessId());
-        } catch (RegistryException e) {
-            String msg = "expId: " + getExperimentId() + " processId: " + getProcessId()
-                    + " : - Error while updating process errors";
-            throw new Exception(msg, e);
-        }
-    }
-
-    public void saveTaskError(ErrorModel errorModel) throws Exception {
-        try {
-            errorModel.setErrorId(AiravataUtils.getId("TASK_ERROR"));
-            getExperimentCatalog().add(ExpCatChildDataType.TASK_ERROR, errorModel, getTaskId());
-        } catch (RegistryException e) {
-            String msg = "expId: " + getExperimentId() + " processId: " + getProcessId() + " taskId: " + getTaskId()
-                    + " : - Error while updating task errors";
-            throw new Exception(msg, e);
-        }
-    }
-
     public void saveJobModel(JobModel jobModel) throws RegistryException {
         getExperimentCatalog().add(ExpCatChildDataType.JOB, jobModel, getProcessId());
     }
 
-    public void saveJobStatus(JobModel jobModel) throws Exception {
+    public void saveAndPublishJobStatus(JobModel jobModel) throws Exception {
         try {
             // first we save job jobModel to the registry for sa and then save the job status.
             JobStatus jobStatus = null;
@@ -213,7 +178,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
             MessageContext msgCtx = new MessageContext(jobStatusChangeEvent, MessageType.JOB, AiravataUtils.getId
                     (MessageType.JOB.name()), getGatewayId());
             msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-            //getStatusPublisher().publish(msgCtx);
+            getStatusPublisher().publish(msgCtx);
         } catch (Exception e) {
             throw new Exception("Error persisting job status " + e.getLocalizedMessage(), e);
         }

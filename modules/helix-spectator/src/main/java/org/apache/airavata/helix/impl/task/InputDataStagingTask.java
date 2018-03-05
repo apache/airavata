@@ -3,20 +3,17 @@ package org.apache.airavata.helix.impl.task;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.task.DataStagingTaskModel;
-import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.commons.io.FileUtils;
 import org.apache.helix.task.TaskResult;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -28,6 +25,8 @@ public class InputDataStagingTask extends DataStagingTask {
     @Override
     public TaskResult onRun(TaskHelper taskHelper) {
         logger.info("Starting Input Data Staging Task " + getTaskId());
+
+        saveAndPublishProcessStatus(ProcessState.INPUT_DATA_STAGING);
 
         try {
             // Get and validate data staging task model
