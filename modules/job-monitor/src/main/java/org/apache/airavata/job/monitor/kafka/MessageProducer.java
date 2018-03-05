@@ -32,5 +32,6 @@ public class MessageProducer {
     public void submitMessageToQueue(JobStatusResult jobStatusResult) throws ExecutionException, InterruptedException {
         final ProducerRecord<String, JobStatusResult> record = new ProducerRecord<>(TOPIC, jobStatusResult);
         RecordMetadata recordMetadata = producer.send(record).get();
+        producer.flush();
     }
 }

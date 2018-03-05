@@ -1,26 +1,33 @@
 package org.apache.airavata.helix.impl.workflow;
 
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.core.OutPort;
-import org.apache.airavata.helix.impl.task.AiravataTask;
-import org.apache.airavata.helix.impl.task.EnvSetupTask;
-import org.apache.airavata.helix.impl.task.InputDataStagingTask;
-import org.apache.airavata.helix.impl.task.OutputDataStagingTask;
+import org.apache.airavata.helix.impl.task.*;
 import org.apache.airavata.helix.impl.task.submission.task.DefaultJobSubmissionTask;
 import org.apache.airavata.helix.impl.task.submission.task.JobSubmissionTask;
 import org.apache.airavata.helix.workflow.WorkflowManager;
 import org.apache.airavata.job.monitor.kafka.JobStatusResultDeserializer;
 import org.apache.airavata.job.monitor.parser.JobStatusResult;
+import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.core.MessagingFactory;
+import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.messaging.core.Type;
+import org.apache.airavata.messaging.core.impl.RabbitMQPublisher;
 import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.job.JobModel;
+import org.apache.airavata.model.messaging.event.JobIdentifier;
+import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.JobState;
+import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.AppCatalog;
-import org.apache.airavata.registry.cpi.ExperimentCatalog;
-import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
+import org.apache.airavata.registry.cpi.*;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -46,6 +53,7 @@ public class PostWorkflowManager {
     private final String TOPIC = "parsed-data";
 
     private CuratorFramework curatorClient = null;
+    private Publisher statusPublisher;
 
     private void init() throws ApplicationSettingsException {
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
@@ -64,6 +72,18 @@ public class PostWorkflowManager {
         // Subscribe to the topic.
         consumer.subscribe(Collections.singletonList(TOPIC));
         return consumer;
+    }
+
+    private String getExperimentIdByJobId(String jobId) throws Exception {
+        byte[] processBytes = this.curatorClient.getData().forPath("/monitoring/" + jobId + "/experiment");
+        String process = new String(processBytes);
+        return process;
+    }
+
+    private String getTaskIdByJobId(String jobId) throws Exception {
+        byte[] processBytes = this.curatorClient.getData().forPath("/monitoring/" + jobId + "/task");
+        String process = new String(processBytes);
+        return process;
     }
 
     private String getProcessIdByJobId(String jobId) throws Exception {
@@ -101,6 +121,8 @@ public class PostWorkflowManager {
             if (hasMonitoringRegistered(jobStatusResult.getJobId())) {
                 String gateway = getGatewayByJobId(jobStatusResult.getJobId());
                 String processId = getProcessIdByJobId(jobStatusResult.getJobId());
+                String experimentId = getExperimentIdByJobId(jobStatusResult.getJobId());
+                String task = getTaskIdByJobId(jobStatusResult.getJobId());
                 String status = getStatusByJobId(jobStatusResult.getJobId());
 
                 logger.info("Starting the post workflow for job id : " + jobStatusResult.getJobId() + " with process id "
@@ -110,6 +132,8 @@ public class PostWorkflowManager {
                 if ("cancelled".equals(status)) {
 
                 } else {
+
+                    saveAndPublishJobStatus(jobStatusResult.getJobId(), task, processId, experimentId, gateway, jobStatusResult.getState());
 
                     if (jobStatusResult.getState() == JobState.COMPLETE) {
                         logger.info("Job " + jobStatusResult.getJobId() + " was completed");
@@ -151,6 +175,14 @@ public class PostWorkflowManager {
                                 }
                             }
                         }
+
+                        CompletingTask completingTask = new CompletingTask();
+                        completingTask.setGatewayId(experimentModel.getGatewayId());
+                        completingTask.setExperimentId(experimentModel.getExperimentId());
+                        completingTask.setProcessId(processModel.getProcessId());
+                        completingTask.setTaskId("Completing-Task");
+                        allTasks.add(completingTask);
+
                         WorkflowManager workflowManager = new WorkflowManager("AiravataDemoCluster",
                                 "wm-23", ServerSettings.getZookeeperConnection());
 
@@ -187,6 +219,48 @@ public class PostWorkflowManager {
 
             consumer.commitAsync();
         }
+    }
+
+    public void saveAndPublishJobStatus(String jobId, String taskId, String processId, String experimentId, String gateway,
+                                        JobState jobState) throws Exception {
+        try {
+
+            JobStatus jobStatus = new JobStatus();
+            jobStatus.setReason(jobState.name());
+            jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            jobStatus.setJobState(jobState);
+
+            if (jobStatus.getTimeOfStateChange() == 0 || jobStatus.getTimeOfStateChange() > 0 ) {
+                jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            } else {
+                jobStatus.setTimeOfStateChange(jobStatus.getTimeOfStateChange());
+            }
+
+            CompositeIdentifier ids = new CompositeIdentifier(taskId, jobId);
+            ExperimentCatalog experimentCatalog = RegistryFactory.getExperimentCatalog(gateway);
+            experimentCatalog.add(ExpCatChildDataType.JOB_STATUS, jobStatus, ids);
+            JobIdentifier identifier = new JobIdentifier(jobId, taskId,
+                    processId, experimentId, gateway);
+
+            JobStatusChangeEvent jobStatusChangeEvent = new JobStatusChangeEvent(jobStatus.getJobState(), identifier);
+            MessageContext msgCtx = new MessageContext(jobStatusChangeEvent, MessageType.JOB, AiravataUtils.getId
+                    (MessageType.JOB.name()), gateway);
+            msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+            getStatusPublisher().publish(msgCtx);
+        } catch (Exception e) {
+            throw new Exception("Error persisting job status " + e.getLocalizedMessage(), e);
+        }
+    }
+
+    public Publisher getStatusPublisher() throws AiravataException {
+        if (statusPublisher == null) {
+            synchronized (RabbitMQPublisher.class) {
+                if (statusPublisher == null) {
+                    statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
+                }
+            }
+        }
+        return statusPublisher;
     }
 
     public static void main(String[] args) throws Exception {

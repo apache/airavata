@@ -58,7 +58,7 @@ public class ForkJobSubmissionTask extends JobSubmissionTask {
                     jobStatus.setReason("Successfully Submitted to " + getComputeResourceDescription().getHostName());
                     jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                     jobModel.setJobStatuses(Arrays.asList(jobStatus));
-                    saveJobStatus(jobModel);
+                    saveAndPublishJobStatus(jobModel);
 
                     return null;
                 } else {

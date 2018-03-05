@@ -21,6 +21,8 @@ import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
+import org.apache.airavata.model.status.TaskState;
+import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
@@ -381,6 +383,20 @@ public class TaskContext {
     public ProcessStatus getProcessStatus(){
         if(processModel.getProcessStatuses() != null)
             return processModel.getProcessStatuses().get(0);
+        else
+            return null;
+    }
+
+    public TaskState getTaskState() {
+        if(getCurrentTaskModel().getTaskStatuses() != null)
+            return getCurrentTaskModel().getTaskStatuses().get(0).getState();
+        else
+            return null;
+    }
+
+    public TaskStatus getTaskStatus() {
+        if(getCurrentTaskModel().getTaskStatuses() != null)
+            return getCurrentTaskModel().getTaskStatuses().get(0);
         else
             return null;
     }
