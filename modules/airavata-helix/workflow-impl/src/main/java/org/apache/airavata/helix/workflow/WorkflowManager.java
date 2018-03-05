@@ -2,13 +2,14 @@ package org.apache.airavata.helix.workflow;
 
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
-import org.apache.airavata.helix.core.util.*;
 import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.helix.HelixManager;
 import org.apache.helix.HelixManagerFactory;
 import org.apache.helix.InstanceType;
 import org.apache.helix.task.*;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,8 @@ import java.util.Map;
  * @since 1.0.0-SNAPSHOT
  */
 public class WorkflowManager {
+
+    private static final Logger logger = LogManager.getLogger(WorkflowManager.class);
 
     private static final String WORKFLOW_PREFIX = "Workflow_of_process_";
     private TaskDriver taskDriver;
@@ -43,9 +46,12 @@ public class WorkflowManager {
         taskDriver = new TaskDriver(helixManager);
     }
 
-    public void launchWorkflow(String processId, List<AbstractTask> tasks, boolean globalParticipant) throws Exception {
+    public String launchWorkflow(String processId, List<AbstractTask> tasks, boolean globalParticipant, boolean monitor) throws Exception {
 
-        Workflow.Builder workflowBuilder = new Workflow.Builder(WORKFLOW_PREFIX + processId).setExpiry(0);
+        String workflowName = WORKFLOW_PREFIX + processId;
+        logger.info("Launching workflow " + workflowName + " for process " + processId);
+
+        Workflow.Builder workflowBuilder = new Workflow.Builder(workflowName).setExpiry(0);
 
         for (int i = 0; i < tasks.size(); i++) {
             AbstractTask data = tasks.get(i);
@@ -86,9 +92,13 @@ public class WorkflowManager {
         //TODO : Do we need to monitor workflow status? If so how do we do it in a scalable manner? For example,
         // if the hfac that monitors a particular workflow, got killed due to some reason, who is taking the responsibility
 
-        TaskState taskState = taskDriver.pollForWorkflowState(workflow.getName(),
-                TaskState.COMPLETED, TaskState.FAILED, TaskState.STOPPED, TaskState.ABORTED);
-        System.out.println("Workflow finished with state " + taskState.name());
+        if (monitor) {
+            TaskState taskState = taskDriver.pollForWorkflowState(workflow.getName(),
+                    TaskState.COMPLETED, TaskState.FAILED, TaskState.STOPPED, TaskState.ABORTED);
+            logger.info("Workflow " + workflowName + " for process " + processId + " finished with state " + taskState.name());
+
+        }
+        return workflowName;
 
     }
 }
