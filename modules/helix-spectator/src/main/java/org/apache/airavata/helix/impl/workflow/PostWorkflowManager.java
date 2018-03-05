@@ -103,6 +103,9 @@ public class PostWorkflowManager {
                 String processId = getProcessIdByJobId(jobStatusResult.getJobId());
                 String status = getStatusByJobId(jobStatusResult.getJobId());
 
+                logger.info("Starting the post workflow for job id : " + jobStatusResult.getJobId() + " with process id "
+                        + processId + ", gateway " + gateway + " and status " + status);
+
                 // TODO get cluster lock before that
                 if ("cancelled".equals(status)) {
 
@@ -151,8 +154,8 @@ public class PostWorkflowManager {
                         WorkflowManager workflowManager = new WorkflowManager("AiravataDemoCluster",
                                 "wm-23", ServerSettings.getZookeeperConnection());
 
-                        workflowManager.launchWorkflow(UUID.randomUUID().toString(),
-                                allTasks.stream().map(t -> (AiravataTask) t).collect(Collectors.toList()), true);
+                        workflowManager.launchWorkflow(processId + "-POST-" + UUID.randomUUID().toString(),
+                                allTasks.stream().map(t -> (AiravataTask) t).collect(Collectors.toList()), true, false);
 
                     } else if (jobStatusResult.getState() == JobState.CANCELED) {
                         logger.info("Job " + jobStatusResult.getJobId() + " was externally cancelled");
@@ -176,25 +179,14 @@ public class PostWorkflowManager {
     private void runConsumer() throws InterruptedException {
         final Consumer<String, JobStatusResult> consumer = createConsumer();
 
-        final int giveUp = 100;   int noRecordsCount = 0;
-
         while (true) {
             final ConsumerRecords<String, JobStatusResult> consumerRecords = consumer.poll(1000);
-
-            /*if (consumerRecords.count() == 0) {
-                noRecordsCount++;
-                if (noRecordsCount > giveUp) break;
-                else continue;
-            }*/
-
             consumerRecords.forEach(record -> {
                 process(record.value());
             });
 
             consumer.commitAsync();
         }
-        //consumer.close();
-        //System.out.println("DONE");
     }
 
     public static void main(String[] args) throws Exception {

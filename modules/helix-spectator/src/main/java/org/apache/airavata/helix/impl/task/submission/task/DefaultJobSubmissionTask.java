@@ -200,7 +200,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                     //taskStatus.setReason("Couldn't find job id in both submitted and verified steps");
                     //taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                     return onFail("Couldn't find job id in both submitted and verified steps", false, null);
-                }else {
+                } else {
                     //GFacUtils.saveJobModel(processContext, jobModel);
                 }
 
