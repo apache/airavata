@@ -17,72 +17,78 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.helix.impl.task.submission.config.imp;
+package org.apache.airavata.helix.impl.task.submission.config.app;
 
 import org.apache.airavata.helix.impl.task.submission.config.JobManagerConfiguration;
 import org.apache.airavata.helix.impl.task.submission.config.OutputParser;
 import org.apache.airavata.helix.impl.task.submission.config.RawCommandInfo;
 import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.Map;
 
-public class SlurmJobConfiguration implements JobManagerConfiguration {
-	private final Map<JobManagerCommand, String> jMCommands;
+public class LSFJobConfiguration implements JobManagerConfiguration {
+    private final static Logger logger = LoggerFactory.getLogger(LSFJobConfiguration.class);
+	private final Map<JobManagerCommand, String> jobMangerCommands;
     private String jobDescriptionTemplateName;
     private String scriptExtension;
     private String installedPath;
     private OutputParser parser;
 
-    public SlurmJobConfiguration(String jobDescriptionTemplateName,
-                                 String scriptExtension, String installedPath, Map<JobManagerCommand, String>
-		                                 jobManagerCommands, OutputParser parser) {
+    public LSFJobConfiguration(String jobDescriptionTemplateName,
+                               String scriptExtension, String installedPath, Map<JobManagerCommand, String>
+		                               jobManagerCommands, OutputParser parser) {
         this.jobDescriptionTemplateName = jobDescriptionTemplateName;
         this.scriptExtension = scriptExtension;
         this.parser = parser;
-	    installedPath = installedPath.trim();
-        if (installedPath.endsWith("/")) {
+        if (installedPath.endsWith("/") || installedPath.isEmpty()) {
             this.installedPath = installedPath;
         } else {
             this.installedPath = installedPath + "/";
         }
-	    this.jMCommands = jobManagerCommands;
+	    this.jobMangerCommands = jobManagerCommands;
     }
 
+    @Override
     public RawCommandInfo getCancelCommand(String jobID) {
-        return new RawCommandInfo(this.installedPath + jMCommands.get(JobManagerCommand.DELETION).trim() + " " + jobID);
+        return new RawCommandInfo(this.installedPath + "bkill " + jobID);
     }
 
+    @Override
     public String getJobDescriptionTemplateName() {
         return jobDescriptionTemplateName;
     }
 
-    public void setJobDescriptionTemplateName(String jobDescriptionTemplateName) {
-        this.jobDescriptionTemplateName = jobDescriptionTemplateName;
-    }
-
+    @Override
     public RawCommandInfo getMonitorCommand(String jobID) {
-        return new RawCommandInfo(this.installedPath + jMCommands.get(JobManagerCommand.JOB_MONITORING).trim() + " -j " + jobID);
+        return new RawCommandInfo(this.installedPath + "bjobs " + jobID);
     }
 
+    @Override
+    public RawCommandInfo getUserBasedMonitorCommand(String userName) {
+        return new RawCommandInfo(this.installedPath + "bjobs -u " + userName);
+    }
+
+    @Override
+    public RawCommandInfo getJobIdMonitorCommand(String jobName, String userName) {
+        return new RawCommandInfo(this.installedPath + "bjobs -J " + jobName);
+    }
+
+    @Override
     public String getScriptExtension() {
         return scriptExtension;
     }
 
-    public RawCommandInfo getSubmitCommand(String workingDirectory,String pbsFilePath) {
-          return new RawCommandInfo(this.installedPath + jMCommands.get(JobManagerCommand.SUBMISSION).trim() + " " +
+    @Override
+    public RawCommandInfo getSubmitCommand(String workingDirectory, String pbsFilePath) {
+        return new RawCommandInfo(this.installedPath + "bsub < " +
                 workingDirectory + File.separator + FilenameUtils.getName(pbsFilePath));
     }
 
-    public String getInstalledPath() {
-        return installedPath;
-    }
-
-    public void setInstalledPath(String installedPath) {
-        this.installedPath = installedPath;
-    }
-
+    @Override
     public OutputParser getParser() {
         return parser;
     }
@@ -91,27 +97,24 @@ public class SlurmJobConfiguration implements JobManagerConfiguration {
         this.parser = parser;
     }
 
-    public RawCommandInfo getUserBasedMonitorCommand(String userName) {
-        return new RawCommandInfo(this.installedPath + jMCommands.get(JobManagerCommand.JOB_MONITORING).trim() + " -u " + userName);
+    @Override
+    public String getInstalledPath() {
+        return installedPath;
     }
 
-    @Override
-    public RawCommandInfo getJobIdMonitorCommand(String jobName, String userName) {
-        return new RawCommandInfo(this.installedPath + jMCommands.get(JobManagerCommand.JOB_MONITORING).trim() + " -n " + jobName + " -u " + userName);
-    }
 
     @Override
     public String getBaseCancelCommand() {
-	    return jMCommands.get(JobManagerCommand.DELETION).trim();
+        return "bkill";
     }
 
     @Override
     public String getBaseMonitorCommand() {
-        return jMCommands.get(JobManagerCommand.JOB_MONITORING).trim();
+        return "bjobs";
     }
 
     @Override
     public String getBaseSubmitCommand() {
-        return jMCommands.get(JobManagerCommand.SUBMISSION).trim();
+        return "bsub";
     }
 }

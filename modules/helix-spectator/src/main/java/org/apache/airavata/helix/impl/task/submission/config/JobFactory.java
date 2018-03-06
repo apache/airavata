@@ -1,12 +1,10 @@
 package org.apache.airavata.helix.impl.task.submission.config;
 
-import org.apache.airavata.helix.impl.task.submission.config.imp.*;
-import org.apache.airavata.helix.impl.task.submission.config.imp.parser.*;
+import org.apache.airavata.helix.impl.task.submission.config.app.*;
+import org.apache.airavata.helix.impl.task.submission.config.app.parser.*;
 import org.apache.airavata.model.appcatalog.computeresource.*;
-import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.airavata.registry.cpi.RegistryException;
 
 public class JobFactory {
 

@@ -1,9 +1,11 @@
-package org.apache.airavata.helix.impl.task;
+package org.apache.airavata.helix.impl.task.staging;
 
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.helix.impl.task.AiravataTask;
+import org.apache.airavata.helix.impl.task.TaskOnFailException;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.task.DataStagingTaskModel;

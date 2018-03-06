@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.helix.impl.task.submission.config.imp;
+package org.apache.airavata.helix.impl.task.submission.config.app;
 
 import org.apache.airavata.helix.impl.task.submission.config.JobManagerConfiguration;
 import org.apache.airavata.helix.impl.task.submission.config.OutputParser;
@@ -28,15 +28,16 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.File;
 import java.util.Map;
 
-public class ForkJobConfiguration implements JobManagerConfiguration {
-    private final Map<JobManagerCommand, String> jobManagerCommands;
+public class SlurmJobConfiguration implements JobManagerConfiguration {
+	private final Map<JobManagerCommand, String> jMCommands;
     private String jobDescriptionTemplateName;
     private String scriptExtension;
     private String installedPath;
     private OutputParser parser;
 
-    public ForkJobConfiguration (String jobDescriptionTemplateName, String scriptExtension, String installedPath,
-                                 Map<JobManagerCommand, String> jobManagerCommands, OutputParser parser){
+    public SlurmJobConfiguration(String jobDescriptionTemplateName,
+                                 String scriptExtension, String installedPath, Map<JobManagerCommand, String>
+		                                 jobManagerCommands, OutputParser parser) {
         this.jobDescriptionTemplateName = jobDescriptionTemplateName;
         this.scriptExtension = scriptExtension;
         this.parser = parser;
@@ -46,68 +47,71 @@ public class ForkJobConfiguration implements JobManagerConfiguration {
         } else {
             this.installedPath = installedPath + "/";
         }
-        this.jobManagerCommands = jobManagerCommands;
+	    this.jMCommands = jobManagerCommands;
     }
 
-    @Override
     public RawCommandInfo getCancelCommand(String jobID) {
-        return new RawCommandInfo(this.installedPath + jobManagerCommands.get(JobManagerCommand.DELETION).trim() + " " +
-                jobID);
+        return new RawCommandInfo(this.installedPath + jMCommands.get(JobManagerCommand.DELETION).trim() + " " + jobID);
     }
 
-    @Override
     public String getJobDescriptionTemplateName() {
         return jobDescriptionTemplateName;
     }
 
-    @Override
+    public void setJobDescriptionTemplateName(String jobDescriptionTemplateName) {
+        this.jobDescriptionTemplateName = jobDescriptionTemplateName;
+    }
+
     public RawCommandInfo getMonitorCommand(String jobID) {
-        return null;
+        return new RawCommandInfo(this.installedPath + jMCommands.get(JobManagerCommand.JOB_MONITORING).trim() + " -j " + jobID);
     }
 
-    @Override
-    public RawCommandInfo getUserBasedMonitorCommand(String userName) {
-        return null;
-    }
-
-    @Override
-    public RawCommandInfo getJobIdMonitorCommand(String jobName, String userName) {
-        return null;
-    }
-
-    @Override
     public String getScriptExtension() {
         return scriptExtension;
     }
 
-    @Override
-    public RawCommandInfo getSubmitCommand(String workingDirectory, String forkFilePath) {
-        return new RawCommandInfo(this.installedPath + jobManagerCommands.get(JobManagerCommand.SUBMISSION).trim() + " " +
-                workingDirectory + File.separator + FilenameUtils.getName(forkFilePath));
+    public RawCommandInfo getSubmitCommand(String workingDirectory,String pbsFilePath) {
+          return new RawCommandInfo(this.installedPath + jMCommands.get(JobManagerCommand.SUBMISSION).trim() + " " +
+                workingDirectory + File.separator + FilenameUtils.getName(pbsFilePath));
     }
 
-    @Override
-    public OutputParser getParser() {
-        return parser;
-    }
-
-    @Override
     public String getInstalledPath() {
         return installedPath;
     }
 
+    public void setInstalledPath(String installedPath) {
+        this.installedPath = installedPath;
+    }
+
+    public OutputParser getParser() {
+        return parser;
+    }
+
+    public void setParser(OutputParser parser) {
+        this.parser = parser;
+    }
+
+    public RawCommandInfo getUserBasedMonitorCommand(String userName) {
+        return new RawCommandInfo(this.installedPath + jMCommands.get(JobManagerCommand.JOB_MONITORING).trim() + " -u " + userName);
+    }
+
+    @Override
+    public RawCommandInfo getJobIdMonitorCommand(String jobName, String userName) {
+        return new RawCommandInfo(this.installedPath + jMCommands.get(JobManagerCommand.JOB_MONITORING).trim() + " -n " + jobName + " -u " + userName);
+    }
+
     @Override
     public String getBaseCancelCommand() {
-        return null;
+	    return jMCommands.get(JobManagerCommand.DELETION).trim();
     }
 
     @Override
     public String getBaseMonitorCommand() {
-        return null;
+        return jMCommands.get(JobManagerCommand.JOB_MONITORING).trim();
     }
 
     @Override
     public String getBaseSubmitCommand() {
-        return null;
+        return jMCommands.get(JobManagerCommand.SUBMISSION).trim();
     }
 }

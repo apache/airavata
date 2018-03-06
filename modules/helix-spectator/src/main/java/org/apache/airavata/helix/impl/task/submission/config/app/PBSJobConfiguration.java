@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.helix.impl.task.submission.config.imp;
+package org.apache.airavata.helix.impl.task.submission.config.app;
 
 import org.apache.airavata.helix.impl.task.submission.config.JobManagerConfiguration;
 import org.apache.airavata.helix.impl.task.submission.config.OutputParser;

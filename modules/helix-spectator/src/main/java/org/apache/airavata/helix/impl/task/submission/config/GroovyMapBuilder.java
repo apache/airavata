@@ -1,4 +1,4 @@
-package org.apache.airavata.helix.impl.task.submission;
+package org.apache.airavata.helix.impl.task.submission.config;
 
 import groovy.text.GStringTemplateEngine;
 import groovy.text.TemplateEngine;

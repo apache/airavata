@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.helix.impl.task.submission.config.imp.parser;
+package org.apache.airavata.helix.impl.task.submission.config.app.parser;
 
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.helix.impl.task.submission.config.OutputParser;

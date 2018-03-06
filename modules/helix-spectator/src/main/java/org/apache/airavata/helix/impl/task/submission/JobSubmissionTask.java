@@ -1,4 +1,4 @@
-package org.apache.airavata.helix.impl.task.submission.task;
+package org.apache.airavata.helix.impl.task.submission;
 
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.CommandOutput;
@@ -7,20 +7,11 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.impl.task.AiravataTask;
-import org.apache.airavata.helix.impl.task.submission.GroovyMapData;
+import org.apache.airavata.helix.impl.task.submission.config.GroovyMapData;
 import org.apache.airavata.helix.impl.task.submission.config.JobFactory;
 import org.apache.airavata.helix.impl.task.submission.config.JobManagerConfiguration;
 import org.apache.airavata.helix.impl.task.submission.config.RawCommandInfo;
 import org.apache.airavata.messaging.core.MessageContext;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
-import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
@@ -36,7 +27,6 @@ import org.apache.helix.HelixManager;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.ZooDefs;
 
 import java.io.File;
 import java.security.SecureRandom;
