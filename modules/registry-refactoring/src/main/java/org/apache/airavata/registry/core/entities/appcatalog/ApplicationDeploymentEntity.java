@@ -106,19 +106,19 @@ public class ApplicationDeploymentEntity implements Serializable {
     public ApplicationDeploymentEntity() {
     }
 
-    public String getDeploymentId() {
+    public String getAppDeploymentId() {
         return appDeploymentId;
     }
 
-    public void setDeploymentId(String appDeploymentId) {
+    public void setAppDeploymentId(String appDeploymentId) {
         this.appDeploymentId = appDeploymentId;
     }
 
-    public String getApplicationDesc() {
+    public String getAppDeploymentDescription() {
         return appDeploymentDescription;
     }
 
-    public void setApplicationDesc(String appDeploymentDescription) {
+    public void setAppDeploymentDescription(String appDeploymentDescription) {
         this.appDeploymentDescription = appDeploymentDescription;
     }
 
@@ -178,11 +178,11 @@ public class ApplicationDeploymentEntity implements Serializable {
         this.computeHostId = computeHostId;
     }
 
-    public String getApplicationModuleId() {
+    public String getAppModuleId() {
         return appModuleId;
     }
 
-    public void setApplicationModuleId(String appModuleId) {
+    public void setAppModuleId(String appModuleId) {
         this.appModuleId = appModuleId;
     }
 
