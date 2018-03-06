@@ -23,7 +23,7 @@ public class InputDataStagingTask extends DataStagingTask {
     private static final Logger logger = LogManager.getLogger(InputDataStagingTask.class);
 
     @Override
-    public TaskResult onRun(TaskHelper taskHelper) {
+    public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
         logger.info("Starting Input Data Staging Task " + getTaskId());
 
         saveAndPublishProcessStatus(ProcessState.INPUT_DATA_STAGING);
@@ -110,7 +110,7 @@ public class InputDataStagingTask extends DataStagingTask {
     }
 
     @Override
-    public void onCancel() {
+    public void onCancel(TaskContext taskContext) {
 
     }
 }

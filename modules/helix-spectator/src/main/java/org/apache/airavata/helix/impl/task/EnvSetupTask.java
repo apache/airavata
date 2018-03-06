@@ -16,7 +16,7 @@ public class EnvSetupTask extends AiravataTask {
     private static final Logger logger = LogManager.getLogger(EnvSetupTask.class);
 
     @Override
-    public TaskResult onRun(TaskHelper taskHelper) {
+    public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
         try {
 
             saveAndPublishProcessStatus(ProcessState.CONFIGURING_WORKSPACE);
@@ -32,6 +32,7 @@ public class EnvSetupTask extends AiravataTask {
             adaptor.createDirectory(getTaskContext().getWorkingDir());
             publishTaskState(TaskState.COMPLETED);
             return onSuccess("Envi setup task successfully completed " + getTaskId());
+
         } catch (Exception e) {
             try {
                 publishTaskState(TaskState.FAILED);
@@ -45,7 +46,7 @@ public class EnvSetupTask extends AiravataTask {
     }
 
     @Override
-    public void onCancel() {
+    public void onCancel(TaskContext taskContext) {
 
     }
 

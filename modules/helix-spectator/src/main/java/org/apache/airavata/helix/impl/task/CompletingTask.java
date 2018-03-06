@@ -13,14 +13,15 @@ public class CompletingTask extends AiravataTask {
     private static final Logger logger = LogManager.getLogger(CompletingTask.class);
 
     @Override
-    public TaskResult onRun(TaskHelper helper) {
+    public TaskResult onRun(TaskHelper helper, TaskContext taskContext) {
+        logger.info("Starting completing task for task " + getTaskId() + ", experiment id " + getExperimentId());
         logger.info("Process " + getProcessId() + " successfully completed");
         saveAndPublishProcessStatus(ProcessState.COMPLETED);
         return onSuccess("Process " + getProcessId() + " successfully completed");
     }
 
     @Override
-    public void onCancel() {
+    public void onCancel(TaskContext taskContext) {
 
     }
 }

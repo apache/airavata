@@ -142,6 +142,7 @@ public class HelixParticipant <T extends AbstractTask> implements Runnable {
 
             // register task model
             machineEngine.registerStateModelFactory("Task", new TaskStateModelFactory(zkHelixManager, getTaskFactory()));
+
             logger.debug("Participant: " + participantName + ", registered state model factories.");
 
             zkHelixManager.connect();

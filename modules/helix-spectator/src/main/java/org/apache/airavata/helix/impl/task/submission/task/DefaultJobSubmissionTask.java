@@ -3,6 +3,7 @@ package org.apache.airavata.helix.impl.task.submission.task;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.JobSubmissionOutput;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.submission.GroovyMapBuilder;
 import org.apache.airavata.helix.impl.task.submission.GroovyMapData;
 import org.apache.airavata.helix.impl.task.submission.config.RawCommandInfo;
@@ -29,7 +30,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
     public static final String DEFAULT_JOB_ID = "DEFAULT_JOB_ID";
 
     @Override
-    public TaskResult onRun(TaskHelper taskHelper) {
+    public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
 
         try {
             saveAndPublishProcessStatus(ProcessState.EXECUTING);
@@ -227,7 +228,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
     }
 
     @Override
-    public void onCancel() {
+    public void onCancel(TaskContext taskContext) {
 
     }
 }

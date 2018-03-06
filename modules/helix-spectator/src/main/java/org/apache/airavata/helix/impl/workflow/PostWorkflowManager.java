@@ -126,7 +126,7 @@ public class PostWorkflowManager {
                 String status = getStatusByJobId(jobStatusResult.getJobId());
 
                 logger.info("Starting the post workflow for job id : " + jobStatusResult.getJobId() + " with process id "
-                        + processId + ", gateway " + gateway + " and status " + status);
+                        + processId + ", gateway " + gateway + " and status " + jobStatusResult.getState().name());
 
                 // TODO get cluster lock before that
                 if ("cancelled".equals(status)) {
@@ -181,6 +181,9 @@ public class PostWorkflowManager {
                         completingTask.setExperimentId(experimentModel.getExperimentId());
                         completingTask.setProcessId(processModel.getProcessId());
                         completingTask.setTaskId("Completing-Task");
+                        if (allTasks.size() > 0) {
+                            allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(completingTask.getTaskId(), completingTask));
+                        }
                         allTasks.add(completingTask);
 
                         WorkflowManager workflowManager = new WorkflowManager("AiravataDemoCluster",

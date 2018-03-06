@@ -27,9 +27,9 @@ public class OutputDataStagingTask extends DataStagingTask {
     private static final Logger logger = LogManager.getLogger(OutputDataStagingTask.class);
 
     @Override
-    public TaskResult onRun(TaskHelper taskHelper) {
+    public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
 
-        logger.info("Starting output data staging task " + getTaskId());
+        logger.info("Starting output data staging task " + getTaskId() + " in experiment " + getExperimentId());
         saveAndPublishProcessStatus(ProcessState.OUTPUT_DATA_STAGING);
 
         try {
@@ -50,7 +50,6 @@ public class OutputDataStagingTask extends DataStagingTask {
                 throw new TaskOnFailException(message, true, null);
             }
 
-            // Fetch and validate storage resource
             // Fetch and validate storage resource
             StorageResourceDescription storageResource = getStorageResource();
 
@@ -212,7 +211,7 @@ public class OutputDataStagingTask extends DataStagingTask {
     }
 
     @Override
-    public void onCancel() {
+    public void onCancel(TaskContext taskContext) {
 
     }
 }
