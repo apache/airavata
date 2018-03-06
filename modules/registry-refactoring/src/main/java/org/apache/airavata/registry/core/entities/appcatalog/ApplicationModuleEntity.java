@@ -61,11 +61,11 @@ public class ApplicationModuleEntity implements Serializable {
 	public ApplicationModuleEntity() {
 	}
 
-	public String getModuleId() {
+	public String getAppModuleId() {
 		return appModuleId;
 	}
 
-	public void setModuleId(String appModuleId) {
+	public void setAppModuleId(String appModuleId) {
 		this.appModuleId = appModuleId;
 	}
 
@@ -85,27 +85,27 @@ public class ApplicationModuleEntity implements Serializable {
 		this.gatewayId = gatewayId;
 	}
 
-	public String getModuleDesc() {
+	public String getAppModuleDescription() {
 		return appModuleDescription;
 	}
 
-	public void setModuleDesc(String appModuleDescription) {
+	public void setAppModuleDescription(String appModuleDescription) {
 		this.appModuleDescription = appModuleDescription;
 	}
 
-	public String getModuleName() {
+	public String getAppModuleName() {
 		return appModuleName;
 	}
 
-	public void setModuleName(String appModuleName) {
+	public void setAppModuleName(String appModuleName) {
 		this.appModuleName = appModuleName;
 	}
 
-	public String getModuleVersion() {
+	public String getAppModuleVersion() {
 		return appModuleVersion;
 	}
 
-	public void setModuleVersion(String appModuleVersion) {
+	public void setAppModuleVersion(String appModuleVersion) {
 		this.appModuleVersion = appModuleVersion;
 	}
 
