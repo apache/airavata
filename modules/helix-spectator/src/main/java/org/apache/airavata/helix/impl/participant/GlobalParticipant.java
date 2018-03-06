@@ -15,13 +15,13 @@ import java.util.Map;
 public class GlobalParticipant extends HelixParticipant {
 
     private String[] taskClasses = {
-        "org.apache.airavata.helix.impl.task.EnvSetupTask",
-        "org.apache.airavata.helix.impl.task.InputDataStagingTask",
-        "org.apache.airavata.helix.impl.task.OutputDataStagingTask",
-        "org.apache.airavata.helix.impl.task.CompletingTask",
-        "org.apache.airavata.helix.impl.task.submission.task.ForkJobSubmissionTask",
-        "org.apache.airavata.helix.impl.task.submission.task.DefaultJobSubmissionTask",
-        "org.apache.airavata.helix.impl.task.submission.task.LocalJobSubmissionTask"
+        "org.apache.airavata.helix.impl.task.env.EnvSetupTask",
+        "org.apache.airavata.helix.impl.task.staging.InputDataStagingTask",
+        "org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask",
+        "org.apache.airavata.helix.impl.task.completing.CompletingTask",
+        "org.apache.airavata.helix.impl.task.submission.ForkJobSubmissionTask",
+        "org.apache.airavata.helix.impl.task.submission.DefaultJobSubmissionTask",
+        "org.apache.airavata.helix.impl.task.submission.LocalJobSubmissionTask"
     };
 
     public Map<String, TaskFactory> getTaskFactory() {

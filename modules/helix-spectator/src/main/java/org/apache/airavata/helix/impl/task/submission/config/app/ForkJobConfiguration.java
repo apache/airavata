@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.helix.impl.task.submission.config.imp;
+package org.apache.airavata.helix.impl.task.submission.config.app;
 
 import org.apache.airavata.helix.impl.task.submission.config.JobManagerConfiguration;
 import org.apache.airavata.helix.impl.task.submission.config.OutputParser;
@@ -28,90 +28,86 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.File;
 import java.util.Map;
 
-public class UGEJobConfiguration implements JobManagerConfiguration {
-	private final Map<JobManagerCommand, String> jobManagerCommands;
+public class ForkJobConfiguration implements JobManagerConfiguration {
+    private final Map<JobManagerCommand, String> jobManagerCommands;
     private String jobDescriptionTemplateName;
     private String scriptExtension;
     private String installedPath;
     private OutputParser parser;
 
-    public UGEJobConfiguration(String jobDescriptionTemplateName,
-                               String scriptExtension, String installedPath, Map<JobManagerCommand, String>
-		                               jobManagerCommands, OutputParser parser) {
+    public ForkJobConfiguration (String jobDescriptionTemplateName, String scriptExtension, String installedPath,
+                                 Map<JobManagerCommand, String> jobManagerCommands, OutputParser parser){
         this.jobDescriptionTemplateName = jobDescriptionTemplateName;
         this.scriptExtension = scriptExtension;
         this.parser = parser;
+	    installedPath = installedPath.trim();
         if (installedPath.endsWith("/")) {
             this.installedPath = installedPath;
         } else {
             this.installedPath = installedPath + "/";
         }
-	    this.jobManagerCommands = jobManagerCommands;
+        this.jobManagerCommands = jobManagerCommands;
     }
 
+    @Override
     public RawCommandInfo getCancelCommand(String jobID) {
-        return new RawCommandInfo(this.installedPath + "qdel " + jobID);
+        return new RawCommandInfo(this.installedPath + jobManagerCommands.get(JobManagerCommand.DELETION).trim() + " " +
+                jobID);
     }
 
+    @Override
     public String getJobDescriptionTemplateName() {
         return jobDescriptionTemplateName;
     }
 
-    public void setJobDescriptionTemplateName(String jobDescriptionTemplateName) {
-        this.jobDescriptionTemplateName = jobDescriptionTemplateName;
-    }
-
+    @Override
     public RawCommandInfo getMonitorCommand(String jobID) {
-        return new RawCommandInfo(this.installedPath + "qstat -j " + jobID);
+        return null;
     }
 
-    public String getScriptExtension() {
-        return scriptExtension;
-    }
-
-    public RawCommandInfo getSubmitCommand(String workingDirectory, String pbsFilePath) {
-        return new RawCommandInfo(this.installedPath + "qsub " +
-                workingDirectory + File.separator + FilenameUtils.getName(pbsFilePath));
-    }
-
-    public String getInstalledPath() {
-        return installedPath;
-    }
-
-    public void setInstalledPath(String installedPath) {
-        this.installedPath = installedPath;
-    }
-
-    public OutputParser getParser() {
-        return parser;
-    }
-
-    public void setParser(OutputParser parser) {
-        this.parser = parser;
-    }
-
+    @Override
     public RawCommandInfo getUserBasedMonitorCommand(String userName) {
-        return new RawCommandInfo(this.installedPath + "qstat -u " + userName);
+        return null;
     }
 
     @Override
     public RawCommandInfo getJobIdMonitorCommand(String jobName, String userName) {
-        // For PBS there is no option to get jobDetails by JobName, so we search with userName
-        return new RawCommandInfo(this.installedPath + "qstat -u " + userName);
+        return null;
     }
 
     @Override
-    public String  getBaseCancelCommand() {
-        return "qdel";
+    public String getScriptExtension() {
+        return scriptExtension;
     }
 
     @Override
-    public String  getBaseMonitorCommand() {
-        return "qstat";
+    public RawCommandInfo getSubmitCommand(String workingDirectory, String forkFilePath) {
+        return new RawCommandInfo(this.installedPath + jobManagerCommands.get(JobManagerCommand.SUBMISSION).trim() + " " +
+                workingDirectory + File.separator + FilenameUtils.getName(forkFilePath));
+    }
+
+    @Override
+    public OutputParser getParser() {
+        return parser;
+    }
+
+    @Override
+    public String getInstalledPath() {
+        return installedPath;
+    }
+
+    @Override
+    public String getBaseCancelCommand() {
+        return null;
+    }
+
+    @Override
+    public String getBaseMonitorCommand() {
+        return null;
     }
 
     @Override
     public String getBaseSubmitCommand() {
-        return "qsub ";
+        return null;
     }
 }

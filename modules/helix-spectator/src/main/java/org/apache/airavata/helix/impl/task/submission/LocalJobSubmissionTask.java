@@ -1,13 +1,12 @@
-package org.apache.airavata.helix.impl.task.submission.task;
+package org.apache.airavata.helix.impl.task.submission;
 
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.JobSubmissionOutput;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.helix.impl.task.TaskContext;
-import org.apache.airavata.helix.impl.task.submission.GroovyMapBuilder;
-import org.apache.airavata.helix.impl.task.submission.GroovyMapData;
-import org.apache.airavata.helix.impl.task.submission.SubmissionUtil;
-import org.apache.airavata.helix.impl.task.submission.task.JobSubmissionTask;
+import org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder;
+import org.apache.airavata.helix.impl.task.submission.config.GroovyMapData;
+import org.apache.airavata.helix.impl.task.submission.config.SubmissionUtil;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.model.job.JobModel;

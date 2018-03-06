@@ -1,4 +1,4 @@
-package org.apache.airavata.helix.impl.task.submission;
+package org.apache.airavata.helix.impl.task.submission.config;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

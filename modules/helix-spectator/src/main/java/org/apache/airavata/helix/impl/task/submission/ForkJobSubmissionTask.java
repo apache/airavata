@@ -1,21 +1,18 @@
-package org.apache.airavata.helix.impl.task.submission.task;
+package org.apache.airavata.helix.impl.task.submission;
 
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.JobSubmissionOutput;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.helix.impl.task.TaskContext;
-import org.apache.airavata.helix.impl.task.submission.GroovyMapBuilder;
-import org.apache.airavata.helix.impl.task.submission.GroovyMapData;
-import org.apache.airavata.helix.impl.task.submission.SubmissionUtil;
+import org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder;
+import org.apache.airavata.helix.impl.task.submission.config.GroovyMapData;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
-import org.apache.commons.io.FileUtils;
 import org.apache.helix.task.TaskResult;
 
-import java.io.File;
 import java.util.Arrays;
 
 @TaskDef(name = "Fork Job Submission")
