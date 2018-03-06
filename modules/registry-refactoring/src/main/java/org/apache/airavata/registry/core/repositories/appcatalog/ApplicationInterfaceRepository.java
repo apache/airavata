@@ -32,6 +32,7 @@ import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,6 +56,9 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
         String applicationInterfaceId = applicationInterfaceDescription.getApplicationInterfaceId();
         Mapper mapper = ObjectMapperSingleton.getInstance();
         ApplicationInterfaceEntity applicationInterfaceEntity = mapper.map(applicationInterfaceDescription, ApplicationInterfaceEntity.class);
+        if (!isApplicationInterfaceExists(applicationInterfaceId))
+            applicationInterfaceEntity.setCreationTime(new Timestamp(System.currentTimeMillis()));
+        applicationInterfaceEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         if (applicationInterfaceEntity.getApplicationInputs() != null) {
             applicationInterfaceEntity.getApplicationInputs().forEach(applicationInputEntity -> applicationInputEntity.setInterfaceId(applicationInterfaceId));
         }
@@ -67,17 +71,21 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
     protected String saveApplicationModuleData(
             ApplicationModule applicationModule) throws AppCatalogException {
         ApplicationModuleEntity applicationModuleEntity = saveApplicationModule(applicationModule);
-        return applicationModuleEntity.getModuleId();
+        return applicationModuleEntity.getAppModuleId();
     }
 
     protected ApplicationModuleEntity saveApplicationModule(
             ApplicationModule applicationModule) throws AppCatalogException {
+        String applicationModuleId = applicationModule.getAppModuleId();
         Mapper mapper = ObjectMapperSingleton.getInstance();
         ApplicationModuleEntity applicationModuleEntity = mapper.map(applicationModule, ApplicationModuleEntity.class);
-        if (!applicationModuleEntity.getModuleId().equals("") && !applicationModule.getAppModuleId().equals(application_interface_modelConstants.DEFAULT_ID)) {
-            applicationModuleEntity.setModuleId(applicationModule.getAppModuleId());
+        if (!isApplicationModuleExists(applicationModuleId))
+            applicationModuleEntity.setCreationTime(new Timestamp(System.currentTimeMillis()));
+        applicationModuleEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+        if (!applicationModuleEntity.getAppModuleId().equals("") && !applicationModule.getAppModuleId().equals(application_interface_modelConstants.DEFAULT_ID)) {
+            applicationModuleEntity.setAppModuleId(applicationModule.getAppModuleId());
         } else {
-            applicationModuleEntity.setModuleId(applicationModule.getAppModuleName());
+            applicationModuleEntity.setAppModuleId(applicationModule.getAppModuleName());
         }
         return execute(entityManager -> entityManager.merge(applicationModuleEntity));
     }
@@ -122,7 +130,7 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
         ApplicationModuleRepository applicationModuleRepository = new ApplicationModuleRepository();
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.ApplicationModule.APPLICATION_MODULE_ID, moduleId);
-        ApplicationModule applicationModule = (ApplicationModule) applicationModuleRepository.select(QueryConstants.FIND_APPLICATION_MODULE, -1, 0, queryParameters);
+        ApplicationModule applicationModule = applicationModuleRepository.select(QueryConstants.FIND_APPLICATION_MODULE, -1, 0, queryParameters).get(0);
         return applicationModule;
     }
 
@@ -130,7 +138,7 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
     public ApplicationInterfaceDescription getApplicationInterface(String interfaceId) throws AppCatalogException {
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.ApplicationInterface.APPLICATION_INTERFACE_ID, interfaceId);
-        ApplicationInterfaceDescription applicationInterfaceDescription = (ApplicationInterfaceDescription) select(QueryConstants.FIND_APPLICATION_INTERFACE, -1, 0, queryParameters);
+        ApplicationInterfaceDescription applicationInterfaceDescription = select(QueryConstants.FIND_APPLICATION_INTERFACE, -1, 0, queryParameters).get(0);
         return applicationInterfaceDescription;
     }
 

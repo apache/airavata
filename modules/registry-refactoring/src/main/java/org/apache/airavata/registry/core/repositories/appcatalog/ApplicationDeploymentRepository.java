@@ -30,6 +30,7 @@ import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,16 +44,24 @@ public class ApplicationDeploymentRepository extends AppCatAbstractRepository<Ap
     }
 
     protected String saveApplicationDeploymentDescriptorData(
-            ApplicationDeploymentDescription applicationDeploymentDescription) throws AppCatalogException {
-        ApplicationDeploymentEntity applicationDeploymentEntity = saveApplicationDeployment(applicationDeploymentDescription);
-        return applicationDeploymentEntity.getDeploymentId();
+            ApplicationDeploymentDescription applicationDeploymentDescription, String gatewayId) throws AppCatalogException {
+        ApplicationDeploymentEntity applicationDeploymentEntity = saveApplicationDeployment(applicationDeploymentDescription, gatewayId);
+        return applicationDeploymentEntity.getAppDeploymentId();
     }
 
     protected ApplicationDeploymentEntity saveApplicationDeployment(
-            ApplicationDeploymentDescription applicationDeploymentDescription) throws AppCatalogException {
+            ApplicationDeploymentDescription applicationDeploymentDescription, String gatewayId) throws AppCatalogException {
         String applicationDeploymentId = applicationDeploymentDescription.getAppDeploymentId();
         Mapper mapper = ObjectMapperSingleton.getInstance();
         ApplicationDeploymentEntity applicationDeploymentEntity = mapper.map(applicationDeploymentDescription, ApplicationDeploymentEntity.class);
+        if (gatewayId != null)
+            applicationDeploymentEntity.setGatewayId(gatewayId);
+        if (!isAppDeploymentExists(applicationDeploymentId))
+            applicationDeploymentEntity.setCreationTime(new Timestamp(System.currentTimeMillis()));
+        applicationDeploymentEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+        if (applicationDeploymentEntity.getModuleLoadCmds() != null) {
+            applicationDeploymentEntity.getModuleLoadCmds().forEach(moduleLoadCmdEntity -> moduleLoadCmdEntity.setAppdeploymentId(applicationDeploymentId));
+        }
         if (applicationDeploymentEntity.getPreJobCommands() != null) {
             applicationDeploymentEntity.getPreJobCommands().forEach(prejobCommandEntity -> prejobCommandEntity.setAppdeploymentId(applicationDeploymentId));
         }
@@ -73,19 +82,19 @@ public class ApplicationDeploymentRepository extends AppCatAbstractRepository<Ap
 
     @Override
     public String addApplicationDeployment(ApplicationDeploymentDescription applicationDeploymentDescription, String gatewayId) throws AppCatalogException {
-        return saveApplicationDeploymentDescriptorData(applicationDeploymentDescription);
+        return saveApplicationDeploymentDescriptorData(applicationDeploymentDescription, gatewayId);
     }
 
     @Override
     public void updateApplicationDeployment(String deploymentId, ApplicationDeploymentDescription updatedApplicationDeploymentDescription) throws AppCatalogException {
-        saveApplicationDeploymentDescriptorData(updatedApplicationDeploymentDescription);
+        saveApplicationDeploymentDescriptorData(updatedApplicationDeploymentDescription, null);
     }
 
     @Override
     public ApplicationDeploymentDescription getApplicationDeployement(String deploymentId) throws AppCatalogException {
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.ApplicationDeployment.APPLICATION_DEPLOYMENT_ID, deploymentId);
-        ApplicationDeploymentDescription applicationDeploymentDescription = (ApplicationDeploymentDescription) select(QueryConstants.FIND_APPLICATION_DEPLOYMENT, -1, 0, queryParameters);
+        ApplicationDeploymentDescription applicationDeploymentDescription = select(QueryConstants.FIND_APPLICATION_DEPLOYMENT, -1, 0, queryParameters).get(0);
         return applicationDeploymentDescription;
     }
 
