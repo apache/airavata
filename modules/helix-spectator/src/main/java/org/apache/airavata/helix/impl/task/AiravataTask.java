@@ -4,6 +4,7 @@ import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
+import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskOutPort;
 import org.apache.airavata.helix.task.api.annotation.TaskParam;
 import org.apache.airavata.messaging.core.MessageContext;
@@ -22,6 +23,7 @@ import org.apache.helix.HelixManager;
 import org.apache.helix.task.TaskResult;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -34,7 +36,6 @@ public abstract class AiravataTask extends AbstractTask {
     private ExperimentCatalog experimentCatalog;
     private Publisher statusPublisher;
     private ProcessModel processModel;
-
     private ComputeResourceDescription computeResourceDescription;
 
     private TaskContext taskContext;
@@ -52,7 +53,7 @@ public abstract class AiravataTask extends AbstractTask {
     private OutPort nextTask;
 
     protected TaskResult onSuccess(String message) {
-        String successMessage = "Task " + getTaskId() + " completed." + message != null ? " Message : " + message : "";
+        String successMessage = "Task " + getTaskId() + " completed." + (message != null ? " Message : " + message : "");
         logger.info(successMessage);
         return nextTask.invoke(new TaskResult(TaskResult.Status.COMPLETED, message));
     }
@@ -89,14 +90,14 @@ public abstract class AiravataTask extends AbstractTask {
         return new TaskResult(fatal ? TaskResult.Status.FATAL_FAILED : TaskResult.Status.FAILED, errorMessage);
     }
 
-    public void saveAndPublishProcessStatus(ProcessState state) {
+    protected void saveAndPublishProcessStatus(ProcessState state) {
         ProcessStatus processStatus = new ProcessStatus(state);
         processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         getTaskContext().setProcessStatus(processStatus);
         saveAndPublishProcessStatus();
     }
 
-    public void saveAndPublishProcessStatus() {
+    protected void saveAndPublishProcessStatus() {
         try {
             ProcessStatus status = taskContext.getProcessStatus();
             if (status.getTimeOfStateChange() == 0 || status.getTimeOfStateChange() > 0 ){
@@ -116,7 +117,7 @@ public abstract class AiravataTask extends AbstractTask {
         }
     }
 
-    public void saveAndPublishTaskStatus() {
+    protected void saveAndPublishTaskStatus() {
         try {
             TaskState state = getTaskContext().getTaskState();
             // first we save job jobModel to the registry for sa and then save the job status.
@@ -139,7 +140,7 @@ public abstract class AiravataTask extends AbstractTask {
         }
     }
 
-    public void saveExperimentError(ErrorModel errorModel) {
+    protected void saveExperimentError(ErrorModel errorModel) {
         try {
             errorModel.setErrorId(AiravataUtils.getId("EXP_ERROR"));
             getExperimentCatalog().add(ExpCatChildDataType.EXPERIMENT_ERROR, errorModel, experimentId);
@@ -149,7 +150,7 @@ public abstract class AiravataTask extends AbstractTask {
         }
     }
 
-    public void saveProcessError(ErrorModel errorModel) {
+    protected void saveProcessError(ErrorModel errorModel) {
         try {
             errorModel.setErrorId(AiravataUtils.getId("PROCESS_ERROR"));
             experimentCatalog.add(ExpCatChildDataType.PROCESS_ERROR, errorModel, getProcessId());
@@ -160,7 +161,7 @@ public abstract class AiravataTask extends AbstractTask {
         }
     }
 
-    public void saveTaskError(ErrorModel errorModel) throws Exception {
+    protected void saveTaskError(ErrorModel errorModel) throws Exception {
         try {
             errorModel.setErrorId(AiravataUtils.getId("TASK_ERROR"));
             getExperimentCatalog().add(ExpCatChildDataType.TASK_ERROR, errorModel, getTaskId());
@@ -171,7 +172,7 @@ public abstract class AiravataTask extends AbstractTask {
         }
     }
 
-    public Publisher getStatusPublisher() throws AiravataException {
+    protected Publisher getStatusPublisher() throws AiravataException {
         if (statusPublisher == null) {
             synchronized (RabbitMQPublisher.class) {
                 if (statusPublisher == null) {
@@ -183,10 +184,47 @@ public abstract class AiravataTask extends AbstractTask {
     }
 
     @Override
+    public TaskResult onRun(TaskHelper helper) {
+
+        try {
+            MDC.put("experiment", getExperimentId());
+            MDC.put("process", getProcessId());
+            MDC.put("gateway", getGatewayId());
+            MDC.put("task", getTaskId());
+            return onRun(helper, getTaskContext());
+        } finally {
+            MDC.clear();
+        }
+    }
+
+    public abstract TaskResult onRun(TaskHelper helper, TaskContext taskContext);
+
+    @Override
+    public void onCancel() {
+        try {
+            MDC.put("experiment", getExperimentId());
+            MDC.put("process", getProcessId());
+            MDC.put("gateway", getGatewayId());
+            MDC.put("task", getTaskId());
+            onCancel(getTaskContext());
+        } finally {
+            MDC.clear();
+        }
+    }
+
+    public abstract void onCancel(TaskContext taskContext);
+
+
+    @Override
     public void init(HelixManager manager, String workflowName, String jobName, String taskName) {
         super.init(manager, workflowName, jobName, taskName);
+        MDC.put("experiment", getExperimentId());
+        MDC.put("process", getProcessId());
+        MDC.put("gateway", getGatewayId());
+        MDC.put("task", getTaskId());
         try {
             appCatalog = RegistryFactory.getAppCatalog();
+            //logger.info("Gateway id is " + getGatewayId());
             experimentCatalog = RegistryFactory.getExperimentCatalog(getGatewayId());
             processModel = (ProcessModel) experimentCatalog.get(ExperimentCatalogModelType.PROCESS, processId);
 
@@ -208,12 +246,12 @@ public abstract class AiravataTask extends AbstractTask {
                                     .getStoragePreference(gatewayId, processModel.getStorageResourceId()));
 
             this.taskContext = taskContextBuilder.build();
-        } catch (AppCatalogException e) {
-            e.printStackTrace();
-        } catch (RegistryException e) {
-            e.printStackTrace();
+            logger.info("Task " + taskName + " intitialized");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error occurred while initializing the task " + getTaskId() + " of experiment " + getExperimentId(), e);
+           throw new RuntimeException("Error occurred while initializing the task " + getTaskId() + " of experiment " + getExperimentId(), e);
+        } finally {
+            MDC.clear();
         }
     }
 
@@ -236,20 +274,15 @@ public abstract class AiravataTask extends AbstractTask {
         msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
     }
 
-    //////////////////////////
-
-    public ComputeResourceDescription getComputeResourceDescription() {
+    protected ComputeResourceDescription getComputeResourceDescription() {
         return computeResourceDescription;
     }
 
-    ////////////////////////
-
-
-    public TaskContext getTaskContext() {
+    protected TaskContext getTaskContext() {
         return taskContext;
     }
 
-    public ExperimentCatalog getExperimentCatalog() {
+    protected ExperimentCatalog getExperimentCatalog() {
         return experimentCatalog;
     }
 
@@ -261,7 +294,7 @@ public abstract class AiravataTask extends AbstractTask {
         this.processId = processId;
     }
 
-    public String getExperimentId() {
+    protected String getExperimentId() {
         return experimentId;
     }
 
@@ -269,7 +302,7 @@ public abstract class AiravataTask extends AbstractTask {
         this.experimentId = experimentId;
     }
 
-    public String getGatewayId() {
+    protected String getGatewayId() {
         return gatewayId;
     }
 
@@ -277,7 +310,7 @@ public abstract class AiravataTask extends AbstractTask {
         this.gatewayId = gatewayId;
     }
 
-    public ProcessModel getProcessModel() {
+    protected ProcessModel getProcessModel() {
         return processModel;
     }
 

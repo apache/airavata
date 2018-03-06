@@ -3,6 +3,7 @@ package org.apache.airavata.helix.impl.task.submission.task;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.JobSubmissionOutput;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.submission.GroovyMapBuilder;
 import org.apache.airavata.helix.impl.task.submission.GroovyMapData;
 import org.apache.airavata.helix.impl.task.submission.SubmissionUtil;
@@ -21,7 +22,7 @@ import java.util.Arrays;
 public class ForkJobSubmissionTask extends JobSubmissionTask {
 
     @Override
-    public TaskResult onRun(TaskHelper taskHelper) {
+    public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
 
         try {
             GroovyMapData mapData = new GroovyMapBuilder(getTaskContext()).build();
@@ -76,7 +77,7 @@ public class ForkJobSubmissionTask extends JobSubmissionTask {
     }
 
     @Override
-    public void onCancel() {
+    public void onCancel(TaskContext taskContext) {
 
     }
 }
