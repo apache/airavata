@@ -447,14 +447,14 @@ public class GroovyMapData {
             String error = "Template file '" + templateName + "' not found";
             throw new Exception(error);
         }
-        File template = new File(templateUrl.getPath());
+        //File template = new File(templateUrl.getPath());
         TemplateEngine engine = new GStringTemplateEngine();
         Writable make;
         try {
 
-            make = engine.createTemplate(template).make(toImmutableMap());
+            make = engine.createTemplate(templateUrl).make(toImmutableMap());
         } catch (Exception e) {
-            throw new Exception("Error while generating script using groovy map");
+            throw new Exception("Error while generating script using groovy map for template " + templateUrl.getPath(), e);
         }
 
         if (logger.isTraceEnabled()) {

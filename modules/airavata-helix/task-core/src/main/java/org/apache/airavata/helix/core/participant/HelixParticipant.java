@@ -20,6 +20,7 @@ import org.apache.helix.task.TaskStateModelFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -43,12 +44,16 @@ public class HelixParticipant <T extends AbstractTask> implements Runnable {
     private PropertyResolver propertyResolver;
     private Class<T> taskClass;
 
-    public HelixParticipant(String propertyFile, Class<T> taskClass, String taskTypeName) throws IOException {
+    public HelixParticipant(String propertyFile, Class<T> taskClass, String taskTypeName, boolean readPropertyFromFile) throws IOException {
 
         logger.info("Initializing Participant Node");
 
         this.propertyResolver = new PropertyResolver();
-        propertyResolver.loadInputStream(this.getClass().getClassLoader().getResourceAsStream(propertyFile));
+        if (readPropertyFromFile) {
+            propertyResolver.loadFromFile(new File(propertyFile));
+        } else {
+            propertyResolver.loadInputStream(this.getClass().getClassLoader().getResourceAsStream(propertyFile));
+        }
 
         this.zkAddress = propertyResolver.get("zookeeper.connection.url");
         this.clusterName = propertyResolver.get("helix.cluster.name");

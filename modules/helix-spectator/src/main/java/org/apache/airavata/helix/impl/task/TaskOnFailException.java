@@ -2,7 +2,6 @@ package org.apache.airavata.helix.impl.task;
 
 public class TaskOnFailException extends Exception {
 
-
     private String reason;
     private boolean critical;
     private Throwable e;

@@ -1,10 +1,11 @@
-package org.apache.airavata.helix.core.controller;
+package org.apache.airavata.helix.impl.controller;
 
 import org.apache.airavata.helix.core.util.PropertyResolver;
 import org.apache.helix.controller.HelixControllerMain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
@@ -26,10 +27,14 @@ public class HelixController implements Runnable {
     private CountDownLatch startLatch = new CountDownLatch(1);
     private CountDownLatch stopLatch = new CountDownLatch(1);
 
-    public HelixController(String propertyFile) throws IOException {
+    public HelixController(String propertyFile, boolean readPropertyFromFile) throws IOException {
 
         PropertyResolver propertyResolver = new PropertyResolver();
-        propertyResolver.loadInputStream(this.getClass().getClassLoader().getResourceAsStream(propertyFile));
+        if (readPropertyFromFile) {
+            propertyResolver.loadFromFile(new File(propertyFile));
+        } else {
+            propertyResolver.loadInputStream(this.getClass().getClassLoader().getResourceAsStream(propertyFile));
+        }
 
         this.clusterName = propertyResolver.get("helix.cluster.name");
         this.controllerName = propertyResolver.get("helix.controller.name");
@@ -38,6 +43,9 @@ public class HelixController implements Runnable {
 
     public void run() {
         try {
+            logger.info("Connection to helix cluster : " + clusterName + " with name : " + controllerName);
+            logger.info("Zookeeper connection string " + zkAddress);
+
             zkHelixManager = HelixControllerMain.startHelixController(zkAddress, clusterName,
                     controllerName, HelixControllerMain.STANDALONE);
             startLatch.countDown();
@@ -82,10 +90,32 @@ public class HelixController implements Runnable {
 
     public static void main(String args[]) {
         try {
-            HelixController helixController = new HelixController("application.properties");
+
+            logger.info("Starting helix controller");
+            String confDir = null;
+            if (args != null) {
+                for (String arg : args) {
+                    if (arg.startsWith("--confDir=")) {
+                        confDir = arg.substring("--confDir=".length());
+                    }
+                }
+            }
+
+            String propertiesFile = "application.properties";
+            boolean readPropertyFromFile = false;
+
+            if (confDir != null && !confDir.isEmpty()) {
+                propertiesFile = confDir.endsWith(File.separator)? confDir + propertiesFile : confDir + File.separator + propertiesFile;
+                readPropertyFromFile = true;
+            }
+
+            logger.info("Using configuration file " + propertiesFile);
+
+            HelixController helixController = new HelixController(propertiesFile, readPropertyFromFile);
             helixController.start();
+
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Failed to start the helix controller", e);
         }
     }
 }

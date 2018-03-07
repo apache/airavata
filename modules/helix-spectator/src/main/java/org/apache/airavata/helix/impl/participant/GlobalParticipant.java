@@ -7,12 +7,17 @@ import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.helix.task.Task;
 import org.apache.helix.task.TaskCallbackContext;
 import org.apache.helix.task.TaskFactory;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class GlobalParticipant extends HelixParticipant {
+
+    private static final Logger logger = LogManager.getLogger(GlobalParticipant.class);
 
     private String[] taskClasses = {
         "org.apache.airavata.helix.impl.task.env.EnvSetupTask",
@@ -52,17 +57,35 @@ public class GlobalParticipant extends HelixParticipant {
                 e.printStackTrace();
             }
         }
-
-
         return taskRegistry;
     }
 
-    public GlobalParticipant(String propertyFile, Class taskClass, String taskTypeName) throws IOException {
-        super(propertyFile, taskClass, taskTypeName);
+    public GlobalParticipant(String propertyFile, Class taskClass, String taskTypeName, boolean readPropertyFromFile) throws IOException {
+        super(propertyFile, taskClass, taskTypeName, readPropertyFromFile);
     }
 
     public static void main(String args[]) throws IOException {
-        GlobalParticipant participant = new GlobalParticipant("application.properties", null, null);
+
+        String confDir = null;
+        if (args != null) {
+            for (String arg : args) {
+                if (arg.startsWith("--confDir=")) {
+                    confDir = arg.substring("--confDir=".length());
+                }
+            }
+        }
+
+        String propertiesFile = "application.properties";
+        boolean readPropertyFromFile = false;
+
+        if (confDir != null && !confDir.isEmpty()) {
+            propertiesFile = confDir.endsWith(File.separator)? confDir + propertiesFile : confDir + File.separator + propertiesFile;
+            readPropertyFromFile = true;
+        }
+
+        logger.info("Using configuration file " + propertiesFile);
+
+        GlobalParticipant participant = new GlobalParticipant(propertiesFile, null, null, readPropertyFromFile);
         Thread t = new Thread(participant);
         t.start();
     }
