@@ -46,58 +46,62 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
     }
 
     protected String saveApplicationInterfaceDescriptorData(
-            ApplicationInterfaceDescription applicationInterfaceDescription) throws AppCatalogException {
-        ApplicationInterfaceEntity applicationInterfaceEntity = saveApplicationInterface(applicationInterfaceDescription);
-        return applicationInterfaceEntity.getInterfaceId();
+            ApplicationInterfaceDescription applicationInterfaceDescription, String gatewayId) throws AppCatalogException {
+        ApplicationInterfaceEntity applicationInterfaceEntity = saveApplicationInterface(applicationInterfaceDescription, gatewayId);
+        return applicationInterfaceEntity.getApplicationInterfaceId();
     }
 
     protected ApplicationInterfaceEntity saveApplicationInterface(
-            ApplicationInterfaceDescription applicationInterfaceDescription) throws AppCatalogException {
+            ApplicationInterfaceDescription applicationInterfaceDescription, String gatewayId) throws AppCatalogException {
         String applicationInterfaceId = applicationInterfaceDescription.getApplicationInterfaceId();
         Mapper mapper = ObjectMapperSingleton.getInstance();
         ApplicationInterfaceEntity applicationInterfaceEntity = mapper.map(applicationInterfaceDescription, ApplicationInterfaceEntity.class);
-        if (!isApplicationInterfaceExists(applicationInterfaceId))
-            applicationInterfaceEntity.setCreationTime(new Timestamp(System.currentTimeMillis()));
-        applicationInterfaceEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+        if (gatewayId != null)
+            applicationInterfaceEntity.setGatewayId(gatewayId);
         if (applicationInterfaceEntity.getApplicationInputs() != null) {
             applicationInterfaceEntity.getApplicationInputs().forEach(applicationInputEntity -> applicationInputEntity.setInterfaceId(applicationInterfaceId));
         }
         if (applicationInterfaceEntity.getApplicationOutputs() != null) {
             applicationInterfaceEntity.getApplicationOutputs().forEach(applicationOutputEntity -> applicationOutputEntity.setInterfaceId(applicationInterfaceId));
         }
+        if (!isApplicationInterfaceExists(applicationInterfaceId))
+            applicationInterfaceEntity.setCreationTime(new Timestamp(System.currentTimeMillis()));
+        applicationInterfaceEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         return execute(entityManager -> entityManager.merge(applicationInterfaceEntity));
     }
 
     protected String saveApplicationModuleData(
-            ApplicationModule applicationModule) throws AppCatalogException {
-        ApplicationModuleEntity applicationModuleEntity = saveApplicationModule(applicationModule);
+            ApplicationModule applicationModule, String gatewayId) throws AppCatalogException {
+        ApplicationModuleEntity applicationModuleEntity = saveApplicationModule(applicationModule, gatewayId);
         return applicationModuleEntity.getAppModuleId();
     }
 
     protected ApplicationModuleEntity saveApplicationModule(
-            ApplicationModule applicationModule) throws AppCatalogException {
+            ApplicationModule applicationModule, String gatewayId) throws AppCatalogException {
         String applicationModuleId = applicationModule.getAppModuleId();
         Mapper mapper = ObjectMapperSingleton.getInstance();
         ApplicationModuleEntity applicationModuleEntity = mapper.map(applicationModule, ApplicationModuleEntity.class);
-        if (!isApplicationModuleExists(applicationModuleId))
-            applicationModuleEntity.setCreationTime(new Timestamp(System.currentTimeMillis()));
-        applicationModuleEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+        if (gatewayId != null)
+            applicationModuleEntity.setGatewayId(gatewayId);
         if (!applicationModuleEntity.getAppModuleId().equals("") && !applicationModule.getAppModuleId().equals(application_interface_modelConstants.DEFAULT_ID)) {
             applicationModuleEntity.setAppModuleId(applicationModule.getAppModuleId());
         } else {
             applicationModuleEntity.setAppModuleId(applicationModule.getAppModuleName());
         }
+        if (!isApplicationModuleExists(applicationModuleId))
+            applicationModuleEntity.setCreationTime(new Timestamp(System.currentTimeMillis()));
+        applicationModuleEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         return execute(entityManager -> entityManager.merge(applicationModuleEntity));
     }
 
     @Override
     public String addApplicationModule(ApplicationModule applicationModule, String gatewayId) throws AppCatalogException {
-        return saveApplicationModuleData(applicationModule);
+        return saveApplicationModuleData(applicationModule, gatewayId);
     }
 
     @Override
     public String addApplicationInterface(ApplicationInterfaceDescription applicationInterfaceDescription, String gatewayId) throws AppCatalogException {
-        return saveApplicationInterfaceDescriptorData(applicationInterfaceDescription);
+        return saveApplicationInterfaceDescriptorData(applicationInterfaceDescription, gatewayId);
     }
 
     @Override
@@ -117,12 +121,12 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
 
     @Override
     public void updateApplicationModule(String moduleId, ApplicationModule updatedApplicationModule) throws AppCatalogException {
-        saveApplicationModuleData(updatedApplicationModule);
+        saveApplicationModuleData(updatedApplicationModule, null);
     }
 
     @Override
     public void updateApplicationInterface(String interfaceId, ApplicationInterfaceDescription updatedApplicationInterfaceDescription) throws AppCatalogException {
-        saveApplicationInterfaceDescriptorData(updatedApplicationInterfaceDescription);
+        saveApplicationInterfaceDescriptorData(updatedApplicationInterfaceDescription, null);
     }
 
     @Override
