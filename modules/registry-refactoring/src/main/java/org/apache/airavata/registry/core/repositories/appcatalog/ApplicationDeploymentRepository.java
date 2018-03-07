@@ -56,9 +56,6 @@ public class ApplicationDeploymentRepository extends AppCatAbstractRepository<Ap
         ApplicationDeploymentEntity applicationDeploymentEntity = mapper.map(applicationDeploymentDescription, ApplicationDeploymentEntity.class);
         if (gatewayId != null)
             applicationDeploymentEntity.setGatewayId(gatewayId);
-        if (!isAppDeploymentExists(applicationDeploymentId))
-            applicationDeploymentEntity.setCreationTime(new Timestamp(System.currentTimeMillis()));
-        applicationDeploymentEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         if (applicationDeploymentEntity.getModuleLoadCmds() != null) {
             applicationDeploymentEntity.getModuleLoadCmds().forEach(moduleLoadCmdEntity -> moduleLoadCmdEntity.setAppdeploymentId(applicationDeploymentId));
         }
@@ -77,6 +74,9 @@ public class ApplicationDeploymentRepository extends AppCatAbstractRepository<Ap
         if (applicationDeploymentEntity.getSetEnvironment() != null) {
             applicationDeploymentEntity.getSetEnvironment().forEach(appEnvironmentEntity -> appEnvironmentEntity.setDeploymentId(applicationDeploymentId));
         }
+        if (!isAppDeploymentExists(applicationDeploymentId))
+            applicationDeploymentEntity.setCreationTime(new Timestamp(System.currentTimeMillis()));
+        applicationDeploymentEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         return execute(entityManager -> entityManager.merge(applicationDeploymentEntity));
     }
 

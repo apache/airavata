@@ -39,40 +39,42 @@ public class ApplicationInputEntity implements Serializable {
 
 	@Id
 	@Column(name = "INPUT_KEY")
-	private String inputKey;
+	private String name;
 
 	@Column(name = "APP_ARGUMENT")
-	private String appArgument;
+	private String applicationArgument;
 
 	@Column(name = "DATA_STAGED")
 	private boolean dataStaged;
 
 	@Column(name = "DATA_TYPE")
-	private String dataType;
+	private String type;
 
 	@Column(name = "INPUT_ORDER")
 	private int inputOrder;
 
 	@Column(name = "INPUT_VALUE")
-	private String inputValue;
+	private String value;
 
 	@Column(name = "IS_REQUIRED")
 	private boolean isRequired;
 
 	@Column(name = "METADATA")
-	private String metadata;
+	private String metaData;
 
 	@Column(name = "REQUIRED_TO_COMMANDLINE")
-	private boolean requiredToCommandline;
+	private boolean requiredToAddedToCommandLine;
 
 	@Column(name = "STANDARD_INPUT")
 	private boolean standardInput;
 
 	@Column(name = "USER_FRIENDLY_DESC")
-	private String userFriendlyDesc;
+	private String userFriendlyDescription;
 
 	@Column(name = "IS_READ_ONLY")
 	private boolean isReadOnly;
+
+	private String storageResourceId;
 
 	@ManyToOne(targetEntity = ApplicationInterfaceEntity.class, cascade = CascadeType.MERGE)
 	@JoinColumn(name = "INTERFACE_ID")
@@ -89,20 +91,20 @@ public class ApplicationInputEntity implements Serializable {
 		this.interfaceId = interfaceId;
 	}
 
-	public String getInputKey() {
-		return inputKey;
+	public String getName() {
+		return name;
 	}
 
-	public void setInputKey(String inputKey) {
-		this.inputKey = inputKey;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public String getAppArgument() {
-		return appArgument;
+	public String getApplicationArgument() {
+		return applicationArgument;
 	}
 
-	public void setAppArgument(String appArgument) {
-		this.appArgument = appArgument;
+	public void setApplicationArgument(String applicationArgument) {
+		this.applicationArgument = applicationArgument;
 	}
 
 	public boolean getDataStaged() {
@@ -113,12 +115,12 @@ public class ApplicationInputEntity implements Serializable {
 		this.dataStaged = dataStaged;
 	}
 
-	public String getDataType() {
-		return dataType;
+	public String getType() {
+		return type;
 	}
 
-	public void setDataType(String dataType) {
-		this.dataType = dataType;
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public int getInputOrder() {
@@ -129,12 +131,12 @@ public class ApplicationInputEntity implements Serializable {
 		this.inputOrder = inputOrder;
 	}
 
-	public String getInputValue() {
-		return inputValue;
+	public String getValue() {
+		return value;
 	}
 
-	public void setInputValue(String inputValue) {
-		this.inputValue = inputValue;
+	public void setValue(String value) {
+		this.value = value;
 	}
 
 	public boolean getIsRequired() {
@@ -145,20 +147,20 @@ public class ApplicationInputEntity implements Serializable {
 		this.isRequired = isRequired;
 	}
 
-	public String getMetadata() {
-		return metadata;
+	public String getMetaData() {
+		return metaData;
 	}
 
-	public void setMetadata(String metadata) {
-		this.metadata = metadata;
+	public void setMetaData(String metaData) {
+		this.metaData = metaData;
 	}
 
-	public boolean getRequiredToCommandline() {
-		return requiredToCommandline;
+	public boolean getRequiredToAddedToCommandLine() {
+		return requiredToAddedToCommandLine;
 	}
 
-	public void setRequiredToCommandline(boolean requiredToCommandline) {
-		this.requiredToCommandline = requiredToCommandline;
+	public void setRequiredToAddedToCommandLine(boolean requiredToAddedToCommandLine) {
+		this.requiredToAddedToCommandLine = requiredToAddedToCommandLine;
 	}
 
 	public boolean getStandardInput() {
@@ -169,12 +171,12 @@ public class ApplicationInputEntity implements Serializable {
 		this.standardInput = standardInput;
 	}
 
-	public String getUserFriendlyDesc() {
-		return userFriendlyDesc;
+	public String getserFriendlyDescription() {
+		return userFriendlyDescription;
 	}
 
-	public void setUserFriendlyDesc(String userFriendlyDesc) {
-		this.userFriendlyDesc = userFriendlyDesc;
+	public void setserFriendlyDescription(String userFriendlyDescription) {
+		this.userFriendlyDescription = userFriendlyDescription;
 	}
 
 	public boolean getIsReadOnly() {
@@ -184,6 +186,10 @@ public class ApplicationInputEntity implements Serializable {
 	public void setIsReadOnly(boolean isReadOnly) {
 		this.isReadOnly = isReadOnly;
 	}
+
+	public String getStorageResourceId() { return storageResourceId; }
+
+	public void setStorageResourceId(String storageResourceId) { this.storageResourceId = storageResourceId; }
 
 	public ApplicationInterfaceEntity getApplicationInterface() {
 		return applicationInterface;
