@@ -19,6 +19,7 @@
         <module>task-api</module>
         <module>task-core</module>
         <module>workflow-impl</module>
+        <module>helix-spectator</module>
     </modules>
 
 </project>

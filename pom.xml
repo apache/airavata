@@ -701,7 +701,6 @@
                 <!--<module>modules/test-suite</module>-->
                 <module>modules/compute-account-provisioning</module>
                 <module>modules/airavata-helix</module>
-                <module>modules/helix-spectator</module>
                 <module>modules/airavata-helix-distribution</module>
             </modules>
         </profile>
