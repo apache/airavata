@@ -8,6 +8,7 @@ public class JobSubmissionOutput {
     private String jobId;
     private boolean isJobSubmissionFailed;
     private String failureReason;
+    private String description;
 
     public int getExitCode() {
         return exitCode;
@@ -70,5 +71,13 @@ public class JobSubmissionOutput {
     public JobSubmissionOutput setFailureReason(String failureReason) {
         this.failureReason = failureReason;
         return this;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

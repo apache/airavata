@@ -1,17 +1,14 @@
 package org.apache.airavata.helix.impl.participant;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.participant.HelixParticipant;
 import org.apache.airavata.helix.core.support.TaskHelperImpl;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
-import org.apache.helix.task.Task;
-import org.apache.helix.task.TaskCallbackContext;
 import org.apache.helix.task.TaskFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,26 +27,24 @@ public class GlobalParticipant extends HelixParticipant {
     };
 
     public Map<String, TaskFactory> getTaskFactory() {
-        Map<String, TaskFactory> taskRegistry = new HashMap<String, TaskFactory>();
+        Map<String, TaskFactory> taskRegistry = new HashMap<>();
 
         for (String taskClass : taskClasses) {
-            TaskFactory taskFac = new TaskFactory() {
-                public Task createNewTask(TaskCallbackContext context) {
-                    try {
-                        return AbstractTask.class.cast(Class.forName(taskClass).newInstance())
-                                .setCallbackContext(context)
-                                .setTaskHelper(new TaskHelperImpl());
-                    } catch (InstantiationException | IllegalAccessException e) {
-                        e.printStackTrace();
-                        return null;
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
-                        return null;
-                    }
+            TaskFactory taskFac = context -> {
+                try {
+                    return AbstractTask.class.cast(Class.forName(taskClass).newInstance())
+                            .setCallbackContext(context)
+                            .setTaskHelper(new TaskHelperImpl());
+                } catch (InstantiationException | IllegalAccessException e) {
+                    logger.error("Failed to initialize the task", e);
+                    return null;
+                } catch (ClassNotFoundException e) {
+                    logger.error("Task class can not be found in the class path", e);
+                    return null;
                 }
             };
 
-            TaskDef taskDef = null;
+            TaskDef taskDef;
             try {
                 taskDef = Class.forName(taskClass).getAnnotation(TaskDef.class);
                 taskRegistry.put(taskDef.name(), taskFac);
@@ -60,34 +55,23 @@ public class GlobalParticipant extends HelixParticipant {
         return taskRegistry;
     }
 
-    public GlobalParticipant(String propertyFile, Class taskClass, String taskTypeName, boolean readPropertyFromFile) throws IOException {
-        super(propertyFile, taskClass, taskTypeName, readPropertyFromFile);
+    @SuppressWarnings("WeakerAccess")
+    public GlobalParticipant(Class taskClass, String taskTypeName) throws ApplicationSettingsException {
+        super(taskClass, taskTypeName);
     }
 
-    public static void main(String args[]) throws IOException {
+    public static void main(String args[]) {
+        logger.info("Starting global participant");
 
-        String confDir = null;
-        if (args != null) {
-            for (String arg : args) {
-                if (arg.startsWith("--confDir=")) {
-                    confDir = arg.substring("--confDir=".length());
-                }
-            }
+        GlobalParticipant participant;
+        try {
+            participant = new GlobalParticipant(null, null);
+            Thread t = new Thread(participant);
+            t.start();
+        } catch (Exception e) {
+            logger.error("Failed to start global participant", e);
         }
 
-        String propertiesFile = "application.properties";
-        boolean readPropertyFromFile = false;
-
-        if (confDir != null && !confDir.isEmpty()) {
-            propertiesFile = confDir.endsWith(File.separator)? confDir + propertiesFile : confDir + File.separator + propertiesFile;
-            readPropertyFromFile = true;
-        }
-
-        logger.info("Using configuration file " + propertiesFile);
-
-        GlobalParticipant participant = new GlobalParticipant(propertiesFile, null, null, readPropertyFromFile);
-        Thread t = new Thread(participant);
-        t.start();
     }
 
 }

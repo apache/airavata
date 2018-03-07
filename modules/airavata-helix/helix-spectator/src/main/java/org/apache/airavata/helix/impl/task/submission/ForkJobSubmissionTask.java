@@ -12,11 +12,16 @@ import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.helix.task.TaskResult;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 @TaskDef(name = "Fork Job Submission")
+@SuppressWarnings("unused")
 public class ForkJobSubmissionTask extends JobSubmissionTask {
+
+    private static final Logger logger = LogManager.getLogger(ForkJobSubmissionTask.class);
 
     @Override
     public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
@@ -31,45 +36,44 @@ public class ForkJobSubmissionTask extends JobSubmissionTask {
             jobModel.setTaskId(getTaskId());
             jobModel.setJobName(mapData.getJobName());
 
-            if (mapData != null) {
-                //jobModel.setJobDescription(FileUtils.readFileToString(jobFile));
-                AgentAdaptor adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(
-                        getTaskContext().getGatewayId(),
-                        getTaskContext().getComputeResourceId(),
-                        getTaskContext().getJobSubmissionProtocol().name(),
-                        getTaskContext().getComputeResourceCredentialToken(),
-                        getTaskContext().getComputeResourceLoginUserName());
+            AgentAdaptor adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(
+                    getTaskContext().getGatewayId(),
+                    getTaskContext().getComputeResourceId(),
+                    getTaskContext().getJobSubmissionProtocol().name(),
+                    getTaskContext().getComputeResourceCredentialToken(),
+                    getTaskContext().getComputeResourceLoginUserName());
 
-                JobSubmissionOutput submissionOutput = submitBatchJob(adaptor, mapData, mapData.getWorkingDirectory());
+            JobSubmissionOutput submissionOutput = submitBatchJob(adaptor, mapData, mapData.getWorkingDirectory());
 
-                jobModel.setExitCode(submissionOutput.getExitCode());
-                jobModel.setStdErr(submissionOutput.getStdErr());
-                jobModel.setStdOut(submissionOutput.getStdOut());
+            jobModel.setJobDescription(submissionOutput.getDescription());
+            jobModel.setExitCode(submissionOutput.getExitCode());
+            jobModel.setStdErr(submissionOutput.getStdErr());
+            jobModel.setStdOut(submissionOutput.getStdOut());
 
-                String jobId = submissionOutput.getJobId();
+            String jobId = submissionOutput.getJobId();
 
-                if (jobId != null && !jobId.isEmpty()) {
-                    jobModel.setJobId(jobId);
-                    saveJobModel(jobModel);
-                    JobStatus jobStatus = new JobStatus();
-                    jobStatus.setJobState(JobState.SUBMITTED);
-                    jobStatus.setReason("Successfully Submitted to " + getComputeResourceDescription().getHostName());
-                    jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-                    jobModel.setJobStatuses(Arrays.asList(jobStatus));
-                    saveAndPublishJobStatus(jobModel);
+            if (jobId != null && !jobId.isEmpty()) {
+                jobModel.setJobId(jobId);
+                saveJobModel(jobModel);
+                JobStatus jobStatus = new JobStatus();
+                jobStatus.setJobState(JobState.SUBMITTED);
+                jobStatus.setReason("Successfully Submitted to " + getComputeResourceDescription().getHostName());
+                jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                jobModel.setJobStatuses(Collections.singletonList(jobStatus));
+                saveAndPublishJobStatus(jobModel);
 
-                    return null;
-                } else {
-                    String msg = "expId:" + getExperimentId() + " Couldn't find remote jobId for JobName:" +
-                            jobModel.getJobName() + ", both submit and verify steps doesn't return a valid JobId. " +
-                            "Hence changing experiment state to Failed";
-                }
+                return onSuccess("Job submitted successfully");
+            } else {
+                String msg = "expId:" + getExperimentId() + " Couldn't find remote jobId for JobName:" +
+                        jobModel.getJobName() + ", both submit and verify steps doesn't return a valid JobId. " +
+                        "Hence changing experiment state to Failed";
 
+                return onFail(msg, true, null);
             }
-            return null;
 
         } catch (Exception e) {
-            return null;
+            logger.error("Unknown error while submitting job", e);
+            return onFail("Unknown error while submitting job", true, e);
         }
     }
 

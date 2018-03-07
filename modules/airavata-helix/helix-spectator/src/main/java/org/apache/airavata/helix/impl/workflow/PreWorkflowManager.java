@@ -3,6 +3,7 @@ package org.apache.airavata.helix.impl.workflow;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.env.EnvSetupTask;
@@ -36,6 +37,7 @@ public class PreWorkflowManager {
 
     private final Subscriber subscriber;
 
+    @SuppressWarnings("WeakerAccess")
     public PreWorkflowManager() throws AiravataException {
         List<String> routingKeys = new ArrayList<>();
         routingKeys.add(ServerSettings.getRabbitmqProcessExchangeName());
@@ -94,7 +96,7 @@ public class PreWorkflowManager {
                 ServerSettings.getSetting("post.workflow.manager.name"),
                 ServerSettings.getZookeeperConnection());
         String workflowName = workflowManager.launchWorkflow(processId + "-PRE-" + UUID.randomUUID().toString(),
-                allTasks.stream().map(t -> (AiravataTask) t).collect(Collectors.toList()), true, false);
+                new ArrayList<>(allTasks), true, false);
         return workflowName;
     }
 

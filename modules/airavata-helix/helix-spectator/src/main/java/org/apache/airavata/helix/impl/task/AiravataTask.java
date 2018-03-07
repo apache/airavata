@@ -53,6 +53,7 @@ public abstract class AiravataTask extends AbstractTask {
     private OutPort nextTask;
 
     protected TaskResult onSuccess(String message) {
+        publishTaskState(TaskState.COMPLETED);
         String successMessage = "Task " + getTaskId() + " completed." + (message != null ? " Message : " + message : "");
         logger.info(successMessage);
         return nextTask.invoke(new TaskResult(TaskResult.Status.COMPLETED, message));
@@ -80,13 +81,15 @@ public abstract class AiravataTask extends AbstractTask {
         getTaskContext().setProcessStatus(status);
 
         ErrorModel errorModel = new ErrorModel();
-        errorModel.setUserFriendlyMessage("GFac Worker throws an exception");
+        errorModel.setUserFriendlyMessage(reason);
         errorModel.setActualErrorMessage(errors.toString());
         errorModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
 
+        publishTaskState(TaskState.FAILED);
         saveAndPublishProcessStatus();
         saveExperimentError(errorModel);
         saveProcessError(errorModel);
+        saveTaskError(errorModel);
         return new TaskResult(fatal ? TaskResult.Status.FATAL_FAILED : TaskResult.Status.FAILED, errorMessage);
     }
 
@@ -97,6 +100,7 @@ public abstract class AiravataTask extends AbstractTask {
         saveAndPublishProcessStatus();
     }
 
+    @SuppressWarnings("WeakerAccess")
     protected void saveAndPublishProcessStatus() {
         try {
             ProcessStatus status = taskContext.getProcessStatus();
@@ -117,6 +121,7 @@ public abstract class AiravataTask extends AbstractTask {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     protected void saveAndPublishTaskStatus() {
         try {
             TaskState state = getTaskContext().getTaskState();
@@ -140,6 +145,7 @@ public abstract class AiravataTask extends AbstractTask {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     protected void saveExperimentError(ErrorModel errorModel) {
         try {
             errorModel.setErrorId(AiravataUtils.getId("EXP_ERROR"));
@@ -150,6 +156,7 @@ public abstract class AiravataTask extends AbstractTask {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     protected void saveProcessError(ErrorModel errorModel) {
         try {
             errorModel.setErrorId(AiravataUtils.getId("PROCESS_ERROR"));
@@ -161,14 +168,15 @@ public abstract class AiravataTask extends AbstractTask {
         }
     }
 
-    protected void saveTaskError(ErrorModel errorModel) throws Exception {
+    @SuppressWarnings("WeakerAccess")
+    protected void saveTaskError(ErrorModel errorModel) {
         try {
             errorModel.setErrorId(AiravataUtils.getId("TASK_ERROR"));
             getExperimentCatalog().add(ExpCatChildDataType.TASK_ERROR, errorModel, getTaskId());
         } catch (RegistryException e) {
             String msg = "expId: " + getExperimentId() + " processId: " + getProcessId() + " taskId: " + getTaskId()
                     + " : - Error while updating task errors";
-            throw new Exception(msg, e);
+            logger.error(msg, e);
         }
     }
 
@@ -191,6 +199,7 @@ public abstract class AiravataTask extends AbstractTask {
             MDC.put("process", getProcessId());
             MDC.put("gateway", getGatewayId());
             MDC.put("task", getTaskId());
+            publishTaskState(TaskState.EXECUTING);
             return onRun(helper, getTaskContext());
         } finally {
             MDC.clear();
@@ -206,6 +215,7 @@ public abstract class AiravataTask extends AbstractTask {
             MDC.put("process", getProcessId());
             MDC.put("gateway", getGatewayId());
             MDC.put("task", getTaskId());
+            publishTaskState(TaskState.CANCELED);
             onCancel(getTaskContext());
         } finally {
             MDC.clear();
@@ -231,22 +241,21 @@ public abstract class AiravataTask extends AbstractTask {
             this.computeResourceDescription = getAppCatalog().getComputeResource().getComputeResource(getProcessModel()
                     .getComputeResourceId());
 
-            TaskContext.TaskContextBuilder taskContextBuilder = new TaskContext.TaskContextBuilder(getProcessId(), getGatewayId(), getTaskId());
-            taskContextBuilder.setAppCatalog(getAppCatalog());
-            taskContextBuilder.setExperimentCatalog(getExperimentCatalog());
-            taskContextBuilder.setProcessModel(getProcessModel());
-            taskContextBuilder.setStatusPublisher(getStatusPublisher());
-
-            taskContextBuilder.setGatewayResourceProfile(appCatalog.getGatewayProfile().getGatewayProfile(gatewayId));
-            taskContextBuilder.setGatewayComputeResourcePreference(
+            TaskContext.TaskContextBuilder taskContextBuilder = new TaskContext.TaskContextBuilder(getProcessId(), getGatewayId(), getTaskId())
+                    .setAppCatalog(getAppCatalog())
+                    .setExperimentCatalog(getExperimentCatalog())
+                    .setProcessModel(getProcessModel())
+                    .setStatusPublisher(getStatusPublisher())
+                    .setGatewayResourceProfile(appCatalog.getGatewayProfile().getGatewayProfile(gatewayId))
+                    .setGatewayComputeResourcePreference(
                             appCatalog.getGatewayProfile()
-                                    .getComputeResourcePreference(gatewayId, processModel.getComputeResourceId()));
-            taskContextBuilder.setGatewayStorageResourcePreference(
+                                    .getComputeResourcePreference(gatewayId, processModel.getComputeResourceId()))
+                    .setGatewayStorageResourcePreference(
                             appCatalog.getGatewayProfile()
                                     .getStoragePreference(gatewayId, processModel.getStorageResourceId()));
 
             this.taskContext = taskContextBuilder.build();
-            logger.info("Task " + taskName + " intitialized");
+            logger.info("Task " + taskName + " initialized");
         } catch (Exception e) {
             logger.error("Error occurred while initializing the task " + getTaskId() + " of experiment " + getExperimentId(), e);
            throw new RuntimeException("Error occurred while initializing the task " + getTaskId() + " of experiment " + getExperimentId(), e);
@@ -259,19 +268,25 @@ public abstract class AiravataTask extends AbstractTask {
         return appCatalog;
     }
 
-    protected void publishTaskState(TaskState ts) throws RegistryException {
+    @SuppressWarnings("WeakerAccess")
+    protected void publishTaskState(TaskState ts) {
 
-        TaskStatus taskStatus = new TaskStatus();
-        taskStatus.setState(ts);
-        taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-        experimentCatalog.add(ExpCatChildDataType.TASK_STATUS, taskStatus, getTaskId());
-        TaskIdentifier identifier = new TaskIdentifier(getTaskId(),
-                getProcessId(), getExperimentId(), getGatewayId());
-        TaskStatusChangeEvent taskStatusChangeEvent = new TaskStatusChangeEvent(ts,
-                identifier);
-        MessageContext msgCtx = new MessageContext(taskStatusChangeEvent, MessageType.TASK, AiravataUtils.getId
-                (MessageType.TASK.name()), getGatewayId());
-        msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+        try {
+            TaskStatus taskStatus = new TaskStatus();
+            taskStatus.setState(ts);
+            taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            experimentCatalog.add(ExpCatChildDataType.TASK_STATUS, taskStatus, getTaskId());
+            TaskIdentifier identifier = new TaskIdentifier(getTaskId(),
+                    getProcessId(), getExperimentId(), getGatewayId());
+            TaskStatusChangeEvent taskStatusChangeEvent = new TaskStatusChangeEvent(ts,
+                    identifier);
+            MessageContext msgCtx = new MessageContext(taskStatusChangeEvent, MessageType.TASK, AiravataUtils.getId
+                    (MessageType.TASK.name()), getGatewayId());
+            msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+            statusPublisher.publish(msgCtx);
+        } catch (Exception e) {
+            logger.error("Failed to publish task status " + (ts != null ? ts.name(): "null") +" of task " + getTaskId());
+        }
     }
 
     protected ComputeResourceDescription getComputeResourceDescription() {

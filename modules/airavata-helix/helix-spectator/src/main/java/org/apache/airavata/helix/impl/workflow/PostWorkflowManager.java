@@ -41,14 +41,10 @@ import org.apache.log4j.Logger;
 import org.apache.zookeeper.data.Stat;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class PostWorkflowManager {
 
     private static final Logger logger = LogManager.getLogger(PostWorkflowManager.class);
-
-    //private final String BOOTSTRAP_SERVERS = "localhost:9092";
-    //private final String TOPIC = "parsed-data";
 
     private CuratorFramework curatorClient = null;
     private Publisher statusPublisher;
@@ -66,7 +62,7 @@ public class PostWorkflowManager {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JobStatusResultDeserializer.class.getName());
         // Create the consumer using props.
-        final Consumer<String, JobStatusResult> consumer = new KafkaConsumer<String, JobStatusResult>(props);
+        final Consumer<String, JobStatusResult> consumer = new KafkaConsumer<>(props);
         // Subscribe to the topic.
         consumer.subscribe(Collections.singletonList(ServerSettings.getSetting("kafka.broker.topic")));
         return consumer;
@@ -74,32 +70,27 @@ public class PostWorkflowManager {
 
     private String getExperimentIdByJobId(String jobId) throws Exception {
         byte[] processBytes = this.curatorClient.getData().forPath("/monitoring/" + jobId + "/experiment");
-        String process = new String(processBytes);
-        return process;
+        return new String(processBytes);
     }
 
     private String getTaskIdByJobId(String jobId) throws Exception {
         byte[] processBytes = this.curatorClient.getData().forPath("/monitoring/" + jobId + "/task");
-        String process = new String(processBytes);
-        return process;
+        return new String(processBytes);
     }
 
     private String getProcessIdByJobId(String jobId) throws Exception {
         byte[] processBytes = this.curatorClient.getData().forPath("/monitoring/" + jobId + "/process");
-        String process = new String(processBytes);
-        return process;
+        return new String(processBytes);
     }
 
     private String getGatewayByJobId(String jobId) throws Exception {
         byte[] gatewayBytes = this.curatorClient.getData().forPath("/monitoring/" + jobId + "/gateway");
-        String gateway = new String(gatewayBytes);
-        return gateway;
+        return new String(gatewayBytes);
     }
 
     private String getStatusByJobId(String jobId) throws Exception {
         byte[] statusBytes = this.curatorClient.getData().forPath("/monitoring/" + jobId + "/status");
-        String status = new String(statusBytes);
-        return status;
+        return new String(statusBytes);
     }
 
     private boolean hasMonitoringRegistered(String jobId) throws Exception {
@@ -128,7 +119,7 @@ public class PostWorkflowManager {
 
                 // TODO get cluster lock before that
                 if ("cancelled".equals(status)) {
-
+                    // TODO to be implemented
                 } else {
 
                     saveAndPublishJobStatus(jobStatusResult.getJobId(), task, processId, experimentId, gateway, jobStatusResult.getState());
@@ -190,7 +181,7 @@ public class PostWorkflowManager {
                                 ServerSettings.getZookeeperConnection());
 
                         workflowManager.launchWorkflow(processId + "-POST-" + UUID.randomUUID().toString(),
-                                allTasks.stream().map(t -> (AiravataTask) t).collect(Collectors.toList()), true, false);
+                                new ArrayList<>(allTasks), true, false);
 
                     } else if (jobStatusResult.getState() == JobState.CANCELED) {
                         logger.info("Job " + jobStatusResult.getJobId() + " was externally cancelled");
@@ -224,7 +215,7 @@ public class PostWorkflowManager {
         }
     }
 
-    public void saveAndPublishJobStatus(String jobId, String taskId, String processId, String experimentId, String gateway,
+    private void saveAndPublishJobStatus(String jobId, String taskId, String processId, String experimentId, String gateway,
                                         JobState jobState) throws Exception {
         try {
 
@@ -255,7 +246,7 @@ public class PostWorkflowManager {
         }
     }
 
-    public Publisher getStatusPublisher() throws AiravataException {
+    private Publisher getStatusPublisher() throws AiravataException {
         if (statusPublisher == null) {
             synchronized (RabbitMQPublisher.class) {
                 if (statusPublisher == null) {

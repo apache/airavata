@@ -15,8 +15,10 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 
+@SuppressWarnings("WeakerAccess")
 public abstract class DataStagingTask extends AiravataTask {
 
+    @SuppressWarnings("WeakerAccess")
     protected DataStagingTaskModel getDataStagingTaskModel() throws TaskOnFailException {
         try {
             Object subTaskModel = getTaskContext().getSubTaskModel();
@@ -30,6 +32,7 @@ public abstract class DataStagingTask extends AiravataTask {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     protected StorageResourceDescription getStorageResource() throws TaskOnFailException {
         try {
             StorageResourceDescription storageResource = getTaskContext().getStorageResource();
@@ -42,6 +45,7 @@ public abstract class DataStagingTask extends AiravataTask {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     protected StorageResourceAdaptor getStorageAdaptor(AdaptorSupport adaptorSupport) throws TaskOnFailException {
         try {
             StorageResourceAdaptor storageResourceAdaptor = adaptorSupport.fetchStorageAdaptor(
@@ -61,6 +65,7 @@ public abstract class DataStagingTask extends AiravataTask {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     protected AgentAdaptor getComputeResourceAdaptor(AdaptorSupport adaptorSupport) throws TaskOnFailException {
         try {
             return adaptorSupport.fetchAdaptor(
@@ -75,6 +80,7 @@ public abstract class DataStagingTask extends AiravataTask {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     protected String getLocalDataPath(String fileName) throws TaskOnFailException {
         String localDataPath = ServerSettings.getLocalDataLocation();
         localDataPath = (localDataPath.endsWith(File.separator) ? localDataPath : localDataPath + File.separator);

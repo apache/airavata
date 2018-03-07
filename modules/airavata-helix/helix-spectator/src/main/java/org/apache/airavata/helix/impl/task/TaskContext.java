@@ -716,21 +716,11 @@ public class TaskContext {
                             }
                         }
                     }else {
-                        Collections.sort(jobSubmissionInterfaces, new Comparator<JobSubmissionInterface>() {
-                            @Override
-                            public int compare(JobSubmissionInterface jobSubmissionInterface, JobSubmissionInterface jobSubmissionInterface2) {
-                                return jobSubmissionInterface.getPriorityOrder() - jobSubmissionInterface2.getPriorityOrder();
-                            }
-                        });
+                        jobSubmissionInterfaces.sort(Comparator.comparingInt(JobSubmissionInterface::getPriorityOrder));
                     }
                 }
                 interfaces = orderedInterfaces.get(preferredJobSubmissionProtocol);
-                Collections.sort(interfaces, new Comparator<JobSubmissionInterface>() {
-                    @Override
-                    public int compare(JobSubmissionInterface jobSubmissionInterface, JobSubmissionInterface jobSubmissionInterface2) {
-                        return jobSubmissionInterface.getPriorityOrder() - jobSubmissionInterface2.getPriorityOrder();
-                    }
-                });
+                interfaces.sort(Comparator.comparingInt(JobSubmissionInterface::getPriorityOrder));
             } else {
                 throw new AppCatalogException("Compute resource should have at least one job submission interface defined...");
             }
@@ -740,6 +730,7 @@ public class TaskContext {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     public TaskModel getCurrentTaskModel() {
         return getTaskMap().get(taskId);
     }
@@ -763,6 +754,7 @@ public class TaskContext {
         private StoragePreference gatewayStorageResourcePreference;
         private ProcessModel processModel;
 
+        @SuppressWarnings("WeakerAccess")
         public TaskContextBuilder(String processId, String gatewayId, String taskId) throws Exception {
             if (notValid(processId) || notValid(gatewayId) || notValid(taskId)) {
                 throwError("Process Id, Gateway Id and Task Id must be not null");
@@ -826,9 +818,9 @@ public class TaskContext {
             if (notValid(experimentCatalog)) {
                 throwError("Invalid Experiment catalog");
             }
-            //if (notValid(statusPublisher)) {
-              //  throwError("Invalid Status Publisher");
-            //}
+            if (notValid(statusPublisher)) {
+                throwError("Invalid Status Publisher");
+            }
 
             TaskContext ctx = new TaskContext(processId, gatewayId, taskId);
             ctx.setAppCatalog(appCatalog);
