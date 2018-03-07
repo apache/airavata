@@ -1,5 +1,7 @@
 package org.apache.airavata.helix.core.participant;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.core.support.TaskHelperImpl;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.util.PropertyResolver;
@@ -44,20 +46,13 @@ public class HelixParticipant <T extends AbstractTask> implements Runnable {
     private PropertyResolver propertyResolver;
     private Class<T> taskClass;
 
-    public HelixParticipant(String propertyFile, Class<T> taskClass, String taskTypeName, boolean readPropertyFromFile) throws IOException {
+    public HelixParticipant(Class<T> taskClass, String taskTypeName) throws ApplicationSettingsException {
 
         logger.info("Initializing Participant Node");
 
-        this.propertyResolver = new PropertyResolver();
-        if (readPropertyFromFile) {
-            propertyResolver.loadFromFile(new File(propertyFile));
-        } else {
-            propertyResolver.loadInputStream(this.getClass().getClassLoader().getResourceAsStream(propertyFile));
-        }
-
-        this.zkAddress = propertyResolver.get("zookeeper.connection.url");
-        this.clusterName = propertyResolver.get("helix.cluster.name");
-        this.participantName = propertyResolver.get("participant.name");
+        this.zkAddress = ServerSettings.getZookeeperConnection();
+        this.clusterName = ServerSettings.getSetting("helix.cluster.name");
+        this.participantName = ServerSettings.getSetting("helix.participant.name");
         this.taskTypeName = taskTypeName;
         this.taskClass = taskClass;
 

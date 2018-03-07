@@ -52,23 +52,32 @@ public abstract class JobSubmissionTask extends AiravataTask {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     public CuratorFramework getCuratorClient() {
         return curatorClient;
     }
 
     // TODO perform exception handling
+    @SuppressWarnings("WeakerAccess")
     protected void createMonitoringNode(String jobId) throws Exception {
         logger.info("Creating zookeeper paths for job monitoring for job id : " + jobId + ", process : "
                 + getProcessId() + ", gateway : " + getGatewayId());
-        this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/monitoring/" + jobId + "/lock", new byte[0]);
-        this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/monitoring/" + jobId + "/gateway", getGatewayId().getBytes());
-        this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/monitoring/" + jobId + "/process", getProcessId().getBytes());
-        this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/monitoring/" + jobId + "/task", getTaskId().getBytes());
-        this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/monitoring/" + jobId + "/experiment", getExperimentId().getBytes());
-        this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath("/monitoring/" + jobId + "/status", "pending".getBytes());
+        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                "/monitoring/" + jobId + "/lock", new byte[0]);
+        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                "/monitoring/" + jobId + "/gateway", getGatewayId().getBytes());
+        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                "/monitoring/" + jobId + "/process", getProcessId().getBytes());
+        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                "/monitoring/" + jobId + "/task", getTaskId().getBytes());
+        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                "/monitoring/" + jobId + "/experiment", getExperimentId().getBytes());
+        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                "/monitoring/" + jobId + "/status", "pending".getBytes());
     }
 
     //////////////////////
+    @SuppressWarnings("WeakerAccess")
     protected JobSubmissionOutput submitBatchJob(AgentAdaptor agentAdaptor, GroovyMapData groovyMapData, String workingDirectory) throws Exception {
         JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
                 getAppCatalog(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
@@ -94,6 +103,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
         CommandOutput commandOutput = agentAdaptor.executeCommand(submitCommand.getRawCommand(), workingDirectory);
 
         JobSubmissionOutput jsoutput = new JobSubmissionOutput();
+        jsoutput.setDescription(scriptAsString);
 
         jsoutput.setJobId(jobManagerConfiguration.getParser().parseJobSubmission(commandOutput.getStdOut()));
         if (jsoutput.getJobId() == null) {
@@ -114,12 +124,14 @@ public abstract class JobSubmissionTask extends AiravataTask {
         return jsoutput;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public File getLocalDataDir() {
         String outputPath = ServerSettings.getLocalDataLocation();
         outputPath = (outputPath.endsWith(File.separator) ? outputPath : outputPath + File.separator);
         return new File(outputPath + getProcessId());
     }
 
+    @SuppressWarnings("WeakerAccess")
     public JobStatus getJobStatus(AgentAdaptor agentAdaptor, String jobID) throws Exception {
         JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
                 getAppCatalog(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
@@ -129,6 +141,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
 
     }
 
+    @SuppressWarnings("WeakerAccess")
     public String getJobIdByJobName(AgentAdaptor agentAdaptor, String jobName, String userName) throws Exception {
         JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
                 getAppCatalog(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
@@ -138,16 +151,22 @@ public abstract class JobSubmissionTask extends AiravataTask {
         return jobManagerConfiguration.getParser().parseJobId(jobName, commandOutput.getStdOut());
     }
 
+    @SuppressWarnings("WeakerAccess")
     public void saveJobModel(JobModel jobModel) throws RegistryException {
         getExperimentCatalog().add(ExpCatChildDataType.JOB, jobModel, getProcessId());
     }
 
+    @SuppressWarnings("WeakerAccess")
     public void saveAndPublishJobStatus(JobModel jobModel) throws Exception {
         try {
             // first we save job jobModel to the registry for sa and then save the job status.
-            JobStatus jobStatus = null;
-            if(jobModel.getJobStatuses() != null)
+            JobStatus jobStatus;
+            if (jobModel.getJobStatuses() != null && jobModel.getJobStatuses().size() > 0) {
                 jobStatus = jobModel.getJobStatuses().get(0);
+            } else {
+                logger.error("Job statuses can not be empty");
+                return;
+            }
 
             List<JobStatus> statuses = new ArrayList<>();
             statuses.add(jobStatus);
@@ -173,7 +192,4 @@ public abstract class JobSubmissionTask extends AiravataTask {
             throw new Exception("Error persisting job status " + e.getLocalizedMessage(), e);
         }
     }
-
-    ///////////// required for groovy map
-
 }

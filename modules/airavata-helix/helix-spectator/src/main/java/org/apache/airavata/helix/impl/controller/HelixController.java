@@ -1,12 +1,11 @@
 package org.apache.airavata.helix.impl.controller;
 
-import org.apache.airavata.helix.core.util.PropertyResolver;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.helix.controller.HelixControllerMain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -27,18 +26,11 @@ public class HelixController implements Runnable {
     private CountDownLatch startLatch = new CountDownLatch(1);
     private CountDownLatch stopLatch = new CountDownLatch(1);
 
-    public HelixController(String propertyFile, boolean readPropertyFromFile) throws IOException {
-
-        PropertyResolver propertyResolver = new PropertyResolver();
-        if (readPropertyFromFile) {
-            propertyResolver.loadFromFile(new File(propertyFile));
-        } else {
-            propertyResolver.loadInputStream(this.getClass().getClassLoader().getResourceAsStream(propertyFile));
-        }
-
-        this.clusterName = propertyResolver.get("helix.cluster.name");
-        this.controllerName = propertyResolver.get("helix.controller.name");
-        this.zkAddress = propertyResolver.get("zookeeper.connection.url");
+    @SuppressWarnings("WeakerAccess")
+    public HelixController() throws ApplicationSettingsException {
+        this.clusterName = ServerSettings.getSetting("helix.cluster.name");
+        this.controllerName = ServerSettings.getSetting("helix.controller.name");
+        this.zkAddress = ServerSettings.getZookeeperConnection();
     }
 
     public void run() {
@@ -64,12 +56,7 @@ public class HelixController implements Runnable {
             logger.info("Controller: " + controllerName + ", has connected to cluster: " + clusterName);
 
             Runtime.getRuntime().addShutdownHook(
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            disconnect();
-                        }
-                    }
+                    new Thread(this::disconnect)
             );
 
         } catch (InterruptedException ex) {
@@ -77,6 +64,7 @@ public class HelixController implements Runnable {
         }
     }
 
+    @SuppressWarnings({"WeakerAccess", "unused"})
     public void stop() {
         stopLatch.countDown();
     }
@@ -92,29 +80,11 @@ public class HelixController implements Runnable {
         try {
 
             logger.info("Starting helix controller");
-            String confDir = null;
-            if (args != null) {
-                for (String arg : args) {
-                    if (arg.startsWith("--confDir=")) {
-                        confDir = arg.substring("--confDir=".length());
-                    }
-                }
-            }
 
-            String propertiesFile = "application.properties";
-            boolean readPropertyFromFile = false;
-
-            if (confDir != null && !confDir.isEmpty()) {
-                propertiesFile = confDir.endsWith(File.separator)? confDir + propertiesFile : confDir + File.separator + propertiesFile;
-                readPropertyFromFile = true;
-            }
-
-            logger.info("Using configuration file " + propertiesFile);
-
-            HelixController helixController = new HelixController(propertiesFile, readPropertyFromFile);
+            HelixController helixController = new HelixController();
             helixController.start();
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Failed to start the helix controller", e);
         }
     }

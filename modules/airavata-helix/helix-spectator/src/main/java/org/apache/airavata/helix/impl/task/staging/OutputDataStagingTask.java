@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @TaskDef(name = "Output Data Staging Task")
@@ -65,6 +65,7 @@ public class OutputDataStagingTask extends DataStagingTask {
                         sourceURI.getPath().length());
 
                 if (dataStagingTaskModel.getDestination().startsWith("dummy")) {
+
                     String inputPath  = getTaskContext().getStorageFileSystemRootLocation();
                     inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
                     String experimentDataDir = getProcessModel().getExperimentDataDir();
@@ -110,7 +111,7 @@ public class OutputDataStagingTask extends DataStagingTask {
                 String sourceParentPath = (new File(sourceURI.getPath())).getParentFile().getPath();
 
                 logger.debug("Destination parent path " + destParentPath + ", source parent path " + sourceParentPath);
-                List<String> fileNames = null;
+                List<String> fileNames;
                 try {
                     fileNames = adaptor.getFileNameFromExtension(sourceFileName, sourceParentPath);
 
@@ -133,11 +134,14 @@ public class OutputDataStagingTask extends DataStagingTask {
                     }
 
                     //Wildcard support is only enabled for output data staging
+                    assert processOutput != null;
                     processOutput.setName(sourceFileName);
 
                     try {
-                        getTaskContext().getExperimentCatalog().add(ExpCatChildDataType.EXPERIMENT_OUTPUT, Arrays.asList(processOutput), getExperimentId());
-                        getTaskContext().getExperimentCatalog().add(ExpCatChildDataType.PROCESS_OUTPUT, Arrays.asList(processOutput), getProcessId());
+                        getTaskContext().getExperimentCatalog().add(ExpCatChildDataType.EXPERIMENT_OUTPUT,
+                                Collections.singletonList(processOutput), getExperimentId());
+                        getTaskContext().getExperimentCatalog().add(ExpCatChildDataType.PROCESS_OUTPUT,
+                                Collections.singletonList(processOutput), getProcessId());
                     } catch (RegistryException e) {
                         throw new TaskOnFailException("Failed to update experiment or process outputs for task " + getTaskId(), true, e);
                     }
@@ -145,11 +149,12 @@ public class OutputDataStagingTask extends DataStagingTask {
                     logger.info("Transferring file " + sourceFileName);
                     transferFile(sourceURI, destinationURI, sourceFileName, adaptor, storageResourceAdaptor);
                 }
+                return onSuccess("Output data staging task " + getTaskId() + " successfully completed");
 
             } else {
                 // Downloading input file from the storage resource
                 transferFile(sourceURI, destinationURI, sourceFileName, adaptor, storageResourceAdaptor);
-                return onSuccess("Input data staging task " + getTaskId() + " successfully completed");
+                return onSuccess("Output data staging task " + getTaskId() + " successfully completed");
             }
 
         } catch (TaskOnFailException e) {
@@ -164,8 +169,6 @@ public class OutputDataStagingTask extends DataStagingTask {
             logger.error("Unknown error while executing output data staging task " + getTaskId(), e);
             return onFail("Unknown error while executing output data staging task " + getTaskId(), false,  e);
         }
-
-        return null;
     }
 
     private void transferFile(URI sourceURI, URI destinationURI, String fileName, AgentAdaptor adaptor,
@@ -190,26 +193,6 @@ public class OutputDataStagingTask extends DataStagingTask {
             throw new TaskOnFailException("Failed uploading the output file to " + destinationURI.getPath() + " from local path " +
                     localSourceFilePath, true, e);
         }
-    }
-
-    public URI getDestinationURIFromDummy(String hostName, String inputPath, String fileName) throws URISyntaxException {
-        String experimentDataDir = getProcessModel().getExperimentDataDir();
-        String filePath;
-        if(experimentDataDir != null && !experimentDataDir.isEmpty()) {
-            if(!experimentDataDir.endsWith(File.separator)){
-                experimentDataDir += File.separator;
-            }
-            if (experimentDataDir.startsWith(File.separator)) {
-                filePath = experimentDataDir + fileName;
-            } else {
-                filePath = inputPath + experimentDataDir + fileName;
-            }
-        } else {
-            filePath = inputPath + getProcessId() + File.separator + fileName;
-        }
-        //FIXME
-        return new URI("file", getTaskContext().getStorageResourceLoginUserName(), hostName, 22, filePath, null, null);
-
     }
 
     @Override

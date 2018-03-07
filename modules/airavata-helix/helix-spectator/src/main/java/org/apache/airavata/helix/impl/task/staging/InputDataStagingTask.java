@@ -7,7 +7,6 @@ import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.TaskOnFailException;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
-import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.task.DataStagingTaskModel;
@@ -48,9 +47,6 @@ public class InputDataStagingTask extends DataStagingTask {
                 logger.error(message);
                 throw new TaskOnFailException(message, true, null);
             }
-
-            // Fetch and validate storage resource
-            StorageResourceDescription storageResource = getStorageResource();
 
             // Fetch and validate source and destination URLS
             URI sourceURI;
