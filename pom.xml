@@ -426,6 +426,17 @@
                 <role>committer</role>
             </roles>
         </developer>
+	<developer>
+            <id>tilaks</id>
+            <name>Sneha Tilak</name>
+            <email>tilaks@apache.org</email>
+            <timezone>-5</timezone>
+            <organization>Indiana University</organization>
+            <organizationUrl>http://iub.edu</organizationUrl>
+            <roles>
+                <role>committer</role>
+            </roles>
+        </developer>
     </developers>
 
     <dependencyManagement>
