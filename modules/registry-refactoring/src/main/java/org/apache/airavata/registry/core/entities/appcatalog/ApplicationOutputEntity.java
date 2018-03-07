@@ -38,19 +38,19 @@ public class ApplicationOutputEntity implements Serializable {
 
     @Id
     @Column(name="OUTPUT_KEY")
-    private String outputKey;
+    private String name;
 
     @Column(name = "APP_ARGUMENT")
-    private String appArgument;
+    private String applicationArgument;
 
     @Column(name = "DATA_MOVEMENT")
     private boolean dataMovement;
 
     @Column(name = "DATA_NAME_LOCATION")
-    private String dataNameLocation;
+    private String location;
 
     @Column(name = "DATA_TYPE")
-    private String dataType;
+    private String type;
 
     @Column(name = "IS_REQUIRED")
     private boolean isRequired;
@@ -59,13 +59,15 @@ public class ApplicationOutputEntity implements Serializable {
     private boolean outputStreaming;
 
     @Column(name = "OUTPUT_VALUE")
-    private String outputValue;
+    private String value;
 
     @Column(name = "REQUIRED_TO_COMMANDLINE")
-    private boolean requiredToCommandline;
+    private boolean requiredToAddedToCommandLine;
 
     @Column(name = "SEARCH_QUERY")
     private String searchQuery;
+
+    private String storageResourceId;
 
     @ManyToOne(targetEntity = ApplicationInterfaceEntity.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "INTERFACE_ID")
@@ -82,20 +84,20 @@ public class ApplicationOutputEntity implements Serializable {
         this.interfaceId = interfaceId;
     }
 
-    public String getOutputKey() {
-        return outputKey;
+    public String getName() {
+        return name;
     }
 
-    public void setOutputKey(String outputKey) {
-        this.outputKey = outputKey;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getAppArgument() {
-        return appArgument;
+    public String getApplicationArgument() {
+        return applicationArgument;
     }
 
-    public void setAppArgument(String appArgument) {
-        this.appArgument = appArgument;
+    public void setApplicationArgument(String applicationArgument) {
+        this.applicationArgument = applicationArgument;
     }
 
     public boolean getDataMovement() {
@@ -106,20 +108,20 @@ public class ApplicationOutputEntity implements Serializable {
         this.dataMovement = dataMovement;
     }
 
-    public String getDataNameLocation() {
-        return dataNameLocation;
+    public String getLocation() {
+        return location;
     }
 
-    public void setDataNameLocation(String dataNameLocation) {
-        this.dataNameLocation = dataNameLocation;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
-    public String getDataType() {
-        return dataType;
+    public String getType() {
+        return type;
     }
 
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public boolean getIsRequired() {
@@ -138,20 +140,20 @@ public class ApplicationOutputEntity implements Serializable {
         this.outputStreaming = outputStreaming;
     }
 
-    public String getOutputValue() {
-        return outputValue;
+    public String getValue() {
+        return value;
     }
 
-    public void setOutputValue(String outputValue) {
-        this.outputValue = outputValue;
+    public void setValue(String value) {
+        this.value = value;
     }
 
-    public boolean getRequiredToCommandline() {
-        return requiredToCommandline;
+    public boolean getRequiredToAddedToCommandLine() {
+        return requiredToAddedToCommandLine;
     }
 
-    public void setRequiredToCommandline(boolean requiredToCommandline) {
-        this.requiredToCommandline = requiredToCommandline;
+    public void setRequiredToAddedToCommandLine(boolean requiredToAddedToCommandLine) {
+        this.requiredToAddedToCommandLine = requiredToAddedToCommandLine;
     }
 
     public String getSearchQuery() {
@@ -161,6 +163,10 @@ public class ApplicationOutputEntity implements Serializable {
     public void setSearchQuery(String searchQuery) {
         this.searchQuery = searchQuery;
     }
+
+    public String getStorageResourceId() { return storageResourceId; }
+
+    public void setStorageResourceId(String storageResourceId) { this.storageResourceId = storageResourceId; }
 
     public ApplicationInterfaceEntity getApplicationInterface() {
         return applicationInterface;
