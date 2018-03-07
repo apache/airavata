@@ -60,8 +60,6 @@ public class ApplicationInterfaceEntity implements Serializable {
 	@Column(name="HAS_OPTIONAL_FILE_INPUTS")
 	private boolean hasOptionalFileInputs;
 
-	@ElementCollection
-	@CollectionTable(name="APPLICATION_MODULE", joinColumns = @JoinColumn(name="MODULE_ID"))
 	private List<String> applicationModules;
 
 	@OneToMany(targetEntity = ApplicationInputEntity.class, cascade = CascadeType.ALL,
@@ -76,11 +74,11 @@ public class ApplicationInterfaceEntity implements Serializable {
 	public ApplicationInterfaceEntity() {
 	}
 
-	public String getInterfaceId() {
+	public String getApplicationInterfaceId() {
 		return applicationInterfaceId;
 	}
 
-	public void setInterfaceId(String applicationInterfaceId) {
+	public void setApplicationInterfaceId(String applicationInterfaceId) {
 		this.applicationInterfaceId = applicationInterfaceId;
 	}
 

@@ -38,7 +38,7 @@ public class ApplicationInputPK implements Serializable {
 
 	@Column(name="INPUT_KEY")
 	@Id
-	private String inputKey;
+	private String name;
 
 	public ApplicationInputPK() {
 	}
@@ -51,12 +51,12 @@ public class ApplicationInputPK implements Serializable {
 		this.interfaceId = interfaceId;
 	}
 
-	public String getInputKey() {
-		return inputKey;
+	public String getName() {
+		return name;
 	}
 
-	public void setInputKey(String inputKey) {
-		this.inputKey = inputKey;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public boolean equals(Object other) {
@@ -69,14 +69,14 @@ public class ApplicationInputPK implements Serializable {
 		ApplicationInputPK castOther = (ApplicationInputPK)other;
 		return 
 			this.interfaceId.equals(castOther.interfaceId)
-			&& this.inputKey.equals(castOther.inputKey);
+			&& this.name.equals(castOther.name);
 	}
 
 	public int hashCode() {
 		final int prime = 31;
 		int hash = 17;
 		hash = hash * prime + this.interfaceId.hashCode();
-		hash = hash * prime + this.inputKey.hashCode();
+		hash = hash * prime + this.name.hashCode();
 		
 		return hash;
 	}
