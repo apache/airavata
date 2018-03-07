@@ -129,7 +129,6 @@ public class ApplicationDeploymentRepositoryTest {
         ApplicationDeploymentDescription retrievedApplicationDeployment = null;
         if(applicationDeploymentRepository.isExists(deploymentId)) {
             retrievedApplicationDeployment = applicationDeploymentRepository.getApplicationDeployement(deploymentId);
-            System.out.println("************ app deployment id ************** :" + retrievedApplicationDeployment.getAppDeploymentId());
             assertTrue("Retrieved app deployment id matched", retrievedApplicationDeployment.getAppDeploymentId().equals("appDep1"));
             assertEquals("test application deployment1", retrievedApplicationDeployment.getAppDeploymentDescription());
             assertEquals(applicationModule.getAppModuleId(), retrievedApplicationDeployment.getAppModuleId());
@@ -160,6 +159,8 @@ public class ApplicationDeploymentRepositoryTest {
 
         appDeploymentList = applicationDeploymentRepository.getAccessibleApplicationDeployements(gatewayId, Arrays.asList(deploymentId));
         assertTrue(appDeploymentList.size() == 1);
+
+        computeResourceRepository.removeComputeResource(computeResourceDescription.getComputeResourceId());
 
     }
 
