@@ -42,15 +42,6 @@ public class PreWorkflowManager {
         this.subscriber = MessagingFactory.getSubscriber(new ProcessLaunchMessageHandler(), routingKeys, Type.PROCESS_LAUNCH);
     }
 
-    public static void main(String[] args) throws Exception {
-
-        PreWorkflowManager preWorkflowManager = new PreWorkflowManager();
-
-        //String processId = "PROCESS_5b252ad9-d630-4cf9-80e3-0c30c55d1001";
-        //AppCatalog appCatalog = RegistryFactory.getAppCatalog();
-
-    }
-
     private String createAndLaunchPreWorkflow(String processId, String gateway) throws Exception {
 
         ExperimentCatalog experimentCatalog = RegistryFactory.getExperimentCatalog(gateway);
@@ -98,11 +89,17 @@ public class PreWorkflowManager {
             }
         }
 
-        WorkflowManager workflowManager = new WorkflowManager("AiravataDemoCluster", "wm-22",
+        WorkflowManager workflowManager = new WorkflowManager(
+                ServerSettings.getSetting("helix.cluster.name"),
+                ServerSettings.getSetting("post.workflow.manager.name"),
                 ServerSettings.getZookeeperConnection());
         String workflowName = workflowManager.launchWorkflow(processId + "-PRE-" + UUID.randomUUID().toString(),
                 allTasks.stream().map(t -> (AiravataTask) t).collect(Collectors.toList()), true, false);
         return workflowName;
+    }
+
+    public static void main(String[] args) throws Exception {
+        PreWorkflowManager preWorkflowManager = new PreWorkflowManager();
     }
 
     private class ProcessLaunchMessageHandler implements MessageHandler {

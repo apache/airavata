@@ -47,8 +47,8 @@ public class PostWorkflowManager {
 
     private static final Logger logger = LogManager.getLogger(PostWorkflowManager.class);
 
-    private final String BOOTSTRAP_SERVERS = "localhost:9092";
-    private final String TOPIC = "parsed-data";
+    //private final String BOOTSTRAP_SERVERS = "localhost:9092";
+    //private final String TOPIC = "parsed-data";
 
     private CuratorFramework curatorClient = null;
     private Publisher statusPublisher;
@@ -59,16 +59,16 @@ public class PostWorkflowManager {
         this.curatorClient.start();
     }
 
-    private Consumer<String, JobStatusResult> createConsumer() {
+    private Consumer<String, JobStatusResult> createConsumer() throws ApplicationSettingsException {
         final Properties props = new Properties();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "MonitoringConsumer");
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerSettings.getSetting("kafka.broker.url"));
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, ServerSettings.getSetting("kafka.broker.consumer.group"));
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JobStatusResultDeserializer.class.getName());
         // Create the consumer using props.
         final Consumer<String, JobStatusResult> consumer = new KafkaConsumer<String, JobStatusResult>(props);
         // Subscribe to the topic.
-        consumer.subscribe(Collections.singletonList(TOPIC));
+        consumer.subscribe(Collections.singletonList(ServerSettings.getSetting("kafka.broker.topic")));
         return consumer;
     }
 
@@ -184,8 +184,10 @@ public class PostWorkflowManager {
                         }
                         allTasks.add(completingTask);
 
-                        WorkflowManager workflowManager = new WorkflowManager("AiravataDemoCluster",
-                                "wm-23", ServerSettings.getZookeeperConnection());
+                        WorkflowManager workflowManager = new WorkflowManager(
+                                ServerSettings.getSetting("helix.cluster.name"),
+                                ServerSettings.getSetting("post.workflow.manager.name"),
+                                ServerSettings.getZookeeperConnection());
 
                         workflowManager.launchWorkflow(processId + "-POST-" + UUID.randomUUID().toString(),
                                 allTasks.stream().map(t -> (AiravataTask) t).collect(Collectors.toList()), true, false);
@@ -209,7 +211,7 @@ public class PostWorkflowManager {
         }
     }
 
-    private void runConsumer() throws InterruptedException {
+    private void runConsumer() throws ApplicationSettingsException {
         final Consumer<String, JobStatusResult> consumer = createConsumer();
 
         while (true) {
@@ -269,55 +271,5 @@ public class PostWorkflowManager {
         PostWorkflowManager postManager = new PostWorkflowManager();
         postManager.init();
         postManager.runConsumer();
-        /*
-        String processId = "PROCESS_5b252ad9-d630-4cf9-80e3-0c30c55d1001";
-        ExperimentCatalog experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-
-        ProcessModel processModel = (ProcessModel) experimentCatalog.get(ExperimentCatalogModelType.PROCESS, processId);
-        ExperimentModel experimentModel = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, processModel.getExperimentId());
-        String taskDag = processModel.getTaskDag();
-        List<TaskModel> taskList = processModel.getTasks();
-
-        String[] taskIds = taskDag.split(",");
-        final List<AiravataTask> allTasks = new ArrayList<>();
-
-        boolean jobSubmissionFound = false;
-
-        for (String taskId : taskIds) {
-            Optional<TaskModel> model = taskList.stream().filter(taskModel -> taskModel.getTaskId().equals(taskId)).findFirst();
-
-            if (model.isPresent()) {
-                TaskModel taskModel = model.get();
-                AiravataTask airavataTask = null;
-                if (taskModel.getTaskType() == TaskTypes.ENV_SETUP) {
-                    //airavataTask = new EnvSetupTask();
-                } else if (taskModel.getTaskType() == TaskTypes.JOB_SUBMISSION) {
-                    //airavataTask = new DefaultJobSubmissionTask();
-                    //airavataTask.setRetryCount(1);
-                    jobSubmissionFound = true;
-                } else if (taskModel.getTaskType() == TaskTypes.DATA_STAGING) {
-                    if (jobSubmissionFound) {
-                        airavataTask = new OutputDataStagingTask();
-                    } else {
-                        //airavataTask = new InputDataStagingTask();
-                    }
-                }
-
-                if (airavataTask != null) {
-                    airavataTask.setGatewayId(experimentModel.getGatewayId());
-                    airavataTask.setExperimentId(experimentModel.getExperimentId());
-                    airavataTask.setProcessId(processModel.getProcessId());
-                    airavataTask.setTaskId(taskModel.getTaskId());
-                    if (allTasks.size() > 0) {
-                        allTasks.get(allTasks.size() -1).setNextTask(new OutPort(airavataTask.getTaskId(), airavataTask));
-                    }
-                    allTasks.add(airavataTask);
-                }
-            }
-        }
-
-        WorkflowManager workflowManager = new WorkflowManager("AiravataDemoCluster", "wm-22", "localhost:2199");
-        workflowManager.launchWorkflow(UUID.randomUUID().toString(), allTasks.stream().map(t -> (AiravataTask)t).collect(Collectors.toList()), true);
-        */
     }
 }
