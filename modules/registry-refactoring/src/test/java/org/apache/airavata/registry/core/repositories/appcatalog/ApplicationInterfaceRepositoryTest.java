@@ -76,7 +76,13 @@ public class ApplicationInterfaceRepositoryTest {
         applicationModule.setAppModuleName("appMod1Name");
         String moduleId = applicationInterfaceRepository.addApplicationModule(applicationModule, gatewayId);
 
+        ApplicationModule applicationModule1 = new ApplicationModule();
+        applicationModule1.setAppModuleId("appMod2");
+        applicationModule1.setAppModuleName("appMod2Name");
+        String moduleId1 = applicationInterfaceRepository.addApplicationModule(applicationModule1, gatewayId);
+
         applicationInterfaceRepository.addApplicationModuleMapping(moduleId, interfaceId);
+        applicationInterfaceRepository.addApplicationModuleMapping(moduleId1, interfaceId);
 
         InputDataObjectType input = new InputDataObjectType();
         input.setName("input1");
@@ -106,10 +112,15 @@ public class ApplicationInterfaceRepositoryTest {
         assertEquals(applicationModule.getAppModuleName(),
                 applicationInterfaceRepository.getApplicationModules(filters).get(0).getAppModuleName());
 
-        assertTrue(applicationInterfaceRepository.getAccessibleApplicationModules(gatewayId, Arrays.asList(moduleId)).size() == 1);
+        List<String> accessibleAppIds = new ArrayList<>();
+        accessibleAppIds.add(moduleId);
+        accessibleAppIds.add(moduleId1);
+        List<ApplicationModule> appModuleList = applicationInterfaceRepository.getAccessibleApplicationModules(gatewayId, accessibleAppIds);
+        assertTrue(appModuleList.size() == 2);
+        assertEquals(moduleId, appModuleList.get(0).getAppModuleId());
 
         assertTrue(applicationInterfaceRepository.getAllApplicationInterfaces(gatewayId).size() == 1);
-        assertTrue(applicationInterfaceRepository.getAllApplicationModules(gatewayId).size() == 1);
+        assertTrue(applicationInterfaceRepository.getAllApplicationModules(gatewayId).size() == 2);
         assertEquals(interfaceId, applicationInterfaceRepository.getAllApplicationInterfaceIds().get(0));
 
         assertEquals(input.getName(), applicationInterfaceRepository.getApplicationInputs(interfaceId).get(0).getName());
@@ -120,6 +131,9 @@ public class ApplicationInterfaceRepositoryTest {
 
         applicationInterfaceRepository.removeApplicationModule(moduleId);
         assertFalse(applicationInterfaceRepository.isApplicationModuleExists(moduleId));
+
+        applicationInterfaceRepository.removeApplicationModule(moduleId1);
+        assertFalse(applicationInterfaceRepository.isApplicationModuleExists(moduleId1));
 
     }
 

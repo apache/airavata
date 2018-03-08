@@ -161,14 +161,11 @@ public class ApplicationDeploymentRepositoryTest {
         applicationDeploymentRepository.updateApplicationDeployment(appDeploymentId , applicationDeploymentDescription);
         assertTrue(applicationDeploymentRepository.getApplicationDeployement(appDeploymentId).getDefaultQueueName().equals("queue3"));
 
-        applicationDeploymentRepository.addApplicationDeployment(applicationDeploymentDescription1, gatewayId);
+        String deploymentId1 = applicationDeploymentRepository.addApplicationDeployment(applicationDeploymentDescription1, gatewayId);
         List<ApplicationDeploymentDescription> appDeploymentList = applicationDeploymentRepository.getAllApplicationDeployements(gatewayId);
         List<String> appDeploymentIds = applicationDeploymentRepository.getAllApplicationDeployementIds();
         assertTrue(appDeploymentList.size() == 2);
         assertTrue(appDeploymentIds.size() == 2);
-
-        applicationDeploymentRepository.removeAppDeployment(applicationDeploymentDescription1.getAppDeploymentId());
-        assertFalse(applicationDeploymentRepository.isExists(applicationDeploymentDescription1.getAppDeploymentId()));
 
         Map<String, String> filters = new HashMap<>();
         filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, applicationModule.getAppModuleId());
@@ -176,8 +173,17 @@ public class ApplicationDeploymentRepositoryTest {
         appDeploymentList = applicationDeploymentRepository.getApplicationDeployements(filters);
         assertEquals(computeResourceDescription.getComputeResourceId(), appDeploymentList.get(0).getComputeHostId());
 
-        appDeploymentList = applicationDeploymentRepository.getAccessibleApplicationDeployements(gatewayId, Arrays.asList(deploymentId));
-        assertTrue(appDeploymentList.size() == 1);
+        assertTrue(applicationDeploymentRepository.getAllApplicationDeployements(gatewayId).size() == 2);
+
+        List<String> accessibleAppIds = new ArrayList<>();
+        accessibleAppIds.add(deploymentId);
+        accessibleAppIds.add(deploymentId1);
+        appDeploymentList = applicationDeploymentRepository.getAccessibleApplicationDeployements(gatewayId, accessibleAppIds);
+        assertTrue(appDeploymentList.size() == 2);
+        assertEquals(deploymentId, appDeploymentList.get(0).getAppDeploymentId());
+
+        applicationDeploymentRepository.removeAppDeployment(applicationDeploymentDescription1.getAppDeploymentId());
+        assertFalse(applicationDeploymentRepository.isExists(applicationDeploymentDescription1.getAppDeploymentId()));
 
         computeResourceRepository.removeComputeResource(computeResourceDescription.getComputeResourceId());
 
