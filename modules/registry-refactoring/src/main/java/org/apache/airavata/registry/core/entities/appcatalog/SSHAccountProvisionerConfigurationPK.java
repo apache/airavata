@@ -24,6 +24,9 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import java.io.Serializable;
 
+/**
+ * The primary key class for the ssh_account_provisioner_config database table.
+ */
 public class SSHAccountProvisionerConfigurationPK implements Serializable {
     private static final long serialVersionUID = 1L;
 
