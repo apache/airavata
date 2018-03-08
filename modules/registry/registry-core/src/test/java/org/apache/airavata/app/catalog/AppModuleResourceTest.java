@@ -108,7 +108,8 @@ public class AppModuleResourceTest {
 
         appModuleResource = new AppModuleResource();
         appModuleResource.setGatewayId(gatewayId);
-        appModuleResource.setAccessibleAppDeploymentIds(Arrays.asList(appDepId1));
+        appModuleResource.setAccessibleApplicationDeploymentIds(Arrays.asList(appDepId1));
+        appModuleResource.setAccessibleComputeResourceIds(Arrays.asList(computeResourceId));
         appModuleResources = appModuleResource.getAll();
         Assert.assertEquals(1, appModuleResources.size());
         AppModuleResource firstAppModuleResource = (AppModuleResource) appModuleResources.get(0);
