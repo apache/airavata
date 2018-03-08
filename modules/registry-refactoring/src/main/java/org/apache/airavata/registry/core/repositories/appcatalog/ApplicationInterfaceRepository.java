@@ -192,12 +192,11 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
 
     @Override
     public List<ApplicationModule> getAccessibleApplicationModules(String gatewayId, List<String> accessibleAppIds) throws AppCatalogException {
-        List<ApplicationModule> accessibleApplicationModules = new ArrayList<>();
-        for(ApplicationModule module : getAllApplicationModules(gatewayId)) {
-            if(accessibleAppIds.contains(module.getAppModuleId())) {
-                accessibleApplicationModules.add(module);
-            }
-        }
+        ApplicationModuleRepository applicationModuleRepository = new ApplicationModuleRepository();
+        Map<String, Object> queryParameters = new HashMap<>();
+        queryParameters.put(DBConstants.ApplicationModule.GATEWAY_ID, gatewayId);
+        queryParameters.put(DBConstants.ApplicationModule.ACCESSIBLE_APPLICATION_MODULE_IDS, accessibleAppIds);
+        List<ApplicationModule> accessibleApplicationModules = applicationModuleRepository.select(QueryConstants.FIND_ACCESSIBLE_APPLICATION_MODULES, -1, 0, queryParameters);
         return accessibleApplicationModules;
     }
 

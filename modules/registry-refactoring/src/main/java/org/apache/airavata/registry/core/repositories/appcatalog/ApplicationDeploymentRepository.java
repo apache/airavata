@@ -126,12 +126,10 @@ public class ApplicationDeploymentRepository extends AppCatAbstractRepository<Ap
 
     @Override
     public List<ApplicationDeploymentDescription> getAccessibleApplicationDeployements(String gatewayId, List<String> accessibleAppIds) throws AppCatalogException {
-        List<ApplicationDeploymentDescription> accessibleApplicationDeployments = new ArrayList<>();
-        for(ApplicationDeploymentDescription description : getAllApplicationDeployements(gatewayId)) {
-            if(accessibleAppIds.contains(description.getAppDeploymentId())) {
-                accessibleApplicationDeployments.add(description);
-            }
-        }
+        Map<String, Object> queryParameters = new HashMap<>();
+        queryParameters.put(DBConstants.ApplicationDeployment.GATEWAY_ID, gatewayId);
+        queryParameters.put(DBConstants.ApplicationDeployment.ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS, accessibleAppIds);
+        List<ApplicationDeploymentDescription> accessibleApplicationDeployments = select(QueryConstants.FIND_ACCESSIBLE_APPLICATION_DEPLOYMENTS, -1, 0, queryParameters);
         return accessibleApplicationDeployments;
     }
 
