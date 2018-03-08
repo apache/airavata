@@ -32,7 +32,10 @@ import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.Type;
 import org.apache.airavata.messaging.core.impl.RabbitMQPublisher;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
+import org.apache.airavata.model.data.replica.*;
+import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.*;
@@ -46,6 +49,7 @@ import org.apache.log4j.MDC;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.List;
 
 public abstract class AiravataTask extends AbstractTask {
 
@@ -68,11 +72,16 @@ public abstract class AiravataTask extends AbstractTask {
     @TaskParam(name = "gatewayId")
     private String gatewayId;
 
+    @TaskParam(name = "Skip Status Publish")
+    private boolean skipTaskStatusPublish = false;
+
     @TaskOutPort(name = "Next Task")
     private OutPort nextTask;
 
     protected TaskResult onSuccess(String message) {
-        publishTaskState(TaskState.COMPLETED);
+        if (!skipTaskStatusPublish) {
+            publishTaskState(TaskState.COMPLETED);
+        }
         String successMessage = "Task " + getTaskId() + " completed." + (message != null ? " Message : " + message : "");
         logger.info(successMessage);
         return nextTask.invoke(new TaskResult(TaskResult.Status.COMPLETED, message));
@@ -104,11 +113,13 @@ public abstract class AiravataTask extends AbstractTask {
         errorModel.setActualErrorMessage(errors.toString());
         errorModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
 
-        publishTaskState(TaskState.FAILED);
-        saveAndPublishProcessStatus();
-        saveExperimentError(errorModel);
-        saveProcessError(errorModel);
-        saveTaskError(errorModel);
+        if (!skipTaskStatusPublish) {
+            publishTaskState(TaskState.FAILED);
+            saveAndPublishProcessStatus();
+            saveExperimentError(errorModel);
+            saveProcessError(errorModel);
+            saveTaskError(errorModel);
+        }
         return new TaskResult(fatal ? TaskResult.Status.FATAL_FAILED : TaskResult.Status.FAILED, errorMessage);
     }
 
@@ -161,6 +172,41 @@ public abstract class AiravataTask extends AbstractTask {
             getStatusPublisher().publish(msgCtx);
         } catch (Exception e) {
             logger.error("Failed to publist task status of task " + getTaskId());
+        }
+    }
+
+    public void saveExperimentOutput(String outputName, String outputVal) throws TaskOnFailException {
+        try {
+            ExperimentModel experiment = (ExperimentModel)experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+            List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
+            if (experimentOutputs != null && !experimentOutputs.isEmpty()){
+                for (OutputDataObjectType expOutput : experimentOutputs){
+                    if (expOutput.getName().equals(outputName)){
+                        DataProductModel dataProductModel = new DataProductModel();
+                        dataProductModel.setGatewayId(getGatewayId());
+                        dataProductModel.setOwnerName(getProcessModel().getUserName());
+                        dataProductModel.setProductName(outputName);
+                        dataProductModel.setDataProductType(DataProductType.FILE);
+
+                        DataReplicaLocationModel replicaLocationModel = new DataReplicaLocationModel();
+                        replicaLocationModel.setStorageResourceId(getTaskContext().getStorageResource().getStorageResourceId());
+                        replicaLocationModel.setReplicaName(outputName + " gateway data store copy");
+                        replicaLocationModel.setReplicaLocationCategory(ReplicaLocationCategory.GATEWAY_DATA_STORE);
+                        replicaLocationModel.setReplicaPersistentType(ReplicaPersistentType.TRANSIENT);
+                        replicaLocationModel.setFilePath(outputVal);
+                        dataProductModel.addToReplicaLocations(replicaLocationModel);
+
+                        ReplicaCatalog replicaCatalog = RegistryFactory.getReplicaCatalog();
+                        String productUri = replicaCatalog.registerDataProduct(dataProductModel);
+                        expOutput.setValue(productUri);
+                    }
+                }
+            }
+            experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT, experiment, experimentId);
+
+        } catch (RegistryException | AppCatalogException e) {
+            String msg = "expId: " + getExperimentId() + " processId: " + getProcessId() + " : - Error while updating experiment outputs";
+            throw new TaskOnFailException(msg, true, e);
         }
     }
 
@@ -218,7 +264,9 @@ public abstract class AiravataTask extends AbstractTask {
             MDC.put("process", getProcessId());
             MDC.put("gateway", getGatewayId());
             MDC.put("task", getTaskId());
-            publishTaskState(TaskState.EXECUTING);
+            if (!skipTaskStatusPublish) {
+                publishTaskState(TaskState.EXECUTING);
+            }
             return onRun(helper, getTaskContext());
         } finally {
             MDC.clear();
@@ -234,7 +282,9 @@ public abstract class AiravataTask extends AbstractTask {
             MDC.put("process", getProcessId());
             MDC.put("gateway", getGatewayId());
             MDC.put("task", getTaskId());
-            publishTaskState(TaskState.CANCELED);
+            if (!skipTaskStatusPublish) {
+                publishTaskState(TaskState.CANCELED);
+            }
             onCancel(getTaskContext());
         } finally {
             MDC.clear();
@@ -350,5 +400,13 @@ public abstract class AiravataTask extends AbstractTask {
 
     public void setNextTask(OutPort nextTask) {
         this.nextTask = nextTask;
+    }
+
+    public void setSkipTaskStatusPublish(boolean skipTaskStatusPublish) {
+        this.skipTaskStatusPublish = skipTaskStatusPublish;
+    }
+
+    public boolean isSkipTaskStatusPublish() {
+        return skipTaskStatusPublish;
     }
 }
