@@ -41,7 +41,7 @@ public class ComputeResourceRepositoryTest {
 
     private static Initialize initialize;
     private ComputeResourceRepository computeResourceRepository;
-    private static final Logger logger = LoggerFactory.getLogger(ComputeResourceRepository.class);
+    private static final Logger logger = LoggerFactory.getLogger(ComputeResourceRepositoryTest.class);
 
     @Before
     public void setUp() {

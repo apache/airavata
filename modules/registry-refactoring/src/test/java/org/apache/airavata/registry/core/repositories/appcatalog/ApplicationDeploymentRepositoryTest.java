@@ -47,7 +47,7 @@ public class ApplicationDeploymentRepositoryTest {
     private ApplicationInterfaceRepository applicationInterfaceRepository;
     private ApplicationDeploymentRepository applicationDeploymentRepository;
     private String gatewayId = "testGateway";
-    private static final Logger logger = LoggerFactory.getLogger(ApplicationDeploymentRepository.class);
+    private static final Logger logger = LoggerFactory.getLogger(ApplicationDeploymentRepositoryTest.class);
 
     @Before
     public void setUp() {

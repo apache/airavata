@@ -43,7 +43,7 @@ public class ApplicationInterfaceRepositoryTest {
     private static Initialize initialize;
     private ApplicationInterfaceRepository applicationInterfaceRepository;
     private String gatewayId = "testGateway";
-    private static final Logger logger = LoggerFactory.getLogger(ApplicationInterfaceRepository.class);
+    private static final Logger logger = LoggerFactory.getLogger(ApplicationInterfaceRepositoryTest.class);
 
     @Before
     public void setUp() {
