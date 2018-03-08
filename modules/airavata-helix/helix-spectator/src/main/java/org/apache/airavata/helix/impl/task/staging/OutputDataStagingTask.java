@@ -166,13 +166,14 @@ public class OutputDataStagingTask extends DataStagingTask {
                     }
 
                     logger.info("Transferring file " + sourceFileName);
-                    transferFile(sourceURI, destinationURI, sourceFileName, adaptor, storageResourceAdaptor);
+                    transferFile(processOutput.getName(), sourceURI, destinationURI, sourceFileName, adaptor, storageResourceAdaptor);
                 }
                 return onSuccess("Output data staging task " + getTaskId() + " successfully completed");
 
             } else {
                 // Downloading input file from the storage resource
-                transferFile(sourceURI, destinationURI, sourceFileName, adaptor, storageResourceAdaptor);
+                assert processOutput != null;
+                transferFile(processOutput.getName(), sourceURI, destinationURI, sourceFileName, adaptor, storageResourceAdaptor);
                 return onSuccess("Output data staging task " + getTaskId() + " successfully completed");
             }
 
@@ -190,7 +191,7 @@ public class OutputDataStagingTask extends DataStagingTask {
         }
     }
 
-    private void transferFile(URI sourceURI, URI destinationURI, String fileName, AgentAdaptor adaptor,
+    private void transferFile(String outputName, URI sourceURI, URI destinationURI, String fileName, AgentAdaptor adaptor,
                               StorageResourceAdaptor storageResourceAdaptor) throws TaskOnFailException {
         String localSourceFilePath = getLocalDataPath(fileName);
 
@@ -212,6 +213,8 @@ public class OutputDataStagingTask extends DataStagingTask {
             throw new TaskOnFailException("Failed uploading the output file to " + destinationURI.getPath() + " from local path " +
                     localSourceFilePath, true, e);
         }
+
+        saveExperimentOutput(outputName, destinationURI.toString());
     }
 
     @Override

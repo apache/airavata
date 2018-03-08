@@ -189,6 +189,7 @@ public class PostWorkflowManager {
                         completingTask.setExperimentId(experimentModel.getExperimentId());
                         completingTask.setProcessId(processModel.getProcessId());
                         completingTask.setTaskId("Completing-Task");
+                        completingTask.setSkipTaskStatusPublish(true);
                         if (allTasks.size() > 0) {
                             allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(completingTask.getTaskId(), completingTask));
                         }

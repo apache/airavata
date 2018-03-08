@@ -99,11 +99,14 @@ public class TaskUtil {
                     classField.setAccessible(true);
                     if (classField.getType().isAssignableFrom(String.class)) {
                         classField.set(instance, params.get(param.name()));
-                    } else if (classField.getType().isAssignableFrom(Integer.class)) {
+                    } else if (classField.getType().isAssignableFrom(Integer.class) ||
+                            classField.getType().isAssignableFrom(Integer.TYPE)) {
                         classField.set(instance, Integer.parseInt(params.get(param.name())));
-                    } else if (classField.getType().isAssignableFrom(Long.class)) {
+                    } else if (classField.getType().isAssignableFrom(Long.class) ||
+                            classField.getType().isAssignableFrom(Long.TYPE)) {
                         classField.set(instance, Long.parseLong(params.get(param.name())));
-                    } else if (classField.getType().isAssignableFrom(Boolean.class)) {
+                    } else if (classField.getType().isAssignableFrom(Boolean.class) ||
+                            classField.getType().isAssignableFrom(Boolean.TYPE)) {
                         classField.set(instance, Boolean.parseBoolean(params.get(param.name())));
                     }
                 }
