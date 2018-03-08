@@ -42,7 +42,7 @@ public class GroupResourceProfileRepositoryTest {
     private GroupResourceProfileRepository groupResourceProfileRepository;
     private String gatewayId = "TEST_GATEWAY";
     private String groupResourceProfileId = "TEST_GROUP_PROFILE_ID";
-    private static final Logger logger = LoggerFactory.getLogger(ComputeResourceRepository.class);
+    private static final Logger logger = LoggerFactory.getLogger(GroupResourceProfileRepositoryTest.class);
 
     @Before
     public void setUp() {
