@@ -22,6 +22,10 @@ package org.apache.airavata.registry.core.entities.appcatalog;
 
 import javax.persistence.*;
 
+/**
+ * The persistent class for the ssh_account_provisioner_config database table.
+ *
+ */
 @Entity
 @Table(name = "SSH_ACCOUNT_PROVISIONER_CONFIG")
 @IdClass(SSHAccountProvisionerConfigurationPK.class)
