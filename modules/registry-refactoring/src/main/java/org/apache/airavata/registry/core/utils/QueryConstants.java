@@ -1,7 +1,25 @@
+/**
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.airavata.registry.core.utils;
 
 import org.apache.airavata.model.user.UserProfile;
-
 import org.apache.airavata.registry.core.entities.appcatalog.*;
 
 public interface QueryConstants {
@@ -23,6 +41,9 @@ public interface QueryConstants {
     String FIND_APPLICATION_DEPLOYMENT = "SELECT AD FROM " + ApplicationDeploymentEntity.class.getSimpleName() + " AD " +
             "WHERE AD.appDeploymentId LIKE : " + DBConstants.ApplicationDeployment.APPLICATION_DEPLOYMENT_ID;
     String GET_ALL_APPLICATION_DEPLOYMENTS = "SELECT AD FROM " + ApplicationDeploymentEntity.class.getSimpleName() + " AD";
+    String FIND_ACCESSIBLE_APPLICATION_DEPLOYMENTS = "SELECT AD FROM " + ApplicationDeploymentEntity.class.getSimpleName() + " AD " +
+            "WHERE AD.gatewayId LIKE : " + DBConstants.ApplicationDeployment.GATEWAY_ID + " AND AD.appDeploymentId IN :" +
+            DBConstants.ApplicationDeployment.ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS;
 
     // Application Module Queries
     String FIND_APPLICATION_MODULES_FOR_GATEWAY_ID = "SELECT AM FROM " + ApplicationModuleEntity.class.getSimpleName() + " AM " +
@@ -31,6 +52,9 @@ public interface QueryConstants {
             "WHERE AM.appModuleName LIKE : " + DBConstants.ApplicationModule.APPLICATION_MODULE_NAME;
     String FIND_APPLICATION_MODULE = "SELECT AM FROM " + ApplicationModuleEntity.class.getSimpleName() + " AM " +
             "WHERE AM.appModuleId LIKE : " + DBConstants.ApplicationModule.APPLICATION_MODULE_ID;
+    String FIND_ACCESSIBLE_APPLICATION_MODULES = "SELECT AM FROM " + ApplicationModuleEntity.class.getSimpleName() + " AM " +
+            "WHERE AM.gatewayId LIKE : " + DBConstants.ApplicationModule.GATEWAY_ID + " AND AM.appModuleId IN :" +
+            DBConstants.ApplicationModule.ACCESSIBLE_APPLICATION_MODULE_IDS;
 
     // Application Interface Queries
     String FIND_APPLICATION_INTERFACES_FOR_GATEWAY_ID = "SELECT AI FROM " + ApplicationInterfaceEntity.class.getSimpleName() + " AI " +
