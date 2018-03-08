@@ -299,6 +299,17 @@
             </roles>
         </developer>
         <developer>
+            <id>sachinkariyattin</id>
+            <name>Sachin Kariyattin</name>
+            <email>sachinkariyattin@apache.org</email>
+            <timezone>-5</timezone>
+            <organization>Indiana University</organization>
+            <organizationUrl>http://www.iub.edu</organizationUrl>
+            <roles>
+                <role>committer</role>
+            </roles>
+        </developer>
+        <developer>
             <id>saminda</id>
             <name>Saminda Wijeratne</name>
             <email>samindaw@apache.org</email>
