@@ -54,7 +54,7 @@ public interface QueryConstants {
             "WHERE AM.appModuleId LIKE : " + DBConstants.ApplicationModule.APPLICATION_MODULE_ID;
     String FIND_ACCESSIBLE_APPLICATION_MODULES = "SELECT AM FROM " + ApplicationModuleEntity.class.getSimpleName() + " AM " +
             ", " + ApplicationDeploymentEntity.class.getSimpleName() + " AD WHERE AM.appModuleId = AD.appModuleId AND AM.gatewayId LIKE : " +
-            DBConstants.ApplicationModule.GATEWAY_ID + " AND AM.appModuleId IN :" + DBConstants.ApplicationModule.ACCESSIBLE_APPLICATION_MODULE_IDS +
+            DBConstants.ApplicationModule.GATEWAY_ID + " AND AD.appDeploymentId IN :" + DBConstants.ApplicationDeployment.ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS +
             " AND AD.computeHostId IN :" + DBConstants.ApplicationDeployment.ACCESSIBLE_COMPUTE_HOST_IDS;
 
     // Application Interface Queries
