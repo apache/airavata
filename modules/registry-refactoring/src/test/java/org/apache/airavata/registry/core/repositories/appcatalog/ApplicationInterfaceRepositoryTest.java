@@ -19,13 +19,17 @@
  */
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.parallelism.ApplicationParallelismType;
 import org.apache.airavata.registry.core.repositories.util.Initialize;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.ApplicationDeployment;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,6 +46,8 @@ public class ApplicationInterfaceRepositoryTest {
 
     private static Initialize initialize;
     private ApplicationInterfaceRepository applicationInterfaceRepository;
+    private ComputeResourceRepository computeResourceRepository;
+    private ApplicationDeploymentRepository applicationDeploymentRepository;
     private String gatewayId = "testGateway";
     private static final Logger logger = LoggerFactory.getLogger(ApplicationInterfaceRepositoryTest.class);
 
@@ -51,6 +57,8 @@ public class ApplicationInterfaceRepositoryTest {
             initialize = new Initialize("appcatalog-derby.sql");
             initialize.initializeDB();
             applicationInterfaceRepository = new ApplicationInterfaceRepository();
+            computeResourceRepository = new ComputeResourceRepository();
+            applicationDeploymentRepository = new ApplicationDeploymentRepository();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -71,10 +79,23 @@ public class ApplicationInterfaceRepositoryTest {
         String interfaceId = applicationInterfaceRepository.addApplicationInterface(applicationInterfaceDescription, gatewayId);
         assertEquals(applicationInterfaceDescription.getApplicationInterfaceId(), interfaceId);
 
+        ComputeResourceDescription computeResourceDescription = new ComputeResourceDescription();
+        computeResourceDescription.setComputeResourceId("compHost1");
+        computeResourceDescription.setHostName("compHost1Name");
+        String computeResourceId = computeResourceRepository.addComputeResource(computeResourceDescription);
+
         ApplicationModule applicationModule = new ApplicationModule();
         applicationModule.setAppModuleId("appMod1");
         applicationModule.setAppModuleName("appMod1Name");
         String moduleId = applicationInterfaceRepository.addApplicationModule(applicationModule, gatewayId);
+
+        ApplicationDeploymentDescription applicationDeploymentDescription = new ApplicationDeploymentDescription();
+        applicationDeploymentDescription.setAppDeploymentId("appDep1");
+        applicationDeploymentDescription.setAppModuleId(moduleId);
+        applicationDeploymentDescription.setComputeHostId(computeResourceId);
+        applicationDeploymentDescription.setExecutablePath("executablePath");
+        applicationDeploymentDescription.setParallelism(ApplicationParallelismType.SERIAL);
+        applicationDeploymentRepository.addApplicationDeployment(applicationDeploymentDescription, gatewayId);
 
         ApplicationModule applicationModule1 = new ApplicationModule();
         applicationModule1.setAppModuleId("appMod2");
@@ -115,8 +136,10 @@ public class ApplicationInterfaceRepositoryTest {
         List<String> accessibleAppIds = new ArrayList<>();
         accessibleAppIds.add(moduleId);
         accessibleAppIds.add(moduleId1);
-        List<ApplicationModule> appModuleList = applicationInterfaceRepository.getAccessibleApplicationModules(gatewayId, accessibleAppIds);
-        assertTrue(appModuleList.size() == 2);
+        List<String> accessibleCompHostIds = new ArrayList<>();
+        accessibleCompHostIds.add(computeResourceId);
+        List<ApplicationModule> appModuleList = applicationInterfaceRepository.getAccessibleApplicationModules(gatewayId, accessibleAppIds, accessibleCompHostIds);
+        assertTrue(appModuleList.size() == 1);
         assertEquals(moduleId, appModuleList.get(0).getAppModuleId());
 
         assertTrue(applicationInterfaceRepository.getAllApplicationInterfaces(gatewayId).size() == 1);
@@ -134,6 +157,8 @@ public class ApplicationInterfaceRepositoryTest {
 
         applicationInterfaceRepository.removeApplicationModule(moduleId1);
         assertFalse(applicationInterfaceRepository.isApplicationModuleExists(moduleId1));
+
+        computeResourceRepository.removeComputeResource(computeResourceId);
 
     }
 
