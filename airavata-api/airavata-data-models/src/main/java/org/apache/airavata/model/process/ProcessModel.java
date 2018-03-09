@@ -61,6 +61,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
   private static final org.apache.thrift.protocol.TField EXPERIMENT_DATA_DIR_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentDataDir", org.apache.thrift.protocol.TType.STRING, (short)22);
   private static final org.apache.thrift.protocol.TField USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userName", org.apache.thrift.protocol.TType.STRING, (short)23);
   private static final org.apache.thrift.protocol.TField USE_USER_CRPREF_FIELD_DESC = new org.apache.thrift.protocol.TField("useUserCRPref", org.apache.thrift.protocol.TType.BOOL, (short)24);
+  private static final org.apache.thrift.protocol.TField GROUP_RESOURCE_PROFILE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("groupResourceProfileId", org.apache.thrift.protocol.TType.STRING, (short)25);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new ProcessModelStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new ProcessModelTupleSchemeFactory();
@@ -89,6 +90,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
   private java.lang.String experimentDataDir; // optional
   private java.lang.String userName; // optional
   private boolean useUserCRPref; // optional
+  private java.lang.String groupResourceProfileId; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -115,7 +117,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     GENERATE_CERT((short)21, "generateCert"),
     EXPERIMENT_DATA_DIR((short)22, "experimentDataDir"),
     USER_NAME((short)23, "userName"),
-    USE_USER_CRPREF((short)24, "useUserCRPref");
+    USE_USER_CRPREF((short)24, "useUserCRPref"),
+    GROUP_RESOURCE_PROFILE_ID((short)25, "groupResourceProfileId");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -178,6 +181,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
           return USER_NAME;
         case 24: // USE_USER_CRPREF
           return USE_USER_CRPREF;
+        case 25: // GROUP_RESOURCE_PROFILE_ID
+          return GROUP_RESOURCE_PROFILE_ID;
         default:
           return null;
       }
@@ -224,7 +229,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
   private static final int __GENERATECERT_ISSET_ID = 3;
   private static final int __USEUSERCRPREF_ISSET_ID = 4;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.LAST_UPDATE_TIME,_Fields.PROCESS_STATUSES,_Fields.PROCESS_DETAIL,_Fields.APPLICATION_INTERFACE_ID,_Fields.APPLICATION_DEPLOYMENT_ID,_Fields.COMPUTE_RESOURCE_ID,_Fields.PROCESS_INPUTS,_Fields.PROCESS_OUTPUTS,_Fields.PROCESS_RESOURCE_SCHEDULE,_Fields.TASKS,_Fields.TASK_DAG,_Fields.PROCESS_ERRORS,_Fields.GATEWAY_EXECUTION_ID,_Fields.ENABLE_EMAIL_NOTIFICATION,_Fields.EMAIL_ADDRESSES,_Fields.STORAGE_RESOURCE_ID,_Fields.USER_DN,_Fields.GENERATE_CERT,_Fields.EXPERIMENT_DATA_DIR,_Fields.USER_NAME,_Fields.USE_USER_CRPREF};
+  private static final _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.LAST_UPDATE_TIME,_Fields.PROCESS_STATUSES,_Fields.PROCESS_DETAIL,_Fields.APPLICATION_INTERFACE_ID,_Fields.APPLICATION_DEPLOYMENT_ID,_Fields.COMPUTE_RESOURCE_ID,_Fields.PROCESS_INPUTS,_Fields.PROCESS_OUTPUTS,_Fields.PROCESS_RESOURCE_SCHEDULE,_Fields.TASKS,_Fields.TASK_DAG,_Fields.PROCESS_ERRORS,_Fields.GATEWAY_EXECUTION_ID,_Fields.ENABLE_EMAIL_NOTIFICATION,_Fields.EMAIL_ADDRESSES,_Fields.STORAGE_RESOURCE_ID,_Fields.USER_DN,_Fields.GENERATE_CERT,_Fields.EXPERIMENT_DATA_DIR,_Fields.USER_NAME,_Fields.USE_USER_CRPREF,_Fields.GROUP_RESOURCE_PROFILE_ID};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -282,6 +287,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.USE_USER_CRPREF, new org.apache.thrift.meta_data.FieldMetaData("useUserCRPref", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+    tmpMap.put(_Fields.GROUP_RESOURCE_PROFILE_ID, new org.apache.thrift.meta_data.FieldMetaData("groupResourceProfileId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ProcessModel.class, metaDataMap);
   }
@@ -390,6 +397,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       this.userName = other.userName;
     }
     this.useUserCRPref = other.useUserCRPref;
+    if (other.isSetGroupResourceProfileId()) {
+      this.groupResourceProfileId = other.groupResourceProfileId;
+    }
   }
 
   public ProcessModel deepCopy() {
@@ -428,6 +438,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     this.userName = null;
     setUseUserCRPrefIsSet(false);
     this.useUserCRPref = false;
+    this.groupResourceProfileId = null;
   }
 
   public java.lang.String getProcessId() {
@@ -1067,6 +1078,29 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __USEUSERCRPREF_ISSET_ID, value);
   }
 
+  public java.lang.String getGroupResourceProfileId() {
+    return this.groupResourceProfileId;
+  }
+
+  public void setGroupResourceProfileId(java.lang.String groupResourceProfileId) {
+    this.groupResourceProfileId = groupResourceProfileId;
+  }
+
+  public void unsetGroupResourceProfileId() {
+    this.groupResourceProfileId = null;
+  }
+
+  /** Returns true if field groupResourceProfileId is set (has been assigned a value) and false otherwise */
+  public boolean isSetGroupResourceProfileId() {
+    return this.groupResourceProfileId != null;
+  }
+
+  public void setGroupResourceProfileIdIsSet(boolean value) {
+    if (!value) {
+      this.groupResourceProfileId = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case PROCESS_ID:
@@ -1261,6 +1295,14 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       }
       break;
 
+    case GROUP_RESOURCE_PROFILE_ID:
+      if (value == null) {
+        unsetGroupResourceProfileId();
+      } else {
+        setGroupResourceProfileId((java.lang.String)value);
+      }
+      break;
+
     }
   }
 
@@ -1338,6 +1380,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     case USE_USER_CRPREF:
       return isUseUserCRPref();
 
+    case GROUP_RESOURCE_PROFILE_ID:
+      return getGroupResourceProfileId();
+
     }
     throw new java.lang.IllegalStateException();
   }
@@ -1397,6 +1442,8 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       return isSetUserName();
     case USE_USER_CRPREF:
       return isSetUseUserCRPref();
+    case GROUP_RESOURCE_PROFILE_ID:
+      return isSetGroupResourceProfileId();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -1632,6 +1679,15 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         return false;
     }
 
+    boolean this_present_groupResourceProfileId = true && this.isSetGroupResourceProfileId();
+    boolean that_present_groupResourceProfileId = true && that.isSetGroupResourceProfileId();
+    if (this_present_groupResourceProfileId || that_present_groupResourceProfileId) {
+      if (!(this_present_groupResourceProfileId && that_present_groupResourceProfileId))
+        return false;
+      if (!this.groupResourceProfileId.equals(that.groupResourceProfileId))
+        return false;
+    }
+
     return true;
   }
 
@@ -1734,6 +1790,10 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
     hashCode = hashCode * 8191 + ((isSetUseUserCRPref()) ? 131071 : 524287);
     if (isSetUseUserCRPref())
       hashCode = hashCode * 8191 + ((useUserCRPref) ? 131071 : 524287);
+
+    hashCode = hashCode * 8191 + ((isSetGroupResourceProfileId()) ? 131071 : 524287);
+    if (isSetGroupResourceProfileId())
+      hashCode = hashCode * 8191 + groupResourceProfileId.hashCode();
 
     return hashCode;
   }
@@ -1986,6 +2046,16 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         return lastComparison;
       }
     }
+    lastComparison = java.lang.Boolean.valueOf(isSetGroupResourceProfileId()).compareTo(other.isSetGroupResourceProfileId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetGroupResourceProfileId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.groupResourceProfileId, other.groupResourceProfileId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -2219,6 +2289,16 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (!first) sb.append(", ");
       sb.append("useUserCRPref:");
       sb.append(this.useUserCRPref);
+      first = false;
+    }
+    if (isSetGroupResourceProfileId()) {
+      if (!first) sb.append(", ");
+      sb.append("groupResourceProfileId:");
+      if (this.groupResourceProfileId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.groupResourceProfileId);
+      }
       first = false;
     }
     sb.append(")");
@@ -2535,6 +2615,14 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 25: // GROUP_RESOURCE_PROFILE_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.groupResourceProfileId = iprot.readString();
+              struct.setGroupResourceProfileIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -2744,6 +2832,13 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
         oprot.writeBool(struct.useUserCRPref);
         oprot.writeFieldEnd();
       }
+      if (struct.groupResourceProfileId != null) {
+        if (struct.isSetGroupResourceProfileId()) {
+          oprot.writeFieldBegin(GROUP_RESOURCE_PROFILE_ID_FIELD_DESC);
+          oprot.writeString(struct.groupResourceProfileId);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -2830,7 +2925,10 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (struct.isSetUseUserCRPref()) {
         optionals.set(21);
       }
-      oprot.writeBitSet(optionals, 22);
+      if (struct.isSetGroupResourceProfileId()) {
+        optionals.set(22);
+      }
+      oprot.writeBitSet(optionals, 23);
       if (struct.isSetCreationTime()) {
         oprot.writeI64(struct.creationTime);
       }
@@ -2933,6 +3031,9 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (struct.isSetUseUserCRPref()) {
         oprot.writeBool(struct.useUserCRPref);
       }
+      if (struct.isSetGroupResourceProfileId()) {
+        oprot.writeString(struct.groupResourceProfileId);
+      }
     }
 
     @Override
@@ -2942,7 +3043,7 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       struct.setProcessIdIsSet(true);
       struct.experimentId = iprot.readString();
       struct.setExperimentIdIsSet(true);
-      java.util.BitSet incoming = iprot.readBitSet(22);
+      java.util.BitSet incoming = iprot.readBitSet(23);
       if (incoming.get(0)) {
         struct.creationTime = iprot.readI64();
         struct.setCreationTimeIsSet(true);
@@ -3090,6 +3191,10 @@ public class ProcessModel implements org.apache.thrift.TBase<ProcessModel, Proce
       if (incoming.get(21)) {
         struct.useUserCRPref = iprot.readBool();
         struct.setUseUserCRPrefIsSet(true);
+      }
+      if (incoming.get(22)) {
+        struct.groupResourceProfileId = iprot.readString();
+        struct.setGroupResourceProfileIdIsSet(true);
       }
     }
   }
