@@ -95,7 +95,7 @@ public class ApplicationInterfaceRepositoryTest {
         applicationDeploymentDescription.setComputeHostId(computeResourceId);
         applicationDeploymentDescription.setExecutablePath("executablePath");
         applicationDeploymentDescription.setParallelism(ApplicationParallelismType.SERIAL);
-        applicationDeploymentRepository.addApplicationDeployment(applicationDeploymentDescription, gatewayId);
+        String deploymentId = applicationDeploymentRepository.addApplicationDeployment(applicationDeploymentDescription, gatewayId);
 
         ApplicationModule applicationModule1 = new ApplicationModule();
         applicationModule1.setAppModuleId("appMod2");
@@ -134,8 +134,7 @@ public class ApplicationInterfaceRepositoryTest {
                 applicationInterfaceRepository.getApplicationModules(filters).get(0).getAppModuleName());
 
         List<String> accessibleAppIds = new ArrayList<>();
-        accessibleAppIds.add(moduleId);
-        accessibleAppIds.add(moduleId1);
+        accessibleAppIds.add(deploymentId);
         List<String> accessibleCompHostIds = new ArrayList<>();
         accessibleCompHostIds.add(computeResourceId);
         List<ApplicationModule> appModuleList = applicationInterfaceRepository.getAccessibleApplicationModules(gatewayId, accessibleAppIds, accessibleCompHostIds);
