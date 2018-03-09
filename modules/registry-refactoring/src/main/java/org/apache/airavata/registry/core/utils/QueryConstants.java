@@ -43,7 +43,8 @@ public interface QueryConstants {
     String GET_ALL_APPLICATION_DEPLOYMENTS = "SELECT AD FROM " + ApplicationDeploymentEntity.class.getSimpleName() + " AD";
     String FIND_ACCESSIBLE_APPLICATION_DEPLOYMENTS = "SELECT AD FROM " + ApplicationDeploymentEntity.class.getSimpleName() + " AD " +
             "WHERE AD.gatewayId LIKE : " + DBConstants.ApplicationDeployment.GATEWAY_ID + " AND AD.appDeploymentId IN :" +
-            DBConstants.ApplicationDeployment.ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS;
+            DBConstants.ApplicationDeployment.ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS + " AND AD.computeHostId IN :" +
+            DBConstants.ApplicationDeployment.ACCESSIBLE_COMPUTE_HOST_IDS;
 
     // Application Module Queries
     String FIND_APPLICATION_MODULES_FOR_GATEWAY_ID = "SELECT AM FROM " + ApplicationModuleEntity.class.getSimpleName() + " AM " +
@@ -53,8 +54,9 @@ public interface QueryConstants {
     String FIND_APPLICATION_MODULE = "SELECT AM FROM " + ApplicationModuleEntity.class.getSimpleName() + " AM " +
             "WHERE AM.appModuleId LIKE : " + DBConstants.ApplicationModule.APPLICATION_MODULE_ID;
     String FIND_ACCESSIBLE_APPLICATION_MODULES = "SELECT AM FROM " + ApplicationModuleEntity.class.getSimpleName() + " AM " +
-            "WHERE AM.gatewayId LIKE : " + DBConstants.ApplicationModule.GATEWAY_ID + " AND AM.appModuleId IN :" +
-            DBConstants.ApplicationModule.ACCESSIBLE_APPLICATION_MODULE_IDS;
+            "JOIN " + ApplicationDeploymentEntity.class.getSimpleName() + " AD ON AM.appModuleId = AD.appModuleId WHERE AM.gatewayId LIKE : " +
+            DBConstants.ApplicationModule.GATEWAY_ID + " AND AM.appModuleId IN :" + DBConstants.ApplicationModule.ACCESSIBLE_APPLICATION_MODULE_IDS +
+            " AND AD.computeHostId IN :" + DBConstants.ApplicationDeployment.ACCESSIBLE_COMPUTE_HOST_IDS;
 
     // Application Interface Queries
     String FIND_APPLICATION_INTERFACES_FOR_GATEWAY_ID = "SELECT AI FROM " + ApplicationInterfaceEntity.class.getSimpleName() + " AI " +
