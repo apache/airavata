@@ -195,7 +195,7 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
         ApplicationModuleRepository applicationModuleRepository = new ApplicationModuleRepository();
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.ApplicationModule.GATEWAY_ID, gatewayId);
-        queryParameters.put(DBConstants.ApplicationModule.ACCESSIBLE_APPLICATION_MODULE_IDS, accessibleAppIds);
+        queryParameters.put(DBConstants.ApplicationDeployment.ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS, accessibleAppIds);
         queryParameters.put(DBConstants.ApplicationDeployment.ACCESSIBLE_COMPUTE_HOST_IDS, accessibleCompHostIds);
         List<ApplicationModule> accessibleApplicationModules = applicationModuleRepository.select(QueryConstants.FIND_ACCESSIBLE_APPLICATION_MODULES, -1, 0, queryParameters);
         return accessibleApplicationModules;

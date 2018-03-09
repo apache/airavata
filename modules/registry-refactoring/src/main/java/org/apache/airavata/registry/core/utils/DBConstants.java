@@ -36,7 +36,6 @@ public class DBConstants {
         public static final String APPLICATION_MODULE_ID = "appModuleId";
         public static final String APPLICATION_MODULE_NAME = "appModuleName";
         public static final String GATEWAY_ID = "gatewayId";
-        public static final String ACCESSIBLE_APPLICATION_MODULE_IDS = "accessibleAppModuleIds";
     }
 
     public static class ApplicationInterface {
