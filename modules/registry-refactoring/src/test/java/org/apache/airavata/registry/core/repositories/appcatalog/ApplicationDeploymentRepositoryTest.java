@@ -73,15 +73,12 @@ public class ApplicationDeploymentRepositoryTest {
         ComputeResourceDescription computeResourceDescription = new ComputeResourceDescription();
         computeResourceDescription.setComputeResourceId("compHost1");
         computeResourceDescription.setHostName("compHost1Name");
-        computeResourceRepository.addComputeResource(computeResourceDescription);
+        String computeResourceId = computeResourceRepository.addComputeResource(computeResourceDescription);
 
         ApplicationModule applicationModule = new ApplicationModule();
         applicationModule.setAppModuleId("appMod1");
         applicationModule.setAppModuleName("appMod1Name");
         applicationInterfaceRepository.addApplicationModule(applicationModule, gatewayId);
-
-        ApplicationDeploymentDescription applicationDeploymentDescription = new ApplicationDeploymentDescription();
-        ApplicationDeploymentDescription applicationDeploymentDescription1 = new ApplicationDeploymentDescription();
 
         CommandObject moduleLoadCmd = new CommandObject();
         moduleLoadCmd.setCommand("moduleLoadCmd");
@@ -108,10 +105,11 @@ public class ApplicationDeploymentRepositoryTest {
         postJobCommand.setCommand("postCommand");
         postJobCommand.setCommandOrder(3);
 
+        ApplicationDeploymentDescription applicationDeploymentDescription = new ApplicationDeploymentDescription();
         applicationDeploymentDescription.setAppDeploymentId("appDep1");
         applicationDeploymentDescription.setAppDeploymentDescription("test application deployment1");
         applicationDeploymentDescription.setAppModuleId(applicationModule.getAppModuleId());
-        applicationDeploymentDescription.setComputeHostId(computeResourceDescription.getComputeResourceId());
+        applicationDeploymentDescription.setComputeHostId(computeResourceId);
         applicationDeploymentDescription.setExecutablePath("executablePath1");
         applicationDeploymentDescription.setParallelism(ApplicationParallelismType.SERIAL);
         applicationDeploymentDescription.setModuleLoadCmds(Arrays.asList(moduleLoadCmd));
@@ -126,10 +124,11 @@ public class ApplicationDeploymentRepositoryTest {
         applicationDeploymentDescription.setDefaultWalltime(15);
         applicationDeploymentDescription.setEditableByUser(true);
 
+        ApplicationDeploymentDescription applicationDeploymentDescription1 = new ApplicationDeploymentDescription();
         applicationDeploymentDescription1.setAppDeploymentId("appDep2");
         applicationDeploymentDescription1.setAppDeploymentDescription("test application deployment2");
         applicationDeploymentDescription1.setAppModuleId(applicationModule.getAppModuleId());
-        applicationDeploymentDescription1.setComputeHostId(computeResourceDescription.getComputeResourceId());
+        applicationDeploymentDescription1.setComputeHostId(computeResourceId);
         applicationDeploymentDescription1.setExecutablePath("executablePath1");
         applicationDeploymentDescription1.setParallelism(ApplicationParallelismType.MPI);
         applicationDeploymentDescription1.setModuleLoadCmds(Arrays.asList(moduleLoadCmd));
@@ -178,7 +177,9 @@ public class ApplicationDeploymentRepositoryTest {
         List<String> accessibleAppIds = new ArrayList<>();
         accessibleAppIds.add(deploymentId);
         accessibleAppIds.add(deploymentId1);
-        appDeploymentList = applicationDeploymentRepository.getAccessibleApplicationDeployements(gatewayId, accessibleAppIds);
+        List<String> accessibleCompHostIds = new ArrayList<>();
+        accessibleCompHostIds.add(computeResourceId);
+        appDeploymentList = applicationDeploymentRepository.getAccessibleApplicationDeployements(gatewayId, accessibleAppIds, accessibleCompHostIds);
         assertTrue(appDeploymentList.size() == 2);
         assertEquals(deploymentId, appDeploymentList.get(0).getAppDeploymentId());
 

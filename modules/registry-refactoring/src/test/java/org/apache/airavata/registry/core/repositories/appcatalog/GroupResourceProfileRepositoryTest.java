@@ -218,8 +218,8 @@ public class GroupResourceProfileRepositoryTest {
         assertTrue(groupResourceProfileRepository.getAllGroupBatchQueueResourcePolicies(groupResourceProfileId).size() == 2);
 
         groupResourceProfileRepository.removeGroupResourceProfile(groupResourceProfileId);
-        computeResourceRepository.removeComputeResource(description.getComputeResourceId());
-        computeResourceRepository.removeComputeResource(cm2.getComputeResourceId());
+        computeResourceRepository.removeComputeResource(resourceId1);
+        computeResourceRepository.removeComputeResource(resourceId2);
 
     }
 }
