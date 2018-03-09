@@ -29,6 +29,7 @@ from airavata.model.credential.store.ttypes import CredentialOwnerType,SummaryTy
 from airavata.model.application.io.ttypes import DataType
 
 from collections import OrderedDict
+import json
 import logging
 import os
 
@@ -231,6 +232,22 @@ class GroupViewSet(APIBackedViewSet):
         group_manager_client = self.request.profile_service['group_manager']
         group_manager_client.deleteGroup(
             self.authz_token, group.id, group.ownerId)
+
+    @detail_route(methods=['post'])
+    def add_admins(self, request, group_id=None):
+        admin_ids = request.data
+        group_manager_client = self.request.profile_service['group_manager']
+        result = group_manager_client.addGroupAdmins(
+            self.authz_token, group_id, admin_ids)
+        return Response({'success': result})
+
+    @detail_route(methods=['post'])
+    def remove_admins(self, request, group_id=None):
+        admin_ids = request.data
+        group_manager_client = self.request.profile_service['group_manager']
+        result = group_manager_client.removeGroupAdmins(
+            self.authz_token, group_id, admin_ids)
+        return Response({'success': result})
 
 
 class ProjectViewSet(APIBackedViewSet):

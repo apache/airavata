@@ -41,6 +41,22 @@ class GroupService {
         return FetchUtils.delete('/api/groups/'
                                  + encodeURIComponent(groupId) + '/');
     }
+
+    // adminIds is an array of sharing user ids, for example:
+    //   ['user1@test-domain', 'user2@test-domain']
+    addAdmins(groupId, adminIds) {
+        return FetchUtils.post('/api/groups/'
+                                 + encodeURIComponent(groupId) + '/add_admins/',
+                               JSON.stringify(adminIds));
+    }
+
+    // adminIds is an array of sharing user ids, for example:
+    //   ['user1@test-domain', 'user2@test-domain']
+    removeAdmins(groupId, adminIds) {
+        return FetchUtils.post('/api/groups/'
+                                 + encodeURIComponent(groupId) + '/remove_admins/',
+                               JSON.stringify(adminIds));
+    }
 }
 
 // Export as a singleton
