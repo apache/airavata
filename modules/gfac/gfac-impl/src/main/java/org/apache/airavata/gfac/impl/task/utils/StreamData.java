@@ -83,7 +83,7 @@ public class StreamData extends TimerTask  {
             log.error("expId: {}, processId:{}, taskId: {}:- Couldn't stage file {} , Erroneous path specified",
                     taskContext.getExperimentId(), taskContext.getProcessId(), taskContext.getTaskId(),
                     taskContext.getProcessOutput().getName());
-        } catch (IllegalAccessException | InstantiationException | AiravataException | IOException | JSchException  e) {
+        } catch (IllegalAccessException | InstantiationException | AiravataException | IOException | JSchException | TException  e) {
             log.error("expId: {}, processId:{}, taskId: {}:- Couldn't stage file {} , Error occurred while streaming data",
                     taskContext.getExperimentId(), taskContext.getProcessId(), taskContext.getTaskId(),
                     taskContext.getProcessOutput().getName());
@@ -91,8 +91,6 @@ public class StreamData extends TimerTask  {
             log.error("expId: {}, processId:{}, taskId: {}:- Couldn't stage file {} , Error occurred while connecting with credential store",
                     taskContext.getExperimentId(), taskContext.getProcessId(), taskContext.getTaskId(),
                     taskContext.getProcessOutput().getName());
-        } catch (TException e) {
-            throw new RuntimeException("Error ", e);
         }
     }
 
