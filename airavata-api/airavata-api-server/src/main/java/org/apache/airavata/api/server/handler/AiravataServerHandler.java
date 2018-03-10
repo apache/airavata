@@ -115,6 +115,9 @@ import org.apache.airavata.sharing.registry.models.SearchCriteria;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.registry.models.User;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
+import org.apache.airavata.sharing.registry.models.UserGroup;
+import org.apache.airavata.sharing.registry.models.GroupCardinality;
+import org.apache.airavata.sharing.registry.models.GroupType;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -293,6 +296,13 @@ public class AiravataServerHandler implements Airavata.Iface {
                 permissionType.setName("WRITE");
                 permissionType.setDescription("Write permission type");
                 client.createPermissionType(permissionType);
+
+                permissionType = new PermissionType();
+                permissionType.setPermissionTypeId(domain.domainId+":EXEC");
+                permissionType.setDomainId(domain.domainId);
+                permissionType.setName("EXEC");
+                permissionType.setDescription("Execute permission type");
+                client.createPermissionType(permissionType);
             }
             sharingClientPool.returnResource(client);
         } catch (Exception ex) {
@@ -402,6 +412,27 @@ public class AiravataServerHandler implements Airavata.Iface {
             permissionType.setName("WRITE");
             permissionType.setDescription("Write permission type");
             sharingClient.createPermissionType(permissionType);
+
+            permissionType = new PermissionType();
+            permissionType.setPermissionTypeId(domain.domainId+":EXEC");
+            permissionType.setDomainId(domain.domainId);
+            permissionType.setName("EXEC");
+            permissionType.setDescription("Execute permission type");
+            sharingClient.createPermissionType(permissionType);
+
+            //Create an "everyone" group for the domain
+            String groupId = "everyone@" + domain.domainId;
+            UserGroup userGroup = new UserGroup();
+            userGroup.setGroupId(groupId);
+            userGroup.setDomainId(domain.domainId);
+            userGroup.setGroupCardinality(GroupCardinality.MULTI_USER);
+            userGroup.setCreatedTime(System.currentTimeMillis());
+            userGroup.setUpdatedTime(System.currentTimeMillis());
+            userGroup.setOwnerId(authzToken.getClaimsMap().get(Constants.USER_NAME) + "@" + domain.domainId);
+            userGroup.setName("everyone");
+            userGroup.setDescription("Default Group");
+            userGroup.setGroupType(GroupType.DOMAIN_LEVEL_GROUP);
+            sharingClient.createGroup(userGroup);
 
             registryClientPool.returnResource(registryClient);
             sharingClientPool.returnResource(sharingClient);
@@ -2266,7 +2297,15 @@ public class AiravataServerHandler implements Airavata.Iface {
                 sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         userName + "@" + gatewayId, sharingFilters, 0, -1).forEach(a -> accessibleAppDeploymentIds.add(a.entityId));
             }
-            List<ApplicationModule> result = regClient.getAccessibleAppModules(gatewayId, accessibleAppDeploymentIds);
+            List<String> accessibleComputeResourceIds = new ArrayList<>();
+            List<GroupResourceProfile> groupResourceProfileList = getGroupResourceList(authzToken, gatewayId);
+            for(GroupResourceProfile groupResourceProfile : groupResourceProfileList) {
+                List<GroupComputeResourcePreference> groupComputeResourcePreferenceList = groupResourceProfile.getComputePreferences();
+                for(GroupComputeResourcePreference groupComputeResourcePreference : groupComputeResourcePreferenceList) {
+                    accessibleComputeResourceIds.add(groupComputeResourcePreference.getComputeResourceId());
+                }
+            }
+            List<ApplicationModule> result = regClient.getAccessibleAppModules(gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
             return result;
@@ -2468,7 +2507,15 @@ public class AiravataServerHandler implements Airavata.Iface {
                 sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         userName + "@" + gatewayId, sharingFilters, 0, -1).forEach(a -> accessibleAppDeploymentIds.add(a.entityId));
             }
-            List<ApplicationDeploymentDescription> result = regClient.getAccessibleApplicationDeployments(gatewayId, accessibleAppDeploymentIds);
+            List<String> accessibleComputeResourceIds = new ArrayList<>();
+            List<GroupResourceProfile> groupResourceProfileList = getGroupResourceList(authzToken, gatewayId);
+            for(GroupResourceProfile groupResourceProfile : groupResourceProfileList) {
+                List<GroupComputeResourcePreference> groupComputeResourcePreferenceList = groupResourceProfile.getComputePreferences();
+                for(GroupComputeResourcePreference groupComputeResourcePreference : groupComputeResourcePreferenceList) {
+                    accessibleComputeResourceIds.add(groupComputeResourcePreference.getComputeResourceId());
+                }
+            }
+            List<ApplicationDeploymentDescription> result = regClient.getAccessibleApplicationDeployments(gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
             return result;
@@ -4921,9 +4968,16 @@ public class AiravataServerHandler implements Airavata.Iface {
                 if(userPermission.getValue().equals(ResourcePermissionType.WRITE))
                     sharingClient.shareEntityWithUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "WRITE", true);
-                else
+                else if(userPermission.getValue().equals(ResourcePermissionType.READ))
                     sharingClient.shareEntityWithUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "READ", true);
+                else if(userPermission.getValue().equals(ResourcePermissionType.EXEC))
+                    sharingClient.shareEntityWithUsers(gatewayId, resourceId,
+                            Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "EXEC", true);
+                else {
+                    logger.error("Invalid ResourcePermissionType : " + userPermission.getValue().toString());
+                    throw new AiravataClientException(AiravataErrorType.UNSUPPORTED_OPERATION);
+                }
             }
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
@@ -4951,9 +5005,16 @@ public class AiravataServerHandler implements Airavata.Iface {
                 if(userPermission.getValue().equals(ResourcePermissionType.WRITE))
                     sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "WRITE");
-                else
+                else if(userPermission.getValue().equals(ResourcePermissionType.READ))
                     sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "READ");
+                else if(userPermission.getValue().equals(ResourcePermissionType.EXEC))
+                    sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
+                            Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "EXEC");
+                else {
+                    logger.error("Invalid ResourcePermissionType : " + userPermission.getValue().toString());
+                    throw new AiravataClientException(AiravataErrorType.UNSUPPORTED_OPERATION);
+                }
             }
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);

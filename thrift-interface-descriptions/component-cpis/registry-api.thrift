@@ -871,7 +871,8 @@ service RegistryService {
              *
             */
             list<application_deployment_model.ApplicationModule> getAccessibleAppModules (1: required string gatewayId
-                    2: required list<string> accessibleAppDeploymentIds)
+                    2: required list<string> accessibleAppDeploymentIds,
+                    3: required list<string> accessibleComputeResourceIds)
                   throws (1: registry_api_errors.RegistryServiceException rse)
 
             /**
@@ -988,7 +989,8 @@ service RegistryService {
              *
             */
             list<application_deployment_model.ApplicationDeploymentDescription> getAccessibleApplicationDeployments(1: required string gatewayId,
-                        2: required list<string> accessibleAppDeploymentIds)
+                        2: required list<string> accessibleAppDeploymentIds,
+                        3: required list<string> accessibleComputeResourceIds)
                 	throws (1: registry_api_errors.RegistryServiceException rse)
 
             /**

@@ -55,11 +55,16 @@ public class AppDeploymentResource extends AppCatAbstractResource {
     private AppModuleResource moduleResource;
     private Timestamp createdTime;
     private Timestamp updatedTime;
-    private List<String> accessibleAppDeploymentIds;
+    private List<String> accessibleApplicationDeploymentIds;
+    private List<String> accessibleComputeResourceIds;
 
-    public List<String> getAccessibleAppDeploymentIds() { return accessibleAppDeploymentIds; }
+    public List<String> getAccessibleApplicationDeploymentIds() { return accessibleApplicationDeploymentIds; }
 
-    public void setAccessibleAppDeploymentIds(List<String> accessibleAppDeploymentIds) { this.accessibleAppDeploymentIds = accessibleAppDeploymentIds; }
+    public void setAccessibleApplicationDeploymentIds(List<String> accessibleAppDeploymentIds) { this.accessibleApplicationDeploymentIds = accessibleAppDeploymentIds; }
+
+    public List<String> getAccessibleComputeResourceIds() { return accessibleComputeResourceIds; }
+
+    public void setAccessibleComputeResourceIds(List<String> accessibleComputeResourceIds) { this.accessibleComputeResourceIds = accessibleComputeResourceIds; }
 
     public String getGatewayId() { return gatewayId; }
 
@@ -317,8 +322,11 @@ public class AppDeploymentResource extends AppCatAbstractResource {
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APPLICATION_DEPLOYMENT);
             generator.setParameter(ApplicationDeploymentConstants.GATEWAY_ID, gatewayId);
-            if (accessibleAppDeploymentIds != null && !accessibleAppDeploymentIds.isEmpty()) {
-                generator.setParameter(ApplicationDeploymentConstants.DEPLOYMENT_ID, accessibleAppDeploymentIds);
+            if (accessibleApplicationDeploymentIds != null && !accessibleApplicationDeploymentIds.isEmpty()) {
+                generator.setParameter(ApplicationDeploymentConstants.DEPLOYMENT_ID, accessibleApplicationDeploymentIds);
+            }
+            if (accessibleComputeResourceIds != null && !accessibleComputeResourceIds.isEmpty()) {
+                generator.setParameter(ApplicationDeploymentConstants.COMPUTE_HOST_ID, accessibleComputeResourceIds);
             }
             Query q = generator.selectQuery(em);
             List results = q.getResultList();
