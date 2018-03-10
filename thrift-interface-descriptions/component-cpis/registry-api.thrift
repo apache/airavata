@@ -2569,7 +2569,7 @@ service RegistryService {
                * Group Resource Profile API methods
                *
                */
-               void createGroupResourceProfile(1: required group_resource_profile_model.GroupResourceProfile groupResourceProfile)
+               string createGroupResourceProfile(1: required group_resource_profile_model.GroupResourceProfile groupResourceProfile)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 
                void updateGroupResourceProfile(1: required group_resource_profile_model.GroupResourceProfile groupResourceProfile)

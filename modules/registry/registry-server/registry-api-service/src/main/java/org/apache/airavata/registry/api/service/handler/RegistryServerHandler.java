@@ -2362,22 +2362,16 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public void createGroupResourceProfile(GroupResourceProfile groupResourceProfile) throws RegistryServiceException, TException {
+    public String createGroupResourceProfile(GroupResourceProfile groupResourceProfile) throws RegistryServiceException, TException {
         try {
-            if (!validateString(groupResourceProfile.getGroupResourceProfileId())){
-                logger.error("Cannot create group resource profile with empty group resource profile id");
-                RegistryServiceException exception =  new RegistryServiceException();
-                exception.setMessage("Cannot create group resource profile with empty gateway id");
-                throw exception;
-            }
             if (!isGatewayExistInternal(groupResourceProfile.getGatewayId())){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
             }
-
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-            groupResourceProfileRepository.addGroupResourceProfile(groupResourceProfile);
+            String groupResourceProfileId = groupResourceProfileRepository.addGroupResourceProfile(groupResourceProfile);
             logger.debug("New Group Resource Profile Created: " + groupResourceProfile.getGroupResourceProfileId());
+            return groupResourceProfileId;
         } catch (Exception e) {
             logger.error("Error while creating group resource profile...", e);
             RegistryServiceException exception = new RegistryServiceException();

@@ -1,3 +1,22 @@
+/**
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
@@ -25,7 +44,7 @@ public class GroupResourceProfileRepositoryTest {
     private ComputeResourceRepository computeResourceRepository;
     private GroupResourceProfileRepository groupResourceProfileRepository;
     private String gatewayId = "TEST_GATEWAY";
-    private String groupResourceProfileId = "TEST_GROUP_PROFILE_ID";
+    private String groupResourceProfileId = "";
     private static final Logger logger = LoggerFactory.getLogger(ComputeResourceRepository.class);
 
     @Before
@@ -112,19 +131,16 @@ public class GroupResourceProfileRepositoryTest {
         groupResourceProfile.setGroupResourceProfileName("TEST_GROUP_PROFILE_NAME");
 
         GroupAccountSSHProvisionerConfig groupAccountSSHProvisionerConfig = new GroupAccountSSHProvisionerConfig();
-        groupAccountSSHProvisionerConfig.setGroupResourceProfileId(groupResourceProfileId);
         groupAccountSSHProvisionerConfig.setResourceId(resourceId1);
         groupAccountSSHProvisionerConfig.setConfigName("configName");
         groupAccountSSHProvisionerConfig.setConfigValue("configvalue");
 
         GroupComputeResourcePreference groupComputeResourcePreference1 = new GroupComputeResourcePreference();
         groupComputeResourcePreference1.setComputeResourceId(resourceId1);
-        groupComputeResourcePreference1.setGroupResourceProfileId(groupResourceProfileId);
         groupComputeResourcePreference1.addToGroupSSHAccountProvisionerConfigs(groupAccountSSHProvisionerConfig);
 
         GroupComputeResourcePreference groupComputeResourcePreference2 = new GroupComputeResourcePreference();
         groupComputeResourcePreference2.setComputeResourceId(resourceId2);
-        groupComputeResourcePreference2.setGroupResourceProfileId(groupResourceProfileId);
 
         List<GroupComputeResourcePreference> groupComputeResourcePreferenceList = new ArrayList<>();
         groupComputeResourcePreferenceList.add(groupComputeResourcePreference1);
@@ -135,13 +151,11 @@ public class GroupResourceProfileRepositoryTest {
         ComputeResourcePolicy computeResourcePolicy = new ComputeResourcePolicy();
         computeResourcePolicy.setComputeResourceId(resourceId1);
         computeResourcePolicy.setResourcePolicyId("TEST_COM_RESOURCE_POLICY_ID1");
-        computeResourcePolicy.setGroupResourceProfileId(groupResourceProfileId);
         computeResourcePolicy.addToAllowedBatchQueues("queue1");
 
         ComputeResourcePolicy computeResourcePolicy2 = new ComputeResourcePolicy();
         computeResourcePolicy2.setComputeResourceId(resourceId2);
         computeResourcePolicy2.setResourcePolicyId("TEST_COM_RESOURCE_POLICY_ID2");
-        computeResourcePolicy2.setGroupResourceProfileId(groupResourceProfileId);
         computeResourcePolicy2.addToAllowedBatchQueues("cmqueue1");
 
         List<ComputeResourcePolicy> computeResourcePolicyList =  new ArrayList<>();
@@ -152,7 +166,6 @@ public class GroupResourceProfileRepositoryTest {
 
         BatchQueueResourcePolicy batchQueueResourcePolicy = new BatchQueueResourcePolicy();
         batchQueueResourcePolicy.setComputeResourceId(resourceId1);
-        batchQueueResourcePolicy.setGroupResourceProfileId(groupResourceProfileId);
         batchQueueResourcePolicy.setResourcePolicyId("TEST_BQ_RESOURCE_POLICY_ID1");
         batchQueueResourcePolicy.setQueuename("queue1");
         batchQueueResourcePolicy.setMaxAllowedCores(2);
@@ -160,7 +173,6 @@ public class GroupResourceProfileRepositoryTest {
 
         BatchQueueResourcePolicy batchQueueResourcePolicy2 = new BatchQueueResourcePolicy();
         batchQueueResourcePolicy2.setComputeResourceId(resourceId2);
-        batchQueueResourcePolicy2.setGroupResourceProfileId(groupResourceProfileId);
         batchQueueResourcePolicy2.setResourcePolicyId("TEST_BQ_RESOURCE_POLICY_ID2");
         batchQueueResourcePolicy2.setQueuename("cmqueue1");
         batchQueueResourcePolicy2.setMaxAllowedCores(3);
@@ -172,7 +184,7 @@ public class GroupResourceProfileRepositoryTest {
 
         groupResourceProfile.setBatchQueueResourcePolicies(batchQueueResourcePolicyList);
 
-        groupResourceProfileRepository.addGroupResourceProfile(groupResourceProfile);
+        groupResourceProfileId = groupResourceProfileRepository.addGroupResourceProfile(groupResourceProfile);
 
         if (groupResourceProfileRepository.isGroupResourceProfileExists(groupResourceProfileId)) {
             GroupResourceProfile getGroupResourceProfile = groupResourceProfileRepository.getGroupResourceProfile(groupResourceProfileId);
