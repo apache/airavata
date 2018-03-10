@@ -2370,7 +2370,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             }
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
             String groupResourceProfileId = groupResourceProfileRepository.addGroupResourceProfile(groupResourceProfile);
-            logger.debug("New Group Resource Profile Created: " + groupResourceProfile.getGroupResourceProfileId());
+            logger.debug("New Group Resource Profile Created: " + groupResourceProfileId);
             return groupResourceProfileId;
         } catch (Exception e) {
             logger.error("Error while creating group resource profile...", e);
