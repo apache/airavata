@@ -65,8 +65,13 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     @SecurityCheck
     public boolean updateGroup(AuthzToken authzToken, GroupModel groupModel) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
-            //TODO Validations for authorization (user must be owner or admin)
             SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+            String userId = getUserId(authzToken);
+            String domainId = getDomainId(authzToken);
+            if (!(sharingClient.hasOwnerAccess(domainId, groupModel.getId(), userId)
+                    || sharingClient.hasAdminAccess(domainId, groupModel.getId(), userId))) {
+                throw new GroupManagerServiceException("User does not have permission to update group");
+            }
 
             UserGroup sharingUserGroup = new UserGroup();
             sharingUserGroup.setGroupId(groupModel.getId());
@@ -92,8 +97,12 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     @SecurityCheck
     public boolean deleteGroup(AuthzToken authzToken, String groupId, String ownerId) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
-            //TODO Validations for authorization (user must be owner or admin)
             SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+            String userId = getUserId(authzToken);
+            String domainId = getDomainId(authzToken);
+            if (!(sharingClient.hasOwnerAccess(domainId, groupId, userId))) {
+                throw new GroupManagerServiceException("User does not have permission to delete group");
+            }
 
             sharingClient.deleteGroup(getDomainId(authzToken), groupId);
             return true;
