@@ -124,12 +124,67 @@ public class AiravataServerHandler implements Airavata.Iface {
                     Integer.parseInt(ServerSettings.getCredentialStoreServerPort()));
 
             initSharingRegistry();
+            postInitDefaultGateway();
         } catch (ApplicationSettingsException e) {
             logger.error("Error occured while reading airavata-server properties..", e);
         } catch (AiravataException e) {
             logger.error("Error occured while reading airavata-server properties..", e);
         } catch (TException e) {
             logger.error("Error occured while reading airavata-server properties..", e);
+        }
+    }
+
+    /**
+     * This method creates a password token for the default gateway profile. Default gateway is originally initialized
+     * at the registry server but we can not add the password token at that step as the credential store is not initialized
+     * before registry server.
+     */
+    private void postInitDefaultGateway() {
+
+        RegistryService.Client registryClient = registryClientPool.getResource();
+        try {
+
+            GatewayResourceProfile gatewayResourceProfile = registryClient.getGatewayResourceProfile(ServerSettings.getDefaultUserGateway());
+            if (gatewayResourceProfile != null && gatewayResourceProfile.getCredentialStoreToken() == null) {
+
+                logger.debug("Starting to add the password credential for default gateway : " +
+                        ServerSettings.getDefaultUserGateway());
+
+                PasswordCredential passwordCredential = new PasswordCredential();
+                passwordCredential.setPortalUserName(ServerSettings.getDefaultUser());
+                passwordCredential.setGatewayId(ServerSettings.getDefaultUserGateway());
+                passwordCredential.setLoginUserName(ServerSettings.getDefaultUser());
+                passwordCredential.setPassword(ServerSettings.getDefaultUserPassword());
+                passwordCredential.setDescription("Credentials for default gateway");
+
+                CredentialStoreService.Client csClient = csClientPool.getResource();
+                String token = null;
+                try {
+                    logger.info("Creating password credential for default gateway");
+                    token = csClient.addPasswordCredential(passwordCredential);
+                    csClientPool.returnResource(csClient);
+                } catch (Exception ex) {
+                    logger.error("Failed to create the password credential for the default gateway : " +
+                            ServerSettings.getDefaultUserGateway(), ex);
+                    if (csClient != null) {
+                        csClientPool.returnBrokenResource(csClient);
+                    }
+                }
+
+                if (token != null) {
+                    logger.debug("Adding password credential token " + token +" to the default gateway : " + ServerSettings.getDefaultUserGateway());
+                    gatewayResourceProfile.setIdentityServerPwdCredToken(token);
+                    registryClient.updateGatewayResourceProfile(ServerSettings.getDefaultUserGateway(), gatewayResourceProfile);
+                }
+
+                registryClientPool.returnResource(registryClient);
+            }
+        } catch (Exception e) {
+            logger.error("Failed to add the password credentials for the default gateway", e);
+
+            if (registryClient != null) {
+                registryClientPool.returnBrokenResource(registryClient);
+            }
         }
     }
 

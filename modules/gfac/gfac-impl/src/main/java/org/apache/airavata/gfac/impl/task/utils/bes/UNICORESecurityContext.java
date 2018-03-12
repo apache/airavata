@@ -51,7 +51,6 @@ import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.RequestData;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
-import org.apache.airavata.registry.core.experiment.catalog.model.UserConfigurationData;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

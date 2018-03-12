@@ -1,0 +1,154 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+# NOTE: copied from scigap/production/group_vars/all/vars.yml on 8-28-2017. Variables are added and removed all
+# the time so make sure you have the latest by comparing with scigap/production/group_vars/all/vars.yml
+
+# Update all entries below that have CHANGEME as the value
+
+ansible_connection: ssh
+ansible_user: root
+
+user: airavata
+group: airavata
+user_home: "/home/{{ user }}"
+
+# deployment related variables
+deployment_dir: "{{ user_home }}/master-deployment"
+airavata_source_dir: "{{ user_home }}/master-source"
+airavata_repo: "https://github.com/apache/airavata.git"
+airavata_dist: "apache-airavata-server-0.17-SNAPSHOT"
+airavata_dist_name: "{{ airavata_dist }}-bin.tar.gz"
+old_airavata_dist: "apache-airavata-server-0.17-SNAPSHOT"
+git_branch: "master"
+
+# Database related variables
+db_server: "{{ groups['database'][0] }}"
+db_server_port: "3306"
+db_user: "airavata"
+db_password: "123456"
+mysql_root_password: "123456"
+app_catalog: "app_catalog"
+exp_catalog: "experiment_catalog"
+replica_catalog: "replica_catalog"
+sharing_catalog: "sharing_catalog"
+workflow_catalog: "workflow_catalog"
+credential_store: "credential_store"
+profile_service: "profile_service"
+
+mysql_connector_jar: "mysql-connector-java-5.1.37-bin.jar"
+
+# Rabbitmq related vareables
+rabbitmq_server: "{{ groups['rabbitmq'][0] }}"
+rabbitmq_vhost: "master"
+rabbitmq_user: "airavata"
+rabbitmq_password: "123456"
+rabbitmq_port: "5672"
+rabbitmq_broker_url: "amqp://{{ rabbitmq_user }}:{{ rabbitmq_password }}@{{ rabbitmq_server}}:{{ rabbitmq_port }}/{{ rabbitmq_vhost }}"
+
+# Zoookeeper related variables
+zookeeper_client_port: 2181
+zookeeper_url: "{{ groups['zookeeper'][0] }}:{{ zookeeper_client_port }}"
+
+# API Server related variables
+api_server_name: "apiserver-node0"
+api_server_host: "{{ groups['api-orch'][0] }}"
+api_server_bind_host: "{{ api_server_host }}"
+api_server_port: "8930"
+api_secured: "false"
+tls_enable: "true"
+api_server_tls_port: "9930"
+enable_sharing: "true"
+iam_server_url: "https://{{ groups['keycloak'][0] }}/auth"
+iam_server_super_admin_username: "admin"
+iam_server_super_admin_password: "123456"
+
+# Orchestrator  related variables
+orchestrator_name: "orchestrator-node0"
+orchestrator_host: "{{ groups['api-orch'][0] }}"
+orchestrator_port: "8940"
+api_orch_dir: "{{ deployment_dir }}/api-orchestrator"
+api_orch_log_dir: "{{ api_orch_dir }}/logs"
+orchestrator_bind_host: "{{ orchestrator_host }}"
+
+# registry related variables
+registry_name: regserver-node0
+registry_host: "{{ groups['api-orch'][0] }}"
+registry_port: 8970
+default_gateway: "default"
+registry_bind_host: "{{ registry_host }}"
+default_registry_user: "default-admin"
+default_registry_password: "123456"
+
+# Credential and keystore related variables
+keystore_src_path: "{{inventory_dir}}/files/airavata.jks"
+keystore_passwd: "password"
+client_truststore_src_path: "{{inventory_dir}}/files/client_truststore.jks"
+client_truststore_passwd: "password"
+cred_keystore_src_path: "{{inventory_dir}}/files/cred_store.jks"
+cred_keystore_passwd: "123456"
+cred_keystore_alias: "seckey"
+cred_store_server_host: "{{ groups['api-orch'][0] }}"
+cred_store_port: "8960"
+keystores_location: "{{ deployment_dir }}/keystores"
+cred_store_server_bind_host: "{{ cred_store_server_host }}"
+
+# Gfac related variables
+gfac_name: "gfac-node0"
+gfac_host: "{{ groups['gfac'][0] }}"
+gfac_port: "8950"
+gfac_dir: "{{ deployment_dir }}/gfac-instance"
+gfac_log_dir: "{{ gfac_dir }}/logs"
+
+# Monitoring variables
+monitor_email_address: ""
+monitor_email_password: ""
+
+# PGA variables
+pga_repo: "https://github.com/apache/airavata-php-gateway.git"
+user_data_dir: "/var/www/portals/gateway-user-data"
+real_user_data_dir: "/data/gateway-user-data"
+airavata_server: "tls://{{ groups['api-orch'][0] }}"
+airavata_port: "9930"
+airavata_profile_service_server: "{{ groups['api-orch'][0] }}"
+auth_verify_peer: "false"
+oauth_service_url: "{{ iam_server_url }}"
+pga_default_http_port: 8008
+pga_default_https_port: 8443
+
+# Sharing Registry related variables
+sharing_registry_host: "{{ groups['api-orch'][0] }}"
+sharing_registry_port: 7878
+sharing_registry_bind_host: "{{ sharing_registry_host }}"
+
+# Profile Service related variables
+profile_service_host: "{{ groups['api-orch'][0] }}"
+profile_service_port: 8962
+profile_service_bind_host: "{{ profile_service_host }}"
+
+# Keycloak
+keycloak_ssl_keystore_file: "{{ keystore_src_path }}"
+keycloak_ssl_keystore_password: "{{ keystore_passwd }}"
+keycloak_db_host: "localhost"
+keycloak_db_username: "{{ db_user }}"
+keycloak_db_password: "{{ db_password }}"
+keycloak_master_account_username: "{{ iam_server_super_admin_username }}"
+keycloak_master_account_password: "{{ iam_server_super_admin_password }}"
