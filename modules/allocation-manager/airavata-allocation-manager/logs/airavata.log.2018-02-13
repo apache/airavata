@@ -1,0 +1,7 @@
+2018-02-13 12:05:17,799 [main] INFO  o.a.a.a.m.db.utils.JPAUtils  - Database already created for Sharing Catalog !!!
+2018-02-13 12:05:40,891 [main] INFO  o.dozer.config.GlobalSettings  - Trying to find Dozer configuration file: dozer.properties
+2018-02-13 12:05:40,897 [main] WARN  o.dozer.config.GlobalSettings  - Dozer configuration file not found: dozer.properties.  Using defaults for all Dozer global properties.
+2018-02-13 12:05:40,898 [main] INFO  org.dozer.DozerInitializer  - Initializing Dozer. Version: 5.4.0, Thread Name: main
+2018-02-13 12:05:40,945 [main] INFO  org.dozer.jmx.JMXPlatformImpl  - Dozer JMX MBean [org.dozer.jmx:type=DozerStatisticsController] auto registered with the Platform MBean Server
+2018-02-13 12:05:40,946 [main] INFO  org.dozer.jmx.JMXPlatformImpl  - Dozer JMX MBean [org.dozer.jmx:type=DozerAdminController] auto registered with the Platform MBean Server
+2018-02-13 12:05:40,950 [main] INFO  org.dozer.DozerBeanMapper  - Initializing a new instance of dozer bean mapper.

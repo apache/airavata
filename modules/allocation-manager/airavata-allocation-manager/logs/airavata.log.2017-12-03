@@ -1,0 +1,12 @@
+2017-12-03 00:37:00,058 [main] INFO  o.a.a.c.u.ApplicationSettings  - Settings loaded from jar:file:/Users/nikithachettiar/.m2/repository/org/apache/airavata/airavata-server-configuration/0.17-SNAPSHOT/airavata-server-configuration-0.17-SNAPSHOT.jar!/airavata-server.properties
+2017-12-03 00:37:01,222 [main] INFO  o.a.a.a.m.d.u.DatabaseCreator  - Script file not found at database_scripts/sharing-registry-derby.sql. Uses default database script file
+2017-12-03 00:37:01,226 [main] ERROR o.a.a.a.m.db.utils.JPAUtils  - null
+java.lang.NullPointerException: null
+	at java.io.Reader.<init>(Reader.java:78)
+	at java.io.InputStreamReader.<init>(InputStreamReader.java:72)
+	at org.apache.airavata.allocation.manager.db.utils.DatabaseCreator.executeSQLScript(DatabaseCreator.java:272)
+	at org.apache.airavata.allocation.manager.db.utils.DatabaseCreator.createDatabase(DatabaseCreator.java:237)
+	at org.apache.airavata.allocation.manager.db.utils.DatabaseCreator.createRegistryDatabase(DatabaseCreator.java:65)
+	at org.apache.airavata.allocation.manager.db.utils.JPAUtils.initializeDB(JPAUtils.java:121)
+	at org.apache.airavata.allocation.manager.server.AllocationManagerServerHandler.<init>(AllocationManagerServerHandler.java:40)
+	at org.apache.airavata.allocation.manager.server.AllocationManagerAdminServer.main(AllocationManagerAdminServer.java:33)
