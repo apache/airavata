@@ -108,7 +108,7 @@
         <snakeyaml.version>1.15</snakeyaml.version>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <maven.replacer.plugin.version>1.5.3</maven.replacer.plugin.version>
-        <kafka-clients.version>0.8.2.2</kafka-clients.version>
+        <kafka-clients.version>1.0.0</kafka-clients.version>
         <logback.version>1.2.3</logback.version>
         <json.version>20160212</json.version>
         <commons.io.version>2.4</commons.io.version>
@@ -692,6 +692,9 @@
                 <module>modules/distribution</module>
                 <!--<module>modules/test-suite</module>-->
                 <module>modules/compute-account-provisioning</module>
+                <module>modules/airavata-helix</module>
+                <module>modules/airavata-helix-distribution</module>
+                <module>modules/job-monitor</module>
             </modules>
         </profile>
         <profile>
