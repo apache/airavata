@@ -15,4 +15,3 @@ script: mvn clean install
 # Git-describe Maven plugin needs the full history
 git:
   depth: false
-
