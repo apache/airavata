@@ -67,8 +67,6 @@ public class ApplicationOutputEntity implements Serializable {
     @Column(name = "SEARCH_QUERY")
     private String searchQuery;
 
-    private String storageResourceId;
-
     @ManyToOne(targetEntity = ApplicationInterfaceEntity.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "INTERFACE_ID")
     private ApplicationInterfaceEntity applicationInterface;
@@ -163,10 +161,6 @@ public class ApplicationOutputEntity implements Serializable {
     public void setSearchQuery(String searchQuery) {
         this.searchQuery = searchQuery;
     }
-
-    public String getStorageResourceId() { return storageResourceId; }
-
-    public void setStorageResourceId(String storageResourceId) { this.storageResourceId = storageResourceId; }
 
     public ApplicationInterfaceEntity getApplicationInterface() {
         return applicationInterface;
