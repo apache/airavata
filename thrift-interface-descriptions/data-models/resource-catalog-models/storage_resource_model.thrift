@@ -48,5 +48,7 @@ struct StorageResourceDescription {
     2: required string hostName,
     3: optional string storageResourceDescription,
     4: optional bool enabled,
-    5: optional list<data_movement_models.DataMovementInterface> dataMovementInterfaces,
+    5: optional i64 creationTime,
+    6: optional i64 updateTime,
+    7: optional list<data_movement_models.DataMovementInterface> dataMovementInterfaces,
 }
