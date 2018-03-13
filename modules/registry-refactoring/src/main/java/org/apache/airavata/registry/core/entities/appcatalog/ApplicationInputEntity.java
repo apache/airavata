@@ -74,8 +74,6 @@ public class ApplicationInputEntity implements Serializable {
 	@Column(name = "IS_READ_ONLY")
 	private boolean isReadOnly;
 
-	private String storageResourceId;
-
 	@ManyToOne(targetEntity = ApplicationInterfaceEntity.class, cascade = CascadeType.MERGE)
 	@JoinColumn(name = "INTERFACE_ID")
 	private ApplicationInterfaceEntity applicationInterface;
@@ -186,10 +184,6 @@ public class ApplicationInputEntity implements Serializable {
 	public void setIsReadOnly(boolean isReadOnly) {
 		this.isReadOnly = isReadOnly;
 	}
-
-	public String getStorageResourceId() { return storageResourceId; }
-
-	public void setStorageResourceId(String storageResourceId) { this.storageResourceId = storageResourceId; }
 
 	public ApplicationInterfaceEntity getApplicationInterface() {
 		return applicationInterface;
