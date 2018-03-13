@@ -134,7 +134,11 @@ public class AppDeploymentTest {
         List<String> allApplicationDeployementIds = appDep.getAllApplicationDeployementIds();
         System.out.println("******** Size of all App deployments ids *********** : " + allApplicationDeployementIds.size());
 
-        List<ApplicationDeploymentDescription> allApplicationDeployements = appDep.getAllApplicationDeployements(ServerSettings.getDefaultUserGateway());
+        List<String> accessibleAppIds = new ArrayList<>();
+        accessibleAppIds.add(wrfModuleId);
+        List<String> accessibleComputeResourceIds = new ArrayList<>();
+        accessibleComputeResourceIds.add(hostId);
+        List<ApplicationDeploymentDescription> allApplicationDeployements = appDep.getAccessibleApplicationDeployements(ServerSettings.getDefaultUserGateway(), accessibleAppIds, accessibleComputeResourceIds);
         System.out.println("******** Size of all App deployments *********** : " + allApplicationDeployements.size());
 
         assertTrue("App interface saved successfully", app != null);

@@ -22,6 +22,7 @@ package org.apache.airavata.gfac.monitor.email;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacThreadPoolExecutor;
 import org.apache.airavata.gfac.core.GFacUtils;
@@ -31,10 +32,17 @@ import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.monitor.EmailParser;
 import org.apache.airavata.gfac.core.monitor.JobMonitor;
 import org.apache.airavata.gfac.core.monitor.JobStatusResult;
+import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.gfac.impl.GFacWorker;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.job.JobModel;
-import org.apache.airavata.model.status.*;
+import org.apache.airavata.model.status.JobState;
+import org.apache.airavata.model.status.JobStatus;
+import org.apache.airavata.model.status.ProcessState;
+import org.apache.airavata.model.status.ProcessStatus;
+import org.apache.airavata.model.status.TaskState;
+import org.apache.airavata.model.status.TaskStatus;
+import org.apache.airavata.registry.api.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +55,16 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.search.FlagTerm;
 import javax.mail.search.SearchTerm;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class EmailBasedMonitor implements JobMonitor, Runnable{
@@ -125,6 +142,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 	public void stopMonitor(String jobId, boolean runOutflow) {
 		TaskContext taskContext = jobMonitorMap.remove(jobId);
 		if (taskContext != null && runOutflow) {
+            RegistryService.Client registryClient = Factory.getRegistryServiceClient();
 			try {
                 ProcessContext pc = taskContext.getParentProcessContext();
                 if (taskContext.isCancel()) {
@@ -135,15 +153,19 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
                             "for a while after execute job cancel command. This may happen if job was in queued state " +
                             "when we run the cancel command");
                     jobModel.setJobStatuses(Arrays.asList(newJobStatus));
-                    GFacUtils.saveJobStatus(pc, jobModel);
+                    GFacUtils.saveJobStatus(pc, registryClient, jobModel);
                 }
                 ProcessStatus pStatus = new ProcessStatus(ProcessState.CANCELLING);
                 pStatus.setReason("Job cancelled");
                 pc.setProcessStatus(pStatus);
-                GFacUtils.saveAndPublishProcessStatus(pc);
+                GFacUtils.saveAndPublishProcessStatus(pc, registryClient);
                 GFacThreadPoolExecutor.getCachedThreadPool().execute(new GFacWorker(pc));
 			} catch (GFacException e) {
 				log.info("[EJM]: Error while running output tasks", e);
+            } finally {
+                if (registryClient != null) {
+                    ThriftUtils.close(registryClient);
+                }
 			}
 		}
 	}
@@ -230,7 +252,14 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 					    } else {
 						    log.info("[EJM]: " + searchMessages.length + " new email/s received");
 					    }
-					    processMessages(searchMessages);
+                        RegistryService.Client registryClient = Factory.getRegistryServiceClient();
+					    try {
+                            processMessages(registryClient, searchMessages);
+                        } finally {
+                            if (registryClient != null) {
+                                ThriftUtils.close(registryClient);
+                            }
+                        }
 					    emailFolder.close(false);
 				    }
 			    }
@@ -256,7 +285,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 	    log.info("[EJM]: Email monitoring daemon stopped");
     }
 
-    private void processMessages(Message[] searchMessages) throws MessagingException {
+    private void processMessages(RegistryService.Client registryClient, Message[] searchMessages) throws MessagingException {
         List<Message> processedMessages = new ArrayList<>();
         List<Message> unreadMessages = new ArrayList<>();
         for (Message message : searchMessages) {
@@ -276,7 +305,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
                     }
                 }
                 if (taskContext != null) {
-                    process(jobStatusResult, taskContext);
+                    process(registryClient, jobStatusResult, taskContext);
                     processedMessages.add(message);
 
                 } else if (!jobStatusResult.isAuthoritative()
@@ -333,7 +362,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
         }
     }
 
-    private void process(JobStatusResult jobStatusResult, TaskContext taskContext){
+    private void process(RegistryService.Client registryClient, JobStatusResult jobStatusResult, TaskContext taskContext){
         canceledJobs.remove(jobStatusResult.getJobId());
         JobState resultState = jobStatusResult.getState();
         // TODO : update job state on process context
@@ -427,7 +456,7 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
 		    try {
 			    jobModel.setJobStatuses(Arrays.asList(jobStatus));
 			    log.info("[EJM]: Publishing status changes to amqp. " + jobDetails);
-			    GFacUtils.saveJobStatus(parentProcessContext, jobModel);
+			    GFacUtils.saveJobStatus(parentProcessContext, registryClient, jobModel);
 		    } catch (GFacException e) {
 			    log.error("expId: {}, processId: {}, taskId: {}, jobId: {} :- Error while save and publishing Job " +
                         "status {}", taskContext.getExperimentId(), taskContext.getProcessId(), jobModel
@@ -442,12 +471,12 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
                 taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                 taskStatus.setReason("Job monitoring completed with final state: " + TaskState.COMPLETED.name());
                 taskContext.setTaskStatus(taskStatus);
-                GFacUtils.saveAndPublishTaskStatus(taskContext);
+                GFacUtils.saveAndPublishTaskStatus(taskContext, registryClient);
                 if (parentProcessContext.isCancel()) {
                     ProcessStatus processStatus = new ProcessStatus(ProcessState.CANCELLING);
                     processStatus.setReason("Process has been cancelled");
                     parentProcessContext.setProcessStatus(processStatus);
-                    GFacUtils.saveAndPublishProcessStatus(parentProcessContext);
+                    GFacUtils.saveAndPublishProcessStatus(parentProcessContext, registryClient);
                 }
 		        GFacThreadPoolExecutor.getCachedThreadPool().execute(new GFacWorker(parentProcessContext));
 	        } catch (GFacException e) {

@@ -157,7 +157,12 @@ public abstract class AbstractRepository<T, E, Id> {
             entityManager.getTransaction().commit();
             return r;
         } finally {
-            entityManager.close();
+            if (entityManager.isOpen()) {
+                if (entityManager.getTransaction().isActive()) {
+                    entityManager.getTransaction().rollback();
+                }
+                entityManager.close();
+            }
         }
     }
 }

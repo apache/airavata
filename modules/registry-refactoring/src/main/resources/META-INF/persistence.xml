@@ -46,18 +46,18 @@
         <class>org.apache.airavata.registry.core.entities.expcatalog.JobEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.JobStatusEntity</class>
 
-        <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowEntity</class>
-        <class>org.apache.airavata.registry.core.entities.workflowcatalog.EdgeEntity</class>
-        <class>org.apache.airavata.registry.core.entities.workflowcatalog.ComponentStatusEntity</class>
-        <class>org.apache.airavata.registry.core.entities.workflowcatalog.NodeEntity</class>
-        <class>org.apache.airavata.registry.core.entities.workflowcatalog.PortEntity</class>
-        <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowInputEntity</class>
-        <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowOutputEntity</class>
-        <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowStatusEntity</class>
-        <class>org.apache.airavata.registry.core.entities.replicacatalog.DataProductEntity</class>
-        <class>org.apache.airavata.registry.core.entities.replicacatalog.DataProductMetadataEntity</class>
-        <class>org.apache.airavata.registry.core.entities.replicacatalog.DataReplicaLocationEntity</class>
-        <class>org.apache.airavata.registry.core.entities.replicacatalog.DataReplicaMetadataEntity</class>
+        <!--<class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowEntity</class>-->
+        <!--<class>org.apache.airavata.registry.core.entities.workflowcatalog.EdgeEntity</class>-->
+        <!--<class>org.apache.airavata.registry.core.entities.workflowcatalog.ComponentStatusEntity</class>-->
+        <!--<class>org.apache.airavata.registry.core.entities.workflowcatalog.NodeEntity</class>-->
+        <!--<class>org.apache.airavata.registry.core.entities.workflowcatalog.PortEntity</class>-->
+        <!--<class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowInputEntity</class>-->
+        <!--<class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowOutputEntity</class>-->
+        <!--<class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowStatusEntity</class>-->
+        <!--<class>org.apache.airavata.registry.core.entities.replicacatalog.DataProductEntity</class>-->
+        <!--<class>org.apache.airavata.registry.core.entities.replicacatalog.DataProductMetadataEntity</class>-->
+        <!--<class>org.apache.airavata.registry.core.entities.replicacatalog.DataReplicaLocationEntity</class>-->
+        <!--<class>org.apache.airavata.registry.core.entities.replicacatalog.DataReplicaMetadataEntity</class>-->
         <class>org.apache.airavata.registry.core.entities.appcatalog.GridftpDataMovementEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ResourceJobManagerEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceEntity</class>
@@ -107,12 +107,12 @@
         <class>org.apache.airavata.registry.core.entities.appcatalog.GroupComputeResourcePrefEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.GroupSSHAccountProvisionerConfig</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.GroupResourceProfileEntity</class>
-        <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowInputPK</class>
-        <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowOutputPK</class>
-        <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowStatusPK</class>
-        <class>org.apache.airavata.registry.core.entities.workflowcatalog.EdgePK</class>
-        <class>org.apache.airavata.registry.core.entities.workflowcatalog.PortPK</class>
-        <class>org.apache.airavata.registry.core.entities.workflowcatalog.NodePK</class>
+        <!--<class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowInputPK</class>-->
+        <!--<class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowOutputPK</class>-->
+        <!--<class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowStatusPK</class>-->
+        <!--<class>org.apache.airavata.registry.core.entities.workflowcatalog.EdgePK</class>-->
+        <!--<class>org.apache.airavata.registry.core.entities.workflowcatalog.PortPK</class>-->
+        <!--<class>org.apache.airavata.registry.core.entities.workflowcatalog.NodePK</class>-->
         <class>org.apache.airavata.registry.core.entities.appcatalog.GridftpEndpointPK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.PrejobCommandPK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.PostjobCommandPK</class>

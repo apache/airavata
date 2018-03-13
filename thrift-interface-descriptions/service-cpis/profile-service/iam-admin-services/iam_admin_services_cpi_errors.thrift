@@ -26,6 +26,7 @@
 
 namespace java org.apache.airavata.service.profile.iam.admin.services.cpi.exception
 namespace php Airavata.Service.Iam.Admin.Services.CPI.Error
+namespace py airavata.service.profile.iam.admin.services.cpi.error
 
 exception IamAdminServicesException {
   1: required string message

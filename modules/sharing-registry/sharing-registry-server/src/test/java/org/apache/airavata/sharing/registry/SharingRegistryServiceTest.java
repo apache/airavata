@@ -189,6 +189,7 @@ public class SharingRegistryServiceTest {
         Assert.assertFalse(sharingServiceClient.hasAdminAccess(domainId, "test-group-1", "test-user-2"));
 
         // transfer group ownership
+        sharingServiceClient.addUsersToGroup(domainId, Arrays.asList("test-user-2"), "test-group-1");
         Assert.assertTrue(sharingServiceClient.transferGroupOwnership(domainId, "test-group-1", "test-user-2"));
         Assert.assertTrue(sharingServiceClient.hasOwnerAccess(domainId, "test-group-1", "test-user-2"));
         Assert.assertTrue(sharingServiceClient.transferGroupOwnership(domainId, "test-group-1", "test-user-1"));
@@ -312,7 +313,7 @@ public class SharingRegistryServiceTest {
         searchCriteria.setValue("1");
         searchCriteria.setSearchCondition(SearchCondition.GTE);
         filters.add(searchCriteria);
-        Assert.assertTrue(sharingServiceClient.searchEntities(domainId, "test-user-2", filters, 0, -1).size() == 1);
+        Assert.assertEquals(1, sharingServiceClient.searchEntities(domainId, "test-user-2", filters, 0, -1).size());
 
 
         sharingServiceClient.revokeEntitySharingFromUsers(domainId, "test-project-1", Arrays.asList("test-user-2"), "WRITE");

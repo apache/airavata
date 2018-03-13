@@ -20,6 +20,7 @@
 package org.apache.airavata.gfac.impl;
 
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
@@ -28,6 +29,8 @@ import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
+import org.apache.airavata.registry.api.RegistryService;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +69,7 @@ public class GFacWorker implements Runnable {
 	 * This constructor will be called when new or recovery request comes.
 	 */
 	public GFacWorker(String processId, String gatewayId, String tokenId) throws GFacException,
-			CredentialStoreException {
+			CredentialStoreException, TException {
 		this.processId = processId;
 		this.gatewayId = gatewayId;
 		this.tokenId = tokenId;
@@ -77,13 +80,14 @@ public class GFacWorker implements Runnable {
 
 	@Override
 	public void run() {
+		RegistryService.Client registryClient = Factory.getRegistryServiceClient();
 		try {
 			ProcessState processState = processContext.getProcessState();
 			switch (processState) {
 				case CREATED:
 				case VALIDATED:
 				case STARTED:
-					executeProcess();
+					executeProcess(registryClient);
 					break;
 				case PRE_PROCESSING:
 				case CONFIGURING_WORKSPACE:
@@ -93,16 +97,16 @@ public class GFacWorker implements Runnable {
                 case OUTPUT_DATA_STAGING:
                 case POST_PROCESSING:
                     if (continueTaskFlow) {
-                        continueTaskExecution();
+                        continueTaskExecution(registryClient);
                     } else {
-                        recoverProcess();
+                        recoverProcess(registryClient);
                     }
                     break;
 				case COMPLETED:
-					completeProcess();
+					completeProcess(registryClient);
 					break;
 				case CANCELLING:
-					cancelProcess();
+					cancelProcess(registryClient);
 					break;
 				case CANCELED:
 					// TODO - implement cancel scenario
@@ -120,7 +124,7 @@ public class GFacWorker implements Runnable {
 						// don't send ack if the process is in MONITORING or EXECUTING states, wait until cancel email comes to airavata
 						break;
 					case CANCELLING:
-						cancelProcess();
+						cancelProcess(registryClient);
 						break;
 					default:
 						sendAck();
@@ -141,37 +145,41 @@ public class GFacWorker implements Runnable {
             errorModel.setActualErrorMessage(errors.toString());
             errorModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
 			try {
-				GFacUtils.saveAndPublishProcessStatus(processContext);
-                GFacUtils.saveExperimentError(processContext, errorModel);
-                GFacUtils.saveProcessError(processContext, errorModel);
-			} catch (GFacException e1) {
+				GFacUtils.saveAndPublishProcessStatus(processContext, registryClient);
+                GFacUtils.saveExperimentError(processContext, registryClient, errorModel);
+                GFacUtils.saveProcessError(processContext, registryClient, errorModel);
+			} catch (GFacException|TException e1) {
 				log.error("expId: {}, processId: {} :- Couldn't save and publish process status {}", processContext
 						.getExperimentId(), processContext.getProcessId(), processContext.getProcessState());
 			}
 			sendAck();
+		} finally {
+			if (registryClient != null) {
+				ThriftUtils.close(registryClient);
+			}
 		}
 	}
 
-	private void cancelProcess() throws GFacException {
+	private void cancelProcess(RegistryService.Client registryClient) throws GFacException {
 		// do cleanup works before cancel the process.
 		ProcessStatus processStatus = new ProcessStatus(ProcessState.CANCELED);
 		processStatus.setReason("Process cancellation has been triggered");
 		processContext.setProcessStatus(processStatus);
-		GFacUtils.saveAndPublishProcessStatus(processContext);
+		GFacUtils.saveAndPublishProcessStatus(processContext, registryClient);
 		sendAck();
 		Factory.getGfacContext().removeProcess(processContext.getProcessId());
 	}
 
-	private void completeProcess() throws GFacException {
+	private void completeProcess(RegistryService.Client registryClient) throws GFacException {
 		ProcessStatus status = new ProcessStatus(ProcessState.COMPLETED);
         status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         processContext.setProcessStatus(status);
-		GFacUtils.saveAndPublishProcessStatus(processContext);
+		GFacUtils.saveAndPublishProcessStatus(processContext, registryClient);
 		sendAck();
 		Factory.getGfacContext().removeProcess(processContext.getProcessId());
 	}
 
-	private void continueTaskExecution() throws GFacException {
+	private void continueTaskExecution(RegistryService.Client registryClient) throws GFacException {
         // checkpoint
         if (processContext.isInterrupted()) {
             return;
@@ -203,22 +211,22 @@ public class GFacWorker implements Runnable {
         }
 
         if (processContext.isComplete()) {
-            completeProcess();
+            completeProcess(registryClient);
         }
     }
 
-	private void recoverProcess() throws GFacException {
+	private void recoverProcess(RegistryService.Client registryClient) throws GFacException {
         engine.recoverProcess(processContext);
         if (processContext.isInterrupted()) {
             return;
         }
 
         if (processContext.isComplete()) {
-            completeProcess();
+            completeProcess(registryClient);
         }
     }
 
-	private void executeProcess() throws GFacException {
+	private void executeProcess(RegistryService.Client registryClient) throws GFacException {
 		// checkpoint
 		if (processContext.isInterrupted()) {
 			return;
@@ -231,7 +239,7 @@ public class GFacWorker implements Runnable {
 		}
 
         if (processContext.isComplete()) {
-            completeProcess();
+            completeProcess(registryClient);
         }
 	}
 

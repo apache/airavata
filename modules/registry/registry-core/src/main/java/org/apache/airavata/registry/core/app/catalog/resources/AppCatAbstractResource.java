@@ -18,6 +18,7 @@
  * under the License.
  */
 package org.apache.airavata.registry.core.app.catalog.resources;
+import java.util.ArrayList;
 
 public abstract class AppCatAbstractResource implements AppCatalogResource {
     // table names
