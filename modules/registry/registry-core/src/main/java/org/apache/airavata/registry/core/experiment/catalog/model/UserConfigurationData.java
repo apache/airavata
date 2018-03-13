@@ -49,6 +49,7 @@ public class UserConfigurationData {
     private String overrideAllocationProjectNumber;
     private String storageId;
     private String experimentDataDir;
+    private String groupResourceProfileId;
     private boolean useUserCRPref;
 
     @Id
@@ -230,6 +231,15 @@ public class UserConfigurationData {
 
     public void setExperimentDataDir(String experimentDataDir) {
         this.experimentDataDir = experimentDataDir;
+    }
+
+    @Column(name = "GROUP_RESOURCE_PROFILE_ID")
+    public String getGroupResourceProfileId() {
+        return groupResourceProfileId;
+    }
+
+    public void setGroupResourceProfileId(String groupResourceProfileId) {
+        this.groupResourceProfileId = groupResourceProfileId;
     }
 
     @Column(name = "IS_USE_USER_CR_PREF")

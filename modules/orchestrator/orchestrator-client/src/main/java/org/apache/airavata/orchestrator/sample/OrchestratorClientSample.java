@@ -119,7 +119,7 @@ public class OrchestratorClientSample {
                     try {
                         orchestratorClient.launchExperiment(expId, "airavataToken");
                     } catch (TException e) {
-                        e.printStackTrace();
+                        throw new RuntimeException("Error while storing experiment details", e);
                     }
                 }
             };

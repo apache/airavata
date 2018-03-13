@@ -19,7 +19,10 @@
  */
 package org.apache.airavata.api.server.handler;
 
-import org.apache.airavata.accountprovisioning.*;
+import org.apache.airavata.accountprovisioning.ConfigParam;
+import org.apache.airavata.accountprovisioning.SSHAccountManager;
+import org.apache.airavata.accountprovisioning.SSHAccountProvisionerFactory;
+import org.apache.airavata.accountprovisioning.SSHAccountProvisionerProvider;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavata_apiConstants;
 import org.apache.airavata.api.server.util.ThriftClientPool;
@@ -42,7 +45,12 @@ import org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvis
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
@@ -57,14 +65,31 @@ import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePrefe
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.airavata_commonsConstants;
-import org.apache.airavata.model.credential.store.*;
+import org.apache.airavata.model.credential.store.CredentialOwnerType;
+import org.apache.airavata.model.credential.store.CredentialSummary;
+import org.apache.airavata.model.credential.store.PasswordCredential;
+import org.apache.airavata.model.credential.store.SSHCredential;
+import org.apache.airavata.model.credential.store.SummaryType;
 import org.apache.airavata.model.data.movement.DMType;
-import org.apache.airavata.model.data.movement.*;
+import org.apache.airavata.model.data.movement.GridFTPDataMovement;
+import org.apache.airavata.model.data.movement.LOCALDataMovement;
+import org.apache.airavata.model.data.movement.SCPDataMovement;
+import org.apache.airavata.model.data.movement.UnicoreDataMovement;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
-import org.apache.airavata.model.error.*;
-import org.apache.airavata.model.experiment.*;
-import org.apache.airavata.model.group.GroupModel;
+import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.error.AiravataErrorType;
+import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.model.error.AuthorizationException;
+import org.apache.airavata.model.error.ExperimentNotFoundException;
+import org.apache.airavata.model.error.InvalidRequestException;
+import org.apache.airavata.model.error.ProjectNotFoundException;
+import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.experiment.ExperimentSearchFields;
+import org.apache.airavata.model.experiment.ExperimentStatistics;
+import org.apache.airavata.model.experiment.ExperimentSummaryModel;
+import org.apache.airavata.model.experiment.ProjectSearchFields;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.group.ResourcePermissionType;
 import org.apache.airavata.model.group.ResourceType;
 import org.apache.airavata.model.job.JobModel;
@@ -85,14 +110,32 @@ import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
 import org.apache.airavata.sharing.registry.client.SharingRegistryServiceClientFactory;
-import org.apache.airavata.sharing.registry.models.*;
+import org.apache.airavata.sharing.registry.models.Domain;
+import org.apache.airavata.sharing.registry.models.Entity;
+import org.apache.airavata.sharing.registry.models.EntitySearchField;
+import org.apache.airavata.sharing.registry.models.EntityType;
+import org.apache.airavata.sharing.registry.models.PermissionType;
+import org.apache.airavata.sharing.registry.models.SearchCondition;
+import org.apache.airavata.sharing.registry.models.SearchCriteria;
+import org.apache.airavata.sharing.registry.models.SharingRegistryException;
+import org.apache.airavata.sharing.registry.models.User;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
+import org.apache.airavata.sharing.registry.models.UserGroup;
+import org.apache.airavata.sharing.registry.models.GroupCardinality;
+import org.apache.airavata.sharing.registry.models.GroupType;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class AiravataServerHandler implements Airavata.Iface {
     private static final Logger logger = LoggerFactory.getLogger(AiravataServerHandler.class);
@@ -128,12 +171,67 @@ public class AiravataServerHandler implements Airavata.Iface {
                     Integer.parseInt(ServerSettings.getCredentialStoreServerPort()));
 
             initSharingRegistry();
+            postInitDefaultGateway();
         } catch (ApplicationSettingsException e) {
             logger.error("Error occured while reading airavata-server properties..", e);
         } catch (AiravataException e) {
             logger.error("Error occured while reading airavata-server properties..", e);
         } catch (TException e) {
             logger.error("Error occured while reading airavata-server properties..", e);
+        }
+    }
+
+    /**
+     * This method creates a password token for the default gateway profile. Default gateway is originally initialized
+     * at the registry server but we can not add the password token at that step as the credential store is not initialized
+     * before registry server.
+     */
+    private void postInitDefaultGateway() {
+
+        RegistryService.Client registryClient = registryClientPool.getResource();
+        try {
+
+            GatewayResourceProfile gatewayResourceProfile = registryClient.getGatewayResourceProfile(ServerSettings.getDefaultUserGateway());
+            if (gatewayResourceProfile != null && gatewayResourceProfile.getCredentialStoreToken() == null) {
+
+                logger.debug("Starting to add the password credential for default gateway : " +
+                        ServerSettings.getDefaultUserGateway());
+
+                PasswordCredential passwordCredential = new PasswordCredential();
+                passwordCredential.setPortalUserName(ServerSettings.getDefaultUser());
+                passwordCredential.setGatewayId(ServerSettings.getDefaultUserGateway());
+                passwordCredential.setLoginUserName(ServerSettings.getDefaultUser());
+                passwordCredential.setPassword(ServerSettings.getDefaultUserPassword());
+                passwordCredential.setDescription("Credentials for default gateway");
+
+                CredentialStoreService.Client csClient = csClientPool.getResource();
+                String token = null;
+                try {
+                    logger.info("Creating password credential for default gateway");
+                    token = csClient.addPasswordCredential(passwordCredential);
+                    csClientPool.returnResource(csClient);
+                } catch (Exception ex) {
+                    logger.error("Failed to create the password credential for the default gateway : " +
+                            ServerSettings.getDefaultUserGateway(), ex);
+                    if (csClient != null) {
+                        csClientPool.returnBrokenResource(csClient);
+                    }
+                }
+
+                if (token != null) {
+                    logger.debug("Adding password credential token " + token +" to the default gateway : " + ServerSettings.getDefaultUserGateway());
+                    gatewayResourceProfile.setIdentityServerPwdCredToken(token);
+                    registryClient.updateGatewayResourceProfile(ServerSettings.getDefaultUserGateway(), gatewayResourceProfile);
+                }
+
+                registryClientPool.returnResource(registryClient);
+            }
+        } catch (Exception e) {
+            logger.error("Failed to add the password credentials for the default gateway", e);
+
+            if (registryClient != null) {
+                registryClientPool.returnBrokenResource(registryClient);
+            }
         }
     }
 
@@ -175,6 +273,20 @@ public class AiravataServerHandler implements Airavata.Iface {
                 entityType.setDescription("File entity type");
                 client.createEntityType(entityType);
 
+                entityType = new EntityType();
+                entityType.setEntityTypeId(domain.domainId+":"+ResourceType.APPLICATION_DEPLOYMENT.name());
+                entityType.setDomainId(domain.domainId);
+                entityType.setName("APPLICATION-DEPLOYMENT");
+                entityType.setDescription("Application Deployment entity type");
+                client.createEntityType(entityType);
+
+                entityType = new EntityType();
+                entityType.setEntityTypeId(domain.domainId+":"+ResourceType.GROUP_RESOURCE_PROFILE.name());
+                entityType.setDomainId(domain.domainId);
+                entityType.setName(ResourceType.GROUP_RESOURCE_PROFILE.name());
+                entityType.setDescription("Group Resource Profile entity type");
+                client.createEntityType(entityType);
+
                 //Creating Permission Types for each domain
                 PermissionType permissionType = new PermissionType();
                 permissionType.setPermissionTypeId(domain.domainId + ":READ");
@@ -188,6 +300,13 @@ public class AiravataServerHandler implements Airavata.Iface {
                 permissionType.setDomainId(domain.domainId);
                 permissionType.setName("WRITE");
                 permissionType.setDescription("Write permission type");
+                client.createPermissionType(permissionType);
+
+                permissionType = new PermissionType();
+                permissionType.setPermissionTypeId(domain.domainId+":EXEC");
+                permissionType.setDomainId(domain.domainId);
+                permissionType.setName("EXEC");
+                permissionType.setDescription("Execute permission type");
                 client.createPermissionType(permissionType);
             }
             sharingClientPool.returnResource(client);
@@ -270,6 +389,20 @@ public class AiravataServerHandler implements Airavata.Iface {
             entityType.setDescription("File entity type");
             sharingClient.createEntityType(entityType);
 
+            entityType = new EntityType();
+            entityType.setEntityTypeId(domain.domainId+":"+ResourceType.APPLICATION_DEPLOYMENT.name());
+            entityType.setDomainId(domain.domainId);
+            entityType.setName("APPLICATION-DEPLOYMENT");
+            entityType.setDescription("Application Deployment entity type");
+            sharingClient.createEntityType(entityType);
+
+            entityType = new EntityType();
+            entityType.setEntityTypeId(domain.domainId+":"+ResourceType.GROUP_RESOURCE_PROFILE.name());
+            entityType.setDomainId(domain.domainId);
+            entityType.setName(ResourceType.GROUP_RESOURCE_PROFILE.name());
+            entityType.setDescription("Group Resource Profile entity type");
+            sharingClient.createEntityType(entityType);
+
             //Creating Permission Types for each domain
             PermissionType permissionType = new PermissionType();
             permissionType.setPermissionTypeId(domain.domainId+":READ");
@@ -284,6 +417,27 @@ public class AiravataServerHandler implements Airavata.Iface {
             permissionType.setName("WRITE");
             permissionType.setDescription("Write permission type");
             sharingClient.createPermissionType(permissionType);
+
+            permissionType = new PermissionType();
+            permissionType.setPermissionTypeId(domain.domainId+":EXEC");
+            permissionType.setDomainId(domain.domainId);
+            permissionType.setName("EXEC");
+            permissionType.setDescription("Execute permission type");
+            sharingClient.createPermissionType(permissionType);
+
+            //Create an "everyone" group for the domain
+            String groupId = "everyone@" + domain.domainId;
+            UserGroup userGroup = new UserGroup();
+            userGroup.setGroupId(groupId);
+            userGroup.setDomainId(domain.domainId);
+            userGroup.setGroupCardinality(GroupCardinality.MULTI_USER);
+            userGroup.setCreatedTime(System.currentTimeMillis());
+            userGroup.setUpdatedTime(System.currentTimeMillis());
+            userGroup.setOwnerId(authzToken.getClaimsMap().get(Constants.USER_NAME) + "@" + domain.domainId);
+            userGroup.setName("everyone");
+            userGroup.setDescription("Default Group");
+            userGroup.setGroupType(GroupType.DOMAIN_LEVEL_GROUP);
+            sharingClient.createGroup(userGroup);
 
             registryClientPool.returnResource(registryClient);
             sharingClientPool.returnResource(sharingClient);
@@ -1751,22 +1905,34 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public void launchExperiment(AuthzToken authzToken, final String airavataExperimentId, String gatewayId)
-            throws TException {
+            throws AuthorizationException, AiravataSystemException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
             ExperimentModel experiment = regClient.getExperiment(airavataExperimentId);
+            // TODO: fix checking if the user has access to the deployment of this application, should check for entity type APPLICATION_DEPLOYMENT and permission type EXEC
+//            String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+//            String appInterfaceId = experiment.getExecutionId();
+//            ApplicationInterfaceDescription applicationInterfaceDescription = regClient.getApplicationInterface(appInterfaceId);
+//            List<String> entityIds = applicationInterfaceDescription.getApplicationModules();
+//            if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId, entityIds.get(0),gatewayId + ":READ")) {
+//                logger.error(airavataExperimentId, "User does not have access to application module {}.", entityIds.get(0));
+//                throw new AuthorizationException("User does not have permission to access this resource");
+//            }
             if (experiment == null) {
                 logger.error(airavataExperimentId, "Error while launching experiment, experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
             submitExperiment(gatewayId, airavataExperimentId);
             registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
         } catch (Exception e1) {
             logger.error(airavataExperimentId, "Error while instantiate the registry instance", e1);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while instantiate the registry instance. More info : " + e1.getMessage());
             registryClientPool.returnBrokenResource(regClient);
+            sharingClientPool.returnBrokenResource(sharingClient);
             throw exception;
         }
     }
@@ -2081,6 +2247,12 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    /**
+     * Fetch all Application Module Descriptions.
+     *
+     * @return list applicationModule.
+     * Returns the list of all Application Module Objects.
+     */
     @Override
     @SecurityCheck
     public List<ApplicationModule> getAllAppModules(AuthzToken authzToken, String gatewayId) throws InvalidRequestException,
@@ -2096,6 +2268,59 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving all application modules. More info : " + e.getMessage());
             registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
+
+    /**
+     * Fetch all accessible Application Module Descriptions.
+     *
+     * @return list applicationModule.
+     * Returns the list of Application Module Objects that are accessible to the user.
+     */
+    @Override
+    @SecurityCheck
+    public List<ApplicationModule> getAccessibleAppModules(AuthzToken authzToken, String gatewayId, ResourcePermissionType permissionType) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        RegistryService.Client regClient = registryClientPool.getResource();
+        String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
+        try {
+            List<String> accessibleAppDeploymentIds = new ArrayList<>();
+            if (ServerSettings.isEnableSharing()) {
+                List<SearchCriteria> sharingFilters = new ArrayList<>();
+                SearchCriteria entityTypeFilter = new SearchCriteria();
+                entityTypeFilter.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+                entityTypeFilter.setSearchCondition(SearchCondition.EQUAL);
+                entityTypeFilter.setValue(gatewayId + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
+                sharingFilters.add(entityTypeFilter);
+                SearchCriteria permissionTypeFilter = new SearchCriteria();
+                permissionTypeFilter.setSearchField(EntitySearchField.PERMISSION_TYPE_ID);
+                permissionTypeFilter.setSearchCondition(SearchCondition.EQUAL);
+                permissionTypeFilter.setValue(gatewayId + ":" + permissionType.name());
+                sharingFilters.add(permissionTypeFilter);
+                sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                        userName + "@" + gatewayId, sharingFilters, 0, -1).forEach(a -> accessibleAppDeploymentIds.add(a.entityId));
+            }
+            List<String> accessibleComputeResourceIds = new ArrayList<>();
+            List<GroupResourceProfile> groupResourceProfileList = getGroupResourceList(authzToken, gatewayId);
+            for(GroupResourceProfile groupResourceProfile : groupResourceProfileList) {
+                List<GroupComputeResourcePreference> groupComputeResourcePreferenceList = groupResourceProfile.getComputePreferences();
+                for(GroupComputeResourcePreference groupComputeResourcePreference : groupComputeResourcePreferenceList) {
+                    accessibleComputeResourceIds.add(groupComputeResourcePreference.getComputeResourceId());
+                }
+            }
+            List<ApplicationModule> result = regClient.getAccessibleAppModules(gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
+            registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
+            return result;
+        } catch (Exception e) {
+            logger.error("Error while retrieving all application modules...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving all application modules. More info : " + e.getMessage());
+            registryClientPool.returnBrokenResource(regClient);
+            sharingClientPool.returnBrokenResource(sharingClient);
             throw exception;
         }
     }
@@ -2235,7 +2460,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Fetch all Application Deployment Descriptions.
      *
      * @return list applicationDeployment.
-     * Returns the list of all application Deployment Objects.
+     * Returns the list of all Application Deployment Objects.
      */
     @Override
     @SecurityCheck
@@ -2252,6 +2477,60 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving application deployments. More info : " + e.getMessage());
             registryClientPool.returnBrokenResource(regClient);
+            throw exception;
+        }
+    }
+
+
+    /**
+     * Fetch all accessible Application Deployment Descriptions.
+     *
+     * @return list applicationDeployment.
+     * Returns the list of Application Deployment Objects that are accessible to the user.
+     */
+    @Override
+    @SecurityCheck
+    public List<ApplicationDeploymentDescription> getAccessibleApplicationDeployments(AuthzToken authzToken, String gatewayId, ResourcePermissionType permissionType)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        RegistryService.Client regClient = registryClientPool.getResource();
+        String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
+        try {
+            List<String> accessibleAppDeploymentIds = new ArrayList<>();
+            if (ServerSettings.isEnableSharing()) {
+                List<SearchCriteria> sharingFilters = new ArrayList<>();
+                SearchCriteria entityTypeFilter = new SearchCriteria();
+                entityTypeFilter.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+                entityTypeFilter.setSearchCondition(SearchCondition.EQUAL);
+                entityTypeFilter.setValue(gatewayId + ":" + ResourceType.APPLICATION_DEPLOYMENT.name());
+                sharingFilters.add(entityTypeFilter);
+                SearchCriteria permissionTypeFilter = new SearchCriteria();
+                permissionTypeFilter.setSearchField(EntitySearchField.PERMISSION_TYPE_ID);
+                permissionTypeFilter.setSearchCondition(SearchCondition.EQUAL);
+                permissionTypeFilter.setValue(gatewayId + ":" + permissionType.name());
+                sharingFilters.add(permissionTypeFilter);
+                sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                        userName + "@" + gatewayId, sharingFilters, 0, -1).forEach(a -> accessibleAppDeploymentIds.add(a.entityId));
+            }
+            List<String> accessibleComputeResourceIds = new ArrayList<>();
+            List<GroupResourceProfile> groupResourceProfileList = getGroupResourceList(authzToken, gatewayId);
+            for(GroupResourceProfile groupResourceProfile : groupResourceProfileList) {
+                List<GroupComputeResourcePreference> groupComputeResourcePreferenceList = groupResourceProfile.getComputePreferences();
+                for(GroupComputeResourcePreference groupComputeResourcePreference : groupComputeResourcePreferenceList) {
+                    accessibleComputeResourceIds.add(groupComputeResourcePreference.getComputeResourceId());
+                }
+            }
+            List<ApplicationDeploymentDescription> result = regClient.getAccessibleApplicationDeployments(gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
+            registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
+            return result;
+        } catch (Exception e) {
+            logger.error("Error while retrieving application deployments...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving application deployments. More info : " + e.getMessage());
+            registryClientPool.returnBrokenResource(regClient);
+            sharingClientPool.returnBrokenResource(sharingClient);
             throw exception;
         }
     }
@@ -4694,9 +4973,16 @@ public class AiravataServerHandler implements Airavata.Iface {
                 if(userPermission.getValue().equals(ResourcePermissionType.WRITE))
                     sharingClient.shareEntityWithUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "WRITE", true);
-                else
+                else if(userPermission.getValue().equals(ResourcePermissionType.READ))
                     sharingClient.shareEntityWithUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "READ", true);
+                else if(userPermission.getValue().equals(ResourcePermissionType.EXEC))
+                    sharingClient.shareEntityWithUsers(gatewayId, resourceId,
+                            Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "EXEC", true);
+                else {
+                    logger.error("Invalid ResourcePermissionType : " + userPermission.getValue().toString());
+                    throw new AiravataClientException(AiravataErrorType.UNSUPPORTED_OPERATION);
+                }
             }
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
@@ -4724,9 +5010,16 @@ public class AiravataServerHandler implements Airavata.Iface {
                 if(userPermission.getValue().equals(ResourcePermissionType.WRITE))
                     sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "WRITE");
-                else
+                else if(userPermission.getValue().equals(ResourcePermissionType.READ))
                     sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
                             Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "READ");
+                else if(userPermission.getValue().equals(ResourcePermissionType.EXEC))
+                    sharingClient.revokeEntitySharingFromUsers(gatewayId, resourceId,
+                            Arrays.asList(userPermission.getKey()), authzToken.getClaimsMap().get(Constants.GATEWAY_ID) + ":" + "EXEC");
+                else {
+                    logger.error("Invalid ResourcePermissionType : " + userPermission.getValue().toString());
+                    throw new AiravataClientException(AiravataErrorType.UNSUPPORTED_OPERATION);
+                }
             }
             registryClientPool.returnResource(regClient);
             sharingClientPool.returnResource(sharingClient);
@@ -4856,16 +5149,40 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public List<GroupResourceProfile> getGroupResourceList(AuthzToken authzToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
+        String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
         try {
-            List<GroupResourceProfile> groupResourceProfileList = regClient.getGroupResourceList(gatewayId);
-            registryClientPool.returnResource(regClient);
-            return groupResourceProfileList;
+            if (ServerSettings.isEnableSharing()) {
+                List<String> accessibleGroupResProfileIds = new ArrayList<>();
+                List<SearchCriteria> filters = new ArrayList<>();
+                SearchCriteria searchCriteria = new SearchCriteria();
+                searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
+                searchCriteria.setSearchCondition(SearchCondition.EQUAL);
+                searchCriteria.setValue(gatewayId + ":" + ResourceType.GROUP_RESOURCE_PROFILE.name());
+                filters.add(searchCriteria);
+                sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
+                        userName + "@" + gatewayId, filters, 0, -1).stream().forEach(p -> accessibleGroupResProfileIds
+                        .add(p.entityId));
+                // TODO: push accessibleGroupResProfileIds filtering down
+                List<GroupResourceProfile> groupResourceProfileList = regClient.getGroupResourceList(gatewayId);
+                registryClientPool.returnResource(regClient);
+                sharingClientPool.returnResource(sharingClient);
+                return groupResourceProfileList.stream()
+                        .filter(grp -> accessibleGroupResProfileIds.contains(grp.getGroupResourceProfileId()))
+                        .collect(Collectors.toList());
+            } else {
+                List<GroupResourceProfile> groupResourceProfileList = regClient.getGroupResourceList(gatewayId);
+                registryClientPool.returnResource(regClient);
+                sharingClientPool.returnResource(sharingClient);
+                return groupResourceProfileList;
+            }
         } catch (Exception e) {
             String msg = "Error retrieving list group resource profile list. GatewayId: "+ gatewayId;
             logger.error(msg, e);
             AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(msg+" More info : " + e.getMessage());
             registryClientPool.returnBrokenResource(regClient);
+            sharingClientPool.returnBrokenResource(sharingClient);
             throw exception;
         }
     }
@@ -5075,4 +5392,5 @@ public class AiravataServerHandler implements Airavata.Iface {
             throw new TException("Unable to create sharing registry client...", e);
         }
     }
+
 }

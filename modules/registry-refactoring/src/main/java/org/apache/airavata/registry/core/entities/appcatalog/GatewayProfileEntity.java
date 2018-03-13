@@ -41,7 +41,7 @@ public class GatewayProfileEntity implements Serializable {
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
 
-    @Column(name = "CREDENTIAL_STORE_TOKEN")
+    @Column(name = "CS_TOKEN")
     private String credentialStoreToken;
 
     @Column(name = "IDENTITY_SERVER_PWD_CRED_TOKEN")

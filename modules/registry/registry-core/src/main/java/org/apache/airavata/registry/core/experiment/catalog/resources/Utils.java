@@ -557,6 +557,7 @@ public class Utils {
             configurationDataResource.setOverrideAllocationProjectNumber(o.getOverrideAllocationProjectNumber());
             configurationDataResource.setStorageId(o.getStorageId());
             configurationDataResource.setExperimentDataDir(o.getExperimentDataDir());
+            configurationDataResource.setGroupResourceProfileId(o.getGroupResourceProfileId());
             configurationDataResource.setUseUserCRPref(o.isUseUserCRPref());
         }
         return configurationDataResource;

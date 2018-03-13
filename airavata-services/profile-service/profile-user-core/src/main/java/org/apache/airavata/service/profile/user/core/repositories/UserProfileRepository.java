@@ -63,10 +63,15 @@ public class UserProfileRepository extends AbstractRepository<UserProfile, UserP
 
     public List<UserProfile> getAllUserProfilesInGateway(String gatewayId, int offset, int limit)  {
 
-        Map<String, Object> queryParam = new HashMap<String, Object>();
-        queryParam.put(UserProfile._Fields.GATEWAY_ID.getFieldName(), gatewayId);
+        Map<String, Object> queryParams = new HashMap<String, Object>();
+        queryParams.put(UserProfile._Fields.GATEWAY_ID.getFieldName(), gatewayId);
 
-        List<UserProfile> resultList = select(QueryConstants.FIND_ALL_USER_PROFILES_BY_GATEWAY_ID, limit, offset, queryParam);
+        List<UserProfile> resultList = null;
+        if (limit > 0) {
+            resultList = select(QueryConstants.FIND_ALL_USER_PROFILES_BY_GATEWAY_ID, limit, offset, queryParams);
+        } else {
+            resultList = select(QueryConstants.FIND_ALL_USER_PROFILES_BY_GATEWAY_ID, queryParams);
+        }
 
         return  resultList;
     }

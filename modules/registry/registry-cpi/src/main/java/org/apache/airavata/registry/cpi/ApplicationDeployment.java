@@ -53,7 +53,21 @@ public interface ApplicationDeployment {
      */
     List<ApplicationDeploymentDescription> getApplicationDeployements (Map<String, String> filters) throws AppCatalogException;
 
+    /**
+     * This method will return a list of all application deployments
+     * @param gatewayId Gateway ID
+     * @return list of all application deployments
+     */
     List<ApplicationDeploymentDescription> getAllApplicationDeployements (String gatewayId) throws AppCatalogException;
+
+    /**
+     * This method will return a list of all application deployments
+     * @param gatewayId Gateway ID
+     * @param accessibleAppDeploymentIds List of Accessible App IDs
+     * @param accessibleComputeResourceIds List of Accessible Compute Resource IDs
+     * @return list of all application deployments accessible to the user
+     */
+    List<ApplicationDeploymentDescription> getAccessibleApplicationDeployements (String gatewayId, List<String> accessibleAppDeploymentIds, List<String> accessibleComputeResourceIds) throws AppCatalogException;
 
     List<String> getAllApplicationDeployementIds () throws AppCatalogException;
 

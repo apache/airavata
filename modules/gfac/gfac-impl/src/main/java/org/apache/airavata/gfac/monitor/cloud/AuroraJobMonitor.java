@@ -24,6 +24,7 @@ import org.apache.airavata.cloud.aurora.client.bean.JobDetailsResponseBean;
 import org.apache.airavata.cloud.aurora.client.bean.JobKeyBean;
 import org.apache.airavata.cloud.aurora.client.sdk.ScheduledTask;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacThreadPoolExecutor;
 import org.apache.airavata.gfac.core.GFacUtils;
@@ -31,6 +32,7 @@ import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.monitor.JobMonitor;
 import org.apache.airavata.gfac.impl.AuroraUtils;
+import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.gfac.impl.GFacWorker;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
@@ -39,10 +41,7 @@ import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
-import org.apache.airavata.registry.cpi.CompositeIdentifier;
-import org.apache.airavata.registry.cpi.ExperimentCatalog;
-import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
-import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.api.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,8 +52,6 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class AuroraJobMonitor implements JobMonitor, Runnable {
     private static final Logger log = LoggerFactory.getLogger(AuroraJobMonitor.class);
@@ -126,33 +123,40 @@ public class AuroraJobMonitor implements JobMonitor, Runnable {
 
         public void run() {
             while(true){
-                JobKeyBean jobKeyBean = new JobKeyBean(AuroraUtils.ENVIRONMENT, AuroraUtils.ROLE, "dummy");
-                Iterator<Map.Entry<String, TaskContext>> iterator = jobMonitoringMap.entrySet().iterator();
-                while (iterator.hasNext()) {
-                    Map.Entry<String, TaskContext> currentEntry = iterator.next();
-                    try {
-                        jobKeyBean.setName(currentEntry.getKey());
-                        JobDetailsResponseBean jobDetailsResponseBean = client.getJobDetails(jobKeyBean);
-                        List<ScheduledTask> tasks = jobDetailsResponseBean.getTasks();
-                        switch (tasks.get(0).getStatus()) {
-                            case FINISHED:
-                                iterator.remove();
-                                processJob(currentEntry.getKey(), currentEntry.getValue(), JobState.COMPLETE);
-                                break;
-                            case FAILED:
-                                iterator.remove();
-                                processJob(currentEntry.getKey(), currentEntry.getValue(), JobState.FAILED);
-                                break;
-                            case RUNNING:
-                                updateStatus(currentEntry.getKey(), currentEntry.getValue(), JobState.ACTIVE);
-                                break;
-                            default:
-                                log.info("Job {} is in {} state", currentEntry.getKey(), tasks.get(0).getStatus().name());
-                                break;
-                        }
-                    } catch (Exception e) {
-                        log.error("Error while getting response for job : {}", currentEntry.getKey());
+                RegistryService.Client registryClient = Factory.getRegistryServiceClient();
+                try {
+                    JobKeyBean jobKeyBean = new JobKeyBean(AuroraUtils.ENVIRONMENT, AuroraUtils.ROLE, "dummy");
+                    Iterator<Map.Entry<String, TaskContext>> iterator = jobMonitoringMap.entrySet().iterator();
+                    while (iterator.hasNext()) {
+                        Map.Entry<String, TaskContext> currentEntry = iterator.next();
+                        try {
+                            jobKeyBean.setName(currentEntry.getKey());
+                            JobDetailsResponseBean jobDetailsResponseBean = client.getJobDetails(jobKeyBean);
+                            List<ScheduledTask> tasks = jobDetailsResponseBean.getTasks();
+                            switch (tasks.get(0).getStatus()) {
+                                case FINISHED:
+                                    iterator.remove();
+                                    processJob(registryClient, currentEntry.getKey(), currentEntry.getValue(), JobState.COMPLETE);
+                                    break;
+                                case FAILED:
+                                    iterator.remove();
+                                    processJob(registryClient, currentEntry.getKey(), currentEntry.getValue(), JobState.FAILED);
+                                    break;
+                                case RUNNING:
+                                    updateStatus(registryClient, currentEntry.getKey(), currentEntry.getValue(), JobState.ACTIVE);
+                                    break;
+                                default:
+                                    log.info("Job {} is in {} state", currentEntry.getKey(), tasks.get(0).getStatus().name());
+                                    break;
+                            }
+                        } catch (Exception e) {
+                            log.error("Error while getting response for job : {}", currentEntry.getKey());
 
+                        }
+                    }
+                } finally {
+                    if (registryClient != null) {
+                        ThriftUtils.close(registryClient);
                     }
                 }
 
@@ -164,7 +168,7 @@ public class AuroraJobMonitor implements JobMonitor, Runnable {
             }
         }
 
-        private void updateStatus(String jobKey, TaskContext taskContext, JobState jobState) {
+        private void updateStatus(RegistryService.Client registryClient, String jobKey, TaskContext taskContext, JobState jobState) {
             ProcessContext pc = taskContext.getParentProcessContext();
             JobModel jobModel = pc.getJobModel();
             if (jobModel.getJobStatuses().get(0).getJobState() != jobState) {
@@ -173,7 +177,7 @@ public class AuroraJobMonitor implements JobMonitor, Runnable {
                 jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                 jobModel.setJobStatuses(Arrays.asList(jobStatus));
                 try {
-                    GFacUtils.saveJobStatus(pc, jobModel);
+                    GFacUtils.saveJobStatus(pc, registryClient, jobModel);
                 } catch (GFacException e) {
                     log.error("Error while saving job status {}, job : {}, task :{}, process:{} exp:{}",
                             jobState.name(), jobKey, taskContext.getTaskId(), pc.getProcessId(), pc.getExperimentId());
@@ -181,7 +185,7 @@ public class AuroraJobMonitor implements JobMonitor, Runnable {
             }
         }
 
-        private void processJob(String jobKey, TaskContext taskContext, JobState jobState) {
+        private void processJob(RegistryService.Client registryClient, String jobKey, TaskContext taskContext, JobState jobState) {
             JobStatus jobStatus = new JobStatus();
             jobStatus.setJobState(jobState);
             if (jobState == JobState.COMPLETE) {
@@ -194,7 +198,7 @@ public class AuroraJobMonitor implements JobMonitor, Runnable {
             jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             jobModel.setJobStatuses(Arrays.asList(jobStatus));
             try {
-                GFacUtils.saveJobStatus(pc, jobModel);
+                GFacUtils.saveJobStatus(pc, registryClient, jobModel);
             } catch (GFacException e) {
                 log.error("Error while saving job status for job : {} ", jobKey);
             }
@@ -204,7 +208,7 @@ public class AuroraJobMonitor implements JobMonitor, Runnable {
             taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             taskContext.setTaskStatus(taskStatus);
             try {
-                GFacUtils.saveAndPublishTaskStatus(taskContext);
+                GFacUtils.saveAndPublishTaskStatus(taskContext, registryClient);
             } catch (GFacException e) {
                 log.error("Error while saving task status for exp : {} , process : {} , task : {} , job : {}",
                         taskContext.getExperimentId(), taskContext.getProcessId(), taskContext.getTaskId(), jobKey);
@@ -215,7 +219,7 @@ public class AuroraJobMonitor implements JobMonitor, Runnable {
                 processStatus.setReason("Process has been cancelled");
                 pc.setProcessStatus(processStatus);
                 try {
-                    GFacUtils.saveAndPublishProcessStatus(pc);
+                    GFacUtils.saveAndPublishProcessStatus(pc, registryClient);
                 } catch (GFacException e) {
                     log.error("Error while cancelling process, exp : {}, process : {}", pc.getExperimentId(), pc.getProcessId());
                 }
@@ -231,7 +235,7 @@ public class AuroraJobMonitor implements JobMonitor, Runnable {
                 processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                 pc.setProcessStatus(processStatus);
                 try {
-                    GFacUtils.saveAndPublishProcessStatus(pc);
+                    GFacUtils.saveAndPublishProcessStatus(pc, registryClient);
                 } catch (GFacException ex) {
                     log.error("Error while updating process status to FAILED, exp : {}, process : {}", pc.getExperimentId(), pc.getProcessId());
                 }

@@ -86,6 +86,7 @@ resources:
       - root <adm@m2.karst.uits.iu.edu> #karst
       - root <adm@m1.mason.indiana.edu> #mason
       - smic3 <smic@mail.hpc.lsu.edu> # philip.hpc.lsu
+      - adm@jetstream-cloud.org
 
   - jobManagerType: SLURM
     commandOutputParser: org.apache.airavata.gfac.impl.job.SlurmOutputParser
@@ -94,14 +95,22 @@ resources:
       - SDSC Admin <slurm@comet-fe3.sdsc.edu> # comet
       - slurm@batch1.stampede.tacc.utexas.edu # stampede
       - SDSC Admin <slurm@comet-fe4.sdsc.edu> # comet new
-      - Slurm <slurm@psc.edu> # bridges 
+      - slurm@comet-fe4.sdsc.edu
+      - Slurm <slurm@psc.edu> # bridges
       - Slurm Daemon <slurm@odin.oscer.ou.edu> # OU Schooner
       - slurm@lnet28.stampede.tacc.utexas.edu # stampede2
       - Slurm service account <slurm@chpc.utah.edu> # Utah Ember
       - SLURM workload manager <slurm@jetstream.chemcompute.org> # JS Mark Cluster
+      - root@master.ls5.tacc.utexas.edu
+      - batch-jsc@fz-juelich.de # Jureca Email
       - Slurm <slurm@br003.pvt.bridges.psc.edu>
       - slurm@jetstream-cloud.org
       - slurm@slurm-example.novalocal
+      - slurm@tutorial-headnode.novalocal # Jetstream Ultrascan static cluster with 10 nodes
+      - slurm@batch1.stampede2.tacc.utexas.edu #Stampede2
+      - slurm@sra-master.jetstreamlocal #Searching SRA
+      - Slurm Admin <slurmadmin@hpclogin01.rs.gsu.edu> #GSU cluster
+      - slurm@head.cluster #USD cluster
 
   - jobManagerType: UGE
     commandOutputParser: org.apache.airavata.gfac.impl.job.UGEOutputParser
