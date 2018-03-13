@@ -329,8 +329,11 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
             return (new DataMovementRepository()).addDataMovementProtocol(resourceId, dataMovementInterface);
         }
         else if (dmType.equals(DMType.STORAGE_RESOURCE)){
-            //TODO - COMPLETE this after StorageResourceRepo implementation
-            return null;
+            Mapper mapper = ObjectMapperSingleton.getInstance();
+            StorageInterfaceEntity storageInterfaceEntity = mapper.map(dataMovementInterface, StorageInterfaceEntity.class);
+            storageInterfaceEntity.setStorageResourceId(resourceId);
+            execute(entityManager -> entityManager.merge(storageInterfaceEntity));
+            return storageInterfaceEntity.getStorageResourceId();
         }
         return null;
     }
