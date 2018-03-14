@@ -151,8 +151,7 @@ public class UserResourceProfileRepository extends AppCatAbstractRepository<User
 
     @Override
     public String getUserNamefromID(String userId, String gatewayID) throws AppCatalogException {
-        //Implementation not needed, username and ID are the same.
-        return null;
+        return userId;
     }
 
     @Override
