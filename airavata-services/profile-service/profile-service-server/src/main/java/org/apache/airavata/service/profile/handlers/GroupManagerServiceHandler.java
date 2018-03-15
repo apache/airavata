@@ -1,11 +1,14 @@
 package org.apache.airavata.service.profile.handlers;
 
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.ThriftClientPool;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.group.GroupModel;
 import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.service.profile.groupmanager.cpi.GroupManagerService;
 import org.apache.airavata.service.profile.groupmanager.cpi.exception.GroupManagerServiceException;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
@@ -14,6 +17,7 @@ import org.apache.airavata.sharing.registry.models.GroupType;
 import org.apache.airavata.sharing.registry.models.SharingRegistryException;
 import org.apache.airavata.sharing.registry.models.UserGroup;
 import org.apache.airavata.sharing.registry.service.cpi.SharingRegistryService;
+import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +28,32 @@ import java.util.UUID;
 
 public class GroupManagerServiceHandler implements GroupManagerService.Iface {
 
+
     private static final Logger logger = LoggerFactory.getLogger(GroupManagerServiceHandler.class);
 
+
+    private ThriftClientPool<SharingRegistryService.Client> sharingClientPool;
+
+
     public GroupManagerServiceHandler() {
+        //Code Changes Done
+
+
+            GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
+            poolConfig.maxActive = 100;
+            poolConfig.minIdle = 5;
+            poolConfig.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_BLOCK;
+            poolConfig.testOnBorrow = true;
+            poolConfig.testWhileIdle = true;
+            poolConfig.numTestsPerEvictionRun = 10;
+            poolConfig.maxWait = 3000;
+
+            sharingClientPool = new ThriftClientPool<>(tProtocol -> new SharingRegistryService.Client(tProtocol), poolConfig, ServerSettings.getSharingRegistryHost(),
+                    Integer.parseInt(ServerSettings.getSharingRegistryPort()));
+
+               //Need to ask
+               // initSharingRegistry();
+               // postInitDefaultGateway();
 
     }
 
@@ -35,7 +62,11 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     public String createGroup(AuthzToken authzToken, GroupModel groupModel) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
             //TODO Validations for authorization
-            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+
+            //Code Changes Done in the below two lines
+            //SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+
+            SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
 
             UserGroup sharingUserGroup = new UserGroup();
             sharingUserGroup.setGroupId(UUID.randomUUID().toString());
@@ -65,7 +96,10 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     public boolean updateGroup(AuthzToken authzToken, GroupModel groupModel) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
             //TODO Validations for authorization
-            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+            //Code changes carried out
+            //SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+
+            SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
 
             UserGroup sharingUserGroup = new UserGroup();
             sharingUserGroup.setGroupId(groupModel.getId());
@@ -92,8 +126,9 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     public boolean deleteGroup(AuthzToken authzToken, String groupId, String ownerId) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
             //TODO Validations for authorization
-            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
-
+            //Code Changes done
+            //SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+            SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
             sharingClient.deleteGroup(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId);
             return true;
         }
@@ -110,7 +145,9 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     @SecurityCheck
     public GroupModel getGroup(AuthzToken authzToken, String groupId) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
-            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+            //Code Changes Done
+            //SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+            SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
             UserGroup userGroup = sharingClient.getGroup(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId);
 
             GroupModel groupModel = new GroupModel();
@@ -138,7 +175,9 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     @SecurityCheck
     public List<GroupModel> getAllGroupsUserBelongs(AuthzToken authzToken, String userName) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
-            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+            //Code Changes Done as below
+            //SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+            SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
             List<GroupModel> groupModels = new ArrayList<GroupModel>();
             List<UserGroup> userGroups = sharingClient.getAllMemberGroupsForUser(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), userName);
 
@@ -169,7 +208,9 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     @SecurityCheck
     public boolean transferGroupOwnership(AuthzToken authzToken, String groupId, String newOwnerId) throws GroupManagerServiceException, AuthorizationException, TException {
        try{
-           SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+
+           //SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+           SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
            return sharingClient.transferGroupOwnership(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, newOwnerId);
        }
        catch (Exception e) {
@@ -186,7 +227,8 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     @SecurityCheck
     public boolean addGroupAdmins(AuthzToken authzToken, String groupId, List<String> adminIds) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
-            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+            //SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+            SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
             return sharingClient.addGroupAdmins(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, adminIds);
         }
         catch (Exception e) {
@@ -202,7 +244,8 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     @SecurityCheck
     public boolean removeGroupAdmins(AuthzToken authzToken, String groupId, List<String> adminIds) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
-            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+            //SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+            SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
             return sharingClient.removeGroupAdmins(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, adminIds);
         }
         catch (Exception e) {
@@ -218,7 +261,9 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     @SecurityCheck
     public boolean hasAdminAccess(AuthzToken authzToken, String groupId, String adminId) throws GroupManagerServiceException, AuthorizationException, TException {
         try {
-            SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+            //Code Changes Done
+            //SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
+            SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
             return sharingClient.hasAdminAccess(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, adminId);
         }
         catch (Exception e) {
@@ -245,7 +290,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             throw exception;
         }
     }
-
+    //This Method has to be commented out after the verification
     private SharingRegistryService.Client getSharingRegistryServiceClient() throws TException, ApplicationSettingsException {
         final int serverPort = Integer.parseInt(ServerSettings.getSharingRegistryPort());
         final String serverHost = ServerSettings.getSharingRegistryHost();

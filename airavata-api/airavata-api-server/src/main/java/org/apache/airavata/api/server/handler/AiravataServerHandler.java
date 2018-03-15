@@ -111,13 +111,18 @@ public class AiravataServerHandler implements Airavata.Iface {
             poolConfig.testWhileIdle = true;
             poolConfig.numTestsPerEvictionRun = 10;
             poolConfig.maxWait = 3000;
+            //Currently working on this
 
             sharingClientPool = new ThriftClientPool<>(
                     tProtocol -> new SharingRegistryService.Client(tProtocol), poolConfig, ServerSettings.getSharingRegistryHost(),
                     Integer.parseInt(ServerSettings.getSharingRegistryPort()));
+
+
             registryClientPool = new ThriftClientPool<>(
                     tProtocol -> new RegistryService.Client(tProtocol), poolConfig, ServerSettings.getRegistryServerHost(),
                     Integer.parseInt(ServerSettings.getRegistryServerPort()));
+
+
             csClientPool = new ThriftClientPool<>(
                     tProtocol -> new CredentialStoreService.Client(tProtocol), poolConfig, ServerSettings.getCredentialStoreServerHost(),
                     Integer.parseInt(ServerSettings.getCredentialStoreServerPort()));
@@ -141,6 +146,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     private void postInitDefaultGateway() {
 
         RegistryService.Client registryClient = registryClientPool.getResource();
+
         try {
 
             GatewayResourceProfile gatewayResourceProfile = registryClient.getGatewayResourceProfile(ServerSettings.getDefaultUserGateway());

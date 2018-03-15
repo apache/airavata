@@ -24,6 +24,7 @@ package org.apache.airavata.service.profile.handlers;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.ThriftClientPool;
 import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
@@ -41,6 +42,7 @@ import org.apache.airavata.service.profile.iam.admin.services.cpi.IamAdminServic
 import org.apache.airavata.service.profile.iam.admin.services.cpi.exception.IamAdminServicesException;
 import org.apache.airavata.service.profile.iam.admin.services.cpi.iam_admin_services_cpiConstants;
 import org.apache.airavata.service.security.interceptor.SecurityCheck;
+import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +52,29 @@ import java.util.List;
 public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     private final static Logger logger = LoggerFactory.getLogger(IamAdminServicesHandler.class);
+    //code changes made
+    private ThriftClientPool<CredentialStoreService.Client> csClientPool;
+    //Code Changes made
+    public IamAdminServicesHandler()  {
+        try {
 
+            GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
+            poolConfig.maxActive = 100;
+            poolConfig.minIdle = 5;
+            poolConfig.whenExhaustedAction = GenericObjectPool.WHEN_EXHAUSTED_BLOCK;
+            poolConfig.testOnBorrow = true;
+            poolConfig.testWhileIdle = true;
+            poolConfig.numTestsPerEvictionRun = 10;
+            poolConfig.maxWait = 3000;
+
+            csClientPool = new ThriftClientPool<>(
+                    tProtocol -> new CredentialStoreService.Client(tProtocol), poolConfig, ServerSettings.getCredentialStoreServerHost(),
+                    Integer.parseInt(ServerSettings.getCredentialStoreServerPort()));
+        }catch (ApplicationSettingsException e) {
+            logger.error("Error occured while reading airavata-server properties..", e);
+        }
+
+        }
 
     @Override
     public String getAPIVersion(AuthzToken authzToken) throws IamAdminServicesException, AuthorizationException {
@@ -73,7 +97,10 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             keycloakclient.addTenant(isSuperAdminCredentials, gateway);
 
             // Load the tenant admin password stored in gateway request
-            CredentialStoreService.Client credentialStoreClient = getCredentialStoreServiceClient();
+            //Code Changes made
+
+            //CredentialStoreService.Client credentialStoreClient = getCredentialStoreServiceClient();
+            CredentialStoreService.Client credentialStoreClient = csClientPool.getResource();
             // Admin password token should already be stored under requested gateway's gatewayId
             PasswordCredential tenantAdminPasswordCredential = credentialStoreClient.getPasswordCredential(gateway.getIdentityServerPasswordToken(), gateway.getGatewayId());
 
@@ -82,11 +109,20 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             }
             Gateway gatewayWithIdAndSecret = keycloakclient.configureClient(isSuperAdminCredentials, gateway);
             return gatewayWithIdAndSecret;
-        } catch (TException|ApplicationSettingsException ex) {
+        } catch (TException ex) {
             logger.error("Gateway Setup Failed, reason: " + ex.getMessage(), ex);
             IamAdminServicesException iamAdminServicesException = new IamAdminServicesException(ex.getMessage());
             throw iamAdminServicesException;
         }
+
+        //Code Changes Done Need to verify and remove the same
+        /*
+        catch (ApplicationSettingsException ex) {
+            logger.error("Gateway Setup Failed, reason: " + ex.getMessage(), ex);
+            IamAdminServicesException iamAdminServicesException = new IamAdminServicesException(ex.getMessage());
+            throw iamAdminServicesException;
+        }
+        */
     }
 
     //ToDo: Will only be secure when using SSL between PGA and Airavata
@@ -241,8 +277,9 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     private PasswordCredential getTenantAdminPasswordCredential(String tenantId) throws TException, ApplicationSettingsException {
 
         GatewayResourceProfile gwrp = getRegistryServiceClient().getGatewayResourceProfile(tenantId);
-
-        CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
+        //Code Changes Done
+       // CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
+        CredentialStoreService.Client csClient = csClientPool.getResource();
         return csClient.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
     }
 
@@ -256,6 +293,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
         }
     }
 
+    //Need to delete this method after the verfication
     private CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
         final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
         final String serverHost = ServerSettings.getCredentialStoreServerHost();
