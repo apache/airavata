@@ -1,4 +1,4 @@
-/**
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,23 +19,19 @@
  */
 package org.apache.airavata.gfac.impl.task;
 
-import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
-import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.cluster.CommandInfo;
 import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.Task;
-import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
+import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
@@ -51,14 +47,10 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This will be used for both Input file staging and output file staging, hence if you do any changes to a part of logic
@@ -66,19 +58,16 @@ import java.util.Map;
  */
 public class SCPDataStageTask implements Task {
     private static final Logger log = LoggerFactory.getLogger(SCPDataStageTask.class);
-    private static final int DEFAULT_SSH_PORT = 22;
 
     @Override
-    public void init(Map<String, String> propertyMap) throws TaskException {
+    public void init(Map<String, String> propertyMap) {
 
     }
 
     @Override
     public TaskStatus execute(TaskContext taskContext) {
         TaskStatus status = new TaskStatus(TaskState.EXECUTING);
-        AuthenticationInfo authenticationInfo = null;
-        DataStagingTaskModel subTaskModel = null;
-        String localDataDir = null;
+        DataStagingTaskModel subTaskModel;
 
         ProcessContext processContext = taskContext.getParentProcessContext();
         ProcessState processState = processContext.getProcessState();
@@ -86,7 +75,16 @@ public class SCPDataStageTask implements Task {
             subTaskModel = ((DataStagingTaskModel) taskContext.getSubTaskModel());
             if (processState == ProcessState.OUTPUT_DATA_STAGING) {
                 OutputDataObjectType processOutput = taskContext.getProcessOutput();
-                if (processOutput != null && processOutput.getValue() == null) {
+
+                if (processOutput == null) {
+                    log.error("expId: {}, processId:{}, taskId: {}: Process output can not be null",
+                            taskContext.getExperimentId(), taskContext.getProcessId(), taskContext.getTaskId());
+                    status = new TaskStatus(TaskState.FAILED);
+                    status.setReason("Process output can not be null");
+                    return status;
+                }
+
+                if (processOutput.getValue() == null) {
                     log.error("expId: {}, processId:{}, taskId: {}:- Couldn't stage file {} , file name shouldn't be null",
                             taskContext.getExperimentId(), taskContext.getProcessId(), taskContext.getTaskId(),
                             processOutput.getName());
@@ -97,7 +95,29 @@ public class SCPDataStageTask implements Task {
                         status.setReason("File name is null");
                     }
                     return status;
+
                 }
+
+                if (processOutput.getType() == DataType.URI || processOutput.getType() == DataType.URI_COLLECTION ||
+                        processOutput.getType() == DataType.STDOUT || processOutput.getType() == DataType.STDERR) {
+                    return transferFiles(processContext, subTaskModel, taskContext, processState);
+
+                } else if (processOutput.getType() == DataType.FLOAT || processOutput.getType() == DataType.STRING ||
+                        processOutput.getType() == DataType.INTEGER ) {
+                    return extractFromFile(subTaskModel, taskContext, processOutput.getApplicationArgument());
+
+                } else {
+                    String msg = "Unknown output data staging type " + processOutput.getType().name();
+                    log.error(msg);
+                    status.setState(TaskState.FAILED);
+                    status.setReason(msg);
+                    ErrorModel errorModel = new ErrorModel();
+                    errorModel.setActualErrorMessage(msg);
+                    errorModel.setUserFriendlyMessage(msg);
+                    taskContext.getTaskModel().setTaskErrors(Collections.singletonList(errorModel));
+                    return status;
+                }
+
             } else if (processState == ProcessState.INPUT_DATA_STAGING) {
                 InputDataObjectType processInput = taskContext.getProcessInput();
                 if (processInput != null && processInput.getValue() == null) {
@@ -111,7 +131,10 @@ public class SCPDataStageTask implements Task {
                         status.setReason("File name is null");
                     }
                     return status;
+                } else {
+                    return transferFiles(processContext, subTaskModel, taskContext, processState);
                 }
+
             } else {
                 status.setState(TaskState.FAILED);
                 status.setReason("Invalid task invocation, Support " + ProcessState.INPUT_DATA_STAGING.name() + " and " +
@@ -119,16 +142,101 @@ public class SCPDataStageTask implements Task {
                 return status;
             }
 
+        } catch (TException e) {
+            String msg = "Couldn't create subTask model thrift model";
+            log.error(msg, e);
+            status.setState(TaskState.FAILED);
+            status.setReason(msg);
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setActualErrorMessage(e.getMessage());
+            errorModel.setUserFriendlyMessage(msg);
+            taskContext.getTaskModel().setTaskErrors(Collections.singletonList(errorModel));
+            return status;
+        }
+    }
+
+    private TaskStatus extractFromFile(DataStagingTaskModel subTaskModel, TaskContext taskContext, String arguments) {
+
+        TaskStatus status = new TaskStatus(TaskState.EXECUTING);
+
+        try {
+            if (arguments != null && !arguments.isEmpty()) {
+
+                String[] allArgs = arguments.split(",");
+                String tempFile = "/tmp/" + UUID.randomUUID().toString();
+                URI sourceURI = new URI(subTaskModel.getSource());
+
+                log.info("Downloading file " + sourceURI.getPath() + " to temporary file " + tempFile);
+                taskContext.getParentProcessContext().getJobSubmissionRemoteCluster().copyFrom(sourceURI.getPath(), tempFile);
+
+                try (FileReader fr = new FileReader(new File(tempFile))) {
+                    log.info("Searching for lines that contains " + arguments + " in file " + tempFile);
+                    BufferedReader br = new BufferedReader(fr);
+                    StringBuilder result = new StringBuilder();
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        for (String arg : allArgs) {
+                            if (line.startsWith(arg)) {
+                                result.append(line).append("\n");
+                            }
+                        }
+
+                    }
+                    log.info("Values that contain given arguments : " + result.toString());
+                    GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), result.toString());
+                    GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), result.toString());
+
+                } catch (IOException e) {
+                    String msg = "Failed while reading from the file " + tempFile;
+                    log.error(msg, e);
+                    status.setState(TaskState.FAILED);
+                    status.setReason(msg);
+                    ErrorModel errorModel = new ErrorModel();
+                    errorModel.setActualErrorMessage(e.getMessage());
+                    errorModel.setUserFriendlyMessage(msg);
+                    taskContext.getTaskModel().setTaskErrors(Collections.singletonList(errorModel));
+
+                }
+            }
+            return status;
+        } catch (GFacException e) {
+            String msg = "Data staging (extracting values) failed";
+            log.error(msg, e);
+            status.setState(TaskState.FAILED);
+            status.setReason(msg);
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setActualErrorMessage(e.getMessage());
+            errorModel.setUserFriendlyMessage(msg);
+            taskContext.getTaskModel().setTaskErrors(Collections.singletonList(errorModel));
+            return status;
+        } catch (URISyntaxException e) {
+            String msg = "Failed to generate uri form the source of sub task";
+            log.error(msg, e);
+            status.setState(TaskState.FAILED);
+            status.setReason(msg);
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setActualErrorMessage(e.getMessage());
+            errorModel.setUserFriendlyMessage(msg);
+            taskContext.getTaskModel().setTaskErrors(Collections.singletonList(errorModel));
+            return status;
+        }
+    }
+
+    private TaskStatus transferFiles(ProcessContext processContext, DataStagingTaskModel subTaskModel,
+                                     TaskContext taskContext, ProcessState processState) {
+        TaskStatus status = new TaskStatus(TaskState.EXECUTING);
+
+        try {
             StorageResourceDescription storageResource = processContext.getStorageResource();
 //            StoragePreference storagePreference = taskContext.getParentProcessContext().getStoragePreference();
 
-            String hostName = null;
+            String hostName;
             if (storageResource != null) {
                 hostName = storageResource.getHostName();
             } else {
                 throw new GFacException("Storage Resource is null");
             }
-            String inputPath  = processContext.getStorageFileSystemRootLocation();
+            String inputPath = processContext.getStorageFileSystemRootLocation();
             inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
 
             // use rsync instead of scp if source and destination host and user name is same.
@@ -141,7 +249,7 @@ public class SCPDataStageTask implements Task {
             Session storageSession = Factory.getSSHSession(Factory.getStorageSSHKeyAuthentication(processContext),
                     processContext.getStorageResourceServerInfo());
 
-            URI destinationURI = null;
+            URI destinationURI;
             if (subTaskModel.getDestination().startsWith("dummy")) {
                 destinationURI = TaskUtils.getDestinationURI(taskContext, hostName, inputPath, fileName);
                 subTaskModel.setDestination(destinationURI.toString());
@@ -160,7 +268,7 @@ public class SCPDataStageTask implements Task {
             status = new TaskStatus(TaskState.COMPLETED);
 
             //Wildcard for file name. Has to find the correct name.
-            if(fileName.contains("*")){
+            if (fileName.contains("*")) {
                 String destParentPath = (new File(destinationURI.getPath())).getParentFile().getPath();
                 String sourceParentPath = (new File(sourceURI.getPath())).getParentFile().getPath();
                 List<String> fileNames = taskContext.getParentProcessContext().getDataMovementRemoteCluster()
@@ -174,14 +282,13 @@ public class SCPDataStageTask implements Task {
 
                 OutputDataObjectType processOutput = taskContext.getProcessOutput();
 
-                for(int i=0; i<fileNames.size(); i++){
-                    String temp = fileNames.get(i);
-                    if(temp != null && temp != ""){
+                for (String temp : fileNames) {
+                    if (temp != null && !temp.equals("")) {
                         fileName = temp;
                     }
-                    if(destParentPath.endsWith(File.separator)){
+                    if (destParentPath.endsWith(File.separator)) {
                         destinationURI = new URI(destParentPath + fileName);
-                    }else{
+                    } else {
                         destinationURI = new URI(destParentPath + File.separator + fileName);
                     }
 
@@ -189,8 +296,8 @@ public class SCPDataStageTask implements Task {
                     if (processState == ProcessState.OUTPUT_DATA_STAGING) {
                         processOutput.setName(fileName);
 
-                        experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_OUTPUT, Arrays.asList(processOutput), experimentId);
-                        experimentCatalog.add(ExpCatChildDataType.PROCESS_OUTPUT, Arrays.asList(processOutput), processId);
+                        experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_OUTPUT, Collections.singletonList(processOutput), experimentId);
+                        experimentCatalog.add(ExpCatChildDataType.PROCESS_OUTPUT, Collections.singletonList(processOutput), processId);
 
                         taskContext.setProcessOutput(processOutput);
 
@@ -202,10 +309,10 @@ public class SCPDataStageTask implements Task {
                 }
                 if (processState == ProcessState.OUTPUT_DATA_STAGING) {
                     status.setReason("Successfully staged output data");
-                }else{
+                } else {
                     status.setReason("Wildcard support is only enabled for output data staging");
                 }
-            }else {
+            } else {
                 if (processState == ProcessState.INPUT_DATA_STAGING) {
                     inputDataStaging(taskContext, storageSession, sourceURI, remoteSession, destinationURI);
                     status.setReason("Successfully staged input data");
@@ -216,25 +323,6 @@ public class SCPDataStageTask implements Task {
                     status.setReason("Successfully staged output data");
                 }
             }
-        } catch (TException e) {
-            String msg = "Couldn't create subTask model thrift model";
-            log.error(msg, e);
-            status.setState(TaskState.FAILED);
-            status.setReason(msg);
-            ErrorModel errorModel = new ErrorModel();
-            errorModel.setActualErrorMessage(e.getMessage());
-            errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
-            return status;
-        } catch (ApplicationSettingsException | FileNotFoundException e) {
-            String msg = "Failed while reading credentials";
-            log.error(msg, e);
-            status.setState(TaskState.FAILED);
-            status.setReason(msg);
-            ErrorModel errorModel = new ErrorModel();
-            errorModel.setActualErrorMessage(e.getMessage());
-            errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
         } catch (URISyntaxException e) {
             String msg = "Source or destination uri is not correct source : " + subTaskModel.getSource() + ", " +
                     "destination : " + subTaskModel.getDestination();
@@ -244,7 +332,7 @@ public class SCPDataStageTask implements Task {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
+            taskContext.getTaskModel().setTaskErrors(Collections.singletonList(errorModel));
         } catch (CredentialStoreException e) {
             String msg = "Storage authentication issue, could be invalid credential token";
             log.error(msg, e);
@@ -253,25 +341,7 @@ public class SCPDataStageTask implements Task {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
-        } catch (AiravataException e) {
-            String msg = "Error while creating ssh session with client";
-            log.error(msg, e);
-            status.setState(TaskState.FAILED);
-            status.setReason(msg);
-            ErrorModel errorModel = new ErrorModel();
-            errorModel.setActualErrorMessage(e.getMessage());
-            errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
-        } catch (JSchException | IOException e) {
-            String msg = "Failed to do scp with client";
-            log.error(msg, e);
-            status.setState(TaskState.FAILED);
-            status.setReason(msg);
-            ErrorModel errorModel = new ErrorModel();
-            errorModel.setActualErrorMessage(e.getMessage());
-            errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
+            taskContext.getTaskModel().setTaskErrors(Collections.singletonList(errorModel));
         } catch (RegistryException | GFacException e) {
             String msg = "Data staging failed";
             log.error(msg, e);
@@ -280,33 +350,28 @@ public class SCPDataStageTask implements Task {
             ErrorModel errorModel = new ErrorModel();
             errorModel.setActualErrorMessage(e.getMessage());
             errorModel.setUserFriendlyMessage(msg);
-            taskContext.getTaskModel().setTaskErrors(Arrays.asList(errorModel));
+            taskContext.getTaskModel().setTaskErrors(Collections.singletonList(errorModel));
         }
         return status;
     }
 
     private void localDataCopy(TaskContext taskContext, URI sourceURI, URI destinationURI) throws GFacException {
-        StringBuilder sb = new StringBuilder("rsync -cr ");
-        sb.append(sourceURI.getPath()).append(" ").append(destinationURI.getPath());
-        CommandInfo commandInfo = new RawCommandInfo(sb.toString());
+        CommandInfo commandInfo = new RawCommandInfo("rsync -cr " + sourceURI.getPath() + " " + destinationURI.getPath());
         taskContext.getParentProcessContext().getDataMovementRemoteCluster().execute(commandInfo);
     }
 
     private void inputDataStaging(TaskContext taskContext, Session srcSession, URI sourceURI,  Session destSession, URI
-            destinationURI) throws GFacException, IOException, JSchException {
-        /**
-         * scp third party file transfer 'to' compute resource.
-         */
+            destinationURI) throws GFacException {
+
+
+        // scp third party file transfer 'to' compute resource.
         taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(), srcSession,
                 destinationURI.getPath(), destSession, RemoteCluster.DIRECTION.FROM, false);
     }
 
     private void outputDataStaging(TaskContext taskContext, Session srcSession, URI sourceURI,  Session destSession, URI destinationURI)
-            throws AiravataException, IOException, JSchException, GFacException {
+            throws GFacException {
 
-        /**
-         * scp third party file transfer 'from' comute resource.
-         */
         //Wildcard file path has not been resolved and cannot be handled. Hence ignoring
         if(!destinationURI.toString().contains("*")){
             taskContext.getParentProcessContext().getDataMovementRemoteCluster().scpThirdParty(sourceURI.getPath(), srcSession,

@@ -947,26 +947,34 @@ public class GFacUtils {
             String experimentId = processContext.getExperimentId();
             ExperimentModel experiment = (ExperimentModel)experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
             List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
-            if (experimentOutputs != null && !experimentOutputs.isEmpty()){
-                for (OutputDataObjectType expOutput : experimentOutputs){
-                    if (expOutput.getName().equals(outputName)){
-                        DataProductModel dataProductModel = new DataProductModel();
-                        dataProductModel.setGatewayId(processContext.getGatewayId());
-                        dataProductModel.setOwnerName(processContext.getProcessModel().getUserName());
-                        dataProductModel.setProductName(outputName);
-                        dataProductModel.setDataProductType(DataProductType.FILE);
+            if (experimentOutputs != null && !experimentOutputs.isEmpty()) {
+                for (OutputDataObjectType expOutput : experimentOutputs) {
+                    if (expOutput.getName().equals(outputName)) {
+                        if (expOutput.getType() == DataType.URI || expOutput.getType() == DataType.URI_COLLECTION ||
+                                expOutput.getType() == DataType.STDERR || expOutput.getType() == DataType.STDOUT) {
 
-                        DataReplicaLocationModel replicaLocationModel = new DataReplicaLocationModel();
-                        replicaLocationModel.setStorageResourceId(processContext.getStorageResource().getStorageResourceId());
-                        replicaLocationModel.setReplicaName(outputName + " gateway data store copy");
-                        replicaLocationModel.setReplicaLocationCategory(ReplicaLocationCategory.GATEWAY_DATA_STORE);
-                        replicaLocationModel.setReplicaPersistentType(ReplicaPersistentType.TRANSIENT);
-                        replicaLocationModel.setFilePath(outputVal);
-                        dataProductModel.addToReplicaLocations(replicaLocationModel);
+                            DataProductModel dataProductModel = new DataProductModel();
+                            dataProductModel.setGatewayId(processContext.getGatewayId());
+                            dataProductModel.setOwnerName(processContext.getProcessModel().getUserName());
+                            dataProductModel.setProductName(outputName);
+                            dataProductModel.setDataProductType(DataProductType.FILE);
 
-                        ReplicaCatalog replicaCatalog = RegistryFactory.getReplicaCatalog();
-                        String productUri = replicaCatalog.registerDataProduct(dataProductModel);
-                        expOutput.setValue(productUri);
+                            DataReplicaLocationModel replicaLocationModel = new DataReplicaLocationModel();
+                            replicaLocationModel.setStorageResourceId(processContext.getStorageResource().getStorageResourceId());
+                            replicaLocationModel.setReplicaName(outputName + " gateway data store copy");
+                            replicaLocationModel.setReplicaLocationCategory(ReplicaLocationCategory.GATEWAY_DATA_STORE);
+                            replicaLocationModel.setReplicaPersistentType(ReplicaPersistentType.TRANSIENT);
+                            replicaLocationModel.setFilePath(outputVal);
+                            dataProductModel.addToReplicaLocations(replicaLocationModel);
+
+                            ReplicaCatalog replicaCatalog = RegistryFactory.getReplicaCatalog();
+                            String productUri = replicaCatalog.registerDataProduct(dataProductModel);
+                            expOutput.setValue(productUri);
+
+                        } else if (expOutput.getType() == DataType.STRING || expOutput.getType() == DataType.INTEGER ||
+                                expOutput.getType() == DataType.FLOAT) {
+                            expOutput.setValue(outputVal);
+                        }
                     }
                 }
             }
