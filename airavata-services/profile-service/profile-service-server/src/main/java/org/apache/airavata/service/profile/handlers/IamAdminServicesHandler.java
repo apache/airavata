@@ -30,6 +30,8 @@ import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.credential.store.PasswordCredential;
+import org.apache.airavata.model.error.AiravataErrorType;
+import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.user.UserProfile;
@@ -93,14 +95,12 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     public Gateway setUpGateway(AuthzToken authzToken, Gateway gateway) throws IamAdminServicesException, AuthorizationException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         PasswordCredential isSuperAdminCredentials = getSuperAdminPasswordCredential();
+        //CredentialStoreService.Client credentialStoreClient = getCredentialStoreServiceClient();
+        CredentialStoreService.Client credentialStoreClient = csClientPool.getResource();
         try {
             keycloakclient.addTenant(isSuperAdminCredentials, gateway);
 
             // Load the tenant admin password stored in gateway request
-            //Code Changes made
-
-            //CredentialStoreService.Client credentialStoreClient = getCredentialStoreServiceClient();
-            CredentialStoreService.Client credentialStoreClient = csClientPool.getResource();
             // Admin password token should already be stored under requested gateway's gatewayId
             PasswordCredential tenantAdminPasswordCredential = credentialStoreClient.getPasswordCredential(gateway.getIdentityServerPasswordToken(), gateway.getGatewayId());
 
@@ -108,10 +108,13 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
                 logger.error("Admin account creation failed !!, please refer error logs for reason");
             }
             Gateway gatewayWithIdAndSecret = keycloakclient.configureClient(isSuperAdminCredentials, gateway);
+            csClientPool.returnResource(credentialStoreClient);
             return gatewayWithIdAndSecret;
         } catch (TException ex) {
+
             logger.error("Gateway Setup Failed, reason: " + ex.getMessage(), ex);
             IamAdminServicesException iamAdminServicesException = new IamAdminServicesException(ex.getMessage());
+            csClientPool.returnBrokenResource(credentialStoreClient);
             throw iamAdminServicesException;
         }
 
@@ -277,12 +280,24 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     private PasswordCredential getTenantAdminPasswordCredential(String tenantId) throws TException, ApplicationSettingsException {
 
         GatewayResourceProfile gwrp = getRegistryServiceClient().getGatewayResourceProfile(tenantId);
-        //Code Changes Done
-       // CredentialStoreService.Client csClient = getCredentialStoreServiceClient();
         CredentialStoreService.Client csClient = csClientPool.getResource();
-        return csClient.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
+
+        try {
+            PasswordCredential TenantAdminPassword = csClient.getPasswordCredential(gwrp.getIdentityServerPwdCredToken(), gwrp.getGatewayID());
+            csClientPool.returnResource(csClient);
+            return TenantAdminPassword;
+        }catch (Exception e){
+            logger.error("Error while getting the tenant admin password", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while getting password credentials. More info : " + e.getMessage());
+            csClientPool.returnBrokenResource(csClient);
+            throw exception;
+        }
+
     }
 
+    //Need to check the usage of this method
     private RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
         final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
         final String serverHost = ServerSettings.getRegistryServerHost();
