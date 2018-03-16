@@ -41,7 +41,7 @@ public class DBConstants {
     public static class ProjectReviewerTable {
 
         public static final String PROJECTID = "projectId";
-        public static final String REVIEWER = "reviewer";
+        public static final String REVIEWER = "reviewerUsername";
     }
 
     public static class UserAllocationDetailTable {

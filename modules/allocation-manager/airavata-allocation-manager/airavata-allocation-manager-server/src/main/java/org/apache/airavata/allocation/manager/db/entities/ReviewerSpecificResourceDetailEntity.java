@@ -16,15 +16,11 @@ public class ReviewerSpecificResourceDetailEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="ID")
 	private int id;
 
-	@Lob
 	@Column(name="APPLICATIONS_TO_BE_USED")
 	private String applicationsToBeUsed;
 
-	@Lob
-	@Column(name="COMMENTS")
 	private String comments;
 
 	@Column(name="PROJECT_ID")

@@ -20,4 +20,12 @@ public class UserAllocationDetailRepository extends AbstractRepository<UserAlloc
         return select(query, queryParameters, 0, -1);
 
     }
+    
+    public long getProjectId(String userName) throws Exception{
+        Map<String,Object> queryParameters = new HashMap<>();
+         String query = "SELECT DISTINCT p from " + UserAllocationDetailEntity.class.getSimpleName() + " as p";
+         query += " WHERE ";
+ 		 query += "p.username" + " = '" + userName + "'";
+         return select(query, queryParameters, 0, -1).get(0).getProjectId();
+     }
 }

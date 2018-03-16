@@ -16,14 +16,13 @@ public class ReviewerAllocationDetailEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="ID")
 	private int id;
 
 	@Column(name="DISK_USAGE_RANGE_PER_JOB")
 	private BigInteger diskUsageRangePerJob;
 
-	@Column(name="DOCUMENTS")
-	private Object documents;
+	@Lob
+	private byte[] documents;
 
 	@Column(name="MAX_MEMORY_PER_CPU")
 	private BigInteger maxMemoryPerCpu;
@@ -40,7 +39,6 @@ public class ReviewerAllocationDetailEntity implements Serializable {
 	@Column(name="TYPICAL_SU_PER_JOB")
 	private BigInteger typicalSuPerJob;
 
-	@Column(name="USERNAME")
 	private String username;
 
 	public ReviewerAllocationDetailEntity() {
@@ -62,11 +60,11 @@ public class ReviewerAllocationDetailEntity implements Serializable {
 		this.diskUsageRangePerJob = diskUsageRangePerJob;
 	}
 
-	public Object getDocuments() {
+	public byte[] getDocuments() {
 		return this.documents;
 	}
 
-	public void setDocuments(Object documents) {
+	public void setDocuments(byte[] documents) {
 		this.documents = documents;
 	}
 

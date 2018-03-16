@@ -18,11 +18,11 @@ public class ReviewerAllocationDetailRepository extends
 		super(ReviewerAllocationDetail.class, ReviewerAllocationDetailEntity.class);
 	}
 
-	public List<ReviewerAllocationDetail> getAllReviewsForARequest(String projectId) throws Exception {
+	public List<ReviewerAllocationDetail> getAllReviewsForARequest(long projectId) throws Exception {
 		Map<String, Object> queryParameters = new HashMap<>();
 		 String query = "SELECT DISTINCT p from " + ReviewerAllocationDetailEntity.class.getSimpleName() + " as p";
 		query += " WHERE ";
-		 query += "p." + DBConstants.UserAllocationDetailTable.PROJECTID + " = '" + projectId + " ' "; 
+		 query += "p." + DBConstants.UserAllocationDetailTable.PROJECTID + " = " + projectId; 
 		return select(query, queryParameters, 0, -1);
 	}
 	
@@ -30,7 +30,7 @@ public class ReviewerAllocationDetailRepository extends
 		Map<String, Object> queryParameters = new HashMap<>();
 		 String query = "SELECT DISTINCT p from " + ReviewerAllocationDetailEntity.class.getSimpleName() + " as p";
 		query += " WHERE ";
-		query += "p." + DBConstants.UserAllocationDetailTable.PROJECTID + " = '" + projectId + "'" + "AND ";
+		query += "p." + DBConstants.UserAllocationDetailTable.PROJECTID + " = " + projectId + "" + "AND ";
 		query += "p." + DBConstants.UserAllocationDetailTable.USERNAME + " = '" + reviewerId + "'"; 
 		List<ReviewerAllocationDetail> reviewerAllocationDetail = select(query, queryParameters, 0, -1);
 		if(reviewerAllocationDetail.size()>=1)

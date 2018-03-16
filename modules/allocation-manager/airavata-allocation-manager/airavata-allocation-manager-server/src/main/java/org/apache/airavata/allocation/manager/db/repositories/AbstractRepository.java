@@ -24,6 +24,7 @@ import org.apache.airavata.allocation.manager.db.utils.DBConstants;
 import org.apache.airavata.allocation.manager.db.utils.JPAUtils;
 import org.apache.airavata.allocation.manager.db.utils.ObjectMapperSingleton;
 import org.apache.airavata.allocation.manager.models.AllocationManagerException;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -156,6 +157,11 @@ public abstract class AbstractRepository<T, E, Id> {
             R r = committer.commit(entityManager);
             entityManager.getTransaction().commit();
             return r;
+        }
+        catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            throw new AllocationManagerException()
+                    .setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         } finally {
             entityManager.close();
         }

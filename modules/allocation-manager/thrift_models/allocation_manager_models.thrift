@@ -60,7 +60,8 @@ struct UserSpecificResourceDetail{
 	8:optional string resourceType,
 	9:optional string specificResource,
 	10:optional i64 startDate,
-	11:optional string subStatus
+	11:optional string subStatus,
+	12:optional i64 usedServiceUnits
 }
 
 
@@ -116,7 +117,7 @@ struct ReviewerSpecificResourceDetail{
 **/
 struct ProjectReviewer{
 	1:optional i64 projectId,
-	2:optional string reviewer,
+	2:optional string reviewerUsername,
 	3:optional i64 id
 }
 

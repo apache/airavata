@@ -16,24 +16,22 @@ public class UserAllocationDetailEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="PROJECT_ID")
 	private int projectId;
 
 	@Column(name="ALLOCATION_STATUS")
 	private String allocationStatus;
 
-	@Lob
-	@Column(name="COMMENTS")
 	private String comments;
 
 	@Column(name="DISK_USAGE_RANGE_PER_JOB")
 	private BigInteger diskUsageRangePerJob;
 
-	@Column(name="DOCUMENTS")
-	private Object documents;
+	@Lob
+	private byte[] documents;
 
-	@Column(name="KEYWORDS")
-	private Object keywords;
+	private String keywords;
 
 	@Column(name="MAX_MEMORY_PER_CPU")
 	private BigInteger maxMemoryPerCpu;
@@ -42,18 +40,16 @@ public class UserAllocationDetailEntity implements Serializable {
 	private BigInteger numberOfCpuPerJob;
 
 	@Column(name="PROJECT_DESCRIPTION")
-	private Object projectDescription;
+	private String projectDescription;
 
 	@Column(name="REQUESTED_DATE")
 	private BigInteger requestedDate;
 
-	@Column(name="TITLE")
-	private Object title;
+	private String title;
 
 	@Column(name="TYPICAL_SU_PER_JOB")
 	private BigInteger typicalSuPerJob;
 
-	@Column(name="USERNAME")
 	private String username;
 
 	public UserAllocationDetailEntity() {
@@ -91,19 +87,19 @@ public class UserAllocationDetailEntity implements Serializable {
 		this.diskUsageRangePerJob = diskUsageRangePerJob;
 	}
 
-	public Object getDocuments() {
+	public byte[] getDocuments() {
 		return this.documents;
 	}
 
-	public void setDocuments(Object documents) {
+	public void setDocuments(byte[] documents) {
 		this.documents = documents;
 	}
 
-	public Object getKeywords() {
+	public String getKeywords() {
 		return this.keywords;
 	}
 
-	public void setKeywords(Object keywords) {
+	public void setKeywords(String keywords) {
 		this.keywords = keywords;
 	}
 
@@ -123,11 +119,11 @@ public class UserAllocationDetailEntity implements Serializable {
 		this.numberOfCpuPerJob = numberOfCpuPerJob;
 	}
 
-	public Object getProjectDescription() {
+	public String getProjectDescription() {
 		return this.projectDescription;
 	}
 
-	public void setProjectDescription(Object projectDescription) {
+	public void setProjectDescription(String projectDescription) {
 		this.projectDescription = projectDescription;
 	}
 
@@ -139,11 +135,11 @@ public class UserAllocationDetailEntity implements Serializable {
 		this.requestedDate = requestedDate;
 	}
 
-	public Object getTitle() {
+	public String getTitle() {
 		return this.title;
 	}
 
-	public void setTitle(Object title) {
+	public void setTitle(String title) {
 		this.title = title;
 	}
 
