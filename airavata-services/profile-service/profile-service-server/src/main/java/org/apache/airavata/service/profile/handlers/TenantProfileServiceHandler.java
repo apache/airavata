@@ -22,9 +22,7 @@ package org.apache.airavata.service.profile.handlers;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.*;
-import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.model.credential.store.PasswordCredential;
 import org.apache.airavata.model.dbevent.CrudType;
 import org.apache.airavata.model.dbevent.EntityType;
@@ -264,13 +262,9 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
             adminPasswordCredential.setGatewayId(gateway.getGatewayId());
             String newAdminPasswordCredentialToken = csClient.addPasswordCredential(adminPasswordCredential);
             gateway.setIdentityServerPasswordToken(newAdminPasswordCredentialToken);
-            csClientPool.returnResource(csClient);
-        }catch (TException e) {
-            if (csClient != null) {
-                csClientPool.returnBrokenResource(csClient);
-            }
-            throw new RuntimeException("Failed to copy the Admin Password to Gateway", e);
 
+        }catch (TException e) {
+            throw new RuntimeException("Failed to copy the Admin Password to Gateway", e);
         }
         finally {
             if (csClient.getInputProtocol().getTransport().isOpen()) {
@@ -279,6 +273,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
             if (csClient.getOutputProtocol().getTransport().isOpen()) {
                 csClient.getOutputProtocol().getTransport().close();
             }
+            csClientPool.returnResource(csClient);
         }
     }
 }
