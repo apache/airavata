@@ -44,19 +44,13 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.List;
 
 public class UserProfileServiceHandler implements UserProfileService.Iface {
-
     private final static Logger logger = LoggerFactory.getLogger(UserProfileServiceHandler.class);
-
     private ThriftClientPool<IamAdminServices.Client> iasClientPool;
-
     private UserProfileRepository userProfileRepository;
-
     public UserProfileServiceHandler() {
-
         userProfileRepository = new UserProfileRepository(UserProfile.class, UserProfileEntity.class);
         try {
             GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
@@ -141,7 +135,6 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
                     iasClientPool.returnBrokenResource(iamAdminServicesClient);
                 }
                 throw new RuntimeException("Failed to update user profile in IAM service", e);
-
             }
         };
     }

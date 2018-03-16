@@ -43,7 +43,6 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -131,7 +130,6 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     @SecurityCheck
     public boolean updateGateway(AuthzToken authzToken, Gateway updatedGateway) throws TenantProfileServiceException, AuthorizationException, TException {
         try {
-
             // if admin password token changes then copy the admin password and store under this gateway id and then update the admin password token
             Gateway existingGateway = tenantProfileRepository.getGateway(updatedGateway.getAiravataInternalGatewayId());
             if (updatedGateway.getIdentityServerPasswordToken() != null

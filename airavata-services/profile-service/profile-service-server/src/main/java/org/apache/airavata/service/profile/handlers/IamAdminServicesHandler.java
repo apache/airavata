@@ -53,7 +53,6 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 public class IamAdminServicesHandler implements IamAdminServices.Iface {
-
     private final static Logger logger = LoggerFactory.getLogger(IamAdminServicesHandler.class);
     private ThriftClientPool<CredentialStoreService.Client> csClientPool;
     private ThriftClientPool<RegistryService.Client> registryClientPool;
@@ -67,7 +66,6 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             poolConfig.testWhileIdle = true;
             poolConfig.numTestsPerEvictionRun = 10;
             poolConfig.maxWait = 3000;
-
             csClientPool = new ThriftClientPool<>(
                     tProtocol -> new CredentialStoreService.Client(tProtocol), poolConfig, ServerSettings.getCredentialStoreServerHost(),
                     Integer.parseInt(ServerSettings.getCredentialStoreServerPort()));
@@ -100,7 +98,6 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
         CredentialStoreService.Client credentialStoreClient = csClientPool.getResource();
         try {
             keycloakclient.addTenant(isSuperAdminCredentials, gateway);
-
             // Load the tenant admin password stored in gateway request
             // Admin password token should already be stored under requested gateway's gatewayId
             PasswordCredential tenantAdminPasswordCredential = credentialStoreClient.getPasswordCredential(gateway.getIdentityServerPasswordToken(), gateway.getGatewayId());
@@ -193,7 +190,6 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     @Override
     @SecurityCheck
     public void updateUserProfile(AuthzToken authzToken, UserProfile userDetails) throws IamAdminServicesException, AuthorizationException, TException {
-
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         try {
             String username = authzToken.getClaimsMap().get(Constants.USER_NAME);
@@ -204,7 +200,6 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             if (!username.equals(userDetails.getUserId())) {
                 throw new IamAdminServicesException("userId in user profile doesn't match authorization token!");
             }
-
             PasswordCredential credential = getTenantAdminPasswordCredential(gatewayId);
             keycloakclient.updateUserProfile(credential, gatewayId, username, userDetails);
         } catch (ApplicationSettingsException e) {

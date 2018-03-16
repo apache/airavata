@@ -21,7 +21,6 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -159,7 +158,6 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
         try {
             List<GroupModel> groupModels = new ArrayList<GroupModel>();
             List<UserGroup> userGroups = sharingClient.getAllMemberGroupsForUser(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), userName);
-
             for (UserGroup userGroup: userGroups) {
                 GroupModel groupModel = new GroupModel();
                 groupModel.setId(userGroup.getGroupId());
@@ -201,7 +199,6 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
            sharingClientPool.returnBrokenResource(sharingClient);
            throw exception;
        }
-
     }
 
     @Override
