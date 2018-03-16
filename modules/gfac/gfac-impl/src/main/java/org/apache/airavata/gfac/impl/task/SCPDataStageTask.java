@@ -59,6 +59,11 @@ import java.util.*;
 public class SCPDataStageTask implements Task {
     private static final Logger log = LoggerFactory.getLogger(SCPDataStageTask.class);
 
+    /**
+     * Maximum size of the file which is compatible for STRING output parsing
+     */
+    private static final long MAX_FILE_SIZE_TO_READ = 2 * 1024 * 1024;
+
     @Override
     public void init(Map<String, String> propertyMap) {
 
@@ -104,7 +109,7 @@ public class SCPDataStageTask implements Task {
 
                 } else if (processOutput.getType() == DataType.FLOAT || processOutput.getType() == DataType.STRING ||
                         processOutput.getType() == DataType.INTEGER ) {
-                    return extractFromFile(subTaskModel, taskContext, processOutput.getApplicationArgument());
+                    return extractStringFromFile(subTaskModel, taskContext, processOutput.getApplicationArgument());
 
                 } else {
                     String msg = "Unknown output data staging type " + processOutput.getType().name();
@@ -155,50 +160,79 @@ public class SCPDataStageTask implements Task {
         }
     }
 
-    private TaskStatus extractFromFile(DataStagingTaskModel subTaskModel, TaskContext taskContext, String arguments) {
+    private TaskStatus extractStringFromFile(DataStagingTaskModel subTaskModel, TaskContext taskContext, String arguments) {
 
         TaskStatus status = new TaskStatus(TaskState.EXECUTING);
 
+        File tempFile = null;
         try {
             if (arguments != null && !arguments.isEmpty()) {
 
                 String[] allArgs = arguments.split(",");
-                String tempFile = "/tmp/" + UUID.randomUUID().toString();
+                tempFile = File.createTempFile("temp-output", ".tmp");
                 URI sourceURI = new URI(subTaskModel.getSource());
 
                 log.info("Downloading file " + sourceURI.getPath() + " to temporary file " + tempFile);
-                taskContext.getParentProcessContext().getJobSubmissionRemoteCluster().copyFrom(sourceURI.getPath(), tempFile);
 
-                try (FileReader fr = new FileReader(new File(tempFile))) {
-                    log.info("Searching for lines that contains " + arguments + " in file " + tempFile);
-                    BufferedReader br = new BufferedReader(fr);
-                    StringBuilder result = new StringBuilder();
-                    String line;
-                    while ((line = br.readLine()) != null) {
-                        for (String arg : allArgs) {
-                            if (line.startsWith(arg)) {
-                                result.append(line).append("\n");
+                taskContext.getParentProcessContext().getJobSubmissionRemoteCluster().copyFrom(sourceURI.getPath(), tempFile.getPath());
+
+                StringBuilder result = new StringBuilder();
+                // this is to identify that output is parsed
+                result.append("parsed-out: ");
+
+                // if the file size is grater than 2 MB, skip parsing to avoid possible OOM issues
+                if (tempFile.length() <= MAX_FILE_SIZE_TO_READ) {
+
+                    try (FileReader fr = new FileReader(tempFile)) {
+                        log.info("Searching for lines that contains " + arguments + " in file " + tempFile);
+                        BufferedReader br = new BufferedReader(fr);
+
+                        String line;
+                        while ((line = br.readLine()) != null) {
+
+                            if (log.isTraceEnabled()) {
+                                log.trace("Input file line : {}", line);
+                            }
+
+                            for (String arg : allArgs) {
+                                if (line.startsWith(arg)) {
+                                    log.debug("Found a line with argument {} : {}", arg, line);
+                                    result.append(line).append("\n");
+                                }
                             }
                         }
 
+                        log.info("Values that contains given arguments : " + result.toString());
+                        GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), result.toString());
+                        GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), result.toString());
+
+                        status.setState(TaskState.COMPLETED);
+                        status.setReason("Successfully parsed output file and fetched data");
+
+                    } catch (IOException e) {
+                        String msg = "Failed while reading from the file " + tempFile;
+                        log.error(msg, e);
+                        status.setState(TaskState.FAILED);
+                        status.setReason(msg);
+                        ErrorModel errorModel = new ErrorModel();
+                        errorModel.setActualErrorMessage(e.getMessage());
+                        errorModel.setUserFriendlyMessage(msg);
+                        taskContext.getTaskModel().setTaskErrors(Collections.singletonList(errorModel));
+
                     }
-                    log.info("Values that contain given arguments : " + result.toString());
+
+                } else {
+                    String msg = "Skipping output parsing as the file sized exceeded 2MB";
+                    log.warn(msg);
+                    result.append(msg);
                     GFacUtils.saveExperimentOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), result.toString());
                     GFacUtils.saveProcessOutput(taskContext.getParentProcessContext(), taskContext.getProcessOutput().getName(), result.toString());
-
-                } catch (IOException e) {
-                    String msg = "Failed while reading from the file " + tempFile;
-                    log.error(msg, e);
-                    status.setState(TaskState.FAILED);
                     status.setReason(msg);
-                    ErrorModel errorModel = new ErrorModel();
-                    errorModel.setActualErrorMessage(e.getMessage());
-                    errorModel.setUserFriendlyMessage(msg);
-                    taskContext.getTaskModel().setTaskErrors(Collections.singletonList(errorModel));
-
+                    status.setState(TaskState.COMPLETED);
                 }
             }
             return status;
+
         } catch (GFacException e) {
             String msg = "Data staging (extracting values) failed";
             log.error(msg, e);
@@ -209,6 +243,7 @@ public class SCPDataStageTask implements Task {
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Collections.singletonList(errorModel));
             return status;
+
         } catch (URISyntaxException e) {
             String msg = "Failed to generate uri form the source of sub task";
             log.error(msg, e);
@@ -219,6 +254,26 @@ public class SCPDataStageTask implements Task {
             errorModel.setUserFriendlyMessage(msg);
             taskContext.getTaskModel().setTaskErrors(Collections.singletonList(errorModel));
             return status;
+
+        } catch (IOException e) {
+            String msg = "Failed to create the temporary file to download output file";
+            log.error(msg, e);
+            status.setState(TaskState.FAILED);
+            status.setReason(msg);
+            ErrorModel errorModel = new ErrorModel();
+            errorModel.setActualErrorMessage(e.getMessage());
+            errorModel.setUserFriendlyMessage(msg);
+            taskContext.getTaskModel().setTaskErrors(Collections.singletonList(errorModel));
+            return status;
+
+        } finally {
+            if (tempFile != null && tempFile.exists()) {
+                if (tempFile.delete()) {
+                    log.debug("Temp file {} successfully deleted", tempFile.getAbsolutePath());
+                } else {
+                    log.warn("Failed to delete temp file {}", tempFile.getAbsolutePath());
+                }
+            }
         }
     }
 
