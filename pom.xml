@@ -200,6 +200,18 @@
             </roles>
         </developer>
         <developer>
+            <id>dimuthuupe</id>
+            <name>Dimuthu Upeksha</name>
+            <email>dimuthuupe@apache.org</email>
+            <timezone>-5</timezone>
+            <organization>Indiana University</organization>
+            <organizationUrl>http://iub.edu</organizationUrl>
+            <roles>
+                <role>committer</role>
+                <role>PMC member</role>
+            </roles>
+        </developer>
+        <developer>
             <id>chinthaka</id>
             <name>Eran Chinthaka</name>
             <email>chinthaka@apache.org</email>
@@ -211,7 +223,7 @@
                 <role>PMC member</role>
             </roles>
         </developer>
-	<developer>
+	    <developer>
             <id>goshenoy</id>
             <name>Gourav Ganesh Shenoy</name>
             <email>goshenoy@apache.org</email>
@@ -280,6 +292,17 @@
             <roles>
                 <role>committer</role>
                 <role>PPMC member</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>sachinkariyattin</id>
+            <name>Sachin Kariyattin</name>
+            <email>sachinkariyattin@apache.org</email>
+            <timezone>-5</timezone>
+            <organization>Indiana University</organization>
+            <organizationUrl>http://www.iub.edu</organizationUrl>
+            <roles>
+                <role>committer</role>
             </roles>
         </developer>
         <developer>
@@ -406,6 +429,17 @@
             <timezone>-5</timezone>
             <organization>Indiana University</organization>
             <organizationUrl>https://www.indiana.edu</organizationUrl>
+            <roles>
+                <role>committer</role>
+            </roles>
+        </developer>
+	<developer>
+            <id>tilaks</id>
+            <name>Sneha Tilak</name>
+            <email>tilaks@apache.org</email>
+            <timezone>-5</timezone>
+            <organization>Indiana University</organization>
+            <organizationUrl>http://iub.edu</organizationUrl>
             <roles>
                 <role>committer</role>
             </roles>

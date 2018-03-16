@@ -174,9 +174,9 @@
 - name: open firewall port {{ pga_default_http_port }}
   firewalld: port="{{ pga_default_http_port }}/tcp"
              zone=public permanent=true state=enabled immediate=yes
-  become_user: root
+  become: yes
 
 - name: open firewall port {{ pga_default_https_port }}
   firewalld: port="{{ pga_default_https_port }}/tcp"
              zone=public permanent=true state=enabled immediate=yes
-  become_user: root
+  become: yes
