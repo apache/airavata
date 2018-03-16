@@ -113,4 +113,14 @@ service AllocationRegistryService{
         */
         bool rejectRequest(1: required security_model.AuthzToken authzToken,2:required i64 projectId, 3: required string adminId,4: required string rejectionReason,5: required string specificResourceName) throws (1: allocation_manager_models.AllocationManagerException ame,2: airavata_errors.AuthorizationException ae);
 
+        /**
+        <p>API method to get the remaining allocation units</p>
+        */
+        i64 getRemainingAllocationUnits(1: required security_model.AuthzToken authzToken,2:required string specificResource) throws (1: allocation_manager_models.AllocationManagerException ame,2: airavata_errors.AuthorizationException ae);
+
+        /**
+        <p>API method to deduct the used allocation units</p>
+        */
+        bool deductAllocationUnits(1: required security_model.AuthzToken authzToken,2:required string specificResource,3:required i64 allocationUnits) throws (1: allocation_manager_models.AllocationManagerException ame,2: airavata_errors.AuthorizationException ae);
+
 }

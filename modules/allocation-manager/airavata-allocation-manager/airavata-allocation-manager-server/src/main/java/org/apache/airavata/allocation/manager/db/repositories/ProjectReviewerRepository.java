@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.Map;
 import org.apache.airavata.allocation.manager.db.entities.ProjectReviewerEntity;
 import org.apache.airavata.allocation.manager.db.entities.ReviewerAllocationDetailEntity;
+import org.apache.airavata.allocation.manager.db.entities.ReviewerSpecificResourceDetailEntity;
 import org.apache.airavata.allocation.manager.db.utils.DBConstants;
 import org.apache.airavata.allocation.manager.models.AllocationManagerException;
 import org.apache.airavata.allocation.manager.models.ProjectReviewer;
 import org.apache.airavata.allocation.manager.models.ReviewerAllocationDetail;
+import org.apache.airavata.allocation.manager.models.ReviewerSpecificResourceDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,4 +46,12 @@ public class ProjectReviewerRepository
 		else
 			return false;
 	}
+	
+	public List<ProjectReviewer> getList(long projectId) throws Exception{
+    	Map<String, Object> queryParameters = new HashMap<>();
+		String query = "SELECT DISTINCT p from " + ProjectReviewerEntity.class.getSimpleName() + " as p";
+		query += " WHERE ";
+		query += "p." + "projectId" + " = " + projectId;
+		return select(query, queryParameters, 0, -1);
+     }
 }

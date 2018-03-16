@@ -16,13 +16,11 @@ public class UserSpecificResourceDetailEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="ID")
 	private int id;
 
 	@Column(name="ALLOCATED_SERVICE_UNITS")
 	private BigInteger allocatedServiceUnits;
 
-	@Lob
 	@Column(name="APPLICATIONS_TO_BE_USED")
 	private String applicationsToBeUsed;
 
@@ -32,7 +30,6 @@ public class UserSpecificResourceDetailEntity implements Serializable {
 	@Column(name="PROJECT_ID")
 	private int projectId;
 
-	@Lob
 	@Column(name="REJECTION_REASON")
 	private String rejectionReason;
 
@@ -50,6 +47,9 @@ public class UserSpecificResourceDetailEntity implements Serializable {
 
 	@Column(name="SUB_STATUS")
 	private String subStatus;
+
+	@Column(name="USED_SERVICE_UNITS")
+	private BigInteger usedServiceUnits;
 
 	public UserSpecificResourceDetailEntity() {
 	}
@@ -140,6 +140,14 @@ public class UserSpecificResourceDetailEntity implements Serializable {
 
 	public void setSubStatus(String subStatus) {
 		this.subStatus = subStatus;
+	}
+
+	public BigInteger getUsedServiceUnits() {
+		return this.usedServiceUnits;
+	}
+
+	public void setUsedServiceUnits(BigInteger usedServiceUnits) {
+		this.usedServiceUnits = usedServiceUnits;
 	}
 
 }

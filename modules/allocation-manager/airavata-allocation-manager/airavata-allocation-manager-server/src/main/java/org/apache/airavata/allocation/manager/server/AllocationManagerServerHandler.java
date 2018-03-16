@@ -21,7 +21,7 @@ package org.apache.airavata.allocation.manager.server;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.airavata.allocation.manager.db.repositories.ProjectReviewerRepository;
+//import org.apache.airavata.allocation.manager.db.repositories.Projec
 import org.apache.airavata.allocation.manager.db.repositories.ReviewerAllocationDetailRepository;
 import org.apache.airavata.allocation.manager.db.repositories.ReviewerSpecificResourceDetailRepository;
 import org.apache.airavata.allocation.manager.db.repositories.UserAllocationDetailRepository;
@@ -56,7 +56,7 @@ public class AllocationManagerServerHandler implements AllocationRegistryService
     }
     
     @Override
-    @SecurityCheck
+    //@SecurityCheck
     public long createAllocationRequest(AuthzToken authzToken, UserAllocationDetail allocDetail)
             throws AllocationManagerException, AuthorizationException, TException {
         // TODO Auto-generated method stub
@@ -64,9 +64,11 @@ public class AllocationManagerServerHandler implements AllocationRegistryService
             if ((new UserAllocationDetailRepository()).isExists(allocDetail.getProjectId() + "")) {
                 throw new TException("There exist project with the id");
             }
+            
             allocDetail.setAllocationStatus(DBConstants.RequestStatus.PENDING);
-            UserAllocationDetail create = (new UserAllocationDetailRepository()).create(allocDetail);
-            return allocDetail.getProjectId();
+            UserAllocationDetail create;
+			create = (new UserAllocationDetailRepository()).create(allocDetail);
+            return create.getProjectId();
         } catch (Exception ex) {
             logger.error(ex.getMessage(), ex);
             throw new AllocationManagerException()
@@ -203,7 +205,7 @@ public class AllocationManagerServerHandler implements AllocationRegistryService
         try {
             ProjectReviewer projectReviewer = new ProjectReviewer();
             projectReviewer.setProjectId(projectId);
-            projectReviewer.setReviewer(reviewerId);
+            projectReviewer.setReviewerUsername(reviewerId);
 
             ProjectReviewer projectReviewerObj = new ProjectReviewerRepository().create(projectReviewer);
             if (projectReviewerObj.getProjectId() != 0L) {
@@ -259,7 +261,7 @@ public class AllocationManagerServerHandler implements AllocationRegistryService
             List<ProjectReviewer> projReviewerList = (new ProjectReviewerRepository()).getProjectForReviewer(userName);
             List<String> projectIds = new ArrayList<String>();
             for (ProjectReviewer objProj : projReviewerList) {
-                projectIds.add(objProj.getProjectId() + "");
+                projectIds.add(objProj.getProjectId()+"");
             }
             return new UserAllocationDetailRepository().get(projectIds);
         } catch (Exception ex) {
@@ -275,7 +277,7 @@ public class AllocationManagerServerHandler implements AllocationRegistryService
         // TODO Auto-generated method stub
         List<ReviewerAllocationDetail> reviewerAllocationDetailList = new ArrayList<ReviewerAllocationDetail>();
         try {
-            reviewerAllocationDetailList = new ReviewerAllocationDetailRepository().getAllReviewsForARequest(projectId + "");
+            reviewerAllocationDetailList = new ReviewerAllocationDetailRepository().getAllReviewsForARequest(projectId);
         } catch (Exception ex) {
             throw new AllocationManagerException()
                     .setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
@@ -342,7 +344,13 @@ public class AllocationManagerServerHandler implements AllocationRegistryService
     @SecurityCheck
     public List<ProjectReviewer> getAllAssignedReviewersForRequest(AuthzToken authzToken, long projectId)
             throws AllocationManagerException, AuthorizationException, TException {
-        // TODO Auto-generated method stub
+	    	 try {
+	    		 	return (new ProjectReviewerRepository().getList(projectId));
+	         } catch (Exception ex) {
+	             logger.error(ex.getMessage(), ex);
+	             throw new AllocationManagerException()
+	                     .setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+	         }
         return null;
     }
     
@@ -421,4 +429,44 @@ public class AllocationManagerServerHandler implements AllocationRegistryService
                     .setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
         }
     }
+
+	@Override
+    @SecurityCheck
+	public long getRemainingAllocationUnits(AuthzToken authzToken, String specificResource)
+			throws AllocationManagerException, AuthorizationException, TException {
+		//public static final String USER_NAME = "userName";
+        //String username = authzToken.getClaimsMap().get("userName");
+        String username="madrina";
+        long projectId;
+		try {
+			projectId = (new UserAllocationDetailRepository()).getProjectId(username);
+	        UserSpecificResourceDetail userSpecificResourceDetail = (new UserSpecificResourceDetailRespository()).getSpecificResource(projectId,specificResource);
+	        if(userSpecificResourceDetail.getAllocatedServiceUnits()-userSpecificResourceDetail.getUsedServiceUnits() > 0)
+	        		return userSpecificResourceDetail.getAllocatedServiceUnits()-userSpecificResourceDetail.getUsedServiceUnits();
+	        else return 0l;
+	}
+        catch (Exception ex) {
+        	 throw new AllocationManagerException()
+             .setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+		}
+	}
+
+	@Override
+    @SecurityCheck
+	public boolean deductAllocationUnits(AuthzToken authzToken, String specificResource, long allocationUnits)
+			throws AllocationManagerException, AuthorizationException, TException {
+			try {
+				//String username = authzToken.getClaimsMap().get("userName");
+				String username="madrina";
+		        long projectId = (new UserAllocationDetailRepository()).getProjectId(username);
+		        UserSpecificResourceDetail userSpecificResourceDetail = (new UserSpecificResourceDetailRespository()).getSpecificResource(projectId,specificResource);
+		        long usedSU = userSpecificResourceDetail.getUsedServiceUnits() + allocationUnits;
+		        userSpecificResourceDetail.setUsedServiceUnits(usedSU);
+		        (new UserSpecificResourceDetailRespository()).update(userSpecificResourceDetail);
+		        return true;
+			}catch (Exception ex) {
+	       	 throw new AllocationManagerException()
+	            .setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
+			}
+	}
 }

@@ -15,7 +15,6 @@ public class ProjectReviewerEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="ID")
 	private int id;
 
 	@Column(name="PROJECT_ID")

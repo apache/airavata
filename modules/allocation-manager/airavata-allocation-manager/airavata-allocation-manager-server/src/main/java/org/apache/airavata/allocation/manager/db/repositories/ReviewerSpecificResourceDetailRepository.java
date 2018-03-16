@@ -16,10 +16,8 @@ public class ReviewerSpecificResourceDetailRepository extends AbstractRepository
     	Map<String, Object> queryParameters = new HashMap<>();
 		String query = "SELECT DISTINCT p from " + ReviewerSpecificResourceDetailEntity.class.getSimpleName() + " as p";
 		query += " WHERE ";
-		query += "p." + "projectId" + " = " + "'" + projectId + "'";
+		query += "p." + "projectId" + " = " + projectId;
 		return select(query, queryParameters, 0, -1);
      }
-
-
 }
 

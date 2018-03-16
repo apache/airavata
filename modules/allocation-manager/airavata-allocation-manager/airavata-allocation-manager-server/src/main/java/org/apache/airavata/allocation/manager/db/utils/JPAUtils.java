@@ -88,7 +88,7 @@ public class JPAUtils {
         Connection conn = null;
         try {
             conn = db.connect();
-            if (!DatabaseCreator.isDatabaseStructureCreated("USER_DETAILS", conn)) {
+            if (!DatabaseCreator.isDatabaseStructureCreated("USER_ALLOCATION_DETAILS", conn)) {
                 DatabaseCreator.createRegistryDatabase("database_scripts/sharing-registry", conn);
                 logger.info("New Database created for Sharing Catalog !!! ");
             } else {

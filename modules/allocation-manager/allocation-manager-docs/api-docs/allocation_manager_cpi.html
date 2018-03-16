@@ -16,6 +16,7 @@
 <li><a href="#Fn_AllocationRegistryService_createAllocationRequest">createAllocationRequest</a></li>
 <li><a href="#Fn_AllocationRegistryService_createReviewerSpecificResource">createReviewerSpecificResource</a></li>
 <li><a href="#Fn_AllocationRegistryService_createUserSpecificResource">createUserSpecificResource</a></li>
+<li><a href="#Fn_AllocationRegistryService_deductAllocationUnits">deductAllocationUnits</a></li>
 <li><a href="#Fn_AllocationRegistryService_deleteAllocationRequest">deleteAllocationRequest</a></li>
 <li><a href="#Fn_AllocationRegistryService_deleteReviewerSpecificResource">deleteReviewerSpecificResource</a></li>
 <li><a href="#Fn_AllocationRegistryService_deleteUserSpecificResource">deleteUserSpecificResource</a></li>
@@ -24,6 +25,7 @@
 <li><a href="#Fn_AllocationRegistryService_getAllRequestsForReviewers">getAllRequestsForReviewers</a></li>
 <li><a href="#Fn_AllocationRegistryService_getAllReviewsForARequest">getAllReviewsForARequest</a></li>
 <li><a href="#Fn_AllocationRegistryService_getAllocationRequest">getAllocationRequest</a></li>
+<li><a href="#Fn_AllocationRegistryService_getRemainingAllocationUnits">getRemainingAllocationUnits</a></li>
 <li><a href="#Fn_AllocationRegistryService_getReviewerSpecificResource">getReviewerSpecificResource</a></li>
 <li><a href="#Fn_AllocationRegistryService_getUserSpecificResource">getUserSpecificResource</a></li>
 <li><a href="#Fn_AllocationRegistryService_rejectRequest">rejectRequest</a></li>
@@ -152,4 +154,15 @@
                    <code>string</code> specificResourceName)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
 </pre><pre><p>API method to reject a request</p>
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_getRemainingAllocationUnits">Function: AllocationRegistryService.getRemainingAllocationUnits</h4>
+<pre><code>i64</code> getRemainingAllocationUnits(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
+                                <code>string</code> specificResource)
+    throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
+</pre><pre><p>API method to get the remaining allocation units</p>
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_deductAllocationUnits">Function: AllocationRegistryService.deductAllocationUnits</h4>
+<pre><code>bool</code> deductAllocationUnits(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
+                           <code>string</code> specificResource,
+                           <code>i64</code> allocationUnits)
+    throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
+</pre><pre><p>API method to deduct the used allocation units</p>
 </pre><br/></div></div></body></html>
