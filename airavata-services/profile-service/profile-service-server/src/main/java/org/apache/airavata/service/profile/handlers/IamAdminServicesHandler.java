@@ -54,12 +54,9 @@ import java.util.List;
 public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     private final static Logger logger = LoggerFactory.getLogger(IamAdminServicesHandler.class);
-    //code changes made
     private ThriftClientPool<CredentialStoreService.Client> csClientPool;
-    //Code Changes made
     public IamAdminServicesHandler()  {
         try {
-
             GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
             poolConfig.maxActive = 100;
             poolConfig.minIdle = 5;
@@ -95,7 +92,6 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     public Gateway setUpGateway(AuthzToken authzToken, Gateway gateway) throws IamAdminServicesException, AuthorizationException {
         TenantManagementKeycloakImpl keycloakclient = new TenantManagementKeycloakImpl();
         PasswordCredential isSuperAdminCredentials = getSuperAdminPasswordCredential();
-        //CredentialStoreService.Client credentialStoreClient = getCredentialStoreServiceClient();
         CredentialStoreService.Client credentialStoreClient = csClientPool.getResource();
         try {
             keycloakclient.addTenant(isSuperAdminCredentials, gateway);
@@ -117,15 +113,6 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             csClientPool.returnBrokenResource(credentialStoreClient);
             throw iamAdminServicesException;
         }
-
-        //Code Changes Done Need to verify and remove the same
-        /*
-        catch (ApplicationSettingsException ex) {
-            logger.error("Gateway Setup Failed, reason: " + ex.getMessage(), ex);
-            IamAdminServicesException iamAdminServicesException = new IamAdminServicesException(ex.getMessage());
-            throw iamAdminServicesException;
-        }
-        */
     }
 
     //ToDo: Will only be secure when using SSL between PGA and Airavata
@@ -297,7 +284,6 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
 
     }
 
-    //Need to check the usage of this method
     private RegistryService.Client getRegistryServiceClient() throws TException, ApplicationSettingsException {
         final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
         final String serverHost = ServerSettings.getRegistryServerHost();
@@ -308,7 +294,6 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
         }
     }
 
-    //Need to delete this method after the verfication
     private CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
         final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
         final String serverHost = ServerSettings.getCredentialStoreServerHost();

@@ -55,7 +55,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     private final static Logger logger = LoggerFactory.getLogger(TenantProfileServiceHandler.class);
 
     private TenantProfileRepository tenantProfileRepository;
-    //Code Changes Made
+
     private ThriftClientPool<CredentialStoreService.Client> csClientPool;
 
     public TenantProfileServiceHandler() {
@@ -64,7 +64,6 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
 
         try {
             logger.debug("Initializing TenantProfileServiceHandler");
-            //Code Changes made
             GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
             poolConfig.maxActive = 100;
             poolConfig.minIdle = 5;
@@ -76,7 +75,6 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
             csClientPool = new ThriftClientPool<>(
                     tProtocol -> new CredentialStoreService.Client(tProtocol), poolConfig, ServerSettings.getCredentialStoreServerHost(),
                     Integer.parseInt(ServerSettings.getCredentialStoreServerPort()));
-            //Need to check about this
 
         }catch (ApplicationSettingsException e) {
             logger.error("Error occured while reading airavata-server properties..", e);
@@ -285,10 +283,6 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
 
         }
         finally {
-
-
-
-
 
             if (csClient.getInputProtocol().getTransport().isOpen()) {
                 csClient.getInputProtocol().getTransport().close();

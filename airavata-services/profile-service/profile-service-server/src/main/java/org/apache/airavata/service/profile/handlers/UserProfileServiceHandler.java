@@ -59,9 +59,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
     public UserProfileServiceHandler() {
 
         userProfileRepository = new UserProfileRepository(UserProfile.class, UserProfileEntity.class);
-
         try {
-
             GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
             poolConfig.maxActive = 100;
             poolConfig.minIdle = 5;
@@ -134,10 +132,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
     }
 
     private Runnable getIAMUserProfileUpdater(AuthzToken authzToken, UserProfile userProfile) throws UserProfileServiceException {
-        //Updated the code changes
-        // IamAdminServices.Client iamAdminServicesClient = getIamAdminServicesClient();
         IamAdminServices.Client iamAdminServicesClient = iasClientPool.getResource();
-
         return () -> {
             try {
                 iamAdminServicesClient.updateUserProfile(authzToken, userProfile);
