@@ -27,14 +27,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class GroupManagerServiceHandler implements GroupManagerService.Iface {
-
-
     private static final Logger logger = LoggerFactory.getLogger(GroupManagerServiceHandler.class);
-
-
     private ThriftClientPool<SharingRegistryService.Client> sharingClientPool;
-
-
     public GroupManagerServiceHandler() {
             try {
                 GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
@@ -47,7 +41,8 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
                 poolConfig.maxWait = 3000;
                 sharingClientPool = new ThriftClientPool<>(tProtocol -> new SharingRegistryService.Client(tProtocol), poolConfig, ServerSettings.getSharingRegistryHost(),
                         Integer.parseInt(ServerSettings.getSharingRegistryPort()));
-            }catch (Exception e) {
+            }
+            catch (Exception e) {
                 logger.error("Error occured while reading airavata-server properties..", e);
             }
     }
@@ -113,8 +108,6 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     @Override
     @SecurityCheck
     public boolean deleteGroup(AuthzToken authzToken, String groupId, String ownerId) throws GroupManagerServiceException, AuthorizationException, TException {
-        //Code Changes done
-        //SharingRegistryService.Client sharingClient = getSharingRegistryServiceClient();
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
             //TODO Validations for authorization
@@ -196,8 +189,9 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     public boolean transferGroupOwnership(AuthzToken authzToken, String groupId, String newOwnerId) throws GroupManagerServiceException, AuthorizationException, TException {
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try{
-            sharingClientPool.returnResource(sharingClient);
-           return sharingClient.transferGroupOwnership(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, newOwnerId);
+           boolean result =  sharingClient.transferGroupOwnership(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, newOwnerId);
+           sharingClientPool.returnResource(sharingClient);
+           return result;
        }
        catch (Exception e) {
            String msg = "Error Transferring Group Ownership";
@@ -279,16 +273,6 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             exception.setMessage(msg + " More info : " + e.getMessage());
             sharingClientPool.returnBrokenResource(sharingClient);
             throw exception;
-        }
-    }
-
-    private SharingRegistryService.Client getSharingRegistryServiceClient() throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getSharingRegistryPort());
-        final String serverHost = ServerSettings.getSharingRegistryHost();
-        try {
-            return SharingRegistryServiceClientFactory.createSharingRegistryClient(serverHost, serverPort);
-        } catch (SharingRegistryException e) {
-            throw new TException("Unable to create sharing registry client...", e);
         }
     }
 }

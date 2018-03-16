@@ -51,7 +51,6 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
 
     private final static Logger logger = LoggerFactory.getLogger(UserProfileServiceHandler.class);
 
-    //Code changes made
     private ThriftClientPool<IamAdminServices.Client> iasClientPool;
 
     private UserProfileRepository userProfileRepository;
@@ -218,18 +217,6 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
             UserProfileServiceException exception = new UserProfileServiceException();
             exception.setMessage("Error while finding user profile. More info : " + e.getMessage());
             throw exception;
-        }
-    }
-
-    private IamAdminServices.Client getIamAdminServicesClient() throws UserProfileServiceException {
-        try {
-            final int serverPort = Integer.parseInt(ServerSettings.getProfileServiceServerPort());
-            final String serverHost = ServerSettings.getProfileServiceServerHost();
-            return ProfileServiceClientFactory.createIamAdminServiceClient(serverHost, serverPort);
-        } catch (IamAdminServicesException|ApplicationSettingsException e) {
-            logger.error("Failed to create IAM Admin Services client", e);
-            UserProfileServiceException ex = new UserProfileServiceException("Failed to create IAM Admin Services client");
-            throw ex;
         }
     }
 }

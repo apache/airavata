@@ -93,7 +93,6 @@ public class AiravataServerHandler implements Airavata.Iface {
     private static final Logger logger = LoggerFactory.getLogger(AiravataServerHandler.class);
     private Publisher statusPublisher;
     private Publisher experimentPublisher;
-
     private ThriftClientPool<SharingRegistryService.Client> sharingClientPool;
     private ThriftClientPool<RegistryService.Client> registryClientPool;
     private ThriftClientPool<CredentialStoreService.Client> csClientPool;
@@ -102,7 +101,6 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
             experimentPublisher = MessagingFactory.getPublisher(Type.EXPERIMENT_LAUNCH);
-
             GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
             poolConfig.maxActive = 100;
             poolConfig.minIdle = 5;
@@ -111,22 +109,15 @@ public class AiravataServerHandler implements Airavata.Iface {
             poolConfig.testWhileIdle = true;
             poolConfig.numTestsPerEvictionRun = 10;
             poolConfig.maxWait = 3000;
-            //Currently working on this
-
             sharingClientPool = new ThriftClientPool<>(
                     tProtocol -> new SharingRegistryService.Client(tProtocol), poolConfig, ServerSettings.getSharingRegistryHost(),
                     Integer.parseInt(ServerSettings.getSharingRegistryPort()));
-
-
             registryClientPool = new ThriftClientPool<>(
                     tProtocol -> new RegistryService.Client(tProtocol), poolConfig, ServerSettings.getRegistryServerHost(),
                     Integer.parseInt(ServerSettings.getRegistryServerPort()));
-
-
             csClientPool = new ThriftClientPool<>(
                     tProtocol -> new CredentialStoreService.Client(tProtocol), poolConfig, ServerSettings.getCredentialStoreServerHost(),
                     Integer.parseInt(ServerSettings.getCredentialStoreServerPort()));
-
             initSharingRegistry();
             postInitDefaultGateway();
         } catch (ApplicationSettingsException e) {
@@ -144,14 +135,10 @@ public class AiravataServerHandler implements Airavata.Iface {
      * before registry server.
      */
     private void postInitDefaultGateway() {
-
         RegistryService.Client registryClient = registryClientPool.getResource();
-
         try {
-
             GatewayResourceProfile gatewayResourceProfile = registryClient.getGatewayResourceProfile(ServerSettings.getDefaultUserGateway());
             if (gatewayResourceProfile != null && gatewayResourceProfile.getCredentialStoreToken() == null) {
-
                 logger.debug("Starting to add the password credential for default gateway : " +
                         ServerSettings.getDefaultUserGateway());
 

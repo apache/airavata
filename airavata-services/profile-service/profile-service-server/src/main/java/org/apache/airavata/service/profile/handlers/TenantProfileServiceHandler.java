@@ -51,17 +51,11 @@ import java.util.UUID;
  * Created by goshenoy on 3/6/17.
  */
 public class TenantProfileServiceHandler implements TenantProfileService.Iface {
-
     private final static Logger logger = LoggerFactory.getLogger(TenantProfileServiceHandler.class);
-
     private TenantProfileRepository tenantProfileRepository;
-
     private ThriftClientPool<CredentialStoreService.Client> csClientPool;
-
     public TenantProfileServiceHandler() {
-
         this.tenantProfileRepository = new TenantProfileRepository(Gateway.class, GatewayEntity.class);
-
         try {
             logger.debug("Initializing TenantProfileServiceHandler");
             GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
@@ -79,7 +73,6 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
         }catch (ApplicationSettingsException e) {
             logger.error("Error occured while reading airavata-server properties..", e);
         }
-
     }
 
     @Override
@@ -266,7 +259,6 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     // admin passwords are stored in credential store in the super portal gateway and need to be
     // copied to a credential that is stored in the requested/newly created gateway
     private void copyAdminPasswordToGateway(AuthzToken authzToken, Gateway gateway) throws TException, ApplicationSettingsException {
-
         CredentialStoreService.Client csClient = csClientPool.getResource();
         try {
             String requestGatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
@@ -283,23 +275,12 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
 
         }
         finally {
-
             if (csClient.getInputProtocol().getTransport().isOpen()) {
                 csClient.getInputProtocol().getTransport().close();
             }
             if (csClient.getOutputProtocol().getTransport().isOpen()) {
                 csClient.getOutputProtocol().getTransport().close();
             }
-        }
-    }
-
-    private CredentialStoreService.Client getCredentialStoreServiceClient() throws TException, ApplicationSettingsException {
-        final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
-        final String serverHost = ServerSettings.getCredentialStoreServerHost();
-        try {
-            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
-        } catch (CredentialStoreException e) {
-            throw new TException("Unable to create credential store client...", e);
         }
     }
 }
