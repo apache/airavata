@@ -52,7 +52,7 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
     private final static Logger logger = LoggerFactory.getLogger(IamAdminServicesHandler.class);
     private ThriftClientPool<CredentialStoreService.Client> csClientPool;
     private ThriftClientPool<RegistryService.Client> registryClientPool;
-    public IamAdminServicesHandler()  {
+    public IamAdminServicesHandler() throws Exception {
         try {
             GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
             poolConfig.maxActive = 100;
@@ -68,11 +68,11 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             registryClientPool = new ThriftClientPool<>(
                     tProtocol -> new RegistryService.Client(tProtocol), poolConfig, ServerSettings.getRegistryServerHost(),
                     Integer.parseInt(ServerSettings.getRegistryServerPort()));
-        }catch (ApplicationSettingsException e) {
+        } catch (ApplicationSettingsException e) {
             logger.error("Error occured while reading airavata-server properties..", e);
+            throw new Exception(e);
         }
-
-        }
+    }
 
     @Override
     public String getAPIVersion(AuthzToken authzToken) throws IamAdminServicesException, AuthorizationException {
@@ -196,6 +196,8 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             }
 
             if (!username.equals(userDetails.getUserId())) {
+                String msg = "userId in user profile "+userDetails.getUserId()+" doesn't match authorization token "+username+"";
+                logger.error(msg);
                 throw new IamAdminServicesException("userId in user profile doesn't match authorization token!");
             }
             PasswordCredential credential = getTenantAdminPasswordCredential(gatewayId);
@@ -272,8 +274,8 @@ public class IamAdminServicesHandler implements IamAdminServices.Iface {
             csClientPool.returnResource(csClient);
             registryClientPool.returnResource(regClient);
             return TenantAdminPassword;
-        }catch (Exception e){
-            logger.error("Error while getting the tenant admin password", e);
+        } catch (Exception e){
+            logger.error("Error while getting the tenant admin password for the tenant id "+tenantId+"", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while getting password credentials. More info : " + e.getMessage());

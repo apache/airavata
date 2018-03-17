@@ -25,7 +25,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     private static final Logger logger = LoggerFactory.getLogger(GroupManagerServiceHandler.class);
 
     private ThriftClientPool<SharingRegistryService.Client> sharingClientPool;
-    public GroupManagerServiceHandler() {
+    public GroupManagerServiceHandler() throws Exception {
 
             try {
                 GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
@@ -38,9 +38,9 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
                 poolConfig.maxWait = 3000;
                 sharingClientPool = new ThriftClientPool<>(tProtocol -> new SharingRegistryService.Client(tProtocol), poolConfig, ServerSettings.getSharingRegistryHost(),
                         Integer.parseInt(ServerSettings.getSharingRegistryPort()));
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 logger.error("Error occured while reading airavata-server properties..", e);
+                throw new Exception(e);
             }
     }
 
@@ -65,8 +65,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             sharingClient.addUsersToGroup(gatewayId, groupModel.getMembers(), groupId);
             sharingClientPool.returnResource(sharingClient);
             return groupId;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String msg = "Error Creating Group" ;
             logger.error(msg, e);
             GroupManagerServiceException exception = new GroupManagerServiceException();
@@ -93,8 +92,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             sharingClient.updateGroup(sharingUserGroup);
             sharingClientPool.returnResource(sharingClient);
             return true;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String msg = "Error Updating Group" ;
             logger.error(msg, e);
             GroupManagerServiceException exception = new GroupManagerServiceException();
@@ -113,8 +111,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             sharingClient.deleteGroup(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId);
             sharingClientPool.returnResource(sharingClient);
             return true;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String msg = "Error Deleting Group. Group ID: " + groupId ;
             logger.error(msg, e);
             GroupManagerServiceException exception = new GroupManagerServiceException();
@@ -142,8 +139,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             );
             sharingClientPool.returnResource(sharingClient);
             return groupModel;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String msg = "Error Retreiving Group. Group ID: " + groupId ;
             logger.error(msg, e);
             GroupManagerServiceException exception = new GroupManagerServiceException();
@@ -174,8 +170,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
                 groupModels.add(groupModel);
             }
             return groupModels;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String msg = "Error Retreiving All Groups for User. User ID: " + userName ;
             logger.error(msg, e);
             GroupManagerServiceException exception = new GroupManagerServiceException();
@@ -189,12 +184,11 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
     @SecurityCheck
     public boolean transferGroupOwnership(AuthzToken authzToken, String groupId, String newOwnerId) throws GroupManagerServiceException, AuthorizationException, TException {
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
-        try{
+        try {
            boolean result =  sharingClient.transferGroupOwnership(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, newOwnerId);
            sharingClientPool.returnResource(sharingClient);
            return result;
-       }
-       catch (Exception e) {
+       } catch (Exception e) {
            String msg = "Error Transferring Group Ownership";
            logger.error(msg, e);
            GroupManagerServiceException exception = new GroupManagerServiceException();
@@ -213,8 +207,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             boolean result = sharingClient.addGroupAdmins(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, adminIds);
             sharingClientPool.returnResource(sharingClient);
             return result;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String msg = "Error Adding Admins to Group. Group ID: " + groupId;
             logger.error(msg, e);
             GroupManagerServiceException exception = new GroupManagerServiceException();
@@ -232,8 +225,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             boolean result = sharingClient.removeGroupAdmins(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, adminIds);
             sharingClientPool.returnResource(sharingClient);
             return result;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String msg = "Error Removing Admins from the Group. Group ID: " + groupId;
             logger.error(msg, e);
             GroupManagerServiceException exception = new GroupManagerServiceException();
@@ -251,8 +243,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             boolean result = sharingClient.hasAdminAccess(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, adminId);
             sharingClientPool.returnResource(sharingClient);
             return result;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String msg = "Error Checking Admin Access for the Group. Group ID: " + groupId + " Admin ID: " + adminId;
             logger.error(msg, e);
             GroupManagerServiceException exception = new GroupManagerServiceException();
@@ -270,8 +261,7 @@ public class GroupManagerServiceHandler implements GroupManagerService.Iface {
             boolean result = sharingClient.hasOwnerAccess(authzToken.getClaimsMap().get(Constants.GATEWAY_ID), groupId, ownerId);
             sharingClientPool.returnResource(sharingClient);
             return result;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String msg = "Error Checking Owner Access for the Group. Group ID: " + groupId + " Owner ID: " + ownerId;
             logger.error(msg, e);
             GroupManagerServiceException exception = new GroupManagerServiceException();

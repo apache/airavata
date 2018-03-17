@@ -51,7 +51,7 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
     private final static Logger logger = LoggerFactory.getLogger(TenantProfileServiceHandler.class);
     private TenantProfileRepository tenantProfileRepository;
     private ThriftClientPool<CredentialStoreService.Client> csClientPool;
-    public TenantProfileServiceHandler() {
+    public TenantProfileServiceHandler() throws Exception {
         this.tenantProfileRepository = new TenantProfileRepository(Gateway.class, GatewayEntity.class);
         try {
             logger.debug("Initializing TenantProfileServiceHandler");
@@ -67,8 +67,9 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
                     tProtocol -> new CredentialStoreService.Client(tProtocol), poolConfig, ServerSettings.getCredentialStoreServerHost(),
                     Integer.parseInt(ServerSettings.getCredentialStoreServerPort()));
 
-        }catch (ApplicationSettingsException e) {
+        } catch (ApplicationSettingsException e) {
             logger.error("Error occured while reading airavata-server properties..", e);
+            throw new Exception(e);
         }
     }
 
@@ -262,11 +263,9 @@ public class TenantProfileServiceHandler implements TenantProfileService.Iface {
             adminPasswordCredential.setGatewayId(gateway.getGatewayId());
             String newAdminPasswordCredentialToken = csClient.addPasswordCredential(adminPasswordCredential);
             gateway.setIdentityServerPasswordToken(newAdminPasswordCredentialToken);
-
-        }catch (TException e) {
+        } catch (TException e) {
             throw new RuntimeException("Failed to copy the Admin Password to Gateway", e);
-        }
-        finally {
+        } finally {
             if (csClient.getInputProtocol().getTransport().isOpen()) {
                 csClient.getInputProtocol().getTransport().close();
             }

@@ -47,7 +47,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
     private final static Logger logger = LoggerFactory.getLogger(UserProfileServiceHandler.class);
     private ThriftClientPool<IamAdminServices.Client> iasClientPool;
     private UserProfileRepository userProfileRepository;
-    public UserProfileServiceHandler() {
+    public UserProfileServiceHandler() throws Exception {
         userProfileRepository = new UserProfileRepository(UserProfile.class, UserProfileEntity.class);
         try {
             GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
@@ -62,8 +62,9 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
             iasClientPool = new ThriftClientPool<>(
                     tProtocol -> new IamAdminServices.Client(tProtocol), poolConfig, ServerSettings.getProfileServiceServerHost(),
                     Integer.parseInt(ServerSettings.getProfileServiceServerPort()));
-        }catch (ApplicationSettingsException e) {
+        } catch (ApplicationSettingsException e) {
             logger.error("Error occured while reading airavata-server properties..", e);
+            throw new Exception(e);
         }
     }
 
@@ -129,6 +130,7 @@ public class UserProfileServiceHandler implements UserProfileService.Iface {
                 iasClientPool.returnResource(iamAdminServicesClient);
             } catch (TException e) {
                 if (iamAdminServicesClient != null) {
+                    logger.error("Error while Updating user profile in IAM Service", e);
                     iasClientPool.returnBrokenResource(iamAdminServicesClient);
                 }
                 throw new RuntimeException("Failed to update user profile in IAM service", e);
