@@ -179,9 +179,9 @@ public abstract class AiravataTask extends AbstractTask {
         try {
             ExperimentModel experiment = (ExperimentModel)experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
             List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
-            if (experimentOutputs != null && !experimentOutputs.isEmpty()){
-                for (OutputDataObjectType expOutput : experimentOutputs){
-                    if (expOutput.getName().equals(outputName)){
+            if (experimentOutputs != null && !experimentOutputs.isEmpty()) {
+                for (OutputDataObjectType expOutput : experimentOutputs) {
+                    if (expOutput.getName().equals(outputName)) {
                         DataProductModel dataProductModel = new DataProductModel();
                         dataProductModel.setGatewayId(getGatewayId());
                         dataProductModel.setOwnerName(getProcessModel().getUserName());
