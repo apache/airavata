@@ -30,12 +30,17 @@ import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescr
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 
 @SuppressWarnings("WeakerAccess")
 public abstract class DataStagingTask extends AiravataTask {
+
+    private static final Logger logger = LogManager.getLogger(DataStagingTask.class);
 
     @SuppressWarnings("WeakerAccess")
     protected DataStagingTaskModel getDataStagingTaskModel() throws TaskOnFailException {
@@ -112,5 +117,49 @@ public abstract class DataStagingTask extends AiravataTask {
         }
         localDataPath = localDataPath + fileName;
         return localDataPath;
+    }
+
+    protected String buildDestinationFilePath(String inputPath, String fileName) {
+
+        inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
+        String experimentDataDir = getProcessModel().getExperimentDataDir();
+        String filePath;
+        if(experimentDataDir != null && !experimentDataDir.isEmpty()) {
+            if(!experimentDataDir.endsWith(File.separator)){
+                experimentDataDir += File.separator;
+            }
+            if (experimentDataDir.startsWith(File.separator)) {
+                filePath = experimentDataDir + fileName;
+            } else {
+                filePath = inputPath + experimentDataDir + fileName;
+            }
+        } else {
+            filePath = inputPath + getProcessId() + File.separator + fileName;
+        }
+        return filePath;
+    }
+
+    protected void transferFileToStorage(String sourcePath, String destPath, String fileName, AgentAdaptor adaptor,
+                              StorageResourceAdaptor storageResourceAdaptor) throws TaskOnFailException {
+        String localSourceFilePath = getLocalDataPath(fileName);
+
+        try {
+            logger.info("Downloading output file " + sourcePath + " to the local path " + localSourceFilePath);
+            adaptor.copyFileFrom(sourcePath, localSourceFilePath);
+            logger.info("Output file downloaded to " + localSourceFilePath);
+        } catch (AgentException e) {
+            throw new TaskOnFailException("Failed downloading output file " + sourcePath + " to the local path " +
+                    localSourceFilePath, true, e);
+        }
+
+        // Uploading output file to the storage resource
+        try {
+            logger.info("Uploading the output file to " + destPath + " from local path " + localSourceFilePath);
+            storageResourceAdaptor.uploadFile(localSourceFilePath, destPath);
+            logger.info("Output file uploaded to " + destPath);
+        } catch (AgentException e) {
+            throw new TaskOnFailException("Failed uploading the output file to " + destPath + " from local path " +
+                    localSourceFilePath, true, e);
+        }
     }
 }

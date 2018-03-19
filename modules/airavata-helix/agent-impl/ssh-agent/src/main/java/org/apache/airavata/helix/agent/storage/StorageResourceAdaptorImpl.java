@@ -21,6 +21,7 @@ package org.apache.airavata.helix.agent.storage;
 
 import com.jcraft.jsch.Session;
 import org.apache.airavata.agents.api.AgentException;
+import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.airavata.agents.api.StorageResourceAdaptor;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.DBUtil;
@@ -100,5 +101,10 @@ public class StorageResourceAdaptorImpl extends SshAgentAdaptor implements Stora
     @Override
     public void downloadFile(String sourceFile, String destFile) throws AgentException {
         super.copyFileFrom(sourceFile, destFile);
+    }
+
+    @Override
+    public CommandOutput executeCommand(String command, String workingDirectory) throws AgentException {
+        return super.executeCommand(command, workingDirectory);
     }
 }

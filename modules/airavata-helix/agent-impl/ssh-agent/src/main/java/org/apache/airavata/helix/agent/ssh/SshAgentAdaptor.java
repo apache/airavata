@@ -151,7 +151,7 @@ public class SshAgentAdaptor implements AgentAdaptor {
         ChannelExec channelExec = null;
         try {
             channelExec = ((ChannelExec) session.openChannel("exec"));
-            channelExec.setCommand("cd " + workingDirectory + "; " + command);
+            channelExec.setCommand((workingDirectory != null ? "cd " + workingDirectory + "; " : "") + command);
             channelExec.setInputStream(null);
             InputStream out = channelExec.getInputStream();
             InputStream err = channelExec.getErrStream();

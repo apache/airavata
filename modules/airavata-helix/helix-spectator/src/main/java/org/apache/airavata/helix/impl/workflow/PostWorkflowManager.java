@@ -23,6 +23,7 @@ import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.impl.task.*;
 import org.apache.airavata.helix.impl.task.completing.CompletingTask;
@@ -42,6 +43,7 @@ import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
+import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
@@ -167,7 +169,14 @@ public class PostWorkflowManager {
                                     jobSubmissionFound = true;
                                 } else if (taskModel.getTaskType() == TaskTypes.DATA_STAGING) {
                                     if (jobSubmissionFound) {
-                                        airavataTask = new OutputDataStagingTask();
+                                        DataStagingTaskModel subTaskModel = (DataStagingTaskModel) ThriftUtils.getSubTaskModel(taskModel);
+                                        switch (subTaskModel.getType()) {
+                                            case OUPUT:
+                                                airavataTask = new OutputDataStagingTask();
+                                                break;
+                                            case ARCHIVE_OUTPUT:
+                                                break;
+                                        }
                                     }
                                 }
 

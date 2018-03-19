@@ -86,24 +86,10 @@ public class OutputDataStagingTask extends DataStagingTask {
                 if (dataStagingTaskModel.getDestination().startsWith("dummy")) {
 
                     String inputPath  = getTaskContext().getStorageFileSystemRootLocation();
-                    inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
-                    String experimentDataDir = getProcessModel().getExperimentDataDir();
-                    String filePath;
-                    if(experimentDataDir != null && !experimentDataDir.isEmpty()) {
-                        if(!experimentDataDir.endsWith(File.separator)){
-                            experimentDataDir += File.separator;
-                        }
-                        if (experimentDataDir.startsWith(File.separator)) {
-                            filePath = experimentDataDir + sourceFileName;
-                        } else {
-                            filePath = inputPath + experimentDataDir + sourceFileName;
-                        }
-                    } else {
-                        filePath = inputPath + getProcessId() + File.separator + sourceFileName;
-                    }
+                    String destFilePath =  buildDestinationFilePath(inputPath, sourceFileName);
 
                     destinationURI = new URI("file", getTaskContext().getStorageResourceLoginUserName(),
-                            storageResource.getHostName(), 22, filePath, null, null);
+                            storageResource.getHostName(), 22, destFilePath, null, null);
 
                 } else {
                     destinationURI = new URI(dataStagingTaskModel.getDestination());
@@ -166,14 +152,16 @@ public class OutputDataStagingTask extends DataStagingTask {
                     }
 
                     logger.info("Transferring file " + sourceFileName);
-                    transferFile(processOutput.getName(), sourceURI, destinationURI, sourceFileName, adaptor, storageResourceAdaptor);
+                    transferFileToStorage(sourceURI.getPath(), destinationURI.getPath(), sourceFileName, adaptor, storageResourceAdaptor);
+                    saveExperimentOutput(processOutput.getName(), destinationURI.toString());
                 }
                 return onSuccess("Output data staging task " + getTaskId() + " successfully completed");
 
             } else {
                 // Downloading input file from the storage resource
                 assert processOutput != null;
-                transferFile(processOutput.getName(), sourceURI, destinationURI, sourceFileName, adaptor, storageResourceAdaptor);
+                transferFileToStorage(sourceURI.getPath(), destinationURI.getPath(), sourceFileName, adaptor, storageResourceAdaptor);
+                saveExperimentOutput(processOutput.getName(), destinationURI.toString());
                 return onSuccess("Output data staging task " + getTaskId() + " successfully completed");
             }
 
@@ -189,32 +177,6 @@ public class OutputDataStagingTask extends DataStagingTask {
             logger.error("Unknown error while executing output data staging task " + getTaskId(), e);
             return onFail("Unknown error while executing output data staging task " + getTaskId(), false,  e);
         }
-    }
-
-    private void transferFile(String outputName, URI sourceURI, URI destinationURI, String fileName, AgentAdaptor adaptor,
-                              StorageResourceAdaptor storageResourceAdaptor) throws TaskOnFailException {
-        String localSourceFilePath = getLocalDataPath(fileName);
-
-        try {
-            logger.info("Downloading output file " + sourceURI.getPath() + " to the local path " + localSourceFilePath);
-            adaptor.copyFileFrom(sourceURI.getPath(), localSourceFilePath);
-            logger.info("Output file downloaded to " + localSourceFilePath);
-        } catch (AgentException e) {
-            throw new TaskOnFailException("Failed downloading output file " + sourceURI.getPath() + " to the local path " +
-                    localSourceFilePath, true, e);
-        }
-
-        // Uploading input file to the compute resource
-        try {
-            logger.info("Uploading the output file to " + destinationURI.getPath() + " from local path " + localSourceFilePath);
-            storageResourceAdaptor.uploadFile(localSourceFilePath, destinationURI.getPath());
-            logger.info("Output file uploaded to " + destinationURI.getPath());
-        } catch (AgentException e) {
-            throw new TaskOnFailException("Failed uploading the output file to " + destinationURI.getPath() + " from local path " +
-                    localSourceFilePath, true, e);
-        }
-
-        saveExperimentOutput(outputName, destinationURI.toString());
     }
 
     @Override
