@@ -40,7 +40,7 @@ import java.net.URISyntaxException;
 @TaskDef(name = "Archival Task")
 public class ArchiveTask extends DataStagingTask {
 
-    private static final Logger logger = LogManager.getLogger(OutputDataStagingTask.class);
+    private static final Logger logger = LogManager.getLogger(ArchiveTask.class);
 
     @Override
     public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {

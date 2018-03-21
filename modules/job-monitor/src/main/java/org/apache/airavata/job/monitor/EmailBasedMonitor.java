@@ -25,7 +25,6 @@ import org.apache.airavata.job.monitor.kafka.MessageProducer;
 import org.apache.airavata.job.monitor.parser.EmailParser;
 import org.apache.airavata.job.monitor.parser.JobStatusResult;
 import org.apache.airavata.job.monitor.parser.ResourceConfig;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

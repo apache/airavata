@@ -153,7 +153,7 @@ public class PreWorkflowManager {
                     subscriber.sendAck(messageContext.getDeliveryTag());
                 } catch (Exception e) {
                     logger.error("Failed to launch the pre workflow for process " + processId + " in gateway " + gateway, e);
-                    subscriber.sendAck(messageContext.getDeliveryTag());
+                    //subscriber.sendAck(messageContext.getDeliveryTag());
                 }
             } else {
                 logger.warn("Unknown message type");

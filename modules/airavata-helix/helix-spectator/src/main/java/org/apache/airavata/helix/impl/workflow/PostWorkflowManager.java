@@ -27,6 +27,7 @@ import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.impl.task.*;
 import org.apache.airavata.helix.impl.task.completing.CompletingTask;
+import org.apache.airavata.helix.impl.task.staging.ArchiveTask;
 import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
 import org.apache.airavata.helix.workflow.WorkflowManager;
 import org.apache.airavata.job.monitor.kafka.JobStatusResultDeserializer;
@@ -175,6 +176,7 @@ public class PostWorkflowManager {
                                                 airavataTask = new OutputDataStagingTask();
                                                 break;
                                             case ARCHIVE_OUTPUT:
+                                                airavataTask = new ArchiveTask();
                                                 break;
                                         }
                                     }
