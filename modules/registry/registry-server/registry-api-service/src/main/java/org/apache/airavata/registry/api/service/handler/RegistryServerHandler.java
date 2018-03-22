@@ -66,6 +66,8 @@ import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.core.experiment.catalog.resources.AbstractExpCatResource;
 import org.apache.airavata.registry.core.repositories.appcatalog.ComputeResourceRepository;
+import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationDeploymentRepository;
+import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationInterfaceRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.GroupResourceProfileRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationDeploymentRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationInterfaceRepository;
@@ -1199,7 +1201,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
         }
         try {
-            List<ApplicationModule> moduleList = new ApplicationInterfaceRepository().getAccessibleApplicationModules(gatewayId, accessibleAppIds);
+            List<ApplicationModule> moduleList = new ApplicationInterfaceRepository().getAccessibleApplicationModules(gatewayId, accessibleAppIds, accessibleComputeResourceIds);
             logger.debug("Airavata retrieved modules for gateway id : " + gatewayId);
             return moduleList;
         } catch (AppCatalogException e) {
@@ -1313,7 +1315,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
         }
         try {
-            List<ApplicationDeploymentDescription> deployements = new ApplicationDeploymentRepository().getAccessibleApplicationDeployements(gatewayId, accessibleAppDeploymentIds);
+            List<ApplicationDeploymentDescription> deployements = new ApplicationDeploymentRepository().getAccessibleApplicationDeployements(gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
             logger.debug("Airavata retrieved application deployments for gateway id : " + gatewayId);
             return deployements;
         } catch (AppCatalogException e) {
