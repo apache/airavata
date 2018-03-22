@@ -29,6 +29,7 @@ public class DBConstants {
         public static final String COMPUTE_HOST_ID = "computeHostId";
         public static final String GATEWAY_ID = "gatewayId";
         public static final String ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS = "accessibleAppDeploymentIds";
+        public static final String ACCESSIBLE_COMPUTE_HOST_IDS = "accessibleComputeHostIds";
     }
 
     public static class ApplicationModule {
