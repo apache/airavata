@@ -24,12 +24,21 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import java.io.Serializable;
 
-public class DataProductMetadataEntityPK implements Serializable {
+/**
+ * The primary key class for the data_product_metadata database table.
+ */
+public class DataProductMetadataPK implements Serializable {
+    //default serial version id, required for serializable classes.
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @Column(name = "PRODUCT_URI")
     private String productUri;
+
+    @Id
+    @Column(name = "METADATA_KEY")
     private String metadataKey;
 
-    @Column(name = "PRODUCT_URI")
-    @Id
     public String getProductUri() {
         return productUri;
     }
@@ -38,8 +47,6 @@ public class DataProductMetadataEntityPK implements Serializable {
         this.productUri = productUri;
     }
 
-    @Column(name = "METADATA_KEY")
-    @Id
     public String getMetadataKey() {
         return metadataKey;
     }
@@ -48,23 +55,26 @@ public class DataProductMetadataEntityPK implements Serializable {
         this.metadataKey = metadataKey;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        DataProductMetadataEntityPK that = (DataProductMetadataEntityPK) o;
-
-        if (productUri != null ? !productUri.equals(that.productUri) : that.productUri != null) return false;
-        if (metadataKey != null ? !metadataKey.equals(that.metadataKey) : that.metadataKey != null) return false;
-
-        return true;
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof DataProductMetadataPK)) {
+            return false;
+        }
+        DataProductMetadataPK castOther = (DataProductMetadataPK) other;
+        return
+                this.productUri.equals(castOther.productUri)
+                        && this.metadataKey.equals(castOther.metadataKey);
     }
 
-    @Override
     public int hashCode() {
-        int result = productUri != null ? productUri.hashCode() : 0;
-        result = 31 * result + (metadataKey != null ? metadataKey.hashCode() : 0);
-        return result;
+        final int prime = 31;
+        int hash = 17;
+        hash = hash * prime + this.productUri.hashCode();
+        hash = hash * prime + this.metadataKey.hashCode();
+
+        return hash;
     }
+
 }

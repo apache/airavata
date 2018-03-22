@@ -21,17 +21,28 @@
 package org.apache.airavata.registry.core.entities.replicacatalog;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
+/**
+ * The persistent class for the data_product_metadata database table.
+ */
 @Entity
-@Table(name = "data_product_metadata", schema = "airavata_catalog", catalog = "")
-@IdClass(DataProductMetadataEntityPK.class)
-public class DataProductMetadataEntity {
-    private String productUri;
-    private String metadataKey;
-    private String metadataValue;
+@Table(name = "DATA_PRODUCT_METADATA")
+@IdClass(DataProductMetadataPK.class)
+public class DataProductMetadataEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "PRODUCT_URI")
+    private String productUri;
+
+    @Id
+    @Column(name = "METADATA_KEY")
+    private String metadataKey;
+
+    @Column(name = "METADATA_VALUE")
+    private String metadataValue;
+
     public String getProductUri() {
         return productUri;
     }
@@ -40,8 +51,6 @@ public class DataProductMetadataEntity {
         this.productUri = productUri;
     }
 
-    @Id
-    @Column(name = "METADATA_KEY")
     public String getMetadataKey() {
         return metadataKey;
     }
@@ -50,8 +59,6 @@ public class DataProductMetadataEntity {
         this.metadataKey = metadataKey;
     }
 
-    @Basic
-    @Column(name = "METADATA_VALUE")
     public String getMetadataValue() {
         return metadataValue;
     }
@@ -60,26 +67,4 @@ public class DataProductMetadataEntity {
         this.metadataValue = metadataValue;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        DataProductMetadataEntity that = (DataProductMetadataEntity) o;
-
-        if (productUri != null ? !productUri.equals(that.productUri) : that.productUri != null) return false;
-        if (metadataKey != null ? !metadataKey.equals(that.metadataKey) : that.metadataKey != null) return false;
-        if (metadataValue != null ? !metadataValue.equals(that.metadataValue) : that.metadataValue != null)
-            return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = productUri != null ? productUri.hashCode() : 0;
-        result = 31 * result + (metadataKey != null ? metadataKey.hashCode() : 0);
-        result = 31 * result + (metadataValue != null ? metadataValue.hashCode() : 0);
-        return result;
-    }
 }
