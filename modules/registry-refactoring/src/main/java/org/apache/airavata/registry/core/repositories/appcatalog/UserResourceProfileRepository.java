@@ -56,16 +56,24 @@ public class UserResourceProfileRepository extends AppCatAbstractRepository<User
         String gatewayId = userResourceProfile.getGatewayID();
         Mapper mapper = ObjectMapperSingleton.getInstance();
         UserResourceProfileEntity userResourceProfileEntity = mapper.map(userResourceProfile, UserResourceProfileEntity.class);
+
         if (userResourceProfileEntity.getUserComputeResourcePreferences() != null) {
+            logger.debug("Populating the Primary Key UserComputeResourcePreferences objects for the User Resource Profile");
             userResourceProfileEntity.getUserComputeResourcePreferences().forEach(userComputeResourcePreferenceEntity -> userComputeResourcePreferenceEntity.setUserId(userId));
             userResourceProfileEntity.getUserComputeResourcePreferences().forEach(userComputeResourcePreferenceEntity -> userComputeResourcePreferenceEntity.setGatewayId(gatewayId));
         }
+
         if (userResourceProfileEntity.getUserStoragePreferences() != null) {
+            logger.debug("Populating the Primary Key UserStoragePreferences objects for the User Resource Profile");
             userResourceProfileEntity.getUserStoragePreferences().forEach(userStoragePreferenceEntity -> userStoragePreferenceEntity.setUserId(userId));
             userResourceProfileEntity.getUserStoragePreferences().forEach(userStoragePreferenceEntity -> userStoragePreferenceEntity.setGatewayId(gatewayId));
         }
-        if (!isUserResourceProfileExists(userId, gatewayId))
+
+        if (!isUserResourceProfileExists(userId, gatewayId)) {
+            logger.debug("Checking if the User Resource Profile already exists");
             userResourceProfileEntity.setCreationTime(new Timestamp(System.currentTimeMillis()));
+        }
+
         userResourceProfileEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         return execute(entityManager -> entityManager.merge(userResourceProfileEntity));
     }
@@ -85,8 +93,14 @@ public class UserResourceProfileRepository extends AppCatAbstractRepository<User
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.UserResourceProfile.USER_ID, userId);
         queryParameters.put(DBConstants.UserResourceProfile.GATEWAY_ID, gatewayId);
-        UserResourceProfile userResourceProfile = select(QueryConstants.GET_USER_RESOURCE_PROFILE, -1, 0, queryParameters).get(0);
-        return userResourceProfile;
+        List<UserResourceProfile> userResourceProfileList = select(QueryConstants.GET_USER_RESOURCE_PROFILE, -1, 0, queryParameters);
+
+        if(!userResourceProfileList.isEmpty() && userResourceProfileList != null) {
+            logger.debug("Return the record (there is only one record)");
+            return userResourceProfileList.get(0);
+        }
+
+        return null;
     }
 
     @Override
@@ -96,8 +110,15 @@ public class UserResourceProfileRepository extends AppCatAbstractRepository<User
         queryParameters.put(DBConstants.UserComputeResourcePreference.USER_ID, userId);
         queryParameters.put(DBConstants.UserComputeResourcePreference.GATEWAY_ID, gatewayId);
         queryParameters.put(DBConstants.UserComputeResourcePreference.COMPUTE_RESOURCE_ID, hostId);
-        UserComputeResourcePreference userComputeResourcePreference = userComputeResourcePreferenceRepository.select(QueryConstants.GET_USER_COMPUTE_RESOURCE_PREFERENCE, -1, 0, queryParameters).get(0);
-        return userComputeResourcePreference;
+        List<UserComputeResourcePreference> userComputeResourcePreferenceList =
+                userComputeResourcePreferenceRepository.select(QueryConstants.GET_USER_COMPUTE_RESOURCE_PREFERENCE, -1, 0, queryParameters);
+
+        if(!userComputeResourcePreferenceList.isEmpty() && userComputeResourcePreferenceList != null) {
+            logger.debug("Return the record (there is only one record)");
+            return userComputeResourcePreferenceList.get(0);
+        }
+
+        return null;
     }
 
     @Override
@@ -107,8 +128,15 @@ public class UserResourceProfileRepository extends AppCatAbstractRepository<User
         queryParameters.put(DBConstants.UserStoragePreference.USER_ID, userId);
         queryParameters.put(DBConstants.UserStoragePreference.GATEWAY_ID, gatewayId);
         queryParameters.put(DBConstants.UserStoragePreference.STORAGE_RESOURCE_ID, storageId);
-        UserStoragePreference userStoragePreference = userStoragePreferenceRepository.select(QueryConstants.GET_USER_STORAGE_PREFERENCE, -1, 0, queryParameters).get(0);
-        return userStoragePreference;
+        List<UserStoragePreference> userStoragePreferenceList =
+                userStoragePreferenceRepository.select(QueryConstants.GET_USER_STORAGE_PREFERENCE, -1, 0, queryParameters);
+
+        if(!userStoragePreferenceList.isEmpty() && userStoragePreferenceList != null) {
+            logger.debug("Return the record (there is only one record)");
+            return userStoragePreferenceList.get(0);
+        }
+
+        return null;
     }
 
     @Override
@@ -123,7 +151,8 @@ public class UserResourceProfileRepository extends AppCatAbstractRepository<User
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.UserComputeResourcePreference.USER_ID, userId);
         queryParameters.put(DBConstants.UserComputeResourcePreference.GATEWAY_ID, gatewayId);
-        List<UserComputeResourcePreference> userComputeResourcePreferenceList = userComputeResourcePreferenceRepository.select(QueryConstants.GET_ALL_USER_COMPUTE_RESOURCE_PREFERENCE, -1, 0, queryParameters);
+        List<UserComputeResourcePreference> userComputeResourcePreferenceList =
+                userComputeResourcePreferenceRepository.select(QueryConstants.GET_ALL_USER_COMPUTE_RESOURCE_PREFERENCE, -1, 0, queryParameters);
         return userComputeResourcePreferenceList;
     }
 
@@ -133,7 +162,8 @@ public class UserResourceProfileRepository extends AppCatAbstractRepository<User
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.UserStoragePreference.USER_ID, userId);
         queryParameters.put(DBConstants.UserStoragePreference.GATEWAY_ID, gatewayId);
-        List<UserStoragePreference> userStoragePreferenceList = userStoragePreferenceRepository.select(QueryConstants.GET_ALL_USER_STORAGE_PREFERENCE, -1, 0, queryParameters);
+        List<UserStoragePreference> userStoragePreferenceList =
+                userStoragePreferenceRepository.select(QueryConstants.GET_ALL_USER_STORAGE_PREFERENCE, -1, 0, queryParameters);
         return userStoragePreferenceList;
     }
 
