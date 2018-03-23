@@ -32,12 +32,7 @@ public class AppModuleMappingPK implements Serializable {
 	//default serial version id, required for serializable classes.
 	private static final long serialVersionUID = 1L;
 
-	@Column(name="INTERFACE_ID", insertable=false, updatable=false)
-	@Id
 	private String interfaceId;
-
-	@Column(name="MODULE_ID", insertable=false, updatable=false)
-	@Id
 	private String moduleId;
 
 	public AppModuleMappingPK() {

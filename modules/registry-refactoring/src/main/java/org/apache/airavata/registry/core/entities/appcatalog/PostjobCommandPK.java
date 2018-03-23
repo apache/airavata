@@ -31,12 +31,7 @@ public class PostjobCommandPK implements Serializable {
     // default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "APPDEPLOYMENT_ID", insertable = false, updatable = false)
-    @Id
     private String appdeploymentId;
-
-    @Column(name = "COMMAND")
-    @Id
     private String command;
 
     public PostjobCommandPK() {
