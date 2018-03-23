@@ -32,12 +32,7 @@ public class UserResourceProfilePK implements Serializable {
     //default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @Column(name = "USER_ID")
     private String userId;
-
-    @Id
-    @Column(name = "GATEWAY_ID")
     private String gatewayId;
 
     public UserResourceProfilePK() {

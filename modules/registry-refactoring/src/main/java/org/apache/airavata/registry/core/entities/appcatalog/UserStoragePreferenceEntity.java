@@ -53,7 +53,10 @@ public class UserStoragePreferenceEntity {
     private String loginUserName;
 
     @ManyToOne(targetEntity = UserResourceProfileEntity.class, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "USER_ID")
+    @JoinColumns({
+            @JoinColumn(name = "USER_ID"),
+            @JoinColumn(name="GATEWAY_ID")
+    })
     private UserResourceProfileEntity userResourceProfile;
 
     public UserStoragePreferenceEntity() {
