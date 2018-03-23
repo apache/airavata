@@ -54,28 +54,47 @@ public class ApplicationDeploymentRepository extends AppCatAbstractRepository<Ap
         String applicationDeploymentId = applicationDeploymentDescription.getAppDeploymentId();
         Mapper mapper = ObjectMapperSingleton.getInstance();
         ApplicationDeploymentEntity applicationDeploymentEntity = mapper.map(applicationDeploymentDescription, ApplicationDeploymentEntity.class);
-        if (gatewayId != null)
+
+        if (gatewayId != null) {
+            logger.debug("Setting the gateway ID of the Application Deployment");
             applicationDeploymentEntity.setGatewayId(gatewayId);
+        }
+
         if (applicationDeploymentEntity.getModuleLoadCmds() != null) {
+            logger.debug("Populating the Primary Key of ModuleLoadCmds objects for the Application Deployment");
             applicationDeploymentEntity.getModuleLoadCmds().forEach(moduleLoadCmdEntity -> moduleLoadCmdEntity.setAppdeploymentId(applicationDeploymentId));
         }
+
         if (applicationDeploymentEntity.getPreJobCommands() != null) {
+            logger.debug("Populating the Primary Key PreJobCommands objects for the Application Deployment");
             applicationDeploymentEntity.getPreJobCommands().forEach(prejobCommandEntity -> prejobCommandEntity.setAppdeploymentId(applicationDeploymentId));
         }
+
         if (applicationDeploymentEntity.getPostJobCommands() != null) {
+            logger.debug("Populating the Primary Key PostJobCommands objects for the Application Deployment");
             applicationDeploymentEntity.getPostJobCommands().forEach(postjobCommandEntity -> postjobCommandEntity.setAppdeploymentId(applicationDeploymentId));
         }
+
         if (applicationDeploymentEntity.getLibPrependPaths() != null) {
+            logger.debug("Populating the Primary Key LibPrependPaths objects for the Application Deployment");
             applicationDeploymentEntity.getLibPrependPaths().forEach(libraryPrependPathEntity -> libraryPrependPathEntity.setDeploymentId(applicationDeploymentId));
         }
+
         if (applicationDeploymentEntity.getLibAppendPaths() != null) {
+            logger.debug("Populating the Primary Key LibAppendPaths objects for the Application Deployment");
             applicationDeploymentEntity.getLibAppendPaths().forEach(libraryApendPathEntity -> libraryApendPathEntity.setDeploymentId(applicationDeploymentId));
         }
+
         if (applicationDeploymentEntity.getSetEnvironment() != null) {
+            logger.debug("Populating the Primary Key of SetEnvironment objects for the Application Deployment");
             applicationDeploymentEntity.getSetEnvironment().forEach(appEnvironmentEntity -> appEnvironmentEntity.setDeploymentId(applicationDeploymentId));
         }
-        if (!isAppDeploymentExists(applicationDeploymentId))
+
+        if (!isAppDeploymentExists(applicationDeploymentId)) {
+            logger.debug("Checking if the Application Deployment already exists");
             applicationDeploymentEntity.setCreationTime(new Timestamp(System.currentTimeMillis()));
+        }
+
         applicationDeploymentEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         return execute(entityManager -> entityManager.merge(applicationDeploymentEntity));
     }
@@ -94,24 +113,38 @@ public class ApplicationDeploymentRepository extends AppCatAbstractRepository<Ap
     public ApplicationDeploymentDescription getApplicationDeployement(String deploymentId) throws AppCatalogException {
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.ApplicationDeployment.APPLICATION_DEPLOYMENT_ID, deploymentId);
-        ApplicationDeploymentDescription applicationDeploymentDescription = select(QueryConstants.FIND_APPLICATION_DEPLOYMENT, -1, 0, queryParameters).get(0);
-        return applicationDeploymentDescription;
+        List<ApplicationDeploymentDescription> applicationDeploymentDescriptionList = select(QueryConstants.FIND_APPLICATION_DEPLOYMENT, -1, 0, queryParameters);
+
+        if(!applicationDeploymentDescriptionList.isEmpty() && applicationDeploymentDescriptionList != null) {
+            logger.debug("Return the record (there is only one record)");
+            return applicationDeploymentDescriptionList.get(0);
+        }
+
+        return null;
     }
 
     @Override
     public List<ApplicationDeploymentDescription> getApplicationDeployements(Map<String, String> filters) throws AppCatalogException {
         if(filters.containsKey(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID)) {
+            logger.debug("Fetching all Application Deployments for given Application Module ID");
             Map<String, Object> queryParameters = new HashMap<>();
             queryParameters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, filters.get(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID));
-            List<ApplicationDeploymentDescription> applicationDeploymentDescriptionList = select(QueryConstants.FIND_APPLICATION_DEPLOYMENTS_FOR_APPLICATION_MODULE_ID, -1, 0, queryParameters);
+            List<ApplicationDeploymentDescription> applicationDeploymentDescriptionList =
+                    select(QueryConstants.FIND_APPLICATION_DEPLOYMENTS_FOR_APPLICATION_MODULE_ID, -1, 0, queryParameters);
             return applicationDeploymentDescriptionList;
-        } else if(filters.containsKey(DBConstants.ApplicationDeployment.COMPUTE_HOST_ID)) {
+        }
+
+        else if(filters.containsKey(DBConstants.ApplicationDeployment.COMPUTE_HOST_ID)) {
+            logger.debug("Fetching Application Deployments for given Compute Host ID");
             Map<String, Object> queryParameters = new HashMap<>();
             queryParameters.put(DBConstants.ApplicationDeployment.COMPUTE_HOST_ID, filters.get(DBConstants.ApplicationDeployment.COMPUTE_HOST_ID));
-            List<ApplicationDeploymentDescription> applicationDeploymentDescriptionList = select(QueryConstants.FIND_APPLICATION_DEPLOYMENTS_FOR_COMPUTE_HOST_ID, -1, 0, queryParameters);
+            List<ApplicationDeploymentDescription> applicationDeploymentDescriptionList =
+                    select(QueryConstants.FIND_APPLICATION_DEPLOYMENTS_FOR_COMPUTE_HOST_ID, -1, 0, queryParameters);
             return applicationDeploymentDescriptionList;
-        } else {
-            logger.error("Unsupported field name for app deployment.", new IllegalArgumentException());
+        }
+
+        else {
+            logger.error("Unsupported field name for app deployment.");
             throw new IllegalArgumentException("Unsupported field name for app deployment.");
         }
     }
@@ -120,7 +153,8 @@ public class ApplicationDeploymentRepository extends AppCatAbstractRepository<Ap
     public List<ApplicationDeploymentDescription> getAllApplicationDeployements(String gatewayId) throws AppCatalogException {
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.ApplicationDeployment.GATEWAY_ID, gatewayId);
-        List<ApplicationDeploymentDescription> applicationDeploymentDescriptionList = select(QueryConstants.FIND_APPLICATION_DEPLOYMENTS_FOR_GATEWAY_ID, -1, 0, queryParameters);
+        List<ApplicationDeploymentDescription> applicationDeploymentDescriptionList =
+                select(QueryConstants.FIND_APPLICATION_DEPLOYMENTS_FOR_GATEWAY_ID, -1, 0, queryParameters);
         return applicationDeploymentDescriptionList;
     }
 
@@ -130,7 +164,8 @@ public class ApplicationDeploymentRepository extends AppCatAbstractRepository<Ap
         queryParameters.put(DBConstants.ApplicationDeployment.GATEWAY_ID, gatewayId);
         queryParameters.put(DBConstants.ApplicationDeployment.ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS, accessibleAppIds);
         queryParameters.put(DBConstants.ApplicationDeployment.ACCESSIBLE_COMPUTE_HOST_IDS, accessibleCompHostIds);
-        List<ApplicationDeploymentDescription> accessibleApplicationDeployments = select(QueryConstants.FIND_ACCESSIBLE_APPLICATION_DEPLOYMENTS, -1, 0, queryParameters);
+        List<ApplicationDeploymentDescription> accessibleApplicationDeployments =
+                select(QueryConstants.FIND_ACCESSIBLE_APPLICATION_DEPLOYMENTS, -1, 0, queryParameters);
         return accessibleApplicationDeployments;
     }
 
@@ -138,7 +173,9 @@ public class ApplicationDeploymentRepository extends AppCatAbstractRepository<Ap
     public List<String> getAllApplicationDeployementIds() throws AppCatalogException {
         List<String> applicationDeploymentIds = new ArrayList<>();
         List<ApplicationDeploymentDescription> applicationDeploymentDescriptionList = select(QueryConstants.GET_ALL_APPLICATION_DEPLOYMENTS, 0);
+
         if (applicationDeploymentDescriptionList != null && !applicationDeploymentDescriptionList.isEmpty()) {
+            logger.debug("The fetched list of Application Deployment is not NULL or empty");
             for (ApplicationDeploymentDescription applicationDeploymentDescription: applicationDeploymentDescriptionList) {
                 applicationDeploymentIds.add(applicationDeploymentDescription.getAppDeploymentId());
             }

@@ -56,16 +56,27 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
         String applicationInterfaceId = applicationInterfaceDescription.getApplicationInterfaceId();
         Mapper mapper = ObjectMapperSingleton.getInstance();
         ApplicationInterfaceEntity applicationInterfaceEntity = mapper.map(applicationInterfaceDescription, ApplicationInterfaceEntity.class);
-        if (gatewayId != null)
+
+        if (gatewayId != null) {
+            logger.debug("Setting the gateway ID of the Application Interface");
             applicationInterfaceEntity.setGatewayId(gatewayId);
+        }
+
         if (applicationInterfaceEntity.getApplicationInputs() != null) {
+            logger.debug("Populating the Primary Key of ApplicationInputs objects for the Application Interface");
             applicationInterfaceEntity.getApplicationInputs().forEach(applicationInputEntity -> applicationInputEntity.setInterfaceId(applicationInterfaceId));
         }
+
         if (applicationInterfaceEntity.getApplicationOutputs() != null) {
+            logger.debug("Populating the Primary Key of ApplicationOutputs objects for the Application Interface");
             applicationInterfaceEntity.getApplicationOutputs().forEach(applicationOutputEntity -> applicationOutputEntity.setInterfaceId(applicationInterfaceId));
         }
-        if (!isApplicationInterfaceExists(applicationInterfaceId))
+
+        if (!isApplicationInterfaceExists(applicationInterfaceId)) {
+            logger.debug("Checking if the Application Interface already exists");
             applicationInterfaceEntity.setCreationTime(new Timestamp(System.currentTimeMillis()));
+        }
+
         applicationInterfaceEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         return execute(entityManager -> entityManager.merge(applicationInterfaceEntity));
     }
@@ -81,15 +92,27 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
         String applicationModuleId = applicationModule.getAppModuleId();
         Mapper mapper = ObjectMapperSingleton.getInstance();
         ApplicationModuleEntity applicationModuleEntity = mapper.map(applicationModule, ApplicationModuleEntity.class);
-        if (gatewayId != null)
+
+        if (gatewayId != null) {
+            logger.debug("Setting the gateway ID of the Application Module");
             applicationModuleEntity.setGatewayId(gatewayId);
+        }
+
         if (!applicationModuleEntity.getAppModuleId().equals("") && !applicationModule.getAppModuleId().equals(application_interface_modelConstants.DEFAULT_ID)) {
+            logger.debug("Checking if the Application Module ID is not empty or DEFAULT");
             applicationModuleEntity.setAppModuleId(applicationModule.getAppModuleId());
-        } else {
+        }
+
+        else {
+            logger.debug("If Application Module ID is empty or DEFAULT, set it as the Application Module Name");
             applicationModuleEntity.setAppModuleId(applicationModule.getAppModuleName());
         }
-        if (!isApplicationModuleExists(applicationModuleId))
+
+        if (!isApplicationModuleExists(applicationModuleId)) {
+            logger.debug("Checking if the Application Module already exists");
             applicationModuleEntity.setCreationTime(new Timestamp(System.currentTimeMillis()));
+        }
+
         applicationModuleEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         return execute(entityManager -> entityManager.merge(applicationModuleEntity));
     }
@@ -134,28 +157,44 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
         ApplicationModuleRepository applicationModuleRepository = new ApplicationModuleRepository();
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.ApplicationModule.APPLICATION_MODULE_ID, moduleId);
-        ApplicationModule applicationModule = applicationModuleRepository.select(QueryConstants.FIND_APPLICATION_MODULE, -1, 0, queryParameters).get(0);
-        return applicationModule;
+        List<ApplicationModule> applicationModuleList = applicationModuleRepository.select(QueryConstants.FIND_APPLICATION_MODULE, -1, 0, queryParameters);
+
+        if(!applicationModuleList.isEmpty() && applicationModuleList != null) {
+            logger.debug("Return the record (there is only one record)");
+            return applicationModuleList.get(0);
+        }
+
+        return null;
     }
 
     @Override
     public ApplicationInterfaceDescription getApplicationInterface(String interfaceId) throws AppCatalogException {
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.ApplicationInterface.APPLICATION_INTERFACE_ID, interfaceId);
-        ApplicationInterfaceDescription applicationInterfaceDescription = select(QueryConstants.FIND_APPLICATION_INTERFACE, -1, 0, queryParameters).get(0);
-        return applicationInterfaceDescription;
+        List<ApplicationInterfaceDescription> applicationInterfaceDescriptionList = select(QueryConstants.FIND_APPLICATION_INTERFACE, -1, 0, queryParameters);
+
+        if(!applicationInterfaceDescriptionList.isEmpty() && applicationInterfaceDescriptionList != null) {
+            logger.debug("Return the record (there is only one record)");
+            return applicationInterfaceDescriptionList.get(0);
+        }
+
+        return null;
     }
 
     @Override
     public List<ApplicationModule> getApplicationModules(Map<String, String> filters) throws AppCatalogException {
         ApplicationModuleRepository applicationModuleRepository = new ApplicationModuleRepository();
         if(filters.containsKey(DBConstants.ApplicationModule.APPLICATION_MODULE_NAME)) {
+            logger.debug("Fetching Application Modules for given Application Module Name");
             Map<String, Object> queryParameters = new HashMap<>();
             queryParameters.put(DBConstants.ApplicationModule.APPLICATION_MODULE_NAME, filters.get(DBConstants.ApplicationModule.APPLICATION_MODULE_NAME));
-            List<ApplicationModule> applicationModuleList = applicationModuleRepository.select(QueryConstants.FIND_APPLICATION_MODULES_FOR_APPLICATION_MODULE_NAME, -1,0, queryParameters);
+            List<ApplicationModule> applicationModuleList =
+                    applicationModuleRepository.select(QueryConstants.FIND_APPLICATION_MODULES_FOR_APPLICATION_MODULE_NAME, -1,0, queryParameters);
             return applicationModuleList;
-        } else {
-            logger.error("Unsupported field name for app module.", new IllegalArgumentException());
+        }
+
+        else {
+            logger.error("Unsupported field name for app module.");
             throw new IllegalArgumentException("Unsupported field name for app module.");
         }
     }
@@ -172,12 +211,16 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
     @Override
     public List<ApplicationInterfaceDescription> getApplicationInterfaces(Map<String, String> filters) throws AppCatalogException {
         if(filters.containsKey(DBConstants.ApplicationInterface.APPLICATION_NAME)) {
+            logger.debug("Fetching Application Interfaces for given Application Name");
             Map<String, Object> queryParameters = new HashMap<>();
             queryParameters.put(DBConstants.ApplicationInterface.APPLICATION_NAME, filters.get(DBConstants.ApplicationInterface.APPLICATION_NAME));
-            List<ApplicationInterfaceDescription> applicationInterfaceDescriptionList = select(QueryConstants.FIND_APPLICATION_INTERFACES_FOR_APPLICATION_NAME, -1,0, queryParameters);
+            List<ApplicationInterfaceDescription> applicationInterfaceDescriptionList =
+                    select(QueryConstants.FIND_APPLICATION_INTERFACES_FOR_APPLICATION_NAME, -1,0, queryParameters);
             return applicationInterfaceDescriptionList;
-        } else {
-            logger.error("Unsupported field name for app interface.", new IllegalArgumentException());
+        }
+
+        else {
+            logger.error("Unsupported field name for app interface.");
             throw new IllegalArgumentException("Unsupported field name for app interface.");
         }
     }
@@ -186,7 +229,8 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
     public List<ApplicationInterfaceDescription> getAllApplicationInterfaces(String gatewayId) throws AppCatalogException {
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.ApplicationInterface.GATEWAY_ID, gatewayId);
-        List<ApplicationInterfaceDescription> applicationInterfaceDescriptionList = select(QueryConstants.FIND_APPLICATION_INTERFACES_FOR_GATEWAY_ID, -1, 0, queryParameters);
+        List<ApplicationInterfaceDescription> applicationInterfaceDescriptionList =
+                select(QueryConstants.FIND_APPLICATION_INTERFACES_FOR_GATEWAY_ID, -1, 0, queryParameters);
         return applicationInterfaceDescriptionList;
     }
 
@@ -197,7 +241,8 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
         queryParameters.put(DBConstants.ApplicationModule.GATEWAY_ID, gatewayId);
         queryParameters.put(DBConstants.ApplicationDeployment.ACCESSIBLE_APPLICATION_DEPLOYMENT_IDS, accessibleAppIds);
         queryParameters.put(DBConstants.ApplicationDeployment.ACCESSIBLE_COMPUTE_HOST_IDS, accessibleCompHostIds);
-        List<ApplicationModule> accessibleApplicationModules = applicationModuleRepository.select(QueryConstants.FIND_ACCESSIBLE_APPLICATION_MODULES, -1, 0, queryParameters);
+        List<ApplicationModule> accessibleApplicationModules =
+                applicationModuleRepository.select(QueryConstants.FIND_ACCESSIBLE_APPLICATION_MODULES, -1, 0, queryParameters);
         return accessibleApplicationModules;
     }
 
@@ -205,11 +250,14 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
     public List<String> getAllApplicationInterfaceIds() throws AppCatalogException {
         List<String> applicationInterfaceIds = new ArrayList<>();
         List<ApplicationInterfaceDescription> applicationInterfaceDescriptionList = select(QueryConstants.GET_ALL_APPLICATION_INTERFACES, 0);
+
         if (applicationInterfaceDescriptionList != null && !applicationInterfaceDescriptionList.isEmpty()) {
+            logger.debug("The fetched list of Application Interfaces is not NULL or empty");
             for (ApplicationInterfaceDescription applicationDeploymentDescription: applicationInterfaceDescriptionList) {
                 applicationInterfaceIds.add(applicationDeploymentDescription.getApplicationInterfaceId());
             }
         }
+
         return applicationInterfaceIds;
     }
 
@@ -218,7 +266,8 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.ApplicationInput.APPLICATION_INTERFACE_ID, interfaceId);
         ApplicationInputRepository applicationInputRepository = new ApplicationInputRepository();
-        List<InputDataObjectType> applicationInputsList = applicationInputRepository.select(QueryConstants.FIND_APPLICATION_INPUTS, -1, 0, queryParameters);
+        List<InputDataObjectType> applicationInputsList =
+                applicationInputRepository.select(QueryConstants.FIND_APPLICATION_INPUTS, -1, 0, queryParameters);
         return applicationInputsList;
     }
 
@@ -227,7 +276,8 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.ApplicationOutput.APPLICATION_INTERFACE_ID, interfaceId);
         ApplicationOutputRepository applicationOutputRepository = new ApplicationOutputRepository();
-        List<OutputDataObjectType> applicationOutputsList = applicationOutputRepository.select(QueryConstants.FIND_APPLICATION_OUTPUTS, -1, 0, queryParameters);
+        List<OutputDataObjectType> applicationOutputsList =
+                applicationOutputRepository.select(QueryConstants.FIND_APPLICATION_OUTPUTS, -1, 0, queryParameters);
         return applicationOutputsList;
     }
 

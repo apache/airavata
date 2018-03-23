@@ -105,48 +105,48 @@ public class ApplicationDeploymentRepositoryTest {
         postJobCommand.setCommand("postCommand");
         postJobCommand.setCommandOrder(3);
 
-        ApplicationDeploymentDescription applicationDeploymentDescription = new ApplicationDeploymentDescription();
-        applicationDeploymentDescription.setAppDeploymentId("appDep1");
-        applicationDeploymentDescription.setAppDeploymentDescription("test application deployment1");
-        applicationDeploymentDescription.setAppModuleId(applicationModule.getAppModuleId());
-        applicationDeploymentDescription.setComputeHostId(computeResourceId);
-        applicationDeploymentDescription.setExecutablePath("executablePath1");
-        applicationDeploymentDescription.setParallelism(ApplicationParallelismType.SERIAL);
-        applicationDeploymentDescription.setModuleLoadCmds(Arrays.asList(moduleLoadCmd));
-        applicationDeploymentDescription.setLibPrependPaths(Arrays.asList(libPrependPath));
-        applicationDeploymentDescription.setLibAppendPaths(Arrays.asList(libAppendPath));
-        applicationDeploymentDescription.setPreJobCommands(Arrays.asList(preJobCommand));
-        applicationDeploymentDescription.setPostJobCommands(Arrays.asList(postJobCommand));
-        applicationDeploymentDescription.setSetEnvironment(Arrays.asList(setEnvironment));
-        applicationDeploymentDescription.setDefaultQueueName("queue1");
-        applicationDeploymentDescription.setDefaultCPUCount(10);
-        applicationDeploymentDescription.setDefaultNodeCount(5);
-        applicationDeploymentDescription.setDefaultWalltime(15);
-        applicationDeploymentDescription.setEditableByUser(true);
+        ApplicationDeploymentDescription testAppDeploymentDesc1 = new ApplicationDeploymentDescription();
+        testAppDeploymentDesc1.setAppDeploymentId("appDep1");
+        testAppDeploymentDesc1.setAppDeploymentDescription("test application deployment1");
+        testAppDeploymentDesc1.setAppModuleId(applicationModule.getAppModuleId());
+        testAppDeploymentDesc1.setComputeHostId(computeResourceId);
+        testAppDeploymentDesc1.setExecutablePath("executablePath1");
+        testAppDeploymentDesc1.setParallelism(ApplicationParallelismType.SERIAL);
+        testAppDeploymentDesc1.setModuleLoadCmds(Arrays.asList(moduleLoadCmd));
+        testAppDeploymentDesc1.setLibPrependPaths(Arrays.asList(libPrependPath));
+        testAppDeploymentDesc1.setLibAppendPaths(Arrays.asList(libAppendPath));
+        testAppDeploymentDesc1.setPreJobCommands(Arrays.asList(preJobCommand));
+        testAppDeploymentDesc1.setPostJobCommands(Arrays.asList(postJobCommand));
+        testAppDeploymentDesc1.setSetEnvironment(Arrays.asList(setEnvironment));
+        testAppDeploymentDesc1.setDefaultQueueName("queue1");
+        testAppDeploymentDesc1.setDefaultCPUCount(10);
+        testAppDeploymentDesc1.setDefaultNodeCount(5);
+        testAppDeploymentDesc1.setDefaultWalltime(15);
+        testAppDeploymentDesc1.setEditableByUser(true);
 
-        ApplicationDeploymentDescription applicationDeploymentDescription1 = new ApplicationDeploymentDescription();
-        applicationDeploymentDescription1.setAppDeploymentId("appDep2");
-        applicationDeploymentDescription1.setAppDeploymentDescription("test application deployment2");
-        applicationDeploymentDescription1.setAppModuleId(applicationModule.getAppModuleId());
-        applicationDeploymentDescription1.setComputeHostId(computeResourceId);
-        applicationDeploymentDescription1.setExecutablePath("executablePath1");
-        applicationDeploymentDescription1.setParallelism(ApplicationParallelismType.MPI);
-        applicationDeploymentDescription1.setModuleLoadCmds(Arrays.asList(moduleLoadCmd));
-        applicationDeploymentDescription1.setLibPrependPaths(Arrays.asList(libPrependPath));
-        applicationDeploymentDescription1.setLibAppendPaths(Arrays.asList(libAppendPath));
-        applicationDeploymentDescription1.setPreJobCommands(Arrays.asList(preJobCommand));
-        applicationDeploymentDescription1.setPostJobCommands(Arrays.asList(postJobCommand));
-        applicationDeploymentDescription1.setSetEnvironment(Arrays.asList(setEnvironment));
-        applicationDeploymentDescription1.setDefaultQueueName("queue2");
-        applicationDeploymentDescription1.setDefaultCPUCount(15);
-        applicationDeploymentDescription1.setDefaultNodeCount(10);
-        applicationDeploymentDescription1.setDefaultWalltime(5);
-        applicationDeploymentDescription1.setEditableByUser(false);
+        ApplicationDeploymentDescription testAppDeploymentDesc2 = new ApplicationDeploymentDescription();
+        testAppDeploymentDesc2.setAppDeploymentId("appDep2");
+        testAppDeploymentDesc2.setAppDeploymentDescription("test application deployment2");
+        testAppDeploymentDesc2.setAppModuleId(applicationModule.getAppModuleId());
+        testAppDeploymentDesc2.setComputeHostId(computeResourceId);
+        testAppDeploymentDesc2.setExecutablePath("executablePath1");
+        testAppDeploymentDesc2.setParallelism(ApplicationParallelismType.MPI);
+        testAppDeploymentDesc2.setModuleLoadCmds(Arrays.asList(moduleLoadCmd));
+        testAppDeploymentDesc2.setLibPrependPaths(Arrays.asList(libPrependPath));
+        testAppDeploymentDesc2.setLibAppendPaths(Arrays.asList(libAppendPath));
+        testAppDeploymentDesc2.setPreJobCommands(Arrays.asList(preJobCommand));
+        testAppDeploymentDesc2.setPostJobCommands(Arrays.asList(postJobCommand));
+        testAppDeploymentDesc2.setSetEnvironment(Arrays.asList(setEnvironment));
+        testAppDeploymentDesc2.setDefaultQueueName("queue2");
+        testAppDeploymentDesc2.setDefaultCPUCount(15);
+        testAppDeploymentDesc2.setDefaultNodeCount(10);
+        testAppDeploymentDesc2.setDefaultWalltime(5);
+        testAppDeploymentDesc2.setEditableByUser(false);
 
-        String deploymentId = applicationDeploymentRepository.addApplicationDeployment(applicationDeploymentDescription, gatewayId);
+        String testDeploymentId1 = applicationDeploymentRepository.addApplicationDeployment(testAppDeploymentDesc1, gatewayId);
         ApplicationDeploymentDescription retrievedApplicationDeployment = null;
-        if(applicationDeploymentRepository.isExists(deploymentId)) {
-            retrievedApplicationDeployment = applicationDeploymentRepository.getApplicationDeployement(deploymentId);
+        if(applicationDeploymentRepository.isExists(testDeploymentId1)) {
+            retrievedApplicationDeployment = applicationDeploymentRepository.getApplicationDeployement(testDeploymentId1);
             assertTrue("Retrieved app deployment id matched", retrievedApplicationDeployment.getAppDeploymentId().equals("appDep1"));
             assertEquals("test application deployment1", retrievedApplicationDeployment.getAppDeploymentDescription());
             assertEquals(applicationModule.getAppModuleId(), retrievedApplicationDeployment.getAppModuleId());
@@ -155,12 +155,12 @@ public class ApplicationDeploymentRepositoryTest {
             assertTrue(retrievedApplicationDeployment.getParallelism().equals(ApplicationParallelismType.SERIAL));
         }
 
-        String appDeploymentId = applicationDeploymentDescription.getAppDeploymentId();
-        applicationDeploymentDescription.setDefaultQueueName("queue3");
-        applicationDeploymentRepository.updateApplicationDeployment(appDeploymentId , applicationDeploymentDescription);
+        String appDeploymentId = testAppDeploymentDesc1.getAppDeploymentId();
+        testAppDeploymentDesc1.setDefaultQueueName("queue3");
+        applicationDeploymentRepository.updateApplicationDeployment(appDeploymentId , testAppDeploymentDesc1);
         assertTrue(applicationDeploymentRepository.getApplicationDeployement(appDeploymentId).getDefaultQueueName().equals("queue3"));
 
-        String deploymentId1 = applicationDeploymentRepository.addApplicationDeployment(applicationDeploymentDescription1, gatewayId);
+        String testDeploymentId2 = applicationDeploymentRepository.addApplicationDeployment(testAppDeploymentDesc2, gatewayId);
         List<ApplicationDeploymentDescription> appDeploymentList = applicationDeploymentRepository.getAllApplicationDeployements(gatewayId);
         List<String> appDeploymentIds = applicationDeploymentRepository.getAllApplicationDeployementIds();
         assertTrue(appDeploymentList.size() == 2);
@@ -175,16 +175,16 @@ public class ApplicationDeploymentRepositoryTest {
         assertTrue(applicationDeploymentRepository.getAllApplicationDeployements(gatewayId).size() == 2);
 
         List<String> accessibleAppIds = new ArrayList<>();
-        accessibleAppIds.add(deploymentId);
-        accessibleAppIds.add(deploymentId1);
+        accessibleAppIds.add(testDeploymentId1);
+        accessibleAppIds.add(testDeploymentId2);
         List<String> accessibleCompHostIds = new ArrayList<>();
         accessibleCompHostIds.add(computeResourceId);
         appDeploymentList = applicationDeploymentRepository.getAccessibleApplicationDeployements(gatewayId, accessibleAppIds, accessibleCompHostIds);
         assertTrue(appDeploymentList.size() == 2);
-        assertEquals(deploymentId, appDeploymentList.get(0).getAppDeploymentId());
+        assertEquals(testDeploymentId1, appDeploymentList.get(0).getAppDeploymentId());
 
-        applicationDeploymentRepository.removeAppDeployment(applicationDeploymentDescription1.getAppDeploymentId());
-        assertFalse(applicationDeploymentRepository.isExists(applicationDeploymentDescription1.getAppDeploymentId()));
+        applicationDeploymentRepository.removeAppDeployment(testAppDeploymentDesc2.getAppDeploymentId());
+        assertFalse(applicationDeploymentRepository.isExists(testAppDeploymentDesc2.getAppDeploymentId()));
 
         computeResourceRepository.removeComputeResource(computeResourceDescription.getComputeResourceId());
 
