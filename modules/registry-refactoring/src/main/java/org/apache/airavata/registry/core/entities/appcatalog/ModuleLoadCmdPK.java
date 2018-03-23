@@ -31,12 +31,7 @@ public class ModuleLoadCmdPK implements Serializable {
     // default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @Column(name = "APP_DEPLOYMENT_ID", insertable = false, updatable = false)
     private String appdeploymentId;
-
-    @Id
-    @Column(name = "CMD")
     private String command;
 
     public ModuleLoadCmdPK() {

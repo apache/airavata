@@ -32,12 +32,7 @@ public class ApplicationOutputPK implements Serializable {
 	//default serial version id, required for serializable classes.
 	private static final long serialVersionUID = 1L;
 
-	@Column(name="INTERFACE_ID", insertable=false, updatable=false)
-	@Id
 	private String interfaceId;
-
-	@Column(name="OUTPUT_KEY")
-	@Id
 	private String name;
 
 	public ApplicationOutputPK() {
