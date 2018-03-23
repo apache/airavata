@@ -60,6 +60,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
 
 import java.util.*;
@@ -90,29 +91,59 @@ public class PostWorkflowManager {
         return consumer;
     }
 
+    private void registerWorkflow(String processId, String workflowId) throws Exception {
+        this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                "/registry/" + processId + "/workflows/" + workflowId , new byte[0]);
+    }
+
     private String getExperimentIdByJobId(String jobId) throws Exception {
-        byte[] processBytes = this.curatorClient.getData().forPath("/monitoring/" + jobId + "/experiment");
-        return new String(processBytes);
+        String path = "/monitoring/" + jobId + "/experiment";
+        if (this.curatorClient.checkExists().forPath(path) != null) {
+            byte[] processBytes = this.curatorClient.getData().forPath(path);
+            return new String(processBytes);
+        } else {
+            return null;
+        }
     }
 
     private String getTaskIdByJobId(String jobId) throws Exception {
-        byte[] processBytes = this.curatorClient.getData().forPath("/monitoring/" + jobId + "/task");
-        return new String(processBytes);
+        String path = "/monitoring/" + jobId + "/task";
+        if (this.curatorClient.checkExists().forPath(path) != null) {
+            byte[] processBytes = this.curatorClient.getData().forPath(path);
+            return new String(processBytes);
+        } else {
+            return null;
+        }
     }
 
     private String getProcessIdByJobId(String jobId) throws Exception {
-        byte[] processBytes = this.curatorClient.getData().forPath("/monitoring/" + jobId + "/process");
-        return new String(processBytes);
+        String path = "/monitoring/" + jobId + "/process";
+        if (this.curatorClient.checkExists().forPath(path) != null) {
+            byte[] processBytes = this.curatorClient.getData().forPath(path);
+            return new String(processBytes);
+        } else {
+            return null;
+        }
     }
 
     private String getGatewayByJobId(String jobId) throws Exception {
-        byte[] gatewayBytes = this.curatorClient.getData().forPath("/monitoring/" + jobId + "/gateway");
-        return new String(gatewayBytes);
+        String path = "/monitoring/" + jobId + "/gateway";
+        if (this.curatorClient.checkExists().forPath(path) != null) {
+            byte[] gatewayBytes = this.curatorClient.getData().forPath(path);
+            return new String(gatewayBytes);
+        } else {
+            return null;
+        }
     }
 
-    private String getStatusByJobId(String jobId) throws Exception {
-        byte[] statusBytes = this.curatorClient.getData().forPath("/monitoring/" + jobId + "/status");
-        return new String(statusBytes);
+    private String getStatusByProcess(String processId) throws Exception {
+        String path = "/registry/" + processId + "/status";
+        if (this.curatorClient.checkExists().forPath(path) != null) {
+            byte[] statusBytes = this.curatorClient.getData().forPath(path);
+            return new String(statusBytes);
+        } else {
+            return null;
+        }
     }
 
     private boolean hasMonitoringRegistered(String jobId) throws Exception {
@@ -130,23 +161,36 @@ public class PostWorkflowManager {
             logger.info("Processing job result " + jobStatusResult.getJobId());
 
             if (hasMonitoringRegistered(jobStatusResult.getJobId())) {
-                String gateway = getGatewayByJobId(jobStatusResult.getJobId());
-                String processId = getProcessIdByJobId(jobStatusResult.getJobId());
-                String experimentId = getExperimentIdByJobId(jobStatusResult.getJobId());
-                String task = getTaskIdByJobId(jobStatusResult.getJobId());
-                String status = getStatusByJobId(jobStatusResult.getJobId());
+                String gateway = Optional.ofNullable(getGatewayByJobId(jobStatusResult.getJobId()))
+                        .orElseThrow(() -> new Exception("Can not find the gateway for job id " + jobStatusResult.getJobId()));
 
-                logger.info("Starting the post workflow for job id : " + jobStatusResult.getJobId() + " with process id "
-                        + processId + ", gateway " + gateway + " and status " + jobStatusResult.getState().name());
+                String processId = Optional.ofNullable(getProcessIdByJobId(jobStatusResult.getJobId()))
+                        .orElseThrow(() -> new Exception("Can not find the process for job id " + jobStatusResult.getJobId()));
+
+                String experimentId = Optional.ofNullable(getExperimentIdByJobId(jobStatusResult.getJobId()))
+                        .orElseThrow(() -> new Exception("Can not find the experiment for job id " + jobStatusResult.getJobId()));
+
+                String task = Optional.ofNullable(getTaskIdByJobId(jobStatusResult.getJobId()))
+                        .orElseThrow(() -> new Exception("Can not find the task for job id " + jobStatusResult.getJobId()));
+
+                String status = getStatusByProcess(processId);
 
                 // TODO get cluster lock before that
-                if ("cancelled".equals(status)) {
+                if ("cancel".equals(status)) {
+                    logger.info("Cancelled post workflow for process " + processId);
                     // TODO to be implemented
                 } else {
+
+                    logger.info("Updating the job status for job id : " + jobStatusResult.getJobId() + " with process id "
+                            + processId + ", gateway " + gateway + " and status " + jobStatusResult.getState().name());
 
                     saveAndPublishJobStatus(jobStatusResult.getJobId(), task, processId, experimentId, gateway, jobStatusResult.getState());
 
                     if (jobStatusResult.getState() == JobState.COMPLETE) {
+
+                        logger.info("Starting the post workflow for job id : " + jobStatusResult.getJobId() + " with process id "
+                                + processId + ", gateway " + gateway + " and status " + jobStatusResult.getState().name());
+
                         logger.info("Job " + jobStatusResult.getJobId() + " was completed");
 
                         ExperimentCatalog experimentCatalog = RegistryFactory.getExperimentCatalog(gateway);
@@ -211,9 +255,14 @@ public class PostWorkflowManager {
                                 ServerSettings.getSetting("post.workflow.manager.name"),
                                 ServerSettings.getZookeeperConnection());
 
-                        workflowManager.launchWorkflow(processId + "-POST-" + UUID.randomUUID().toString(),
+                        String workflowName = workflowManager.launchWorkflow(processId + "-POST-" + UUID.randomUUID().toString(),
                                 new ArrayList<>(allTasks), true, false);
-
+                        try {
+                            registerWorkflow(processId, workflowName);
+                        } catch (Exception e) {
+                            logger.error("Failed to save workflow " + workflowName + " of process " + processId + " in zookeeper registry. " +
+                                    "This will affect cancellation tasks", e);
+                        }
                     } else if (jobStatusResult.getState() == JobState.CANCELED) {
                         logger.info("Job " + jobStatusResult.getJobId() + " was externally cancelled");
 

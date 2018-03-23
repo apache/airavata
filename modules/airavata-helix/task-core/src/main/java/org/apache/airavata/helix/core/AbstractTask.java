@@ -21,12 +21,16 @@ package org.apache.airavata.helix.core;
 
 import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.helix.task.api.TaskHelper;
+import org.apache.airavata.helix.task.api.annotation.TaskOutPort;
 import org.apache.airavata.helix.task.api.annotation.TaskParam;
+import org.apache.airavata.model.status.TaskState;
 import org.apache.helix.HelixManager;
 import org.apache.helix.task.Task;
 import org.apache.helix.task.TaskCallbackContext;
 import org.apache.helix.task.TaskResult;
 import org.apache.helix.task.UserContentStore;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 /**
  * TODO: Class level comments please
@@ -36,11 +40,16 @@ import org.apache.helix.task.UserContentStore;
  */
 public abstract class AbstractTask extends UserContentStore implements Task {
 
+    private static final Logger logger = LogManager.getLogger(AbstractTask.class);
+
     private static final String NEXT_JOB = "next-job";
     private static final String WORKFLOW_STARTED = "workflow-started";
 
     @TaskParam(name = "taskId")
     private String taskId;
+
+    @TaskOutPort(name = "Next Task")
+    private OutPort nextTask;
 
     private TaskCallbackContext callbackContext;
     private TaskHelper taskHelper;
@@ -71,6 +80,7 @@ public abstract class AbstractTask extends UserContentStore implements Task {
 
     @Override
     public final void cancel() {
+        logger.info("Cancelling task " + taskId);
         onCancel();
     }
 
@@ -78,6 +88,15 @@ public abstract class AbstractTask extends UserContentStore implements Task {
 
     public abstract void onCancel();
 
+    protected TaskResult onSuccess(String message) {
+        String successMessage = "Task " + getTaskId() + " completed." + (message != null ? " Message : " + message : "");
+        logger.info(successMessage);
+        return nextTask.invoke(new TaskResult(TaskResult.Status.COMPLETED, message));
+    }
+
+    protected TaskResult onFail(String reason, boolean fatal) {
+        return new TaskResult(fatal ? TaskResult.Status.FATAL_FAILED : TaskResult.Status.FAILED, reason);
+    }
     protected void publishErrors(Throwable e) {
         // TODO Publish through kafka channel with task and workflow id
         e.printStackTrace();
@@ -133,5 +152,13 @@ public abstract class AbstractTask extends UserContentStore implements Task {
 
     public void setRetryCount(int retryCount) {
         this.retryCount = retryCount;
+    }
+
+    public OutPort getNextTask() {
+        return nextTask;
+    }
+
+    public void setNextTask(OutPort nextTask) {
+        this.nextTask = nextTask;
     }
 }

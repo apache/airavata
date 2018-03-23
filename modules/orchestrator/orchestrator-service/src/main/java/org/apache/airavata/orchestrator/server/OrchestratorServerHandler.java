@@ -428,6 +428,26 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 				log.warn("Experiment termination is only allowed for launched experiments.");
 				return false;
 			default:
+				ExperimentModel experimentModel = registryClient.getExperiment(experimentId);
+
+                ComputeResourcePreference computeResourcePreference = registryClient.getGatewayComputeResourcePreference
+                        (gatewayId,
+                                experimentModel.getUserConfigurationData().getComputationalResourceScheduling().getResourceHostId());
+                String token = computeResourcePreference.getResourceSpecificCredentialStoreToken();
+                if (token == null || token.isEmpty()){
+                    // try with gateway profile level token
+                    GatewayResourceProfile gatewayProfile = registryClient.getGatewayResourceProfile(gatewayId);
+                    token = gatewayProfile.getCredentialStoreToken();
+                }
+                // still the token is empty, then we fail the experiment
+                if (token == null || token.isEmpty()){
+                    log.error("You have not configured credential store token at gateway profile or compute resource preference." +
+                            " Please provide the correct token at gateway profile or compute resource preference.");
+                    return false;
+                }
+
+				orchestrator.cancelExperiment(experimentModel, token);
+				// TODO deprecate this approach as we are replacing gfac
 				String expCancelNodePath = ZKPaths.makePath(ZKPaths.makePath(ZkConstants.ZOOKEEPER_EXPERIMENT_NODE,
 						experimentId), ZkConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
 				Stat stat = curatorClient.checkExists().forPath(expCancelNodePath);

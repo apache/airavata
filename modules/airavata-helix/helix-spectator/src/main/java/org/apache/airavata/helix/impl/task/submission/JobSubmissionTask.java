@@ -65,7 +65,6 @@ public abstract class JobSubmissionTask extends AiravataTask {
             this.curatorClient = CuratorFrameworkFactory.newClient(ServerSettings.getZookeeperConnection(), retryPolicy);
             this.curatorClient.start();
         } catch (ApplicationSettingsException e) {
-            e.printStackTrace();
             logger.error("Failed to create curator client ", e);
             throw new RuntimeException(e);
         }
@@ -93,6 +92,8 @@ public abstract class JobSubmissionTask extends AiravataTask {
                 "/monitoring/" + jobId + "/experiment", getExperimentId().getBytes());
         getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
                 "/monitoring/" + jobId + "/status", "pending".getBytes());
+        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                "/registry/" + getProcessId() + "/jobs/" + jobId, new byte[0]);
     }
 
     @SuppressWarnings("WeakerAccess")

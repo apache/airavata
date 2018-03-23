@@ -75,16 +75,11 @@ public abstract class AiravataTask extends AbstractTask {
     @TaskParam(name = "Skip Status Publish")
     private boolean skipTaskStatusPublish = false;
 
-    @TaskOutPort(name = "Next Task")
-    private OutPort nextTask;
-
     protected TaskResult onSuccess(String message) {
         if (!skipTaskStatusPublish) {
             publishTaskState(TaskState.COMPLETED);
         }
-        String successMessage = "Task " + getTaskId() + " completed." + (message != null ? " Message : " + message : "");
-        logger.info(successMessage);
-        return nextTask.invoke(new TaskResult(TaskResult.Status.COMPLETED, message));
+        return super.onSuccess(message);
     }
 
     protected TaskResult onFail(String reason, boolean fatal, Throwable error) {
@@ -120,7 +115,8 @@ public abstract class AiravataTask extends AbstractTask {
             saveProcessError(errorModel);
             saveTaskError(errorModel);
         }
-        return new TaskResult(fatal ? TaskResult.Status.FATAL_FAILED : TaskResult.Status.FAILED, errorMessage);
+
+        return onFail(errorMessage, fatal);
     }
 
     protected void saveAndPublishProcessStatus(ProcessState state) {
@@ -396,10 +392,6 @@ public abstract class AiravataTask extends AbstractTask {
 
     protected ProcessModel getProcessModel() {
         return processModel;
-    }
-
-    public void setNextTask(OutPort nextTask) {
-        this.nextTask = nextTask;
     }
 
     public void setSkipTaskStatusPublish(boolean skipTaskStatusPublish) {
