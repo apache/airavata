@@ -16,11 +16,13 @@ public class ReviewerSpecificResourceDetailEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@Column(name="ID")
 	private int id;
 
 	@Column(name="APPLICATIONS_TO_BE_USED")
 	private String applicationsToBeUsed;
 
+	@Column(name="COMMENTS")
 	private String comments;
 
 	@Column(name="PROJECT_ID")
@@ -34,6 +36,9 @@ public class ReviewerSpecificResourceDetailEntity implements Serializable {
 
 	@Column(name="SPECIFIC_RESOURCE")
 	private String specificResource;
+
+	@Column(name="USERNAME")
+	private String username;
 
 	public ReviewerSpecificResourceDetailEntity() {
 	}
@@ -92,6 +97,14 @@ public class ReviewerSpecificResourceDetailEntity implements Serializable {
 
 	public void setSpecificResource(String specificResource) {
 		this.specificResource = specificResource;
+	}
+
+	public String getUsername() {
+		return this.username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 }

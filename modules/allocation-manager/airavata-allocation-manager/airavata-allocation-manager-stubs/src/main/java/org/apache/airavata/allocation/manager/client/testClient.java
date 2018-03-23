@@ -35,7 +35,7 @@ public class testClient {
             
             AuthzToken token = new AuthzToken("empty_token");
             
-            /*System.out.println("######################");
+            System.out.println("######################");
             System.out.println("Testing createAllocationRequest() 1");
             UserAllocationDetail requestDetails = new UserAllocationDetail();
             requestDetails.setUsername("harsha");
@@ -128,7 +128,6 @@ public class testClient {
             for (UserAllocationDetail object : userAllocationDetailList) {
                 System.out.println(object.getProjectId());
             }
-            int pId1 =14;
             System.out.println("######################");
             System.out.println("Testing assignReviewers() ");
             System.out.println(client.assignReviewers(token, pId1, "reviewer1", "admin"));
@@ -149,7 +148,6 @@ public class testClient {
             for (UserAllocationDetail object : userAllocationDetailList1) {
                 System.out.println(object.getProjectId());
             }
-            int pId1 = 14;
             System.out.println("######################");
             System.out.println("Testing getAllReviewsForARequest() ");
             List<ReviewerAllocationDetail> reviewerAllocationDetailList = client.getAllReviewsForARequest(token, pId1);
@@ -177,7 +175,6 @@ public class testClient {
             revSpecObj2.setSpecificResource("largest gpu");
             long revSpecId2 = client.createReviewerSpecificResource(token, revSpecObj2);
             System.out.println("Second reviewer spec Id: "+ revSpecId2); 
-             int pId1 = 14;
             System.out.println("######################");
             System.out.println("Testing getReviewerSpecificResource 1");
             List<ReviewerSpecificResourceDetail> revSpecObjList;
@@ -194,10 +191,9 @@ public class testClient {
             
             System.out.println("######################");
             System.out.println("Testing updateReviewerSpecificResource");
-            client.updateReviewerSpecificResource(token, pId1, revUpdatedList); */
-            int pId1 = 14;
+            client.updateReviewerSpecificResource(token, pId1, revUpdatedList); 
             
-            /*System.out.println("######################");
+            System.out.println("######################");
             System.out.println("Testing getAllAssignedReviewersForRequest");
             List<ProjectReviewer> userDetailList = client.getAllAssignedReviewersForRequest(token, pId1);
             for (ProjectReviewer object : userDetailList) {
@@ -211,7 +207,7 @@ public class testClient {
             
             System.out.println("######################");
             System.out.println("Testing rejectRequest() ");
-            System.out.println(client.rejectRequest(token, 14, "admin", "rejecttest","large gpu"));*/
+            System.out.println(client.rejectRequest(token, 14, "admin", "rejecttest","large gpu"));
             
             System.out.println("######################");
             System.out.println("Testing getRemainingAllocationUnits");

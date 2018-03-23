@@ -7,7 +7,7 @@
 <title>Thrift module: allocation_manager_models</title></head><body>
 <div class="container-fluid">
 <h1>Thrift module: allocation_manager_models</h1>
-<pre><p>Required allocation request details</p>
+<p>Required allocation request details</p>
 <li>projectId : (primary key) Ask the user to assign project ID, but this project should unique, we will need an API endpoint to check whether this ID is not used by other projects and the username</li>
 <li>allocationStatus : Overall status of the allocation</li>
 <li>diskUsageRangePerJob : An optional field to help reviewer and PI for allocation approval</li>
@@ -25,7 +25,7 @@
 <li>typeOfAllocation : If the User has an exclusive allocation with third party organization and wants to use airavata middleware to manage jobs.</li>
 <li>typicalSuPerJob :  An optional field to help reviewer and PI for allocation approval</li>
 
-</pre><br/><table class="table-bordered table-striped table-condensed"><thead><th>Module</th><th>Services</th><th>Data types</th><th>Constants</th></thead>
+<br/><table class="table-bordered table-striped table-condensed"><thead><th>Module</th><th>Services</th><th>Data types</th><th>Constants</th></thead>
 <tr>
 <td>allocation_manager_models</td><td></td>
 <td><a href="#Struct_AllocationManagerException">AllocationManagerException</a><br/>
@@ -53,7 +53,7 @@
 <tr><td>11</td><td>title</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>12</td><td>typicalSuPerJob</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>13</td><td>username</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
-</table><br/><pre><p>Required allocation request details</p>
+</table><br/><p>Required allocation request details</p>
 <li>projectId : (primary key) Ask the user to assign project ID, but this project should unique, we will need an API endpoint to check whether this ID is not used by other projects and the username</li>
 <li>allocationStatus : Overall status of the allocation</li>
 <li>diskUsageRangePerJob : An optional field to help reviewer and PI for allocation approval</li>
@@ -71,7 +71,7 @@
 <li>typeOfAllocation : If the User has an exclusive allocation with third party organization and wants to use airavata middleware to manage jobs.</li>
 <li>typicalSuPerJob :  An optional field to help reviewer and PI for allocation approval</li>
 
-</pre><br/></div><div class="definition"><h3 id="Struct_UserSpecificResourceDetail">Struct: UserSpecificResourceDetail</h3>
+<br/></div><div class="definition"><h3 id="Struct_UserSpecificResourceDetail">Struct: UserSpecificResourceDetail</h3>
 <table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
 <tr><td>1</td><td>id</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>2</td><td>allocatedServiceUnits</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
@@ -85,7 +85,7 @@
 <tr><td>10</td><td>startDate</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>11</td><td>subStatus</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>12</td><td>usedServiceUnits</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
-</table><br/><pre><p>User Specific Resource Detail</p>
+</table><br/><p>User Specific Resource Detail</p>
 <li>Id: Unique id</li>
 <li>allocatedServiceUnits: Allocation requested by the user</li>
 <li>applicationsToBeUsed: Applications to be used</li>
@@ -97,7 +97,7 @@
 <li>startDate: Start date of the allocation updated by the admin</li>
 <li>subStatus: Status of the specific resource</li>
 
-</pre><br/></div><div class="definition"><h3 id="Struct_ReviewerAllocationDetail">Struct: ReviewerAllocationDetail</h3>
+<br/></div><div class="definition"><h3 id="Struct_ReviewerAllocationDetail">Struct: ReviewerAllocationDetail</h3>
 <table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
 <tr><td>1</td><td>id</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>2</td><td>projectId</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
@@ -108,7 +108,7 @@
 <tr><td>7</td><td>reviewDate</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>8</td><td>typicalSuPerJob</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>9</td><td>username</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
-</table><br/><pre><p>Allocation Request status details</p>
+</table><br/><p>Allocation Request status details</p>
 <li>projectId: Unique id of the project</li>
 <li>awardAllocation: Allocation awarded</li>
 <li>endDate: End date of the request</li>
@@ -116,7 +116,7 @@
 <li>startDate: Start date of the allocation</li>
 <li>status: Status of the allocation request</li>
 
-</pre><br/></div><div class="definition"><h3 id="Struct_ReviewerSpecificResourceDetail">Struct: ReviewerSpecificResourceDetail</h3>
+<br/></div><div class="definition"><h3 id="Struct_ReviewerSpecificResourceDetail">Struct: ReviewerSpecificResourceDetail</h3>
 <table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
 <tr><td>1</td><td>id</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>2</td><td>applicationsToBeUsed</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
@@ -125,7 +125,8 @@
 <tr><td>5</td><td>resourceType</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>6</td><td>reviewedServiceUnits</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>7</td><td>specificResource</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
-</table><br/><pre><p>Allocation Request status details</p>
+<tr><td>8</td><td>username</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
+</table><br/><p>Allocation Request status details</p>
 <li>projectId: Unique id of the project</li>
 <li>awardAllocation: Allocation awarded</li>
 <li>endDate: End date of the request</li>
@@ -133,12 +134,12 @@
 <li>startDate: Start date of the allocation</li>
 <li>status: Status of the allocation request</li>
 
-</pre><br/></div><div class="definition"><h3 id="Struct_ProjectReviewer">Struct: ProjectReviewer</h3>
+<br/></div><div class="definition"><h3 id="Struct_ProjectReviewer">Struct: ProjectReviewer</h3>
 <table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
 <tr><td>1</td><td>projectId</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>2</td><td>reviewerUsername</td><td><code>string</code></td><td></td><td>optional</td><td></td></tr>
 <tr><td>3</td><td>id</td><td><code>i64</code></td><td></td><td>optional</td><td></td></tr>
-</table><br/><pre><p>Allocation Request status details</p>
+</table><br/><p>Allocation Request status details</p>
 <li>projectId: Unique id of the project</li>
 <li>awardAllocation: Allocation awarded</li>
 <li>endDate: End date of the request</li>
@@ -146,9 +147,9 @@
 <li>startDate: Start date of the allocation</li>
 <li>status: Status of the allocation request</li>
 
-</pre><br/></div><div class="definition"><h3 id="Struct_AllocationManagerException">Exception: AllocationManagerException</h3>
+<br/></div><div class="definition"><h3 id="Struct_AllocationManagerException">Exception: AllocationManagerException</h3>
 <table class="table-bordered table-striped table-condensed"><thead><th>Key</th><th>Field</th><th>Type</th><th>Description</th><th>Requiredness</th><th>Default value</th></thead>
 <tr><td>1</td><td>message</td><td><code>string</code></td><td></td><td>required</td><td></td></tr>
-</table><br/><pre><p>Exception model used in the allocation manager service</p>
+</table><br/><p>Exception model used in the allocation manager service</p>
 
-</pre><br/></div></div></body></html>
+<br/></div></div></body></html>

@@ -9,8 +9,5 @@
 from thrift.Thrift import TType, TMessageType, TFrozenDict, TException, TApplicationException
 from thrift.protocol.TProtocol import TProtocolException
 import sys
-import allocation_manager_models.ttypes
-import airavata.api.error.ttypes
-import airavata.model.security.ttypes
-
-from thrift.transport import TTransport
+from .ttypes import *
+DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"

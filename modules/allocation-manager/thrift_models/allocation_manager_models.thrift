@@ -103,7 +103,8 @@ struct ReviewerSpecificResourceDetail{
 	4:optional i64 projectId,
 	5:optional string resourceType,
 	6:optional i64 reviewedServiceUnits,
-	7:optional string specificResource
+	7:optional string specificResource,
+	8:optional string username
 }
 
 /**

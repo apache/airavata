@@ -21,6 +21,7 @@ package org.apache.airavata.allocation.manager.server;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.airavata.allocation.manager.db.repositories.ProjectReviewerRepository;
 //import org.apache.airavata.allocation.manager.db.repositories.Projec
 import org.apache.airavata.allocation.manager.db.repositories.ReviewerAllocationDetailRepository;
 import org.apache.airavata.allocation.manager.db.repositories.ReviewerSpecificResourceDetailRepository;
@@ -327,11 +328,13 @@ public class AllocationManagerServerHandler implements AllocationRegistryService
             throws AllocationManagerException, AuthorizationException, TException {
         for (ReviewerSpecificResourceDetail reviewerSpecificResourceObj : listReviewerSpecificResource) {
             try {
-                if (reviewerSpecificResourceObj.getId() == 0L) {
+            	ReviewerSpecificResourceDetail reviewerSpecificResourceDetail = (new ReviewerSpecificResourceDetailRepository()).getSpecificResource(projectId, reviewerSpecificResourceObj.specificResource,
+                		reviewerSpecificResourceObj.username);
+                if (reviewerSpecificResourceDetail == null) {
                     //create new
                     (new ReviewerSpecificResourceDetailRepository()).create(reviewerSpecificResourceObj);
                 } else {
-                    (new ReviewerSpecificResourceDetailRepository()).update(reviewerSpecificResourceObj);
+                    (new ReviewerSpecificResourceDetailRepository()).update(reviewerSpecificResourceObj.setId(reviewerSpecificResourceDetail.getId()));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -351,7 +354,6 @@ public class AllocationManagerServerHandler implements AllocationRegistryService
 	             throw new AllocationManagerException()
 	                     .setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
 	         }
-        return null;
     }
     
     @Override
