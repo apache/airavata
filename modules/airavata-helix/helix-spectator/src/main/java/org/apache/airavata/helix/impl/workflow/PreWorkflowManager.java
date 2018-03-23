@@ -20,11 +20,13 @@
 package org.apache.airavata.helix.impl.workflow;
 
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.impl.task.AiravataTask;
+import org.apache.airavata.helix.impl.task.cancel.WorkflowCancellationTask;
 import org.apache.airavata.helix.impl.task.env.EnvSetupTask;
 import org.apache.airavata.helix.impl.task.staging.InputDataStagingTask;
 import org.apache.airavata.helix.impl.task.submission.DefaultJobSubmissionTask;
@@ -33,16 +35,22 @@ import org.apache.airavata.messaging.core.*;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.messaging.event.ProcessSubmitEvent;
+import org.apache.airavata.model.messaging.event.ProcessTerminateEvent;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
+import org.apache.curator.RetryPolicy;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
+import org.apache.zookeeper.CreateMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,13 +62,36 @@ public class PreWorkflowManager {
 
     private static final Logger logger = LogManager.getLogger(PreWorkflowManager.class);
 
-    private final Subscriber subscriber;
+    private Subscriber subscriber;
+    private CuratorFramework curatorClient = null;
 
     @SuppressWarnings("WeakerAccess")
     public PreWorkflowManager() throws AiravataException {
+        init();
+    }
+
+    private void init() throws AiravataException {
         List<String> routingKeys = new ArrayList<>();
         routingKeys.add(ServerSettings.getRabbitmqProcessExchangeName());
         this.subscriber = MessagingFactory.getSubscriber(new ProcessLaunchMessageHandler(), routingKeys, Type.PROCESS_LAUNCH);
+
+        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
+        this.curatorClient = CuratorFrameworkFactory.newClient(ServerSettings.getZookeeperConnection(), retryPolicy);
+        this.curatorClient.start();
+    }
+
+    private void registerWorkflow(String processId, String workflowId) throws Exception {
+        this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                "/registry/" + processId + "/workflows/" + workflowId , new byte[0]);
+    }
+
+    private void registerCancelProcess(String processId) throws Exception {
+        this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                "/registry/" + processId + "/status" , "cancel".getBytes());
+    }
+
+    private List<String> getWorkflowsOfProcess(String processId) throws Exception {
+        return this.curatorClient.getChildren().forPath("/registry/" + processId + "/workflows");
     }
 
     private String createAndLaunchPreWorkflow(String processId, String gateway) throws Exception {
@@ -90,9 +121,7 @@ public class PreWorkflowManager {
                     airavataTask.setRetryCount(1);
                     jobSubmissionFound = true;
                 } else if (taskModel.getTaskType() == TaskTypes.DATA_STAGING) {
-                    if (jobSubmissionFound) {
-                        //airavataTask = new OutputDataStagingTask();
-                    } else {
+                    if (!jobSubmissionFound) {
                         airavataTask = new InputDataStagingTask();
                     }
                 }
@@ -116,7 +145,40 @@ public class PreWorkflowManager {
                 ServerSettings.getZookeeperConnection());
         String workflowName = workflowManager.launchWorkflow(processId + "-PRE-" + UUID.randomUUID().toString(),
                 new ArrayList<>(allTasks), true, false);
+        try {
+            registerWorkflow(processId, workflowName);
+        } catch (Exception e) {
+            logger.error("Failed to save workflow " + workflowName + " of process " + processId + " in zookeeper registry. " +
+                    "This will affect cancellation tasks", e);
+        }
         return workflowName;
+    }
+
+    private String createAndLaunchCancelWorkflow(String processId, String gateway) throws Exception {
+        registerCancelProcess(processId);
+        List<String> workflows = getWorkflowsOfProcess(processId);
+        final List<AbstractTask> allTasks = new ArrayList<>();
+        if (workflows != null && workflows.size() > 0) {
+            for (String wf : workflows) {
+                logger.info("Creating cancellation task for workflow " + wf + " of process " + processId);
+                WorkflowCancellationTask wfct = new WorkflowCancellationTask();
+                wfct.setTaskId(UUID.randomUUID().toString());
+                wfct.setCancellingWorkflowName(wf);
+                allTasks.add(wfct);
+            }
+
+            WorkflowManager workflowManager = new WorkflowManager(
+                    ServerSettings.getSetting("helix.cluster.name"),
+                    ServerSettings.getSetting("post.workflow.manager.name"),
+                    ServerSettings.getZookeeperConnection());
+
+            String workflow = workflowManager.launchWorkflow(processId + "-CANCEL-" + UUID.randomUUID().toString(), allTasks, true, false);
+            logger.info("Started launching workflow " + workflow + " to cancel process " + processId);
+            return workflow;
+        } else {
+            logger.info("No workflow registered with process " + processId + " to cancel");
+            return null;
+        }
     }
 
     public static void main(String[] args) throws Exception {
@@ -147,12 +209,38 @@ public class PreWorkflowManager {
                 logger.info("Received process launch message for process " + processId + " in gateway " + gateway);
 
                 try {
-                    logger.info("Launching the pre workflow for process " + processId + " in gateway " + gateway );
+                    logger.info("Launching the pre workflow for process " + processId + " in gateway " + gateway);
                     String workflowName = createAndLaunchPreWorkflow(processId, gateway);
-                    logger.info("Completed launching the pre workflow " + workflowName + " for process " + processId + " in gateway " + gateway );
+                    logger.info("Completed launching the pre workflow " + workflowName + " for process " + processId + " in gateway " + gateway);
                     subscriber.sendAck(messageContext.getDeliveryTag());
                 } catch (Exception e) {
                     logger.error("Failed to launch the pre workflow for process " + processId + " in gateway " + gateway, e);
+                    //subscriber.sendAck(messageContext.getDeliveryTag());
+                }
+            } else if (messageContext.getType().equals(MessageType.TERMINATEPROCESS)) {
+                ProcessTerminateEvent event = new ProcessTerminateEvent();
+                TBase messageEvent = messageContext.getEvent();
+
+                try {
+                    byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
+                    ThriftUtils.createThriftFromBytes(bytes, event);
+                } catch (TException e) {
+                    logger.error("Failed to fetch process cancellation event", e);
+                    subscriber.sendAck(messageContext.getDeliveryTag());
+                }
+
+                String processId = event.getProcessId();
+                String gateway = event.getGatewayId();
+
+                logger.info("Received process cancel message for process " + processId + " in gateway " + gateway);
+
+                try {
+                    logger.info("Launching the process cancel workflow for process " + processId + " in gateway " + gateway);
+                    String workflowName = createAndLaunchCancelWorkflow(processId, gateway);
+                    logger.info("Completed process cancel workflow " + workflowName + " for process " + processId + " in gateway " + gateway);
+                    subscriber.sendAck(messageContext.getDeliveryTag());
+                } catch (Exception e) {
+                    logger.error("Failed to launch process cancel workflow for process " + processId + " in gateway " + gateway, e);
                     //subscriber.sendAck(messageContext.getDeliveryTag());
                 }
             } else {
