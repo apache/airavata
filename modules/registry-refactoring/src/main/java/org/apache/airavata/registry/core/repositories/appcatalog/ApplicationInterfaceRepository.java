@@ -155,30 +155,12 @@ public class ApplicationInterfaceRepository extends AppCatAbstractRepository<App
     @Override
     public ApplicationModule getApplicationModule(String moduleId) throws AppCatalogException {
         ApplicationModuleRepository applicationModuleRepository = new ApplicationModuleRepository();
-        Map<String, Object> queryParameters = new HashMap<>();
-        queryParameters.put(DBConstants.ApplicationModule.APPLICATION_MODULE_ID, moduleId);
-        List<ApplicationModule> applicationModuleList = applicationModuleRepository.select(QueryConstants.FIND_APPLICATION_MODULE, -1, 0, queryParameters);
-
-        if(!applicationModuleList.isEmpty() && applicationModuleList != null) {
-            logger.debug("Return the record (there is only one record)");
-            return applicationModuleList.get(0);
-        }
-
-        return null;
+        return applicationModuleRepository.get(moduleId);
     }
 
     @Override
     public ApplicationInterfaceDescription getApplicationInterface(String interfaceId) throws AppCatalogException {
-        Map<String, Object> queryParameters = new HashMap<>();
-        queryParameters.put(DBConstants.ApplicationInterface.APPLICATION_INTERFACE_ID, interfaceId);
-        List<ApplicationInterfaceDescription> applicationInterfaceDescriptionList = select(QueryConstants.FIND_APPLICATION_INTERFACE, -1, 0, queryParameters);
-
-        if(!applicationInterfaceDescriptionList.isEmpty() && applicationInterfaceDescriptionList != null) {
-            logger.debug("Return the record (there is only one record)");
-            return applicationInterfaceDescriptionList.get(0);
-        }
-
-        return null;
+        return get(interfaceId);
     }
 
     @Override

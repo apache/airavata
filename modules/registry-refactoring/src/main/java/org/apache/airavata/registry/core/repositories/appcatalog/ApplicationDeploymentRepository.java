@@ -111,16 +111,7 @@ public class ApplicationDeploymentRepository extends AppCatAbstractRepository<Ap
 
     @Override
     public ApplicationDeploymentDescription getApplicationDeployement(String deploymentId) throws AppCatalogException {
-        Map<String, Object> queryParameters = new HashMap<>();
-        queryParameters.put(DBConstants.ApplicationDeployment.APPLICATION_DEPLOYMENT_ID, deploymentId);
-        List<ApplicationDeploymentDescription> applicationDeploymentDescriptionList = select(QueryConstants.FIND_APPLICATION_DEPLOYMENT, -1, 0, queryParameters);
-
-        if(!applicationDeploymentDescriptionList.isEmpty() && applicationDeploymentDescriptionList != null) {
-            logger.debug("Return the record (there is only one record)");
-            return applicationDeploymentDescriptionList.get(0);
-        }
-
-        return null;
+        return get(deploymentId);
     }
 
     @Override
