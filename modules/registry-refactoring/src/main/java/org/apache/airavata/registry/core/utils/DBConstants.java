@@ -24,7 +24,6 @@ public class DBConstants {
     public static int SELECT_MAX_ROWS = 1000;
 
     public static class ApplicationDeployment {
-        public static final String APPLICATION_DEPLOYMENT_ID = "appDeploymentId";
         public static final String APPLICATION_MODULE_ID = "appModuleId";
         public static final String COMPUTE_HOST_ID = "computeHostId";
         public static final String GATEWAY_ID = "gatewayId";
@@ -33,13 +32,11 @@ public class DBConstants {
     }
 
     public static class ApplicationModule {
-        public static final String APPLICATION_MODULE_ID = "appModuleId";
         public static final String APPLICATION_MODULE_NAME = "appModuleName";
         public static final String GATEWAY_ID = "gatewayId";
     }
 
     public static class ApplicationInterface {
-        public static final String APPLICATION_INTERFACE_ID = "applicationInterfaceId";
         public static final String APPLICATION_NAME = "applicationName";
         public static final String GATEWAY_ID = "gatewayId";
     }
