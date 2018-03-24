@@ -26,4 +26,11 @@ public class DBConstants {
         public static final String GROUP_RESOURCE_PROFILE_ID = "groupResourceProfileId";
     }
 
+    public static class DataProduct {
+        public static final String GATEWAY_ID = "gatewayId";
+        public static final String OWNER_NAME = "ownerName";
+        public static final String PRODUCT_NAME = "productName";
+        public static final String PARENT_PRODUCT_URI = "parentProductUri";
+    }
+
 }

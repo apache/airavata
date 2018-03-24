@@ -3,6 +3,7 @@ package org.apache.airavata.registry.core.utils;
 import org.apache.airavata.model.user.UserProfile;
 
 import org.apache.airavata.registry.core.entities.appcatalog.*;
+import org.apache.airavata.registry.core.entities.replicacatalog.DataProductEntity;
 
 public interface QueryConstants {
 
@@ -37,4 +38,10 @@ public interface QueryConstants {
             "WHERE BQ.groupResourceProfileId LIKE : " + DBConstants.GroupResourceProfile.GROUP_RESOURCE_PROFILE_ID;
     String FIND_ALL_GROUP_COMPUTE_RESOURCE_POLICY = "SELECT CR FROM "+ ComputeResourcePolicyEntity.class.getSimpleName() + " CR " +
             "WHERE CR.groupResourceProfileId LIKE : " + DBConstants.GroupResourceProfile.GROUP_RESOURCE_PROFILE_ID;
+
+    String FIND_ALL_CHILD_DATA_PRODUCTS = "SELECT DP FROM " + DataProductEntity.class.getSimpleName() + " DP " +
+            "WHERE DP.parentProductUri LIKE: " + DBConstants.DataProduct.PARENT_PRODUCT_URI;
+    String FIND_DATA_PRODUCT_BY_NAME = "SELECT DP FROM " + DataProductEntity.class.getSimpleName() + " DP " +
+            "WHERE DP.gatewayId LIKE: " + DBConstants.DataProduct.GATEWAY_ID + " AND DP.ownerName LIKE: " +
+            DBConstants.DataProduct.OWNER_NAME + "AND dp.productName LIKE: " + DBConstants.DataProduct.PRODUCT_NAME;
 }
