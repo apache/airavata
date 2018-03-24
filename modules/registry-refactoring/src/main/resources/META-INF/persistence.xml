@@ -54,10 +54,11 @@
         <!--<class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowInputEntity</class>-->
         <!--<class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowOutputEntity</class>-->
         <!--<class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowStatusEntity</class>-->
-        <!--<class>org.apache.airavata.registry.core.entities.replicacatalog.DataProductEntity</class>-->
-        <!--<class>org.apache.airavata.registry.core.entities.replicacatalog.DataProductMetadataEntity</class>-->
-        <!--<class>org.apache.airavata.registry.core.entities.replicacatalog.DataReplicaLocationEntity</class>-->
-        <!--<class>org.apache.airavata.registry.core.entities.replicacatalog.DataReplicaMetadataEntity</class>-->
+        <class>org.apache.airavata.registry.core.entities.replicacatalog.ConfigurationEntity</class>
+        <class>org.apache.airavata.registry.core.entities.replicacatalog.DataProductEntity</class>
+        <class>org.apache.airavata.registry.core.entities.replicacatalog.DataProductMetadataEntity</class>
+        <class>org.apache.airavata.registry.core.entities.replicacatalog.DataReplicaLocationEntity</class>
+        <class>org.apache.airavata.registry.core.entities.replicacatalog.DataReplicaMetadataEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.GridftpDataMovementEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ResourceJobManagerEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ComputeResourceEntity</class>
