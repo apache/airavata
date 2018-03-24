@@ -66,9 +66,9 @@ public class DataProductEntity implements Serializable {
     @Column(name = "PRODUCT_TYPE")
     private DataProductType dataProductType;
 
-    //@ElementCollection(fetch = FetchType.EAGER)
-    //@CollectionTable(name="DATA_PRODUCT_METADATA", joinColumns = @JoinColumn(name="PRODUCT_URI"))
-    //@Column(name = "METADATA_KEY")
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="DATA_PRODUCT_METADATA", joinColumns = @JoinColumn(name="PRODUCT_URI"))
+    @Column(name = "METADATA_KEY")
     private Map<String, String> productMetadata;
 
     @OneToMany(targetEntity = DataReplicaLocationEntity.class, cascade = CascadeType.ALL,

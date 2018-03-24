@@ -31,12 +31,7 @@ public class DataProductMetadataPK implements Serializable {
     //default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @Column(name = "PRODUCT_URI")
     private String productUri;
-
-    @Id
-    @Column(name = "METADATA_KEY")
     private String metadataKey;
 
     public String getProductUri() {
