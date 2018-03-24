@@ -30,12 +30,7 @@ import java.io.Serializable;
 public class DataReplicaMetadataPK implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @Column(name = "REPLICA_ID")
     private String replicaId;
-
-    @Id
-    @Column(name = "METADATA_KEY")
     private String metadataKey;
 
     public String getReplicaId() {

@@ -31,12 +31,7 @@ public class ConfigurationPK implements Serializable {
     //default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @Column(name = "CONFIG_KEY")
     private String configKey;
-
-    @Id
-    @Column(name = "CONFIG_VAL")
     private String configVal;
 
     public String getConfigKey() {

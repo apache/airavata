@@ -70,9 +70,9 @@ public class DataReplicaLocationEntity implements Serializable {
     @Column(name = "REPLICA_PERSISTENT_TYPE")
     private ReplicaPersistentType replicaPersistentType;
 
-    //@ElementCollection(fetch = FetchType.EAGER)
-    //@CollectionTable(name="DATA_REPLICA_METADATA", joinColumns = @JoinColumn(name="REPLICA_ID"))
-    //@Column(name = "METADATA_KEY")
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="DATA_REPLICA_METADATA", joinColumns = @JoinColumn(name="REPLICA_ID"))
+    @Column(name = "METADATA_KEY")
     private Map<String, String> replicaMetadata;
 
     @ManyToOne(targetEntity = DataProductEntity.class, cascade = CascadeType.MERGE)
