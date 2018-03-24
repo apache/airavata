@@ -38,7 +38,7 @@ public class DataReplicaMetadataEntity implements Serializable {
 
     @Id
     @Column(name = "METADATA_KEY")
-    private String metadatKey;
+    private String metadataKey;
 
     @Column(name = "METADATA_VALUE")
     private String metadataValue;
@@ -51,12 +51,12 @@ public class DataReplicaMetadataEntity implements Serializable {
         this.replicaId = replicaId;
     }
 
-    public String getMetadatKey() {
-        return metadatKey;
+    public String getMetadataKey() {
+        return metadataKey;
     }
 
-    public void setMetadatKey(String metadatKey) {
-        this.metadatKey = metadatKey;
+    public void setMetadataKey(String metadataKey) {
+        this.metadataKey = metadataKey;
     }
 
     public String getMetadataValue() {
