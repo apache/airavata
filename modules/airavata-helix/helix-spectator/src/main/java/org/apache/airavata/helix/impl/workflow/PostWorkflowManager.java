@@ -175,16 +175,15 @@ public class PostWorkflowManager {
 
                 String status = getStatusByProcess(processId);
 
+                logger.info("Updating the job status for job id : " + jobStatusResult.getJobId() + " with process id "
+                        + processId + ", gateway " + gateway + " and status " + jobStatusResult.getState().name());
+                saveAndPublishJobStatus(jobStatusResult.getJobId(), task, processId, experimentId, gateway, jobStatusResult.getState());
+
                 // TODO get cluster lock before that
                 if ("cancel".equals(status)) {
                     logger.info("Cancelled post workflow for process " + processId);
                     // TODO to be implemented
                 } else {
-
-                    logger.info("Updating the job status for job id : " + jobStatusResult.getJobId() + " with process id "
-                            + processId + ", gateway " + gateway + " and status " + jobStatusResult.getState().name());
-
-                    saveAndPublishJobStatus(jobStatusResult.getJobId(), task, processId, experimentId, gateway, jobStatusResult.getState());
 
                     if (jobStatusResult.getState() == JobState.COMPLETE) {
 

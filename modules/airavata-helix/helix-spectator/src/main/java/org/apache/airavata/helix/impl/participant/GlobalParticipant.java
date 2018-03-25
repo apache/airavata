@@ -44,7 +44,9 @@ public class GlobalParticipant extends HelixParticipant {
         "org.apache.airavata.helix.impl.task.submission.DefaultJobSubmissionTask",
         "org.apache.airavata.helix.impl.task.submission.LocalJobSubmissionTask",
         "org.apache.airavata.helix.impl.task.staging.ArchiveTask",
-        "org.apache.airavata.helix.impl.task.cancel.WorkflowCancellationTask"
+        "org.apache.airavata.helix.impl.task.cancel.WorkflowCancellationTask",
+        "org.apache.airavata.helix.impl.task.cancel.RemoteJobCancellationTask",
+        "org.apache.airavata.helix.impl.task.cancel.CancelCompletingTask"
     };
 
     public Map<String, TaskFactory> getTaskFactory() {
