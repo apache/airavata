@@ -26,6 +26,8 @@ import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.impl.task.AiravataTask;
+import org.apache.airavata.helix.impl.task.cancel.CancelCompletingTask;
+import org.apache.airavata.helix.impl.task.cancel.RemoteJobCancellationTask;
 import org.apache.airavata.helix.impl.task.cancel.WorkflowCancellationTask;
 import org.apache.airavata.helix.impl.task.env.EnvSetupTask;
 import org.apache.airavata.helix.impl.task.staging.InputDataStagingTask;
@@ -91,7 +93,12 @@ public class PreWorkflowManager {
     }
 
     private List<String> getWorkflowsOfProcess(String processId) throws Exception {
-        return this.curatorClient.getChildren().forPath("/registry/" + processId + "/workflows");
+        String path = "/registry/" + processId + "/workflows";
+        if (this.curatorClient.checkExists().forPath(path) != null) {
+            return this.curatorClient.getChildren().forPath(path);
+        } else {
+            return null;
+        }
     }
 
     private String createAndLaunchPreWorkflow(String processId, String gateway) throws Exception {
@@ -155,6 +162,12 @@ public class PreWorkflowManager {
     }
 
     private String createAndLaunchCancelWorkflow(String processId, String gateway) throws Exception {
+
+        ExperimentCatalog experimentCatalog = RegistryFactory.getExperimentCatalog(gateway);
+        ProcessModel processModel = (ProcessModel) experimentCatalog.get(ExperimentCatalogModelType.PROCESS, processId);
+
+        String experimentId = processModel.getExperimentId();
+
         registerCancelProcess(processId);
         List<String> workflows = getWorkflowsOfProcess(processId);
         final List<AbstractTask> allTasks = new ArrayList<>();
@@ -164,21 +177,50 @@ public class PreWorkflowManager {
                 WorkflowCancellationTask wfct = new WorkflowCancellationTask();
                 wfct.setTaskId(UUID.randomUUID().toString());
                 wfct.setCancellingWorkflowName(wf);
+
+                if (allTasks.size() > 0) {
+                    allTasks.get(allTasks.size() -1).setNextTask(new OutPort(wfct.getTaskId(), wfct));
+                }
                 allTasks.add(wfct);
             }
 
-            WorkflowManager workflowManager = new WorkflowManager(
-                    ServerSettings.getSetting("helix.cluster.name"),
-                    ServerSettings.getSetting("post.workflow.manager.name"),
-                    ServerSettings.getZookeeperConnection());
-
-            String workflow = workflowManager.launchWorkflow(processId + "-CANCEL-" + UUID.randomUUID().toString(), allTasks, true, false);
-            logger.info("Started launching workflow " + workflow + " to cancel process " + processId);
-            return workflow;
         } else {
             logger.info("No workflow registered with process " + processId + " to cancel");
             return null;
         }
+
+        RemoteJobCancellationTask rjct = new RemoteJobCancellationTask();
+        rjct.setTaskId(UUID.randomUUID().toString());
+        rjct.setExperimentId(experimentId);
+        rjct.setProcessId(processId);
+        rjct.setGatewayId(gateway);
+        rjct.setSkipTaskStatusPublish(true);
+
+        if (allTasks.size() > 0) {
+            allTasks.get(allTasks.size() -1).setNextTask(new OutPort(rjct.getTaskId(), rjct));
+        }
+        allTasks.add(rjct);
+
+        CancelCompletingTask cct = new CancelCompletingTask();
+        cct.setTaskId(UUID.randomUUID().toString());
+        cct.setExperimentId(experimentId);
+        cct.setProcessId(processId);
+        cct.setGatewayId(gateway);
+        cct.setSkipTaskStatusPublish(true);
+
+        if (allTasks.size() > 0) {
+            allTasks.get(allTasks.size() -1).setNextTask(new OutPort(cct.getTaskId(), cct));
+        }
+        allTasks.add(cct);
+
+        WorkflowManager workflowManager = new WorkflowManager(
+                ServerSettings.getSetting("helix.cluster.name"),
+                ServerSettings.getSetting("post.workflow.manager.name"),
+                ServerSettings.getZookeeperConnection());
+
+        String workflow = workflowManager.launchWorkflow(processId + "-CANCEL-" + UUID.randomUUID().toString(), allTasks, true, false);
+        logger.info("Started launching workflow " + workflow + " to cancel process " + processId);
+        return workflow;
     }
 
     public static void main(String[] args) throws Exception {
