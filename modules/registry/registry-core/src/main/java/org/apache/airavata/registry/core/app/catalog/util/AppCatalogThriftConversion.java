@@ -30,8 +30,8 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfil
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
 import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
 import org.apache.airavata.model.appcatalog.userresourceprofile.UserResourceProfile;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
@@ -43,6 +43,7 @@ import org.apache.airavata.registry.cpi.AppCatalogException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AppCatalogThriftConversion {
     public static ComputeResourceResource getComputeHostResource (ComputeResourceDescription description){
@@ -874,6 +875,12 @@ public class AppCatalogThriftConversion {
         if (resource.getReservationEndTime() != null) {
             preference.setReservationEndTime(resource.getReservationEndTime().getTime());
         }
+        preference.setSshAccountProvisioner(resource.getSshAccountProvisioner());
+        if (resource.getSshAccountProvisionerConfigurations() != null && !resource.getSshAccountProvisionerConfigurations().isEmpty()){
+            Map<String, String> sshAccountProvisionerConfigCopy = new HashMap<>(resource.getSshAccountProvisionerConfigurations());
+            preference.setSshAccountProvisionerConfig(sshAccountProvisionerConfigCopy);
+        }
+        preference.setSshAccountProvisionerAdditionalInfo(resource.getSshAccountProvisionerAdditionalInfo());
         return preference;
     }
 
@@ -894,6 +901,7 @@ public class AppCatalogThriftConversion {
         if (resource.getReservationEndTime() != null) {
             preference.setReservationEndTime(resource.getReservationEndTime().getTime());
         }
+        preference.setValidated(resource.isValidated());
         return preference;
     }
 

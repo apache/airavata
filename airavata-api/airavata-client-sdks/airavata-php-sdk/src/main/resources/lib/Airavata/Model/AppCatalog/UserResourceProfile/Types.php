@@ -43,6 +43,11 @@ use Thrift\Exception\TApplicationException;
  *  Resource specific credential store token. If this token is specified, then it is superceeded by the gateway's
  *   default credential store.
  * 
+ * validated:
+ *  If true the the configuration has been validated in the sense that the username and credential can be used to
+ *  login to the remote host and the scratchLocation is a valid location that the user has permission to write to.
+ *  Should be treated as read-only and only mutated by Airavata middleware.
+ * 
  */
 class UserComputeResourcePreference {
   static $_TSPEC;
@@ -87,6 +92,10 @@ class UserComputeResourcePreference {
    * @var int
    */
   public $reservationEndTime = null;
+  /**
+   * @var bool
+   */
+  public $validated = false;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -131,6 +140,10 @@ class UserComputeResourcePreference {
           'var' => 'reservationEndTime',
           'type' => TType::I64,
           ),
+        11 => array(
+          'var' => 'validated',
+          'type' => TType::BOOL,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -163,6 +176,9 @@ class UserComputeResourcePreference {
       }
       if (isset($vals['reservationEndTime'])) {
         $this->reservationEndTime = $vals['reservationEndTime'];
+      }
+      if (isset($vals['validated'])) {
+        $this->validated = $vals['validated'];
       }
     }
   }
@@ -256,6 +272,13 @@ class UserComputeResourcePreference {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 11:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->validated);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -317,6 +340,11 @@ class UserComputeResourcePreference {
     if ($this->reservationEndTime !== null) {
       $xfer += $output->writeFieldBegin('reservationEndTime', TType::I64, 10);
       $xfer += $output->writeI64($this->reservationEndTime);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->validated !== null) {
+      $xfer += $output->writeFieldBegin('validated', TType::BOOL, 11);
+      $xfer += $output->writeBool($this->validated);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
