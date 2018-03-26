@@ -17,14 +17,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.job.monitor;
+package org.apache.airavata.monitor.email;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.job.monitor.kafka.MessageProducer;
-import org.apache.airavata.job.monitor.parser.EmailParser;
-import org.apache.airavata.job.monitor.parser.JobStatusResult;
-import org.apache.airavata.job.monitor.parser.ResourceConfig;
+import org.apache.airavata.monitor.JobStatusResult;
+import org.apache.airavata.monitor.kafka.MessageProducer;
+import org.apache.airavata.monitor.email.parser.EmailParser;
+import org.apache.airavata.monitor.email.parser.ResourceConfig;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,9 +39,7 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.search.FlagTerm;
 import javax.mail.search.SearchTerm;
-import java.io.FileReader;
 import java.io.InputStream;
-import java.io.Reader;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -49,23 +47,18 @@ public class EmailBasedMonitor implements Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(EmailBasedMonitor.class);
 
-    public static final int COMPARISON = 6; // after and equal
-    public static final String IMAPS = "imaps";
-    public static final String POP3 = "pop3";
-    private boolean stopMonitoring = false;
+    private static final String IMAPS = "imaps";
+    private static final String POP3 = "pop3";
 
+    private boolean stopMonitoring = false;
     private Session session ;
     private Store store;
     private Folder emailFolder;
     private Properties properties;
-    //private Map<String, TaskContext> jobMonitorMap = new ConcurrentHashMap<>();
     private String host, emailAddress, password, storeProtocol, folderName ;
-    private Date monitorStartDate;
     private Map<ResourceJobManagerType, EmailParser> emailParserMap = new HashMap<ResourceJobManagerType, EmailParser>();
     private Map<String, ResourceJobManagerType> addressMap = new HashMap<>();
     private Message[] flushUnseenMessages;
-    private Map<String, Boolean> canceledJobs = new ConcurrentHashMap<>();
-    private Timer timer;
     private Map<ResourceJobManagerType, ResourceConfig> resourceConfigs = new HashMap<>();
     private MessageProducer messageProducer = new MessageProducer();
 
@@ -88,7 +81,6 @@ public class EmailBasedMonitor implements Runnable {
         }
         properties = new Properties();
         properties.put("mail.store.protocol", storeProtocol);
-        timer = new Timer("CancelJobHandler", true);
         long period = 1000 * 60 * 5; // five minute delay between successive task executions.
     }
 
@@ -148,18 +140,6 @@ public class EmailBasedMonitor implements Runnable {
         log.info("[EJM]: Added monitor Id : {} to email based monitor map", jobId);
     }
 
-    public void stopMonitor(String jobId, boolean runOutflow) {
-
-    }
-
-    public boolean isMonitoring(String jobId) {
-        return true;
-    }
-
-    public void canceledJob(String jobId) {
-
-    }
-
     private JobStatusResult parse(Message message) throws MessagingException, AiravataException {
         Address fromAddress = message.getFrom()[0];
         String addressStr = fromAddress.toString();
@@ -169,11 +149,12 @@ public class EmailBasedMonitor implements Runnable {
             throw new AiravataException("[EJM]: Un-handle resource job manager type: " + jobMonitorType
                     .toString() + " for email monitoring -->  " + addressStr);
         }
-        return emailParser.parseEmail(message);
+        JobStatusResult jobStatusResult = emailParser.parseEmail(message);
+        jobStatusResult.setPublisherName(ServerSettings.getSetting("job.monitor.broker.publisher.id"));
+        return jobStatusResult;
     }
 
     private ResourceJobManagerType getJobMonitorType(String addressStr) throws AiravataException {
-//        System.out.println("*********** address ******** : " + addressStr);
         for (Map.Entry<String, ResourceJobManagerType> addressEntry : addressMap.entrySet()) {
             if (addressStr.contains(addressEntry.getKey())) {
                 return addressEntry.getValue();
@@ -184,7 +165,6 @@ public class EmailBasedMonitor implements Runnable {
 
     @Override
     public void run() {
-        boolean quite = false;
 
         while (!stopMonitoring && !ServerSettings.isStopAllThreads()) {
             try {
@@ -221,8 +201,8 @@ public class EmailBasedMonitor implements Runnable {
                             log.info("[EJM]: No new email messages");
                         } else {
                             log.info("[EJM]: " + searchMessages.length + " new email/s received");
+                            processMessages(searchMessages);
                         }
-                        processMessages(searchMessages);
                         emailFolder.close(false);
                     }
                 }
@@ -290,35 +270,6 @@ public class EmailBasedMonitor implements Runnable {
                 }
             }
         }
-    }
-
-    private void process(JobStatusResult jobStatusResult){
-
-    }
-
-    private void writeEnvelopeOnError(Message m) throws MessagingException {
-        Address[] a;
-        // FROM
-        if ((a = m.getFrom()) != null) {
-            for (int j = 0; j < a.length; j++)
-                log.error("FROM: " + a[j].toString());
-        }
-        // TO
-        if ((a = m.getRecipients(Message.RecipientType.TO)) != null) {
-            for (int j = 0; j < a.length; j++)
-                log.error("TO: " + a[j].toString());
-        }
-        // SUBJECT
-        if (m.getSubject() != null)
-            log.error("SUBJECT: " + m.getSubject());
-    }
-
-    public void stopMonitoring() {
-        stopMonitoring = true;
-    }
-
-    public void setDate(Date date) {
-        this.monitorStartDate = date;
     }
 
     public static void main(String args[]) throws Exception {

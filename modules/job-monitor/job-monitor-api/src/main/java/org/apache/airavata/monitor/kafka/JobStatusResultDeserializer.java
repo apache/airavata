@@ -1,4 +1,4 @@
-/**
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,47 +17,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.job.monitor.parser;
+package org.apache.airavata.monitor.kafka;
 
-
+import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.model.status.JobState;
+import org.apache.kafka.common.serialization.Deserializer;
 
-public class JobStatusResult {
-    private JobState state;
-    private String jobId;
-    private String jobName;
-    private boolean authoritative = true;
+import java.util.Map;
 
-    public String getJobName() {
-        return jobName;
+public class JobStatusResultDeserializer implements Deserializer<JobStatusResult> {
+    @Override
+    public void configure(Map<String, ?> map, boolean b) {
+
     }
 
-    public void setJobName(String jobName) {
-        this.jobName = jobName;
+    @Override
+    public JobStatusResult deserialize(String s, byte[] bytes) {
+        String deserializedData = new String(bytes);
+        String[] parts = deserializedData.split(",");
+        JobStatusResult jobStatusResult = new JobStatusResult();
+        jobStatusResult.setJobId(parts[0]);
+        jobStatusResult.setJobName(parts[1]);
+        jobStatusResult.setState(JobState.valueOf(parts[2]));
+        jobStatusResult.setPublisherName(parts[3]);
+        return jobStatusResult;
     }
 
-    public JobState getState() {
-        return state;
-    }
+    @Override
+    public void close() {
 
-    public void setState(JobState state) {
-        this.state = state;
-    }
-
-    public String getJobId() {
-        return jobId;
-    }
-
-    public void setJobId(String jobId) {
-        this.jobId = jobId;
-    }
-
-    public boolean isAuthoritative() {
-        return authoritative;
-    }
-
-    public void setAuthoritative(boolean authoritative) {
-        this.authoritative = authoritative;
     }
 }
-

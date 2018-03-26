@@ -30,8 +30,9 @@ import org.apache.airavata.helix.impl.task.completing.CompletingTask;
 import org.apache.airavata.helix.impl.task.staging.ArchiveTask;
 import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
 import org.apache.airavata.helix.workflow.WorkflowManager;
-import org.apache.airavata.job.monitor.kafka.JobStatusResultDeserializer;
-import org.apache.airavata.job.monitor.parser.JobStatusResult;
+import org.apache.airavata.monitor.JobStateValidator;
+import org.apache.airavata.monitor.JobStatusResult;
+import org.apache.airavata.monitor.kafka.JobStatusResultDeserializer;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
 import org.apache.airavata.messaging.core.Publisher;
@@ -136,7 +137,22 @@ public class PostWorkflowManager {
         }
     }
 
-    private String getStatusByProcess(String processId) throws Exception {
+    private void updateStatusOfJob(String jobId, JobState jobState) throws Exception {
+        this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                "/monitoring/" + jobId + "/status", jobState.name().getBytes());
+    }
+
+    private JobState getCurrentStatusOfJob(String jobId) throws Exception {
+        String path = "/monitoring/" + jobId + "/status";
+        if (this.curatorClient.checkExists().forPath(path) != null) {
+            byte[] gatewayBytes = this.curatorClient.getData().forPath(path);
+            return JobState.valueOf(new String(gatewayBytes));
+        } else {
+            return null;
+        }
+    }
+
+    private String getStatusOfProcess(String processId) throws Exception {
         String path = "/registry/" + processId + "/status";
         if (this.curatorClient.checkExists().forPath(path) != null) {
             byte[] statusBytes = this.curatorClient.getData().forPath(path);
@@ -158,9 +174,17 @@ public class PostWorkflowManager {
         }
 
         try {
-            logger.info("Processing job result " + jobStatusResult.getJobId());
+            logger.info("Processing job result of job id " + jobStatusResult.getJobId() + " sent by " + jobStatusResult.getPublisherName());
 
             if (hasMonitoringRegistered(jobStatusResult.getJobId())) {
+
+                JobState currentJobStatus = getCurrentStatusOfJob(jobStatusResult.getJobId());
+                if (!JobStateValidator.isValid(currentJobStatus, jobStatusResult.getState())) {
+                    logger.warn("Job state of " + jobStatusResult.getJobId() + " is not valid. Previous state " +
+                            currentJobStatus + ", new state " + jobStatusResult.getState());
+                    return;
+                }
+
                 String gateway = Optional.ofNullable(getGatewayByJobId(jobStatusResult.getJobId()))
                         .orElseThrow(() -> new Exception("Can not find the gateway for job id " + jobStatusResult.getJobId()));
 
@@ -173,14 +197,14 @@ public class PostWorkflowManager {
                 String task = Optional.ofNullable(getTaskIdByJobId(jobStatusResult.getJobId()))
                         .orElseThrow(() -> new Exception("Can not find the task for job id " + jobStatusResult.getJobId()));
 
-                String status = getStatusByProcess(processId);
+                String processStatus = getStatusOfProcess(processId);
 
                 logger.info("Updating the job status for job id : " + jobStatusResult.getJobId() + " with process id "
                         + processId + ", gateway " + gateway + " and status " + jobStatusResult.getState().name());
                 saveAndPublishJobStatus(jobStatusResult.getJobId(), task, processId, experimentId, gateway, jobStatusResult.getState());
 
                 // TODO get cluster lock before that
-                if ("cancel".equals(status)) {
+                if ("cancel".equals(processStatus)) {
                     logger.info("Cancelled post workflow for process " + processId);
                     // TODO to be implemented
                 } else {
@@ -320,6 +344,8 @@ public class PostWorkflowManager {
                     (MessageType.JOB.name()), gateway);
             msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             getStatusPublisher().publish(msgCtx);
+
+            updateStatusOfJob(jobId, jobState);
         } catch (Exception e) {
             throw new Exception("Error persisting job status " + e.getLocalizedMessage(), e);
         }

@@ -17,10 +17,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.job.monitor.parser;
+package org.apache.airavata.monitor.email.parser;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.model.status.JobState;
+import org.apache.airavata.monitor.JobStatusResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,12 +31,18 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class LSFEmailParser implements EmailParser {
-    private static final Logger log = LoggerFactory.getLogger(LSFEmailParser.class);
-    private static final String REGEX = "[a-zA-Z]+\\s+(?<" + JOBID + ">[\\d]+):\\s+<(?<" + JOBNAME + ">[a-zA-Z0-9]+)>\\s+(?<" + STATUS + ">[a-zA-Z]+)";
-    public static final String STARTED = "started";
-    public static final String COMPLETE = "Done";
-    public static final String FAILED = "Exited";
+public class UGEEmailParser implements EmailParser {
+
+    private static final Logger log = LoggerFactory.getLogger(UGEEmailParser.class);
+    private static final String REGEX = "[\\w]*[ ]*(?<"+ JOBID + ">[\\d]*)[ ]*\\((?<" + JOBNAME
+            + ">[a-zA-Z0-9]*)\\)[ ]*(?<" + STATUS + ">[a-zA-Z]*)";
+    public static final String STARTED = "Started";
+    public static final String COMPLETE = "Complete";
+    public static final String FAILED = "Failed";
+    public static final String KILLED = "Killed";
+    private static final String REGEX_EXIT_STATUS = "Exit Status[ ]*=[ ]*(?<" + EXIT_STATUS + ">[\\d]+)";
+    public static final String ABORTED = "Aborted";
+
 
     @Override
     public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException {
@@ -47,6 +54,10 @@ public class LSFEmailParser implements EmailParser {
 
     private void parseContent(Message message, JobStatusResult jobStatusResult) throws MessagingException, AiravataException {
         String subject = message.getSubject();
+
+        //FIXME - HACK to handle Little Dog email issue from SIU
+        subject = subject.replace("Set in error state", "Failed");
+
         Pattern pattern = Pattern.compile(REGEX);
         Matcher matcher = pattern.matcher(subject);
         try {
@@ -68,11 +79,32 @@ public class LSFEmailParser implements EmailParser {
             case STARTED:
                 return JobState.ACTIVE;
             case COMPLETE:
-                return JobState.COMPLETE;
+                int exitStatus = getExitStatus(content);
+                if (exitStatus == 0) {
+                    return JobState.COMPLETE;
+                } else {
+                    log.info("[EJM]: Job returns with Exit Status = " + exitStatus + "  , Marked as Failed");
+                    return JobState.FAILED;
+                }
             case FAILED:
                 return JobState.FAILED;
+            case ABORTED:
+                return JobState.CANCELED;
             default:
                 return JobState.UNKNOWN;
+
         }
+    }
+
+    private int getExitStatus(String content) {
+        Pattern statusPattern = Pattern.compile(REGEX_EXIT_STATUS);
+        Matcher statusMatcher = statusPattern.matcher(content);
+        if (statusMatcher.find()) {
+            String group = statusMatcher.group(EXIT_STATUS);
+            if (group != null && !group.trim().isEmpty()) {
+                return Integer.valueOf(group.trim());
+            }
+        }
+        return -1;
     }
 }

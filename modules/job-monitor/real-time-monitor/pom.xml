@@ -24,46 +24,27 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>airavata</artifactId>
+        <artifactId>job-monitor</artifactId>
         <groupId>org.apache.airavata</groupId>
         <version>0.17-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>job-monitor</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>job-monitor-api</module>
-        <module>email-monitor</module>
-        <module>real-time-monitor</module>
-    </modules>
+    <artifactId>realtime-monitor</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.25</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <version>1.4.5</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-commons</artifactId>
+            <artifactId>job-monitor-api</artifactId>
             <version>0.17-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>1.15</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-            <version>1.0.0</version>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
         </dependency>
     </dependencies>
 
