@@ -138,8 +138,11 @@ public class PostWorkflowManager {
     }
 
     private void updateStatusOfJob(String jobId, JobState jobState) throws Exception {
-        this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                "/monitoring/" + jobId + "/status", jobState.name().getBytes());
+        String path = "/monitoring/" + jobId + "/status";
+        if (this.curatorClient.checkExists().forPath(path) != null) {
+            this.curatorClient.delete().forPath(path);
+        }
+        this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(path, jobState.name().getBytes());
     }
 
     private JobState getCurrentStatusOfJob(String jobId) throws Exception {
