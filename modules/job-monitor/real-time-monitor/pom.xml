@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-
     Licensed to the Apache Software Foundation (ASF) under one
     or more contributor license agreements.  See the NOTICE file
     distributed with this work for additional information
@@ -36,6 +35,11 @@
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>job-monitor-api</artifactId>
+            <version>0.17-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-commons</artifactId>
             <version>0.17-SNAPSHOT</version>
         </dependency>
         <dependency>
