@@ -51,6 +51,7 @@ public class MessageProducer {
     public void submitMessageToQueue(JobStatusResult jobStatusResult) throws ExecutionException, InterruptedException, ApplicationSettingsException {
         final ProducerRecord<String, JobStatusResult> record = new ProducerRecord<>(
                 ServerSettings.getSetting("job.monitor.broker.topic"),
+                jobStatusResult.getJobId(),
                 jobStatusResult);
         RecordMetadata recordMetadata = producer.send(record).get();
         producer.flush();
