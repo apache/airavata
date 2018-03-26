@@ -77,7 +77,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
 
     // TODO perform exception handling
     @SuppressWarnings("WeakerAccess")
-    protected void createMonitoringNode(String jobId) throws Exception {
+    protected void createMonitoringNode(String jobId, String jobName) throws Exception {
         logger.info("Creating zookeeper paths for job monitoring for job id : " + jobId + ", process : "
                 + getProcessId() + ", gateway : " + getGatewayId());
         getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
@@ -91,7 +91,9 @@ public abstract class JobSubmissionTask extends AiravataTask {
         getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
                 "/monitoring/" + jobId + "/experiment", getExperimentId().getBytes());
         getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                "/monitoring/" + jobId + "/status", "pending".getBytes());
+                "/monitoring/" + jobId + "/jobName", jobName.getBytes());
+        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                "/monitoring/" + jobName + "/jobId", jobId.getBytes());
         getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
                 "/registry/" + getProcessId() + "/jobs/" + jobId, new byte[0]);
     }
@@ -100,6 +102,8 @@ public abstract class JobSubmissionTask extends AiravataTask {
     protected JobSubmissionOutput submitBatchJob(AgentAdaptor agentAdaptor, GroovyMapData groovyMapData, String workingDirectory) throws Exception {
         JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
                 getAppCatalog(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
+
+        addMonitoringCommands(groovyMapData);
 
         String scriptAsString = groovyMapData.getAsString(jobManagerConfiguration.getJobDescriptionTemplateName());
 
@@ -210,5 +214,25 @@ public abstract class JobSubmissionTask extends AiravataTask {
         } catch (Exception e) {
             throw new Exception("Error persisting job status " + e.getLocalizedMessage(), e);
         }
+    }
+
+    private void addMonitoringCommands(GroovyMapData mapData) throws ApplicationSettingsException {
+        if (mapData.getPreJobCommands() == null) {
+            mapData.setPreJobCommands(new ArrayList<>());
+        }
+
+        mapData.getPreJobCommands().add(0, "curl -X POST -H \"Content-Type: application/vnd.kafka.json.v2+json\" " +
+                "-H \"Accept: application/vnd.kafka.v2+json\" " +
+                "--data '{\"records\":[{\"value\":{\"jobName\":\"" + mapData.getJobName() + "\", \"status\":\"RUNNING\"}}]}' \"" +
+                ServerSettings.getSetting("job.status.publish.endpoint") + "\"");
+
+        if (mapData.getPostJobCommands() == null) {
+            mapData.setPostJobCommands(new ArrayList<>());
+        }
+
+        mapData.getPostJobCommands().add("curl -X POST -H \"Content-Type: application/vnd.kafka.json.v2+json\" " +
+                "-H \"Accept: application/vnd.kafka.v2+json\" " +
+                "--data '{\"records\":[{\"value\":{\"jobName\":\"" + mapData.getJobName() + "\", \"status\":\"COMPLETED\"}}]}' \"" +
+                ServerSettings.getSetting("job.status.publish.endpoint") + "\"");
     }
 }

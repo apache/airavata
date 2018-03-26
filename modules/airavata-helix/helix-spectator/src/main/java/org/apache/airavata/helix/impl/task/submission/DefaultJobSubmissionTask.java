@@ -141,7 +141,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                     jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                     jobModel.setJobStatuses(Collections.singletonList(jobStatus));
                     saveAndPublishJobStatus(jobModel);
-                    createMonitoringNode(jobId);
+                    createMonitoringNode(jobId, mapData.getJobName());
                 }
 
                 if (getComputeResourceDescription().isGatewayUsageReporting()){

@@ -1,4 +1,4 @@
-/**
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,18 +17,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.job.monitor.parser;
+package org.apache.airavata.monitor.kafka;
 
-import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.monitor.JobStatusResult;
+import org.apache.kafka.common.serialization.Serializer;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
+import java.util.Map;
 
-public interface EmailParser {
-    static final String STATUS = "status";
-    static final String JOBID = "jobId";
-    static final String JOBNAME = "jobName";
-    static final String EXIT_STATUS = "exitStatus";
+public class JobStatusResultSerializer implements Serializer<JobStatusResult> {
 
-    JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException;
+    @Override
+    public void configure(Map<String, ?> map, boolean b) {
+
+    }
+
+    @Override
+    public byte[] serialize(String s, JobStatusResult jobStatusResult) {
+        String serializedData = jobStatusResult.getJobId() + "," +
+                jobStatusResult.getJobName() + "," +
+                jobStatusResult.getState().name() + "," +
+                jobStatusResult.getPublisherName();
+        return serializedData.getBytes();
+    }
+
+    @Override
+    public void close() {
+
+    }
 }

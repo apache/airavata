@@ -78,7 +78,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>job-monitor</artifactId>
+            <artifactId>job-monitor-api</artifactId>
             <version>0.17-SNAPSHOT</version>
         </dependency>
         <dependency>
