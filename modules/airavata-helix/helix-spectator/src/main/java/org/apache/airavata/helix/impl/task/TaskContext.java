@@ -47,7 +47,6 @@ import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
-import org.apache.curator.framework.CuratorFramework;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +56,7 @@ import java.util.*;
 
 public class TaskContext {
 
-    private static final Logger log = LoggerFactory.getLogger(TaskContext.class);
+    private final static Logger logger = LoggerFactory.getLogger(TaskContext.class);
     // process model
     private ExperimentCatalog experimentCatalog;
     private AppCatalog appCatalog;
@@ -391,7 +390,7 @@ public class TaskContext {
 
     public void setProcessStatus(ProcessStatus status) {
         if (status != null) {
-            log.info("expId: {}, processId: {} :- Process status changed {} -> {}", getExperimentId(), processId,
+            logger.info("expId: {}, processId: {} :- Process status changed {} -> {}", getExperimentId(), processId,
                     getProcessState().name(), status.getState().name());
             List<ProcessStatus> processStatuses = new ArrayList<>();
             processStatuses.add(status);

@@ -59,16 +59,16 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class PostWorkflowManager {
 
-    private static final Logger logger = LogManager.getLogger(PostWorkflowManager.class);
+    private final static Logger logger = LoggerFactory.getLogger(PostWorkflowManager.class);
 
     private CuratorFramework curatorClient = null;
     private Publisher statusPublisher;

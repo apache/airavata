@@ -30,17 +30,16 @@ import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescr
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 
 @SuppressWarnings("WeakerAccess")
 public abstract class DataStagingTask extends AiravataTask {
 
-    private static final Logger logger = LogManager.getLogger(DataStagingTask.class);
+    private final static Logger logger = LoggerFactory.getLogger(DataStagingTask.class);
 
     @SuppressWarnings("WeakerAccess")
     protected DataStagingTaskModel getDataStagingTaskModel() throws TaskOnFailException {

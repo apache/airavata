@@ -43,9 +43,9 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.helix.HelixManager;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.apache.zookeeper.CreateMode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.security.SecureRandom;
@@ -53,7 +53,7 @@ import java.util.*;
 
 public abstract class JobSubmissionTask extends AiravataTask {
 
-    private static final Logger logger = LogManager.getLogger(JobSubmissionTask.class);
+    private final static Logger logger = LoggerFactory.getLogger(JobSubmissionTask.class);
 
     private CuratorFramework curatorClient = null;
 

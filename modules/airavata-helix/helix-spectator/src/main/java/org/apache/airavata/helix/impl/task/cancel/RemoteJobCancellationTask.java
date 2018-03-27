@@ -17,15 +17,15 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.helix.HelixManager;
 import org.apache.helix.task.TaskResult;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 @TaskDef(name = "Remote Job Cancellation Task")
 public class RemoteJobCancellationTask extends AiravataTask {
 
-    private static final Logger logger = LogManager.getLogger(RemoteJobCancellationTask.class);
+    private final static Logger logger = LoggerFactory.getLogger(RemoteJobCancellationTask.class);
 
     private CuratorFramework curatorClient = null;
 

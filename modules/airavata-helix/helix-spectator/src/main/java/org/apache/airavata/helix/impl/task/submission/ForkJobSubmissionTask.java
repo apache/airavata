@@ -31,8 +31,8 @@ import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.helix.task.TaskResult;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 
@@ -40,7 +40,7 @@ import java.util.Collections;
 @SuppressWarnings("unused")
 public class ForkJobSubmissionTask extends JobSubmissionTask {
 
-    private static final Logger logger = LogManager.getLogger(ForkJobSubmissionTask.class);
+    private final static Logger logger = LoggerFactory.getLogger(ForkJobSubmissionTask.class);
 
     @Override
     public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {

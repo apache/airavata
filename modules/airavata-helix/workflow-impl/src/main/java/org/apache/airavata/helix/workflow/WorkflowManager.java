@@ -27,8 +27,8 @@ import org.apache.helix.HelixManager;
 import org.apache.helix.HelixManagerFactory;
 import org.apache.helix.InstanceType;
 import org.apache.helix.task.*;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +42,7 @@ import java.util.Map;
  */
 public class WorkflowManager {
 
-    private static final Logger logger = LogManager.getLogger(WorkflowManager.class);
+    private final static Logger logger = LoggerFactory.getLogger(WorkflowManager.class);
 
     private static final String WORKFLOW_PREFIX = "Workflow_of_process_";
     private TaskDriver taskDriver;

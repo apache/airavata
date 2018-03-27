@@ -36,9 +36,9 @@ import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.task.JobSubmissionTaskModel;
 import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 
 public class GroovyMapBuilder {
 
-    private static final Logger logger = LogManager.getLogger(GroovyMapBuilder.class);
+    private final static Logger logger = LoggerFactory.getLogger(GroovyMapBuilder.class);
 
     public static final String MULTIPLE_INPUTS_SPLITTER = ",";
 

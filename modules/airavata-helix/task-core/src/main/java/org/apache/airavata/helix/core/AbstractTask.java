@@ -23,14 +23,13 @@ import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskOutPort;
 import org.apache.airavata.helix.task.api.annotation.TaskParam;
-import org.apache.airavata.model.status.TaskState;
 import org.apache.helix.HelixManager;
 import org.apache.helix.task.Task;
 import org.apache.helix.task.TaskCallbackContext;
 import org.apache.helix.task.TaskResult;
 import org.apache.helix.task.UserContentStore;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO: Class level comments please
@@ -40,7 +39,7 @@ import org.apache.log4j.Logger;
  */
 public abstract class AbstractTask extends UserContentStore implements Task {
 
-    private static final Logger logger = LogManager.getLogger(AbstractTask.class);
+    private final static Logger logger = LoggerFactory.getLogger(AbstractTask.class);
 
     private static final String NEXT_JOB = "next-job";
     private static final String WORKFLOW_STARTED = "workflow-started";

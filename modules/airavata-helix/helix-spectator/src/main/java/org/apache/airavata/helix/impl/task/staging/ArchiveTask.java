@@ -30,8 +30,8 @@ import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.helix.task.TaskResult;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URI;
@@ -40,7 +40,7 @@ import java.net.URISyntaxException;
 @TaskDef(name = "Archival Task")
 public class ArchiveTask extends DataStagingTask {
 
-    private static final Logger logger = LogManager.getLogger(ArchiveTask.class);
+    private final static Logger logger = LoggerFactory.getLogger(ArchiveTask.class);
 
     @Override
     public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
