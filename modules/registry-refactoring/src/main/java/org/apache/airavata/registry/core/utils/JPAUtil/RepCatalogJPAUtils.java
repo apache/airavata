@@ -37,11 +37,9 @@ public class RepCatalogJPAUtils {
     private static final String REPLICACATALOG_JDBC_USER = "replicacatalog.jdbc.user";
     private static final String REPLICACATALOG_JDBC_PWD = "replicacatalog.jdbc.password";
     private static final String REPLICACATALOG_VALIDATION_QUERY = "replicacatalog.validationQuery";
-
-    @PersistenceUnit(unitName="replicacatalog_data")
+    @PersistenceUnit(unitName=PERSISTENCE_UNIT_NAME)
     protected static EntityManagerFactory factory;
-
-    @PersistenceContext(unitName="replicacatalog_data")
+    @PersistenceContext(unitName=PERSISTENCE_UNIT_NAME)
     private static EntityManager dataCatEntityManager;
 
     public static EntityManager getEntityManager() throws ApplicationSettingsException {
@@ -52,7 +50,7 @@ public class RepCatalogJPAUtils {
                     "Password=" + readServerProperties(REPLICACATALOG_JDBC_PWD) +
                     ",validationQuery=" + readServerProperties(REPLICACATALOG_VALIDATION_QUERY);
             System.out.println(connectionProperties);
-            Map<String, String> properties = new HashMap<String, String>();
+            Map<String, String> properties = new HashMap<>();
             properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");
             properties.put("openjpa.ConnectionProperties", connectionProperties);
             properties.put("openjpa.DynamicEnhancementAgent", "true");

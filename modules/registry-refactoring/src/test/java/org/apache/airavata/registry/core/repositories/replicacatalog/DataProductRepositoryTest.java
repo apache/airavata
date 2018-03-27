@@ -19,6 +19,8 @@
  */
 package org.apache.airavata.registry.core.repositories.replicacatalog;
 
+import org.apache.airavata.model.data.replica.DataProductModel;
+import org.apache.airavata.model.data.replica.DataProductType;
 import org.apache.airavata.registry.core.repositories.util.Initialize;
 import org.apache.airavata.registry.cpi.ReplicaCatalogException;
 import org.junit.After;
@@ -46,6 +48,7 @@ public class DataProductRepositoryTest {
             dataProductRepository = new DataProductRepository();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
+            throw e;
         }
     }
 
@@ -57,7 +60,14 @@ public class DataProductRepositoryTest {
 
     @Test
     public void DataProductRepositoryTest() throws ReplicaCatalogException {
-
+        DataProductModel dataProductModel = new DataProductModel();
+        dataProductModel.setGatewayId(gatewayId);
+        dataProductModel.setOwnerName("testUser");
+        dataProductModel.setDataProductType(DataProductType.COLLECTION);
+        dataProductModel.setProductSize(1);
+        dataProductModel.setProductName("testProduct");
+        String productUri = dataProductRepository.registerDataProduct(dataProductModel);
+        assertTrue(productUri != null);
     }
 
 }

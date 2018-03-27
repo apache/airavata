@@ -72,7 +72,8 @@ public class DataReplicaLocationEntity implements Serializable {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="DATA_REPLICA_METADATA", joinColumns = @JoinColumn(name="REPLICA_ID"))
-    @Column(name = "METADATA_KEY")
+    @MapKeyColumn(name = "METADATA_KEY")
+    @Column(name = "METADATA_VALUE")
     private Map<String, String> replicaMetadata;
 
     @ManyToOne(targetEntity = DataProductEntity.class, cascade = CascadeType.MERGE)
