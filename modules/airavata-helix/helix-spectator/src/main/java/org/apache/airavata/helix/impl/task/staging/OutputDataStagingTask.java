@@ -33,8 +33,8 @@ import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.registry.cpi.ExpCatChildDataType;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.helix.task.TaskResult;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URI;
@@ -45,7 +45,7 @@ import java.util.List;
 @TaskDef(name = "Output Data Staging Task")
 public class OutputDataStagingTask extends DataStagingTask {
 
-    private static final Logger logger = LogManager.getLogger(OutputDataStagingTask.class);
+    private final static Logger logger = LoggerFactory.getLogger(OutputDataStagingTask.class);
 
     @Override
     public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {

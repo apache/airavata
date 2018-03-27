@@ -22,9 +22,7 @@ package org.apache.airavata.helix.impl.task;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.helix.core.AbstractTask;
-import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.task.api.TaskHelper;
-import org.apache.airavata.helix.task.api.annotation.TaskOutPort;
 import org.apache.airavata.helix.task.api.annotation.TaskParam;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingFactory;
@@ -43,9 +41,9 @@ import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory
 import org.apache.airavata.registry.cpi.*;
 import org.apache.helix.HelixManager;
 import org.apache.helix.task.TaskResult;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.log4j.MDC;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -53,7 +51,7 @@ import java.util.List;
 
 public abstract class AiravataTask extends AbstractTask {
 
-    private static final Logger logger = LogManager.getLogger(AiravataTask.class);
+    private final static Logger logger = LoggerFactory.getLogger(AiravataTask.class);
 
     private AppCatalog appCatalog;
     private ExperimentCatalog experimentCatalog;

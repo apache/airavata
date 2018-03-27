@@ -25,15 +25,15 @@ import org.apache.airavata.helix.core.participant.HelixParticipant;
 import org.apache.airavata.helix.core.support.TaskHelperImpl;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.helix.task.TaskFactory;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class GlobalParticipant extends HelixParticipant {
 
-    private static final Logger logger = LogManager.getLogger(GlobalParticipant.class);
+    private final static Logger logger = LoggerFactory.getLogger(GlobalParticipant.class);
 
     private String[] taskClasses = {
         "org.apache.airavata.helix.impl.task.env.EnvSetupTask",

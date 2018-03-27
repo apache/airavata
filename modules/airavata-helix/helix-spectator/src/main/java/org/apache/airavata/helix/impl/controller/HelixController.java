@@ -22,8 +22,8 @@ package org.apache.airavata.helix.impl.controller;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.helix.controller.HelixControllerMain;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -35,7 +35,7 @@ import java.util.concurrent.CountDownLatch;
  */
 public class HelixController implements Runnable {
 
-    private static final Logger logger = LogManager.getLogger(HelixController.class);
+    private final static Logger logger = LoggerFactory.getLogger(HelixController.class);
 
     private String clusterName;
     private String controllerName;

@@ -34,8 +34,8 @@ import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.helix.task.TaskResult;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +44,7 @@ import java.util.List;
 @TaskDef(name = "Default Job Submission")
 public class DefaultJobSubmissionTask extends JobSubmissionTask {
 
-    private static final Logger logger = LogManager.getLogger(DefaultJobSubmissionTask.class);
+    private final static Logger logger = LoggerFactory.getLogger(DefaultJobSubmissionTask.class);
 
     private static final String DEFAULT_JOB_ID = "DEFAULT_JOB_ID";
 

@@ -36,12 +36,12 @@ import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescr
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StorageResourceAdaptorImpl extends SshAgentAdaptor implements StorageResourceAdaptor  {
 
-    private static final Logger logger = LogManager.getLogger(SshAgentAdaptor.class);
+    private final static Logger logger = LoggerFactory.getLogger(StorageResourceAdaptorImpl.class);
 
     private Session session = null;
     private AppCatalog appCatalog;

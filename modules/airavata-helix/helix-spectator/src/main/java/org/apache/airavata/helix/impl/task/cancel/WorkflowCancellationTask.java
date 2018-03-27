@@ -11,13 +11,13 @@ import org.apache.helix.InstanceType;
 import org.apache.helix.task.TaskDriver;
 import org.apache.helix.task.TaskResult;
 import org.apache.helix.task.TaskState;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @TaskDef(name = "Workflow Cancellation Task")
 public class WorkflowCancellationTask extends AbstractTask {
 
-    private static final Logger logger = LogManager.getLogger(WorkflowCancellationTask.class);
+    private final static Logger logger = LoggerFactory.getLogger(WorkflowCancellationTask.class);
 
     private TaskDriver taskDriver;
 

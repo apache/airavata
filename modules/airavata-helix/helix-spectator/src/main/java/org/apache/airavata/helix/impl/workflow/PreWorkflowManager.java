@@ -48,21 +48,20 @@ import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.apache.zookeeper.CreateMode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class PreWorkflowManager {
 
-    private static final Logger logger = LogManager.getLogger(PreWorkflowManager.class);
+    private final static Logger logger = LoggerFactory.getLogger(PreWorkflowManager.class);
 
     private Subscriber subscriber;
     private CuratorFramework curatorClient = null;
