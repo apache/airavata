@@ -30,7 +30,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <name>Helix Spectator</name>
     <artifactId>helix-spectator</artifactId>
 
 

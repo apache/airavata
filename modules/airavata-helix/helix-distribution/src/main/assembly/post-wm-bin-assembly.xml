@@ -1,4 +1,5 @@
 <!--
+
     Licensed to the Apache Software Foundation (ASF) under one
     or more contributor license agreements.  See the NOTICE file
     distributed with this work for additional information
@@ -36,16 +37,15 @@
 <assembly>
     <id>bin</id>
     <includeBaseDirectory>true</includeBaseDirectory>
-    <baseDirectory>${realtime.monitor.archieve.name}-${version}</baseDirectory>
+    <baseDirectory>${post.wm.archieve.name}-${version}</baseDirectory>
     <formats>
         <format>tar.gz</format>
         <format>zip</format>
     </formats>
 
     <fileSets>
-
         <fileSet>
-            <directory>src/main/resources/realtime-monitor/bin</directory>
+            <directory>src/main/resources/post-wm/bin</directory>
             <outputDirectory>bin</outputDirectory>
             <fileMode>777</fileMode>
             <includes>
@@ -53,16 +53,13 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>src/main/resources/realtime-monitor/conf</directory>
+            <directory>src/main/resources/post-wm/conf</directory>
             <outputDirectory>conf</outputDirectory>
-            <fileMode>777</fileMode>
             <includes>
                 <include>airavata-server.properties</include>
                 <include>log4j.properties</include>
             </includes>
         </fileSet>
-
-        <!-- Create logs directory -->
         <fileSet>
             <directory>./</directory>
             <outputDirectory>logs</outputDirectory>
@@ -70,45 +67,19 @@
                 <exclude>*/**</exclude>
             </excludes>
         </fileSet>
-
     </fileSets>
 
     <dependencySets>
-
         <dependencySet>
             <useProjectArtifact>false</useProjectArtifact>
             <outputDirectory>lib</outputDirectory>
             <includes>
-                <include>org.apache.airavata:realtime-monitor:jar</include>
-                <include>org.apache.airavata:job-monitor-api:jar</include>
-
-                <include>org.apache.airavata:airavata-commons:jar</include>
-                <include>org.apache.airavata:airavata-data-models:jar</include>
-                <include>commons-cli:commons-cli</include>
-                <include>org.apache.thrift:libthrift:jar</include>
-
-                <!-- kafka specific jars -->
-                <include>org.apache.kafka:kafka-clients:jar</include>
-                <include>org.lz4:lz4-java:jar</include>
-                <include>org.xerial.snappy:snappy-java:jar</include>
-
-                <!-- curator and zookeeper jars -->
-                <include>org.apache.curator:curator-framework:jar</include>
-                <include>org.apache.curator:curator-client:jar</include>
-                <include>com.google.guava:guava:jar</include>
-                <include>org.apache.zookeeper:zookeeper:jar</include>
-                <include>jline:jline:jar</include>
-                <include>org.jboss.netty:netty:jar</include>
-
-                <include>com.google.code.gson:gson:jar</include>
-
-                <!-- logging jars -->
-                <include>org.slf4j:slf4j-api:jar</include>
-                <include>org.slf4j:slf4j-log4j12:jar</include>
-                <include>log4j:log4j:jar</include>
-
+                <include>*:*:jar</include>
             </includes>
+            <excludes>
+                <exclude>mysql:mysql-connector-java:jar</exclude>
+                <exclude>ch.qos.logback:logback-classic:jar</exclude>
+            </excludes>
         </dependencySet>
     </dependencySets>
-
 </assembly>
