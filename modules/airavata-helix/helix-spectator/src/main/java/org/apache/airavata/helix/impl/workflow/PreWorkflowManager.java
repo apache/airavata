@@ -88,8 +88,12 @@ public class PreWorkflowManager {
     }
 
     private void registerCancelProcess(String processId) throws Exception {
+        String path = "/registry/" + processId + "/status";
+        if (this.curatorClient.checkExists().forPath(path) != null) {
+            this.curatorClient.delete().forPath(path);
+        }
         this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                "/registry/" + processId + "/status" , "cancel".getBytes());
+                path , "cancel".getBytes());
     }
 
     private List<String> getWorkflowsOfProcess(String processId) throws Exception {
@@ -148,7 +152,7 @@ public class PreWorkflowManager {
 
         WorkflowManager workflowManager = new WorkflowManager(
                 ServerSettings.getSetting("helix.cluster.name"),
-                ServerSettings.getSetting("post.workflow.manager.name"),
+                ServerSettings.getSetting("pre.workflow.manager.name"),
                 ServerSettings.getZookeeperConnection());
         String workflowName = workflowManager.launchWorkflow(processId + "-PRE-" + UUID.randomUUID().toString(),
                 new ArrayList<>(allTasks), true, false);
@@ -215,7 +219,7 @@ public class PreWorkflowManager {
 
         WorkflowManager workflowManager = new WorkflowManager(
                 ServerSettings.getSetting("helix.cluster.name"),
-                ServerSettings.getSetting("post.workflow.manager.name"),
+                ServerSettings.getSetting("pre.workflow.manager.name"),
                 ServerSettings.getZookeeperConnection());
 
         String workflow = workflowManager.launchWorkflow(processId + "-CANCEL-" + UUID.randomUUID().toString(), allTasks, true, false);

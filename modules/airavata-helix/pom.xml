@@ -31,7 +31,7 @@
     </parent>
     <packaging>pom</packaging>
     <modelVersion>4.0.0</modelVersion>
-
+    <name>Airavata Helix</name>
     <artifactId>airavata-helix</artifactId>
 
     <modules>
@@ -41,6 +41,7 @@
         <module>task-core</module>
         <module>workflow-impl</module>
         <module>helix-spectator</module>
+        <module>helix-distribution</module>
     </modules>
 
 </project>

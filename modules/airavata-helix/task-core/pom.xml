@@ -30,7 +30,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <name>Helix Task Core</name>
     <artifactId>task-core</artifactId>
 
     <dependencies>
