@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
@@ -38,6 +39,8 @@ public class DataProductRepositoryTest {
     private static Initialize initialize;
     private DataProductRepository dataProductRepository;
     private String gatewayId = "testGateway";
+    private String userId = "testUser";
+    private String productName = "testProduct";
     private static final Logger logger = LoggerFactory.getLogger(DataProductRepositoryTest.class);
 
     @Before
@@ -60,14 +63,43 @@ public class DataProductRepositoryTest {
 
     @Test
     public void DataProductRepositoryTest() throws ReplicaCatalogException {
-        DataProductModel dataProductModel = new DataProductModel();
-        dataProductModel.setGatewayId(gatewayId);
-        dataProductModel.setOwnerName("testUser");
-        dataProductModel.setDataProductType(DataProductType.COLLECTION);
-        dataProductModel.setProductSize(1);
-        dataProductModel.setProductName("testProduct");
-        String productUri = dataProductRepository.registerDataProduct(dataProductModel);
-        assertTrue(productUri != null);
+        DataProductModel testDataProductModel1 = new DataProductModel();
+        testDataProductModel1.setGatewayId(gatewayId);
+        testDataProductModel1.setOwnerName(userId);
+        testDataProductModel1.setDataProductType(DataProductType.COLLECTION);
+        testDataProductModel1.setProductName(productName);
+
+        String productUri1 = dataProductRepository.registerDataProduct(testDataProductModel1);
+        assertTrue(dataProductRepository.isDataProductExists(productUri1));
+
+        DataProductModel retrievedDataProductModel = dataProductRepository.getDataProduct(productUri1);
+        assertEquals(retrievedDataProductModel.getProductUri(), productUri1);
+
+        DataProductModel testDataProductModel2 = new DataProductModel();
+        testDataProductModel2.setGatewayId(gatewayId);
+        testDataProductModel2.setOwnerName(userId);
+        testDataProductModel2.setDataProductType(DataProductType.FILE);
+        testDataProductModel2.setProductName(productName);
+
+        String productUri2 = dataProductRepository.registerDataProduct(testDataProductModel2);
+        assertTrue(dataProductRepository.isDataProductExists(productUri2));
+
+        testDataProductModel2.setParentProductUri(productUri1);
+        dataProductRepository.updateDataProduct(testDataProductModel2);
+
+        DataProductModel retrievedParentDataProductModel = dataProductRepository.getParentDataProduct(productUri2);
+        assertEquals(retrievedParentDataProductModel.getProductUri(), productUri1);
+
+        List<DataProductModel> childDataProductList = dataProductRepository.getChildDataProducts(productUri1);
+        assertTrue(childDataProductList.size() == 1);
+
+        List<DataProductModel> dataProductModelList = dataProductRepository.searchDataProductsByName(gatewayId, userId, productName, -1, 0);
+        assertTrue(dataProductModelList.size() == 2);
+
+        dataProductRepository.removeDataProduct(productUri1);
+        assertFalse(dataProductRepository.isDataProductExists(productUri1));
+
+        dataProductRepository.removeDataProduct(productUri2);
     }
 
 }
