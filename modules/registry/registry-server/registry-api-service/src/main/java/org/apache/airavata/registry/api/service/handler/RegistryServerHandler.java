@@ -72,6 +72,7 @@ import org.apache.airavata.registry.core.repositories.appcatalog.GroupResourcePr
 import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationDeploymentRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationInterfaceRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.GwyResourceProfileRepository;
+import org.apache.airavata.registry.core.repositories.appcatalog.UserResourceProfileRepository;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
@@ -89,6 +90,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private WorkflowCatalog workflowCatalog;
     private ApplicationDeploymentRepository applicationDeploymentRepository = new ApplicationDeploymentRepository();
     private ApplicationInterfaceRepository applicationInterfaceRepository = new ApplicationInterfaceRepository();
+    private UserResourceProfileRepository userResourceProfileRepository = new UserResourceProfileRepository();
 
     /**
      * Fetch Apache Registry API version
@@ -4335,9 +4337,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("User does not exist.Please provide a valid user ID...");
                 throw new RegistryServiceException("User does not exist.Please provide a valid user ID...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
-            String resourceProfile = userProfile.addUserResourceProfile(userResourceProfile);
+            String resourceProfile = userResourceProfileRepository.addUserResourceProfile(userResourceProfile);
             logger.debug("Airavata registered user resource profile with gateway id : " + userResourceProfile.getGatewayID() + "and user id : " + userResourceProfile.getUserId());
             return resourceProfile;
         } catch (AppCatalogException e) {
@@ -4367,9 +4367,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("user does not exist.Please provide a valid gateway id...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            UsrResourceProfile usrResourceProfile = appCatalog.getUserResourceProfile();
-            UserResourceProfile userResourceProfile = usrResourceProfile.getUserResourceProfile(userId,gatewayId);
+            UserResourceProfile userResourceProfile = userResourceProfileRepository.getUserResourceProfile(userId, gatewayId);
             logger.debug("Airavata retrieved User resource profile with user id : " + userId);
             return userResourceProfile;
         } catch (AppCatalogException e) {
@@ -4401,9 +4399,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("User does not exist.Please provide a valid user id...");
                 throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
-            userProfile.updateUserResourceProfile(userId, gatewayID, userResourceProfile);
+            userResourceProfileRepository.updateUserResourceProfile(userId, gatewayID, userResourceProfile);
             logger.debug("Airavata updated gateway profile with gateway id : " + userId);
             return true;
         } catch (AppCatalogException e) {
@@ -4433,9 +4429,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            UsrResourceProfile userResourceProfile = appCatalog.getUserResourceProfile();
-            userResourceProfile.removeUserResourceProfile(userId, gatewayID);
+            userResourceProfileRepository.removeUserResourceProfile(userId, gatewayID);
             logger.debug("Airavata deleted User profile with gateway id : " + gatewayID + " and user id : " + userId);
             return true;
         } catch (AppCatalogException e) {
@@ -4487,15 +4481,13 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
-            if (!userProfile.isUserResourceProfileExists(userId, gatewayID)){
+            if (! userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayID)) {
                 throw new RegistryServiceException("User resource profile with user id'"+userId+" &  gateway Id"+gatewayID+"' does not exist!!!");
             }
-            UserResourceProfile profile = userProfile.getUserResourceProfile(userId,gatewayID);
+            UserResourceProfile profile = userResourceProfileRepository.getUserResourceProfile(userId, gatewayID);
 //            gatewayProfile.removeGatewayResourceProfile(gatewayID);
             profile.addToUserComputeResourcePreferences(userComputeResourcePreference);
-            userProfile.updateUserResourceProfile(userId, gatewayID, profile);
+            userResourceProfileRepository.updateUserResourceProfile(userId, gatewayID, profile);
             logger.debug("Airavata added User compute resource preference with gateway id : " + gatewayID + " and for compute resource id : " + computeResourceId );
             return true;
         } catch (AppCatalogException e) {
@@ -4528,16 +4520,14 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
-            if (!userProfile.isUserResourceProfileExists(userId, gatewayID)){
+            if (! userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayID)){
                 throw new RegistryServiceException("User resource profile with user id'"+userId+" &  gateway Id"+gatewayID+"' does not exist!!!");
             }
-            UserResourceProfile profile = userProfile.getUserResourceProfile(userId,gatewayID);
+            UserResourceProfile profile = userResourceProfileRepository.getUserResourceProfile(userId,gatewayID);
 //            gatewayProfile.removeGatewayResourceProfile(gatewayID);
             dataStoragePreference.setStorageResourceId(storageResourceId);
             profile.addToUserStoragePreferences(dataStoragePreference);
-            userProfile.updateUserResourceProfile(userId, gatewayID, profile);
+            userResourceProfileRepository.updateUserResourceProfile(userId, gatewayID, profile);
             logger.debug("Airavata added storage resource preference with gateway id : " + gatewayID + " and for storage resource id : " + storageResourceId );
             return true;
         } catch (AppCatalogException e) {
@@ -4568,10 +4558,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            appCatalog = RegistryFactory.getAppCatalog();
-            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
-            if (!userProfile.isUserResourceProfileExists(userId, gatewayID)){
+            if (!userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayID)){
                 throw new RegistryServiceException("User resource profile with user id'"+userId+" &  gateway Id"+gatewayID+"' does not exist!!!");
             }
             ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
@@ -4581,7 +4568,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 exception.setMessage("Given compute resource does not exist in the system. Please provide a valid compute resource id...");
                 throw exception;
             }
-            UserComputeResourcePreference userComputeResourcePreference = userProfile.getUserComputeResourcePreference(userId, gatewayID, userComputeResourceId);
+            UserComputeResourcePreference userComputeResourcePreference = userResourceProfileRepository.getUserComputeResourcePreference(userId, gatewayID, userComputeResourceId);
             logger.debug("Airavata retrieved user compute resource preference with gateway id : " + gatewayID + " and for compute resoruce id : " + userComputeResourceId );
             return userComputeResourcePreference;
         } catch (AppCatalogException e) {
@@ -4612,13 +4599,11 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
-            if (!userProfile.isUserResourceProfileExists(userId, gatewayID)){
+            if (! userResourceProfileRepository.isUserResourceProfileExists(userId, gatewayID)){
                 throw new RegistryServiceException("User resource profile with user id'"+userId+" &  gateway Id"+gatewayID+"' does not exist!!!");
             }
 
-            UserStoragePreference storagePreference = userProfile.getUserStoragePreference(userId, gatewayID, storageId);
+            UserStoragePreference storagePreference = userResourceProfileRepository.getUserStoragePreference(userId, gatewayID, storageId);
             logger.debug("Airavata retrieved user storage resource preference with gateway id : " + gatewayID + " and for storage resource id : " + storageId);
             return storagePreference;
         } catch (AppCatalogException e) {
@@ -4643,9 +4628,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<UserResourceProfile> getAllUserResourceProfiles() throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
-            return userProfile.getAllUserResourceProfiles();
+            return userResourceProfileRepository.getAllUserResourceProfiles();
         } catch (AppCatalogException e) {
             RegistryServiceException exception = new RegistryServiceException();
             exception.setMessage("Error while reading retrieving all gateway profiles. More info : " + e.getMessage());
@@ -4669,9 +4652,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
-            UserResourceProfile profile = userProfile.getUserResourceProfile(userId,gatewayID);
+            UserResourceProfile profile = userResourceProfileRepository.getUserResourceProfile(userId,gatewayID);
             List<UserComputeResourcePreference> userComputeResourcePreferences = profile.getUserComputeResourcePreferences();
             UserComputeResourcePreference preferenceToRemove = null;
             for (UserComputeResourcePreference preference : userComputeResourcePreferences) {
@@ -4685,7 +4666,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                         preferenceToRemove);
             }
             profile.getUserComputeResourcePreferences().add(userComputeResourcePreference);
-            userProfile.updateUserResourceProfile(userId, gatewayID, profile);
+            userResourceProfileRepository.updateUserResourceProfile(userId, gatewayID, profile);
             logger.debug("Airavata updated compute resource preference with gateway id : " + gatewayID + " and for compute resource id : " + computeResourceId );
             return true;
         } catch (AppCatalogException e) {
@@ -4717,9 +4698,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
-            UserResourceProfile profile = userProfile.getUserResourceProfile(userId,gatewayID);
+            UserResourceProfile profile = userResourceProfileRepository.getUserResourceProfile(userId,gatewayID);
             List<UserStoragePreference> dataStoragePreferences = profile.getUserStoragePreferences();
             UserStoragePreference preferenceToRemove = null;
             for (UserStoragePreference preference : dataStoragePreferences) {
@@ -4733,7 +4712,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                         preferenceToRemove);
             }
             profile.getUserStoragePreferences().add(userStoragePreference);
-            userProfile.updateUserResourceProfile(userId, gatewayID, profile);
+            userResourceProfileRepository.updateUserResourceProfile(userId, gatewayID, profile);
             logger.debug("Airavata updated user storage resource preference with gateway id : " + gatewayID + " and for storage resource id : " + storageId );
             return true;
         } catch (AppCatalogException e) {
@@ -4764,9 +4743,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
-            return userProfile.removeUserComputeResourcePreferenceFromGateway(userId, gatewayID, computeResourceId);
+            return userResourceProfileRepository.removeUserComputeResourcePreferenceFromGateway(userId, gatewayID, computeResourceId);
         } catch (AppCatalogException e) {
             logger.error(userId, "Error while reading user compute resource preference...", e);
             RegistryServiceException exception = new RegistryServiceException();
@@ -4795,9 +4772,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("user does not exist.Please provide a valid user id...");
                 throw new RegistryServiceException("user does not exist.Please provide a valid user id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
-            return userProfile.removeUserDataStoragePreferenceFromGateway(userId, gatewayID, storageId);
+            return userResourceProfileRepository.removeUserDataStoragePreferenceFromGateway(userId, gatewayID, storageId);
         } catch (AppCatalogException e) {
             logger.error(gatewayID, "Error while reading user data storage preference...", e);
             RegistryServiceException exception = new RegistryServiceException();
@@ -4861,9 +4836,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("User Resource Profile does not exist.Please provide a valid gateway id...");
                 throw new RegistryServiceException("User Resource Profile does not exist.Please provide a valid gateway id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
-            return userProfile.getUserResourceProfile(userId, gatewayID).getUserComputeResourcePreferences();
+            return userResourceProfileRepository.getUserResourceProfile(userId, gatewayID).getUserComputeResourcePreferences();
         } catch (AppCatalogException e) {
             logger.error(userId, "Error while reading User Resource Profile compute resource preferences...", e);
             RegistryServiceException exception = new RegistryServiceException();
@@ -4887,9 +4860,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("User does not exist.Please provide a valid gateway id...");
                 throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
-            UsrResourceProfile userProfile = appCatalog.getUserResourceProfile();
-            return userProfile.getUserResourceProfile(userId, gatewayID).getUserStoragePreferences();
+            return userResourceProfileRepository.getUserResourceProfile(userId, gatewayID).getUserStoragePreferences();
         } catch (AppCatalogException e) {
             logger.error(userId, "Error while reading user resource Profile data storage preferences...", e);
             RegistryServiceException exception = new RegistryServiceException();
