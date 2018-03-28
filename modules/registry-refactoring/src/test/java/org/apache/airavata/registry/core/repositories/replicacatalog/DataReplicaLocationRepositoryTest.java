@@ -24,7 +24,7 @@ import org.apache.airavata.model.data.replica.DataProductType;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
 import org.apache.airavata.model.data.replica.ReplicaPersistentType;
 import org.apache.airavata.registry.core.entities.replicacatalog.DataReplicaMetadataEntity;
-import org.apache.airavata.registry.core.repositories.util.Initialize;
+import org.apache.airavata.registry.core.repositories.replicacatalog.util.Initialize;
 import org.apache.airavata.registry.cpi.ReplicaCatalogException;
 import org.junit.After;
 import org.junit.Before;
@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 public class DataReplicaLocationRepositoryTest {
 
@@ -76,14 +75,12 @@ public class DataReplicaLocationRepositoryTest {
         DataReplicaLocationModel testDataReplicaLocationModel1 = new DataReplicaLocationModel();
         testDataReplicaLocationModel1.setReplicaName("replicaName1");
         testDataReplicaLocationModel1.setProductUri(productUri);
-        String replicaId1 = dataReplicaLocationRepository.registerDataReplicaLocation(testDataReplicaLocationModel1);
-        assertTrue(dataReplicaLocationRepository.isExists(replicaId1));
+        String replicaId1 = dataReplicaLocationRepository.registerReplicaLocation(testDataReplicaLocationModel1);
 
         DataReplicaLocationModel testDataReplicaLocationModel2 = new DataReplicaLocationModel();
         testDataReplicaLocationModel2.setReplicaName("replicaName2");
         testDataReplicaLocationModel2.setProductUri(productUri);
-        String replicaId2 = dataReplicaLocationRepository.registerDataReplicaLocation(testDataReplicaLocationModel2);
-        assertTrue(dataReplicaLocationRepository.isExists(replicaId2));
+        String replicaId2 = dataReplicaLocationRepository.registerReplicaLocation(testDataReplicaLocationModel2);
 
         DataReplicaMetadataEntity dataReplicaMetadataEntity1 = new DataReplicaMetadataEntity();
         dataReplicaMetadataEntity1.setReplicaId(replicaId1);
@@ -92,17 +89,17 @@ public class DataReplicaLocationRepositoryTest {
 
         DataReplicaMetadataEntity dataReplicaMetadataEntity2 = new DataReplicaMetadataEntity();
         dataReplicaMetadataEntity2.setReplicaId(replicaId1);
-        dataReplicaMetadataEntity1.setMetadataKey("dataKey2");
-        dataReplicaMetadataEntity1.setMetadataValue("dataValue2");
+        dataReplicaMetadataEntity2.setMetadataKey("dataKey2");
+        dataReplicaMetadataEntity2.setMetadataValue("dataValue2");
 
         Map<String, String> dataReplicaMetadataEntityMap = new HashMap<>();
         dataReplicaMetadataEntityMap.put(dataReplicaMetadataEntity1.getMetadataKey(), dataReplicaMetadataEntity1.getMetadataValue());
         dataReplicaMetadataEntityMap.put(dataReplicaMetadataEntity2.getMetadataKey(), dataReplicaMetadataEntity2.getMetadataValue());
         testDataReplicaLocationModel1.setReplicaMetadata(dataReplicaMetadataEntityMap);
         testDataReplicaLocationModel1.setReplicaPersistentType(ReplicaPersistentType.TRANSIENT);
-        dataReplicaLocationRepository.updateDataReplicaLocation(testDataReplicaLocationModel1);
+        assertTrue(dataReplicaLocationRepository.updateReplicaLocation(testDataReplicaLocationModel1));
 
-        DataReplicaLocationModel retrievedDataReplicaLocationModel = dataReplicaLocationRepository.getDataReplicaLocation(replicaId1);
+        DataReplicaLocationModel retrievedDataReplicaLocationModel = dataReplicaLocationRepository.getReplicaLocation(replicaId1);
         assertTrue(retrievedDataReplicaLocationModel.getReplicaMetadata().size() == 2);
         assertEquals(retrievedDataReplicaLocationModel.getReplicaPersistentType(), testDataReplicaLocationModel1.getReplicaPersistentType());
 
@@ -110,14 +107,11 @@ public class DataReplicaLocationRepositoryTest {
         dataProductRepository.updateDataProduct(testDataProductModel);
         assertTrue(dataProductRepository.getDataProduct(productUri).getReplicaLocations().size() == 2);
 
-
-        List<DataReplicaLocationModel> dataReplicaLocationModelList = dataReplicaLocationRepository.getAllDataReplicaLocations(productUri);
+        List<DataReplicaLocationModel> dataReplicaLocationModelList = dataReplicaLocationRepository.getAllReplicaLocations(productUri);
         assertTrue(dataReplicaLocationModelList.size() == 2);
 
-        dataReplicaLocationRepository.removeDataReplicaLocation(replicaId1);
-        assertFalse(dataReplicaLocationRepository.isDataReplicaLocationExists(replicaId1));
-
-        dataReplicaLocationRepository.removeDataReplicaLocation(replicaId2);
+        dataReplicaLocationRepository.removeReplicaLocation(replicaId1);
+        dataReplicaLocationRepository.removeReplicaLocation(replicaId2);
         dataProductRepository.removeDataProduct(productUri);
     }
 

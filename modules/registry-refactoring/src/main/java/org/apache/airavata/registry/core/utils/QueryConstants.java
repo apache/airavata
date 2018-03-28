@@ -40,8 +40,8 @@ public interface QueryConstants {
             "WHERE CR.groupResourceProfileId LIKE : " + DBConstants.GroupResourceProfile.GROUP_RESOURCE_PROFILE_ID;
 
     String FIND_ALL_CHILD_DATA_PRODUCTS = "SELECT DP FROM " + DataProductEntity.class.getSimpleName() + " DP " +
-            "WHERE DP.parentProductUri LIKE : " + DBConstants.DataProduct.PARENT_PRODUCT_URI;
+            "WHERE DP.parentProductUri LIKE :" + DBConstants.DataProduct.PARENT_PRODUCT_URI;
     String FIND_DATA_PRODUCT_BY_NAME = "SELECT DP FROM " + DataProductEntity.class.getSimpleName() + " DP " +
-            "WHERE DP.gatewayId LIKE : " + DBConstants.DataProduct.GATEWAY_ID + " AND DP.ownerName LIKE: " +
-            DBConstants.DataProduct.OWNER_NAME + "AND dp.productName LIKE: " + DBConstants.DataProduct.PRODUCT_NAME;
+            "WHERE DP.gatewayId LIKE :" + DBConstants.DataProduct.GATEWAY_ID + " AND DP.ownerName LIKE :" +
+            DBConstants.DataProduct.OWNER_NAME + " AND dp.productName LIKE :" + DBConstants.DataProduct.PRODUCT_NAME;
 }

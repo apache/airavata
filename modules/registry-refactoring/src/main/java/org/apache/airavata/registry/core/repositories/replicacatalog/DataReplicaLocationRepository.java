@@ -22,9 +22,9 @@ package org.apache.airavata.registry.core.repositories.replicacatalog;
 
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
-import org.apache.airavata.registry.core.entities.replicacatalog.DataProductEntity;
 import org.apache.airavata.registry.core.entities.replicacatalog.DataReplicaLocationEntity;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
+import org.apache.airavata.registry.cpi.DataReplicaLocationInterface;
 import org.apache.airavata.registry.cpi.ReplicaCatalogException;
 import org.dozer.Mapper;
 import org.slf4j.Logger;
@@ -34,23 +34,29 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
-public class DataReplicaLocationRepository extends RepCatAbstractRepository<DataReplicaLocationModel, DataReplicaLocationEntity, String> {
-    private final static Logger logger = LoggerFactory.getLogger(DataProductRepository.class);
+public class DataReplicaLocationRepository extends RepCatAbstractRepository<DataReplicaLocationModel, DataReplicaLocationEntity, String> implements DataReplicaLocationInterface {
+    private final static Logger logger = LoggerFactory.getLogger(DataReplicaLocationRepository.class);
 
     public DataReplicaLocationRepository() { super(DataReplicaLocationModel.class, DataReplicaLocationEntity.class); }
 
     private String saveDataReplicaLocationModelData(DataReplicaLocationModel dataReplicaLocationModel) throws ReplicaCatalogException {
         DataReplicaLocationEntity dataReplicaLocationEntity = saveDataReplicaLocation(dataReplicaLocationModel);
-        return dataReplicaLocationEntity.getProductUri();
+        return dataReplicaLocationEntity.getReplicaId();
     }
 
     private DataReplicaLocationEntity saveDataReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws ReplicaCatalogException {
-        String replicaId = UUID.randomUUID().toString();
+
+        if (dataReplicaLocationModel.getReplicaId() == null) {
+            logger.debug("Setting the Replica ID for the new Data Replica Location");
+            dataReplicaLocationModel.setReplicaId(UUID.randomUUID().toString());
+        }
+
+        String replicaId = dataReplicaLocationModel.getReplicaId();
         dataReplicaLocationModel.setReplicaId(replicaId);
         Mapper mapper = ObjectMapperSingleton.getInstance();
         DataReplicaLocationEntity dataReplicaLocationEntity = mapper.map(dataReplicaLocationModel, DataReplicaLocationEntity.class);
 
-        if (!isDataReplicaLocationExists(replicaId)) {
+        if (!isExists(replicaId)) {
             logger.debug("Checking if the Data Replica Location already exists");
             dataReplicaLocationEntity.setCreationTime(new Timestamp(System.currentTimeMillis()));
         }
@@ -60,30 +66,26 @@ public class DataReplicaLocationRepository extends RepCatAbstractRepository<Data
         return execute(entityManager -> entityManager.merge(dataReplicaLocationEntity));
     }
 
-    public String registerDataReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws ReplicaCatalogException {
+    public String registerReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws ReplicaCatalogException {
         return saveDataReplicaLocationModelData(dataReplicaLocationModel);
     }
 
-    public void updateDataReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws ReplicaCatalogException {
-        saveDataReplicaLocationModelData(dataReplicaLocationModel);
+    public boolean updateReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws ReplicaCatalogException {
+        return (saveDataReplicaLocationModelData(dataReplicaLocationModel) != null);
     }
 
-    public DataReplicaLocationModel getDataReplicaLocation(String replicaId) throws ReplicaCatalogException {
+    public DataReplicaLocationModel getReplicaLocation(String replicaId) throws ReplicaCatalogException {
         return get(replicaId);
     }
 
-    public List<DataReplicaLocationModel> getAllDataReplicaLocations(String productUri) throws ReplicaCatalogException {
+    public List<DataReplicaLocationModel> getAllReplicaLocations(String productUri) throws ReplicaCatalogException {
         DataProductRepository dataProductRepository = new DataProductRepository();
         DataProductModel dataProductModel = dataProductRepository.getDataProduct(productUri);
         List<DataReplicaLocationModel> dataReplicaLocationModelList = dataProductModel.getReplicaLocations();
         return dataReplicaLocationModelList;
     }
 
-    public boolean isDataReplicaLocationExists(String replicaId) throws ReplicaCatalogException {
-        return isExists(replicaId);
-    }
-
-    public boolean removeDataReplicaLocation(String replicaId) throws ReplicaCatalogException {
+    public boolean removeReplicaLocation(String replicaId) throws ReplicaCatalogException {
         return delete(replicaId);
     }
 

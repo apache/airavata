@@ -25,7 +25,7 @@ import org.apache.airavata.model.data.replica.DataProductType;
 import org.apache.airavata.registry.core.entities.replicacatalog.DataProductEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.QueryConstants;
-import org.apache.airavata.registry.cpi.ReplicaCatalog;
+import org.apache.airavata.registry.cpi.DataProductInterface;
 import org.apache.airavata.registry.cpi.ReplicaCatalogException;
 import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
 import org.dozer.Mapper;
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.Timestamp;
 import java.util.*;
 
-public class DataProductRepository extends RepCatAbstractRepository<DataProductModel, DataProductEntity, String> {
+public class DataProductRepository extends RepCatAbstractRepository<DataProductModel, DataProductEntity, String> implements DataProductInterface {
     private final static Logger logger = LoggerFactory.getLogger(DataProductRepository.class);
 
     public DataProductRepository() {
@@ -48,8 +48,13 @@ public class DataProductRepository extends RepCatAbstractRepository<DataProductM
     }
 
     protected DataProductEntity saveDataProduct(DataProductModel dataProductModel) throws ReplicaCatalogException {
-        String productUri = ReplicaCatalog.schema + "://" + UUID.randomUUID().toString();
-        dataProductModel.setProductUri(productUri);
+
+        if (dataProductModel.getProductUri() == null) {
+            logger.debug("Setting the Product URI for the new Data Product");
+            dataProductModel.setProductUri(DataProductInterface.schema + "://" + UUID.randomUUID().toString());
+        }
+
+        String productUri = dataProductModel.getProductUri();
         Mapper mapper = ObjectMapperSingleton.getInstance();
         DataProductEntity dataProductEntity = mapper.map(dataProductModel, DataProductEntity.class);
 
@@ -65,7 +70,7 @@ public class DataProductRepository extends RepCatAbstractRepository<DataProductM
         }
 
         if (dataProductEntity.getReplicaLocations() != null) {
-            logger.debug("Populating the product URI for ReplicaLocations objects for the Application Deployment");
+            logger.debug("Populating the product URI for ReplicaLocations objects for the Data Product");
             dataProductEntity.getReplicaLocations().forEach(dataReplicaLocationEntity -> dataReplicaLocationEntity.setProductUri(productUri));
         }
 
@@ -84,8 +89,8 @@ public class DataProductRepository extends RepCatAbstractRepository<DataProductM
         return saveDataProductModelData(dataProductModel);
     }
 
-    public void updateDataProduct(DataProductModel updatedDataProductModel) throws ReplicaCatalogException {
-        saveDataProductModelData(updatedDataProductModel);
+    public boolean updateDataProduct(DataProductModel updatedDataProductModel) throws ReplicaCatalogException {
+        return (saveDataProductModelData(updatedDataProductModel) != null);
     }
 
     public DataProductModel getDataProduct(String productUri) throws ReplicaCatalogException {

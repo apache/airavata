@@ -2604,7 +2604,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String registerReplicaLocation(DataReplicaLocationModel replicaLocationModel) throws RegistryServiceException, TException {
         try {
-            String replicaId = dataReplicaLocationRepository.registerDataReplicaLocation(replicaLocationModel);
+            String replicaId = dataReplicaLocationRepository.registerReplicaLocation(replicaLocationModel);
             return replicaId;
         } catch (RegistryException e) {
             String msg = "Error in retreiving the replica "+replicaLocationModel.getReplicaName()+".";

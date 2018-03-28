@@ -21,7 +21,8 @@ package org.apache.airavata.registry.core.repositories.replicacatalog;
 
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataProductType;
-import org.apache.airavata.registry.core.repositories.util.Initialize;
+import org.apache.airavata.registry.core.entities.replicacatalog.DataProductMetadataEntity;
+import org.apache.airavata.registry.core.repositories.replicacatalog.util.Initialize;
 import org.apache.airavata.registry.cpi.ReplicaCatalogException;
 import org.junit.After;
 import org.junit.Before;
@@ -51,7 +52,6 @@ public class DataProductRepositoryTest {
             dataProductRepository = new DataProductRepository();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw e;
         }
     }
 
@@ -72,8 +72,8 @@ public class DataProductRepositoryTest {
         String productUri1 = dataProductRepository.registerDataProduct(testDataProductModel1);
         assertTrue(dataProductRepository.isDataProductExists(productUri1));
 
-        DataProductModel retrievedDataProductModel = dataProductRepository.getDataProduct(productUri1);
-        assertEquals(retrievedDataProductModel.getProductUri(), productUri1);
+        DataProductModel retrievedDataProductModel1 = dataProductRepository.getDataProduct(productUri1);
+        assertEquals(retrievedDataProductModel1.getProductUri(), productUri1);
 
         DataProductModel testDataProductModel2 = new DataProductModel();
         testDataProductModel2.setGatewayId(gatewayId);
@@ -84,8 +84,19 @@ public class DataProductRepositoryTest {
         String productUri2 = dataProductRepository.registerDataProduct(testDataProductModel2);
         assertTrue(dataProductRepository.isDataProductExists(productUri2));
 
+        DataProductMetadataEntity dataProductMetadataEntity = new DataProductMetadataEntity();
+        dataProductMetadataEntity.setProductUri(productUri2);
+        dataProductMetadataEntity.setMetadataKey("dataKey");
+        dataProductMetadataEntity.setMetadataValue("dataValue");
+
+        Map<String, String> dataProductMetadataEntityMap = new HashMap<>();
+        dataProductMetadataEntityMap.put(dataProductMetadataEntity.getMetadataKey(), dataProductMetadataEntity.getMetadataValue());
+        testDataProductModel2.setProductMetadata(dataProductMetadataEntityMap);
         testDataProductModel2.setParentProductUri(productUri1);
-        dataProductRepository.updateDataProduct(testDataProductModel2);
+        assertTrue(dataProductRepository.updateDataProduct(testDataProductModel2));
+
+        DataProductModel retrievedDataProductModel2 = dataProductRepository.getDataProduct(productUri2);
+        assertTrue(retrievedDataProductModel2.getProductMetadata().size() == 1);
 
         DataProductModel retrievedParentDataProductModel = dataProductRepository.getParentDataProduct(productUri2);
         assertEquals(retrievedParentDataProductModel.getProductUri(), productUri1);
