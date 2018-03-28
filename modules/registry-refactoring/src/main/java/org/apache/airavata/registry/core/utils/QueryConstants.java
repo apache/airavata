@@ -39,9 +39,23 @@ public interface QueryConstants {
     String FIND_ALL_GROUP_COMPUTE_RESOURCE_POLICY = "SELECT CR FROM "+ ComputeResourcePolicyEntity.class.getSimpleName() + " CR " +
             "WHERE CR.groupResourceProfileId LIKE : " + DBConstants.GroupResourceProfile.GROUP_RESOURCE_PROFILE_ID;
 
+
+    String GET_ALL_USER_RESOURCE_PROFILE = "SELECT URP FROM " + UserResourceProfileEntity.class.getSimpleName() + " URP";
+    String GET_ALL_GATEWAY_ID = "SELECT DISTINCT URP FROM " + UserResourceProfileEntity.class.getSimpleName() + " URP " +
+            "WHERE URP.gatewayId LIKE :" + DBConstants.UserResourceProfile.GATEWAY_ID;
+
+    String GET_ALL_USER_COMPUTE_RESOURCE_PREFERENCE = "SELECT UCRP FROM " + UserComputeResourcePreferenceEntity.class.getSimpleName() + " UCRP " +
+            "WHERE UCRP.userId LIKE :" + DBConstants.UserComputeResourcePreference.USER_ID + " AND UCRP.gatewayId LIKE :" +
+            DBConstants.UserComputeResourcePreference.GATEWAY_ID;
+
+    String GET_ALL_USER_STORAGE_PREFERENCE = "SELECT USP FROM " + UserStoragePreferenceEntity.class.getSimpleName() + " USP " +
+            "WHERE USP.userId LIKE :" + DBConstants.UserStoragePreference.USER_ID + " AND USP.gatewayId LIKE :" +
+            DBConstants.UserStoragePreference.GATEWAY_ID;
+
     String FIND_ALL_CHILD_DATA_PRODUCTS = "SELECT DP FROM " + DataProductEntity.class.getSimpleName() + " DP " +
             "WHERE DP.parentProductUri LIKE :" + DBConstants.DataProduct.PARENT_PRODUCT_URI;
     String FIND_DATA_PRODUCT_BY_NAME = "SELECT DP FROM " + DataProductEntity.class.getSimpleName() + " DP " +
             "WHERE DP.gatewayId LIKE :" + DBConstants.DataProduct.GATEWAY_ID + " AND DP.ownerName LIKE :" +
             DBConstants.DataProduct.OWNER_NAME + " AND dp.productName LIKE :" + DBConstants.DataProduct.PRODUCT_NAME;
+
 }
