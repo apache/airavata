@@ -57,7 +57,7 @@
             <outputDirectory>conf</outputDirectory>
             <includes>
                 <include>airavata-server.properties</include>
-                <include>log4j.properties</include>
+                <include>logback.xml</include>
             </includes>
         </fileSet>
         <fileSet>
@@ -78,7 +78,7 @@
             </includes>
             <excludes>
                 <exclude>mysql:mysql-connector-java:jar</exclude>
-                <exclude>ch.qos.logback:logback-classic:jar</exclude>
+                <exclude>log4j:log4j:jar</exclude>
             </excludes>
         </dependencySet>
     </dependencySets>
