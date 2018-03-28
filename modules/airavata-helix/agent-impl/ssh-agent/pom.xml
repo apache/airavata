@@ -33,6 +33,12 @@
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-credential-store</artifactId>
             <version>0.17-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
