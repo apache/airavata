@@ -118,6 +118,9 @@
         <class>org.apache.airavata.registry.core.entities.appcatalog.JobManagerCommandPK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ParallelismCommandPK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ModuleLoadCmdEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.UserResourceProfileEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.UserComputeResourcePreferenceEntity</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.UserStoragePreferenceEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 </persistence>

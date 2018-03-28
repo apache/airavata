@@ -93,4 +93,17 @@ public interface QueryConstants {
             "WHERE BQ.groupResourceProfileId LIKE : " + DBConstants.GroupResourceProfile.GROUP_RESOURCE_PROFILE_ID;
     String FIND_ALL_GROUP_COMPUTE_RESOURCE_POLICY = "SELECT CR FROM "+ ComputeResourcePolicyEntity.class.getSimpleName() + " CR " +
             "WHERE CR.groupResourceProfileId LIKE : " + DBConstants.GroupResourceProfile.GROUP_RESOURCE_PROFILE_ID;
+
+    String GET_ALL_USER_RESOURCE_PROFILE = "SELECT URP FROM " + UserResourceProfileEntity.class.getSimpleName() + " URP";
+    String GET_ALL_GATEWAY_ID = "SELECT DISTINCT URP FROM " + UserResourceProfileEntity.class.getSimpleName() + " URP " +
+            "WHERE URP.gatewayId LIKE :" + DBConstants.UserResourceProfile.GATEWAY_ID;
+
+    String GET_ALL_USER_COMPUTE_RESOURCE_PREFERENCE = "SELECT UCRP FROM " + UserComputeResourcePreferenceEntity.class.getSimpleName() + " UCRP " +
+            "WHERE UCRP.userId LIKE :" + DBConstants.UserComputeResourcePreference.USER_ID + " AND UCRP.gatewayId LIKE :" +
+            DBConstants.UserComputeResourcePreference.GATEWAY_ID;
+
+    String GET_ALL_USER_STORAGE_PREFERENCE = "SELECT USP FROM " + UserStoragePreferenceEntity.class.getSimpleName() + " USP " +
+            "WHERE USP.userId LIKE :" + DBConstants.UserStoragePreference.USER_ID + " AND USP.gatewayId LIKE :" +
+            DBConstants.UserStoragePreference.GATEWAY_ID;
+
 }

@@ -108,4 +108,21 @@ public class DBConstants {
         public static final String COMMAND = "cmd";
     }
 
+    public static class UserResourceProfile {
+        public static final String USER_ID = "userId";
+        public static final String GATEWAY_ID = "gatewayId";
+    }
+
+    public static class UserComputeResourcePreference {
+        public static final String USER_ID = "userId";
+        public static final String GATEWAY_ID = "gatewayId";
+        public static final String COMPUTE_RESOURCE_ID = "computeResourceId";
+    }
+
+    public static class UserStoragePreference {
+        public static final String USER_ID = "userId";
+        public static final String GATEWAY_ID = "gatewayId";
+        public static final String STORAGE_RESOURCE_ID = "storageResourceId";
+    }
+
 }
