@@ -20,13 +20,12 @@
 package org.apache.airavata.registry.cpi;
 
 
-import org.apache.airavata.model.data.replica.DataProductModel;
-import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
-
-import java.util.List;
-
-public interface ReplicaCatalog {
-    String schema = "airavata-dp";
+/*
+Included for backwards compatibility
+TODO: Remove interface once registry refactoring is complete
+*/
+public interface ReplicaCatalog extends DataProductInterface, DataReplicaLocationInterface {
+    /*String schema = "airavata-dp";
 
     String registerDataProduct(DataProductModel product) throws ReplicaCatalogException;
 
@@ -36,7 +35,7 @@ public interface ReplicaCatalog {
 
     DataProductModel getDataProduct(String productUri) throws ReplicaCatalogException;
 
-    boolean isExists(String productUri) throws ReplicaCatalogException;
+    boolean isDataProductExists(String productUri) throws ReplicaCatalogException;
 
     String registerReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws ReplicaCatalogException;
 
@@ -53,5 +52,5 @@ public interface ReplicaCatalog {
     List<DataProductModel> getChildDataProducts(String productUri) throws ReplicaCatalogException;
 
     List<DataProductModel> searchDataProductsByName(String gatewayId, String userId, String productName,
-                                                    int limit, int offset) throws ReplicaCatalogException;
+                                                    int limit, int offset) throws ReplicaCatalogException;*/
 }
