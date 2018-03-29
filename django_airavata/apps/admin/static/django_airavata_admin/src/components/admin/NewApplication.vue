@@ -55,7 +55,7 @@
       ...mapGetters(["getTitle"])
     },
     watch:{
-      '$route' (to, from) {
+      '$route'   (to, from) {
         if(!this.tabs.hasOwnProperty(to.name)){
           this.initialize(false)
         }
@@ -67,8 +67,4 @@
   }
 </script>
 <style>
-
-
-
-
 </style>

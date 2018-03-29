@@ -94,26 +94,7 @@
   ;
 </script>
 <style>
-  .interface-btn {
-    color: #868E96;
-    border: solid 1px #868E96;
-    background-color: transparent;
-    text-align: center;
-    border-radius: 3px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 15px;
-    padding-right: 15px;
-  }
 
-  .interface-btn span {
-    font-weight: bold;
-  }
-
-  .interface-btn:hover {
-    background-color: rgba(0, 105, 217, 1);
-    color: white;
-  }
 
   .entry.boolean-selectors {
     display: flex;

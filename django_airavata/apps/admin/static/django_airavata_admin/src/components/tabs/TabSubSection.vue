@@ -1,5 +1,5 @@
 <template>
-  <div class="main_section interface-main">
+  <div class="tab-section-1 interface-main">
     <div class="input-field-header">
       {{sectionName}}
       <img v-if="enableDeletion" v-on:click="deleteSection()" src="/static/images/delete.png"/>
@@ -27,14 +27,22 @@
       enableDeletion: {
         type: Boolean,
         default: true
+      },
+      deleteAction: {
+        type: Function,
+        default: null
       }
     },
     methods: {
       deleteSection: function () {
-        if (this.sectionType != null) {
-          this.$emit('delete_section', this.sectionId, this.sectionType)
+        if (this.deleteAction) {
+          this.deleteAction();
         } else {
-          this.$emit('delete_section', this.sectionId)
+          if (this.sectionType != null) {
+            this.$emit('delete_section', this.sectionId, this.sectionType)
+          } else {
+            this.$emit('delete_section', this.sectionId)
+          }
         }
       }
     }
@@ -46,7 +54,13 @@
     float: right;
   }
 
-  .main_section.interface-main .entry {
+  .tab-section-1 {
+    width: 100%;
+    display: block;
+    margin-top: 10px;
+  }
+
+  .tab-section-1.interface-main .entry {
     margin-bottom: 40px;
     margin-left: 15px;
     margin-right: 15px;

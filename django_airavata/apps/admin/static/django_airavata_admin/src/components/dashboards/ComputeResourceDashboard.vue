@@ -41,11 +41,8 @@
       return ret
     },
     mounted: function () {
-      DjangoAiravataAPI.services.ComputeResourceService.list().then((value) => {
-        this.resources = value;
-        this.allResources = value;
-      })
-
+      this.allResources = DjangoAiravataAPI.services.ComputeResourceService.list();
+      this.resources = value;
     },
     methods: {
       clickHandler: function (hostID) {

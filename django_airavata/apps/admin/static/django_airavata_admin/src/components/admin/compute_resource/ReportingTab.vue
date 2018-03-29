@@ -34,7 +34,7 @@
   export default {
     name: "reporting-tab",
     components: {
-      BooleanRadioButton,TabActionConsole
+      BooleanRadioButton, TabActionConsole
     },
     mixins: [tabMixin, computeResourceTabMixin],
     methods: {
