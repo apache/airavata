@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class UserComputeResourcePreferenceRepository extends AppCatAbstractRepository<UserComputeResourcePreference, UserComputeResourcePreferenceEntity, UserComputeResourcePreferencePK> {
-    private final static Logger logger = LoggerFactory.getLogger(UserComputeResourcePreferenceRepository.class);
 
     public UserComputeResourcePreferenceRepository() {
         super(UserComputeResourcePreference.class, UserComputeResourcePreferenceEntity.class);
