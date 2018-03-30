@@ -20,12 +20,10 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.List;
 
 
 /**
@@ -33,13 +31,13 @@ import java.sql.Timestamp;
  * 
  */
 @Entity
-@Table(name="application_interface")
+@Table(name="APPLICATION_INTERFACE")
 public class ApplicationInterfaceEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name="INTERFACE_ID")
-	private String interfaceId;
+	private String applicationInterfaceId;
 
 	@Column(name="APPLICATION_DESCRIPTION")
 	private String applicationDescription;
@@ -48,7 +46,7 @@ public class ApplicationInterfaceEntity implements Serializable {
 	private String applicationName;
 
 	@Column(name="ARCHIVE_WORKING_DIRECTORY")
-	private short archiveWorkingDirectory;
+	private boolean archiveWorkingDirectory;
 
 	@Column(name="CREATION_TIME")
 	private Timestamp creationTime;
@@ -59,16 +57,32 @@ public class ApplicationInterfaceEntity implements Serializable {
 	@Column(name="UPDATE_TIME")
 	private Timestamp updateTime;
 
+	@Column(name="HAS_OPTIONAL_FILE_INPUTS")
+	private boolean hasOptionalFileInputs;
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name="APP_MODULE_MAPPING", joinColumns = @JoinColumn(name="INTERFACE_ID"))
+	@Column(name = "MODULE_ID")
+	private List<String> applicationModules;
+
+	@OneToMany(targetEntity = ApplicationInputEntity.class, cascade = CascadeType.ALL,
+			mappedBy = "applicationInterface", fetch = FetchType.EAGER)
+	private List<ApplicationInputEntity> applicationInputs;
+
+	@OneToMany(targetEntity = ApplicationOutputEntity.class, cascade = CascadeType.ALL,
+			mappedBy = "applicationInterface", fetch = FetchType.EAGER)
+	private List<ApplicationOutputEntity> applicationOutputs;
+
 	
 	public ApplicationInterfaceEntity() {
 	}
 
-	public String getInterfaceId() {
-		return interfaceId;
+	public String getApplicationInterfaceId() {
+		return applicationInterfaceId;
 	}
 
-	public void setInterfaceId(String interfaceId) {
-		this.interfaceId = interfaceId;
+	public void setApplicationInterfaceId(String applicationInterfaceId) {
+		this.applicationInterfaceId = applicationInterfaceId;
 	}
 
 	public String getApplicationDescription() {
@@ -87,11 +101,11 @@ public class ApplicationInterfaceEntity implements Serializable {
 		this.applicationName = applicationName;
 	}
 
-	public short getArchiveWorkingDirectory() {
+	public boolean getArchiveWorkingDirectory() {
 		return archiveWorkingDirectory;
 	}
 
-	public void setArchiveWorkingDirectory(short archiveWorkingDirectory) {
+	public void setArchiveWorkingDirectory(boolean archiveWorkingDirectory) {
 		this.archiveWorkingDirectory = archiveWorkingDirectory;
 	}
 
@@ -118,4 +132,33 @@ public class ApplicationInterfaceEntity implements Serializable {
 	public void setUpdateTime(Timestamp updateTime) {
 		this.updateTime = updateTime;
 	}
+
+	public boolean getHasOptionalFileInputs() {
+		return hasOptionalFileInputs;
+	}
+
+	public void setHasOptionalFileInputs(boolean hasOptionalFileInputs) {
+		this.hasOptionalFileInputs = hasOptionalFileInputs;
+	}
+
+	public List<String> getApplicationModules() { return applicationModules; }
+
+	public void setApplicationModules(List<String> applicationModules) { this.applicationModules = applicationModules; }
+
+	public List<ApplicationInputEntity> getApplicationInputs() {
+		return applicationInputs;
+	}
+
+	public void setApplicationInputs(List<ApplicationInputEntity> applicationInputs) {
+		this.applicationInputs = applicationInputs;
+	}
+
+	public List<ApplicationOutputEntity> getApplicationOutputs() {
+		return applicationOutputs;
+	}
+
+	public void setApplicationOutputs(List<ApplicationOutputEntity> applicationOutputs) {
+		this.applicationOutputs = applicationOutputs;
+	}
+
 }

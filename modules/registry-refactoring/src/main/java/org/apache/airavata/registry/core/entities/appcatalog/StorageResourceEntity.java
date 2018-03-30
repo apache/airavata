@@ -31,7 +31,7 @@ import java.sql.Timestamp;
  * The persistent class for the storage_resource database table.
  */
 @Entity
-@Table(name = "storage_resource")
+@Table(name = "STORAGE_RESOURCE")
 public class StorageResourceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -42,8 +42,10 @@ public class StorageResourceEntity implements Serializable {
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
 
+    @Column(name = "DESCRIPTION")
     private String description;
 
+    @Column(name = "ENABLED")
     private short enabled;
 
     @Column(name = "HOST_NAME")

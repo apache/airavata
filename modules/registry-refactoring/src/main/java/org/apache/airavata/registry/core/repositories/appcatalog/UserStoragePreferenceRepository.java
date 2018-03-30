@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class UserStoragePreferenceRepository extends AppCatAbstractRepository<UserStoragePreference, UserStoragePreferenceEntity, UserStoragePreferencePK> {
-    private final static Logger logger = LoggerFactory.getLogger(UserStoragePreferenceRepository.class);
 
     public UserStoragePreferenceRepository() {
         super(UserStoragePreference.class, UserStoragePreferenceEntity.class);
