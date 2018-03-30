@@ -56,7 +56,7 @@ public class RepCatalogJPAUtils {
             properties.put("openjpa.DynamicEnhancementAgent", "true");
             properties.put("openjpa.RuntimeUnenhancedClasses", "unsupported");
             properties.put("openjpa.RemoteCommitProvider","sjvm");
-            properties.put("openjpa.Log","DefaultLevel=TRACE, Runtime=TRACE, Tool=TRACE, SQL=TRACE");
+            properties.put("openjpa.Log","DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
             properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
             properties.put("openjpa.jdbc.QuerySQLCache", "false");
             properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72," +
