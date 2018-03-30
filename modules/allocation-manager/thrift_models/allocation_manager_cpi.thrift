@@ -17,7 +17,7 @@ service AllocationRegistryService{
     bool deleteAllocationRequest(1: required security_model.AuthzToken authzToken,2: required i64 projectId) throws (1: allocation_manager_models.AllocationManagerException ame,2: airavata_errors.AuthorizationException ae);
     
     /**
-     <p>API method to get an allocation Request</p>
+     <p>API method to get an allocation Request details based on a projectid</p>
     */
     allocation_manager_models.UserAllocationDetail getAllocationRequest(1: required security_model.AuthzToken authzToken,2: required i64 projectId) throws (1: allocation_manager_models.AllocationManagerException ame,2: airavata_errors.AuthorizationException ae);
     
@@ -39,7 +39,7 @@ service AllocationRegistryService{
     bool deleteUserSpecificResource(1: required security_model.AuthzToken authzToken,2: required i64 projectId,3: required string specificResource) throws (1: allocation_manager_models.AllocationManagerException ame,2: airavata_errors.AuthorizationException ae);
     
     /**
-     <p>API method to get specific resource requests</p>
+     <p>API method to get specific resource requests based on a project id</p>
     */
     list<allocation_manager_models.UserSpecificResourceDetail> getUserSpecificResource(1: required security_model.AuthzToken authzToken,2: required i64 projectId) throws (1: allocation_manager_models.AllocationManagerException ame,2: airavata_errors.AuthorizationException ae);
     
@@ -79,22 +79,22 @@ service AllocationRegistryService{
 /** REVIEWER_SPECIFIC_RESOURCE_DETAILS */
 
 /**
-      <p>API method to create new specific resource requests</p>
+      <p>API method to create new specific resource requests for a reviewer</p>
     */
     i64 createReviewerSpecificResource(1: required security_model.AuthzToken authzToken,2: required allocation_manager_models.ReviewerSpecificResourceDetail allocDetail) throws (1: allocation_manager_models.AllocationManagerException ame,2: airavata_errors.AuthorizationException ae);
     
     /**
-     <p>API method to delete specific resource requests</p>
+     <p>API method to delete specific resource requests for a reviewer</p>
     */
     bool deleteReviewerSpecificResource(1: required security_model.AuthzToken authzToken,2: required i64 projectId,3: required string specificResource) throws (1: allocation_manager_models.AllocationManagerException ame,2: airavata_errors.AuthorizationException ae);
     
     /**
-     <p>API method to get specific resource requests</p>
+     <p>API method to get specific resource requests for a reviewer</p>
     */
     list<allocation_manager_models.ReviewerSpecificResourceDetail> getReviewerSpecificResource(1: required security_model.AuthzToken authzToken,2: required i64 projectId) throws (1: allocation_manager_models.AllocationManagerException ame,2: airavata_errors.AuthorizationException ae);
     
 /**
-     <p>API method to update specific resource requests</p>
+     <p>API method to update specific resource requests for a reviewer</p>
     */
     bool updateReviewerSpecificResource(1: required security_model.AuthzToken authzToken,2: required i64 projectId,3: required list<allocation_manager_models.ReviewerSpecificResourceDetail> listReviewerSpecificResource) throws (1: allocation_manager_models.AllocationManagerException ame,2: airavata_errors.AuthorizationException ae);
 

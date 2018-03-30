@@ -2,22 +2,19 @@
  
 /**
 * <p>Required allocation request details</p>
-* <li>projectId : (primary key) Ask the user to assign project ID, but this project should unique, we will need an API endpoint to check whether this ID is not used by other projects and the username</li>
-* <li>allocationStatus : Overall status of the allocation</li>
-* <li>diskUsageRangePerJob : An optional field to help reviewer and PI for allocation approval</li>
+* <li>projectId : (primary key) This is a unique id given to each new request that is submitted by a user</li>
+* <li>allocationStatus : Overall status of the allocation which is the cumulative of all the sub statues of each specific resource associated with the request</li>
+* <li>comments : It the comments updated by the user in support of the request</li>
+* <li>diskUsageRangePerJob : An optional field to help reviewer and PI for allocation approval </li>
 * <li>documents : Resume, CV, PI’s portfolio etc</li>
-* <li>fieldOfScience :An optional field to help reviewer and PI for allocation approval</li>
 * <li>keywords : Keyword will be helpful in search</li>
 * <li>maxMemoryPerCpu :An optional field to help reviewer and PI for allocation approval</li>
 * <li>numberOfCpuPerJob : An optional field to help reviewer and PI for allocation approval</li>
 * <li>projectDescription :(Eg: Hypothesis, Model Systems, Methods, and Analysis)</li>
-* <li>projectReviewedAndFundedBy : (Eg., NSF, NIH, DOD, DOE, None etc...). An optional field to help reviewer and PI for allocation approval</li>
 * <li>requestedDate: The date the allocation was requested</li>
-* <li>serviceUnits : 1 SU is approximately 1 workstation CPU hour, if the user fails to give a value, default value will be chosen.</li>
-* <li>specificResourceSelection : This list will be fetched from resource discovery module, in case of community allocation, the request is subject to reviewers, PI discretion and availability</li>
 * <li>title : Assign a title to allocation request</li>
-* <li>typeOfAllocation : If the User has an exclusive allocation with third party organization and wants to use airavata middleware to manage jobs.</li>
 * <li>typicalSuPerJob :  An optional field to help reviewer and PI for allocation approval</li>
+*<li>username: Name of the user (retrieved from the authentication token) who submitted the request
 **/
 struct UserAllocationDetail{
 	1:optional i64 projectId,
@@ -38,16 +35,18 @@ struct UserAllocationDetail{
 
 /**
 * <p>User Specific Resource Detail</p>
-* <li>Id: Unique id</li>
-* <li>allocatedServiceUnits: Allocation requested by the user</li>
+* <li>Id: Unique id for the each specific resource associated with the request submitted by the user</li>
+* <li>allocatedServiceUnits: Allocation service units allocated by the admin upon approving a request</li>
 * <li>applicationsToBeUsed: Applications to be used</li>
 * <li>endDate: End date updated by the admin</li>
-* <li>projectId: Unique id of the project</li>
-* <li>rejectionReason: Rejection reason updated by the admin</li>
+* <li>projectId: Unique projectid assocaited with the specific resource</li>
+* <li>rejectionReason: Rejection reason updated by the admin on rejecting a particular specific request</li>
+* <li>requestedServiceUnits: Service units requested by the user for a specific request</li>
 * <li>resourceType: Resource type for the request</li>
 * <li>specificResource: Specific resource for the request</li>
 * <li>startDate: Start date of the allocation updated by the admin</li>
 * <li>subStatus: Status of the specific resource</li>
+* <li>usedServiceUnits: Total service units used by the user</li>
 **/
 struct UserSpecificResourceDetail{
 	1:optional i64 id,
@@ -67,12 +66,15 @@ struct UserSpecificResourceDetail{
 
 /**
 * <p>Allocation Request status details</p>
+* <li>id: Unique id for the review submitted by a reviewer for a request</li>
 * <li>projectId: Unique id of the project</li>
-* <li>awardAllocation: Allocation awarded</li>
-* <li>endDate: End date of the request</li>
-* <li>reviewers: reviewers of the request</li>
-* <li>startDate: Start date of the allocation</li>
-* <li>status: Status of the allocation request</li>
+* <li>diskUsageRangePerJob : An optional field to help admin allocation approval </li>
+* <li>documents : Resume, CV, PI’s portfolio etc uploaded by reviewer in support</li>
+* <li>maxMemoryPerCpu :An optional field updated by the reviewer to help admin for allocation approval</li>
+* <li>numberOfCpuPerJob : An optional field updated by the reviewer to help admin for allocation approval</li>
+* <li>reviewDate: Date on which reviewer submitted the review</li>
+* <li>typicalSuPerJob :  An optional field to help reviewer and PI for allocation approval</li>
+* <li>username: Name of the reviewer who submitted the review
 **/
 struct ReviewerAllocationDetail{
 	1:optional i64 id,
@@ -89,12 +91,14 @@ struct ReviewerAllocationDetail{
 
 /**
 * <p>Allocation Request status details</p>
+* <li>id: Unique id for the specific resource detail for each review submitted by the user</li>
+* <li>applicationsToBeUsed: Applications to be used</li>
+* <li>comments : Field updated by the reviewer in support of the review submitted by him/her</li>
 * <li>projectId: Unique id of the project</li>
-* <li>awardAllocation: Allocation awarded</li>
-* <li>endDate: End date of the request</li>
-* <li>reviewers: reviewers of the request</li>
-* <li>startDate: Start date of the allocation</li>
-* <li>status: Status of the allocation request</li>
+* <li>resourceType: Resource type for the request</li>
+* <li>reviewedServiceUnits: Service units suggested by the reviewer for a specific request</li>
+* <li>specificResource: Specific resource for the request suggested by the reviewer</li>
+* <li>username: Name of the reviewer who submitted the review
 **/
 struct ReviewerSpecificResourceDetail{
 	1:optional i64 id,
@@ -110,11 +114,8 @@ struct ReviewerSpecificResourceDetail{
 /**
 * <p>Allocation Request status details</p>
 * <li>projectId: Unique id of the project</li>
-* <li>awardAllocation: Allocation awarded</li>
-* <li>endDate: End date of the request</li>
-* <li>reviewers: reviewers of the request</li>
-* <li>startDate: Start date of the allocation</li>
-* <li>status: Status of the allocation request</li>
+* <li>reviewerUsername: Name of the reviewer who submitted the review</li>
+* <li>id: Unique id of mapping</li>
 **/
 struct ProjectReviewer{
 	1:optional i64 projectId,
