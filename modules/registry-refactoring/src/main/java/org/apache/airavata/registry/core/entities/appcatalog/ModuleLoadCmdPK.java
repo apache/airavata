@@ -21,20 +21,20 @@
 package org.apache.airavata.registry.core.entities.appcatalog;
 
 import javax.persistence.Column;
-import java.io.Serializable;
 import javax.persistence.Id;
+import java.io.Serializable;
 
 /**
- * The primary key class for the postjob_command database table.
+ * The primary key class for the module_load_cmd database table.
  */
-public class PostjobCommandPK implements Serializable {
+public class ModuleLoadCmdPK implements Serializable {
     // default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
     private String appdeploymentId;
     private String command;
 
-    public PostjobCommandPK() {
+    public ModuleLoadCmdPK() {
     }
 
     public String getAppdeploymentId() {
@@ -60,7 +60,7 @@ public class PostjobCommandPK implements Serializable {
         if (!(other instanceof PostjobCommandPK)) {
             return false;
         }
-        PostjobCommandPK castOther = (PostjobCommandPK) other;
+        ModuleLoadCmdPK castOther = (ModuleLoadCmdPK) other;
         return this.appdeploymentId.equals(castOther.appdeploymentId) && this.command.equals(castOther.command);
     }
 
@@ -72,4 +72,5 @@ public class PostjobCommandPK implements Serializable {
 
         return hash;
     }
+
 }

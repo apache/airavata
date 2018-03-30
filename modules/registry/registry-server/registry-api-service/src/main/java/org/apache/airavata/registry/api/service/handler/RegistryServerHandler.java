@@ -65,7 +65,11 @@ import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.core.experiment.catalog.resources.AbstractExpCatResource;
 import org.apache.airavata.registry.core.repositories.appcatalog.ComputeResourceRepository;
+import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationDeploymentRepository;
+import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationInterfaceRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.GroupResourceProfileRepository;
+import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationDeploymentRepository;
+import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationInterfaceRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.GwyResourceProfileRepository;
 import org.apache.airavata.registry.core.repositories.replicacatalog.DataProductRepository;
 import org.apache.airavata.registry.core.repositories.replicacatalog.DataReplicaLocationRepository;
@@ -84,6 +88,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private ExperimentCatalog experimentCatalog;
     private AppCatalog appCatalog;
     private WorkflowCatalog workflowCatalog;
+    private ApplicationDeploymentRepository applicationDeploymentRepository = new ApplicationDeploymentRepository();
+    private ApplicationInterfaceRepository applicationInterfaceRepository = new ApplicationInterfaceRepository();
     private UserResourceProfileRepository userResourceProfileRepository = new UserResourceProfileRepository();
     private DataProductRepository dataProductRepository = new DataProductRepository();
     private DataReplicaLocationRepository dataReplicaLocationRepository = new DataReplicaLocationRepository();
@@ -1150,8 +1156,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public ApplicationModule getApplicationModule(String appModuleId) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            ApplicationModule module = appCatalog.getApplicationInterface().getApplicationModule(appModuleId);
+            ApplicationModule module = applicationInterfaceRepository.getApplicationModule(appModuleId);
             logger.debug("Airavata retrieved application module with module id : " + appModuleId);
             return module;
         } catch (AppCatalogException e) {
@@ -1176,8 +1181,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
         }
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            List<ApplicationModule> moduleList = appCatalog.getApplicationInterface().getAllApplicationModules(gatewayId);
+            List<ApplicationModule> moduleList = applicationInterfaceRepository.getAllApplicationModules(gatewayId);
             logger.debug("Airavata retrieved modules for gateway id : " + gatewayId);
             return moduleList;
         } catch (AppCatalogException e) {
@@ -1203,8 +1207,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
         }
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            List<ApplicationModule> moduleList = appCatalog.getApplicationInterface().getAccessibleApplicationModules(gatewayId, accessibleAppIds, accessibleComputeResourceIds);
+            List<ApplicationModule> moduleList = applicationInterfaceRepository.getAccessibleApplicationModules(gatewayId, accessibleAppIds, accessibleComputeResourceIds);
             logger.debug("Airavata retrieved modules for gateway id : " + gatewayId);
             return moduleList;
         } catch (AppCatalogException e) {
@@ -1225,9 +1228,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean deleteApplicationModule(String appModuleId) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
             logger.debug("Airavata deleted application module with module id : " + appModuleId);
-            return appCatalog.getApplicationInterface().removeApplicationModule(appModuleId);
+            return applicationInterfaceRepository.removeApplicationModule(appModuleId);
         } catch (AppCatalogException e) {
             logger.error(appModuleId, "Error while deleting application module...", e);
             RegistryServiceException exception = new RegistryServiceException();
@@ -1246,8 +1248,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public ApplicationDeploymentDescription getApplicationDeployment(String appDeploymentId) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            ApplicationDeploymentDescription deployement = appCatalog.getApplicationDeployment().getApplicationDeployement(appDeploymentId);
+            ApplicationDeploymentDescription deployement = applicationDeploymentRepository.getApplicationDeployement(appDeploymentId);
             logger.debug("Airavata registered application deployment for deployment id : " + appDeploymentId);
             return deployement;
         } catch (AppCatalogException e) {
@@ -1268,8 +1269,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean deleteApplicationDeployment(String appDeploymentId) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            appCatalog.getApplicationDeployment().removeAppDeployment(appDeploymentId);
+            applicationDeploymentRepository.removeAppDeployment(appDeploymentId);
             logger.debug("Airavata removed application deployment with deployment id : " + appDeploymentId);
             return true;
         } catch (AppCatalogException e) {
@@ -1295,8 +1295,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
         }
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            List<ApplicationDeploymentDescription> deployements = appCatalog.getApplicationDeployment().getAllApplicationDeployements(gatewayId);
+            List<ApplicationDeploymentDescription> deployements = applicationDeploymentRepository.getAllApplicationDeployements(gatewayId);
             logger.debug("Airavata retrieved application deployments for gateway id : " + gatewayId);
             return deployements;
         } catch (AppCatalogException e) {
@@ -1322,8 +1321,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
         }
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            List<ApplicationDeploymentDescription> deployements = appCatalog.getApplicationDeployment().getAccessibleApplicationDeployements(gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
+            List<ApplicationDeploymentDescription> deployements = applicationDeploymentRepository.getAccessibleApplicationDeployements(gatewayId, accessibleAppDeploymentIds, accessibleComputeResourceIds);
             logger.debug("Airavata retrieved application deployments for gateway id : " + gatewayId);
             return deployements;
         } catch (AppCatalogException e) {
@@ -1344,11 +1342,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<String> getAppModuleDeployedResources(String appModuleId) throws RegistryServiceException, TException {
         try {
-            List<String> appDeployments = new ArrayList<String>();
-            appCatalog = RegistryFactory.getAppCatalog();
-            Map<String, String> filters = new HashMap<String, String>();
+            List<String> appDeployments = new ArrayList<>();
+            Map<String, String> filters = new HashMap<>();
             filters.put(AppCatAbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, appModuleId);
-            List<ApplicationDeploymentDescription> applicationDeployments = appCatalog.getApplicationDeployment().getApplicationDeployements(filters);
+            List<ApplicationDeploymentDescription> applicationDeployments = applicationDeploymentRepository.getApplicationDeployements(filters);
             for (ApplicationDeploymentDescription description : applicationDeployments){
                 appDeployments.add(description.getAppDeploymentId());
             }
@@ -1365,10 +1362,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<ApplicationDeploymentDescription> getApplicationDeployments(String appModuleId) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            Map<String, String> filters = new HashMap<String, String>();
+            Map<String, String> filters = new HashMap<>();
             filters.put(AppCatAbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, appModuleId);
-            List<ApplicationDeploymentDescription> applicationDeployments = appCatalog.getApplicationDeployment().getApplicationDeployements(filters);
+            List<ApplicationDeploymentDescription> applicationDeployments = applicationDeploymentRepository.getApplicationDeployements(filters);
             return applicationDeployments;
         } catch (AppCatalogException e) {
             logger.error(appModuleId, "Error while retrieving application deployments...", e);
@@ -1388,8 +1384,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public ApplicationInterfaceDescription getApplicationInterface(String appInterfaceId) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            ApplicationInterfaceDescription interfaceDescription = appCatalog.getApplicationInterface().getApplicationInterface(appInterfaceId);
+            ApplicationInterfaceDescription interfaceDescription = applicationInterfaceRepository.getApplicationInterface(appInterfaceId);
             logger.debug("Airavata retrieved application interface with interface id : " + appInterfaceId);
             return interfaceDescription;
         } catch (AppCatalogException e) {
@@ -1410,8 +1405,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean deleteApplicationInterface(String appInterfaceId) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            boolean removeApplicationInterface = appCatalog.getApplicationInterface().removeApplicationInterface(appInterfaceId);
+            boolean removeApplicationInterface = applicationInterfaceRepository.removeApplicationInterface(appInterfaceId);
             logger.debug("Airavata removed application interface with interface id : " + appInterfaceId);
             return removeApplicationInterface;
         } catch (AppCatalogException e) {
@@ -1436,9 +1430,8 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
         }
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            List<ApplicationInterfaceDescription> allApplicationInterfaces = appCatalog.getApplicationInterface().getAllApplicationInterfaces(gatewayId);
-            Map<String, String> allApplicationInterfacesMap = new HashMap<String, String>();
+            List<ApplicationInterfaceDescription> allApplicationInterfaces = applicationInterfaceRepository.getAllApplicationInterfaces(gatewayId);
+            Map<String, String> allApplicationInterfacesMap = new HashMap<>();
             if (allApplicationInterfaces != null && !allApplicationInterfaces.isEmpty()){
                 for (ApplicationInterfaceDescription interfaceDescription : allApplicationInterfaces){
                     allApplicationInterfacesMap.put(interfaceDescription.getApplicationInterfaceId(), interfaceDescription.getApplicationName());
@@ -1468,8 +1461,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
         }
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            List<ApplicationInterfaceDescription> interfaces = appCatalog.getApplicationInterface().getAllApplicationInterfaces(gatewayId);
+            List<ApplicationInterfaceDescription> interfaces = applicationInterfaceRepository.getAllApplicationInterfaces(gatewayId);
             logger.debug("Airavata retrieved application interfaces for gateway id : " + gatewayId);
             return interfaces;
         } catch (AppCatalogException e) {
@@ -1490,8 +1482,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<InputDataObjectType> getApplicationInputs(String appInterfaceId) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            List<InputDataObjectType> applicationInputs = appCatalog.getApplicationInterface().getApplicationInputs(appInterfaceId);
+            List<InputDataObjectType> applicationInputs = applicationInterfaceRepository.getApplicationInputs(appInterfaceId);
             logger.debug("Airavata retrieved application inputs for application interface id : " + appInterfaceId);
             return applicationInputs;
         } catch (AppCatalogException e) {
@@ -1527,19 +1518,16 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public Map<String, String> getAvailableAppInterfaceComputeResources(String appInterfaceId) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            ApplicationDeployment applicationDeployment = appCatalog.getApplicationDeployment();
             Map<String, String> allComputeResources = new ComputeResourceRepository().getAvailableComputeResourceIdList();
             Map<String, String> availableComputeResources = new HashMap<String, String>();
-            ApplicationInterfaceDescription applicationInterface =
-                    appCatalog.getApplicationInterface().getApplicationInterface(appInterfaceId);
-            HashMap<String, String> filters = new HashMap<String,String>();
+            ApplicationInterfaceDescription applicationInterface = applicationInterfaceRepository.getApplicationInterface(appInterfaceId);
+            HashMap<String, String> filters = new HashMap<>();
             List<String> applicationModules = applicationInterface.getApplicationModules();
             if (applicationModules != null && !applicationModules.isEmpty()){
                 for (String moduleId : applicationModules) {
                     filters.put(AppCatAbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, moduleId);
                     List<ApplicationDeploymentDescription> applicationDeployments =
-                            applicationDeployment.getApplicationDeployements(filters);
+                            applicationDeploymentRepository.getApplicationDeployements(filters);
                     for (ApplicationDeploymentDescription deploymentDescription : applicationDeployments) {
                         if (allComputeResources.get(deploymentDescription.getComputeHostId()) != null){
                             availableComputeResources.put(deploymentDescription.getComputeHostId(),
@@ -3487,8 +3475,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateApplicationInterface(String appInterfaceId, ApplicationInterfaceDescription applicationInterface) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            appCatalog.getApplicationInterface().updateApplicationInterface(appInterfaceId, applicationInterface);
+            applicationInterfaceRepository.updateApplicationInterface(appInterfaceId, applicationInterface);
             logger.debug("Airavata updated application interface with interface id : " + appInterfaceId);
             return true;
         } catch (AppCatalogException e) {
@@ -3514,8 +3501,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
             }
             try {
-                appCatalog = RegistryFactory.getAppCatalog();
-                String interfaceId = appCatalog.getApplicationInterface().addApplicationInterface(applicationInterface, gatewayId);
+                String interfaceId = applicationInterfaceRepository.addApplicationInterface(applicationInterface, gatewayId);
                 logger.debug("Airavata registered application interface for gateway id : " + gatewayId);
                 return interfaceId;
             } catch (AppCatalogException e) {
@@ -3537,8 +3523,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateApplicationDeployment(String appDeploymentId, ApplicationDeploymentDescription applicationDeployment) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            appCatalog.getApplicationDeployment().updateApplicationDeployment(appDeploymentId, applicationDeployment);
+            applicationDeploymentRepository.updateApplicationDeployment(appDeploymentId, applicationDeployment);
             logger.debug("Airavata updated application deployment for deployment id : " + appDeploymentId);
             return true;
         } catch (AppCatalogException e) {
@@ -3564,8 +3549,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
         }
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            String deployment = appCatalog.getApplicationDeployment().addApplicationDeployment(applicationDeployment, gatewayId);
+            String deployment = applicationDeploymentRepository.addApplicationDeployment(applicationDeployment, gatewayId);
             logger.debug("Airavata registered application deployment for gateway id : " + gatewayId);
             return deployment;
         } catch (AppCatalogException e) {
@@ -3587,8 +3571,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean updateApplicationModule(String appModuleId, ApplicationModule applicationModule) throws RegistryServiceException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            appCatalog.getApplicationInterface().updateApplicationModule(appModuleId, applicationModule);
+            applicationInterfaceRepository.updateApplicationModule(appModuleId, applicationModule);
             logger.debug("Airavata updated application module with module id: " + appModuleId);
             return true;
         } catch (AppCatalogException e) {
@@ -3615,8 +3598,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
         }
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            String module = appCatalog.getApplicationInterface().addApplicationModule(applicationModule, gatewayId);
+            String module = applicationInterfaceRepository.addApplicationModule(applicationModule, gatewayId);
             logger.debug("Airavata registered application module for gateway id : " + gatewayId);
             return module;
         } catch (AppCatalogException e) {
@@ -4277,8 +4259,9 @@ public class RegistryServerHandler implements RegistryService.Iface {
     private List<OutputDataObjectType> getApplicationOutputsInternal(String appInterfaceId) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, TException {
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
-            return appCatalog.getApplicationInterface().getApplicationOutputs(appInterfaceId);
+            List<OutputDataObjectType> applicationOutputs = applicationInterfaceRepository.getApplicationOutputs(appInterfaceId);
+            logger.debug("Airavata retrieved application outputs for application interface id : " + appInterfaceId);
+            return applicationOutputs;
         } catch (AppCatalogException e) {
             logger.error(appInterfaceId, "Error while retrieving application outputs...", e);
             AiravataSystemException exception = new AiravataSystemException();

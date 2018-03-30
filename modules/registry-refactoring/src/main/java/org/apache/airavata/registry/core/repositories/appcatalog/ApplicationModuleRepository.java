@@ -19,16 +19,13 @@
  */
 package org.apache.airavata.registry.core.repositories.appcatalog;
 
-import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
-import org.apache.airavata.registry.core.entities.appcatalog.UserComputeResourcePreferenceEntity;
-import org.apache.airavata.registry.core.entities.appcatalog.UserComputeResourcePreferencePK;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
+import org.apache.airavata.registry.core.entities.appcatalog.ApplicationModuleEntity;
 
-public class UserComputeResourcePreferenceRepository extends AppCatAbstractRepository<UserComputeResourcePreference, UserComputeResourcePreferenceEntity, UserComputeResourcePreferencePK> {
+public class ApplicationModuleRepository extends AppCatAbstractRepository<ApplicationModule, ApplicationModuleEntity, String> {
 
-    public UserComputeResourcePreferenceRepository() {
-        super(UserComputeResourcePreference.class, UserComputeResourcePreferenceEntity.class);
+    public ApplicationModuleRepository () {
+        super(ApplicationModule.class, ApplicationModuleEntity.class);
     }
 
 }

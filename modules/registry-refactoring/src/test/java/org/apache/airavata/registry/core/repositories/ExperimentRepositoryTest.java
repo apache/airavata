@@ -76,80 +76,80 @@ public class ExperimentRepositoryTest {
 		/*
          * Creating Gateway required for UserProfile & Project creation
 		 */
-        Gateway gateway = new Gateway();
-        gateway.setGatewayApprovalStatus(GatewayApprovalStatus.ACTIVE);
-        gateway.setGatewayId(gatewayId);
-        gateway.setDomain(GATEWAY_DOMAIN);
-        gateway = gatewayRepository.create(gateway);
-        Assert.assertTrue(!gateway.getGatewayId().isEmpty());
+//        Gateway gateway = new Gateway();
+//        gateway.setGatewayApprovalStatus(GatewayApprovalStatus.ACTIVE);
+//        gateway.setGatewayId(gatewayId);
+//        gateway.setDomain(GATEWAY_DOMAIN);
+//        gateway = gatewayRepository.create(gateway);
+//        Assert.assertTrue(!gateway.getGatewayId().isEmpty());
 
 		/*
          * UserProfile Instance creation required for Project Creation
 		 */
-        UserProfile userProfile = new UserProfile();
-        userProfile.setAiravataInternalUserId(userId);
-        userProfile.setGatewayId(gateway.getGatewayId());
-        userProfile = userProfileRepository.create(userProfile);
-        Assert.assertTrue(!userProfile.getAiravataInternalUserId().isEmpty());
+//        UserProfile userProfile = new UserProfile();
+//        userProfile.setAiravataInternalUserId(userId);
+//        userProfile.setGatewayId(gateway.getGatewayId());
+//        userProfile = userProfileRepository.create(userProfile);
+//        Assert.assertTrue(!userProfile.getAiravataInternalUserId().isEmpty());
 
         /*
          * Project Instance creation
          */
-        Project project = new Project();
-        project.setGatewayId(gatewayId);
-        project.setOwner(userId);
-        project.setProjectID(projectId);
-        project.setGatewayIdIsSet(true);
-        project = projectRepository.create(project);
-        Assert.assertTrue(!project.getProjectID().isEmpty());
+//        Project project = new Project();
+//        project.setGatewayId(gatewayId);
+//        project.setOwner(userId);
+//        project.setProjectID(projectId);
+//        project.setGatewayIdIsSet(true);
+//        project = projectRepository.create(project);
+//        Assert.assertTrue(!project.getProjectID().isEmpty());
 
         /*
          * Experiment Instance Creation
          */
 
-        ExperimentModel experiment = new ExperimentModel();
-        experiment.setExperimentId(experimentId);
-        experiment.setExperimentName(EXPERIMENT_NAME);
-        experiment.setGatewayId(gatewayId);
-        experiment.setUserName(userId);
-        experiment.setProjectId(projectId);
+//        ExperimentModel experiment = new ExperimentModel();
+//        experiment.setExperimentId(experimentId);
+//        experiment.setExperimentName(EXPERIMENT_NAME);
+//        experiment.setGatewayId(gatewayId);
+//        experiment.setUserName(userId);
+//        experiment.setProjectId(projectId);
 
         /*
          * Experiment Repository Insert Operation Test
 		 */
-        experiment = experimentRepository.create(experiment);
-        Assert.assertTrue(!experiment.getExperimentId().isEmpty());
+//        experiment = experimentRepository.create(experiment);
+//        Assert.assertTrue(!experiment.getExperimentId().isEmpty());
 
 
         /*
          * Experiment Repository Update Operation Test
 		 */
-        experiment.setDescription(EXPERIMENT_DESCRIPTION);
-        experimentRepository.update(experiment);
-        experiment = experimentRepository.get(experimentId);
-        Assert.assertEquals(experiment.getDescription(), EXPERIMENT_DESCRIPTION);
+//        experiment.setDescription(EXPERIMENT_DESCRIPTION);
+//        experimentRepository.update(experiment);
+//        experiment = experimentRepository.get(experimentId);
+//        Assert.assertEquals(experiment.getDescription(), EXPERIMENT_DESCRIPTION);
 
 		/*
          * Workspace Project Repository Select Operation Test
 		 */
-        experiment = experimentRepository.get(experimentId);
-        Assert.assertNotNull(experiment);
+//        experiment = experimentRepository.get(experimentId);
+//        Assert.assertNotNull(experiment);
 
 		/*
          * Experiment Repository Delete Operation
 		 */
 
-        boolean deleteResult = experimentRepository.delete(experimentId);
-        Assert.assertTrue(deleteResult);
-
-        deleteResult = projectRepository.delete(projectId);
-        Assert.assertTrue(deleteResult);
-
-        deleteResult = userProfileRepository.delete(userId);
-        Assert.assertTrue(deleteResult);
-
-        deleteResult = gatewayRepository.delete(gatewayId);
-        Assert.assertTrue(deleteResult);
+//        boolean deleteResult = experimentRepository.delete(experimentId);
+//        Assert.assertTrue(deleteResult);
+//
+//        deleteResult = projectRepository.delete(projectId);
+//        Assert.assertTrue(deleteResult);
+//
+//        deleteResult = userProfileRepository.delete(userId);
+//        Assert.assertTrue(deleteResult);
+//
+//        deleteResult = gatewayRepository.delete(gatewayId);
+//        Assert.assertTrue(deleteResult);
 
 
     }

@@ -131,8 +131,7 @@
                 <inherited>true</inherited>
                 <configuration>
                     <failIfNoTests>false</failIfNoTests>
-                    <!--<skipTests>${skipTests}</skipTests>-->
-                    <skipTests>true</skipTests>
+                    <skipTests>${skipTests}</skipTests>
                     <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
                 </configuration>
             </plugin>

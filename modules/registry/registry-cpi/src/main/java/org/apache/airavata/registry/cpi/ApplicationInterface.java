@@ -96,11 +96,11 @@ public interface ApplicationInterface {
     /**
      * This method will return a list of all application modules
      * @param gatewayId Gateway ID
-     * @param accessibleAppModuleIds List of Accessible App IDs accessible to the user
+     * @param accessibleAppIds List of Accessible App IDs
      * @param accessibleComputeResourceIds List of Accessible Compute Resource IDs
      * @return list of all application modules accessible to the user
      */
-    List<ApplicationModule> getAccessibleApplicationModules(String gatewayId, List<String> accessibleAppModuleIds, List<String> accessibleComputeResourceIds) throws AppCatalogException;
+    List<ApplicationModule> getAccessibleApplicationModules(String gatewayId, List<String> accessibleAppIds, List<String> accessibleComputeResourceIds) throws AppCatalogException;
 
     /**
      * This method will return a list of application interfaces according to given search criteria

@@ -31,7 +31,7 @@ import java.sql.Timestamp;
  * The persistent class for the storage_interface database table.
  */
 @Entity
-@Table(name = "storage_interface")
+@Table(name = "STORAGE_INTERFACE")
 public class StorageInterfaceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 

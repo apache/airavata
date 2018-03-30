@@ -72,14 +72,10 @@
         <class>org.apache.airavata.registry.core.entities.appcatalog.GroupSSHAccountProvisionerConfig</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.GroupResourceProfileEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.GridftpEndpointPK</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.PrejobCommandPK</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.PostjobCommandPK</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.AppModuleMappingPK</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.ApplicationInputPK</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.ApplicationOutputPK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.StorageInterfacePK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.JobManagerCommandPK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ParallelismCommandPK</class>
+        <class>org.apache.airavata.registry.core.entities.appcatalog.ModuleLoadCmdEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.UserResourceProfileEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.UserComputeResourcePreferenceEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.UserStoragePreferenceEntity</class>

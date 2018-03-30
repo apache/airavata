@@ -20,10 +20,7 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -31,76 +28,97 @@ import java.io.Serializable;
  * 
  */
 @Entity
-@Table(name = "application_input")
+@Table(name = "APPLICATION_INPUT")
+@IdClass(ApplicationInputPK.class)
 public class ApplicationInputEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@EmbeddedId
-	private ApplicationInputPK id;
+	@Id
+	@Column(name = "INTERFACE_ID")
+	private String interfaceId;
+
+	@Id
+	@Column(name = "INPUT_KEY")
+	private String name;
 
 	@Column(name = "APP_ARGUMENT")
-	private String appArgument;
+	private String applicationArgument;
 
 	@Column(name = "DATA_STAGED")
-	private short dataStaged;
+	private boolean dataStaged;
 
 	@Column(name = "DATA_TYPE")
-	private String dataType;
+	private String type;
 
 	@Column(name = "INPUT_ORDER")
 	private int inputOrder;
 
 	@Column(name = "INPUT_VALUE")
-	private String inputValue;
+	private String value;
 
 	@Column(name = "IS_REQUIRED")
-	private short isRequired;
+	private boolean isRequired;
 
 	@Column(name = "METADATA")
-	private String metadata;
+	private String metaData;
 
 	@Column(name = "REQUIRED_TO_COMMANDLINE")
-	private short requiredToCommandline;
+	private boolean requiredToAddedToCommandLine;
 
 	@Column(name = "STANDARD_INPUT")
-	private short standardInput;
+	private boolean standardInput;
 
 	@Column(name = "USER_FRIENDLY_DESC")
-	private String userFriendlyDesc;
+	private String userFriendlyDescription;
+
+	@Column(name = "IS_READ_ONLY")
+	private boolean isReadOnly;
+
+	@ManyToOne(targetEntity = ApplicationInterfaceEntity.class, cascade = CascadeType.MERGE)
+	@JoinColumn(name = "INTERFACE_ID")
+	private ApplicationInterfaceEntity applicationInterface;
 
 	public ApplicationInputEntity() {
 	}
 
-	public ApplicationInputPK getId() {
-		return id;
+	public String getInterfaceId() {
+		return interfaceId;
 	}
 
-	public void setId(ApplicationInputPK id) {
-		this.id = id;
+	public void setInterfaceId(String interfaceId) {
+		this.interfaceId = interfaceId;
 	}
 
-	public String getAppArgument() {
-		return appArgument;
+	public String getName() {
+		return name;
 	}
 
-	public void setAppArgument(String appArgument) {
-		this.appArgument = appArgument;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public short getDataStaged() {
+	public String getApplicationArgument() {
+		return applicationArgument;
+	}
+
+	public void setApplicationArgument(String applicationArgument) {
+		this.applicationArgument = applicationArgument;
+	}
+
+	public boolean getDataStaged() {
 		return dataStaged;
 	}
 
-	public void setDataStaged(short dataStaged) {
+	public void setDataStaged(boolean dataStaged) {
 		this.dataStaged = dataStaged;
 	}
 
-	public String getDataType() {
-		return dataType;
+	public String getType() {
+		return type;
 	}
 
-	public void setDataType(String dataType) {
-		this.dataType = dataType;
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public int getInputOrder() {
@@ -111,51 +129,68 @@ public class ApplicationInputEntity implements Serializable {
 		this.inputOrder = inputOrder;
 	}
 
-	public String getInputValue() {
-		return inputValue;
+	public String getValue() {
+		return value;
 	}
 
-	public void setInputValue(String inputValue) {
-		this.inputValue = inputValue;
+	public void setValue(String value) {
+		this.value = value;
 	}
 
-	public short getIsRequired() {
+	public boolean getIsRequired() {
 		return isRequired;
 	}
 
-	public void setIsRequired(short isRequired) {
+	public void setIsRequired(boolean isRequired) {
 		this.isRequired = isRequired;
 	}
 
-	public String getMetadata() {
-		return metadata;
+	public String getMetaData() {
+		return metaData;
 	}
 
-	public void setMetadata(String metadata) {
-		this.metadata = metadata;
+	public void setMetaData(String metaData) {
+		this.metaData = metaData;
 	}
 
-	public short getRequiredToCommandline() {
-		return requiredToCommandline;
+	public boolean getRequiredToAddedToCommandLine() {
+		return requiredToAddedToCommandLine;
 	}
 
-	public void setRequiredToCommandline(short requiredToCommandline) {
-		this.requiredToCommandline = requiredToCommandline;
+	public void setRequiredToAddedToCommandLine(boolean requiredToAddedToCommandLine) {
+		this.requiredToAddedToCommandLine = requiredToAddedToCommandLine;
 	}
 
-	public short getStandardInput() {
+	public boolean getStandardInput() {
 		return standardInput;
 	}
 
-	public void setStandardInput(short standardInput) {
+	public void setStandardInput(boolean standardInput) {
 		this.standardInput = standardInput;
 	}
 
-	public String getUserFriendlyDesc() {
-		return userFriendlyDesc;
+	public String getserFriendlyDescription() {
+		return userFriendlyDescription;
 	}
 
-	public void setUserFriendlyDesc(String userFriendlyDesc) {
-		this.userFriendlyDesc = userFriendlyDesc;
+	public void setserFriendlyDescription(String userFriendlyDescription) {
+		this.userFriendlyDescription = userFriendlyDescription;
 	}
+
+	public boolean getIsReadOnly() {
+		return isReadOnly;
+	}
+
+	public void setIsReadOnly(boolean isReadOnly) {
+		this.isReadOnly = isReadOnly;
+	}
+
+	public ApplicationInterfaceEntity getApplicationInterface() {
+		return applicationInterface;
+	}
+
+	public void setApplicationInterface(ApplicationInterfaceEntity applicationInterface) {
+		this.applicationInterface = applicationInterface;
+	}
+
 }

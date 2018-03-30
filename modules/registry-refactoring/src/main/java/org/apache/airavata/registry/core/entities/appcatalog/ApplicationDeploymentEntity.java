@@ -20,27 +20,25 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * The persistent class for the application_deployment database table.
  */
 @Entity
-@Table(name = "application_deployment")
+@Table(name = "APPLICATION_DEPLOYMENT")
 public class ApplicationDeploymentEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "DEPLOYMENT_ID")
-    private String deploymentId;
+    private String appDeploymentId;
 
     @Column(name = "APPLICATION_DESC")
-    private String applicationDesc;
+    private String appDeploymentDescription;
 
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
@@ -61,28 +59,67 @@ public class ApplicationDeploymentEntity implements Serializable {
     private Timestamp updateTime;
 
     @Column(name = "COMPUTE_HOSTID")
-    private String computeHostid;
+    private String computeHostId;
 
     @Column(name = "APP_MODULE_ID")
-    private String applicationModuleId;
+    private String appModuleId;
+
+    @Column(name = "DEFAULT_NODE_COUNT")
+    private int defaultNodeCount;
+
+    @Column(name = "DEFAULT_CPU_COUNT")
+    private int defaultCPUCount;
+
+    @Column(name = "DEFAULT_WALLTIME")
+    private int defaultWallTime;
+
+    @Column(name = "DEFAULT_QUEUE_NAME")
+    private String defaultQueueName;
+
+    @Column(name = "EDITABLE_BY_USER")
+    private boolean editableByUser;
+
+    @OneToMany(targetEntity = ModuleLoadCmdEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "applicationDeployment", fetch = FetchType.EAGER)
+    private List<ModuleLoadCmdEntity> moduleLoadCmds;
+
+    @OneToMany(targetEntity = AppEnvironmentEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "applicationDeployment", fetch = FetchType.EAGER)
+    private List<AppEnvironmentEntity> setEnvironment;
+
+    @OneToMany(targetEntity = LibraryPrependPathEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "applicationDeployment", fetch = FetchType.EAGER)
+    private List<LibraryPrependPathEntity> libPrependPaths;
+
+    @OneToMany(targetEntity = LibraryApendPathEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "applicationDeployment", fetch = FetchType.EAGER)
+    private List<LibraryApendPathEntity> libAppendPaths;
+
+    @OneToMany(targetEntity = PrejobCommandEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "applicationDeployment", fetch = FetchType.EAGER)
+    private List<PrejobCommandEntity> preJobCommands;
+
+    @OneToMany(targetEntity = PostjobCommandEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "applicationDeployment", fetch = FetchType.EAGER)
+    private List<PostjobCommandEntity> postJobCommands;
 
     public ApplicationDeploymentEntity() {
     }
 
-    public String getDeploymentId() {
-        return deploymentId;
+    public String getAppDeploymentId() {
+        return appDeploymentId;
     }
 
-    public void setDeploymentId(String deploymentId) {
-        this.deploymentId = deploymentId;
+    public void setAppDeploymentId(String appDeploymentId) {
+        this.appDeploymentId = appDeploymentId;
     }
 
-    public String getApplicationDesc() {
-        return applicationDesc;
+    public String getAppDeploymentDescription() {
+        return appDeploymentDescription;
     }
 
-    public void setApplicationDesc(String applicationDesc) {
-        this.applicationDesc = applicationDesc;
+    public void setAppDeploymentDescription(String appDeploymentDescription) {
+        this.appDeploymentDescription = appDeploymentDescription;
     }
 
     public Timestamp getCreationTime() {
@@ -133,19 +170,108 @@ public class ApplicationDeploymentEntity implements Serializable {
         this.updateTime = updateTime;
     }
 
-    public String getComputeHostid() {
-        return computeHostid;
+    public String getComputeHostId() {
+        return computeHostId;
     }
 
-    public void setComputeHostid(String computeHostid) {
-        this.computeHostid = computeHostid;
+    public void setComputeHostId(String computeHostId) {
+        this.computeHostId = computeHostId;
     }
 
-    public String getApplicationModuleId() {
-        return applicationModuleId;
+    public String getAppModuleId() {
+        return appModuleId;
     }
 
-    public void setApplicationModuleId(String applicationModuleId) {
-        this.applicationModuleId = applicationModuleId;
+    public void setAppModuleId(String appModuleId) {
+        this.appModuleId = appModuleId;
     }
+
+    public int getDefaultNodeCount() {
+        return defaultNodeCount;
+    }
+
+    public void setDefaultNodeCount(int defaultNodeCount) {
+        this.defaultNodeCount = defaultNodeCount;
+    }
+
+    public int getDefaultCPUCount() {
+        return defaultCPUCount;
+    }
+
+    public void setDefaultCPUCount(int defaultCPUCount) {
+        this.defaultCPUCount = defaultCPUCount;
+    }
+
+    public int getDefaultWallTime() {
+        return defaultWallTime;
+    }
+
+    public void setDefaultWallTime(int defaultWallTime) {
+        this.defaultWallTime = defaultWallTime;
+    }
+
+    public String getDefaultQueueName() {
+        return defaultQueueName;
+    }
+
+    public void setDefaultQueueName(String defaultQueueName) {
+        this.defaultQueueName = defaultQueueName;
+    }
+
+    public boolean getEditableByUser() {
+        return editableByUser;
+    }
+
+    public void setEditableByUser(boolean editableByUser) {
+        this.editableByUser = editableByUser;
+    }
+
+    public List<ModuleLoadCmdEntity> getModuleLoadCmds() {
+        return moduleLoadCmds;
+    }
+
+    public void setModuleLoadCmds(List<ModuleLoadCmdEntity> moduleLoadCmds) {
+        this.moduleLoadCmds = moduleLoadCmds;
+    }
+
+    public List<AppEnvironmentEntity> getSetEnvironment() {
+        return setEnvironment;
+    }
+
+    public void setSetEnvironment(List<AppEnvironmentEntity> setEnvironment) {
+        this.setEnvironment = setEnvironment;
+    }
+
+    public List<LibraryPrependPathEntity> getLibPrependPaths() {
+        return libPrependPaths;
+    }
+
+    public void setLibPrependPaths(List<LibraryPrependPathEntity> libPrependPaths) {
+        this.libPrependPaths = libPrependPaths;
+    }
+
+    public List<LibraryApendPathEntity> getLibAppendPaths() {
+        return libAppendPaths;
+    }
+
+    public void setLibAppendPaths(List<LibraryApendPathEntity> libAppendPaths) {
+        this.libAppendPaths = libAppendPaths;
+    }
+
+    public List<PrejobCommandEntity> getPreJobCommands() {
+        return preJobCommands;
+    }
+
+    public void setPreJobCommands(List<PrejobCommandEntity> preJobCommands) {
+        this.preJobCommands = preJobCommands;
+    }
+
+    public List<PostjobCommandEntity> getPostJobCommands() {
+        return postJobCommands;
+    }
+
+    public void setPostJobCommands(List<PostjobCommandEntity> postJobCommands) {
+        this.postJobCommands = postJobCommands;
+    }
+
 }

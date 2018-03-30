@@ -20,9 +20,7 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 
@@ -31,21 +29,60 @@ import java.io.Serializable;
  * 
  */
 @Entity
-@Table(name="app_module_mapping")
+@Table(name="APP_MODULE_MAPPING")
+@IdClass(AppModuleMappingPK.class)
 public class AppModuleMappingEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@EmbeddedId
-	private AppModuleMappingPK id;
+	@Id
+	@Column(name="INTERFACE_ID")
+	private String interfaceId;
+
+	@Id
+	@Column(name="MODULE_ID")
+	private String moduleId;
+
+	@ManyToOne(targetEntity = ApplicationInterfaceEntity.class, cascade = CascadeType.MERGE)
+	@JoinColumn(name = "INTERFACE_ID")
+	private ApplicationInterfaceEntity applicationInterface;
+
+	@ManyToOne(targetEntity = ApplicationModuleEntity.class, cascade = CascadeType.MERGE)
+	@JoinColumn(name = "MODULE_ID")
+	private ApplicationModuleEntity applicationModule;
 
 	public AppModuleMappingEntity() {
 	}
 
-	public AppModuleMappingPK getId() {
-		return id;
+	public String getInterfaceId() {
+		return interfaceId;
 	}
 
-	public void setId(AppModuleMappingPK id) {
-		this.id = id;
+	public void setInterfaceId(String interfaceId) {
+		this.interfaceId = interfaceId;
 	}
+
+	public String getModuleId() {
+		return moduleId;
+	}
+
+	public void setModuleId(String moduleId) {
+		this.moduleId = moduleId;
+	}
+
+	public ApplicationInterfaceEntity getApplicationInterface() {
+		return applicationInterface;
+	}
+
+	public void setApplicationInterface(ApplicationInterfaceEntity applicationInterface) {
+		this.applicationInterface = applicationInterface;
+	}
+
+	public ApplicationModuleEntity getApplicationModule() {
+		return applicationModule;
+	}
+
+	public void setApplicationModule(ApplicationModuleEntity applicationModule) {
+		this.applicationModule = applicationModule;
+	}
+
 }
