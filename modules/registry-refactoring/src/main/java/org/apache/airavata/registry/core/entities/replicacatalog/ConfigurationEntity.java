@@ -24,47 +24,36 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 /**
- * The persistent class for the data_product_metadata database table.
+ * The persistent class for the configuration database table.
  */
 @Entity
-@Table(name = "DATA_PRODUCT_METADATA")
-@IdClass(DataProductMetadataPK.class)
-public class DataProductMetadataEntity implements Serializable {
+@Table(name = "CONFIGURATION")
+@IdClass(ConfigurationPK.class)
+public class ConfigurationEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "PRODUCT_URI")
-    private String productUri;
+    @Column(name = "CONFIG_KEY")
+    private String configKey;
 
     @Id
-    @Column(name = "METADATA_KEY")
-    private String metadataKey;
+    @Column(name = "CONFIG_VAL")
+    private String configVal;
 
-    @Column(name = "METADATA_VALUE")
-    private String metadataValue;
-
-    public String getProductUri() {
-        return productUri;
+    public String getConfigKey() {
+        return configKey;
     }
 
-    public void setProductUri(String productUri) {
-        this.productUri = productUri;
+    public void setConfigKey(String configKey) {
+        this.configKey = configKey;
     }
 
-    public String getMetadataKey() {
-        return metadataKey;
+    public String getConfigVal() {
+        return configVal;
     }
 
-    public void setMetadataKey(String metadataKey) {
-        this.metadataKey = metadataKey;
-    }
-
-    public String getMetadataValue() {
-        return metadataValue;
-    }
-
-    public void setMetadataValue(String metadataValue) {
-        this.metadataValue = metadataValue;
+    public void setConfigVal(String configVal) {
+        this.configVal = configVal;
     }
 
 }
