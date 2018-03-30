@@ -20,9 +20,7 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 
@@ -30,22 +28,55 @@ import java.io.Serializable;
  * The persistent class for the postjob_command database table.
  */
 @Entity
-@Table(name = "postjob_command")
+@Table(name = "POSTJOB_COMMAND")
+@IdClass(PostjobCommandPK.class)
 public class PostjobCommandEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private PostjobCommandPK id;
+    @Id
+    @Column(name = "APPDEPLOYMENT_ID")
+    private String appdeploymentId;
 
+    @Id
+    @Column(name = "COMMAND")
+    private String command;
+
+    @Column(name = "COMMAND_ORDER")
+    private int commandOrder;
+
+    @ManyToOne(targetEntity = ApplicationDeploymentEntity.class, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "APPDEPLOYMENT_ID")
+    private ApplicationDeploymentEntity applicationDeployment;
 
     public PostjobCommandEntity() {
     }
 
-    public PostjobCommandPK getId() {
-        return id;
+    public String getAppdeploymentId() {
+        return appdeploymentId;
     }
 
-    public void setId(PostjobCommandPK id) {
-        this.id = id;
+    public void setAppdeploymentId(String appdeploymentId) {
+        this.appdeploymentId = appdeploymentId;
     }
+
+    public String getCommand() {
+        return command;
+    }
+
+    public void setCommand(String command) {
+        this.command = command;
+    }
+
+    public int getCommandOrder() { return commandOrder; }
+
+    public void setCommandOrder(int commandOrder) { this.commandOrder = commandOrder; }
+
+    public ApplicationDeploymentEntity getApplicationDeployment() {
+        return applicationDeployment;
+    }
+
+    public void setApplicationDeployment(ApplicationDeploymentEntity applicationDeployment) {
+        this.applicationDeployment = applicationDeployment;
+    }
+
 }
