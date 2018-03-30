@@ -25,6 +25,9 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
 
+/**
+ * The persistent class for the cloud_job_submission database table.
+ */
 @Entity
 @Table(name = "CLOUD_JOB_SUBMISSION")
 public class CloudJobSubmissionEntity implements Serializable {

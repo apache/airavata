@@ -32,13 +32,13 @@ import java.sql.Timestamp;
  * 
  */
 @Entity
-@Table(name = "application_module")
+@Table(name = "APPLICATION_MODULE")
 public class ApplicationModuleEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name = "MODULE_ID")
-	private String moduleId;
+	private String appModuleId;
 
 	@Column(name = "CREATION_TIME")
 	private Timestamp creationTime;
@@ -47,13 +47,13 @@ public class ApplicationModuleEntity implements Serializable {
 	private String gatewayId;
 
 	@Column(name = "MODULE_DESC")
-	private String moduleDesc;
+	private String appModuleDescription;
 
 	@Column(name = "MODULE_NAME")
-	private String moduleName;
+	private String appModuleName;
 
 	@Column(name = "MODULE_VERSION")
-	private String moduleVersion;
+	private String appModuleVersion;
 
 	@Column(name = "UPDATE_TIME")
 	private Timestamp updateTime;
@@ -61,12 +61,12 @@ public class ApplicationModuleEntity implements Serializable {
 	public ApplicationModuleEntity() {
 	}
 
-	public String getModuleId() {
-		return moduleId;
+	public String getAppModuleId() {
+		return appModuleId;
 	}
 
-	public void setModuleId(String moduleId) {
-		this.moduleId = moduleId;
+	public void setAppModuleId(String appModuleId) {
+		this.appModuleId = appModuleId;
 	}
 
 	public Timestamp getCreationTime() {
@@ -85,28 +85,28 @@ public class ApplicationModuleEntity implements Serializable {
 		this.gatewayId = gatewayId;
 	}
 
-	public String getModuleDesc() {
-		return moduleDesc;
+	public String getAppModuleDescription() {
+		return appModuleDescription;
 	}
 
-	public void setModuleDesc(String moduleDesc) {
-		this.moduleDesc = moduleDesc;
+	public void setAppModuleDescription(String appModuleDescription) {
+		this.appModuleDescription = appModuleDescription;
 	}
 
-	public String getModuleName() {
-		return moduleName;
+	public String getAppModuleName() {
+		return appModuleName;
 	}
 
-	public void setModuleName(String moduleName) {
-		this.moduleName = moduleName;
+	public void setAppModuleName(String appModuleName) {
+		this.appModuleName = appModuleName;
 	}
 
-	public String getModuleVersion() {
-		return moduleVersion;
+	public String getAppModuleVersion() {
+		return appModuleVersion;
 	}
 
-	public void setModuleVersion(String moduleVersion) {
-		this.moduleVersion = moduleVersion;
+	public void setAppModuleVersion(String appModuleVersion) {
+		this.appModuleVersion = appModuleVersion;
 	}
 
 	public Timestamp getUpdateTime() {

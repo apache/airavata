@@ -30,7 +30,7 @@ import java.io.Serializable;
  * The persistent class for the gsissh_prejobcommand database table.
  */
 @Entity
-@Table(name = "gsissh_prejobcommand")
+@Table(name = "GSISSH_PREJOBCOMMAND")
 public class GsisshPrejobcommandEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 

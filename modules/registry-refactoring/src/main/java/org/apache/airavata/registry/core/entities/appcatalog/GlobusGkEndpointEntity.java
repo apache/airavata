@@ -31,7 +31,7 @@ import java.io.Serializable;
  * 
  */
 @Entity
-@Table(name="globus_gk_endpoint")
+@Table(name="GLOBUS_GK_ENDPOINT")
 public class GlobusGkEndpointEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
