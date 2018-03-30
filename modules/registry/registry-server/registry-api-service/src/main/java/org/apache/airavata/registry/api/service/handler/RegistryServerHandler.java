@@ -60,7 +60,6 @@ import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.api.registry_apiConstants;
 import org.apache.airavata.registry.core.app.catalog.resources.*;
-import org.apache.airavata.registry.core.app.catalog.util.AppCatalogJPAUtils;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
@@ -72,6 +71,8 @@ import org.apache.airavata.registry.core.repositories.appcatalog.GroupResourcePr
 import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationDeploymentRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationInterfaceRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.GwyResourceProfileRepository;
+import org.apache.airavata.registry.core.repositories.replicacatalog.DataProductRepository;
+import org.apache.airavata.registry.core.repositories.replicacatalog.DataReplicaLocationRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.UserResourceProfileRepository;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
@@ -86,11 +87,12 @@ public class RegistryServerHandler implements RegistryService.Iface {
 
     private ExperimentCatalog experimentCatalog;
     private AppCatalog appCatalog;
-    private ReplicaCatalog dataCatalog;
     private WorkflowCatalog workflowCatalog;
     private ApplicationDeploymentRepository applicationDeploymentRepository = new ApplicationDeploymentRepository();
     private ApplicationInterfaceRepository applicationInterfaceRepository = new ApplicationInterfaceRepository();
     private UserResourceProfileRepository userResourceProfileRepository = new UserResourceProfileRepository();
+    private DataProductRepository dataProductRepository = new DataProductRepository();
+    private DataReplicaLocationRepository dataReplicaLocationRepository = new DataReplicaLocationRepository();
 
     /**
      * Fetch Apache Registry API version
@@ -2294,8 +2296,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public DataProductModel getDataProduct(String productUri) throws RegistryServiceException, TException {
         try {
-            dataCatalog = RegistryFactory.getReplicaCatalog();
-            DataProductModel dataProductModel = dataCatalog.getDataProduct(productUri);
+            DataProductModel dataProductModel = dataProductRepository.getDataProduct(productUri);
             return dataProductModel;
         } catch (RegistryException e) {
             String msg = "Error in retreiving the data product "+productUri+".";
@@ -2309,8 +2310,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public DataProductModel getParentDataProduct(String productUri) throws RegistryServiceException, TException {
         try {
-            dataCatalog = RegistryFactory.getReplicaCatalog();
-            DataProductModel dataProductModel = dataCatalog.getParentDataProduct(productUri);
+            DataProductModel dataProductModel = dataProductRepository.getParentDataProduct(productUri);
             return dataProductModel;
         } catch (RegistryException e) {
             String msg = "Error in retreiving the parent data product for "+ productUri+".";
@@ -2324,8 +2324,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<DataProductModel> getChildDataProducts(String productUri) throws RegistryServiceException, TException {
         try {
-            dataCatalog = RegistryFactory.getReplicaCatalog();
-            List<DataProductModel> dataProductModels = dataCatalog.getChildDataProducts(productUri);
+            List<DataProductModel> dataProductModels = dataProductRepository.getChildDataProducts(productUri);
             return dataProductModels;
         } catch (RegistryException e) {
             String msg = "Error in retreiving the child products for "+productUri+".";
@@ -2339,8 +2338,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public List<DataProductModel> searchDataProductsByName(String gatewayId, String userId, String productName, int limit, int offset) throws RegistryServiceException, TException {
         try {
-            dataCatalog = RegistryFactory.getReplicaCatalog();
-            List<DataProductModel> dataProductModels = dataCatalog.searchDataProductsByName(gatewayId, userId, productName, limit, offset);
+            List<DataProductModel> dataProductModels = dataProductRepository.searchDataProductsByName(gatewayId, userId, productName, limit, offset);
             return dataProductModels;
         } catch (RegistryException e) {
             String msg = "Error in searching the data products for name " + productName + ".";
@@ -2596,8 +2594,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String registerReplicaLocation(DataReplicaLocationModel replicaLocationModel) throws RegistryServiceException, TException {
         try {
-            dataCatalog = RegistryFactory.getReplicaCatalog();
-            String replicaId = dataCatalog.registerReplicaLocation(replicaLocationModel);
+            String replicaId = dataReplicaLocationRepository.registerReplicaLocation(replicaLocationModel);
             return replicaId;
         } catch (RegistryException e) {
             String msg = "Error in retreiving the replica "+replicaLocationModel.getReplicaName()+".";
@@ -2616,8 +2613,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String registerDataProduct(DataProductModel dataProductModel) throws RegistryServiceException, TException {
         try {
-            dataCatalog = RegistryFactory.getReplicaCatalog();
-            String productUrl = dataCatalog.registerDataProduct(dataProductModel);
+            String productUrl = dataProductRepository.registerDataProduct(dataProductModel);
             return productUrl;
         } catch (RegistryException e) {
             String msg = "Error in registering the data resource"+dataProductModel.getProductName()+".";

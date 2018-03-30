@@ -20,24 +20,62 @@
 */
 package org.apache.airavata.registry.core.entities.replicacatalog;
 
+import org.apache.airavata.model.data.replica.DataProductType;
+
+import java.util.*;
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
+/**
+ * The persistent class for the data_product database table.
+ */
 @Entity
-@Table(name = "data_product", schema = "airavata_catalog", catalog = "")
-public class DataProductEntity {
-    private String productUri;
-    private String gatewayId;
-    private String productName;
-    private String productDescription;
-    private String ownerName;
-    private String parentProductUri;
-    private Integer productSize;
-    private Timestamp creationTime;
-    private Timestamp lastModifiedTime;
+@Table(name = "DATA_PRODUCT")
+public class DataProductEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "PRODUCT_URI")
+    private String productUri;
+
+    @Column(name = "GATEWAY_ID")
+    private String gatewayId;
+
+    @Column(name = "PRODUCT_NAME")
+    private String productName;
+
+    @Column(name = "PRODUCT_DESCRIPTION")
+    private String productDescription;
+
+    @Column(name = "OWNER_NAME")
+    private String ownerName;
+
+    @Column(name = "PARENT_PRODUCT_URI")
+    private String parentProductUri;
+
+    @Column(name = "PRODUCT_SIZE")
+    private int productSize;
+
+    @Column(name = "CREATION_TIME")
+    private Timestamp creationTime;
+
+    @Column(name = "LAST_MODIFIED_TIME")
+    private Timestamp lastModifiedTime;
+
+    @Column(name = "PRODUCT_TYPE")
+    private DataProductType dataProductType;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="DATA_PRODUCT_METADATA", joinColumns = @JoinColumn(name="PRODUCT_URI"))
+    @MapKeyColumn(name = "METADATA_KEY")
+    @Column(name = "METADATA_VALUE")
+    private Map<String, String> productMetadata;
+
+    @OneToMany(targetEntity = DataReplicaLocationEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "dataProduct", fetch = FetchType.EAGER)
+    private List<DataReplicaLocationEntity> replicaLocations;
+
     public String getProductUri() {
         return productUri;
     }
@@ -46,8 +84,6 @@ public class DataProductEntity {
         this.productUri = productUri;
     }
 
-    @Basic
-    @Column(name = "GATEWAY_ID")
     public String getGatewayId() {
         return gatewayId;
     }
@@ -56,8 +92,6 @@ public class DataProductEntity {
         this.gatewayId = gatewayId;
     }
 
-    @Basic
-    @Column(name = "PRODUCT_NAME")
     public String getProductName() {
         return productName;
     }
@@ -66,8 +100,6 @@ public class DataProductEntity {
         this.productName = productName;
     }
 
-    @Basic
-    @Column(name = "PRODUCT_DESCRIPTION")
     public String getProductDescription() {
         return productDescription;
     }
@@ -76,8 +108,6 @@ public class DataProductEntity {
         this.productDescription = productDescription;
     }
 
-    @Basic
-    @Column(name = "OWNER_NAME")
     public String getOwnerName() {
         return ownerName;
     }
@@ -86,8 +116,6 @@ public class DataProductEntity {
         this.ownerName = ownerName;
     }
 
-    @Basic
-    @Column(name = "PARENT_PRODUCT_URI")
     public String getParentProductUri() {
         return parentProductUri;
     }
@@ -96,18 +124,14 @@ public class DataProductEntity {
         this.parentProductUri = parentProductUri;
     }
 
-    @Basic
-    @Column(name = "PRODUCT_SIZE")
-    public Integer getProductSize() {
+    public int getProductSize() {
         return productSize;
     }
 
-    public void setProductSize(Integer productSize) {
+    public void setProductSize(int productSize) {
         this.productSize = productSize;
     }
 
-    @Basic
-    @Column(name = "CREATION_TIME")
     public Timestamp getCreationTime() {
         return creationTime;
     }
@@ -116,8 +140,6 @@ public class DataProductEntity {
         this.creationTime = creationTime;
     }
 
-    @Basic
-    @Column(name = "LAST_MODIFIED_TIME")
     public Timestamp getLastModifiedTime() {
         return lastModifiedTime;
     }
@@ -126,40 +148,24 @@ public class DataProductEntity {
         this.lastModifiedTime = lastModifiedTime;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        DataProductEntity that = (DataProductEntity) o;
-
-        if (productUri != null ? !productUri.equals(that.productUri) : that.productUri != null) return false;
-        if (gatewayId != null ? !gatewayId.equals(that.gatewayId) : that.gatewayId != null) return false;
-        if (productName != null ? !productName.equals(that.productName) : that.productName != null) return false;
-        if (productDescription != null ? !productDescription.equals(that.productDescription) : that.productDescription != null)
-            return false;
-        if (ownerName != null ? !ownerName.equals(that.ownerName) : that.ownerName != null) return false;
-        if (parentProductUri != null ? !parentProductUri.equals(that.parentProductUri) : that.parentProductUri != null)
-            return false;
-        if (productSize != null ? !productSize.equals(that.productSize) : that.productSize != null) return false;
-        if (creationTime != null ? !creationTime.equals(that.creationTime) : that.creationTime != null) return false;
-        if (lastModifiedTime != null ? !lastModifiedTime.equals(that.lastModifiedTime) : that.lastModifiedTime != null)
-            return false;
-
-        return true;
+    public DataProductType getDataProductType() {
+        return dataProductType;
     }
 
-    @Override
-    public int hashCode() {
-        int result = productUri != null ? productUri.hashCode() : 0;
-        result = 31 * result + (gatewayId != null ? gatewayId.hashCode() : 0);
-        result = 31 * result + (productName != null ? productName.hashCode() : 0);
-        result = 31 * result + (productDescription != null ? productDescription.hashCode() : 0);
-        result = 31 * result + (ownerName != null ? ownerName.hashCode() : 0);
-        result = 31 * result + (parentProductUri != null ? parentProductUri.hashCode() : 0);
-        result = 31 * result + (productSize != null ? productSize.hashCode() : 0);
-        result = 31 * result + (creationTime != null ? creationTime.hashCode() : 0);
-        result = 31 * result + (lastModifiedTime != null ? lastModifiedTime.hashCode() : 0);
-        return result;
+    public void setDataProductType(DataProductType dataProductType) {
+        this.dataProductType = dataProductType;
     }
+
+    public Map<String, String> getProductMetadata() { return productMetadata; }
+
+    public void setProductMetadata(Map<String, String> productMetadata) { this.productMetadata = productMetadata; }
+
+    public List<DataReplicaLocationEntity> getReplicaLocations() {
+        return replicaLocations;
+    }
+
+    public void setReplicaLocations(List<DataReplicaLocationEntity> replicaLocations) {
+        this.replicaLocations = replicaLocations;
+    }
+
 }
