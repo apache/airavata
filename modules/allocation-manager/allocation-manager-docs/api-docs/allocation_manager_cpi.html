@@ -44,99 +44,99 @@
 <pre><code>i64</code> createAllocationRequest(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
                             <code><a href="allocation_manager_models.html#Struct_UserAllocationDetail">allocation_manager_models.UserAllocationDetail</a></code> allocDetail)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
-</pre><p>API method to create new allocation requests</p>
-<br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_deleteAllocationRequest">Function: AllocationRegistryService.deleteAllocationRequest</h4>
+</pre><pre><p>API method to create new allocation requests</p>
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_deleteAllocationRequest">Function: AllocationRegistryService.deleteAllocationRequest</h4>
 <pre><code>bool</code> deleteAllocationRequest(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
                              <code>i64</code> projectId)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
-</pre><p>API method to delete allocation request</p>
-<br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_getAllocationRequest">Function: AllocationRegistryService.getAllocationRequest</h4>
+</pre><pre><p>API method to delete allocation request</p>
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_getAllocationRequest">Function: AllocationRegistryService.getAllocationRequest</h4>
 <pre><code><a href="allocation_manager_models.html#Struct_UserAllocationDetail">allocation_manager_models.UserAllocationDetail</a></code> getAllocationRequest(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
                                                                     <code>i64</code> projectId)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
-</pre><p>API method to get an allocation Request</p>
-<br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_updateAllocationRequest">Function: AllocationRegistryService.updateAllocationRequest</h4>
+</pre><pre><p>API method to get an allocation Request details based on a projectid</p>
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_updateAllocationRequest">Function: AllocationRegistryService.updateAllocationRequest</h4>
 <pre><code>bool</code> updateAllocationRequest(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
                              <code><a href="allocation_manager_models.html#Struct_UserAllocationDetail">allocation_manager_models.UserAllocationDetail</a></code> allocDetail)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
-</pre><p>API method to update an allocation Request</p>
-<br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_createUserSpecificResource">Function: AllocationRegistryService.createUserSpecificResource</h4>
+</pre><pre><p>API method to update an allocation Request</p>
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_createUserSpecificResource">Function: AllocationRegistryService.createUserSpecificResource</h4>
 <pre><code>i64</code> createUserSpecificResource(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
                                <code><a href="allocation_manager_models.html#Struct_UserSpecificResourceDetail">allocation_manager_models.UserSpecificResourceDetail</a></code> allocDetail)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
-</pre><p>API method to create new specific resource requests</p>
-<br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_deleteUserSpecificResource">Function: AllocationRegistryService.deleteUserSpecificResource</h4>
+</pre><pre><p>API method to create new specific resource requests</p>
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_deleteUserSpecificResource">Function: AllocationRegistryService.deleteUserSpecificResource</h4>
 <pre><code>bool</code> deleteUserSpecificResource(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
                                 <code>i64</code> projectId,
                                 <code>string</code> specificResource)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
-</pre><p>API method to delete specific resource requests</p>
-<br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_getUserSpecificResource">Function: AllocationRegistryService.getUserSpecificResource</h4>
+</pre><pre><p>API method to delete specific resource requests</p>
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_getUserSpecificResource">Function: AllocationRegistryService.getUserSpecificResource</h4>
 <pre><code>list&lt;<code><a href="allocation_manager_models.html#Struct_UserSpecificResourceDetail">allocation_manager_models.UserSpecificResourceDetail</a></code>&gt;</code> getUserSpecificResource(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
                                                                                    <code>i64</code> projectId)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
-</pre><p>API method to get specific resource requests</p>
-<br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_updateUserSpecificResource">Function: AllocationRegistryService.updateUserSpecificResource</h4>
+</pre><pre><p>API method to get specific resource requests based on a project id</p>
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_updateUserSpecificResource">Function: AllocationRegistryService.updateUserSpecificResource</h4>
 <pre><code>bool</code> updateUserSpecificResource(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
                                 <code>i64</code> projectId,
                                 <code>list&lt;<code><a href="allocation_manager_models.html#Struct_UserSpecificResourceDetail">allocation_manager_models.UserSpecificResourceDetail</a></code>&gt;</code> listUserSpecificResource)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
-</pre><p>API method to update specific resource requests</p>
-<br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_getAllRequestsForAdmin">Function: AllocationRegistryService.getAllRequestsForAdmin</h4>
+</pre><pre><p>API method to update specific resource requests</p>
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_getAllRequestsForAdmin">Function: AllocationRegistryService.getAllRequestsForAdmin</h4>
 <pre><code>list&lt;<code><a href="allocation_manager_models.html#Struct_UserAllocationDetail">allocation_manager_models.UserAllocationDetail</a></code>&gt;</code> getAllRequestsForAdmin(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
                                                                             <code>string</code> userName)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
-</pre><p>API method to get all allocation requests for admin</p>
-<br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_assignReviewers">Function: AllocationRegistryService.assignReviewers</h4>
+</pre><pre><p>API method to get all allocation requests for admin</p>
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_assignReviewers">Function: AllocationRegistryService.assignReviewers</h4>
 <pre><code>bool</code> assignReviewers(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
                      <code>i64</code> projectId,
                      <code>string</code> reviewerId,
                      <code>string</code> adminId)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
-</pre><p>API method to assign reviewers</p>
-<br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_updateRequestByReviewer">Function: AllocationRegistryService.updateRequestByReviewer</h4>
+</pre><pre><p>API method to assign reviewers</p>
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_updateRequestByReviewer">Function: AllocationRegistryService.updateRequestByReviewer</h4>
 <pre><code>bool</code> updateRequestByReviewer(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
                              <code><a href="allocation_manager_models.html#Struct_ReviewerAllocationDetail">allocation_manager_models.ReviewerAllocationDetail</a></code> reviewerAllocationDetail)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
-</pre><p>API method to update request submitted by reviewer</p>
-<br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_getAllRequestsForReviewers">Function: AllocationRegistryService.getAllRequestsForReviewers</h4>
+</pre><pre><p>API method to update request submitted by reviewer</p>
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_getAllRequestsForReviewers">Function: AllocationRegistryService.getAllRequestsForReviewers</h4>
 <pre><code>list&lt;<code><a href="allocation_manager_models.html#Struct_UserAllocationDetail">allocation_manager_models.UserAllocationDetail</a></code>&gt;</code> getAllRequestsForReviewers(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
                                                                                 <code>string</code> userName)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
-</pre><p>API method to get all requests assigned to the reviewers</p>
-<br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_getAllReviewsForARequest">Function: AllocationRegistryService.getAllReviewsForARequest</h4>
+</pre><pre><p>API method to get all requests assigned to the reviewers</p>
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_getAllReviewsForARequest">Function: AllocationRegistryService.getAllReviewsForARequest</h4>
 <pre><code>list&lt;<code><a href="allocation_manager_models.html#Struct_ReviewerAllocationDetail">allocation_manager_models.ReviewerAllocationDetail</a></code>&gt;</code> getAllReviewsForARequest(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
                                                                                   <code>i64</code> projectId)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
-</pre><p>API method to get all the reviews for a request</p>
-<br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_createReviewerSpecificResource">Function: AllocationRegistryService.createReviewerSpecificResource</h4>
+</pre><pre><p>API method to get all the reviews for a request</p>
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_createReviewerSpecificResource">Function: AllocationRegistryService.createReviewerSpecificResource</h4>
 <pre><code>i64</code> createReviewerSpecificResource(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
                                    <code><a href="allocation_manager_models.html#Struct_ReviewerSpecificResourceDetail">allocation_manager_models.ReviewerSpecificResourceDetail</a></code> allocDetail)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
-</pre><p>API method to create new specific resource requests</p>
-<br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_deleteReviewerSpecificResource">Function: AllocationRegistryService.deleteReviewerSpecificResource</h4>
+</pre><pre><p>API method to create new specific resource requests for a reviewer</p>
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_deleteReviewerSpecificResource">Function: AllocationRegistryService.deleteReviewerSpecificResource</h4>
 <pre><code>bool</code> deleteReviewerSpecificResource(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
                                     <code>i64</code> projectId,
                                     <code>string</code> specificResource)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
-</pre><p>API method to delete specific resource requests</p>
-<br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_getReviewerSpecificResource">Function: AllocationRegistryService.getReviewerSpecificResource</h4>
+</pre><pre><p>API method to delete specific resource requests for a reviewer</p>
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_getReviewerSpecificResource">Function: AllocationRegistryService.getReviewerSpecificResource</h4>
 <pre><code>list&lt;<code><a href="allocation_manager_models.html#Struct_ReviewerSpecificResourceDetail">allocation_manager_models.ReviewerSpecificResourceDetail</a></code>&gt;</code> getReviewerSpecificResource(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
                                                                                            <code>i64</code> projectId)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
-</pre><p>API method to get specific resource requests</p>
-<br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_updateReviewerSpecificResource">Function: AllocationRegistryService.updateReviewerSpecificResource</h4>
+</pre><pre><p>API method to get specific resource requests for a reviewer</p>
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_updateReviewerSpecificResource">Function: AllocationRegistryService.updateReviewerSpecificResource</h4>
 <pre><code>bool</code> updateReviewerSpecificResource(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
                                     <code>i64</code> projectId,
                                     <code>list&lt;<code><a href="allocation_manager_models.html#Struct_ReviewerSpecificResourceDetail">allocation_manager_models.ReviewerSpecificResourceDetail</a></code>&gt;</code> listReviewerSpecificResource)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
-</pre><p>API method to update specific resource requests</p>
-<br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_getAllAssignedReviewersForRequest">Function: AllocationRegistryService.getAllAssignedReviewersForRequest</h4>
+</pre><pre><p>API method to update specific resource requests for a reviewer</p>
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_getAllAssignedReviewersForRequest">Function: AllocationRegistryService.getAllAssignedReviewersForRequest</h4>
 <pre><code>list&lt;<code><a href="allocation_manager_models.html#Struct_ProjectReviewer">allocation_manager_models.ProjectReviewer</a></code>&gt;</code> getAllAssignedReviewersForRequest(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
                                                                                   <code>i64</code> projectId)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
-</pre><p>API method to get all unassigned reviewers for a request</p>
-<br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_approveRequest">Function: AllocationRegistryService.approveRequest</h4>
+</pre><pre><p>API method to get all unassigned reviewers for a request</p>
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_approveRequest">Function: AllocationRegistryService.approveRequest</h4>
 <pre><code>bool</code> approveRequest(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
                     <code>i64</code> projectId,
                     <code>string</code> adminId,
@@ -145,24 +145,24 @@
                     <code>i64</code> awardAllocation,
                     <code>string</code> specificResourceName)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
-</pre><p>API method to approve a request</p>
-<br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_rejectRequest">Function: AllocationRegistryService.rejectRequest</h4>
+</pre><pre><p>API method to approve a request</p>
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_rejectRequest">Function: AllocationRegistryService.rejectRequest</h4>
 <pre><code>bool</code> rejectRequest(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
                    <code>i64</code> projectId,
                    <code>string</code> adminId,
                    <code>string</code> rejectionReason,
                    <code>string</code> specificResourceName)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
-</pre><p>API method to reject a request</p>
-<br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_getRemainingAllocationUnits">Function: AllocationRegistryService.getRemainingAllocationUnits</h4>
+</pre><pre><p>API method to reject a request</p>
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_getRemainingAllocationUnits">Function: AllocationRegistryService.getRemainingAllocationUnits</h4>
 <pre><code>i64</code> getRemainingAllocationUnits(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
                                 <code>string</code> specificResource)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
-</pre><p>API method to get the remaining allocation units</p>
-<br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_deductAllocationUnits">Function: AllocationRegistryService.deductAllocationUnits</h4>
+</pre><pre><p>API method to get the remaining allocation units</p>
+</pre><br/></div><div class="definition"><h4 id="Fn_AllocationRegistryService_deductAllocationUnits">Function: AllocationRegistryService.deductAllocationUnits</h4>
 <pre><code>bool</code> deductAllocationUnits(<code><a href="security_model.html#Struct_AuthzToken">security_model.AuthzToken</a></code> authzToken,
                            <code>string</code> specificResource,
                            <code>i64</code> allocationUnits)
     throws <code><a href="allocation_manager_models.html#Struct_AllocationManagerException">allocation_manager_models.AllocationManagerException</a></code>, <code><a href="airavata_errors.html#Struct_AuthorizationException">airavata_errors.AuthorizationException</a></code>
-</pre><p>API method to deduct the used allocation units</p>
-<br/></div></div></body></html>
+</pre><pre><p>API method to deduct the used allocation units</p>
+</pre><br/></div></div></body></html>
