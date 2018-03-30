@@ -2,9 +2,11 @@
   <div>
     <div class="array-view-main">
       <div class="array-view-main2">
-        <input class="deployment btn left" type="button" value="Previous" v-on:click.prevent="previousClickHandler()"/>
+        <input class="deployment btn left" type="button" value="Previous" v-if="data > 0"
+               v-on:click.prevent="previousClickHandler()"/>
         <input class="deployment btn home-btn" type="button" v-bind:value="homeBtnName" v-on:click="homeAction"/>
-        <input class="deployment btn right" type="button" value="Next" v-on:click.prevent="nextClickHandler()"/>
+        <input class="deployment btn right" type="button" value="Next" v-if="data < maxIndex"
+               v-on:click.prevent="nextClickHandler()"/>
       </div>
     </div>
     <slot>
@@ -63,11 +65,13 @@
   .left {
     border-top-left-radius: 20px;
     border-bottom-left-radius: 20px;
+    float: left;
   }
 
   .right {
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
+    float: right;
   }
 
   .array-view-main2 .left, .right {
@@ -82,5 +86,6 @@
   .home-btn {
     margin-left: 35%;
     margin-right: 35%;
+    float: none;
   }
 </style>

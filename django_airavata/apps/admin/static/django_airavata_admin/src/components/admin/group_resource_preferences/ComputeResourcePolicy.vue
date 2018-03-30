@@ -1,6 +1,7 @@
 <template>
-  <div>
-    <div class="new-application-tab-main">
+  <transition name="fade">
+    <div>
+      <div class="new-application-tab-main">
       <h5>Allowed Batch Queues</h5>
       <div class="entry">
         <div class="heading">Batch Queues</div>
@@ -18,11 +19,12 @@
       <div v-for="batchQueue,index in batchQueues" v-bind:key="index">
         <input type="checkbox" v-model="batchQueues[index].selected"/>
         <label>{{batchQueue.name}}</label>
-        <batch-queue-resource-policy v-if="batchQueues[index].batchQueueResourcePolicy"
-                                     v-model="batchQueues[index].batchQueueResourcePolicy"></batch-queue-resource-policy>
+        <batch-queue-resource-policy v-if="resourcePolicies[index]"
+                                     v-model="resourcePolicies[index]"></batch-queue-resource-policy>
       </div>
     </div>
-  </div>
+    </div>
+  </transition>
 </template>
 
 <script>
@@ -30,7 +32,7 @@
   import ComputeResourcePolicy from './ComputeResourcePolicy'
   import BatchQueueResourcePolicy from './BatchQueueResourcePolicy'
   import VModelMixin from '../../commons/vmodel_mixin'
-
+  import Vue from 'vue'
   export default {
     name: "compute-resource-policy",
     components: {
@@ -39,29 +41,40 @@
       BatchQueueResourcePolicy
     },
     data: function () {
+      let batchQueues = this.fetchBatchQueues(this.value);
       return {
-        batchQueues: this.fetchBatchQueues(),
+        batchQueues: batchQueues.queues,
+        resourcePolicies: batchQueues.resourcePolicies,
+        data: this.value
       }
     },
     mixins: [VModelMixin],
     methods: {
-      fetchBatchQueues: function () {
+      fetchBatchQueues: function (data) {
         let queues = [{
           name: "cpu",
-          selected: false
+          selected: false,
+          batchQueueResourcePolicy: null
         }, {
           name: "gpu",
-          selected: false
+          selected: false,
+          batchQueueResourcePolicy: null
         }];
-        queues.forEach(value => {
-          for (queue in data.batchQueueResourcePolicies) {
-            if (value.name == queue.queuename) {
-              value.queue = queue;
+        let resourcePolicies = {}
+        data.batchQueueResourcePolicies.forEach(value => {
+          for (let index in queues) {
+            let queue = queues[index];
+            if (queue.name == value.queuename) {
+              queue.selected = true;
+              resourcePolicies[index] = value;
               break;
             }
           }
         })
-        return queues;
+        return {
+          queues: queues,
+          resourcePolicies: resourcePolicies
+        };
       },
       createBatchQueue: function (queueName) {
         let batchQueuePreference = {
@@ -70,25 +83,47 @@
           maxAllowedWalltime: null,
           queuename: queueName
         }
-        this.data.batchQueueResourcePolicies.push(batchQueuePreference);
-      }
-    },
-    watch: {
-      batchQueues: function (newValue, oldValue) {
-        for (let batchQueue in  this.batchQueues) {
+        return batchQueuePreference;
+      },
+      updateBatchQueues: function (data) {
+        for (let index in  this.batchQueues) {
+          let batchQueue = this.batchQueues[index];
           if (batchQueue.selected) {
-            if (this.data.batchQueueResourcePolicies) {
-              for (let val in this.data.batchQueueResourcePolicies) {
+            if (data.batchQueueResourcePolicies && !this.resourcePolicies[index]) {
+              for (let val of data.batchQueueResourcePolicies) {
                 if (val.queuename == batchQueue.name) {
-                  batchQueue.batchQueueResourcePolicy = val;
+                  Vue.set(this.resourcePolicies,index,val);
                 }
               }
             }
-            if (!batchQueue.batchQueueResourcePolicy) {
-              batchQueue.batchQueueResourcePolicy = this.createBatchQueue(batchQueue.name);
+            if (!this.resourcePolicies[index]) {
+              Vue.set(this.resourcePolicies,index,this.createBatchQueue(batchQueue.name));
             }
+          } else if (this.resourcePolicies[index]) {
+            Vue.delete(this.resourcePolicies,index);
           }
         }
+      }
+    },
+    watch: {
+      batchQueues: {
+        handler: function (newValue) {
+          console.log("watch", newValue);
+          this.updateBatchQueues(newValue);
+        },
+        deep: true
+      },
+      resourcePolicies:{
+        handler:function (newValue) {
+          console.log("Resource policies",newValue);
+          let resourcePolicies=[];
+          for(let prop in newValue){
+            resourcePolicies.push(this.resourcePolicies[prop]);
+            console.log(prop);
+          }
+          this.data.batchQueueResourcePolicies=resourcePolicies;
+        },
+        deep:true
       }
     }
   }

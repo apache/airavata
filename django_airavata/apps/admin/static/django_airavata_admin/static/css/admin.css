@@ -9,7 +9,7 @@
   margin-bottom: 10px;
 }
 
-input[type="text"], input[type="number"], textarea, select {
+.new_app input[type="text"], input[type="number"], textarea, select {
   width: 100%;
   border-radius: 2px;
   border: solid #dddddd 1px;
@@ -82,7 +82,7 @@ button, input[type="button"] {
   background-color: #F8F8F8;
   width: 100%;
   padding: 15px;
-  border: solid 1px #dddddd;
+  border-bottom: solid 1px #dddddd;
   text-align: left;
 }
 
@@ -202,5 +202,31 @@ button, input[type="button"] {
   padding:15px;
   width:100%;
 }
+
+
+.interface-btn {
+    color: #868E96;
+    border: solid 1px #868E96;
+    background-color: transparent;
+    text-align: center;
+    border-radius: 3px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .interface-btn span {
+    font-weight: bold;
+  }
+
+  .interface-btn:hover {
+    background-color: rgba(0, 105, 217, 1);
+    color: white;
+  }
+
+  .sub-section-1{
+    padding-top: 40px;
+  }
 
 

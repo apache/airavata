@@ -158,5 +158,8 @@
     background-color: #007BFF;
     cursor: pointer;
   }
+  .list-item span:hover{
+    color: white;
+  }
 
 </style>

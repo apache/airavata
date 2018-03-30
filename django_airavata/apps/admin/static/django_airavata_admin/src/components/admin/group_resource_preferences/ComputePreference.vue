@@ -73,7 +73,7 @@
             <h4>Compute Resource Policies</h4>
             <tab-sub-section v-for="computeResourcePolicy,index in data.computeResourcePolicies" v-bind:key="index"
                              v-bind:sectionName="'Compute Resource Policy'">
-              <compute-resource-policy v-model="data.computeResourcePolicies[index]"></compute-resource-policy>
+                <compute-resource-policy v-model="data.computeResourcePolicies[index]"></compute-resource-policy>
             </tab-sub-section>
             <div class="deployment-entry">
               <input type="button" class="deployment btn" value="Add Compute Resource Policy"
@@ -120,7 +120,6 @@
           groupResourceProfileId: null,
           resourcePolicyId: null
         })
-        console.log('Compute Resource Profile Added')
       }
     }
   }
