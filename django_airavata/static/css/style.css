@@ -1,0 +1,245 @@
+.theme-header{
+    z-index:1001;
+}
+
+body{
+	background: #fff !important;
+}
+
+.seagrid .container-fluid{
+	padding:0;
+}
+.seagrid .navbar-inverse {
+    background: #333 !important;
+}
+
+.seagrid a{
+	color: #fff !important;
+}
+
+.seagrid a:hover{
+	color: #20b2aa !important;
+}
+
+.seagrid .btn{
+	padding: 5px;
+	margin: 5%;
+	margin-top: 10%;
+	margin-left: -8%;
+	width: 100%;
+}
+
+.seagrid .btn:hover{
+	color: #20b2aa !important;
+}
+
+.seagrid-logo{
+    width:140px;
+    margin-top:-10px;
+}
+
+.hero-unit > img{
+	  width: 100%;
+    background: no-repeat center center;
+    background-size:cover;
+  }
+
+/* Custom Styles for Wagtail Images */
+
+#nsf-footer {
+  width: 100px;
+  height: 100px;
+}
+
+.carousel-item img {
+  height: 600px;
+}
+
+/* end */
+
+.footer-margin {
+  height: 580px;
+}
+
+@media (max-width:767px){
+    .hero-unit{
+        min-height:500px;
+        background:url('../images/seagrid-hero-360x496.jpg') no-repeat center center fixed;
+    }
+}
+
+.hero-unit h1 {
+    color: #FFFFFF;
+    font-size: 60px;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 0;
+}
+.hero-unit h2 {
+    font-size: 25px;
+    color: #FFFFFF;
+
+}
+.fill{width:100%;height:350px;background-position:center;background-size:cover;
+}
+
+/* Large desktop */
+@media (min-width: 1200px) { ... }
+
+/* Portrait tablet to landscape and desktop */
+@media (min-width: 768px) and (max-width: 979px) { ... }
+
+/* Landscape phone to portrait tablet */
+@media (max-width: 767px) { ... }
+
+/* Landscape phones and down */
+@media (max-width: 480px) { ... }
+
+
+.blue-bg{
+    background: #20b2aa;
+}
+
+.darker-blue-bg{
+    background: #2c3e50;
+}
+
+.video-space{
+    text-align: center;
+    color: #fff;
+    width:90%;
+    margin-left: 5%;
+    margin-bottom: 5%;
+}
+
+.video-space img{
+    width: 100%;
+}
+.breathing-space{
+    margin-top:4%;
+    margin-bottom:4%;
+}
+
+.news{
+    background: #666666;
+    color: #ffffff;
+    text-align: center;
+    padding: 1%;
+    margin-bottom:7%;
+    min-height: 300px;
+}
+
+.read-more{
+    padding:18.3%;
+    background: #fff;
+}
+
+.read-more a{
+    font-size:3.5em;
+}
+
+.team{
+    margin-top: 2.5%;
+    margin-bottom: 2.5%;
+}
+
+.new-collaborators, .old-collaborators{
+    margin-bottom: 10px;
+}
+
+.new-collaborators img, .old-collaborators img{
+}
+
+.new-collaborators{
+    /*margin-bottom: 2.5%;*/
+}
+
+.old-collaborators{
+    margin-top: 2.5%;
+}
+
+.download-click{
+    color: #fff;
+    text-align: center;
+    min-height: 250px;
+    font-size: 2em;
+    padding-top: 100px;
+
+}
+
+.separation-line{
+    width: 100%;
+    height: 4px;
+    margin-left: auto;
+    margin-right: auto;
+    color:#FF0066;
+    border: 0 none;
+}
+
+.font-1-5{
+    font-size:1.5em;
+}
+
+.seagrid-workflow{
+    color: #fff;
+}
+
+/*------------------------ floating-scaling arrow -----------------------------*/
+
+.floating{
+    margin-left:-6%;
+    margin-top:-2%;
+    -webkit-animation-name: Floatingx;
+    -webkit-animation-duration: 3s;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: ease-in-out;
+    -moz-animation-name: Floating;
+    -moz-animation-duration: 3s;
+    -moz-animation-iteration-count: infinite;
+    -moz-animation-timing-function: ease-in-out;
+    /*margin-left: 30px;
+    margin-top: 5px;*/
+
+}
+
+@-webkit-keyframes Floatingx{
+    from {-webkit-transform:translate(0, 0px);}
+    65% {-webkit-transform:translate(0, 15px);}
+    to {-webkit-transform: translate(0, -0px);    }
+}
+
+@-moz-keyframes Floating{
+    from {-moz-transform:translate(0, 0px);}
+    65% {-moz-transform:translate(0, 15px);}
+    to {-moz-transform: translate(0, -0px);}
+}
+
+
+.scaling{
+    margin-left:-6%;
+    margin-top:-6%;
+    -webkit-animation-name: scalex;
+    -webkit-animation-duration:3s;
+    -webkit-animation-iteration-count:infinite;
+    -webkit-animation-timing-function:ease-in-out;
+    -moz-animation-name: scale;
+    -moz-animation-duration:3s;
+    -moz-animation-iteration-count:infinite;
+    -moz-animation-timing-function:ease-in-out;
+}
+
+@-webkit-keyframes scalex{
+    from {-webkit-transform: scale(0.9);}
+    65% {-webkit-transform: scale(1.0);}
+    to {-webkit-transform: scale(0.9);}
+}
+
+@-moz-keyframes scale{
+    from {-moz-transform: scale(0.9);}
+    65% {-moz-transform: scale(1.0);}
+    to {-moz-transform: scale(0.9);}
+}
+
+.cite-area{
+    font-size: 0.85em;
+}

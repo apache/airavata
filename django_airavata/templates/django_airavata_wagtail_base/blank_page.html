@@ -1,0 +1,14 @@
+{% extends "wagtail_base.html" %}
+{% load navigation_tags wagtailimages_tags wagtailcore_tags %}
+
+{% block content %}
+<div class="container-fluid">
+  {% for item in page.row.all %}
+  <div class="row">
+    {% for block in item.body %}
+      {% include_block block.value %}
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+{% endblock content %}

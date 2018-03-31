@@ -43,6 +43,27 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_airavata.apps.api.apps.ApiConfig',
     'django_airavata.apps.groups.apps.GroupsConfig',
+
+    # wagtail related apps
+    'wagtail.contrib.forms',
+    'wagtail.contrib.redirects',
+    'wagtail.embeds',
+    'wagtail.sites',
+    'wagtail.users',
+    'wagtail.snippets',
+    'wagtail.documents',
+    'wagtail.images',
+    'wagtail.search',
+    'wagtail.admin',
+    'wagtail.core',
+
+    # wagtail third party dependencies
+    'modelcluster',
+    'taggit',
+    'wagtailfontawesome',
+
+    # wagtail custom apps
+    'django_airavata.wagtailapps.base.apps.BaseConfig',
 ]
 
 MIDDLEWARE = [
@@ -57,6 +78,9 @@ MIDDLEWARE = [
     'django_airavata.middleware.airavata_client',
     # 'django_airavata.middleware.sharing_client',
     'django_airavata.middleware.profile_service_client',
+    # Wagtail related middleware
+    'wagtail.core.middleware.SiteMiddleware',
+    'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 ]
 
 ROOT_URLCONF = 'django_airavata.urls'
@@ -132,6 +156,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "django_airavata", "static")]
 
+# Media Files (PDF, Documents, Custom Images)
+MEDIA_ROOT = os.path.join(BASE_DIR, "django_airavata", "media")
+MEDIA_URL = '/media/'
+
 # Data storage
 FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o777
 
@@ -148,6 +176,13 @@ REST_FRAMEWORK = {
 AUTHENTICATION_BACKENDS = [
     'django_airavata.apps.auth.backends.KeycloakBackend'
 ]
+
+# Wagtail related stuff
+WAGTAIL_SITE_NAME = 'Django Airavata Portal'
+
+WAGTAILIMAGES_JPEG_QUALITY = 100
+
+
 
 LOGIN_URL = 'django_airavata_auth:login'
 LOGIN_REDIRECT_URL = 'django_airavata_workspace:dashboard'

@@ -1,0 +1,12 @@
+{% load wagtailimages_tags %}
+<div class="{{self.custom_class}}">
+  <figure>
+      {% image self.image original as tmp_photo %}
+      <img src="{{tmp_photo.url}}" width="{{self.width}}" height="{{self.height}}" alt="image" class="img-fluid"/>
+      {% if self.caption %}
+      <div class="card card-body bg-light text-center">
+    		<figcaption class="text-center">{{ self.caption }}</figcaption>
+    	</div>
+      {% endif %}
+  </figure>
+</div>

@@ -1,0 +1,9 @@
+{% load navigation_tags wagtailimages_tags wagtailcore_tags %}
+
+<a href="/" class="navbar-brand">
+    {% if header_title_text.logo %}
+      {% image header_title_text.logo fill-144x43 class="img-responsive" id="brand-logo" %}
+    {% else %}
+      {{ header_title_text.body }}
+    {% endif %}
+</a>
