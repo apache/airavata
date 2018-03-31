@@ -1,4 +1,4 @@
-{% load static %}
+{% load static navigations_tags %}
 
 <head>
     <meta charset="utf-8">
@@ -34,4 +34,8 @@
     {% block head-extra %}
       {% include "includes/head-extra.html" %}
     {% endblock head-extra %}
+
+    <style>
+      {% get_css %}
+    </style>
 </head>

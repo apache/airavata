@@ -15,6 +15,7 @@ from wagtail.admin.edit_handlers import (
 )
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Collection, Page, Orderable
+from wagtail.core.blocks import RawHTMLBlock
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.search import index
 from wagtail.snippets.models import register_snippet
@@ -52,6 +53,26 @@ class Announcements(models.Model):
 
     class Meta:
         verbose_name_plural = 'Announcement'
+
+
+@register_snippet
+class CustomCss(models.Model):
+    """
+    Custom CSS
+    """
+
+    body = StreamField([
+    ('css_class', RawHTMLBlock(required=True, help_text="Write Css Here"))],default="")
+
+    panels = [
+        StreamFieldPanel('body'),
+    ]
+
+    def __str__(self):
+        return "Custom Css"
+
+    class Meta:
+        verbose_name_plural = 'Custom CSS'
 
 
 @register_snippet

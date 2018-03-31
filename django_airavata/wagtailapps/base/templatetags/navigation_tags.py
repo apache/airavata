@@ -10,6 +10,8 @@ from django_airavata.wagtailapps.base.models import Announcements
 
 from django_airavata.wagtailapps.base.models import CustomHeaderLinks
 
+from django_airavata.wagtailapps.base.models import CustomCss
+
 
 register = template.Library()
 # https://docs.djangoproject.com/en/1.9/howto/custom-template-tags/
@@ -136,4 +138,14 @@ def get_custom_header_links(context):
 
     return {
         'custom_header_links': custom_header_links,
+    }
+
+@register.inclusion_tag('django_airavata_wagtail_base/includes/custom_css.html', takes_context=True)
+def get_css(context):
+    custom_css = ""
+    if CustomCss.objects.first() is not None:
+        custom_css = CustomCss.objects.first()
+
+    return {
+        'custom_css': custom_css,
     }
