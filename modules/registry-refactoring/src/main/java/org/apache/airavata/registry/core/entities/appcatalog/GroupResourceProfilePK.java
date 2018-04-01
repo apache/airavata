@@ -19,8 +19,6 @@
  */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
 import java.io.Serializable;
 
 /**
@@ -30,8 +28,6 @@ public class GroupResourceProfilePK implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @Column(name = "GROUP_RESOURCE_PROFILE_ID")
     private String groupResourceProfileId;
 
     public GroupResourceProfilePK() {
