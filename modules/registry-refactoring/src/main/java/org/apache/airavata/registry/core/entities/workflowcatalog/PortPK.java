@@ -20,23 +20,17 @@
 */
 package org.apache.airavata.registry.core.entities.workflowcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import java.io.Serializable;
 
 /**
  * The primary key class for the port database table.
  * 
  */
-@Embeddable
 public class PortPK implements Serializable {
 	//default serial version id, required for serializable classes.
 	private static final long serialVersionUID = 1L;
 
-	@Column(name="PORT_ID")
 	private String portId;
-
-	@Column(name="TEMPLATE_ID", insertable=false, updatable=false)
 	private String templateId;
 
 	public PortPK() {
