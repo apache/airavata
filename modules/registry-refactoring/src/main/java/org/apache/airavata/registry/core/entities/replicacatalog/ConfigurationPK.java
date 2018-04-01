@@ -34,6 +34,9 @@ public class ConfigurationPK implements Serializable {
     private String configKey;
     private String configVal;
 
+    public ConfigurationPK() {
+    }
+
     public String getConfigKey() {
         return configKey;
     }
