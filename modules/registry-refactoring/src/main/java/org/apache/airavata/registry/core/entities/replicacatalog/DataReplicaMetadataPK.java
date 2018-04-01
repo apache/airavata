@@ -33,6 +33,9 @@ public class DataReplicaMetadataPK implements Serializable {
     private String replicaId;
     private String metadataKey;
 
+    public DataReplicaMetadataPK() {
+    }
+
     public String getReplicaId() {
         return replicaId;
     }

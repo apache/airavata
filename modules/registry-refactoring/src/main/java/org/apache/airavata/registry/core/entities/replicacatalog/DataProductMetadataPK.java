@@ -34,6 +34,9 @@ public class DataProductMetadataPK implements Serializable {
     private String productUri;
     private String metadataKey;
 
+    public DataProductMetadataPK() {
+    }
+
     public String getProductUri() {
         return productUri;
     }
