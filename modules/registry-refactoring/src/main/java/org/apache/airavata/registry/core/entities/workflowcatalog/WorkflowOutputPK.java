@@ -20,24 +20,18 @@
 */
 package org.apache.airavata.registry.core.entities.workflowcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import java.io.Serializable;
 
 /**
  * The primary key class for the workflow_output database table.
  * 
  */
-@Embeddable
 public class WorkflowOutputPK implements Serializable {
 	//default serial version id, required for serializable classes.
 	private static final long serialVersionUID = 1L;
 
-	@Column(name="TEMPLATE_ID", insertable=false, updatable=false)
 	private String templateId;
-
-	@Column(name="OUTPUT_KEY")
-	private String outputKey;
+	private String name;
 
 	public WorkflowOutputPK() {
 	}
@@ -50,12 +44,12 @@ public class WorkflowOutputPK implements Serializable {
 		this.templateId = templateId;
 	}
 
-	public String getOutputKey() {
-		return outputKey;
+	public String getName() {
+		return name;
 	}
 
-	public void setOutputKey(String outputKey) {
-		this.outputKey = outputKey;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public boolean equals(Object other) {
@@ -68,14 +62,14 @@ public class WorkflowOutputPK implements Serializable {
 		WorkflowOutputPK castOther = (WorkflowOutputPK)other;
 		return 
 			this.templateId.equals(castOther.templateId)
-			&& this.outputKey.equals(castOther.outputKey);
+			&& this.name.equals(castOther.name);
 	}
 
 	public int hashCode() {
 		final int prime = 31;
 		int hash = 17;
 		hash = hash * prime + this.templateId.hashCode();
-		hash = hash * prime + this.outputKey.hashCode();
+		hash = hash * prime + this.name.hashCode();
 		
 		return hash;
 	}

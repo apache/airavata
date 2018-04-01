@@ -20,24 +20,26 @@
 */
 package org.apache.airavata.registry.core.entities.workflowcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
-
 
 /**
  * The persistent class for the workflow_status database table.
  */
 @Entity
-@Table(name = "workflow_status")
+@Table(name = "WORKFLOW_STATUS")
+@IdClass(WorkflowStatusPK.class)
 public class WorkflowStatusEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private WorkflowStatusPK id;
+    @Id
+    @Column(name = "STATUS_ID")
+    private String statusId;
+
+    @Id
+    @Column(name = "TEMPLATE_ID")
+    private String templateId;
 
     @Column(name = "REASON")
     private String reason;
@@ -46,20 +48,17 @@ public class WorkflowStatusEntity implements Serializable {
     private String state;
 
     @Column(name = "UPDATE_TIME")
-    private Timestamp updateTime;
-
-    @Column(name = "TEMPLATE_ID")
-    private String templateId;
+    private Timestamp timeOfStateChange;
 
     public WorkflowStatusEntity() {
     }
 
-    public WorkflowStatusPK getId() {
-        return id;
+    public String getStatusId() {
+        return statusId;
     }
 
-    public void setId(WorkflowStatusPK id) {
-        this.id = id;
+    public void setStatusId(String statusId) {
+        this.statusId = statusId;
     }
 
     public String getReason() {
@@ -78,12 +77,12 @@ public class WorkflowStatusEntity implements Serializable {
         this.state = state;
     }
 
-    public Timestamp getUpdateTime() {
-        return updateTime;
+    public Timestamp getTimeOfStateChange() {
+        return timeOfStateChange;
     }
 
-    public void setUpdateTime(Timestamp updateTime) {
-        this.updateTime = updateTime;
+    public void setTimeOfStateChange(Timestamp timeOfStateChange) {
+        this.timeOfStateChange = timeOfStateChange;
     }
 
     public String getTemplateId() {

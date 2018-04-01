@@ -32,7 +32,7 @@ import java.sql.Timestamp;
  * The persistent class for the component_status database table.
  */
 @Entity
-@Table(name = "component_status")
+@Table(name = "COMPONENT_STATUS")
 public class ComponentStatusEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -47,7 +47,7 @@ public class ComponentStatusEntity implements Serializable {
     private String state;
 
     @Column(name = "UPDATE_TIME")
-    private Timestamp updateTime;
+    private Timestamp timeofStateChange;
 
     @Column(name = "TEMPLATE_ID")
     private String templateId;
@@ -79,12 +79,12 @@ public class ComponentStatusEntity implements Serializable {
         this.state = state;
     }
 
-    public Timestamp getUpdateTime() {
-        return updateTime;
+    public Timestamp getTimeofStateChange() {
+        return timeofStateChange;
     }
 
-    public void setUpdateTime(Timestamp updateTime) {
-        this.updateTime = updateTime;
+    public void setTimeofStateChange(Timestamp timeofStateChange) {
+        this.timeofStateChange = timeofStateChange;
     }
 
     public String getTemplateId() {

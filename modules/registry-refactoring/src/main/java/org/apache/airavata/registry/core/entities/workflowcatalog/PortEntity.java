@@ -20,9 +20,9 @@
 */
 package org.apache.airavata.registry.core.entities.workflowcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
+import org.apache.airavata.model.ComponentStatus;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -31,14 +31,21 @@ import java.sql.Timestamp;
  * The persistent class for the port database table.
  */
 @Entity
+@Table(name = "PORT")
+@IdClass(PortPK.class)
 public class PortEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private PortPK id;
+    @Id
+    @Column(name = "PORT_ID")
+    private String portId;
+
+    @Id
+    @Column(name = "TEMPLATE_ID")
+    private String templateId;
 
     @Column(name = "COMPONENT_STATUS_ID")
-    private String componentStatusId;
+    private ComponentStatus status;
 
     @Column(name = "CREATED_TIME")
     private Timestamp createdTime;
@@ -49,27 +56,23 @@ public class PortEntity implements Serializable {
     @Column(name = "NAME")
     private String name;
 
-    @Column(name = "TEMPLATE_ID")
-    private String templateId;
-
     public PortEntity() {
     }
 
-
-    public PortPK getId() {
-        return id;
+    public String getPortId() {
+        return portId;
     }
 
-    public void setId(PortPK id) {
-        this.id = id;
+    public void setPortId(String portId) {
+        this.portId = portId;
     }
 
-    public String getComponentStatusId() {
-        return componentStatusId;
+    public ComponentStatus getComponentStatusId() {
+        return status;
     }
 
-    public void setComponentStatusId(String componentStatusId) {
-        this.componentStatusId = componentStatusId;
+    public void setComponentStatusId(ComponentStatus status) {
+        this.status = status;
     }
 
     public Timestamp getCreatedTime() {

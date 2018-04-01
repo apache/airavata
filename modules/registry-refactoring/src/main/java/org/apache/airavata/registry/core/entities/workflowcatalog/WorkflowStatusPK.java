@@ -20,22 +20,16 @@
 */
 package org.apache.airavata.registry.core.entities.workflowcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import java.io.Serializable;
 
 /**
  * The primary key class for the workflow_status database table.
  */
-@Embeddable
 public class WorkflowStatusPK implements Serializable {
     //default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "STATUS_ID")
     private String statusId;
-
-    @Column(name = "TEMPLATE_ID", insertable = false, updatable = false)
     private String templateId;
 
     public WorkflowStatusPK() {
