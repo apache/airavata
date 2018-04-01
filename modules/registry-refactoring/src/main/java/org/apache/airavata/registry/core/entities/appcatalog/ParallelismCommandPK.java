@@ -20,22 +20,16 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import java.io.Serializable;
 
 /**
  * The primary key class for the parallelism_command database table.
  */
-@Embeddable
 public class ParallelismCommandPK implements Serializable {
     //default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "RESOURCE_JOB_MANAGER_ID", insertable = false, updatable = false)
     private String resourceJobManagerId;
-
-    @Column(name = "COMMAND_TYPE")
     private String commandType;
 
     public ParallelismCommandPK() {

@@ -20,9 +20,6 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Id;
 import java.io.Serializable;
 
 /**
@@ -32,12 +29,7 @@ public class JobSubmissionInterfacePK implements Serializable {
     //default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "COMPUTE_RESOURCE_ID", insertable = false, updatable = false)
-    @Id
     private String computeResourceId;
-
-    @Column(name = "JOB_SUBMISSION_INTERFACE_ID")
-    @Id
     private String jobSubmissionInterfaceId;
 
     public JobSubmissionInterfacePK() {

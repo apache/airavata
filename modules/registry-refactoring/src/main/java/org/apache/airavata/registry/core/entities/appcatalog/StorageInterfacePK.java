@@ -20,23 +20,17 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import java.io.Serializable;
 
 /**
  * The primary key class for the storage_interface database table.
  * 
  */
-@Embeddable
 public class StorageInterfacePK implements Serializable {
 	//default serial version id, required for serializable classes.
 	private static final long serialVersionUID = 1L;
 
-	@Column(name="STORAGE_RESOURCE_ID", insertable=false, updatable=false)
 	private String storageResourceId;
-
-	@Column(name="DATA_MOVEMENT_INTERFACE_ID")
 	private String dataMovementInterfaceId;
 
 	public StorageInterfacePK() {
