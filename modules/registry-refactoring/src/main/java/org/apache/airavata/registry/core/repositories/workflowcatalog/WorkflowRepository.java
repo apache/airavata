@@ -86,34 +86,39 @@ public class WorkflowRepository extends WorkflowCatAbstractRepository<WorkflowMo
 
     @Override
     public String registerWorkflow(WorkflowModel workflowModel, String gatewayId) throws WorkflowCatalogException {
-        return saveWorkflowModelData(workflowModel, gatewayId);
+        throw new WorkflowCatalogException("This method is not implemented");
+        //return saveWorkflowModelData(workflowModel, gatewayId);
     }
 
     @Override
     public void updateWorkflow(String templateId, WorkflowModel updatedWorkflowModel) throws WorkflowCatalogException {
-        saveWorkflowModelData(updatedWorkflowModel, null);
+        throw new WorkflowCatalogException("This method is not implemented");
+        //saveWorkflowModelData(updatedWorkflowModel, null);
     }
 
     @Override
     public WorkflowModel getWorkflow(String templateId) throws WorkflowCatalogException {
-        return get(templateId);
+        throw new WorkflowCatalogException("This method is not implemented");
+        //return get(templateId);
     }
 
     @Override
     public List<String> getAllWorkflows(String gatewayId) throws WorkflowCatalogException {
-        Map<String, Object> queryParameters = new HashMap<>();
+        throw new WorkflowCatalogException("This method is not implemented");
+        /*Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.Workflow.GATEWAY_ID, gatewayId);
         List<WorkflowModel> workflowModelList = select(QueryConstants.GET_ALL_WORKFLOWS, -1, 0, queryParameters);
         List<String> workflows = new ArrayList<>();
         for (WorkflowModel workflowModel : workflowModelList) {
             workflows.add(workflowModel.getTemplateId());
         }
-        return workflows;
+        return workflows;*/
     }
 
     @Override
     public String getWorkflowTemplateId(String workflowName) throws WorkflowCatalogException {
-        Map<String, Object> queryParameters = new HashMap<>();
+        throw new WorkflowCatalogException("This method is not implemented");
+        /*Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.Workflow.WORKFLOW_NAME, workflowName);
         List<WorkflowModel> workflowModelList = select(QueryConstants.GET_WORKFLOW_GIVEN_NAME, -1, 0, queryParameters);
 
@@ -121,28 +126,30 @@ public class WorkflowRepository extends WorkflowCatAbstractRepository<WorkflowMo
             logger.debug("Return the record (there is only one record)");
             return workflowModelList.get(0).getTemplateId();
         }
-
-        return null;
+        return null;*/
     }
 
     @Override
     public boolean isWorkflowExistWithName(String workflowName) throws WorkflowCatalogException {
-        Map<String, Object> queryParameters = new HashMap<>();
+        throw new WorkflowCatalogException("This method is not implemented");
+        /*Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.Workflow.WORKFLOW_NAME, workflowName);
         List<WorkflowModel> workflowModelList = select(QueryConstants.GET_WORKFLOW_GIVEN_NAME, -1, 0, queryParameters);
-        return (!workflowModelList.isEmpty() && workflowModelList != null);
+        return (!workflowModelList.isEmpty() && workflowModelList != null);*/
     }
 
     @Override
     public void updateWorkflowOutputs(String templateId, List<OutputDataObjectType> workflowOutputs) throws WorkflowCatalogException {
-        WorkflowModel workflowModel = getWorkflow(templateId);
+        throw new WorkflowCatalogException("This method is not implemented");
+        /*WorkflowModel workflowModel = getWorkflow(templateId);
         workflowModel.setWorkflowOutputs(workflowOutputs);
-        updateWorkflow(workflowModel.getTemplateId(), workflowModel);
+        updateWorkflow(workflowModel.getTemplateId(), workflowModel);*/
     }
 
     @Override
     public void deleteWorkflow(String templateId) throws WorkflowCatalogException {
-        delete(templateId);
+        throw new WorkflowCatalogException("This method is not implemented");
+        //delete(templateId);
     }
 
 }
