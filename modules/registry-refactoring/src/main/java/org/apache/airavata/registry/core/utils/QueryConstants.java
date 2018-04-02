@@ -22,6 +22,7 @@ package org.apache.airavata.registry.core.utils;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.registry.core.entities.appcatalog.*;
 import org.apache.airavata.registry.core.entities.replicacatalog.DataProductEntity;
+import org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowEntity;
 
 public interface QueryConstants {
 
@@ -112,5 +113,10 @@ public interface QueryConstants {
     String FIND_DATA_PRODUCT_BY_NAME = "SELECT DP FROM " + DataProductEntity.class.getSimpleName() + " DP " +
             "WHERE DP.gatewayId LIKE :" + DBConstants.DataProduct.GATEWAY_ID + " AND DP.ownerName LIKE :" +
             DBConstants.DataProduct.OWNER_NAME + " AND dp.productName LIKE :" + DBConstants.DataProduct.PRODUCT_NAME;
+
+    String GET_ALL_WORKFLOWS = "SELECT W FROM " + WorkflowEntity.class.getSimpleName() + " W " +
+            "WHERE W.gatewayId LIKE :" + DBConstants.Workflow.GATEWAY_ID;
+    String GET_WORKFLOW_GIVEN_NAME = "SELECT W FROM " + WorkflowEntity.class.getSimpleName() + " W " +
+            "WHERE W.workflowName LIKE :" + DBConstants.Workflow.WORKFLOW_NAME;
 
 }
