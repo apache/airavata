@@ -85,23 +85,28 @@ public class DataProductRepository extends RepCatAbstractRepository<DataProductM
 
     }
 
+    @Override
     public String registerDataProduct(DataProductModel dataProductModel) throws ReplicaCatalogException {
         return saveDataProductModelData(dataProductModel);
     }
 
+    @Override
     public boolean updateDataProduct(DataProductModel updatedDataProductModel) throws ReplicaCatalogException {
         return (saveDataProductModelData(updatedDataProductModel) != null);
     }
 
+    @Override
     public DataProductModel getDataProduct(String productUri) throws ReplicaCatalogException {
         return get(productUri);
     }
 
+    @Override
     public DataProductModel getParentDataProduct(String productUri) throws ReplicaCatalogException {
         DataProductModel dataProductModel = getDataProduct(productUri);
         return get(dataProductModel.getParentProductUri());
     }
 
+    @Override
     public List<DataProductModel> getChildDataProducts(String parentProductUri) throws ReplicaCatalogException {
         Map<String, Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.DataProduct.PARENT_PRODUCT_URI, parentProductUri);
@@ -109,6 +114,7 @@ public class DataProductRepository extends RepCatAbstractRepository<DataProductM
         return dataProductModelList;
     }
 
+    @Override
     public List<DataProductModel> searchDataProductsByName(String gatewayId, String userId, String productName,
                                                     int limit, int offset) throws ReplicaCatalogException {
         Map<String, Object> queryParameters = new HashMap<>();
@@ -119,10 +125,12 @@ public class DataProductRepository extends RepCatAbstractRepository<DataProductM
         return dataProductModelList;
     }
 
+    @Override
     public boolean isDataProductExists(String productUri) throws ReplicaCatalogException {
         return isExists(productUri);
     }
 
+    @Override
     public boolean removeDataProduct(String productUri) throws ReplicaCatalogException {
         return delete(productUri);
     }
