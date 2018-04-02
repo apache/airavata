@@ -24,7 +24,7 @@ import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtoco
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.data.movement.DataMovementProtocol;
-import org.apache.airavata.registry.core.repositories.util.Initialize;
+import org.apache.airavata.registry.core.repositories.appcatalog.util.Initialize;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.junit.After;
 import org.junit.Before;

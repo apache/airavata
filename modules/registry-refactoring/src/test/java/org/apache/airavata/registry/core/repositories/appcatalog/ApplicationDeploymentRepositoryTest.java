@@ -25,7 +25,7 @@ import org.apache.airavata.model.appcatalog.appdeployment.CommandObject;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.parallelism.ApplicationParallelismType;
-import org.apache.airavata.registry.core.repositories.util.Initialize;
+import org.apache.airavata.registry.core.repositories.appcatalog.util.Initialize;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.junit.After;

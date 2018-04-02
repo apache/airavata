@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.registry.core.repositories.util;
+package org.apache.airavata.registry.core.repositories.appcatalog.util;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
