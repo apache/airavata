@@ -200,8 +200,8 @@ public class Initialize {
             executeSQL(sql.toString(), conn);
         }
         }catch (IOException e){
-            logger.error("Error occurred while executing SQL script for creating Airavata Data Catalog database", e);
-            throw new Exception("Error occurred while executing SQL script for creating Airavata Data Catalog database", e);
+            logger.error("Error occurred while executing SQL script for creating Airavata Replica Catalog database", e);
+            throw new Exception("Error occurred while executing SQL script for creating Airavata Replica Catalog database", e);
         }finally {
             if (reader != null) {
                 reader.close();
