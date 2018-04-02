@@ -42,9 +42,7 @@ import java.util.Map;
 public class WorkflowRepository extends WorkflowCatAbstractRepository<WorkflowModel, WorkflowEntity, String> implements WorkflowCatalog {
     private final static Logger logger = LoggerFactory.getLogger(WorkflowRepository.class);
 
-    public WorkflowRepository() {
-        super(WorkflowModel.class, WorkflowEntity.class);
-    }
+    public WorkflowRepository() { super(WorkflowModel.class, WorkflowEntity.class); }
 
     protected String saveWorkflowModelData(WorkflowModel workflowModel, String gatewayId) throws WorkflowCatalogException {
         WorkflowEntity workflowEntity = saveWorkflow(workflowModel, gatewayId);

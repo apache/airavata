@@ -62,19 +62,11 @@
         <class>org.apache.airavata.registry.core.entities.appcatalog.LocalDataMovementEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.StoragePreferenceEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.SSHAccountProvisionerConfiguration</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.GlobusGkEndpointPK</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.GsisshPostjobcommandPK</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.GsisshPrejobcommandPK</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.GsisshExportPK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.BatchQueueResourcePolicyEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ComputeResourcePolicyEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.GroupComputeResourcePrefEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.GroupSSHAccountProvisionerConfig</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.GroupResourceProfileEntity</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.GridftpEndpointPK</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.StorageInterfacePK</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.JobManagerCommandPK</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.ParallelismCommandPK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ModuleLoadCmdEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.UserResourceProfileEntity</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.UserComputeResourcePreferenceEntity</class>

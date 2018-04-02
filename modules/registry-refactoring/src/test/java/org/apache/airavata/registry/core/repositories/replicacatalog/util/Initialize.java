@@ -111,9 +111,9 @@ public class Initialize {
             conn = DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcPassword);
             if (!isDatabaseStructureCreated(DBConstants.CONFIGURATION, conn)) {
                 executeSQLScript(conn);
-                logger.info("New Database created for Data Catalog !!!");
+                logger.info("New Database created for Replica Catalog !!!");
             } else {
-                logger.debug("Database already created for Data Catalog!");
+                logger.debug("Database already created for Replica Catalog!");
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
