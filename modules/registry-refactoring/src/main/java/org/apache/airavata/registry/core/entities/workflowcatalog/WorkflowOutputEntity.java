@@ -29,7 +29,7 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name="WORKFLOW_OUTPUT")
-@IdClass(WorkflowOutputEntity.class)
+@IdClass(WorkflowOutputPK.class)
 public class WorkflowOutputEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 

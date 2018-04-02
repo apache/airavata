@@ -83,9 +83,9 @@ public interface QueryConstants {
     String GET_FILE_SYSTEM = "SELECT DISTINCT FS FROM " + ComputeResourceFileSystemEntity.class.getSimpleName() + " FS " +
             "WHERE FS.computeResourceId LIKE :" + DBConstants.ComputeResource.COMPUTE_RESOURCE_ID;
     String GET_JOB_MANAGER_COMMAND = "SELECT DISTINCT JM FROM " + JobManagerCommandEntity.class.getSimpleName() + " JM " +
-            "WHERE JM.id.resourceJobManagerId LIKE :" + DBConstants.ResourceJobManager.RESOURCE_JOB_MANAGER_ID;
+            "WHERE JM.resourceJobManagerId LIKE :" + DBConstants.ResourceJobManager.RESOURCE_JOB_MANAGER_ID;
     String GET_PARALLELISM_PREFIX = "SELECT DISTINCT PF FROM " + ParallelismCommandEntity.class.getSimpleName() + " PF " +
-            "WHERE PF.id.resourceJobManagerId LIKE :" + DBConstants.ResourceJobManager.RESOURCE_JOB_MANAGER_ID;
+            "WHERE PF.resourceJobManagerId LIKE :" + DBConstants.ResourceJobManager.RESOURCE_JOB_MANAGER_ID;
 
     String FIND_ALL_GROUP_RESOURCE_PROFILES = "SELECT G FROM " + GroupResourceProfileEntity.class.getSimpleName() + " G " +
             "WHERE G.gatewayId LIKE :" + DBConstants.GroupResourceProfile.GATEWAY_ID;
