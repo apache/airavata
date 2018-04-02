@@ -109,7 +109,7 @@ public class Initialize {
         try {
             Class.forName(jdbcDriver).newInstance();
             conn = DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcPassword);
-            if (!isDatabaseStructureCreated(DBConstants.CONFIGURATION, conn)) {
+            if (!isDatabaseStructureCreated(DBConstants.WORKFLOW, conn)) {
                 executeSQLScript(conn);
                 logger.info("New Database created for Workflow Catalog !!!");
             } else {

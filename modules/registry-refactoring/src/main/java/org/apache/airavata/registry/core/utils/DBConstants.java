@@ -23,6 +23,7 @@ public class DBConstants {
 
     public static int SELECT_MAX_ROWS = 1000;
     public static final String CONFIGURATION = "Configuration";
+    public static final String WORKFLOW = "Workflow";
 
     public static class ApplicationDeployment {
         public static final String APPLICATION_MODULE_ID = "appModuleId";
