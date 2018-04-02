@@ -64,11 +64,11 @@ public class WorkflowEntity implements Serializable {
 
     @OneToMany(targetEntity = WorkflowInputEntity.class, cascade = CascadeType.ALL,
             mappedBy = "workflow", fetch = FetchType.EAGER)
-    private List<InputDataObjectType> workflowInputs;
+    private List<WorkflowInputEntity> workflowInputs;
 
     @OneToMany(targetEntity = WorkflowOutputEntity.class, cascade = CascadeType.ALL,
             mappedBy = "workflow", fetch = FetchType.EAGER)
-    private List<OutputDataObjectType> workflowOutputs;
+    private List<WorkflowOutputEntity> workflowOutputs;
 
     public WorkflowEntity() {
     }
@@ -151,19 +151,19 @@ public class WorkflowEntity implements Serializable {
         this.name = name;
     }
 
-    public List<InputDataObjectType> getWorkflowInputs() {
+    public List<WorkflowInputEntity> getWorkflowInputs() {
         return workflowInputs;
     }
 
-    public void setWorkflowInputs(List<InputDataObjectType> workflowInputs) {
+    public void setWorkflowInputs(List<WorkflowInputEntity> workflowInputs) {
         this.workflowInputs = workflowInputs;
     }
 
-    public List<OutputDataObjectType> getWorkflowOutputs() {
+    public List<WorkflowOutputEntity> getWorkflowOutputs() {
         return workflowOutputs;
     }
 
-    public void setWorkflowOutputs(List<OutputDataObjectType> workflowOutputs) {
+    public void setWorkflowOutputs(List<WorkflowOutputEntity> workflowOutputs) {
         this.workflowOutputs = workflowOutputs;
     }
 }
