@@ -363,12 +363,10 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
         List<String> gridFTPEndPoint = gridFTPDataMovement.getGridFTPEndPoints();
         if (gridFTPEndPoint != null && !gridFTPEndPoint.isEmpty()) {
             for (String endpoint : gridFTPEndPoint) {
-                GridftpEndpointPK gridftpEndpointPK = new GridftpEndpointPK();
-                gridftpEndpointPK.setDataMovementInterfaceId(gridFTPDataMovement.getDataMovementInterfaceId());
-                gridftpEndpointPK.setEndpoint(endpoint);
                 GridftpEndpointEntity gridftpEndpointEntity = new GridftpEndpointEntity();
                 gridftpEndpointEntity.setGridftpDataMovement(gridftpDataMovementEntity);
-                gridftpEndpointEntity.setId(gridftpEndpointPK);
+                gridftpEndpointEntity.setDataMovementInterfaceId(gridFTPDataMovement.getDataMovementInterfaceId());
+                gridftpEndpointEntity.setEndpoint(endpoint);
                 execute(entityManager -> entityManager.merge(gridftpEndpointEntity));
             }
         }
