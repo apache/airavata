@@ -59,7 +59,7 @@
             <includes>
                 <include>airavata-server.properties</include>
                 <include>email-config.yaml</include>
-                <include>log4j.properties</include>
+                <include>logback.xml</include>
             </includes>
         </fileSet>
 
@@ -99,9 +99,11 @@
 
                 <!-- logging jars -->
                 <include>org.slf4j:slf4j-api:jar</include>
-                <include>org.slf4j:slf4j-log4j12:jar</include>
-                <include>log4j:log4j:jar</include>
-
+                <include>ch.qos.logback:logback-classic:jar</include>
+                <include>ch.qos.logback:logback-core:jar</include>
+                <include>org.slf4j:log4j-over-slf4j:jar</include>
+                <include>com.github.danielwegener:logback-kafka-appender:jar</include>
+                <include>net.logstash.logback:logstash-logback-encoder:jar</include>
             </includes>
         </dependencySet>
     </dependencySets>
