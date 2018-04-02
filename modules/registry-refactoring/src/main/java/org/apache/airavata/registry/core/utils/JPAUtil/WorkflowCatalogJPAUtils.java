@@ -32,16 +32,16 @@ public class WorkflowCatalogJPAUtils {
     private final static Logger logger = LoggerFactory.getLogger(WorkflowCatalogJPAUtils.class);
 
     private static final String PERSISTENCE_UNIT_NAME = "workflowcatalog_data";
-    private static final String WFCATALOG_JDBC_DRIVER = "wfcatalog.jdbc.driver";
-    private static final String WFCATALOG_JDBC_URL = "wfcatalog.jdbc.url";
-    private static final String WFCATALOG_JDBC_USER = "wfcatalog.jdbc.user";
-    private static final String WFCATALOG_JDBC_PASSWORD = "wfcatalog.jdbc.password";
-    private static final String WFCATALOG_VALIDATION_QUERY = "wfcatalog.validationQuery";
+    private static final String WFCATALOG_JDBC_DRIVER = "workflowcatalog.jdbc.driver";
+    private static final String WFCATALOG_JDBC_URL = "workflowcatalog.jdbc.url";
+    private static final String WFCATALOG_JDBC_USER = "workflowcatalog.jdbc.user";
+    private static final String WFCATALOG_JDBC_PASSWORD = "workflowcatalog.jdbc.password";
+    private static final String WFCATALOG_VALIDATION_QUERY = "workflowcatalog.validationQuery";
     private static final String JPA_CACHE_SIZE = "jpa.cache.size";
     private static final String JPA_CACHE_ENABLED = "cache.enable";
-    @PersistenceUnit(unitName="workflowcatalog_data")
+    @PersistenceUnit(unitName=PERSISTENCE_UNIT_NAME)
     protected static EntityManagerFactory factory;
-    @PersistenceContext(unitName="worlkflowcatalog_data")
+    @PersistenceContext(unitName=PERSISTENCE_UNIT_NAME)
     private static EntityManager wfCatEntityManager;
 
     public static EntityManager getEntityManager() throws ApplicationSettingsException {
@@ -52,7 +52,7 @@ public class WorkflowCatalogJPAUtils {
                     "Password=" + readServerProperties(WFCATALOG_JDBC_PASSWORD) +
                     ",validationQuery=" + readServerProperties(WFCATALOG_VALIDATION_QUERY);
             System.out.println(connectionProperties);
-            Map<String, String> properties = new HashMap<String, String>();
+            Map<String, String> properties = new HashMap<>();
             properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");
             properties.put("openjpa.ConnectionProperties", connectionProperties);
             properties.put("openjpa.DynamicEnhancementAgent", "true");

@@ -36,7 +36,7 @@ import java.sql.*;
 import java.util.StringTokenizer;
 
 public class Initialize {
-    private static final Logger logger = LoggerFactory.getLogger(org.apache.airavata.registry.core.repositories.workflowcatalog.util.Initialize.class);
+    private static final Logger logger = LoggerFactory.getLogger(Initialize.class);
     public static final String DERBY_SERVER_MODE_SYS_PROPERTY = "derby.drda.startNetworkServer";
     public  String scriptName = "workflowcatalog-derby.sql";
     private NetworkServerControl server;
@@ -200,8 +200,8 @@ public class Initialize {
                 executeSQL(sql.toString(), conn);
             }
         }catch (IOException e){
-            logger.error("Error occurred while executing SQL script for creating Airavata Data Catalog database", e);
-            throw new Exception("Error occurred while executing SQL script for creating Airavata Data Catalog database", e);
+            logger.error("Error occurred while executing SQL script for creating Airavata Workflow Catalog database", e);
+            throw new Exception("Error occurred while executing SQL script for creating Airavata Workflow Catalog database", e);
         }finally {
             if (reader != null) {
                 reader.close();
