@@ -722,3 +722,7 @@ class GroupResourceProfileViewSet(ReadOnlyAPIBackedViewSet):
     def get_list(self):
         return self.request.airavata_client.getGroupResourceList(
             self.authz_token, self.gateway_id)
+
+    def get_instance(self, lookup_value):
+        return self.request.airavata_client.getGroupResourceProfile(
+            self.authz_token, lookup_value)

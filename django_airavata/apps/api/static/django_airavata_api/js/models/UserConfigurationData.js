@@ -39,7 +39,8 @@ const FIELDS = [
         name: 'useUserCRPref',
         type: 'boolean',
         default: false,
-    }
+    },
+    'groupResourceProfileId',
 ];
 
 export default class UserConfigurationData extends BaseModel {
