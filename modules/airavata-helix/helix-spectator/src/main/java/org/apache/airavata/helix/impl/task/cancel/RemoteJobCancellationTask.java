@@ -2,8 +2,6 @@ package org.apache.airavata.helix.impl.task.cancel;
 
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.CommandOutput;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.submission.config.JobFactory;
@@ -11,10 +9,6 @@ import org.apache.airavata.helix.impl.task.submission.config.JobManagerConfigura
 import org.apache.airavata.helix.impl.task.submission.config.RawCommandInfo;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
-import org.apache.curator.RetryPolicy;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.helix.HelixManager;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
@@ -27,19 +21,9 @@ public class RemoteJobCancellationTask extends AiravataTask {
 
     private final static Logger logger = LoggerFactory.getLogger(RemoteJobCancellationTask.class);
 
-    private CuratorFramework curatorClient = null;
-
     @Override
     public void init(HelixManager manager, String workflowName, String jobName, String taskName) {
         super.init(manager, workflowName, jobName, taskName);
-        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
-        try {
-            this.curatorClient = CuratorFrameworkFactory.newClient(ServerSettings.getZookeeperConnection(), retryPolicy);
-            this.curatorClient.start();
-        } catch (ApplicationSettingsException e) {
-            logger.error("Failed to create curator client ", e);
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
@@ -108,8 +92,8 @@ public class RemoteJobCancellationTask extends AiravataTask {
 
     private List<String> getJobsOfProcess(String processId) throws Exception {
         String path = "/registry/" + processId + "/jobs";
-        if (this.curatorClient.checkExists().forPath(path) != null) {
-            return this.curatorClient.getChildren().forPath(path);
+        if (getCuratorClient().checkExists().forPath(path) != null) {
+            return getCuratorClient().getChildren().forPath(path);
         } else {
             return null;
         }

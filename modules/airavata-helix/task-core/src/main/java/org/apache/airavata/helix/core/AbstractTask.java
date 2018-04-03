@@ -19,10 +19,16 @@
  */
 package org.apache.airavata.helix.core;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskOutPort;
 import org.apache.airavata.helix.task.api.annotation.TaskParam;
+import org.apache.curator.RetryPolicy;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.helix.HelixManager;
 import org.apache.helix.task.Task;
 import org.apache.helix.task.TaskCallbackContext;
@@ -43,6 +49,8 @@ public abstract class AbstractTask extends UserContentStore implements Task {
 
     private static final String NEXT_JOB = "next-job";
     private static final String WORKFLOW_STARTED = "workflow-started";
+
+    private static CuratorFramework curatorClient = null;
 
     @TaskParam(name = "taskId")
     private String taskId;
@@ -159,5 +167,20 @@ public abstract class AbstractTask extends UserContentStore implements Task {
 
     public void setNextTask(OutPort nextTask) {
         this.nextTask = nextTask;
+    }
+
+    protected synchronized CuratorFramework getCuratorClient() {
+
+        if (curatorClient == null) {
+            RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
+            try {
+                this.curatorClient = CuratorFrameworkFactory.newClient(ServerSettings.getZookeeperConnection(), retryPolicy);
+                this.curatorClient.start();
+            } catch (ApplicationSettingsException e) {
+                logger.error("Failed to create curator client ", e);
+                throw new RuntimeException(e);
+            }
+        }
+        return curatorClient;
     }
 }

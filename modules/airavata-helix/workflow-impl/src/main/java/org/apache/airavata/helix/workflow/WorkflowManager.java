@@ -65,7 +65,7 @@ public class WorkflowManager {
         taskDriver = new TaskDriver(helixManager);
     }
 
-    public String launchWorkflow(String processId, List<AbstractTask> tasks, boolean globalParticipant, boolean monitor) throws Exception {
+    public synchronized String launchWorkflow(String processId, List<AbstractTask> tasks, boolean globalParticipant, boolean monitor) throws Exception {
 
         String workflowName = WORKFLOW_PREFIX + processId;
         logger.info("Launching workflow " + workflowName + " for process " + processId);

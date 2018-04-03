@@ -20,6 +20,7 @@
 package org.apache.airavata.helix.impl.task.submission;
 
 import org.apache.airavata.agents.api.AgentAdaptor;
+import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.airavata.agents.api.JobSubmissionOutput;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -38,10 +39,6 @@ import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.commons.io.FileUtils;
-import org.apache.curator.RetryPolicy;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.helix.HelixManager;
 import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
@@ -55,24 +52,9 @@ public abstract class JobSubmissionTask extends AiravataTask {
 
     private final static Logger logger = LoggerFactory.getLogger(JobSubmissionTask.class);
 
-    private CuratorFramework curatorClient = null;
-
     @Override
     public void init(HelixManager manager, String workflowName, String jobName, String taskName) {
         super.init(manager, workflowName, jobName, taskName);
-        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
-        try {
-            this.curatorClient = CuratorFrameworkFactory.newClient(ServerSettings.getZookeeperConnection(), retryPolicy);
-            this.curatorClient.start();
-        } catch (ApplicationSettingsException e) {
-            logger.error("Failed to create curator client ", e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    @SuppressWarnings("WeakerAccess")
-    public CuratorFramework getCuratorClient() {
-        return curatorClient;
     }
 
     // TODO perform exception handling
@@ -106,6 +88,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
         addMonitoringCommands(groovyMapData);
 
         String scriptAsString = groovyMapData.getAsString(jobManagerConfiguration.getJobDescriptionTemplateName());
+        logger.info("Generated job submission script : " + scriptAsString);
 
         int number = new SecureRandom().nextInt();
         number = (number < 0 ? -number : number);
@@ -117,13 +100,15 @@ public abstract class JobSubmissionTask extends AiravataTask {
         logger.info("Copying file form " + tempJobFile.getAbsolutePath() + " to remote path " + workingDirectory +
                 " of compute resource " + getTaskContext().getComputeResourceId());
         agentAdaptor.copyFileTo(tempJobFile.getAbsolutePath(), workingDirectory);
-        // TODO transfer file
+
         RawCommandInfo submitCommand = jobManagerConfiguration.getSubmitCommand(workingDirectory, tempJobFile.getPath());
 
-        logger.debug("Submit command for process id " + getProcessId() + " : " + submitCommand.getRawCommand());
+        logger.info("Submit command for process id " + getProcessId() + " : " + submitCommand.getRawCommand());
         logger.debug("Working directory for process id " + getProcessId() + " : " + workingDirectory);
 
-        CommandOutput commandOutput = agentAdaptor.executeCommand(submitCommand.getRawCommand(), workingDirectory);
+        CommandOutput commandOutput = submitCommandWithRecording(submitCommand, agentAdaptor, groovyMapData, workingDirectory);
+        logger.info("Job " + groovyMapData.getJobName() + " submitted to compute resource");
+        logger.info("Submission stdout: " + commandOutput.getStdOut() + ", stderr: " + commandOutput.getStdError());
 
         JobSubmissionOutput jsoutput = new JobSubmissionOutput();
         jsoutput.setDescription(scriptAsString);
@@ -145,6 +130,46 @@ public abstract class JobSubmissionTask extends AiravataTask {
         jsoutput.setStdOut(commandOutput.getStdOut());
         jsoutput.setStdErr(commandOutput.getStdError());
         return jsoutput;
+    }
+
+    /**
+     * This will write the standard output of the command to a file inside the working directory of the process and
+     * if the agent does not receive the output through first invocation, it retries by looking into the output file.
+     *
+     * @param submitCommand command to submit
+     * @param agentAdaptor agent adaptor to communicate with compute resource
+     * @param groovyMapData metadata object of the job
+     * @param workingDirectory working directory for the process
+     * @return {@link CommandOutput} of the submitted command
+     * @throws AgentException if agent failed to communicate with the compute host
+     */
+    private CommandOutput submitCommandWithRecording(RawCommandInfo submitCommand, AgentAdaptor agentAdaptor,
+                                                     GroovyMapData groovyMapData, String workingDirectory) throws AgentException {
+
+        String modifiedCommand =  submitCommand.getCommand() + " | tee " + getJobCommandRecordingFile(groovyMapData);
+        logger.info("Modified the submit command to support recording : " + modifiedCommand);
+
+        CommandOutput commandOutput = agentAdaptor.executeCommand(modifiedCommand, workingDirectory);
+
+        if (commandOutput.getStdOut() == null || "".equals(commandOutput.getStdOut())) {
+            logger.warn("command submission returned empty response so reading recording file at " + getJobCommandRecordingFile(groovyMapData));
+            CommandOutput recordingFileReadCommandOutput = agentAdaptor.executeCommand("cat " + getJobCommandRecordingFile(groovyMapData),
+                    groovyMapData.getWorkingDirectory());
+            if (recordingFileReadCommandOutput.getStdOut() != null && !"".equals(recordingFileReadCommandOutput.getStdOut())) {
+                logger.info("Received non empty output form recording file : " + recordingFileReadCommandOutput.getStdOut());
+                return recordingFileReadCommandOutput;
+            } else {
+                return commandOutput;
+            }
+        } else {
+            return commandOutput;
+        }
+    }
+
+    private String getJobCommandRecordingFile(GroovyMapData mapData) {
+        return (mapData.getWorkingDirectory().endsWith(File.separator) ?
+                mapData.getWorkingDirectory() : mapData.getWorkingDirectory() + File.separator) +
+                mapData.getJobName();
     }
 
     @SuppressWarnings("WeakerAccess")
