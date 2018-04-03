@@ -72,11 +72,16 @@ public class PostWorkflowManager {
 
     private CuratorFramework curatorClient = null;
     private Publisher statusPublisher;
+    private WorkflowManager workflowManager;
 
-    private void init() throws ApplicationSettingsException {
+    private void init() throws Exception {
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
         this.curatorClient = CuratorFrameworkFactory.newClient(ServerSettings.getZookeeperConnection(), retryPolicy);
         this.curatorClient.start();
+        workflowManager = new WorkflowManager(
+                ServerSettings.getSetting("helix.cluster.name"),
+                ServerSettings.getSetting("post.workflow.manager.name"),
+                ServerSettings.getZookeeperConnection());
     }
 
     private Consumer<String, JobStatusResult> createConsumer() throws ApplicationSettingsException {
@@ -275,11 +280,6 @@ public class PostWorkflowManager {
                             allTasks.get(allTasks.size() - 1).setNextTask(new OutPort(completingTask.getTaskId(), completingTask));
                         }
                         allTasks.add(completingTask);
-
-                        WorkflowManager workflowManager = new WorkflowManager(
-                                ServerSettings.getSetting("helix.cluster.name"),
-                                ServerSettings.getSetting("post.workflow.manager.name"),
-                                ServerSettings.getZookeeperConnection());
 
                         String workflowName = workflowManager.launchWorkflow(processId + "-POST-" + UUID.randomUUID().toString(),
                                 new ArrayList<>(allTasks), true, false);

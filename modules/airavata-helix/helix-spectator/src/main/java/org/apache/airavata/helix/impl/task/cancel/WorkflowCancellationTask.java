@@ -20,6 +20,7 @@ public class WorkflowCancellationTask extends AbstractTask {
     private final static Logger logger = LoggerFactory.getLogger(WorkflowCancellationTask.class);
 
     private TaskDriver taskDriver;
+    private HelixManager helixManager;
 
     @TaskParam(name = "Cancelling Workflow")
     private String cancellingWorkflowName;
@@ -33,16 +34,15 @@ public class WorkflowCancellationTask extends AbstractTask {
 
         try {
 
-            HelixManager helixManager = HelixManagerFactory.getZKHelixManager(ServerSettings.getSetting("helix.cluster.name"), taskName,
+            helixManager = HelixManagerFactory.getZKHelixManager(ServerSettings.getSetting("helix.cluster.name"), taskName,
                     InstanceType.SPECTATOR, ServerSettings.getZookeeperConnection());
             helixManager.connect();
             Runtime.getRuntime().addShutdownHook(
-                    new Thread() {
-                        @Override
-                        public void run() {
+                    new Thread(() -> {
+                        if (helixManager.isConnected()) {
                             helixManager.disconnect();
                         }
-                    }
+                    })
             );
             taskDriver = new TaskDriver(helixManager);
         } catch (Exception e) {
@@ -74,6 +74,17 @@ public class WorkflowCancellationTask extends AbstractTask {
         } catch (Exception e) {
             logger.error("Failed to stop workflow " + cancellingWorkflowName, e);
             return onFail("Failed to stop workflow " + cancellingWorkflowName + ": " + e.getMessage(), true);
+        } finally {
+
+            try {
+                if (helixManager != null) {
+                    if (helixManager.isConnected()) {
+                        helixManager.disconnect();
+                    }
+                }
+            } catch (Exception e) {
+                logger.warn("Failed to disconnect helix manager", e);
+            }
         }
     }
 

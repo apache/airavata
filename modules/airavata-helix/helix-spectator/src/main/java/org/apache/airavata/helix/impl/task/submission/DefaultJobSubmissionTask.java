@@ -89,8 +89,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                     statusList.get(0).setReason(submissionOutput.getFailureReason());
                     jobModel.setJobStatuses(statusList);
                     saveJobModel(jobModel);
-                    logger.error("expId: " + getExperimentId() + ", processid: " + getProcessId()+ ", taskId: " +
-                            getTaskId() + " :- Job submission failed for job name " + jobModel.getJobName()
+                    logger.error("Job submission failed for job name " + jobModel.getJobName()
                             + ". Exit code : " + submissionOutput.getExitCode() + ", Submission failed : "
                             + submissionOutput.isJobSubmissionFailed());
 
@@ -100,19 +99,16 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                             false, null);
 
                 } else {
-
                     String msg;
                     saveJobModel(jobModel);
                     ErrorModel errorModel = new ErrorModel();
                     if (submissionOutput.getExitCode() != Integer.MIN_VALUE) {
-                        msg = "expId:" + getExperimentId() + ", processId:" + getProcessId() + ", taskId: " + getTaskId() +
-                                " return non zero exit code:" + submissionOutput.getExitCode() + "  for JobName:" + jobModel.getJobName() +
+                        msg = "Returned non zero exit code:" + submissionOutput.getExitCode() + "  for JobName:" + jobModel.getJobName() +
                                 ", with failure reason : " + submissionOutput.getFailureReason()
                                 + " Hence changing job state to Failed." ;
                         errorModel.setActualErrorMessage(submissionOutput.getFailureReason());
                     } else {
-                        msg = "expId:" + getExperimentId() + ", processId:" + getProcessId() + ", taskId: " + getTaskId() +
-                                " doesn't  return valid job submission exit code for JobName:" + jobModel.getJobName() +
+                        msg = "Didn't return valid job submission exit code for JobName:" + jobModel.getJobName() +
                                 ", with failure reason : stdout ->" + submissionOutput.getStdOut() +
                                 " stderr -> " + submissionOutput.getStdErr() + " Hence changing job state to Failed." ;
                         errorModel.setActualErrorMessage(msg);
