@@ -4,7 +4,7 @@ from wagtail.core.models import Page
 
 from django_airavata.wagtailapps.base.models import FooterText
 
-from django_airavata.wagtailapps.base.models import HeaderTitleText
+from django_airavata.wagtailapps.base.models import Navbar
 
 from django_airavata.wagtailapps.base.models import Announcements
 
@@ -120,14 +120,13 @@ def get_footer_text(context):
         'footer_text': footer_text,
     }
 
-@register.inclusion_tag('django_airavata_wagtail_base/includes/header_title_text.html', takes_context=True)
-def get_header_title_text(context):
-    header_title_text = ""
-    if HeaderTitleText.objects.first() is not None:
-        header_title_text = HeaderTitleText.objects.first()
-
+@register.inclusion_tag('django_airavata_wagtail_base/includes/navbar.html', takes_context=True)
+def get_navbar(context):
+    navbar = None
+    if Navbar.objects.first() is not None:
+        navbar = Navbar.objects.first()
     return {
-        'header_title_text': header_title_text,
+        'navbar': navbar,
     }
 
 @register.inclusion_tag('django_airavata_wagtail_base/includes/custom_header_links.html', takes_context=True)

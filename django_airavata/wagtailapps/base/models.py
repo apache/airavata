@@ -21,6 +21,7 @@ from wagtail.search import index
 from wagtail.snippets.models import register_snippet
 
 from .blocks import BaseStreamBlock
+from .blocks import CssStreamBlock
 from wagtail.snippets.blocks import SnippetChooserBlock
 
 
@@ -61,11 +62,12 @@ class CustomCss(models.Model):
     Custom CSS
     """
 
-    body = StreamField([
-    ('css_class', RawHTMLBlock(required=True, help_text="Write Css Here"))],default="")
+    css = StreamField(
+        CssStreamBlock(), verbose_name="CSS block", blank=True, null=True, help_text="Write custom css and give comments as necessary"
+    )
 
     panels = [
-        StreamFieldPanel('body'),
+        StreamFieldPanel('css'),
     ]
 
     def __str__(self):
@@ -123,7 +125,7 @@ class FooterText(models.Model):
 
 
 @register_snippet
-class HeaderTitleText(models.Model):
+class Navbar(models.Model):
     """
     This provides editable text for the site header title. Again it uses the decorator
     `register_snippet` to allow it to be accessible via the admin. It is made
@@ -139,23 +141,80 @@ class HeaderTitleText(models.Model):
         help_text='Brand Logo'
     )
 
-    body = models.CharField(
+    logo_redirect_link = models.CharField(
+        max_length = 255,
+        help_text = 'Provide a redirection link for the logo or logo text Eg. (https://www.google.com/)',
+        null=True,
+        blank=True,
+        default = '#',
+    )
+
+    logo_width = models.IntegerField(
+        help_text = 'Provide a width for the logo',
+        null=True,
+        blank=True,
+        default = '144',
+    )
+
+    logo_height = models.IntegerField(
+        help_text = 'Provide a height for the logo',
+        null=True,
+        blank = True,
+        default = '43'
+    )
+
+    logo_text = models.CharField(
         max_length=255,
-        help_text = 'Give a title text',
+        help_text = 'Give a title text as an alternative to logo. Eg.(SEAGRID)',
         null=True,
         blank=True,
     )
 
+    logo_text_color = models.CharField(
+        max_length=100,
+        help_text = 'Give a color for logo text if you have a logo text Eg.(#FFFFFF)',
+        null=True,
+        blank=True,
+    )
+
+    logo_text_size = models.IntegerField(
+        help_text = 'Give a text size as number of pixels Eg.(30)',
+        null=True,
+        blank=True,
+    )
+
+    nav_background = models.CharField(
+        max_length=100,
+        help_text = "Give a background color for navbar Eg. (#000000)",
+        null=True,
+        blank=True,
+    )
+
+    nav_link_color = models.CharField(
+        max_length=100,
+        help_text = "Give a color for nav links Eg. (#FFFFFF)",
+        null=True,
+        blank=True,
+    )
+
+
     panels = [
         ImageChooserPanel('logo'),
-        FieldPanel('body'),
+        FieldPanel('logo_redirect_link'),
+        FieldPanel('logo_width'),
+        FieldPanel('logo_height'),
+        FieldPanel('logo_text'),
+        FieldPanel('logo_text_size'),
+        FieldPanel('logo_text_color'),
+        FieldPanel('nav_background'),
+        FieldPanel('nav_link_color'),
     ]
 
     def __str__(self):
-        return "Header Title"
+        return "Navbar"
 
     class Meta:
-        verbose_name_plural = 'Header Title'
+        verbose_name_plural = 'Navbar'
 
 
 @register_snippet
@@ -267,7 +326,7 @@ class CustomHeaderLinks(models.Model):
     class Meta:
         verbose_name_plural = 'Header Custom Links'
 
-class HomePage(Page):
+class SeagridHomePage(Page):
     """
     The Home Page. This looks slightly more complicated than it is. You can
     see if you visit your site and edit the homepage that it is split between

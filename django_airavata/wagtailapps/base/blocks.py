@@ -2,7 +2,7 @@ from wagtail.images.blocks import ImageChooserBlock
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.core.blocks import (
-    CharBlock, ChoiceBlock, RichTextBlock, StreamBlock, StructBlock, TextBlock, ListBlock, BooleanBlock, StaticBlock, IntegerBlock
+    CharBlock, ChoiceBlock, RichTextBlock, StreamBlock, StructBlock, TextBlock, ListBlock, BooleanBlock, StaticBlock, IntegerBlock, RawHTMLBlock
 )
 from django_airavata.wagtailapps.base import models
 
@@ -47,6 +47,17 @@ class CustomEmbedBlock(StructBlock):
         template = "blocks/embed_block.html"
         help_text = "Insert an embed URL e.g https://www.youtube.com/embed/SGJFWirQ3ks"
 
+
+class CssCommentBlock(StructBlock):
+    """
+    CSS Comment block
+    """
+    message = TextBlock(required=True, help_text="Write some comment to mark the css")
+
+    class Meta:
+        icon = "fa-comment"
+        template = "blocks/css_comment.html"
+        help_text = "-----Navbar Styles------"
 
 # BootStrap Components
 
@@ -235,3 +246,11 @@ class BaseStreamBlock(StreamBlock):
     bootstrap_card = BootstrapCard()
     bootstrap_carousel = BootstrapCarousel()
     bootstrap_well = BootstrapWell()
+
+
+class CssStreamBlock(StreamBlock):
+    """
+    Define the custom blocks for css that 'StreamField' will utilize
+    """
+    css_block = RawHTMLBlock(required=True, help_text="Write Css Here")
+    css_comment = CssCommentBlock()

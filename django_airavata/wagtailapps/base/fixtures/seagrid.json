@@ -4,7 +4,7 @@
   "pk": 2,
   "fields": {
     "password": "pbkdf2_sha256$36000$kSBYHC0WApTU$GhqnCk1geRftoLf27CUboofpZbF+N2TW98QbpuwCI6Q=",
-    "last_login": "2018-03-31T17:04:17.616Z",
+    "last_login": "2018-04-03T15:52:48.967Z",
     "is_superuser": true,
     "username": "stephenpaul2727",
     "first_name": "",
@@ -14,6 +14,26 @@
     "is_active": true,
     "date_joined": "2018-03-13T19:27:45.222Z",
     "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 3,
+  "fields": {
+    "password": "",
+    "last_login": "2018-04-02T18:50:56.232Z",
+    "is_superuser": false,
+    "username": "cmstest",
+    "first_name": "cms",
+    "last_name": "test",
+    "email": "stephenadithela@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2018-04-02T18:48:24.273Z",
+    "groups": [
+      1
+    ],
     "user_permissions": []
   }
 },
@@ -4967,6 +4987,13 @@
   }
 },
 {
+  "model": "django_airavata_wagtail_base.customcss",
+  "pk": 2,
+  "fields": {
+    "css": "[{\"type\": \"css_comment\", \"value\": {\"message\": \"-----navbar styles-----\"}, \"id\": \"e714a71c-104b-409e-baa2-844d0511822c\"}, {\"type\": \"css_block\", \"value\": \".main-nav {\\r\\nbackground-color : #333 !important;\\r\\n}\\r\\n.main-nav a {\\r\\ncolor : #fff !important;\\r\\n}\\r\\n.main-nav a:hover {\\r\\ncolor: #20b2aa !important;\\r\\n}\\r\\n.main-nav ul {\\r\\nfont-size: 16 px;\\r\\n}\", \"id\": \"83c1e976-e5d7-4561-aa84-9d65c51482e3\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"-----end of navbar styles-----\"}, \"id\": \"61fcba71-6c21-424b-8e67-8105d6be22ce\"}]"
+  }
+},
+{
   "model": "django_airavata_wagtail_base.footertext",
   "pk": 1,
   "fields": {
@@ -5007,11 +5034,18 @@
   }
 },
 {
-  "model": "django_airavata_wagtail_base.headertitletext",
+  "model": "django_airavata_wagtail_base.navbar",
   "pk": 1,
   "fields": {
     "logo": 4,
-    "body": null
+    "logo_redirect_link": "/",
+    "logo_width": 190,
+    "logo_height": 55,
+    "logo_text": null,
+    "logo_text_color": null,
+    "logo_text_size": null,
+    "nav_background": null,
+    "nav_link_color": null
   }
 },
 {
@@ -5049,7 +5083,7 @@
   }
 },
 {
-  "model": "django_airavata_wagtail_base.homepage",
+  "model": "django_airavata_wagtail_base.seagridhomepage",
   "pk": 3,
   "fields": {
     "image": 14,
