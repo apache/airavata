@@ -2,9 +2,10 @@
 import copy
 import datetime
 import logging
-from urllib.parse import quote
+from urllib.parse import quote, urlencode
 
 from django.conf import settings
+from django.urls import reverse
 from rest_framework import serializers
 
 from airavata.model.appcatalog.appdeployment.ttypes import (ApplicationDeploymentDescription,
@@ -14,6 +15,8 @@ from airavata.model.appcatalog.appdeployment.ttypes import (ApplicationDeploymen
 from airavata.model.appcatalog.appinterface.ttypes import \
     ApplicationInterfaceDescription
 from airavata.model.appcatalog.computeresource.ttypes import BatchQueue
+from airavata.model.appcatalog.groupresourceprofile.ttypes import \
+    GroupResourceProfile
 from airavata.model.application.io.ttypes import (InputDataObjectType,
                                                   OutputDataObjectType)
 from airavata.model.data.replica.ttypes import (DataProductModel,
@@ -23,8 +26,10 @@ from airavata.model.experiment.ttypes import (ExperimentModel,
 from airavata.model.group.ttypes import GroupModel
 from airavata.model.job.ttypes import JobModel
 from airavata.model.status.ttypes import ExperimentStatus
+from airavata.model.user.ttypes import UserProfile
 from airavata.model.workspace.ttypes import Project
 
+from . import datastore
 from . import thrift_utils
 
 log = logging.getLogger(__name__)
@@ -112,18 +117,43 @@ class GroupSerializer(serializers.Serializer):
     url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:group-detail', lookup_field='id', lookup_url_kwarg='group_id')
     id = serializers.CharField(default=GroupModel.thrift_spec[1][4], read_only=True)
     name = serializers.CharField(required=True)
-    description = serializers.CharField(allow_null=True)
-    ownerId = GatewayUsernameDefaultField()
+    description = serializers.CharField(allow_null=True, allow_blank=True)
+    ownerId = serializers.CharField(read_only=True)
     members = serializers.ListSerializer(child=serializers.CharField())
+    isAdmin = serializers.SerializerMethodField()
+    isOwner = serializers.SerializerMethodField()
+    isMember = serializers.SerializerMethodField()
 
     def create(self, validated_data):
-        validated_data['ownerId'] = self.context['request'].user.username
+        validated_data['ownerId'] = self.context['request'].user.username + "@" + settings.GATEWAY_ID
         return GroupModel(**validated_data)
 
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
         instance.description = validated_data.get('description', instance.description)
+        # Calculate added and removed members
+        old_members = set(instance.members)
+        new_members = set(validated_data.get('members', instance.members))
+        removed_members = old_members - new_members
+        added_members = new_members - old_members
+        instance._removed_members = list(removed_members)
+        instance._added_members = list(added_members)
+        instance.members = validated_data.get('members', instance.members)
         return instance
+
+    def get_isAdmin(self, group):
+        request = self.context['request']
+        return request.profile_service['group_manager'].hasAdminAccess(
+            request.authz_token, group.id, request.user.username + "@" + settings.GATEWAY_ID)
+
+    def get_isOwner(self, group):
+        request = self.context['request']
+        return group.ownerId == request.user.username + "@" + settings.GATEWAY_ID
+
+    def get_isMember(self, group):
+        request = self.context['request']
+        username = request.user.username + "@" + settings.GATEWAY_ID
+        return group.members and username in group.members
 
 
 class ProjectSerializer(serializers.Serializer):
@@ -305,6 +335,17 @@ class DataProductSerializer(
     creationTime = UTCPosixTimestampDateTimeField()
     lastModifiedTime = UTCPosixTimestampDateTimeField()
     replicaLocations = DataReplicaLocationSerializer(many=True)
+    downloadURL = serializers.SerializerMethodField()
+
+    def get_downloadURL(self, data_product):
+        """Getter for downloadURL field."""
+        if datastore.exists(data_product):
+            request = self.context['request']
+            return (request.build_absolute_uri(
+                reverse('django_airavata_api:download_file'))
+                + '?'
+                + urlencode({'data-product-uri': data_product.productUri}))
+        return None
 
 
 # TODO move this into airavata_sdk?
@@ -354,3 +395,15 @@ class ExperimentSummarySerializer(
     statusUpdateTime = UTCPosixTimestampDateTimeField()
     url = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:experiment-detail', lookup_field='experimentId', lookup_url_kwarg='experiment_id')
     project = FullyEncodedHyperlinkedIdentityField(view_name='django_airavata_api:project-detail', lookup_field='projectId', lookup_url_kwarg='project_id')
+
+
+class UserProfileSerializer(
+        thrift_utils.create_serializer_class(UserProfile)):
+    creationTime = UTCPosixTimestampDateTimeField()
+    lastAccessTime = UTCPosixTimestampDateTimeField()
+
+
+class GroupResourceProfileSerializer(
+        thrift_utils.create_serializer_class(GroupResourceProfile)):
+    creationTime = UTCPosixTimestampDateTimeField()
+    updatedTime = UTCPosixTimestampDateTimeField()

@@ -2,6 +2,11 @@
 
 {% load static %}
 
+{% block css %}
+{{ block.super }}
+<link rel=stylesheet type=text/css href="{% static 'django_airavata_groups/dist/group-create.css' %}">
+{% endblock %}
+
 {% block content %}
 <div id="create-group"></div>
 {% endblock content %}
@@ -9,30 +14,3 @@
 {% block scripts %}
 <script src="{% static 'django_airavata_groups/dist/group-create.js' %}"></script>
 {% endblock %}
-
-
-<!-- OLD CODE -->
-
-<!--
-<h1 align="center">Create a Group</h1>
-<br>
-{% block body %}
-<div class="container">
-    {% if user.is_authenticated %}
-    <div class="row">
-        <div class="col-md-12">
-            <h3>Enter Group Details</h3>
-            <form action="" method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button class="btn btn-primary btn-xs" type="submit" role="button">Submit</button>
-            </form>
-        </div>
-    </div>
-    <br>
-    <p align="right"><a class="btn btn-primary btn-xs" href="{% url 'django_airavata_groups:manage' %}" role="button">Back</a></p>
-    {% else %}
-    <p><a class="btn btn-primary btn-lg" href="{% url 'django_airavata_auth:login' %}" role="button">Login »</a></p>
-    {% endif %}
-</div>
-{% endblock %} -->

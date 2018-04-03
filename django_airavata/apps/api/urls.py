@@ -17,6 +17,10 @@ router.register(r'new/application/module', views.RegisterApplicationModule, base
 router.register(r'application-interfaces', views.ApplicationInterfaceViewSet, base_name='application-interface')
 router.register(r'applications', views.ApplicationModuleViewSet, base_name='application')
 router.register(r'application-deployments', views.ApplicationDeploymentViewSet, base_name='application-deployment')
+router.register(r'user-profiles', views.UserProfileViewSet,
+                base_name='user-profile')
+router.register(r'group-resource-profiles', views.GroupResourceProfileViewSet,
+                base_name='group-resource-profile')
 
 app_name = 'django_airavata_api'
 urlpatterns = [
@@ -34,6 +38,9 @@ urlpatterns = [
     url(r'^application/deployment$', views.FetchApplicationDeployment.as_view(), name="app_deployment"),
     url(r'^credentials/ssh/keys', views.FetchSSHPubKeys.as_view(), name="ssh_keys"),
     url(r'^credentials/ssh/key/delete', views.DeleteSSHPubKey.as_view(), name="ssh_key_deletion"),
+    url(r'^credentials/ssh/key/create', views.GenerateRegisterSSHKeys.as_view(), name="ssh_key_creation"),
+    url(r'^upload$', views.upload_input_file, name='upload_input_file'),
+    url(r'^download', views.download_file, name='download_file'),
     url(r'^credentials/ssh/key/create', views.GenerateRegisterSSHKeys.as_view(), name="ssh_key_creation"),
     url(r'^compute/resources$', views.ComputeResourceListView.as_view(), name="compute_resources"),
     url(r'^compute/resource/details', views.ComputeResourceDetails.as_view(), name="compute_resource_details"),

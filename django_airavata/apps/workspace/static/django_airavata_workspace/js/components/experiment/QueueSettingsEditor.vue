@@ -52,28 +52,28 @@
                         :feedback="getValidationFeedback('nodeCount')"
                         :state="getValidationState('nodeCount')">
                         <b-form-input id="node-count" type="number" min="1"
-                            :max="selectedQueueDefault.maxNodes"
+                            :max="maxNodes"
                             v-model="localComputationalResourceScheduling.nodeCount" required
                             @input="emitValueChanged"
                             :state="getValidationState('nodeCount')">
                         </b-form-input>
                         <div slot="description">
                             <i class="fa fa-info-circle" aria-hidden="true"></i>
-                            Max Allowed Nodes = {{ selectedQueueDefault.maxNodes }}
+                            Max Allowed Nodes = {{ maxNodes }}
                         </div>
                     </b-form-group>
                     <b-form-group label="Total Core Count" label-for="core-count"
                         :feedback="getValidationFeedback('totalCPUCount')"
                         :state="getValidationState('totalCPUCount')">
                         <b-form-input id="core-count" type="number" min="1"
-                            :max="selectedQueueDefault.maxProcessors"
+                            :max="maxCPUCount"
                             v-model="localComputationalResourceScheduling.totalCPUCount" required
                             @input="emitValueChanged"
                             :state="getValidationState('totalCPUCount')">
                         </b-form-input>
                         <div slot="description">
                             <i class="fa fa-info-circle" aria-hidden="true"></i>
-                            Max Allowed Cores = {{ selectedQueueDefault.maxProcessors }}
+                            Max Allowed Cores = {{ maxCPUCount }}
                         </div>
                     </b-form-group>
                     <b-form-group label="Wall Time Limit" label-for="walltime-limit"
@@ -81,7 +81,7 @@
                         :state="getValidationState('wallTimeLimit')">
                         <b-input-group right="minutes">
                             <b-form-input id="walltime-limit" type="number" min="1"
-                                :max="selectedQueueDefault.maxRunTime"
+                                :max="maxWalltime"
                                 v-model="localComputationalResourceScheduling.wallTimeLimit" required
                                 @input="emitValueChanged"
                                 :state="getValidationState('wallTimeLimit')">
@@ -89,7 +89,7 @@
                         </b-input-group>
                         <div slot="description">
                             <i class="fa fa-info-circle" aria-hidden="true"></i>
-                            Max Allowed Wall Time = {{ selectedQueueDefault.maxRunTime }}
+                            Max Allowed Wall Time = {{ maxWalltime }}
                         </div>
                     </b-form-group>
                     <div>
@@ -117,6 +117,14 @@ export default {
             type: String,
             required: true
         },
+        computeResourcePolicy: {
+            type: models.ComputeResourcePolicy,
+            required: false,
+        },
+        batchQueueResourcePolicies: {
+            type: models.BatchQueueResourcePolicy,
+            required: false,
+        }
     },
     data () {
         return {
@@ -138,14 +146,35 @@ export default {
         selectedQueueDefault: function() {
             return this.queueDefaults.find(queue => queue.queueName === this.localComputationalResourceScheduling.queueName);
         },
+        maxCPUCount: function() {
+            const batchQueueResourcePolicy = this.getBatchQueueResourcePolicy(this.selectedQueueDefault.queueName);
+            if (batchQueueResourcePolicy) {
+                return Math.min(batchQueueResourcePolicy.maxAllowedCores, this.selectedQueueDefault.maxProcessors);
+            }
+            return this.selectedQueueDefault.maxProcessors;
+        },
+        maxNodes: function() {
+            const batchQueueResourcePolicy = this.getBatchQueueResourcePolicy(this.selectedQueueDefault.queueName);
+            if (batchQueueResourcePolicy) {
+                return Math.min(batchQueueResourcePolicy.maxAllowedNodes, this.selectedQueueDefault.maxNodes);
+            }
+            return this.selectedQueueDefault.maxNodes;
+        },
+        maxWalltime: function() {
+            const batchQueueResourcePolicy = this.getBatchQueueResourcePolicy(this.selectedQueueDefault.queueName);
+            if (batchQueueResourcePolicy) {
+                return Math.min(batchQueueResourcePolicy.maxAllowedWalltime, this.selectedQueueDefault.maxRunTime);
+            }
+            return this.selectedQueueDefault.maxRunTime;
+        }
     },
     methods: {
         queueChanged: function(queueName) {
 
             const queueDefault = this.queueDefaults.find(queue => queue.queueName === queueName);
-            this.localComputationalResourceScheduling.totalCPUCount = queueDefault.defaultCPUCount;
-            this.localComputationalResourceScheduling.nodeCount = queueDefault.defaultNodeCount;
-            this.localComputationalResourceScheduling.wallTimeLimit = queueDefault.defaultWalltime;
+            this.localComputationalResourceScheduling.totalCPUCount = this.getDefaultCPUCount(queueDefault);
+            this.localComputationalResourceScheduling.nodeCount = this.getDefaultNodeCount(queueDefault);
+            this.localComputationalResourceScheduling.wallTimeLimit = this.getDefaultWalltime(queueDefault);
             this.emitValueChanged();
         },
         emitValueChanged: function() {
@@ -155,28 +184,63 @@ export default {
             services.ApplicationDeploymentService.getQueues(this.appDeploymentId)
                 .then(queueDefaults => {
                     // Sort queue defaults
-                    this.queueDefaults = queueDefaults.sort((a, b) => {
-                        // Sort default first, then by alphabetically by name
-                        if (a.isDefaultQueue) {
-                            return -1;
-                        } else if (b.isDefaultQueue) {
-                            return 1;
-                        } else {
-                            return a.queueName.localeCompare(b.queueName);
-                        }
+                    this.queueDefaults = queueDefaults
+                        .filter(q => this.isQueueInComputeResourcePolicy(q.queueName))
+                        .sort((a, b) => {
+                            // Sort default first, then by alphabetically by name
+                            if (a.isDefaultQueue) {
+                                return -1;
+                            } else if (b.isDefaultQueue) {
+                                return 1;
+                            } else {
+                                return a.queueName.localeCompare(b.queueName);
+                            }
                     });
                     // Find the default queue and apply it's settings
                     const defaultQueue = this.queueDefaults[0];
 
                     this.localComputationalResourceScheduling.queueName = defaultQueue.queueName;
-                    this.localComputationalResourceScheduling.totalCPUCount = defaultQueue.defaultCPUCount;
-                    this.localComputationalResourceScheduling.nodeCount = defaultQueue.defaultNodeCount;
-                    this.localComputationalResourceScheduling.wallTimeLimit = defaultQueue.defaultWalltime;
+                    this.localComputationalResourceScheduling.totalCPUCount = this.getDefaultCPUCount(defaultQueue);
+                    this.localComputationalResourceScheduling.nodeCount = this.getDefaultNodeCount(defaultQueue);
+                    this.localComputationalResourceScheduling.wallTimeLimit = this.getDefaultWalltime(defaultQueue);
                     this.emitValueChanged();
                 });
         },
+        isQueueInComputeResourcePolicy: function(queueName) {
+            if (!this.computeResourcePolicy) {
+                return true;
+            }
+            return this.computeResourcePolicy.allowedBatchQueues.includes(queueName);
+        },
+        getBatchQueueResourcePolicy: function(queueName) {
+            if (!this.batchQueueResourcePolicies || this.batchQueueResourcePolicies.length === 0) {
+                return null;
+            }
+            return this.batchQueueResourcePolicies.find(bqrp => bqrp.queuename === queueName);
+        },
+        getDefaultCPUCount: function(queueDefault) {
+            const batchQueueResourcePolicy = this.getBatchQueueResourcePolicy(queueDefault.queueName);
+            if (batchQueueResourcePolicy) {
+                return Math.min(batchQueueResourcePolicy.maxAllowedCores, queueDefault.defaultCPUCount);
+            }
+            return queueDefault.defaultCPUCount;
+        },
+        getDefaultNodeCount: function(queueDefault) {
+            const batchQueueResourcePolicy = this.getBatchQueueResourcePolicy(queueDefault.queueName);
+            if (batchQueueResourcePolicy) {
+                return Math.min(batchQueueResourcePolicy.maxAllowedNodes, queueDefault.defaultNodeCount);
+            }
+            return queueDefault.defaultNodeCount;
+        },
+        getDefaultWalltime: function(queueDefault) {
+            const batchQueueResourcePolicy = this.getBatchQueueResourcePolicy(queueDefault.queueName);
+            if (batchQueueResourcePolicy) {
+                return Math.min(batchQueueResourcePolicy.maxAllowedWalltime, queueDefault.defaultWalltime);
+            }
+            return queueDefault.defaultWalltime;
+        },
         getValidationFeedback: function(properties) {
-            return utils.getProperty(this.localComputationalResourceScheduling.validate(this.selectedQueueDefault), properties);
+            return utils.getProperty(this.localComputationalResourceScheduling.validate(this.selectedQueueDefault, this.getBatchQueueResourcePolicy(this.selectedQueueDefault.queueName)), properties);
         },
         getValidationState: function(properties) {
             return this.getValidationFeedback(properties) ? 'invalid' : null;

@@ -54,9 +54,12 @@
                                     :label="experimentInput.name" :label-for="experimentInput.name" :key="experimentInput.name"
                                     :feedback="getValidationFeedback(['experimentInputs', experimentInput.name, 'value'])"
                                     :state="getValidationState(['experimentInputs', experimentInput.name, 'value'])">
-                                <b-form-input :id="experimentInput.name" type="text" v-model="experimentInput.value" required
+                                <b-form-input v-if="isSimpleInput(experimentInput)" :id="experimentInput.name" type="text" v-model="experimentInput.value" required
                                     :placeholder="experimentInput.userFriendlyDescription"
                                     :state="getValidationState(['experimentInputs', experimentInput.name, 'value'])"></b-form-input>
+                                <b-form-file v-if="isFileInput(experimentInput)" :id="experimentInput.name" type="text" v-model="experimentInput.value" required
+                                    :placeholder="experimentInput.userFriendlyDescription"
+                                    :state="getValidationState(['experimentInputs', experimentInput.name, 'value'])"></b-form-file>
                             </b-form-group>
                         </div>
                     </div>
@@ -94,7 +97,7 @@
 
 <script>
 import ComputationalResourceSchedulingEditor from './ComputationalResourceSchedulingEditor.vue'
-import {models, services} from 'django-airavata-api'
+import {models, services, utils as apiUtils} from 'django-airavata-api'
 import {utils} from 'django-airavata-common-ui'
 
 export default {
@@ -140,33 +143,49 @@ export default {
     },
     methods: {
         saveExperiment: function() {
-            console.log(JSON.stringify(this.localExperiment));
-            // TODO: validate experiment
-            // save experiment
-            services.ExperimentService.save(this.localExperiment)
-                .then(experiment => {
-                    this.localExperiment = experiment;
-                    console.log(experiment);
-                    alert('Experiment saved!');
-                    this.$emit('saved', experiment);
+            return this.uploadInputFiles()
+                .then(uploadResults => {
+                    return services.ExperimentService.save(this.localExperiment)
+                        .then(experiment => {
+                            this.localExperiment = experiment;
+                            console.log(experiment);
+                            this.$emit('saved', experiment);
+                        });
+                })
+                .catch(result => {
+                    console.log("Save failed!", result);
                 });
         },
         saveAndLaunchExperiment: function() {
-            console.log(JSON.stringify(this.localExperiment));
-            // TODO: validate experiment
-            let savedExperiment = null;
-            services.ExperimentService.save(this.localExperiment)
-                .then(experiment => {
-                    this.localExperiment = experiment;
-                    return services.ExperimentService.launch(experiment.experimentId)
-                        .then(result => {
-                            alert('Experiment launched!');
-                            this.$emit('savedAndLaunched', experiment);
-                        });
-                    })
+            return this.uploadInputFiles()
+                .then(uploadResults => {
+                    return services.ExperimentService.save(this.localExperiment)
+                        .then(experiment => {
+                            this.localExperiment = experiment;
+                            return services.ExperimentService.launch(experiment.experimentId)
+                            .then(result => {
+                                this.$emit('savedAndLaunched', experiment);
+                            });
+                        })
+                })
                 .catch(result => {
                     console.log("Launch failed!", result);
                 });
+        },
+        uploadInputFiles: function() {
+            let uploads = [];
+            this.localExperiment.experimentInputs.forEach(input => {
+                if (input.type === models.DataType.URI && input.value) {
+                    let data = new FormData();
+                    data.append('file', input.value);
+                    data.append('project-id', this.localExperiment.projectId);
+                    data.append('experiment-name', this.localExperiment.experimentName);
+                    let uploadRequest = apiUtils.FetchUtils.post('/api/upload', data)
+                        .then(result => input.value = result['data-product-uri'])
+                    uploads.push(uploadRequest);
+                }
+            });
+            return Promise.all(uploads);
         },
         getApplicationInputState: function(applicationInput) {
             const validation = this.getApplicationInputValidation(applicationInput);
@@ -188,6 +207,18 @@ export default {
         },
         getValidationState: function(properties) {
             return this.getValidationFeedback(properties) ? 'invalid' : null;
+        },
+        isSimpleInput: function(experimentInput) {
+            return [
+                models.DataType.STRING,
+                models.DataType.FLOAT,
+                models.DataType.INTEGER,
+            ].indexOf(experimentInput.type) >= 0;
+        },
+        isFileInput: function(experimentInput) {
+            return [
+                models.DataType.URI,
+            ].indexOf(experimentInput.type) >= 0;
         },
     },
     watch: {

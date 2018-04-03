@@ -6,6 +6,7 @@ module.exports = {
   entry: {
     'group-list': './static/django_airavata_groups/js/group-listing-entry-point.js',
     'group-create': './static/django_airavata_groups/js/group-create-entry-point.js',
+    'group-edit': './static/django_airavata_groups/js/group-edit-entry-point.js',
   },
   output: {
     path: path.resolve(__dirname, './static/django_airavata_groups/dist/'),
@@ -61,7 +62,7 @@ module.exports = {
   plugins: [
       // Exclude all but the 'en' locale from moment's locales
       new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /^en$/),
-      new ExtractTextPlugin("main.css"),
+      new ExtractTextPlugin("[name].css"),
   ]
 }
 

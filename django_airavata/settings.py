@@ -72,6 +72,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django_airavata.context_processors.airavata_app_registry',
+                # 'django_airavata.context_processors.resolver_match',
             ],
         },
     },
@@ -130,6 +132,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "django_airavata", "static")]
 
+# Data storage
+FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o777
 
 # Django REST Framework configuration
 REST_FRAMEWORK = {
@@ -146,7 +150,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 LOGIN_URL = 'django_airavata_auth:login'
-LOGIN_REDIRECT_URL = 'home'
+LOGIN_REDIRECT_URL = 'django_airavata_workspace:dashboard'
 LOGOUT_REDIRECT_URL = 'home'
 
 LOGGING = {

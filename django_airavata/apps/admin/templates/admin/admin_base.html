@@ -7,6 +7,15 @@
 <link rel=stylesheet type=text/css href={% static 'django_airavata_admin/dist/static/css/app.css' %}>
     <link rel=stylesheet type=text/css href={% static 'css/admin.css' %}>
  {% endblock %}
+{% block nav-items %}
+
+        <a href="{% url 'django_airavata_admin:app_catalog' %}" class="c-nav__item {% if request.active_nav_item == 'app_catalog' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title="Application Catalog">
+            <i class="fa fa-cogs"></i> <span class=sr-only>Application Catalog</span>
+        </a>
+        <a href="{% url 'django_airavata_admin:credential_store' %}" class="c-nav__item {% if request.active_nav_item == 'credential_store' %}is-active{% endif %}" data-toggle=tooltip data-placement=right title="Credential Store">
+            <i class="fa fa-lock"></i> <span class=sr-only>Credential Store</span>
+        </a>
+{% endblock %}
 {% block scripts %}
     {{ block.super }}
     <script type=text/javascript src="{% static 'django_airavata_admin/dist/static/js/manifest.js' %}"></script>

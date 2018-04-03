@@ -1,3 +1,4 @@
+from . import datastore
 from . import serializers
 from . import thrift_utils
 
@@ -15,9 +16,10 @@ from rest_framework.utils.urls import replace_query_param, remove_query_param
 from rest_framework import status
 
 from django.conf import settings
-from django.http import JsonResponse, Http404
-from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.files.storage import FileSystemStorage
+from django.http import FileResponse, Http404, JsonResponse
 
 from airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule, ApplicationDeploymentDescription
 from airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDescription
@@ -29,7 +31,9 @@ from airavata.model.data.movement.ttypes import GridFTPDataMovement, LOCALDataMo
 from airavata.model.application.io.ttypes import DataType
 
 from collections import OrderedDict
+import json
 import logging
+import os
 
 log = logging.getLogger(__name__)
 
@@ -200,23 +204,52 @@ class GroupViewSet(APIBackedViewSet):
     pagination_viewname = 'django_airavata_api:group-list'
 
     def get_list(self):
-        class GroupMemberResultIterator(APIResultIterator):
+        view = self
+        class GroupResultsIterator(APIResultIterator):
             def get_results(self, limit=-1, offset=0):
-                return self.request.sharing_client.getGroups(self.gateway_id, limit, offset)
-
-        return GroupMemberResultIterator()
+                groups = view.request.profile_service['group_manager'].getGroups(view.authz_token)
+                return groups[offset:offset+limit] if groups else []
+        return GroupResultsIterator()
 
     def get_instance(self, lookup_value):
-        return self.request.airavata_client.getGroup(self.authz_token, self.gateway_id, lookup_value)
+        return self.request.profile_service['group_manager'].getGroup(self.authz_token, lookup_value)
 
     def perform_create(self, serializer):
         group = serializer.save()
         group_id = self.request.profile_service['group_manager'].createGroup(self.authz_token, group)
-        group.groupID = group_id
+        group.id = group_id
 
     def perform_update(self, serializer):
         group = serializer.save()
-        self.request.airavata_client.updateGroup(self.authz_token, group)
+        group_manager_client = self.request.profile_service['group_manager']
+        if len(group._added_members) > 0:
+            group_manager_client.addUsersToGroup(
+                self.authz_token, group._added_members, group.id)
+        if len(group._removed_members) > 0:
+            group_manager_client.removeUsersFromGroup(
+                self.authz_token, group._removed_members, group.id)
+        group_manager_client.updateGroup(self.authz_token, group)
+
+    def perform_destroy(self, group):
+        group_manager_client = self.request.profile_service['group_manager']
+        group_manager_client.deleteGroup(
+            self.authz_token, group.id, group.ownerId)
+
+    @detail_route(methods=['post'])
+    def add_admins(self, request, group_id=None):
+        admin_ids = request.data
+        group_manager_client = self.request.profile_service['group_manager']
+        result = group_manager_client.addGroupAdmins(
+            self.authz_token, group_id, admin_ids)
+        return Response({'success': result})
+
+    @detail_route(methods=['post'])
+    def remove_admins(self, request, group_id=None):
+        admin_ids = request.data
+        group_manager_client = self.request.profile_service['group_manager']
+        result = group_manager_client.removeGroupAdmins(
+            self.authz_token, group_id, admin_ids)
+        return Response({'success': result})
 
 
 class ProjectViewSet(APIBackedViewSet):
@@ -272,8 +305,17 @@ class ExperimentViewSet(APIBackedViewSet):
 
     def perform_create(self, serializer):
         experiment = serializer.save()
-        experiment.userConfigurationData.storageId = settings.GATEWAY_DATA_STORE_RESOURCE_ID
-        experiment_id = self.request.airavata_client.createExperiment(self.authz_token, self.gateway_id, experiment)
+        experiment.userConfigurationData.storageId =\
+            settings.GATEWAY_DATA_STORE_RESOURCE_ID
+        # Set the experimentDataDir
+        project = self.request.airavata_client.getProject(
+            self.authz_token, experiment.projectId)
+        exp_dir = datastore.get_experiment_dir(self.username,
+                                               project.name,
+                                               experiment.experimentName)
+        experiment.userConfigurationData.experimentDataDir = exp_dir
+        experiment_id = self.request.airavata_client.createExperiment(
+            self.authz_token, self.gateway_id, experiment)
         experiment.experimentId = experiment_id
 
     def perform_update(self, serializer):
@@ -750,3 +792,67 @@ class LocalDataMovementView(APIView):
         data_movement_id = request.query_params["id"]
         data_movement = request.airavata_client.getLocalDataMovement(request.authz_token, data_movement_id)
         return Response(thrift_utils.create_serializer(LOCALDataMovement, instance=data_movement).data)
+        return Response(request.airavata_client.deleteSSHPubKey(request.authz_token,request.data['token'],gateway_id))
+
+
+@login_required
+def upload_input_file(request):
+    try:
+        username = request.user.username
+        project_id = request.POST['project-id']
+        project = request.airavata_client.getProject(
+            request.authz_token, project_id)
+        exp_name = request.POST['experiment-name']
+        input_file = request.FILES['file']
+        data_product = datastore.save(username, project.name, exp_name,
+                                      input_file)
+        data_product_uri = request.airavata_client.registerDataProduct(
+            request.authz_token, data_product)
+        return JsonResponse({'uploaded': True,
+                             'data-product-uri': data_product_uri})
+    except Exception as e:
+        log.error("Failed to upload file", exc_info=True)
+        resp = JsonResponse({'uploaded': False, 'error': str(e)})
+        resp.status_code = 500
+        return resp
+
+
+@login_required
+def download_file(request):
+    # TODO check that user has access to this file using sharing API
+    data_product_uri = request.GET.get('data-product-uri', '')
+    data_product = None
+    try:
+        data_product = request.airavata_client.getDataProduct(
+            request.authz_token, data_product_uri)
+    except Exception as e:
+        log.warning("Failed to load DataProduct for {}"
+                    .format(data_product_uri), exc_info=True)
+        raise Http404("data product does not exist") from e
+    try:
+        data_file = datastore.open(data_product)
+        response = FileResponse(data_file,
+                                content_type="application/octet-stream")
+        response['Content-Disposition'] = ('attachment; filename="{}"'
+                                           .format(data_product.productName))
+        return response
+    except ObjectDoesNotExist as e:
+        raise Http404(str(e)) from e
+
+
+class UserProfileViewSet(mixins.ListModelMixin, GenericAPIBackedViewSet):
+
+    serializer_class = serializers.UserProfileSerializer
+
+    def get_list(self):
+        user_profile_client = self.request.profile_service['user_profile']
+        return user_profile_client.getAllUserProfilesInGateway(
+            self.authz_token, self.gateway_id, 0, -1)
+
+
+class GroupResourceProfileViewSet(ReadOnlyAPIBackedViewSet):
+    serializer_class = serializers.GroupResourceProfileSerializer
+
+    def get_list(self):
+        return self.request.airavata_client.getGroupResourceList(
+            self.authz_token, self.gateway_id)

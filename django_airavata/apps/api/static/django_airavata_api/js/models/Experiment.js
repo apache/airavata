@@ -122,4 +122,10 @@ export default class Experiment extends BaseModel {
             && this.experimentStatus.length > 0
             && hasLaunchedStates.indexOf(this.experimentStatus[0].state) >= 0;
     }
+
+    populateInputsOutputsFromApplicationInterface(applicationInterface) {
+        // Copy application inputs and outputs to the experiment
+        this.experimentInputs = applicationInterface.getOrderedApplicationInputs().map(input => input.clone());
+        this.experimentOutputs = applicationInterface.applicationOutputs.slice();
+    }
 }

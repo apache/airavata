@@ -12,7 +12,7 @@
         <input type="text" v-model="version"/>
       </div>
       <div class="entry">
-        <div class="heading" >Experiment Description</div>
+        <div class="heading" >Application Description</div>
         <textarea  style="height: 80px;" type="text" v-model="description"/>
       </div>
       <new-application-buttons v-bind:save="registerAppModule" v-bind:cancel="cancelAction" v-bind:sectionName="'Application Details'"></new-application-buttons>

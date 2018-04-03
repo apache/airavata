@@ -35,14 +35,45 @@
     <div class=c-header__title><a href="{% url 'home' %}">{% block title %}Django Airavata Gateway{% endblock %}</a></div>
     {% if user.is_authenticated %}
         <div class=c-header__controls>
-            <div class=dropdown><a href=#0 class="dropdown-toggle text-dark" id=dropdownMenuButton data-toggle=dropdown
-                                   aria-haspopup=true aria-expanded=false><i
-                    class="fa fa-user mr-2"></i> {{ request.session.USERINFO.given_name }} {{ request.session.USERINFO.family_name }}
-            </a>
-                <div class=dropdown-menu aria-labelledby=dropdownMenuButton><a class=dropdown-item href=#>User
-                    settings</a> <a
-                        class=dropdown-item href="{% url 'django_airavata_auth:logout' %}">Logout <i
-                        class="fa fa-sign-out"></i></a></div>
+            <div class="btn-group">
+                <div class=dropdown>
+                    <a href=#0 class="dropdown-toggle text-dark" id=appDropdownMenuButton data-toggle=dropdown
+                            aria-haspopup=true aria-expanded=false>
+                        {% if current_airavata_app %}
+                            <i class="fa {{ current_airavata_app.fa_icon_class }} mr-2"></i>
+                            {{ current_airavata_app.verbose_name }}
+                        {% else %}
+                            Menu
+                        {% endif %}
+                    </a>
+                    <div class=dropdown-menu aria-labelledby=appDropdownMenuButton>
+                            {% for app in airavata_apps %}
+                                {% if app == current_airavata_app %}
+                                    <a class="dropdown-item active" href="{% url app.url_home %}">
+                                        <i class="fa {{ app.fa_icon_class }} mr-2"></i>{{ app.verbose_name }}
+                                    </a>
+                                {% else %}
+                                    <a class="dropdown-item" href="{% url app.url_home %}">
+                                        <i class="fa {{ app.fa_icon_class }} mr-2"></i>{{ app.verbose_name }}
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="btn-group ml-3">
+                <div class=dropdown>
+                    <a href=#0 class="dropdown-toggle text-dark" id=dropdownMenuButton data-toggle=dropdown
+                        aria-haspopup=true aria-expanded=false>
+                        <i class="fa fa-user mr-2"></i> {{ request.session.USERINFO.given_name }} {{ request.session.USERINFO.family_name }}
+                    </a>
+                    <div class=dropdown-menu aria-labelledby=dropdownMenuButton>
+                        <a class=dropdown-item href=#>User settings</a>
+                        <a class=dropdown-item href="{% url 'django_airavata_auth:logout' %}">
+                            Logout <i class="fa fa-sign-out"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     {% endif %}

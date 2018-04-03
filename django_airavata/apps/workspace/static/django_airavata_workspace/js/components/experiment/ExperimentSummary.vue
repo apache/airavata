@@ -29,7 +29,13 @@
                                     <th scope="row">Outputs</th>
                                     <td>
                                         <template v-for="output in localFullExperiment.outputDataProducts">
-                                            {{ output.filename }}
+                                            <span v-if="output.downloadURL">
+                                                <a :href="output.downloadURL">
+                                                    <i class="fa fa-download"></i>
+                                                    {{ output.filename }}
+                                                </a>
+                                            </span>
+                                            <span v-else>{{ output.filename }}</span>
                                         </template>
                                     </td>
                                 </tr>
@@ -73,7 +79,7 @@
                                             <tr v-for="(jobDetail, index) in localFullExperiment.jobDetails">
                                                 <td>{{ jobDetail.jobName }}</td>
                                                 <td>{{ jobDetail.jobId }}</td>
-                                                <td>{{ jobDetail.jobStatuses[0].jobState.name }}</td>
+                                                <td>{{ jobDetail.jobStatusStateName }}</td>
                                                 <td><span :title="jobDetail.creationTime.toString()">{{ jobCreationTimes[index] }}</span></td>
                                             </tr>
                                         </table>
@@ -111,11 +117,16 @@
                                     <td>{{ experiment.userConfigurationData.computationalResourceScheduling.queueName }}</td>
                                 </tr>
                                 <tr>
-                                    <!-- TODO -->
                                     <th scope="row">Inputs</th>
                                     <td>
                                         <template v-for="input in localFullExperiment.inputDataProducts">
-                                            {{ input.filename }}
+                                            <span v-if="input.downloadURL">
+                                                <a :href="input.downloadURL">
+                                                    <i class="fa fa-download"></i>
+                                                    {{ input.filename }}
+                                                </a>
+                                            </span>
+                                            <span v-else>{{ input.filename }}</span>
                                         </template>
                                     </td>
                                 </tr>

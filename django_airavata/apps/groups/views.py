@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 @login_required
 def groups_manage(request):
 
+    request.active_nav_item = "manage"
     gateway_id = settings.GATEWAY_ID
     username = request.user.username
     authz_token = request.authz_token
@@ -102,47 +103,14 @@ def view_group(request):
         logger.exception("Failed to load the group details")
         return redirect('/groups')
 
+
 @login_required
-def edit_group(request):
-
-    gateway_id = settings.GATEWAY_ID
-    group_id = request.GET.get('group_id')
-    users = request.POST.getlist('users')
-    members = request.POST.getlist('members')
-
-    try:
-        user_choices = request.sharing_client.getUsers(gateway_id, 0, -1)
-        member_choices = request.sharing_client.getGroupMembersOfTypeUser(gateway_id, group_id, 0, -1)
-        for user in user_choices:
-            for member in member_choices:
-                if user.userId == member.userId:
-                    user_choices.remove(user)
-        if request.method == 'POST':
-            add_form = AddForm(request.POST, user_choices=[(user.userId, user.userId) for user in user_choices])
-            remove_form = RemoveForm(request.POST, user_choices=[(member.userId, member.userId) for member in member_choices])
-            if 'add' in request.POST:
-                if add_form.is_valid():
-                    add = request.sharing_client.addUsersToGroup(gateway_id, users, group_id)
-                    messages.success(request, 'Selected members have been added successfully!')
-                    return redirect('/groups')
-            elif 'remove' in request.POST:
-                if remove_form.is_valid():
-                    remove = request.sharing_client.removeUsersFromGroup(gateway_id, members, group_id)
-                    messages.success(request, 'Selected members have been removed successfully!')
-                    return redirect('/groups')
-
-        else:
-            add_form = AddForm(user_choices=[(user.userId, user.userId) for user in user_choices])
-            remove_form = RemoveForm(user_choices=[(member.userId, member.userId) for member in member_choices])
-            group_details = request.sharing_client.getGroup(gateway_id, group_id)
-
-    except Exception as e:
-        logger.exception("Failed to edit the group")
-        return redirect('/groups')
+def edit_group(request, group_id):
 
     return render(request, 'django_airavata_groups/group_edit.html', {
-        'group_name': group_details.name, 'add_form': add_form, 'remove_form': remove_form
+        'group_id': group_id,
     })
+
 
 @login_required
 def delete_group(request):

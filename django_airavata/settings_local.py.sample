@@ -33,6 +33,8 @@ AIRAVATA_API_HOST = 'localhost'
 AIRAVATA_API_PORT = 8930
 AIRAVATA_API_SECURE = False
 GATEWAY_DATA_STORE_RESOURCE_ID = '...'
+GATEWAY_DATA_STORE_DIR = '/tmp'
+GATEWAY_DATA_STORE_HOSTNAME = 'localhost'
 
 # Profile Service Configuration
 PROFILE_SERVICE_HOST = AIRAVATA_API_HOST
@@ -43,3 +45,46 @@ PROFILE_SERVICE_SECURE = False
 SHARING_API_HOST = 'localhost'
 SHARING_API_PORT = 7878
 SHARING_API_SECURE = False
+
+# Logging configuration
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'verbose': {
+#             'format': '[%(asctime)s %(name)s:%(lineno)d %(levelname)s] %(message)s'
+#         },
+#     },
+#     'filters': {
+#         'require_debug_true': {
+#             '()': 'django.utils.log.RequireDebugTrue',
+#         },
+#     },
+#     'handlers': {
+#         'console': {
+#             'filters': ['require_debug_true'],
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'verbose',
+#             'level': 'DEBUG',
+#         },
+#         'file': {
+#             'class': 'logging.FileHandler',
+#             'filename': 'django_airavata.log',
+#             'formatter': 'verbose',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console', 'file'],
+#             'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+#         },
+#         'airavata': {
+#             'handlers': ['console', 'file'],
+#             'level': 'DEBUG',
+#         },
+#         'django_airavata': {
+#             'handlers': ['console', 'file'],
+#             'level': 'DEBUG',
+#         },
+#     },
+# }

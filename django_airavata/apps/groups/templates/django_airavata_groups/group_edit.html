@@ -1,38 +1,16 @@
 {% extends 'base.html' %}
 
-{% block content %}
+{% load static %}
 
-<h1 align="center">Edit Group</h1>
-<br>
-{% block body %}
-<div class="container">
-    {% if user.is_authenticated %}
-    <h5>Group Name: {{ group_name }}</h5>
-    <div class="row">
-        <div class="col-lg-6">
-            <h3>Add</h3>
-            <form action="" method="post">
-                {% csrf_token %}
-                {{ add_form.as_p }}
-                <button class="btn btn-primary btn-xs" type="submit" role="button" name="add">Add</button>
-            </form>
-        </div>
-        <div class="col-lg-6">
-            <h3>Remove</h3>
-            <form action="" method="post">
-                {% csrf_token %}
-                {{ remove_form.as_p }}
-                <button class="btn btn-primary btn-xs" type="submit" role="button" name="remove" onclick="return confirm('Are you sure you want to remove the selected members from the group? This action cannot be undone!')">Remove</button>
-            </form>
-        </div>
-    </div>
-    <br>
-    <br>
-    <p align="right"><a class="btn btn-primary btn-xs" href="{% url 'django_airavata_groups:manage' %}" role="button">Back</a></p>
-    {% else %}
-    <p><a class="btn btn-primary btn-lg" href="{% url 'django_airavata_auth:login' %}" role="button">Login »</a></p>
-    {% endif %}
-</div>
+{% block css %}
+{{ block.super }}
+<link rel=stylesheet type=text/css href="{% static 'django_airavata_groups/dist/group-edit.css' %}">
 {% endblock %}
 
+{% block content %}
+<div id="edit-group" data-group-id="{{ group_id }}"></div>
 {% endblock content %}
+
+{% block scripts %}
+<script src="{% static 'django_airavata_groups/dist/group-edit.js' %}"></script>
+{% endblock %}
