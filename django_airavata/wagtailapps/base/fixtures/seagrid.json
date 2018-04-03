@@ -4,7 +4,7 @@
   "pk": 2,
   "fields": {
     "password": "pbkdf2_sha256$36000$kSBYHC0WApTU$GhqnCk1geRftoLf27CUboofpZbF+N2TW98QbpuwCI6Q=",
-    "last_login": "2018-04-03T15:52:48.967Z",
+    "last_login": "2018-04-03T19:05:46.262Z",
     "is_superuser": true,
     "username": "stephenpaul2727",
     "first_name": "",
@@ -14,26 +14,6 @@
     "is_active": true,
     "date_joined": "2018-03-13T19:27:45.222Z",
     "groups": [],
-    "user_permissions": []
-  }
-},
-{
-  "model": "auth.user",
-  "pk": 3,
-  "fields": {
-    "password": "",
-    "last_login": "2018-04-02T18:50:56.232Z",
-    "is_superuser": false,
-    "username": "cmstest",
-    "first_name": "cms",
-    "last_name": "test",
-    "email": "stephenadithela@gmail.com",
-    "is_staff": false,
-    "is_active": true,
-    "date_joined": "2018-04-02T18:48:24.273Z",
-    "groups": [
-      1
-    ],
     "user_permissions": []
   }
 },
