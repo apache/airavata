@@ -66,6 +66,11 @@ public class StorageResourceAdaptorImpl extends SshAgentAdaptor implements Stora
 
             Credential credential = credentialReader.getCredential(gatewayId, token);
 
+            if (credential == null) {
+                throw new AgentException("Null credential for token " + token);
+            }
+            logger.info("Description for token : " + token + " : " + credential.getDescription());
+
             if (credential instanceof SSHCredential) {
                 SSHCredential sshCredential = SSHCredential.class.cast(credential);
                 SshAdaptorParams adaptorParams = new SshAdaptorParams();

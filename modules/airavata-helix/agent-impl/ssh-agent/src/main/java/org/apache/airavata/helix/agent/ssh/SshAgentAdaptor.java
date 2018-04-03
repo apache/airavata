@@ -32,6 +32,8 @@ import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Arrays;
@@ -48,6 +50,8 @@ import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
  * @since 1.0.0-SNAPSHOT
  */
 public class SshAgentAdaptor implements AgentAdaptor {
+
+    private final static Logger logger = LoggerFactory.getLogger(SshAgentAdaptor.class);
 
     private Session session = null;
     private AppCatalog appCatalog;
@@ -111,7 +115,14 @@ public class SshAgentAdaptor implements AgentAdaptor {
             String jdbcPass = ServerSettings.getCredentialStoreDBPassword();
             String driver = ServerSettings.getCredentialStoreDBDriver();
             CredentialReaderImpl credentialReader = new CredentialReaderImpl(new DBUtil(jdbcUrl, jdbcUsr, jdbcPass, driver));
+
+            logger.info("Fetching credentials for cred store token " + token);
+
             Credential credential = credentialReader.getCredential(gatewayId, token);
+            if (credential == null) {
+                throw new AgentException("Null credential for token " + token);
+            }
+            logger.info("Description for token : " + token + " : " + credential.getDescription());
 
             if (credential instanceof SSHCredential) {
                 SSHCredential sshCredential = SSHCredential.class.cast(credential);
