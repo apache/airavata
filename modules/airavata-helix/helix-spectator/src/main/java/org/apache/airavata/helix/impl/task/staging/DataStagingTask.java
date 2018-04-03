@@ -143,22 +143,39 @@ public abstract class DataStagingTask extends AiravataTask {
         String localSourceFilePath = getLocalDataPath(fileName);
 
         try {
-            logger.info("Downloading output file " + sourcePath + " to the local path " + localSourceFilePath);
-            adaptor.copyFileFrom(sourcePath, localSourceFilePath);
-            logger.info("Output file downloaded to " + localSourceFilePath);
-        } catch (AgentException e) {
-            throw new TaskOnFailException("Failed downloading output file " + sourcePath + " to the local path " +
-                    localSourceFilePath, true, e);
-        }
+            try {
+                logger.info("Downloading output file " + sourcePath + " to the local path " + localSourceFilePath);
+                adaptor.copyFileFrom(sourcePath, localSourceFilePath);
+                logger.info("Output file downloaded to " + localSourceFilePath);
+            } catch (AgentException e) {
+                throw new TaskOnFailException("Failed downloading output file " + sourcePath + " to the local path " +
+                        localSourceFilePath, true, e);
+            }
 
-        // Uploading output file to the storage resource
+            // Uploading output file to the storage resource
+            try {
+                logger.info("Uploading the output file to " + destPath + " from local path " + localSourceFilePath);
+                storageResourceAdaptor.uploadFile(localSourceFilePath, destPath);
+                logger.info("Output file uploaded to " + destPath);
+            } catch (AgentException e) {
+                throw new TaskOnFailException("Failed uploading the output file to " + destPath + " from local path " +
+                        localSourceFilePath, true, e);
+            }
+
+        } finally {
+            logger.info("Deleting temporary file " + localSourceFilePath);
+            deleteTempFile(localSourceFilePath);
+        }
+    }
+
+    protected void deleteTempFile(String filePath) {
         try {
-            logger.info("Uploading the output file to " + destPath + " from local path " + localSourceFilePath);
-            storageResourceAdaptor.uploadFile(localSourceFilePath, destPath);
-            logger.info("Output file uploaded to " + destPath);
-        } catch (AgentException e) {
-            throw new TaskOnFailException("Failed uploading the output file to " + destPath + " from local path " +
-                    localSourceFilePath, true, e);
+            File tobeDeleted = new File(filePath);
+            if (tobeDeleted.exists()) {
+                tobeDeleted.delete();
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to delete temporary file " + filePath);
         }
     }
 }
