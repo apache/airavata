@@ -66,18 +66,22 @@ public class DataReplicaLocationRepository extends RepCatAbstractRepository<Data
         return execute(entityManager -> entityManager.merge(dataReplicaLocationEntity));
     }
 
+    @Override
     public String registerReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws ReplicaCatalogException {
         return saveDataReplicaLocationModelData(dataReplicaLocationModel);
     }
 
+    @Override
     public boolean updateReplicaLocation(DataReplicaLocationModel dataReplicaLocationModel) throws ReplicaCatalogException {
         return (saveDataReplicaLocationModelData(dataReplicaLocationModel) != null);
     }
 
+    @Override
     public DataReplicaLocationModel getReplicaLocation(String replicaId) throws ReplicaCatalogException {
         return get(replicaId);
     }
 
+    @Override
     public List<DataReplicaLocationModel> getAllReplicaLocations(String productUri) throws ReplicaCatalogException {
         DataProductRepository dataProductRepository = new DataProductRepository();
         DataProductModel dataProductModel = dataProductRepository.getDataProduct(productUri);
@@ -85,6 +89,7 @@ public class DataReplicaLocationRepository extends RepCatAbstractRepository<Data
         return dataReplicaLocationModelList;
     }
 
+    @Override
     public boolean removeReplicaLocation(String replicaId) throws ReplicaCatalogException {
         return delete(replicaId);
     }

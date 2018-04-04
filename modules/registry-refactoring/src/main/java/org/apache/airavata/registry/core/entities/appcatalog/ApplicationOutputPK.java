@@ -20,9 +20,7 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
 import java.io.Serializable;
-import javax.persistence.Id;
 
 /**
  * The primary key class for the application_output database table.

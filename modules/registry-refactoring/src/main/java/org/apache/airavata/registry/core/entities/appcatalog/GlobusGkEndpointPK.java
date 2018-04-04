@@ -20,23 +20,17 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import java.io.Serializable;
 
 /**
  * The primary key class for the globus_gk_endpoint database table.
  * 
  */
-@Embeddable
 public class GlobusGkEndpointPK implements Serializable {
 	//default serial version id, required for serializable classes.
 	private static final long serialVersionUID = 1L;
 
-	@Column(name="SUBMISSION_ID", insertable=false, updatable=false)
 	private String submissionId;
-
-	@Column(name="ENDPOINT")
 	private String endpoint;
 
 	public GlobusGkEndpointPK() {

@@ -40,13 +40,11 @@ public class ResourceJobManagerRepository extends AppCatAbstractRepository<Resou
     public void createJobManagerCommand(Map<JobManagerCommand, String> jobManagerCommands, ResourceJobManagerEntity resourceJobManagerEntity) {
         for (JobManagerCommand commandType : jobManagerCommands.keySet()) {
             if (jobManagerCommands.get(commandType) != null && !jobManagerCommands.get(commandType).isEmpty()) {
-                JobManagerCommandPK jobManagerCommandPK = new JobManagerCommandPK();
-                jobManagerCommandPK.setCommandType(commandType.toString());
-                jobManagerCommandPK.setResourceJobManagerId(resourceJobManagerEntity.getResourceJobManagerId());
                 JobManagerCommandEntity jobManagerCommandEntity = new JobManagerCommandEntity();
                 jobManagerCommandEntity.setCommand(jobManagerCommands.get(commandType));
                 jobManagerCommandEntity.setResourceJobManager(resourceJobManagerEntity);
-                jobManagerCommandEntity.setId(jobManagerCommandPK);
+                jobManagerCommandEntity.setResourceJobManagerId(resourceJobManagerEntity.getResourceJobManagerId());
+                jobManagerCommandEntity.setCommandType(commandType.toString());
                 execute(entityManager -> entityManager.merge(jobManagerCommandEntity));
             }
         }
@@ -55,13 +53,11 @@ public class ResourceJobManagerRepository extends AppCatAbstractRepository<Resou
     public void createParallesimPrefix(Map<ApplicationParallelismType, String> parallelismPrefix,ResourceJobManagerEntity resourceJobManagerEntity) {
         for (ApplicationParallelismType commandType : parallelismPrefix.keySet()) {
             if (parallelismPrefix.get(commandType) != null && !parallelismPrefix.get(commandType).isEmpty()) {
-                ParallelismCommandPK parallelismCommandPK = new ParallelismCommandPK();
-                parallelismCommandPK.setCommandType(commandType.toString());
-                parallelismCommandPK.setResourceJobManagerId(resourceJobManagerEntity.getResourceJobManagerId());
                 ParallelismCommandEntity parallelismCommandEntity = new ParallelismCommandEntity();
                 parallelismCommandEntity.setCommand(parallelismPrefix.get(commandType));
                 parallelismCommandEntity.setResourceJobManager(resourceJobManagerEntity);
-                parallelismCommandEntity.setId(parallelismCommandPK);
+                parallelismCommandEntity.setCommandType(commandType.toString());
+                parallelismCommandEntity.setResourceJobManagerId(resourceJobManagerEntity.getResourceJobManagerId());
                 execute(entityManager -> entityManager.merge(parallelismCommandEntity));
             }
         }
@@ -82,7 +78,7 @@ public class ResourceJobManagerRepository extends AppCatAbstractRepository<Resou
         List<JobManagerCommandEntity> jobManagerCommandEntityList = resultSet;
         Map<JobManagerCommand, String> jobManagerCommandMap= new HashMap<JobManagerCommand,String>();
         for (JobManagerCommandEntity jm: jobManagerCommandEntityList) {
-            jobManagerCommandMap.put(JobManagerCommand.valueOf(jm.getId().getCommandType()), jm.getCommand());
+            jobManagerCommandMap.put(JobManagerCommand.valueOf(jm.getCommandType()), jm.getCommand());
         }
         return jobManagerCommandMap;
     }
@@ -102,7 +98,7 @@ public class ResourceJobManagerRepository extends AppCatAbstractRepository<Resou
         List<ParallelismCommandEntity> parallelismCommandEntityList = resultSet;
         Map<ApplicationParallelismType, String> applicationParallelismTypeMap= new HashMap<ApplicationParallelismType,String>();
         for (ParallelismCommandEntity pc: parallelismCommandEntityList) {
-            applicationParallelismTypeMap.put(ApplicationParallelismType.valueOf(pc.getId().getCommandType()), pc.getCommand());
+            applicationParallelismTypeMap.put(ApplicationParallelismType.valueOf(pc.getCommandType()), pc.getCommand());
         }
         return applicationParallelismTypeMap;
     }

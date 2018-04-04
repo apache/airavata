@@ -20,16 +20,20 @@
 */
 package org.apache.airavata.registry.core.entities.workflowcatalog;
 
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
+
+import java.nio.ByteBuffer;
+import java.util.List;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
-
 
 /**
  * The persistent class for the workflow database table.
  */
 @Entity
-@Table(name="workflow")
+@Table(name="WORKFLOW")
 public class WorkflowEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -40,8 +44,7 @@ public class WorkflowEntity implements Serializable {
     @Column(name = "CREATED_USER")
     private String createdUser;
 
-    @Column(name = "CREATION_TIME", insertable = false, updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
 
     @Column(name = "GATEWAY_ID")
@@ -51,7 +54,7 @@ public class WorkflowEntity implements Serializable {
     private String graph;
 
     @Column(name = "IMAGE")
-    private byte[] image;
+    private ByteBuffer image;
 
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
@@ -59,6 +62,13 @@ public class WorkflowEntity implements Serializable {
     @Column(name = "WORKFLOW_NAME")
     private String name;
 
+    @OneToMany(targetEntity = WorkflowInputEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "workflow", fetch = FetchType.EAGER)
+    private List<WorkflowInputEntity> workflowInputs;
+
+    @OneToMany(targetEntity = WorkflowOutputEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "workflow", fetch = FetchType.EAGER)
+    private List<WorkflowOutputEntity> workflowOutputs;
 
     public WorkflowEntity() {
     }
@@ -113,12 +123,12 @@ public class WorkflowEntity implements Serializable {
         this.graph = graph;
     }
 
-    public byte[] getImage() {
+    public ByteBuffer getImage() {
 
         return this.image;
     }
 
-    public void setImage(byte[] image) {
+    public void setImage(ByteBuffer image) {
 
         this.image = image;
     }
@@ -139,5 +149,21 @@ public class WorkflowEntity implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<WorkflowInputEntity> getWorkflowInputs() {
+        return workflowInputs;
+    }
+
+    public void setWorkflowInputs(List<WorkflowInputEntity> workflowInputs) {
+        this.workflowInputs = workflowInputs;
+    }
+
+    public List<WorkflowOutputEntity> getWorkflowOutputs() {
+        return workflowOutputs;
+    }
+
+    public void setWorkflowOutputs(List<WorkflowOutputEntity> workflowOutputs) {
+        this.workflowOutputs = workflowOutputs;
     }
 }

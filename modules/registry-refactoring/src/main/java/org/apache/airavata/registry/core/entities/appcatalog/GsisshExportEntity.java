@@ -20,31 +20,43 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
-
 
 /**
  * The persistent class for the gsissh_export database table.
  */
 @Entity
 @Table(name = "GSISSH_EXPORT")
+@IdClass(GsisshExportPK.class)
 public class GsisshExportEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private GsisshExportPK id;
+    @Id
+    @Column(name = "SUBMISSION_ID")
+    private String submissionId;
+
+    @Id
+    @Column(name = "EXPORT")
+    private String export;
 
     public GsisshExportEntity() {
     }
 
-    public GsisshExportPK getId() {
-        return id;
+    public String getSubmissionId() {
+        return submissionId;
     }
 
-    public void setId(GsisshExportPK id) {
-        this.id = id;
+    public void setSubmissionId(String submissionId) {
+        this.submissionId = submissionId;
     }
+
+    public String getExport() {
+        return export;
+    }
+
+    public void setExport(String export) {
+        this.export = export;
+    }
+
 }

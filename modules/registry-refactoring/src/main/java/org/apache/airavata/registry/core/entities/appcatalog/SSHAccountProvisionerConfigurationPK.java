@@ -20,8 +20,6 @@
 
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
 import java.io.Serializable;
 
 /**
@@ -30,14 +28,8 @@ import java.io.Serializable;
 public class SSHAccountProvisionerConfigurationPK implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @Column(name = "GATEWAY_ID" , insertable = false, updatable = false)
     private String gatewayId;
-    @Id
-    @Column(name = "RESOURCE_ID", insertable = false, updatable = false)
     private String resourceId;
-    @Id
-    @Column(name = "CONFIG_NAME")
     private String configName;
 
     public SSHAccountProvisionerConfigurationPK(String gatewayId, String resourceId, String configName) {

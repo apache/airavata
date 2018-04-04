@@ -17,11 +17,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.registry.core.repositories.replicacatalog.util;
+package org.apache.airavata.registry.core.repositories.appcatalog.util;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.derby.drda.NetworkServerControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,9 +37,10 @@ import java.util.StringTokenizer;
 public class Initialize {
     private static final Logger logger = LoggerFactory.getLogger(Initialize.class);
     public static final String DERBY_SERVER_MODE_SYS_PROPERTY = "derby.drda.startNetworkServer";
-    public  String scriptName = "replicacatalog-derby.sql";
+    public  String scriptName = "appcatalog-derby.sql";
     private NetworkServerControl server;
     private static final String delimiter = ";";
+    public static final String COMPUTE_RESOURCE_TABLE = "COMPUTE_RESOURCE";
     private String jdbcUrl = null;
     private String jdbcDriver = null;
     private String jdbcUser = null;
@@ -91,11 +91,12 @@ public class Initialize {
     }
 
     public void initializeDB() {
+
         try{
-            jdbcDriver = ServerSettings.getSetting("replicacatalog.jdbc.driver");
-            jdbcUrl = ServerSettings.getSetting("replicacatalog.jdbc.url");
-            jdbcUser = ServerSettings.getSetting("replicacatalog.jdbc.user");
-            jdbcPassword = ServerSettings.getSetting("replicacatalog.jdbc.password");
+            jdbcDriver = ServerSettings.getSetting("appcatalog.jdbc.driver");
+            jdbcUrl = ServerSettings.getSetting("appcatalog.jdbc.url");
+            jdbcUser = ServerSettings.getSetting("appcatalog.jdbc.user");
+            jdbcPassword = ServerSettings.getSetting("appcatalog.jdbc.password");
             jdbcUrl = jdbcUrl + "?" + "user=" + jdbcUser + "&" + "password=" + jdbcPassword;
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read properties", e);
@@ -103,17 +104,19 @@ public class Initialize {
 
         startDerbyInServerMode();
         if(!isServerStarted(server, 20)){
-           throw new RuntimeException("Derby server could not started within five seconds...");
+           throw new RuntimeException("Derby server cound not started within five seconds...");
         }
+//      startDerbyInEmbeddedMode();
+
         Connection conn = null;
         try {
             Class.forName(jdbcDriver).newInstance();
             conn = DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcPassword);
-            if (!isDatabaseStructureCreated(DBConstants.CONFIGURATION, conn)) {
+            if (!isDatabaseStructureCreated(COMPUTE_RESOURCE_TABLE, conn)) {
                 executeSQLScript(conn);
-                logger.info("New Database created for Replica Catalog !!!");
+                logger.info("New Database created for App Catalog !!!");
             } else {
-                logger.debug("Database already created for Replica Catalog!");
+                logger.debug("Database already created for App Catalog!");
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -200,13 +203,15 @@ public class Initialize {
             executeSQL(sql.toString(), conn);
         }
         }catch (IOException e){
-            logger.error("Error occurred while executing SQL script for creating Airavata Replica Catalog database", e);
-            throw new Exception("Error occurred while executing SQL script for creating Airavata Replica Catalog database", e);
+            logger.error("Error occurred while executing SQL script for creating Airavata database", e);
+            throw new Exception("Error occurred while executing SQL script for creating Airavata database", e);
         }finally {
             if (reader != null) {
                 reader.close();
             }
+
         }
+
     }
 
     private static void executeSQL(String sql, Connection conn) throws Exception {

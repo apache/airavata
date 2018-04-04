@@ -23,30 +23,35 @@ package org.apache.airavata.registry.core.entities.workflowcatalog;
 import javax.persistence.*;
 import java.io.Serializable;
 
-
 /**
  * The persistent class for the workflow_output database table.
  * 
  */
 @Entity
-@Table(name="workflow_output")
+@Table(name="WORKFLOW_OUTPUT")
+@IdClass(WorkflowOutputPK.class)
 public class WorkflowOutputEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@EmbeddedId
-	private WorkflowOutputPK id;
+	@Id
+	@Column(name = "TEMPLATE_ID")
+	private String templateId;
+
+	@Id
+	@Column(name = "OUTPUT_KEY")
+	private String name;
 
 	@Column(name="APP_ARGUMENT")
-	private String appArgument;
+	private String applicationArgument;
 
 	@Column(name="DATA_MOVEMENT")
 	private short dataMovement;
 
 	@Column(name="DATA_NAME_LOCATION")
-	private String dataNameLocation;
+	private String location;
 
 	@Column(name="DATA_TYPE")
-	private String dataType;
+	private String type;
 
 	@Column(name="IS_REQUIRED")
 	private short isRequired;
@@ -54,36 +59,44 @@ public class WorkflowOutputEntity implements Serializable {
 	@Column(name="OUTPUT_STREAMING")
 	private short outputStreaming;
 
-	@Lob
 	@Column(name="OUTPUT_VALUE")
-	private String outputValue;
+	private String value;
 
 	@Column(name="REQUIRED_TO_COMMANDLINE")
-	private short requiredToCommandline;
+	private short requiredToAddedToCommandLine;
 
 	@Column(name="SEARCH_QUERY")
 	private String searchQuery;
 
-	@Column(name="TEMPLATE_ID")
-	private String templateId;
+	@ManyToOne(targetEntity = WorkflowEntity.class, cascade = CascadeType.MERGE)
+	@JoinColumn(name = "TEMPLATE_ID")
+	private WorkflowEntity workflow;
 
 	public WorkflowOutputEntity() {
 	}
 
-	public WorkflowOutputPK getId() {
-		return id;
+	public String getTemplateId() {
+		return templateId;
 	}
 
-	public void setId(WorkflowOutputPK id) {
-		this.id = id;
+	public void setTemplateId(String templateId) {
+		this.templateId = templateId;
 	}
 
-	public String getAppArgument() {
-		return appArgument;
+	public String getName() {
+		return name;
 	}
 
-	public void setAppArgument(String appArgument) {
-		this.appArgument = appArgument;
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getApplicationArgument() {
+		return applicationArgument;
+	}
+
+	public void setApplicationArgument(String applicationArgument) {
+		this.applicationArgument = applicationArgument;
 	}
 
 	public short getDataMovement() {
@@ -94,20 +107,20 @@ public class WorkflowOutputEntity implements Serializable {
 		this.dataMovement = dataMovement;
 	}
 
-	public String getDataNameLocation() {
-		return dataNameLocation;
+	public String getLocation() {
+		return location;
 	}
 
-	public void setDataNameLocation(String dataNameLocation) {
-		this.dataNameLocation = dataNameLocation;
+	public void setLocation(String location) {
+		this.location = location;
 	}
 
-	public String getDataType() {
-		return dataType;
+	public String getType() {
+		return type;
 	}
 
-	public void setDataType(String dataType) {
-		this.dataType = dataType;
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public short getIsRequired() {
@@ -126,20 +139,20 @@ public class WorkflowOutputEntity implements Serializable {
 		this.outputStreaming = outputStreaming;
 	}
 
-	public String getOutputValue() {
-		return outputValue;
+	public String getValue() {
+		return value;
 	}
 
-	public void setOutputValue(String outputValue) {
-		this.outputValue = outputValue;
+	public void setValue(String value) {
+		this.value = value;
 	}
 
-	public short getRequiredToCommandline() {
-		return requiredToCommandline;
+	public short getRequiredToAddedToCommandLine() {
+		return requiredToAddedToCommandLine;
 	}
 
-	public void setRequiredToCommandline(short requiredToCommandline) {
-		this.requiredToCommandline = requiredToCommandline;
+	public void setRequiredToAddedToCommandLine(short requiredToAddedToCommandLine) {
+		this.requiredToAddedToCommandLine = requiredToAddedToCommandLine;
 	}
 
 	public String getSearchQuery() {
@@ -150,11 +163,11 @@ public class WorkflowOutputEntity implements Serializable {
 		this.searchQuery = searchQuery;
 	}
 
-	public String getTemplateId() {
-		return templateId;
+	public WorkflowEntity getWorkflow() {
+		return workflow;
 	}
 
-	public void setTemplateId(String templateId) {
-		this.templateId = templateId;
+	public void setWorkflow(WorkflowEntity workflow) {
+		this.workflow = workflow;
 	}
 }

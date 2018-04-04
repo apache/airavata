@@ -28,11 +28,17 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "PARALLELISM_COMMAND")
+@IdClass(ParallelismCommandPK.class)
 public class ParallelismCommandEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private ParallelismCommandPK id;
+    @Id
+    @Column(name = "RESOURCE_JOB_MANAGER_ID")
+    private String resourceJobManagerId;
+
+    @Id
+    @Column(name = "COMMAND_TYPE")
+    private String commandType;
 
     @Column(name = "COMMAND")
     private String command;
@@ -44,12 +50,20 @@ public class ParallelismCommandEntity implements Serializable {
     public ParallelismCommandEntity() {
     }
 
-    public ParallelismCommandPK getId() {
-        return id;
+    public String getResourceJobManagerId() {
+        return resourceJobManagerId;
     }
 
-    public void setId(ParallelismCommandPK id) {
-        this.id = id;
+    public void setResourceJobManagerId(String resourceJobManagerId) {
+        this.resourceJobManagerId = resourceJobManagerId;
+    }
+
+    public String getCommandType() {
+        return commandType;
+    }
+
+    public void setCommandType(String commandType) {
+        this.commandType = commandType;
     }
 
     public String getCommand() {

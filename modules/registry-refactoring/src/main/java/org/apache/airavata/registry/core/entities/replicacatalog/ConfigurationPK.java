@@ -20,8 +20,6 @@
 */
 package org.apache.airavata.registry.core.entities.replicacatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
 import java.io.Serializable;
 
 /**
@@ -33,6 +31,9 @@ public class ConfigurationPK implements Serializable {
 
     private String configKey;
     private String configVal;
+
+    public ConfigurationPK() {
+    }
 
     public String getConfigKey() {
         return configKey;
