@@ -74,6 +74,7 @@ import org.apache.airavata.registry.core.repositories.appcatalog.GwyResourceProf
 import org.apache.airavata.registry.core.repositories.replicacatalog.DataProductRepository;
 import org.apache.airavata.registry.core.repositories.replicacatalog.DataReplicaLocationRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.UserResourceProfileRepository;
+import org.apache.airavata.registry.core.repositories.workflowcatalog.WorkflowRepository;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
@@ -87,12 +88,12 @@ public class RegistryServerHandler implements RegistryService.Iface {
 
     private ExperimentCatalog experimentCatalog;
     private AppCatalog appCatalog;
-    private WorkflowCatalog workflowCatalog;
     private ApplicationDeploymentRepository applicationDeploymentRepository = new ApplicationDeploymentRepository();
     private ApplicationInterfaceRepository applicationInterfaceRepository = new ApplicationInterfaceRepository();
     private UserResourceProfileRepository userResourceProfileRepository = new UserResourceProfileRepository();
     private DataProductRepository dataProductRepository = new DataProductRepository();
     private DataReplicaLocationRepository dataReplicaLocationRepository = new DataReplicaLocationRepository();
+    private WorkflowRepository workflowRepository = new WorkflowRepository();
 
     /**
      * Fetch Apache Registry API version
@@ -2034,7 +2035,6 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
             GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
             ComputeResourceRepository computeResourceRepository = new ComputeResourceRepository();
             if (!gwyResourceProfileRepository.isGatewayResourceProfileExists(gatewayID)){
@@ -2075,7 +2075,6 @@ public class RegistryServerHandler implements RegistryService.Iface {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
             }
-            appCatalog = RegistryFactory.getAppCatalog();
             GwyResourceProfileRepository gwyResourceProfileRepository = new GwyResourceProfileRepository();
             if (!gwyResourceProfileRepository.isGatewayResourceProfileExists(gatewayID)){
                 logger.error(gatewayID, "Given gateway profile does not exist in the system. Please provide a valid gateway id...");
@@ -2226,7 +2225,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
         }
         try {
-            return getWorkflowCatalog().getAllWorkflows(gatewayId);
+            return workflowRepository.getAllWorkflows(gatewayId);
         } catch (WorkflowCatalogException e) {
             String msg = "Error in retrieving all workflow template Ids.";
             logger.error(msg, e);
@@ -2244,7 +2243,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public WorkflowModel getWorkflow(String workflowTemplateId) throws RegistryServiceException, TException {
         try {
-            return getWorkflowCatalog().getWorkflow(workflowTemplateId);
+            return workflowRepository.getWorkflow(workflowTemplateId);
         } catch (WorkflowCatalogException e) {
             String msg = "Error in retrieving the workflow "+workflowTemplateId+".";
             logger.error(msg, e);
@@ -2257,7 +2256,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public void deleteWorkflow(String workflowTemplateId) throws RegistryServiceException, TException {
         try {
-            getWorkflowCatalog().deleteWorkflow(workflowTemplateId);
+            workflowRepository.deleteWorkflow(workflowTemplateId);
         } catch (WorkflowCatalogException e) {
             String msg = "Error in deleting the workflow "+workflowTemplateId+".";
             logger.error(msg, e);
@@ -2270,7 +2269,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public String getWorkflowTemplateId(String workflowName) throws RegistryServiceException, TException {
         try {
-            return getWorkflowCatalog().getWorkflowTemplateId(workflowName);
+            return workflowRepository.getWorkflowTemplateId(workflowName);
         } catch (WorkflowCatalogException e) {
             String msg = "Error in retrieving the workflow template id for "+workflowName+".";
             logger.error(msg, e);
@@ -2283,7 +2282,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public boolean isWorkflowExistWithName(String workflowName) throws RegistryServiceException, TException {
         try {
-            return getWorkflowCatalog().isWorkflowExistWithName(workflowName);
+            return workflowRepository.isWorkflowExistWithName(workflowName);
         } catch (WorkflowCatalogException e) {
             String msg = "Error in veriying the workflow for workflow name "+workflowName+".";
             logger.error(msg, e);
@@ -2627,7 +2626,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     @Override
     public void updateWorkflow(String workflowTemplateId, WorkflowModel workflow) throws RegistryServiceException, TException {
         try {
-            getWorkflowCatalog().updateWorkflow(workflowTemplateId, workflow);
+            workflowRepository.updateWorkflow(workflowTemplateId, workflow);
         } catch (WorkflowCatalogException e) {
             String msg = "Error in updating the workflow "+workflow.getName()+".";
             logger.error(msg, e);
@@ -2644,7 +2643,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             throw new RegistryServiceException("Gateway does not exist.Please provide a valid gateway id...");
         }
         try {
-            return getWorkflowCatalog().registerWorkflow(workflow, gatewayId);
+            return workflowRepository.registerWorkflow(workflow, gatewayId);
         } catch (WorkflowCatalogException e) {
             String msg = "Error in registering the workflow "+workflow.getName()+".";
             logger.error(msg, e);
@@ -4291,17 +4290,6 @@ public class RegistryServerHandler implements RegistryService.Iface {
         dataMovementInterface.setPriorityOrder(priorityOrder);
         dataMovementInterface.setDataMovementProtocol(protocolType);
         return computeResource.addDataMovementProtocol(computeResourceId, dmType, dataMovementInterface);
-    }
-
-    private WorkflowCatalog getWorkflowCatalog() {
-        if (workflowCatalog == null) {
-            try {
-                workflowCatalog = RegistryFactory.getAppCatalog().getWorkflowCatalog();
-            } catch (Exception e) {
-                logger.error("Unable to create Workflow Catalog", e);
-            }
-        }
-        return workflowCatalog;
     }
 
     /**

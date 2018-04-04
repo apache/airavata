@@ -20,8 +20,6 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
 import java.io.Serializable;
 
 /**
@@ -32,8 +30,6 @@ public class BatchQueueResourcePolicyPK implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @Column(name = "RESOURCE_POLICY_ID")
     private String resourcePolicyId;
 
     public BatchQueueResourcePolicyPK() {

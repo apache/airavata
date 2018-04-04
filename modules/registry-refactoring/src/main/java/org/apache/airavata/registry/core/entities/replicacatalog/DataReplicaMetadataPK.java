@@ -20,8 +20,6 @@
 */
 package org.apache.airavata.registry.core.entities.replicacatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
 import java.io.Serializable;
 
 /**
@@ -32,6 +30,9 @@ public class DataReplicaMetadataPK implements Serializable {
 
     private String replicaId;
     private String metadataKey;
+
+    public DataReplicaMetadataPK() {
+    }
 
     public String getReplicaId() {
         return replicaId;

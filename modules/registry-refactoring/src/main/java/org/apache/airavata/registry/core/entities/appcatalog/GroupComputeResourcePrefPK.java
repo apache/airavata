@@ -19,8 +19,6 @@
  */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
 import java.io.Serializable;
 
 /**
@@ -30,12 +28,7 @@ public class GroupComputeResourcePrefPK implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "RESOURCE_ID")
-    @Id
     private String computeResourceId;
-
-    @Column(name = "GROUP_RESOURCE_PROFILE_ID")
-    @Id
     private String groupResourceProfileId;
 
     public String getComputeResourceId() {

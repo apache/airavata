@@ -20,22 +20,28 @@
 */
 package org.apache.airavata.registry.core.entities.workflowcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
+import org.apache.airavata.model.ComponentStatus;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
-
 
 /**
  * The persistent class for the node database table.
  */
 @Entity
+@Table(name = "NODE")
+@IdClass(NodePK.class)
 public class NodeEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private NodePK id;
+    @Id
+    @Column(name = "NODE_ID")
+    private String nodeId;
+
+    @Id
+    @Column(name = "TEMPLATE_ID")
+    private String templateId;
 
     @Column(name = "APPLICATION_ID")
     private String applicationId;
@@ -44,7 +50,7 @@ public class NodeEntity implements Serializable {
     private String applicationName;
 
     @Column(name = "COMPONENT_STATUS_ID")
-    private String componentStatusId;
+    private ComponentStatus status;
 
     @Column(name = "CREATED_TIME")
     private Timestamp createdTime;
@@ -55,18 +61,15 @@ public class NodeEntity implements Serializable {
     @Column(name = "NAME")
     private String name;
 
-    @Column(name = "TEMPLATE_ID")
-    private String templateId;
-
     public NodeEntity() {
     }
 
-    public NodePK getId() {
-        return id;
+    public String getNodeId() {
+        return nodeId;
     }
 
-    public void setId(NodePK id) {
-        this.id = id;
+    public void setNodeId(String nodeId) {
+        this.nodeId = nodeId;
     }
 
     public String getApplicationId() {
@@ -85,12 +88,12 @@ public class NodeEntity implements Serializable {
         this.applicationName = applicationName;
     }
 
-    public String getComponentStatusId() {
-        return componentStatusId;
+    public ComponentStatus getStatus() {
+        return status;
     }
 
-    public void setComponentStatusId(String componentStatusId) {
-        this.componentStatusId = componentStatusId;
+    public void setStatus(ComponentStatus status) {
+        this.status = status;
     }
 
     public Timestamp getCreatedTime() {

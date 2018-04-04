@@ -19,8 +19,6 @@
  */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
 import java.io.Serializable;
 
 /**
@@ -30,16 +28,8 @@ public class GroupSSHAccountProvisionerConfigPK implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @Column(name = "RESOURCE_ID")
     private String resourceId;
-
-    @Id
-    @Column(name = "GROUP_RESOURCE_PROFILE_ID")
     private String groupResourceProfileId;
-
-    @Id
-    @Column(name = "CONFIG_NAME")
     private String configName;
 
 

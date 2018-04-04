@@ -20,25 +20,31 @@
 */
 package org.apache.airavata.registry.core.entities.workflowcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
+import org.apache.airavata.model.ComponentStatus;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
-
 
 /**
  * The persistent class for the edge database table.
  */
 @Entity
+@Table(name = "EDGE")
+@IdClass(EdgePK.class)
 public class EdgeEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private EdgePK id;
+    @Id
+    @Column(name = "EDGE_ID")
+    private String edgeId;
+
+    @Id
+    @Column(name = "TEMPLATE_ID")
+    private String templateId;
 
     @Column(name = "COMPONENT_STATUS_ID")
-    private String componentStatusId;
+    private ComponentStatus status;
 
     @Column(name = "CREATED_TIME")
     private Timestamp createdTime;
@@ -49,26 +55,31 @@ public class EdgeEntity implements Serializable {
     @Column(name = "NAME")
     private String name;
 
-    @Column(name = "TEMPLATE_ID")
-    private String templateId;
-
     public EdgeEntity() {
     }
 
-    public EdgePK getId() {
-        return id;
+    public String getEdgeId() {
+        return edgeId;
     }
 
-    public void setId(EdgePK id) {
-        this.id = id;
+    public void setEdgeId(String edgeId) {
+        this.edgeId = edgeId;
     }
 
-    public String getComponentStatusId() {
-        return componentStatusId;
+    public String getTemplateId() {
+        return templateId;
     }
 
-    public void setComponentStatusId(String componentStatusId) {
-        this.componentStatusId = componentStatusId;
+    public void setTemplateId(String templateId) {
+        this.templateId = templateId;
+    }
+
+    public ComponentStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ComponentStatus status) {
+        this.status = status;
     }
 
     public Timestamp getCreatedTime() {
@@ -93,13 +104,5 @@ public class EdgeEntity implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getTemplateId() {
-        return templateId;
-    }
-
-    public void setTemplateId(String templateId) {
-        this.templateId = templateId;
     }
 }

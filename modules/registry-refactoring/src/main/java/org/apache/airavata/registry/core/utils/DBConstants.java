@@ -23,6 +23,7 @@ public class DBConstants {
 
     public static int SELECT_MAX_ROWS = 1000;
     public static final String CONFIGURATION = "Configuration";
+    public static final String WORKFLOW = "Workflow";
 
     public static class ApplicationDeployment {
         public static final String APPLICATION_MODULE_ID = "appModuleId";
@@ -44,17 +45,10 @@ public class DBConstants {
 
     public static class ApplicationInput {
         public static final String APPLICATION_INTERFACE_ID = "interfaceId";
-        public static final String INPUT_KEY = "inputKey";
     }
 
     public static class ApplicationOutput {
         public static final String APPLICATION_INTERFACE_ID = "interfaceId";
-        public static final String OUTPUT_KEY = "outputKey";
-    }
-
-    public static class AppModuleMapping {
-        public static final String APPLICATION_INTERFACE_ID = "interfaceId";
-        public static final String APPLICATION_MODULE_ID = "moduleId";
     }
 
     public static class ComputeResourcePreference {
@@ -79,36 +73,6 @@ public class DBConstants {
         public static final String GROUP_RESOURCE_PROFILE_ID = "groupResourceProfileId";
     }
 
-    public final class PreJobCommand {
-        public static final String APPLICATION_DEPLOYMENT_ID = "deploymentId";
-        public static final String COMMAND = "command";
-    }
-
-    public final class PostJobCommand {
-        public static final String APPLICATION_DEPLOYMENT_ID = "deploymentId";
-        public static final String COMMAND = "command";
-    }
-
-    public final class LibraryPrepandPathConstants {
-        public static final String APPLICATION_DEPLOYMENT_ID = "deploymentID";
-        public static final String NAME = "name";
-    }
-
-    public final class LibraryApendPath {
-        public static final String APPLICATION_DEPLOYMENT_ID = "deploymentID";
-        public static final String NAME = "name";
-    }
-
-    public final class AppEnvironment {
-        public static final String APPLICATION_DEPLOYMENT_ID = "deploymentID";
-        public static final String NAME = "name";
-    }
-
-    public final class ModuleLoadCmd {
-        public static final String APPLICATION_DEPLOYMENT_ID = "appDeploymentId";
-        public static final String COMMAND = "cmd";
-    }
-
     public static class UserResourceProfile {
         public static final String USER_ID = "userId";
         public static final String GATEWAY_ID = "gatewayId";
@@ -131,6 +95,11 @@ public class DBConstants {
         public static final String OWNER_NAME = "ownerName";
         public static final String PRODUCT_NAME = "productName";
         public static final String PARENT_PRODUCT_URI = "parentProductUri";
+    }
+
+    public static class Workflow {
+        public static final String GATEWAY_ID = "gatewayId";
+        public static final String WORKFLOW_NAME = "workflowName";
     }
 
 }

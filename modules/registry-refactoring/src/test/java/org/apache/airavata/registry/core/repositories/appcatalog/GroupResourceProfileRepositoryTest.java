@@ -22,7 +22,7 @@ package org.apache.airavata.registry.core.repositories.appcatalog;
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.*;
-import org.apache.airavata.registry.core.repositories.util.Initialize;
+import org.apache.airavata.registry.core.repositories.appcatalog.util.Initialize;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.junit.After;
 import org.junit.Before;

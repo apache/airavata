@@ -28,11 +28,17 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "JOB_MANAGER_COMMAND")
+@IdClass(JobManagerCommandPK.class)
 public class JobManagerCommandEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private JobManagerCommandPK id;
+    @Id
+    @Column(name = "RESOURCE_JOB_MANAGER_ID")
+    private String resourceJobManagerId;
+
+    @Id
+    @Column(name = "COMMAND_TYPE")
+    private String commandType;
 
     @Column(name = "COMMAND")
     private String command;
@@ -44,20 +50,28 @@ public class JobManagerCommandEntity implements Serializable {
     public JobManagerCommandEntity() {
     }
 
+    public String getResourceJobManagerId() {
+        return resourceJobManagerId;
+    }
+
+    public void setResourceJobManagerId(String resourceJobManagerId) {
+        this.resourceJobManagerId = resourceJobManagerId;
+    }
+
+    public String getCommandType() {
+        return commandType;
+    }
+
+    public void setCommandType(String commandType) {
+        this.commandType = commandType;
+    }
+
     public ResourceJobManagerEntity getResourceJobManager() {
         return resourceJobManager;
     }
 
     public void setResourceJobManager(ResourceJobManagerEntity resourceJobManager) {
         this.resourceJobManager = resourceJobManager;
-    }
-
-    public JobManagerCommandPK getId() {
-        return id;
-    }
-
-    public void setId(JobManagerCommandPK id) {
-        this.id = id;
     }
 
     public String getCommand() {

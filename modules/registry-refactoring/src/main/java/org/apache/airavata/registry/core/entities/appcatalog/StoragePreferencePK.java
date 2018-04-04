@@ -20,9 +20,6 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Id;
 import java.io.Serializable;
 
 /**
@@ -32,12 +29,7 @@ public class StoragePreferencePK implements Serializable {
     //default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "GATEWAY_ID", insertable = false, updatable = false)
-    @Id
     private String gatewayId;
-
-    @Column(name = "STORAGE_RESOURCE_ID")
-    @Id
     private String storageResourceId;
 
     public StoragePreferencePK() {
