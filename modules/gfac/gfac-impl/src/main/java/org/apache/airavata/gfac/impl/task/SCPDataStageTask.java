@@ -195,7 +195,7 @@ public class SCPDataStageTask implements Task {
                             }
 
                             for (String arg : allArgs) {
-                                if (line.startsWith(arg)) {
+                                if (line.contains(arg)) {
                                     log.debug("Found a line with argument {} : {}", arg, line);
                                     result.append(line).append("\n");
                                 }
