@@ -53,9 +53,10 @@ public abstract class AiravataTask extends AbstractTask {
 
     private final static Logger logger = LoggerFactory.getLogger(AiravataTask.class);
 
+    private static Publisher statusPublisher;
+
     private AppCatalog appCatalog;
     private ExperimentCatalog experimentCatalog;
-    private Publisher statusPublisher;
     private ProcessModel processModel;
     private ComputeResourceDescription computeResourceDescription;
 
