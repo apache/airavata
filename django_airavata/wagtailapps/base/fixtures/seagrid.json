@@ -4,7 +4,7 @@
   "pk": 2,
   "fields": {
     "password": "pbkdf2_sha256$36000$kSBYHC0WApTU$GhqnCk1geRftoLf27CUboofpZbF+N2TW98QbpuwCI6Q=",
-    "last_login": "2018-04-03T20:57:37.318Z",
+    "last_login": "2018-04-04T03:39:57.427Z",
     "is_superuser": true,
     "username": "stephenpaul2727",
     "first_name": "",
@@ -4545,6 +4545,60 @@
   }
 },
 {
+  "model": "wagtailcore.grouppagepermission",
+  "pk": 1,
+  "fields": {
+    "group": 1,
+    "page": 1,
+    "permission_type": "add"
+  }
+},
+{
+  "model": "wagtailcore.grouppagepermission",
+  "pk": 2,
+  "fields": {
+    "group": 1,
+    "page": 1,
+    "permission_type": "edit"
+  }
+},
+{
+  "model": "wagtailcore.grouppagepermission",
+  "pk": 3,
+  "fields": {
+    "group": 1,
+    "page": 1,
+    "permission_type": "publish"
+  }
+},
+{
+  "model": "wagtailcore.grouppagepermission",
+  "pk": 4,
+  "fields": {
+    "group": 2,
+    "page": 1,
+    "permission_type": "add"
+  }
+},
+{
+  "model": "wagtailcore.grouppagepermission",
+  "pk": 5,
+  "fields": {
+    "group": 2,
+    "page": 1,
+    "permission_type": "edit"
+  }
+},
+{
+  "model": "wagtailcore.grouppagepermission",
+  "pk": 6,
+  "fields": {
+    "group": 1,
+    "page": 1,
+    "permission_type": "lock"
+  }
+},
+{
   "model": "wagtailcore.collection",
   "pk": 1,
   "fields": {
@@ -4914,9 +4968,9 @@
 },
 {
   "model": "django_airavata_wagtail_base.customcss",
-  "pk": 2,
+  "pk": 1,
   "fields": {
-    "css": "[{\"type\": \"css_comment\", \"value\": {\"message\": \"-----navbar styles-----\"}, \"id\": \"e714a71c-104b-409e-baa2-844d0511822c\"}, {\"type\": \"css_block\", \"value\": \".main-nav {\\r\\nbackground-color : #333 !important;\\r\\n}\\r\\n.main-nav a {\\r\\ncolor : #fff !important;\\r\\n}\\r\\n.main-nav a:hover {\\r\\ncolor: #20b2aa !important;\\r\\n}\\r\\n.main-nav ul {\\r\\nfont-size: 16 px;\\r\\n}\", \"id\": \"83c1e976-e5d7-4561-aa84-9d65c51482e3\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"-----end of navbar styles-----\"}, \"id\": \"61fcba71-6c21-424b-8e67-8105d6be22ce\"}]"
+    "css": "[{\"type\": \"css_block\", \"value\": \".main-nav {\\r\\nbackground-color: #333 !important;\\r\\n}\\r\\n.main-nav a {\\r\\ncolor: #fff !important;\\r\\n}\\r\\n.main-nav a:hover {\\r\\ncolor: #20b2aa !important;\\r\\n}\\r\\n.main-nav ul {\\r\\nfont-size: 18px;\\r\\n}\", \"id\": \"8c8162c4-07f7-4d7e-aab4-83e3914013ff\"}]"
   }
 },
 {
@@ -4965,13 +5019,11 @@
   "fields": {
     "logo": 4,
     "logo_redirect_link": "/",
-    "logo_width": 190,
-    "logo_height": 55,
+    "logo_width": 144,
+    "logo_height": 43,
     "logo_text": null,
     "logo_text_color": null,
-    "logo_text_size": null,
-    "nav_background": null,
-    "nav_link_color": null
+    "logo_text_size": null
   }
 },
 {
@@ -5009,7 +5061,7 @@
   }
 },
 {
-  "model": "django_airavata_wagtail_base.seagridhomepage",
+  "model": "django_airavata_wagtail_base.homepage",
   "pk": 3,
   "fields": {
     "image": 14,

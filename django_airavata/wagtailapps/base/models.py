@@ -62,9 +62,7 @@ class CustomCss(models.Model):
     Custom CSS
     """
 
-    css = StreamField(
-        CssStreamBlock(), verbose_name="CSS block", blank=True, null=True, help_text="Write custom css and give comments as necessary"
-    )
+    css = StreamField(CssStreamBlock(), verbose_name="CSS block", blank=True, null=True, help_text="Write custom css and give comments as necessary",default="")
 
     panels = [
         StreamFieldPanel('css'),
@@ -183,20 +181,6 @@ class Navbar(models.Model):
         blank=True,
     )
 
-    nav_background = models.CharField(
-        max_length=100,
-        help_text = "Give a background color for navbar Eg. (#000000)",
-        null=True,
-        blank=True,
-    )
-
-    nav_link_color = models.CharField(
-        max_length=100,
-        help_text = "Give a color for nav links Eg. (#FFFFFF)",
-        null=True,
-        blank=True,
-    )
-
 
     panels = [
         ImageChooserPanel('logo'),
@@ -206,8 +190,6 @@ class Navbar(models.Model):
         FieldPanel('logo_text'),
         FieldPanel('logo_text_size'),
         FieldPanel('logo_text_color'),
-        FieldPanel('nav_background'),
-        FieldPanel('nav_link_color'),
     ]
 
     def __str__(self):
@@ -215,6 +197,7 @@ class Navbar(models.Model):
 
     class Meta:
         verbose_name_plural = 'Navbar'
+
 
 
 @register_snippet
@@ -326,7 +309,7 @@ class CustomHeaderLinks(models.Model):
     class Meta:
         verbose_name_plural = 'Header Custom Links'
 
-class SeagridHomePage(Page):
+class HomePage(Page):
     """
     The Home Page. This looks slightly more complicated than it is. You can
     see if you visit your site and edit the homepage that it is split between

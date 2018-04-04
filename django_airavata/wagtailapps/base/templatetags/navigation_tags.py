@@ -125,6 +125,7 @@ def get_navbar(context):
     navbar = None
     if Navbar.objects.first() is not None:
         navbar = Navbar.objects.first()
+
     return {
         'navbar': navbar,
     }

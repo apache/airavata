@@ -57,7 +57,8 @@ class CssCommentBlock(StructBlock):
     class Meta:
         icon = "fa-comment"
         template = "blocks/css_comment.html"
-        help_text = "-----Navbar Styles------"
+        help_text = "Enter a css comment"
+
 
 # BootStrap Components
 
