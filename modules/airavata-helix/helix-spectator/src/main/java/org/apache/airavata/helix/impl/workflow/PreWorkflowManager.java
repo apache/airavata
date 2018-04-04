@@ -66,22 +66,31 @@ public class PreWorkflowManager {
     private CuratorFramework curatorClient = null;
     private WorkflowManager workflowManager;
 
-    @SuppressWarnings("WeakerAccess")
-    public PreWorkflowManager() throws Exception {
-        init();
+    private void initAllComponents() throws Exception {
+        initWorkflowManager();
+        initLaunchSubscriber();
+        initStatusPublisher();
+        initCuratorClient();
     }
 
-    private void init() throws Exception {
-
+    private void initWorkflowManager() throws Exception {
         workflowManager = new WorkflowManager(
                 ServerSettings.getSetting("helix.cluster.name"),
                 ServerSettings.getSetting("pre.workflow.manager.name"),
                 ServerSettings.getZookeeperConnection());
+    }
 
+    private void initStatusPublisher() throws AiravataException {
+        this.statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
+    }
+
+    private void initLaunchSubscriber() throws AiravataException {
         List<String> routingKeys = new ArrayList<>();
         routingKeys.add(ServerSettings.getRabbitmqProcessExchangeName());
         this.subscriber = MessagingFactory.getSubscriber(new ProcessLaunchMessageHandler(), routingKeys, Type.PROCESS_LAUNCH);
-        this.statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
+    }
+
+    private void initCuratorClient() throws Exception {
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
         this.curatorClient = CuratorFrameworkFactory.newClient(ServerSettings.getZookeeperConnection(), retryPolicy);
         this.curatorClient.start();
@@ -225,6 +234,7 @@ public class PreWorkflowManager {
 
     public static void main(String[] args) throws Exception {
         PreWorkflowManager preWorkflowManager = new PreWorkflowManager();
+        preWorkflowManager.initAllComponents();
     }
 
     private class ProcessLaunchMessageHandler implements MessageHandler {
