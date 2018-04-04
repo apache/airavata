@@ -4545,60 +4545,6 @@
   }
 },
 {
-  "model": "wagtailcore.grouppagepermission",
-  "pk": 1,
-  "fields": {
-    "group": 1,
-    "page": 1,
-    "permission_type": "add"
-  }
-},
-{
-  "model": "wagtailcore.grouppagepermission",
-  "pk": 2,
-  "fields": {
-    "group": 1,
-    "page": 1,
-    "permission_type": "edit"
-  }
-},
-{
-  "model": "wagtailcore.grouppagepermission",
-  "pk": 3,
-  "fields": {
-    "group": 1,
-    "page": 1,
-    "permission_type": "publish"
-  }
-},
-{
-  "model": "wagtailcore.grouppagepermission",
-  "pk": 4,
-  "fields": {
-    "group": 2,
-    "page": 1,
-    "permission_type": "add"
-  }
-},
-{
-  "model": "wagtailcore.grouppagepermission",
-  "pk": 5,
-  "fields": {
-    "group": 2,
-    "page": 1,
-    "permission_type": "edit"
-  }
-},
-{
-  "model": "wagtailcore.grouppagepermission",
-  "pk": 6,
-  "fields": {
-    "group": 1,
-    "page": 1,
-    "permission_type": "lock"
-  }
-},
-{
   "model": "wagtailcore.collection",
   "pk": 1,
   "fields": {
