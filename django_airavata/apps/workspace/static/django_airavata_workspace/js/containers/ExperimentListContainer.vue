@@ -13,6 +13,7 @@
                             <thead>
                                 <tr>
                                     <th>Name</th>
+                                    <th>Application</th>
                                     <th>Creation Time</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -21,6 +22,7 @@
                             <tbody>
                                 <tr v-for="experiment in experiments" :key="experiment.experimentId">
                                     <td>{{experiment.name}}</td>
+                                    <td>{{applicationName(experiment)}}</td>
                                     <td><span :title="experiment.creationTime">{{ fromNow(experiment.creationTime) }}</span></td>
                                     <td><experiment-status-badge :statusName="experiment.experimentStatus" /></td>
                                     <td>
@@ -53,6 +55,7 @@ export default {
     data () {
         return {
             experimentsPaginator: null,
+            applicationInterfaces: {},
         }
     },
     components: {
@@ -71,6 +74,18 @@ export default {
         },
         viewLink: function(experiment) {
             return '/workspace/experiments/' + encodeURIComponent(experiment.experimentId) + '/';
+        },
+        applicationName: function(experiment) {
+            if (experiment.executionId in this.applicationInterfaces){
+                if (this.applicationInterfaces[experiment.executionId] instanceof models.ApplicationInterfaceDefinition) {
+                    return this.applicationInterfaces[experiment.executionId].applicationName;
+                }
+            } else {
+                const request = services.ApplicationInterfaceService.get(experiment.executionId)
+                    .then(result => this.$set(this.applicationInterfaces, experiment.executionId, result));
+                this.$set(this.applicationInterfaces, experiment.executionId, request);
+            }
+            return "...";
         }
     },
     computed: {
@@ -80,10 +95,7 @@ export default {
     },
     beforeMount: function () {
         services.ExperimentSearchService.list(this.initialExperimentsData)
-            .then(result => {
-                this.experimentsPaginator = result
-                console.log("experiments", result.results);
-            });
+            .then(result => this.experimentsPaginator = result);
     }
 }
 </script>
