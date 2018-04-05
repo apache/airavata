@@ -51,6 +51,7 @@ import org.slf4j.MDC;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class AiravataTask extends AbstractTask {
@@ -195,10 +196,11 @@ public abstract class AiravataTask extends AbstractTask {
 
                         String productUri = getRegistryServiceClient().registerDataProduct(dataProductModel);
                         expOutput.setValue(productUri);
+                        getRegistryServiceClient().addExperimentProcessOutputs("EXPERIMENT_OUTPUT",
+                                Collections.singletonList(expOutput), experimentId);
                     }
                 }
             }
-            getRegistryServiceClient().updateExperiment(experimentId, experiment);
 
         } catch (TException e) {
             String msg = "expId: " + getExperimentId() + " processId: " + getProcessId() + " : - Error while updating experiment outputs";
