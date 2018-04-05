@@ -191,7 +191,7 @@ public class PostWorkflowManager extends WorkflowManager {
                 String processStatus = getStatusOfProcess(processId);
 
                 logger.info("Updating the job status for job id : " + jobStatusResult.getJobId() + " with process id "
-                        + processId + ", gateway " + gateway + " and status " + jobStatusResult.getState().name());
+                        + processId + ", exp id " + experimentId + ", gateway " + gateway + " and status " + jobStatusResult.getState().name());
                 saveAndPublishJobStatus(jobStatusResult.getJobId(), task, processId, experimentId, gateway, jobStatusResult.getState());
 
                 // TODO get cluster lock before that
@@ -288,7 +288,7 @@ public class PostWorkflowManager extends WorkflowManager {
                         logger.info("Job " + jobStatusResult.getJobId() + " was externally cancelled");
 
                     } else if (jobStatusResult.getState() == JobState.FAILED) {
-                        logger.info("Job " + jobStatusResult.getJobId() + " was failed");
+                        logger.info("Job " + jobStatusResult.getJobId() + " was failed.");
 
                     } else if (jobStatusResult.getState() == JobState.SUBMITTED) {
                         logger.info("Job " + jobStatusResult.getJobId() + " was submitted");
