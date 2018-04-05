@@ -20,6 +20,7 @@
 package org.apache.airavata.monitor.email;
 
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.monitor.kafka.MessageProducer;
@@ -86,7 +87,7 @@ public class EmailBasedMonitor implements Runnable {
 
     private void loadContext() throws Exception {
         Yaml yaml = new Yaml();
-        InputStream emailConfigStream = EmailBasedMonitor.class.getClassLoader().getResourceAsStream("email-config.yaml");
+        InputStream emailConfigStream = ApplicationSettings.loadFile("email-config.yaml").openStream();
         Object load = yaml.load(emailConfigStream);
 
         if (load == null) {
