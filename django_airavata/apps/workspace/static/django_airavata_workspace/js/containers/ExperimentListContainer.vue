@@ -20,10 +20,12 @@
                             </thead>
                             <tbody>
                                 <tr v-for="experiment in experiments" :key="experiment.experimentId">
-                                    <td><a :href="'/workspace/experiments/' + encodeURIComponent(experiment.experimentId) + '/'">{{experiment.name}}</a></td>
+                                    <td>{{experiment.name}}</td>
                                     <td><span :title="experiment.creationTime">{{ fromNow(experiment.creationTime) }}</span></td>
                                     <td><experiment-status-badge :statusName="experiment.experimentStatus" /></td>
-                                    <td></td>
+                                    <td>
+                                        <a :href="viewLink(experiment)">View <i class="fa fa-bar-chart" aria-hidden="true"></i></a>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -66,6 +68,9 @@ export default {
         },
         fromNow: function(date) {
             return moment(date).fromNow();
+        },
+        viewLink: function(experiment) {
+            return '/workspace/experiments/' + encodeURIComponent(experiment.experimentId) + '/';
         }
     },
     computed: {
