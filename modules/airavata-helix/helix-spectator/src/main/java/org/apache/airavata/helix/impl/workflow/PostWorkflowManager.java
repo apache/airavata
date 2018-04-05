@@ -200,7 +200,9 @@ public class PostWorkflowManager extends WorkflowManager {
                     // TODO to be implemented
                 } else {
 
-                    if (jobStatusResult.getState() == JobState.COMPLETE) {
+                    if (jobStatusResult.getState() == JobState.COMPLETE || jobStatusResult.getState() == JobState.FAILED) {
+                        // if the job is FAILED, still run output staging tasks to debug the reason for failure. And update
+                        // the experiment status as COMPLETED as this job failure is not related to Airavata scope.
 
                         logger.info("Starting the post workflow for job id : " + jobStatusResult.getJobId() + " with process id "
                                 + processId + ", gateway " + gateway + " and status " + jobStatusResult.getState().name());
@@ -286,10 +288,7 @@ public class PostWorkflowManager extends WorkflowManager {
                         }
                     } else if (jobStatusResult.getState() == JobState.CANCELED) {
                         logger.info("Job " + jobStatusResult.getJobId() + " was externally cancelled");
-
-                    } else if (jobStatusResult.getState() == JobState.FAILED) {
-                        logger.info("Job " + jobStatusResult.getJobId() + " was failed.");
-
+                        //
                     } else if (jobStatusResult.getState() == JobState.SUBMITTED) {
                         logger.info("Job " + jobStatusResult.getJobId() + " was submitted");
 
