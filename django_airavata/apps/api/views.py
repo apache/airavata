@@ -1,4 +1,3 @@
-
 from . import datastore
 from . import serializers
 from . import thrift_utils
@@ -24,8 +23,11 @@ from django.http import FileResponse, Http404, JsonResponse
 
 from airavata.model.appcatalog.appdeployment.ttypes import ApplicationModule, ApplicationDeploymentDescription
 from airavata.model.appcatalog.appinterface.ttypes import ApplicationInterfaceDescription
-from airavata.model.appcatalog.computeresource.ttypes import ComputeResourceDescription
-from airavata.model.credential.store.ttypes import CredentialOwnerType,SummaryType,CredentialSummary
+from airavata.model.appcatalog.computeresource.ttypes import ComputeResourceDescription, LOCALSubmission, \
+    CloudJobSubmission, SSHJobSubmission, GlobusJobSubmission, UnicoreJobSubmission
+from airavata.model.credential.store.ttypes import CredentialOwnerType, SummaryType, CredentialSummary
+from airavata.model.data.movement.ttypes import GridFTPDataMovement, LOCALDataMovement, SCPDataMovement, \
+    UnicoreDataMovement
 from airavata.model.application.io.ttypes import DataType
 
 from collections import OrderedDict
@@ -73,7 +75,6 @@ class GenericAPIBackedViewSet(GenericViewSet):
     @property
     def authz_token(self):
         return self.request.authz_token
-
 
 
 class ReadOnlyAPIBackedViewSet(mixins.RetrieveModelMixin,
@@ -132,6 +133,7 @@ class APIResultIterator(object):
             return iter(self)
         else:
             return self.get_results(1, key)
+
 
 class APIResultPagination(pagination.LimitOffsetPagination):
     """
@@ -194,8 +196,8 @@ class APIResultPagination(pagination.LimitOffsetPagination):
         else:
             return self.request.build_absolute_uri()
 
-class GroupViewSet(APIBackedViewSet):
 
+class GroupViewSet(APIBackedViewSet):
     serializer_class = serializers.GroupSerializer
     lookup_field = 'group_id'
     pagination_class = APIResultPagination
@@ -251,7 +253,6 @@ class GroupViewSet(APIBackedViewSet):
 
 
 class ProjectViewSet(APIBackedViewSet):
-
     serializer_class = serializers.ProjectSerializer
     lookup_field = 'project_id'
     pagination_class = APIResultPagination
@@ -259,9 +260,12 @@ class ProjectViewSet(APIBackedViewSet):
 
     def get_list(self):
         view = self
+
         class ProjectResultIterator(APIResultIterator):
             def get_results(self, limit=-1, offset=0):
-                return view.request.airavata_client.getUserProjects(view.authz_token, view.gateway_id, view.username, limit, offset)
+                return view.request.airavata_client.getUserProjects(view.authz_token, view.gateway_id, view.username,
+                                                                    limit, offset)
+
         return ProjectResultIterator()
 
     def get_instance(self, lookup_value):
@@ -290,7 +294,6 @@ class ProjectViewSet(APIBackedViewSet):
 
 
 class ExperimentViewSet(APIBackedViewSet):
-
     serializer_class = serializers.ExperimentSerializer
     lookup_field = 'experiment_id'
 
@@ -337,7 +340,6 @@ class ExperimentViewSet(APIBackedViewSet):
 
 
 class ExperimentSearchViewSet(mixins.ListModelMixin, GenericAPIBackedViewSet):
-
     serializer_class = serializers.ExperimentSummarySerializer
     pagination_class = APIResultPagination
     pagination_viewname = 'django_airavata_api:experiment-search-list'
@@ -351,6 +353,7 @@ class ExperimentSearchViewSet(mixins.ListModelMixin, GenericAPIBackedViewSet):
                 return view.request.airavata_client.searchExperiments(
                     view.authz_token, view.gateway_id, view.username, {},
                     limit, offset)
+
         return ExperimentSearchResultIterator()
 
     def get_instance(self, lookup_value):
@@ -359,7 +362,6 @@ class ExperimentSearchViewSet(mixins.ListModelMixin, GenericAPIBackedViewSet):
 
 class FullExperimentViewSet(mixins.RetrieveModelMixin,
                             GenericAPIBackedViewSet):
-
     serializer_class = serializers.FullExperimentSerializer
     lookup_field = 'experiment_id'
 
@@ -385,10 +387,10 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
                                  DataType.STDOUT,
                                  DataType.STDERR))]
         appInterfaceId = experimentModel.executionId
-        applicationInterface = self.request.airavata_client\
+        applicationInterface = self.request.airavata_client \
             .getApplicationInterface(self.authz_token, appInterfaceId)
         appModuleId = applicationInterface.applicationModules[0]
-        applicationModule = self.request.airavata_client\
+        applicationModule = self.request.airavata_client \
             .getApplicationModule(self.authz_token, appModuleId)
         compute_resource_id = None
         user_conf = experimentModel.userConfigurationData
@@ -396,7 +398,7 @@ class FullExperimentViewSet(mixins.RetrieveModelMixin,
             comp_res_sched = user_conf.computationalResourceScheduling
             compute_resource_id = comp_res_sched.resourceHostId
         compute_resource = self.request.airavata_client.getComputeResource(
-            self.authz_token, compute_resource_id)\
+            self.authz_token, compute_resource_id) \
             if compute_resource_id else None
         project = self.request.airavata_client.getProject(
             self.authz_token, experimentModel.projectId)
@@ -425,7 +427,8 @@ class ApplicationModuleViewSet(APIBackedViewSet):
 
     def perform_create(self, serializer):
         app_module = serializer.save()
-        app_module_id = self.request.airavata_client.registerApplicationModule(self.authz_token, self.gateway_id, app_module)
+        app_module_id = self.request.airavata_client.registerApplicationModule(self.authz_token, self.gateway_id,
+                                                                               app_module)
         app_module.appModuleId = app_module_id
 
     def perform_update(self, serializer):
@@ -446,9 +449,11 @@ class ApplicationModuleViewSet(APIBackedViewSet):
                 ApplicationInterfaceDescription, instance=app_interfaces[0], context={'request': request})
             return Response(serializer.data)
         elif len(app_interfaces) > 1:
-            log.error("More than one application interface found for module {}: {}".format(app_module_id, app_interfaces))
-            return Response({'error': 'More than one application interface found for module id {}'.format(app_module_id)},
-                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            log.error(
+                "More than one application interface found for module {}: {}".format(app_module_id, app_interfaces))
+            return Response(
+                {'error': 'More than one application interface found for module id {}'.format(app_module_id)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             return Response({'error': 'No application interface found for module id {}'.format(app_module_id)},
                             status=status.HTTP_404_NOT_FOUND)
@@ -457,7 +462,8 @@ class ApplicationModuleViewSet(APIBackedViewSet):
     def application_deployments(self, request, app_module_id):
         all_deployments = self.request.airavata_client.getAllApplicationDeployments(self.authz_token, self.gateway_id)
         app_deployments = [dep for dep in all_deployments if dep.appModuleId == app_module_id]
-        serializer = serializers.ApplicationDeploymentDescriptionSerializer(app_deployments, many=True, context={'request': request})
+        serializer = serializers.ApplicationDeploymentDescriptionSerializer(app_deployments, many=True,
+                                                                            context={'request': request})
         return Response(serializer.data)
 
 
@@ -499,8 +505,8 @@ class RegisterApplicationDeployments(APIView):
                                                                          app_deployment)
         return Response(response)
 
-class ApplicationInterfaceViewSet(APIBackedViewSet):
 
+class ApplicationInterfaceViewSet(APIBackedViewSet):
     serializer_class = serializers.ApplicationInterfaceDescriptionSerializer
     lookup_field = 'app_interface_id'
 
@@ -513,20 +519,24 @@ class ApplicationInterfaceViewSet(APIBackedViewSet):
     def perform_create(self, serializer):
         application_interface = serializer.save()
         log.debug("application_interface: {}".format(application_interface))
-        app_interface_id = self.request.airavata_client.registerApplicationInterface(self.authz_token, self.gateway_id, application_interface)
+        app_interface_id = self.request.airavata_client.registerApplicationInterface(self.authz_token, self.gateway_id,
+                                                                                     application_interface)
         application_interface.applicationInterfaceId = app_interface_id
 
     def perform_update(self, serializer):
         application_interface = serializer.save()
-        self.request.airavata_client.updateApplicationInterface(self.authz_token, application_interface.applicationInterfaceId, application_interface)
+        self.request.airavata_client.updateApplicationInterface(self.authz_token,
+                                                                application_interface.applicationInterfaceId,
+                                                                application_interface)
 
     @detail_route()
     def compute_resources(self, request, app_interface_id):
-        compute_resources = request.airavata_client.getAvailableAppInterfaceComputeResources(self.authz_token, app_interface_id)
+        compute_resources = request.airavata_client.getAvailableAppInterfaceComputeResources(self.authz_token,
+                                                                                             app_interface_id)
         return Response(compute_resources)
 
-class ApplicationDeploymentViewSet(APIBackedViewSet):
 
+class ApplicationDeploymentViewSet(APIBackedViewSet):
     serializer_class = serializers.ApplicationDeploymentDescriptionSerializer
     lookup_field = 'app_deployment_id'
     lookup_value_regex = '[^/]+'
@@ -539,12 +549,16 @@ class ApplicationDeploymentViewSet(APIBackedViewSet):
 
     def perform_create(self, serializer):
         application_deployment = serializer.save()
-        app_deployment_id = self.request.airavata_client.registerApplicationDeployment(self.authz_token, self.gateway_id, application_deployment)
+        app_deployment_id = self.request.airavata_client.registerApplicationDeployment(self.authz_token,
+                                                                                       self.gateway_id,
+                                                                                       application_deployment)
         application_deployment.appDeploymentId = app_deployment_id
 
     def perform_update(self, serializer):
         application_deployment = serializer.save()
-        self.request.airavata_client.updateApplicationDeployment(self.authz_token, application_deployment.appDeploymentId, application_deployment)
+        self.request.airavata_client.updateApplicationDeployment(self.authz_token,
+                                                                 application_deployment.appDeploymentId,
+                                                                 application_deployment)
 
     @detail_route()
     def queues(self, request, app_deployment_id):
@@ -566,6 +580,7 @@ class ApplicationDeploymentViewSet(APIBackedViewSet):
         serializer = serializers.BatchQueueSerializer(batch_queues, many=True, context={'request': request})
         return Response(serializer.data)
 
+
 class ComputeResourceList(APIView):
     renderer_classes = (JSONRenderer,)
 
@@ -582,7 +597,7 @@ class ComputeResourceDetails(APIView):
     def get(self, request, format=None):
         details = request.airavata_client.getComputeResource(request.authz_token, request.query_params["id"])
         serializer = thrift_utils.create_serializer(ComputeResourceDescription, instance=details,
-                                                                context={'request': request})
+                                                    context={'request': request})
         print(details)
         return Response(serializer.data)
 
@@ -593,7 +608,7 @@ class ComputeResourcesQueues(APIView):
     def get(self, request, format=None):
         details = request.airavata_client.getComputeResource(request.authz_token, request.query_params["id"])
         serializer = thrift_utils.create_serializer(ComputeResourceDescription, instance=details,
-                                                                context={'request': request})
+                                                    context={'request': request})
         data = serializer.data
         return Response([queue["queueName"] for queue in data["batchQueues"]])
 
@@ -602,44 +617,49 @@ class ApplicationInterfaceList(APIView):
     def get(self, request, format=None):
         gateway_id = settings.GATEWAY_ID
         serializer = thrift_utils.create_serializer(ApplicationInterfaceDescription,
-                                                                instance=request.airavata_client.getAllApplicationInterfaces(
-                                                                    request.authz_token, gateway_id),
-                                                                context={'request': request},many=True)
+                                                    instance=request.airavata_client.getAllApplicationInterfaces(
+                                                        request.authz_token, gateway_id),
+                                                    context={'request': request}, many=True)
         return Response(serializer.data)
+
 
 class FetchApplicationInterface(APIView):
 
-
-    def get(self,request,format=None):
+    def get(self, request, format=None):
         gateway_id = settings.GATEWAY_ID
         for app_interface in request.airavata_client.getAllApplicationInterfaces(
-                                                                    request.authz_token, gateway_id):
-            app_modules=app_interface.applicationModules
+                request.authz_token, gateway_id):
+            app_modules = app_interface.applicationModules
             if request.query_params["id"] in app_modules:
                 return Response(thrift_utils.create_serializer(ApplicationInterfaceDescription,
-                                                                instance=app_interface,
-                                                                context={'request': request}).data)
+                                                               instance=app_interface,
+                                                               context={'request': request}).data)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class FetchApplicationDeployment(APIView):
 
-    def get(self,request,format=None):
+    def get(self, request, format=None):
         gateway_id = settings.GATEWAY_ID
-        app_deployments=[app_deployment for app_deployment in  request.airavata_client.getAllApplicationDeployments(
-                request.authz_token, gateway_id) if request.query_params["id"] == app_deployment.appModuleId]
-        serializer=thrift_utils.create_serializer(ApplicationDeploymentDescription,
-                                                   instance=app_deployments,
-                                                   context={'request': request},many=True)
+        app_deployments = [app_deployment for app_deployment in request.airavata_client.getAllApplicationDeployments(
+            request.authz_token, gateway_id) if request.query_params["id"] == app_deployment.appModuleId]
+        serializer = thrift_utils.create_serializer(ApplicationDeploymentDescription,
+                                                    instance=app_deployments,
+                                                    context={'request': request}, many=True)
         return Response(serializer.data)
-        #return Response(request.airavata_client.getAppModuleDeployedResources(request.authz_token, request.query_params["id"]))
+        # return Response(request.airavata_client.getAppModuleDeployedResources(request.authz_token, request.query_params["id"]))
+
 
 class FetchSSHPubKeys(APIView):
 
-    def get(self,request,format=None):
+    def get(self, request, format=None):
         gateway_id = settings.GATEWAY_ID
-        serializer=thrift_utils.create_serializer(CredentialSummary,instance=request.airavata_client.getAllCredentialSummaryForGateway (request.authz_token,SummaryType.SSH,gateway_id),context={'request': request},many=True)
+        serializer = thrift_utils.create_serializer(CredentialSummary,
+                                                    instance=request.airavata_client.getAllCredentialSummaryForGateway(
+                                                        request.authz_token, SummaryType.SSH, gateway_id),
+                                                    context={'request': request}, many=True)
         return Response(serializer.data)
+
 
 class GenerateRegisterSSHKeys(APIView):
     parser_classes = (JSONParser,)
@@ -648,8 +668,10 @@ class GenerateRegisterSSHKeys(APIView):
     def post(self, request, format=None):
         username = request.user.username
         gateway_id = settings.GATEWAY_ID
-        data=request.data
-        return Response(request.airavata_client.generateAndRegisterSSHKeys (request.authz_token,gateway_id,username,data["description"],CredentialOwnerType.GATEWAY))
+        data = request.data
+        return Response(request.airavata_client.generateAndRegisterSSHKeys(request.authz_token, gateway_id, username,
+                                                                           data["description"],
+                                                                           CredentialOwnerType.GATEWAY))
 
 
 class DeleteSSHPubKey(APIView):
@@ -658,7 +680,118 @@ class DeleteSSHPubKey(APIView):
 
     def post(self, request, format=None):
         gateway_id = settings.GATEWAY_ID
-        return Response(request.airavata_client.deleteSSHPubKey(request.authz_token,request.data['token'],gateway_id))
+        return Response(request.airavata_client.deleteSSHPubKey(request.authz_token, request.data['token'], gateway_id))
+
+
+class ComputeResourceAPIViewSet(mixins.RetrieveModelMixin,
+                                mixins.ListModelMixin,
+                                GenericAPIBackedViewSet):
+    serializer_class = thrift_utils.create_serializer_class(ComputeResourceDescription)
+
+    def list(self, request, *args, **kwargs):
+        return Response(request.airavata_client.getAllComputeResourceNames(request.authz_token))
+
+    def retrieve(self, request, pk=None):
+        compute_resource_id = request.query_params["id"]
+        compute_resource = request.airavata_client.getComputeResource(request.authz_token, compute_resource_id)
+        return Response(thrift_utils.create_serializer(ComputeResourceDescription, instance=compute_resource).data)
+
+
+class ComputeResourceListView(APIView):
+    renderer_classes = (JSONRenderer,)
+
+    def get(self, request, format=None):
+        return Response(request.airavata_client.getAllComputeResourceNames(request.authz_token))
+
+
+class ComputeResourceView(APIView):
+    renderer_classes = (JSONRenderer,)
+
+    def get(self, request, format=None):
+        compute_resource_id = request.query_params["id"]
+        compute_resource = request.airavata_client.getComputeResource(request.authz_token, compute_resource_id)
+        return Response(thrift_utils.create_serializer(ComputeResourceDescription, instance=compute_resource).data)
+
+
+class LocalJobSubmissionView(APIView):
+    renderer_classes = (JSONRenderer,)
+
+    def get(self, request, format=None):
+        job_submission_id = request.query_params["id"]
+        local_job_submission = request.airavata_client.getLocalJobSubmission(request.authz_token, job_submission_id)
+        return Response(thrift_utils.create_serializer(LOCALSubmission, instance=local_job_submission).data)
+
+
+class CloudJobSubmissionView(APIView):
+    renderer_classes = (JSONRenderer,)
+
+    def get(self, request, format=None):
+        job_submission_id = request.query_params["id"]
+        job_submission = request.airavata_client.getCloudJobSubmission(request.authz_token, job_submission_id)
+        return Response(thrift_utils.create_serializer(CloudJobSubmission, instance=job_submission).data)
+
+
+class GlobusJobSubmissionView(APIView):
+    renderer_classes = (JSONRenderer,)
+
+    def get(self, request, format=None):
+        job_submission_id = request.query_params["id"]
+        job_submission = request.airavata_client.getClo(request.authz_token, job_submission_id)
+        return Response(thrift_utils.create_serializer(GlobusJobSubmission, instance=job_submission).data)
+
+
+class SshJobSubmissionView(APIView):
+    renderer_classes = (JSONRenderer,)
+
+    def get(self, request, format=None):
+        job_submission_id = request.query_params["id"]
+        job_submission = request.airavata_client.getSSHJobSubmission(request.authz_token, job_submission_id)
+        return Response(thrift_utils.create_serializer(SSHJobSubmission, instance=job_submission).data)
+
+
+class UnicoreJobSubmissionView(APIView):
+    renderer_classes = (JSONRenderer,)
+
+    def get(self, request, format=None):
+        job_submission_id = request.query_params["id"]
+        job_submission = request.airavata_client.getUnicoreJobSubmission(request.authz_token, job_submission_id)
+        return Response(thrift_utils.create_serializer(UnicoreJobSubmission, instance=job_submission).data)
+
+
+class GridFtpDataMovementView(APIView):
+    renderer_classes = (JSONRenderer,)
+
+    def get(self, request, format=None):
+        data_movement_id = request.query_params["id"]
+        data_movement = request.airavata_client.getGridFTPDataMovement(request.authz_token, data_movement_id)
+        return Response(thrift_utils.create_serializer(GridFTPDataMovement, instance=data_movement).data)
+
+
+class ScpDataMovementView(APIView):
+    renderer_classes = (JSONRenderer,)
+
+    def get(self, request, format=None):
+        data_movement_id = request.query_params["id"]
+        data_movement = request.airavata_client.getSCPDataMovement(request.authz_token, data_movement_id)
+        return Response(thrift_utils.create_serializer(SCPDataMovement, instance=data_movement).data)
+
+
+class UnicoreDataMovementView(APIView):
+    renderer_classes = (JSONRenderer,)
+
+    def get(self, request, format=None):
+        data_movement_id = request.query_params["id"]
+        data_movement = request.airavata_client.getUnicoreDataMovement(request.authz_token, data_movement_id)
+        return Response(thrift_utils.create_serializer(UnicoreDataMovement, instance=data_movement).data)
+
+
+class LocalDataMovementView(APIView):
+    renderer_classes = (JSONRenderer,)
+
+    def get(self, request, format=None):
+        data_movement_id = request.query_params["id"]
+        data_movement = request.airavata_client.getLocalDataMovement(request.authz_token, data_movement_id)
+        return Response(thrift_utils.create_serializer(LOCALDataMovement, instance=data_movement).data)
 
 
 @login_required

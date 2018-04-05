@@ -1,4 +1,3 @@
-
 from . import views
 
 from django.conf.urls import include, url
@@ -27,8 +26,10 @@ app_name = 'django_airavata_api'
 urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^new/application/module$', views.RegisterApplicationModule.as_view(), name='register_application_module'),
-    url(r'^new/application/interface$', views.RegisterApplicationInterface.as_view(), name='register_application_interface'),
-    url(r'^new/application/deployment$', views.RegisterApplicationDeployments.as_view(), name='register_application_deployments'),
+    url(r'^new/application/interface$', views.RegisterApplicationInterface.as_view(),
+        name='register_application_interface'),
+    url(r'^new/application/deployment$', views.RegisterApplicationDeployments.as_view(),
+        name='register_application_deployments'),
     url(r'^compute/resources$', views.ComputeResourceList.as_view(), name="compute_resources"),
     url(r'^compute/resource/details$', views.ComputeResourceDetails.as_view(), name="compute_resource_details"),
     url(r'^compute/resource/queues', views.ComputeResourcesQueues.as_view(), name="compute_resource_queues"),
@@ -40,8 +41,20 @@ urlpatterns = [
     url(r'^credentials/ssh/key/create', views.GenerateRegisterSSHKeys.as_view(), name="ssh_key_creation"),
     url(r'^upload$', views.upload_input_file, name='upload_input_file'),
     url(r'^download', views.download_file, name='download_file'),
-]
+    url(r'^credentials/ssh/key/create', views.GenerateRegisterSSHKeys.as_view(), name="ssh_key_creation"),
+    url(r'^compute/resources$', views.ComputeResourceListView.as_view(), name="compute_resources"),
+    url(r'^compute/resource/details', views.ComputeResourceDetails.as_view(), name="compute_resource_details"),
+    url(r'^job/submission/local', views.LocalJobSubmissionView.as_view(), name="local_job_submission"),
+    url(r'^job/submission/cloud', views.CloudJobSubmissionView.as_view(), name="cloud_job_submission"),
+    url(r'^job/submission/globus', views.GlobusJobSubmissionView.as_view(), name="globus_job_submission"),
+    url(r'^job/submission/ssh', views.SshJobSubmissionView.as_view(), name="ssh_job_submission"),
+    url(r'^job/submission/unicore', views.UnicoreJobSubmissionView.as_view(), name="unicore_job_submission"),
+    url(r'^data/movement/gridftp', views.GridFtpDataMovementView.as_view(), name="grid_ftp_data_movement"),
+    url(r'^data/movement/local', views.LocalDataMovementView.as_view(), name="local_ftp_data_movement"),
+    url(r'^data/movement/unicore', views.UnicoreDataMovementView.as_view(), name="unicore_ftp_data_movement"),
+    url(r'^data/movement/scp', views.ScpDataMovementView.as_view(), name="scp_ftp_data_movement"),
 
+]
 
 if logger.isEnabledFor(logging.DEBUG):
     for url in router.urls:

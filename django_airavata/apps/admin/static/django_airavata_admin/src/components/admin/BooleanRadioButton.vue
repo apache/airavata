@@ -37,7 +37,6 @@
         type:String
       },
       selectorId:{
-        type:String,
         default:''
       }
     },

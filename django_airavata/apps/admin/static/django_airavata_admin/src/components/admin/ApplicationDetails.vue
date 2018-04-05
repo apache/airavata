@@ -20,7 +20,7 @@
   </div>
 </template>
 <script>
-  import NewApplicationButtons from './NewApplicationButtons.vue';
+  import NewApplicationButtons from './TabActionConsole.vue';
   import Loading from '../Loading.vue'
   import { createNamespacedHelpers } from 'vuex'
 
