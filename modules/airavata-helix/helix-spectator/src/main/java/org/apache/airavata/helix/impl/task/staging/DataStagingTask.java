@@ -136,6 +136,18 @@ public abstract class DataStagingTask extends AiravataTask {
 
     protected boolean transferFileToStorage(String sourcePath, String destPath, String fileName, AgentAdaptor adaptor,
                               StorageResourceAdaptor storageResourceAdaptor) throws TaskOnFailException {
+
+        try {
+            boolean fileExists = adaptor.doesFileExist(sourcePath);
+            if (!fileExists) {
+                logger.warn("Ignoring the file " + sourcePath + " transfer as it is not available");
+                return false;
+            }
+        } catch (AgentException e) {
+            logger.error("Error while checking the file " + sourcePath + " existence");
+            throw new TaskOnFailException("Error while checking the file " + sourcePath + " existence", true, e);
+        }
+
         String localSourceFilePath = getLocalDataPath(fileName);
 
         try {
