@@ -20,7 +20,9 @@
 package org.apache.airavata.helix.impl.task;
 
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskParam;
@@ -37,10 +39,12 @@ import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.*;
-import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.*;
+import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.helix.HelixManager;
 import org.apache.helix.task.TaskResult;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -55,8 +59,6 @@ public abstract class AiravataTask extends AbstractTask {
 
     private static Publisher statusPublisher;
 
-    private AppCatalog appCatalog;
-    private ExperimentCatalog experimentCatalog;
     private ProcessModel processModel;
     private ComputeResourceDescription computeResourceDescription;
 
@@ -131,10 +133,10 @@ public abstract class AiravataTask extends AbstractTask {
             ProcessStatus status = taskContext.getProcessStatus();
             if (status.getTimeOfStateChange() == 0 || status.getTimeOfStateChange() > 0 ){
                 status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-            }else {
+            } else {
                 status.setTimeOfStateChange(status.getTimeOfStateChange());
             }
-            experimentCatalog.add(ExpCatChildDataType.PROCESS_STATUS, status, getProcessId());
+            getRegistryServiceClient().addProcessStatus(status, getProcessId());
             ProcessIdentifier identifier = new ProcessIdentifier(getProcessId(), getExperimentId(), getGatewayId());
             ProcessStatusChangeEvent processStatusChangeEvent = new ProcessStatusChangeEvent(status.getState(), identifier);
             MessageContext msgCtx = new MessageContext(processStatusChangeEvent, MessageType.PROCESS,
@@ -157,7 +159,7 @@ public abstract class AiravataTask extends AbstractTask {
             }else {
                 status.setTimeOfStateChange(status.getTimeOfStateChange());
             }
-            experimentCatalog.add(ExpCatChildDataType.TASK_STATUS, status, getTaskId());
+            getRegistryServiceClient().addTaskStatus(status, getTaskId());
             TaskIdentifier identifier = new TaskIdentifier(getTaskId(), getProcessId(), getExperimentId(), getGatewayId());
             TaskStatusChangeEvent taskStatusChangeEvent = new TaskStatusChangeEvent(state,
                     identifier);
@@ -172,7 +174,7 @@ public abstract class AiravataTask extends AbstractTask {
 
     public void saveExperimentOutput(String outputName, String outputVal) throws TaskOnFailException {
         try {
-            ExperimentModel experiment = (ExperimentModel)experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+            ExperimentModel experiment = getRegistryServiceClient().getExperiment(experimentId);
             List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
             if (experimentOutputs != null && !experimentOutputs.isEmpty()) {
                 for (OutputDataObjectType expOutput : experimentOutputs) {
@@ -191,15 +193,14 @@ public abstract class AiravataTask extends AbstractTask {
                         replicaLocationModel.setFilePath(outputVal);
                         dataProductModel.addToReplicaLocations(replicaLocationModel);
 
-                        ReplicaCatalog replicaCatalog = RegistryFactory.getReplicaCatalog();
-                        String productUri = replicaCatalog.registerDataProduct(dataProductModel);
+                        String productUri = getRegistryServiceClient().registerDataProduct(dataProductModel);
                         expOutput.setValue(productUri);
                     }
                 }
             }
-            experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT, experiment, experimentId);
+            getRegistryServiceClient().updateExperiment(experimentId, experiment);
 
-        } catch (RegistryException | AppCatalogException e) {
+        } catch (TException e) {
             String msg = "expId: " + getExperimentId() + " processId: " + getProcessId() + " : - Error while updating experiment outputs";
             throw new TaskOnFailException(msg, true, e);
         }
@@ -209,8 +210,8 @@ public abstract class AiravataTask extends AbstractTask {
     protected void saveExperimentError(ErrorModel errorModel) {
         try {
             errorModel.setErrorId(AiravataUtils.getId("EXP_ERROR"));
-            getExperimentCatalog().add(ExpCatChildDataType.EXPERIMENT_ERROR, errorModel, experimentId);
-        } catch (RegistryException e) {
+            getRegistryServiceClient().addErrors("EXPERIMENT_ERROR", errorModel, experimentId);
+        } catch (TException e) {
             String msg = "expId: " + getExperimentId() + " processId: " + getProcessId() + " : - Error while updating experiment errors";
             logger.error(msg, e);
         }
@@ -220,8 +221,8 @@ public abstract class AiravataTask extends AbstractTask {
     protected void saveProcessError(ErrorModel errorModel) {
         try {
             errorModel.setErrorId(AiravataUtils.getId("PROCESS_ERROR"));
-            experimentCatalog.add(ExpCatChildDataType.PROCESS_ERROR, errorModel, getProcessId());
-        } catch (RegistryException e) {
+            getRegistryServiceClient().addErrors("PROCESS_ERROR", errorModel, getProcessId());
+        } catch (TException e) {
             String msg = "expId: " + getExperimentId() + " processId: " + getProcessId()
                     + " : - Error while updating process errors";
             logger.error(msg, e);
@@ -232,8 +233,8 @@ public abstract class AiravataTask extends AbstractTask {
     protected void saveTaskError(ErrorModel errorModel) {
         try {
             errorModel.setErrorId(AiravataUtils.getId("TASK_ERROR"));
-            getExperimentCatalog().add(ExpCatChildDataType.TASK_ERROR, errorModel, getTaskId());
-        } catch (RegistryException e) {
+            getRegistryServiceClient().addErrors("TASK_ERROR", errorModel, getTaskId());
+        } catch (TException e) {
             String msg = "expId: " + getExperimentId() + " processId: " + getProcessId() + " taskId: " + getTaskId()
                     + " : - Error while updating task errors";
             logger.error(msg, e);
@@ -297,26 +298,22 @@ public abstract class AiravataTask extends AbstractTask {
         MDC.put("gateway", getGatewayId());
         MDC.put("task", getTaskId());
         try {
-            appCatalog = RegistryFactory.getAppCatalog();
             //logger.info("Gateway id is " + getGatewayId());
-            experimentCatalog = RegistryFactory.getExperimentCatalog(getGatewayId());
-            processModel = (ProcessModel) experimentCatalog.get(ExperimentCatalogModelType.PROCESS, processId);
+            processModel = getRegistryServiceClient().getProcess(processId);
 
-            this.computeResourceDescription = getAppCatalog().getComputeResource().getComputeResource(getProcessModel()
-                    .getComputeResourceId());
+            this.computeResourceDescription = getRegistryServiceClient().getComputeResource(this.processModel.getComputeResourceId());
 
             TaskContext.TaskContextBuilder taskContextBuilder = new TaskContext.TaskContextBuilder(getProcessId(), getGatewayId(), getTaskId())
-                    .setAppCatalog(getAppCatalog())
-                    .setExperimentCatalog(getExperimentCatalog())
+                    .setRegistryClient(getRegistryServiceClient())
                     .setProcessModel(getProcessModel())
                     .setStatusPublisher(getStatusPublisher())
-                    .setGatewayResourceProfile(appCatalog.getGatewayProfile().getGatewayProfile(gatewayId))
+                    .setGatewayResourceProfile(getRegistryServiceClient().getGatewayResourceProfile(gatewayId))
                     .setGatewayComputeResourcePreference(
-                            appCatalog.getGatewayProfile()
-                                    .getComputeResourcePreference(gatewayId, processModel.getComputeResourceId()))
+                            getRegistryServiceClient().getGatewayComputeResourcePreference(gatewayId,
+                                    processModel.getComputeResourceId()))
                     .setGatewayStorageResourcePreference(
-                            appCatalog.getGatewayProfile()
-                                    .getStoragePreference(gatewayId, processModel.getStorageResourceId()));
+                            getRegistryServiceClient().getGatewayStoragePreference(gatewayId,
+                                    processModel.getStorageResourceId()));
 
             this.taskContext = taskContextBuilder.build();
             logger.info("Task " + taskName + " initialized");
@@ -328,10 +325,6 @@ public abstract class AiravataTask extends AbstractTask {
         }
     }
 
-    protected AppCatalog getAppCatalog() {
-        return appCatalog;
-    }
-
     @SuppressWarnings("WeakerAccess")
     protected void publishTaskState(TaskState ts) {
 
@@ -339,7 +332,7 @@ public abstract class AiravataTask extends AbstractTask {
             TaskStatus taskStatus = new TaskStatus();
             taskStatus.setState(ts);
             taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-            experimentCatalog.add(ExpCatChildDataType.TASK_STATUS, taskStatus, getTaskId());
+            getRegistryServiceClient().addTaskStatus(taskStatus, getTaskId());
             TaskIdentifier identifier = new TaskIdentifier(getTaskId(),
                     getProcessId(), getExperimentId(), getGatewayId());
             TaskStatusChangeEvent taskStatusChangeEvent = new TaskStatusChangeEvent(ts,
@@ -359,10 +352,6 @@ public abstract class AiravataTask extends AbstractTask {
 
     protected TaskContext getTaskContext() {
         return taskContext;
-    }
-
-    protected ExperimentCatalog getExperimentCatalog() {
-        return experimentCatalog;
     }
 
     public String getProcessId() {
@@ -399,5 +388,16 @@ public abstract class AiravataTask extends AbstractTask {
 
     public boolean isSkipTaskStatusPublish() {
         return skipTaskStatusPublish;
+    }
+
+    // TODO this is inefficient. Try to use a connection pool
+    public static RegistryService.Client getRegistryServiceClient() {
+        try {
+            final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
+            final String serverHost = ServerSettings.getRegistryServerHost();
+            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
+        } catch (RegistryServiceException|ApplicationSettingsException e) {
+            throw new RuntimeException("Unable to create registry client...", e);
+        }
     }
 }

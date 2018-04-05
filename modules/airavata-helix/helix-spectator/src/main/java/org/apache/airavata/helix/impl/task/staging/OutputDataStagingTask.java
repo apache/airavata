@@ -30,9 +30,8 @@ import org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescr
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.task.DataStagingTaskModel;
-import org.apache.airavata.registry.cpi.ExpCatChildDataType;
-import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.helix.task.TaskResult;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -143,11 +142,11 @@ public class OutputDataStagingTask extends DataStagingTask {
                     processOutput.setName(sourceFileName);
 
                     try {
-                        getTaskContext().getExperimentCatalog().add(ExpCatChildDataType.EXPERIMENT_OUTPUT,
-                                Collections.singletonList(processOutput), getExperimentId());
-                        getTaskContext().getExperimentCatalog().add(ExpCatChildDataType.PROCESS_OUTPUT,
-                                Collections.singletonList(processOutput), getProcessId());
-                    } catch (RegistryException e) {
+                        getTaskContext().getRegistryClient()
+                                .addExperimentProcessOutputs("EXPERIMENT_OUTPUT", Collections.singletonList(processOutput), getExperimentId());
+                        getTaskContext().getRegistryClient()
+                                .addExperimentProcessOutputs("PROCESS_OUTPUT", Collections.singletonList(processOutput), getProcessId());
+                    } catch (TException e) {
                         throw new TaskOnFailException("Failed to update experiment or process outputs for task " + getTaskId(), true, e);
                     }
 

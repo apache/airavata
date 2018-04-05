@@ -20,6 +20,7 @@
 package org.apache.airavata.helix.impl.workflow;
 
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
@@ -32,7 +33,6 @@ import org.apache.airavata.helix.impl.task.cancel.WorkflowCancellationTask;
 import org.apache.airavata.helix.impl.task.env.EnvSetupTask;
 import org.apache.airavata.helix.impl.task.staging.InputDataStagingTask;
 import org.apache.airavata.helix.impl.task.submission.DefaultJobSubmissionTask;
-import org.apache.airavata.helix.workflow.WorkflowManager;
 import org.apache.airavata.messaging.core.*;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.messaging.event.*;
@@ -41,14 +41,7 @@ import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
-import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.ExperimentCatalog;
-import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
-import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.curator.RetryPolicy;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.airavata.registry.api.RegistryService;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.apache.zookeeper.CreateMode;
@@ -57,31 +50,19 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public class PreWorkflowManager {
+public class PreWorkflowManager extends WorkflowManager {
 
     private final static Logger logger = LoggerFactory.getLogger(PreWorkflowManager.class);
 
     private Subscriber subscriber;
-    private Publisher statusPublisher;
-    private CuratorFramework curatorClient = null;
-    private WorkflowManager workflowManager;
+
+    public PreWorkflowManager() throws ApplicationSettingsException {
+        super(ServerSettings.getSetting("pre.workflow.manager.name"));
+    }
 
     private void initAllComponents() throws Exception {
-        initWorkflowManager();
+        super.initComponents();
         initLaunchSubscriber();
-        initStatusPublisher();
-        initCuratorClient();
-    }
-
-    private void initWorkflowManager() throws Exception {
-        workflowManager = new WorkflowManager(
-                ServerSettings.getSetting("helix.cluster.name"),
-                ServerSettings.getSetting("pre.workflow.manager.name"),
-                ServerSettings.getZookeeperConnection());
-    }
-
-    private void initStatusPublisher() throws AiravataException {
-        this.statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
     }
 
     private void initLaunchSubscriber() throws AiravataException {
@@ -90,41 +71,46 @@ public class PreWorkflowManager {
         this.subscriber = MessagingFactory.getSubscriber(new ProcessLaunchMessageHandler(), routingKeys, Type.PROCESS_LAUNCH);
     }
 
-    private void initCuratorClient() throws Exception {
-        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
-        this.curatorClient = CuratorFrameworkFactory.newClient(ServerSettings.getZookeeperConnection(), retryPolicy);
-        this.curatorClient.start();
-    }
-
     private void registerWorkflow(String processId, String workflowId) throws Exception {
-        this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
                 "/registry/" + processId + "/workflows/" + workflowId , new byte[0]);
     }
 
     private void registerCancelProcess(String processId) throws Exception {
         String path = "/registry/" + processId + "/status";
-        if (this.curatorClient.checkExists().forPath(path) != null) {
-            this.curatorClient.delete().forPath(path);
+        if (getCuratorClient().checkExists().forPath(path) != null) {
+            getCuratorClient().delete().forPath(path);
         }
-        this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
                 path , "cancel".getBytes());
     }
 
     private List<String> getWorkflowsOfProcess(String processId) throws Exception {
         String path = "/registry/" + processId + "/workflows";
-        if (this.curatorClient.checkExists().forPath(path) != null) {
-            return this.curatorClient.getChildren().forPath(path);
+        if (getCuratorClient().checkExists().forPath(path) != null) {
+            return getCuratorClient().getChildren().forPath(path);
         } else {
             return null;
         }
     }
 
-    private String createAndLaunchPreWorkflow(String processId, String gateway) throws Exception {
+    private String createAndLaunchPreWorkflow(String processId) throws Exception {
 
-        ExperimentCatalog experimentCatalog = RegistryFactory.getExperimentCatalog(gateway);
+        RegistryService.Client registryClient = getRegistryClientPool().getResource();
 
-        ProcessModel processModel = (ProcessModel) experimentCatalog.get(ExperimentCatalogModelType.PROCESS, processId);
-        ExperimentModel experimentModel = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, processModel.getExperimentId());
+        ProcessModel processModel;
+        ExperimentModel experimentModel;
+        try {
+            processModel = registryClient.getProcess(processId);
+            experimentModel = registryClient.getExperiment(processModel.getExperimentId());
+            getRegistryClientPool().returnResource(registryClient);
+
+        } catch (Exception e) {
+            logger.error("Failed to fetch experiment or process from registry associated with process id " + processId, e);
+            getRegistryClientPool().returnBrokenResource(registryClient);
+            throw new Exception("Failed to fetch experiment or process from registry associated with process id " + processId, e);
+        }
+
         String taskDag = processModel.getTaskDag();
         List<TaskModel> taskList = processModel.getTasks();
 
@@ -164,7 +150,7 @@ public class PreWorkflowManager {
             }
         }
 
-        String workflowName = workflowManager.launchWorkflow(processId + "-PRE-" + UUID.randomUUID().toString(),
+        String workflowName = getWorkflowOperator().launchWorkflow(processId + "-PRE-" + UUID.randomUUID().toString(),
                 new ArrayList<>(allTasks), true, false);
         try {
             registerWorkflow(processId, workflowName);
@@ -177,8 +163,19 @@ public class PreWorkflowManager {
 
     private String createAndLaunchCancelWorkflow(String processId, String gateway) throws Exception {
 
-        ExperimentCatalog experimentCatalog = RegistryFactory.getExperimentCatalog(gateway);
-        ProcessModel processModel = (ProcessModel) experimentCatalog.get(ExperimentCatalogModelType.PROCESS, processId);
+
+        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+
+        ProcessModel processModel;
+        try {
+            processModel = registryClient.getProcess(processId);
+            getRegistryClientPool().returnResource(registryClient);
+
+        } catch (Exception e) {
+            logger.error("Failed to fetch process from registry associated with process id " + processId, e);
+            getRegistryClientPool().returnBrokenResource(registryClient);
+            throw new Exception("Failed to fetch process from registry associated with process id " + processId, e);
+        }
 
         String experimentId = processModel.getExperimentId();
 
@@ -227,7 +224,7 @@ public class PreWorkflowManager {
         }
         allTasks.add(cct);
 
-        String workflow = workflowManager.launchWorkflow(processId + "-CANCEL-" + UUID.randomUUID().toString(), allTasks, true, false);
+        String workflow = getWorkflowOperator().launchWorkflow(processId + "-CANCEL-" + UUID.randomUUID().toString(), allTasks, true, false);
         logger.info("Started launching workflow " + workflow + " to cancel process " + processId);
         return workflow;
     }
@@ -262,7 +259,7 @@ public class PreWorkflowManager {
 
                 try {
                     logger.info("Launching the pre workflow for process " + processId + " in gateway " + gateway);
-                    String workflowName = createAndLaunchPreWorkflow(processId, gateway);
+                    String workflowName = createAndLaunchPreWorkflow(processId);
                     logger.info("Completed launching the pre workflow " + workflowName + " for process " + processId + " in gateway " + gateway);
 
                     // updating the process status
@@ -309,15 +306,24 @@ public class PreWorkflowManager {
         }
     }
 
-    private void publishProcessStatus(ProcessSubmitEvent event, ProcessStatus status) throws AiravataException, RegistryException {
+    private void publishProcessStatus(ProcessSubmitEvent event, ProcessStatus status) throws AiravataException {
 
-        ExperimentCatalog experimentCatalog = RegistryFactory.getExperimentCatalog(event.getGatewayId());
-        experimentCatalog.update(ExperimentCatalogModelType.PROCESS_STATUS, status, event.getProcessId());
+        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+
+        try {
+            registryClient.updateProcessStatus(status, event.getProcessId());
+            getRegistryClientPool().returnResource(registryClient);
+
+        } catch (Exception e) {
+            logger.error("Failed to update process status " + event.getProcessId(), e);
+            getRegistryClientPool().returnBrokenResource(registryClient);
+        }
+
         ProcessIdentifier identifier = new ProcessIdentifier(event.getProcessId(), event.getExperimentId(), event.getGatewayId());
         ProcessStatusChangeEvent processStatusChangeEvent = new ProcessStatusChangeEvent(status.getState(), identifier);
         MessageContext msgCtx = new MessageContext(processStatusChangeEvent, MessageType.PROCESS,
                 AiravataUtils.getId(MessageType.PROCESS.name()), event.getGatewayId());
         msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-        statusPublisher.publish(msgCtx);
+        getStatusPublisher().publish(msgCtx);
     }
 }

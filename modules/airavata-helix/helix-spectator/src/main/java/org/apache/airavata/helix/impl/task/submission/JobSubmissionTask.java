@@ -37,9 +37,9 @@ import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.status.JobStatus;
-import org.apache.airavata.registry.cpi.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.helix.HelixManager;
+import org.apache.thrift.TException;
 import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +83,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
     @SuppressWarnings("WeakerAccess")
     protected JobSubmissionOutput submitBatchJob(AgentAdaptor agentAdaptor, GroovyMapData groovyMapData, String workingDirectory) throws Exception {
         JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                getAppCatalog(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
+                getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
 
         addMonitoringCommands(groovyMapData);
 
@@ -182,7 +182,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
     @SuppressWarnings("WeakerAccess")
     public JobStatus getJobStatus(AgentAdaptor agentAdaptor, String jobID) throws Exception {
         JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                getAppCatalog(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
+                getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
         CommandOutput commandOutput = agentAdaptor.executeCommand(jobManagerConfiguration.getMonitorCommand(jobID).getRawCommand(), null);
 
         return jobManagerConfiguration.getParser().parseJobStatus(jobID, commandOutput.getStdOut());
@@ -192,7 +192,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
     @SuppressWarnings("WeakerAccess")
     public String getJobIdByJobName(AgentAdaptor agentAdaptor, String jobName, String userName) throws Exception {
         JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                getAppCatalog(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
+                getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
 
         RawCommandInfo jobIdMonitorCommand = jobManagerConfiguration.getJobIdMonitorCommand(jobName, userName);
         CommandOutput commandOutput = agentAdaptor.executeCommand(jobIdMonitorCommand.getRawCommand(), null);
@@ -200,8 +200,8 @@ public abstract class JobSubmissionTask extends AiravataTask {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public void saveJobModel(JobModel jobModel) throws RegistryException {
-        getExperimentCatalog().add(ExpCatChildDataType.JOB, jobModel, getProcessId());
+    public void saveJobModel(JobModel jobModel) throws TException {
+        getRegistryServiceClient().addJob(jobModel, getProcessId());
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -226,8 +226,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
                 jobStatus.setTimeOfStateChange(jobStatus.getTimeOfStateChange());
             }
 
-            CompositeIdentifier ids = new CompositeIdentifier(jobModel.getTaskId(), jobModel.getJobId());
-            getExperimentCatalog().add(ExpCatChildDataType.JOB_STATUS, jobStatus, ids);
+            getRegistryServiceClient().addJobStatus(jobStatus, jobModel.getTaskId(), jobModel.getJobId());
             JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), jobModel.getTaskId(),
                     getProcessId(), getProcessModel().getExperimentId(), getGatewayId());
 

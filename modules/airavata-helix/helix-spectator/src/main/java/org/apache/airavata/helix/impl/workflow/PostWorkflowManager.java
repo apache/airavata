@@ -19,7 +19,6 @@
  */
 package org.apache.airavata.helix.impl.workflow;
 
-import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -29,15 +28,10 @@ import org.apache.airavata.helix.impl.task.*;
 import org.apache.airavata.helix.impl.task.completing.CompletingTask;
 import org.apache.airavata.helix.impl.task.staging.ArchiveTask;
 import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
-import org.apache.airavata.helix.workflow.WorkflowManager;
 import org.apache.airavata.monitor.JobStateValidator;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.monitor.kafka.JobStatusResultDeserializer;
 import org.apache.airavata.messaging.core.MessageContext;
-import org.apache.airavata.messaging.core.MessagingFactory;
-import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.messaging.core.Type;
-import org.apache.airavata.messaging.core.impl.RabbitMQPublisher;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
@@ -48,12 +42,7 @@ import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
-import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.*;
-import org.apache.curator.RetryPolicy;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.airavata.registry.api.RegistryService;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -66,22 +55,16 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public class PostWorkflowManager {
+public class PostWorkflowManager extends WorkflowManager {
 
     private final static Logger logger = LoggerFactory.getLogger(PostWorkflowManager.class);
 
-    private CuratorFramework curatorClient = null;
-    private Publisher statusPublisher;
-    private WorkflowManager workflowManager;
+    public PostWorkflowManager() throws ApplicationSettingsException {
+        super(ServerSettings.getSetting("post.workflow.manager.name"));
+    }
 
     private void init() throws Exception {
-        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
-        this.curatorClient = CuratorFrameworkFactory.newClient(ServerSettings.getZookeeperConnection(), retryPolicy);
-        this.curatorClient.start();
-        workflowManager = new WorkflowManager(
-                ServerSettings.getSetting("helix.cluster.name"),
-                ServerSettings.getSetting("post.workflow.manager.name"),
-                ServerSettings.getZookeeperConnection());
+        super.initComponents();
     }
 
     private Consumer<String, JobStatusResult> createConsumer() throws ApplicationSettingsException {
@@ -98,14 +81,14 @@ public class PostWorkflowManager {
     }
 
     private void registerWorkflow(String processId, String workflowId) throws Exception {
-        this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
                 "/registry/" + processId + "/workflows/" + workflowId , new byte[0]);
     }
 
     private String getExperimentIdByJobId(String jobId) throws Exception {
         String path = "/monitoring/" + jobId + "/experiment";
-        if (this.curatorClient.checkExists().forPath(path) != null) {
-            byte[] processBytes = this.curatorClient.getData().forPath(path);
+        if (getCuratorClient().checkExists().forPath(path) != null) {
+            byte[] processBytes = getCuratorClient().getData().forPath(path);
             return new String(processBytes);
         } else {
             return null;
@@ -114,8 +97,8 @@ public class PostWorkflowManager {
 
     private String getTaskIdByJobId(String jobId) throws Exception {
         String path = "/monitoring/" + jobId + "/task";
-        if (this.curatorClient.checkExists().forPath(path) != null) {
-            byte[] processBytes = this.curatorClient.getData().forPath(path);
+        if (getCuratorClient().checkExists().forPath(path) != null) {
+            byte[] processBytes = getCuratorClient().getData().forPath(path);
             return new String(processBytes);
         } else {
             return null;
@@ -124,8 +107,8 @@ public class PostWorkflowManager {
 
     private String getProcessIdByJobId(String jobId) throws Exception {
         String path = "/monitoring/" + jobId + "/process";
-        if (this.curatorClient.checkExists().forPath(path) != null) {
-            byte[] processBytes = this.curatorClient.getData().forPath(path);
+        if (getCuratorClient().checkExists().forPath(path) != null) {
+            byte[] processBytes = getCuratorClient().getData().forPath(path);
             return new String(processBytes);
         } else {
             return null;
@@ -134,8 +117,8 @@ public class PostWorkflowManager {
 
     private String getGatewayByJobId(String jobId) throws Exception {
         String path = "/monitoring/" + jobId + "/gateway";
-        if (this.curatorClient.checkExists().forPath(path) != null) {
-            byte[] gatewayBytes = this.curatorClient.getData().forPath(path);
+        if (getCuratorClient().checkExists().forPath(path) != null) {
+            byte[] gatewayBytes = getCuratorClient().getData().forPath(path);
             return new String(gatewayBytes);
         } else {
             return null;
@@ -144,16 +127,16 @@ public class PostWorkflowManager {
 
     private void updateStatusOfJob(String jobId, JobState jobState) throws Exception {
         String path = "/monitoring/" + jobId + "/status";
-        if (this.curatorClient.checkExists().forPath(path) != null) {
-            this.curatorClient.delete().forPath(path);
+        if (getCuratorClient().checkExists().forPath(path) != null) {
+            getCuratorClient().delete().forPath(path);
         }
-        this.curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(path, jobState.name().getBytes());
+        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(path, jobState.name().getBytes());
     }
 
     private JobState getCurrentStatusOfJob(String jobId) throws Exception {
         String path = "/monitoring/" + jobId + "/status";
-        if (this.curatorClient.checkExists().forPath(path) != null) {
-            byte[] gatewayBytes = this.curatorClient.getData().forPath(path);
+        if (getCuratorClient().checkExists().forPath(path) != null) {
+            byte[] gatewayBytes = getCuratorClient().getData().forPath(path);
             return JobState.valueOf(new String(gatewayBytes));
         } else {
             return null;
@@ -162,8 +145,8 @@ public class PostWorkflowManager {
 
     private String getStatusOfProcess(String processId) throws Exception {
         String path = "/registry/" + processId + "/status";
-        if (this.curatorClient.checkExists().forPath(path) != null) {
-            byte[] statusBytes = this.curatorClient.getData().forPath(path);
+        if (getCuratorClient().checkExists().forPath(path) != null) {
+            byte[] statusBytes = getCuratorClient().getData().forPath(path);
             return new String(statusBytes);
         } else {
             return null;
@@ -171,7 +154,7 @@ public class PostWorkflowManager {
     }
 
     private boolean hasMonitoringRegistered(String jobId) throws Exception {
-        Stat stat = this.curatorClient.checkExists().forPath("/monitoring/" + jobId);
+        Stat stat = getCuratorClient().checkExists().forPath("/monitoring/" + jobId);
         return stat != null;
     }
 
@@ -224,9 +207,21 @@ public class PostWorkflowManager {
 
                         logger.info("Job " + jobStatusResult.getJobId() + " was completed");
 
-                        ExperimentCatalog experimentCatalog = RegistryFactory.getExperimentCatalog(gateway);
-                        ProcessModel processModel = (ProcessModel) experimentCatalog.get(ExperimentCatalogModelType.PROCESS, processId);
-                        ExperimentModel experimentModel = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, processModel.getExperimentId());
+                        RegistryService.Client registryClient = getRegistryClientPool().getResource();
+
+                        ProcessModel processModel;
+                        ExperimentModel experimentModel;
+                        try {
+                            processModel = registryClient.getProcess(processId);
+                            experimentModel = registryClient.getExperiment(processModel.getExperimentId());
+                            getRegistryClientPool().returnResource(registryClient);
+
+                        } catch (Exception e) {
+                            logger.error("Failed to fetch experiment or process from registry associated with process id " + processId, e);
+                            getRegistryClientPool().returnResource(registryClient);
+                            throw new Exception("Failed to fetch experiment or process from registry associated with process id " + processId, e);
+                        }
+
                         String taskDag = processModel.getTaskDag();
                         List<TaskModel> taskList = processModel.getTasks();
 
@@ -281,7 +276,7 @@ public class PostWorkflowManager {
                         }
                         allTasks.add(completingTask);
 
-                        String workflowName = workflowManager.launchWorkflow(processId + "-POST-" + UUID.randomUUID().toString(),
+                        String workflowName = getWorkflowOperator().launchWorkflow(processId + "-POST-" + UUID.randomUUID().toString(),
                                 new ArrayList<>(allTasks), true, false);
                         try {
                             registerWorkflow(processId, workflowName);
@@ -336,11 +331,18 @@ public class PostWorkflowManager {
                 jobStatus.setTimeOfStateChange(jobStatus.getTimeOfStateChange());
             }
 
-            CompositeIdentifier ids = new CompositeIdentifier(taskId, jobId);
-            ExperimentCatalog experimentCatalog = RegistryFactory.getExperimentCatalog(gateway);
-            experimentCatalog.add(ExpCatChildDataType.JOB_STATUS, jobStatus, ids);
-            JobIdentifier identifier = new JobIdentifier(jobId, taskId,
-                    processId, experimentId, gateway);
+            RegistryService.Client registryClient = getRegistryClientPool().getResource();
+
+            try {
+                registryClient.addJobStatus(jobStatus, taskId, jobId);
+                getRegistryClientPool().returnResource(registryClient);
+
+            } catch (Exception e) {
+                logger.error("Failed to add job status " + jobId, e);
+                getRegistryClientPool().returnBrokenResource(registryClient);
+            }
+
+            JobIdentifier identifier = new JobIdentifier(jobId, taskId, processId, experimentId, gateway);
 
             JobStatusChangeEvent jobStatusChangeEvent = new JobStatusChangeEvent(jobStatus.getJobState(), identifier);
             MessageContext msgCtx = new MessageContext(jobStatusChangeEvent, MessageType.JOB, AiravataUtils.getId
@@ -352,17 +354,6 @@ public class PostWorkflowManager {
         } catch (Exception e) {
             throw new Exception("Error persisting job status " + e.getLocalizedMessage(), e);
         }
-    }
-
-    private Publisher getStatusPublisher() throws AiravataException {
-        if (statusPublisher == null) {
-            synchronized (RabbitMQPublisher.class) {
-                if (statusPublisher == null) {
-                    statusPublisher = MessagingFactory.getPublisher(Type.STATUS);
-                }
-            }
-        }
-        return statusPublisher;
     }
 
     public static void main(String[] args) throws Exception {

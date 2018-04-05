@@ -24,14 +24,15 @@ import org.apache.airavata.agents.api.*;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.credential.store.credential.Credential;
-import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
-import org.apache.airavata.credential.store.store.CredentialStoreException;
+import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
+import org.apache.airavata.credential.store.cpi.CredentialStoreService;
+import org.apache.airavata.model.credential.store.SSHCredential;
+import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 import org.apache.airavata.model.appcatalog.computeresource.*;
-import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.AppCatalog;
-import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,39 +92,49 @@ public class SshAgentAdaptor implements AgentAdaptor {
     @Override
     public void init(String computeResourceId, String gatewayId, String userId, String token) throws AgentException {
         try {
-            AppCatalog appCatalog = RegistryFactory.getAppCatalog();
-            ComputeResourceDescription computeResourceDescription = appCatalog.getComputeResource().getComputeResource(computeResourceId);
-
-            String jdbcUrl = ServerSettings.getCredentialStoreDBURL();
-            String jdbcUsr = ServerSettings.getCredentialStoreDBUser();
-            String jdbcPass = ServerSettings.getCredentialStoreDBPassword();
-            String driver = ServerSettings.getCredentialStoreDBDriver();
-            CredentialReaderImpl credentialReader = new CredentialReaderImpl(new DBUtil(jdbcUrl, jdbcUsr, jdbcPass, driver));
+            ComputeResourceDescription computeResourceDescription = getRegistryServiceClient().getComputeResource(computeResourceId);
 
             logger.info("Fetching credentials for cred store token " + token);
 
-            Credential credential = credentialReader.getCredential(gatewayId, token);
-            if (credential == null) {
+            SSHCredential sshCredential = getCredentialClient().getSSHCredential(token, gatewayId);
+            if (sshCredential == null) {
                 throw new AgentException("Null credential for token " + token);
             }
-            logger.info("Description for token : " + token + " : " + credential.getDescription());
+            logger.info("Description for token : " + token + " : " + sshCredential.getDescription());
 
-            if (credential instanceof SSHCredential) {
-                SSHCredential sshCredential = SSHCredential.class.cast(credential);
-                SshAdaptorParams adaptorParams = new SshAdaptorParams();
-                adaptorParams.setHostName(computeResourceDescription.getHostName());
-                adaptorParams.setUserName(userId);
-                adaptorParams.setPassphrase(sshCredential.getPassphrase());
-                adaptorParams.setPrivateKey(sshCredential.getPrivateKey());
-                adaptorParams.setPublicKey(sshCredential.getPublicKey());
-                adaptorParams.setStrictHostKeyChecking(false);
-                init(adaptorParams);
-            }
+            SshAdaptorParams adaptorParams = new SshAdaptorParams();
+            adaptorParams.setHostName(computeResourceDescription.getHostName());
+            adaptorParams.setUserName(userId);
+            adaptorParams.setPassphrase(sshCredential.getPassphrase());
+            adaptorParams.setPrivateKey(sshCredential.getPrivateKey().getBytes());
+            adaptorParams.setPublicKey(sshCredential.getPublicKey().getBytes());
+            adaptorParams.setStrictHostKeyChecking(false);
+            init(adaptorParams);
 
-        } catch (AppCatalogException | ApplicationSettingsException | InstantiationException | IllegalAccessException |
-                ClassNotFoundException | CredentialStoreException e) {
+        } catch (Exception e) {
             logger.error("Error while initializing ssh agent for compute resource " + computeResourceId + " to token " + token, e);
             throw new AgentException("Error while initializing ssh agent for compute resource " + computeResourceId + " to token " + token, e);
+        }
+    }
+
+    // TODO this is inefficient. Try to use a connection pool
+    public static RegistryService.Client getRegistryServiceClient() throws AgentException {
+        try {
+            final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
+            final String serverHost = ServerSettings.getRegistryServerHost();
+            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
+        } catch (RegistryServiceException | ApplicationSettingsException e) {
+            throw new AgentException("Unable to create registry client...", e);
+        }
+    }
+
+    public static CredentialStoreService.Client getCredentialClient() throws AgentException {
+        try {
+            final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
+            final String serverHost =ServerSettings.getCredentialStoreServerHost();
+            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
+        } catch (CredentialStoreException | ApplicationSettingsException e) {
+            throw new AgentException("Unable to create credential client...", e);
         }
     }
 

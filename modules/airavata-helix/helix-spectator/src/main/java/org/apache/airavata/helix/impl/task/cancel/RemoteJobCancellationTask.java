@@ -42,8 +42,11 @@ public class RemoteJobCancellationTask extends AiravataTask {
 
             logger.info("Fetching job manager configuration for process " + getProcessId());
 
-            JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                    getAppCatalog(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
+            JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(
+                    JobFactory.getResourceJobManager(
+                            getRegistryServiceClient(),
+                            getTaskContext().getJobSubmissionProtocol(),
+                            getTaskContext().getPreferredJobSubmissionInterface()));
 
             for (String jobId : jobs) {
 

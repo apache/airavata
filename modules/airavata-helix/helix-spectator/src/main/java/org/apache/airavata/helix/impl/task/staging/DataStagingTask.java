@@ -57,15 +57,11 @@ public abstract class DataStagingTask extends AiravataTask {
 
     @SuppressWarnings("WeakerAccess")
     protected StorageResourceDescription getStorageResource() throws TaskOnFailException {
-        try {
-            StorageResourceDescription storageResource = getTaskContext().getStorageResource();
-            if (storageResource == null) {
-                throw new TaskOnFailException("Storage resource can not be null for task " + getTaskId(), true, null);
-            }
-            return storageResource;
-        } catch (AppCatalogException e) {
-            throw new TaskOnFailException("Failed to fetch the storage resource for task " + getTaskId(), true, e);
+        StorageResourceDescription storageResource = getTaskContext().getStorageResource();
+        if (storageResource == null) {
+            throw new TaskOnFailException("Storage resource can not be null for task " + getTaskId(), true, null);
         }
+        return storageResource;
     }
 
     @SuppressWarnings("WeakerAccess")
