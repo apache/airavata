@@ -43,6 +43,7 @@ import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
+import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
@@ -58,8 +59,6 @@ public class TaskContext {
 
     private final static Logger logger = LoggerFactory.getLogger(TaskContext.class);
     // process model
-    private ExperimentCatalog experimentCatalog;
-    private AppCatalog appCatalog;
     private Publisher statusPublisher;
     private final String processId;
     private final String gatewayId;
@@ -103,6 +102,7 @@ public class TaskContext {
     private List<String> queueSpecificMacros;
     private String taskId;
     private Object subTaskModel = null;
+    private RegistryService.Client registryClient;
 
 
     /**
@@ -113,22 +113,6 @@ public class TaskContext {
         this.processId = processId;
         this.gatewayId = gatewayId;
         this.taskId = taskId;
-    }
-
-    public ExperimentCatalog getExperimentCatalog() {
-        return experimentCatalog;
-    }
-
-    public void setExperimentCatalog(ExperimentCatalog experimentCatalog) {
-        this.experimentCatalog = experimentCatalog;
-    }
-
-    public AppCatalog getAppCatalog() {
-        return appCatalog;
-    }
-
-    public void setAppCatalog(AppCatalog appCatalog) {
-        this.appCatalog = appCatalog;
     }
 
     public String getGatewayId() {
@@ -481,21 +465,25 @@ public class TaskContext {
 
             if (jsInterface == null) {
                 throw new Exception("Job Submission interface cannot be empty at this point");
+
             } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH) {
-                SSHJobSubmission sshJobSubmission = getAppCatalog().getComputeResource().getSSHJobSubmission
-                        (jsInterface.getJobSubmissionInterfaceId());
-                // context method.
+                SSHJobSubmission sshJobSubmission = getRegistryClient()
+                        .getSSHJobSubmission(jsInterface.getJobSubmissionInterfaceId());
                 resourceJobManager = sshJobSubmission.getResourceJobManager();
+
             } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.LOCAL) {
-                LOCALSubmission localSubmission = getAppCatalog().getComputeResource().getLocalJobSubmission
-                        (jsInterface.getJobSubmissionInterfaceId());
+                LOCALSubmission localSubmission = getRegistryClient()
+                        .getLocalJobSubmission(jsInterface.getJobSubmissionInterfaceId());
                 resourceJobManager = localSubmission.getResourceJobManager();
+
             } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH_FORK) {
-                SSHJobSubmission sshJobSubmission = getAppCatalog().getComputeResource().getSSHJobSubmission
-                        (jsInterface.getJobSubmissionInterfaceId());
+                SSHJobSubmission sshJobSubmission = getRegistryClient()
+                        .getSSHJobSubmission(jsInterface.getJobSubmissionInterfaceId());
                 resourceJobManager = sshJobSubmission.getResourceJobManager();
+
             } else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.CLOUD) {
                 return null;
+
             } else {
                 throw new Exception("Unsupported JobSubmissionProtocol - " + jsInterface.getJobSubmissionProtocol()
                         .name());
@@ -508,82 +496,11 @@ public class TaskContext {
         return this.resourceJobManager;
     }
 
-    public String getLocalWorkingDir() {
-        return localWorkingDir;
-    }
-
-    public void setLocalWorkingDir(String localWorkingDir) {
-        this.localWorkingDir = localWorkingDir;
-    }
-
     public String getExperimentId() {
         return processModel.getExperimentId();
     }
 
-    public boolean isHandOver() {
-        return handOver;
-    }
-
-    public void setHandOver(boolean handOver) {
-        this.handOver = handOver;
-    }
-
-    public boolean isCancel() {
-        return cancel;
-    }
-
-    public void setCancel(boolean cancel) {
-        this.cancel = cancel;
-    }
-
-    public boolean isInterrupted(){
-        return this.cancel || this.handOver;
-    }
-
-    public String getCurrentExecutingTaskId() {
-        if (currentExecutingTaskModel != null) {
-            return currentExecutingTaskModel.getTaskId();
-        }
-        return null;
-    }
-
-    public boolean isPauseTaskExecution() {
-        return pauseTaskExecution;
-    }
-
-    public void setPauseTaskExecution(boolean pauseTaskExecution) {
-        this.pauseTaskExecution = pauseTaskExecution;
-    }
-
-    public boolean isComplete() {
-        return complete;
-    }
-
-    public void setComplete(boolean complete) {
-        this.complete = complete;
-    }
-
-    public boolean isRecovery() {
-        return recovery;
-    }
-
-    public void setRecovery(boolean recovery) {
-        this.recovery = recovery;
-    }
-
-    public TaskModel getCurrentExecutingTaskModel() {
-        return currentExecutingTaskModel;
-    }
-
-    public void setCurrentExecutingTaskModel(TaskModel currentExecutingTaskModel) {
-        this.currentExecutingTaskModel = currentExecutingTaskModel;
-    }
-
-    public StorageResourceDescription getStorageResource() throws AppCatalogException {
-        if (storageResource == null) {
-            this.storageResource = appCatalog.getStorageResource()
-                    .getStorageResource(processModel.getStorageResourceId());
-        }
+    public StorageResourceDescription getStorageResource() {
         return storageResource;
     }
 
@@ -641,6 +558,14 @@ public class TaskContext {
         } else {
             return null;
         }
+    }
+
+    public void setRegistryClient(RegistryService.Client registryClient) {
+        this.registryClient = registryClient;
+    }
+
+    public RegistryService.Client getRegistryClient() {
+        return registryClient;
     }
 
     private boolean isValid(String str) {
@@ -713,39 +638,35 @@ public class TaskContext {
         return null;
     }
 
-    public JobSubmissionInterface getPreferredJobSubmissionInterface() throws AppCatalogException {
-        try {
-            JobSubmissionProtocol preferredJobSubmissionProtocol = getJobSubmissionProtocol();
-            ComputeResourceDescription resourceDescription = getComputeResourceDescription();
-            List<JobSubmissionInterface> jobSubmissionInterfaces = resourceDescription.getJobSubmissionInterfaces();
-            Map<JobSubmissionProtocol, List<JobSubmissionInterface>> orderedInterfaces = new HashMap<>();
-            List<JobSubmissionInterface> interfaces = new ArrayList<>();
-            if (jobSubmissionInterfaces != null && !jobSubmissionInterfaces.isEmpty()) {
-                for (JobSubmissionInterface submissionInterface : jobSubmissionInterfaces){
+    public JobSubmissionInterface getPreferredJobSubmissionInterface() throws TaskOnFailException {
+        JobSubmissionProtocol preferredJobSubmissionProtocol = getJobSubmissionProtocol();
+        ComputeResourceDescription resourceDescription = getComputeResourceDescription();
+        List<JobSubmissionInterface> jobSubmissionInterfaces = resourceDescription.getJobSubmissionInterfaces();
+        Map<JobSubmissionProtocol, List<JobSubmissionInterface>> orderedInterfaces = new HashMap<>();
+        List<JobSubmissionInterface> interfaces = new ArrayList<>();
+        if (jobSubmissionInterfaces != null && !jobSubmissionInterfaces.isEmpty()) {
+            for (JobSubmissionInterface submissionInterface : jobSubmissionInterfaces){
 
-                    if (preferredJobSubmissionProtocol != null){
-                        if (preferredJobSubmissionProtocol.toString().equals(submissionInterface.getJobSubmissionProtocol().toString())){
-                            if (orderedInterfaces.containsKey(submissionInterface.getJobSubmissionProtocol())){
-                                List<JobSubmissionInterface> interfaceList = orderedInterfaces.get(submissionInterface.getJobSubmissionProtocol());
-                                interfaceList.add(submissionInterface);
-                            }else {
-                                interfaces.add(submissionInterface);
-                                orderedInterfaces.put(submissionInterface.getJobSubmissionProtocol(), interfaces);
-                            }
+                if (preferredJobSubmissionProtocol != null){
+                    if (preferredJobSubmissionProtocol.toString().equals(submissionInterface.getJobSubmissionProtocol().toString())){
+                        if (orderedInterfaces.containsKey(submissionInterface.getJobSubmissionProtocol())){
+                            List<JobSubmissionInterface> interfaceList = orderedInterfaces.get(submissionInterface.getJobSubmissionProtocol());
+                            interfaceList.add(submissionInterface);
+                        }else {
+                            interfaces.add(submissionInterface);
+                            orderedInterfaces.put(submissionInterface.getJobSubmissionProtocol(), interfaces);
                         }
-                    }else {
-                        jobSubmissionInterfaces.sort(Comparator.comparingInt(JobSubmissionInterface::getPriorityOrder));
                     }
+                }else {
+                    jobSubmissionInterfaces.sort(Comparator.comparingInt(JobSubmissionInterface::getPriorityOrder));
                 }
-                interfaces = orderedInterfaces.get(preferredJobSubmissionProtocol);
-                interfaces.sort(Comparator.comparingInt(JobSubmissionInterface::getPriorityOrder));
-            } else {
-                throw new AppCatalogException("Compute resource should have at least one job submission interface defined...");
             }
-            return interfaces.get(0);
-        } catch (AppCatalogException e) {
-            throw new AppCatalogException("Error occurred while retrieving data from app catalog", e);
+            interfaces = orderedInterfaces.get(preferredJobSubmissionProtocol);
+            interfaces.sort(Comparator.comparingInt(JobSubmissionInterface::getPriorityOrder));
+        } else {
+            throw new TaskOnFailException("Compute resource should have at least one job submission interface defined...", true, null);
         }
+        return interfaces.get(0);
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -764,8 +685,7 @@ public class TaskContext {
         private final String processId;
         private final String gatewayId;
         private final String taskId;
-        private ExperimentCatalog experimentCatalog;
-        private AppCatalog appCatalog;
+        private RegistryService.Client registryClient;
         private Publisher statusPublisher;
         private GatewayResourceProfile gatewayResourceProfile;
         private ComputeResourcePreference gatewayComputeResourcePreference;
@@ -802,13 +722,8 @@ public class TaskContext {
             return this;
         }
 
-        public TaskContextBuilder setExperimentCatalog(ExperimentCatalog experimentCatalog) {
-            this.experimentCatalog = experimentCatalog;
-            return this;
-        }
-
-        public TaskContextBuilder setAppCatalog(AppCatalog appCatalog) {
-            this.appCatalog = appCatalog;
+        public TaskContextBuilder setRegistryClient(RegistryService.Client registryClient) {
+            this.registryClient = registryClient;
             return this;
         }
 
@@ -830,30 +745,24 @@ public class TaskContext {
             if (notValid(processModel)) {
                 throwError("Invalid Process Model");
             }
-            if (notValid(appCatalog)) {
-                throwError("Invalid AppCatalog");
-            }
-            if (notValid(experimentCatalog)) {
-                throwError("Invalid Experiment catalog");
+            if (notValid(registryClient)) {
+                throwError("Invalid Registry Client");
             }
             if (notValid(statusPublisher)) {
                 throwError("Invalid Status Publisher");
             }
 
             TaskContext ctx = new TaskContext(processId, gatewayId, taskId);
-            ctx.setAppCatalog(appCatalog);
-            ctx.setExperimentCatalog(experimentCatalog);
+            ctx.setRegistryClient(registryClient);
             ctx.setStatusPublisher(statusPublisher);
             ctx.setProcessModel(processModel);
             ctx.setGatewayResourceProfile(gatewayResourceProfile);
             ctx.setGatewayComputeResourcePreference(gatewayComputeResourcePreference);
             ctx.setGatewayStorageResourcePreference(gatewayStorageResourcePreference);
-            ctx.setApplicationDeploymentDescription(appCatalog.getApplicationDeployment()
-                    .getApplicationDeployement(processModel.getApplicationDeploymentId()));
-            ctx.setApplicationInterfaceDescription(appCatalog.getApplicationInterface()
-                    .getApplicationInterface(processModel.getApplicationInterfaceId()));
-            ctx.setComputeResourceDescription(appCatalog.getComputeResource().getComputeResource
-                    (ctx.getComputeResourceId()));
+            ctx.setApplicationDeploymentDescription(registryClient.getApplicationDeployment(processModel.getApplicationDeploymentId()));
+            ctx.setApplicationInterfaceDescription(registryClient.getApplicationInterface(processModel.getApplicationInterfaceId()));
+            ctx.setComputeResourceDescription(registryClient.getComputeResource(ctx.getComputeResourceId()));
+            ctx.setStorageResource(registryClient.getStorageResource(ctx.getStorageResourceId()));
 
             List<OutputDataObjectType> applicationOutputs = ctx.getApplicationInterfaceDescription().getApplicationOutputs();
             if (applicationOutputs != null && !applicationOutputs.isEmpty()) {
@@ -882,7 +791,7 @@ public class TaskContext {
             }
 
             // TODO move this to some where else as this is not the correct place to do so
-            experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel, processId);
+            registryClient.updateProcess(processModel, processId);
             processModel.setProcessOutputs(applicationOutputs);
             return ctx;
         }

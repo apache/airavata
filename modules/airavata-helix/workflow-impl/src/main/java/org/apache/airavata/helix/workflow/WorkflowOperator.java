@@ -40,14 +40,14 @@ import java.util.Map;
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT
  */
-public class WorkflowManager {
+public class WorkflowOperator {
 
-    private final static Logger logger = LoggerFactory.getLogger(WorkflowManager.class);
+    private final static Logger logger = LoggerFactory.getLogger(WorkflowOperator.class);
 
     private static final String WORKFLOW_PREFIX = "Workflow_of_process_";
     private TaskDriver taskDriver;
 
-    public WorkflowManager(String helixClusterName, String instanceName, String zkConnectionString) throws Exception {
+    public WorkflowOperator(String helixClusterName, String instanceName, String zkConnectionString) throws Exception {
 
         HelixManager helixManager = HelixManagerFactory.getZKHelixManager(helixClusterName, instanceName,
                 InstanceType.SPECTATOR, zkConnectionString);

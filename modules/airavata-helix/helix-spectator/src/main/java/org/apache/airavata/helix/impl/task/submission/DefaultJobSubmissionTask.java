@@ -32,7 +32,6 @@ import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.*;
-import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,7 +142,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                 if (getComputeResourceDescription().isGatewayUsageReporting()){
                     String loadCommand = getComputeResourceDescription().getGatewayUsageModuleLoadCommand();
                     String usageExecutable = getComputeResourceDescription().getGatewayUsageExecutable();
-                    ExperimentModel experiment = (ExperimentModel)getExperimentCatalog().get(ExperimentCatalogModelType.EXPERIMENT, getExperimentId());
+                    ExperimentModel experiment = getRegistryServiceClient().getExperiment(getExperimentId());
                     String username = experiment.getUserName() + "@" + getTaskContext().getGatewayComputeResourcePreference().getUsageReportingGatewayId();
                     RawCommandInfo rawCommandInfo = new RawCommandInfo(loadCommand + " && " + usageExecutable + " -gateway_user " +  username  +
                             " -submit_time \"`date '+%F %T %:z'`\"  -jobid " + jobId );

@@ -24,7 +24,7 @@
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d [%t] %-5p %c{30} %X - %m%n</pattern>
+            <pattern>%d [%t] %-5p %c{30} %m [%X]%n</pattern>
         </encoder>
     </appender>
 
@@ -32,7 +32,7 @@
         <File>../logs/airavata.log</File>
         <Append>true</Append>
         <encoder>
-            <pattern>%d [%t] %-5p %c{30} %X - %m%n</pattern>
+            <pattern>%d [%t] %-5p %c{30} %m [%X]%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>../logs/airavata.log.%d{yyyy-MM-dd}</fileNamePattern>

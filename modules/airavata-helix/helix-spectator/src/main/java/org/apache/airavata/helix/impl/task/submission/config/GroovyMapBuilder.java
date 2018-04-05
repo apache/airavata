@@ -24,6 +24,7 @@ import groovy.text.TemplateEngine;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.impl.task.TaskContext;
+import org.apache.airavata.helix.impl.task.TaskOnFailException;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.CommandObject;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
@@ -357,8 +358,8 @@ public class GroovyMapBuilder {
         }
     }
 
-    private static void setMailAddresses(TaskContext taskContext, GroovyMapData groovyMap) throws AppCatalogException,
-            ApplicationSettingsException {
+    private static void setMailAddresses(TaskContext taskContext, GroovyMapData groovyMap) throws
+            ApplicationSettingsException, TException, TaskOnFailException {
 
         ProcessModel processModel =  taskContext.getProcessModel();
         String emailIds = null;
@@ -392,12 +393,12 @@ public class GroovyMapBuilder {
         }
     }
 
-    public static boolean isEmailBasedJobMonitor(TaskContext taskContext) throws AppCatalogException {
+    public static boolean isEmailBasedJobMonitor(TaskContext taskContext) throws TException, TaskOnFailException {
         JobSubmissionProtocol jobSubmissionProtocol = taskContext.getPreferredJobSubmissionProtocol();
         JobSubmissionInterface jobSubmissionInterface = taskContext.getPreferredJobSubmissionInterface();
         if (jobSubmissionProtocol == JobSubmissionProtocol.SSH) {
             String jobSubmissionInterfaceId = jobSubmissionInterface.getJobSubmissionInterfaceId();
-            SSHJobSubmission sshJobSubmission = taskContext.getAppCatalog().getComputeResource().getSSHJobSubmission(jobSubmissionInterfaceId);
+            SSHJobSubmission sshJobSubmission = taskContext.getRegistryClient().getSSHJobSubmission(jobSubmissionInterfaceId);
             MonitorMode monitorMode = sshJobSubmission.getMonitorMode();
             return monitorMode != null && monitorMode == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR;
         } else {
