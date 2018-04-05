@@ -134,7 +134,7 @@ public abstract class DataStagingTask extends AiravataTask {
         return filePath;
     }
 
-    protected void transferFileToStorage(String sourcePath, String destPath, String fileName, AgentAdaptor adaptor,
+    protected boolean transferFileToStorage(String sourcePath, String destPath, String fileName, AgentAdaptor adaptor,
                               StorageResourceAdaptor storageResourceAdaptor) throws TaskOnFailException {
         String localSourceFilePath = getLocalDataPath(fileName);
 
@@ -148,6 +148,15 @@ public abstract class DataStagingTask extends AiravataTask {
                         localSourceFilePath, true, e);
             }
 
+            File localFile = new File(localSourceFilePath);
+            if (localFile.exists()) {
+                if (localFile.length() == 0) {
+                    logger.warn("Local file " + localSourceFilePath +" size is 0 so ignoring the upload");
+                    return false;
+                }
+            } else {
+                throw new TaskOnFailException("Local file does not exist at " + localSourceFilePath, true, null);
+            }
             // Uploading output file to the storage resource
             try {
                 logger.info("Uploading the output file to " + destPath + " from local path " + localSourceFilePath);
@@ -158,6 +167,7 @@ public abstract class DataStagingTask extends AiravataTask {
                         localSourceFilePath, true, e);
             }
 
+            return true;
         } finally {
             logger.info("Deleting temporary file " + localSourceFilePath);
             deleteTempFile(localSourceFilePath);

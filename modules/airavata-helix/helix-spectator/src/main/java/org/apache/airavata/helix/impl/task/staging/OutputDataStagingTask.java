@@ -151,16 +151,24 @@ public class OutputDataStagingTask extends DataStagingTask {
                     }
 
                     logger.info("Transferring file " + sourceFileName);
-                    transferFileToStorage(sourceURI.getPath(), destinationURI.getPath(), sourceFileName, adaptor, storageResourceAdaptor);
-                    saveExperimentOutput(processOutput.getName(), destinationURI.toString());
+                    boolean transferred = transferFileToStorage(sourceURI.getPath(), destinationURI.getPath(), sourceFileName, adaptor, storageResourceAdaptor);
+                    if (transferred) {
+                        saveExperimentOutput(processOutput.getName(), destinationURI.toString());
+                    } else {
+                        logger.warn("File " + sourceFileName + " did not transfer");
+                    }
                 }
                 return onSuccess("Output data staging task " + getTaskId() + " successfully completed");
 
             } else {
                 // Downloading input file from the storage resource
                 assert processOutput != null;
-                transferFileToStorage(sourceURI.getPath(), destinationURI.getPath(), sourceFileName, adaptor, storageResourceAdaptor);
-                saveExperimentOutput(processOutput.getName(), destinationURI.toString());
+                boolean transferred = transferFileToStorage(sourceURI.getPath(), destinationURI.getPath(), sourceFileName, adaptor, storageResourceAdaptor);
+                if (transferred) {
+                    saveExperimentOutput(processOutput.getName(), destinationURI.toString());
+                } else {
+                    logger.warn("File " + sourceFileName + " did not transfer");
+                }
                 return onSuccess("Output data staging task " + getTaskId() + " successfully completed");
             }
 
