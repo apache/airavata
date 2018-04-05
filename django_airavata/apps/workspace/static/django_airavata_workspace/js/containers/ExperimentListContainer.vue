@@ -22,7 +22,7 @@
                                 <tr v-for="experiment in experiments" :key="experiment.experimentId">
                                     <td><a :href="'/workspace/experiments/' + encodeURIComponent(experiment.experimentId) + '/'">{{experiment.name}}</a></td>
                                     <td><span :title="experiment.creationTime">{{ fromNow(experiment.creationTime) }}</span></td>
-                                    <td>{{experiment.experimentStatus}}</td>
+                                    <td><experiment-status-badge :statusName="experiment.experimentStatus" /></td>
                                     <td></td>
                                 </tr>
                             </tbody>
@@ -41,6 +41,8 @@
 import { models, services } from 'django-airavata-api'
 import { components as comps } from 'django-airavata-common-ui'
 
+import ExperimentStatusBadge from '../components/experiment/ExperimentStatusBadge.vue'
+
 import moment from 'moment';
 
 export default {
@@ -53,6 +55,7 @@ export default {
     },
     components: {
         'pager': comps.Pager,
+        'experiment-status-badge': ExperimentStatusBadge,
     },
     methods: {
         nextExperiments: function(event) {
