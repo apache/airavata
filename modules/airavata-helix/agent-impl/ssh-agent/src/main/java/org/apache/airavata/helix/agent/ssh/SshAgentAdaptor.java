@@ -477,6 +477,62 @@ public class SshAgentAdaptor implements AgentAdaptor {
     }
 
     @Override
+    public Boolean doesFileExist(String filePath) throws AgentException {
+        String command = "ls " + filePath;
+        ChannelExec channelExec = null;
+        try {
+            channelExec = (ChannelExec)session.openChannel("exec");
+            StandardOutReader stdOutReader = new StandardOutReader();
+
+            channelExec.setCommand(command);
+
+            InputStream out = channelExec.getInputStream();
+            InputStream err = channelExec.getErrStream();
+
+            channelExec.connect();
+
+            stdOutReader.readStdOutFromStream(out);
+            stdOutReader.readStdErrFromStream(err);
+            if (stdOutReader.getStdError().contains("ls:")) {
+                logger.info("Invalid file path " + filePath + ". stderr : " + stdOutReader.getStdError());
+                return false;
+            } else {
+                String[] potentialFiles = stdOutReader.getStdOut().split("\n");
+                if (potentialFiles.length > 1) {
+                    logger.info("More than one file matching to given path " + filePath);
+                    return false;
+                } else if (potentialFiles.length == 0) {
+                    logger.info("No file found for given path " + filePath);
+                    return false;
+                } else {
+                    if (potentialFiles[0].trim().equals(new File(filePath).getName())) {
+                        return true;
+                    } else {
+                        logger.info("Returned file name " + potentialFiles[0].trim() + " does not match with given name " + new File(filePath).getName());
+                        return false;
+                    }
+                }
+            }
+        } catch (JSchException e) {
+            logger.error("Unable to retrieve command output. Command - " + command +
+                    " on server - " + session.getHost() + ":" + session.getPort() +
+                    " connecting user name - "
+                    + session.getUserName(), e);
+            throw new AgentException("Unable to retrieve command output. Command - " + command +
+                    " on server - " + session.getHost() + ":" + session.getPort() +
+                    " connecting user name - "
+                    + session.getUserName(), e);
+        } catch (IOException e) {
+            logger.error("Error while handling streams", e);
+            throw new AgentException("Error while handling streams", e);
+        } finally {
+            if (channelExec != null) {
+                channelExec.disconnect();
+            }
+        }
+    }
+
+    @Override
     public List<String> getFileNameFromExtension(String fileName, String parentPath) throws AgentException {
         throw new AgentException("Operation not implemented");
     }
