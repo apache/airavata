@@ -792,7 +792,6 @@ class LocalDataMovementView(APIView):
         data_movement_id = request.query_params["id"]
         data_movement = request.airavata_client.getLocalDataMovement(request.authz_token, data_movement_id)
         return Response(thrift_utils.create_serializer(LOCALDataMovement, instance=data_movement).data)
-        return Response(request.airavata_client.deleteSSHPubKey(request.authz_token,request.data['token'],gateway_id))
 
 
 @login_required

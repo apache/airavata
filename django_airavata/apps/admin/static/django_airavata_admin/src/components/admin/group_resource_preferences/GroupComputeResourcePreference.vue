@@ -8,7 +8,7 @@
           <input type="text" v-model="data.groupResourceProfileName"/>
         </div>
         <div class="entry">
-          <div class="heading">Group Resource Profile Name</div>
+          <div class="heading">Groups</div>
           <auto-complete v-model="selectedGroups"
                          v-bind:suggestions="[{name:'hello',id:0},{name:'hi',id:1}]"></auto-complete>
         </div>
@@ -21,7 +21,7 @@
             <span v-if="computePreference.groupResourceProfileId">
               {{computePreference.groupResourceProfileId}}
             </span>
-            <span v-else>
+            <span v-else class="un-saved">
               Un Saved Compute Preference {{index}}
             </span>
 
@@ -38,8 +38,6 @@
 </template>
 <script>
   import ComputePreference from './ComputePreference';
-  import MultiSelectionDropDown from "../../commons/MultiSelectionDropDown";
-  import SingleItemList from '../../commons/SingleItemList'
   import {components as comps} from 'django-airavata-common-ui'
 
   export default {
@@ -66,10 +64,8 @@
     },
 
     components: {
-      MultiSelectionDropDown,
       ComputePreference,
-      SingleItemList,
-      "auto-complete": comps.AutoComplete,
+      "auto-complete": comps.Autocomplete,
 
     },
     methods: {
@@ -158,8 +154,12 @@
     background-color: #007BFF;
     cursor: pointer;
   }
-  .list-item span:hover{
+  .list-item:hover span{
     color: white;
+  }
+
+  .un-saved{
+    color: red;
   }
 
 </style>
