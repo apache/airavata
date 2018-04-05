@@ -72,12 +72,16 @@
                     </h2>
                 </div>
             </div>
+            <group-resource-profile-selector v-model="localExperiment.userConfigurationData.groupResourceProfileId">
+            </group-resource-profile-selector>
             <div class="row">
                 <div class="col">
                     <computational-resource-scheduling-editor
                         v-model="localExperiment.userConfigurationData.computationalResourceScheduling"
+                        v-if="localExperiment.userConfigurationData.groupResourceProfileId"
                         :app-module-id="appModule.appModuleId"
-                        :app-interface-id="appInterface.applicationInterfaceId">
+                        :app-interface-id="appInterface.applicationInterfaceId"
+                        :group-resource-profile-id="localExperiment.userConfigurationData.groupResourceProfileId">
                     </computational-resource-scheduling-editor>
                 </div>
             </div>
@@ -97,6 +101,7 @@
 
 <script>
 import ComputationalResourceSchedulingEditor from './ComputationalResourceSchedulingEditor.vue'
+import GroupResourceProfileSelector from './GroupResourceProfileSelector.vue'
 import {models, services, utils as apiUtils} from 'django-airavata-api'
 import {utils} from 'django-airavata-common-ui'
 
@@ -124,6 +129,7 @@ export default {
     },
     components: {
         ComputationalResourceSchedulingEditor,
+        GroupResourceProfileSelector,
     },
     mounted: function () {
         services.ProjectService.listAll()
@@ -148,7 +154,7 @@ export default {
                     return services.ExperimentService.save(this.localExperiment)
                         .then(experiment => {
                             this.localExperiment = experiment;
-                            console.log(experiment);
+                            console.log(JSON.stringify(experiment));
                             this.$emit('saved', experiment);
                         });
                 })

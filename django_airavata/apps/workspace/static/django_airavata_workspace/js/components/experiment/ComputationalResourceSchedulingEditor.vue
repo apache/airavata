@@ -53,13 +53,16 @@ export default {
             type: String,
             required: true
         },
+        groupResourceProfileId: {
+            type: String,
+            required: true
+        }
     },
     data () {
         return {
             localComputationalResourceScheduling: this.value.clone(),
             computeResources: {},
             applicationDeployments: [],
-            groupResourceProfiles: [],
             selectedGroupResourceProfile: null,
             appDeploymentId: null,
             resourceHostId: null,
@@ -73,7 +76,7 @@ export default {
     mounted: function () {
         this.loadApplicationDeployments(this.appModuleId);
         this.loadComputeResourcesForApplicationInterface(this.appInterfaceId);
-        this.loadGroupResourceProfiles();
+        this.loadGroupResourceProfile();
     },
     computed: {
         computeResourceOptions: function() {
@@ -135,15 +138,11 @@ export default {
                 .then(computeResources => this.computeResources = computeResources)
                 .then(()=> {this.loadingCount--;}, () => {this.loadingCount--;});
         },
-        loadGroupResourceProfiles: function() {
+        loadGroupResourceProfile: function() {
             this.loadingCount++;
-            services.GroupResourceProfileService.list()
-                .then(groupResourceProfiles => {
-                    this.groupResourceProfiles = groupResourceProfiles;
-                    if (this.groupResourceProfiles && this.groupResourceProfiles.length > 0) {
-                        // Just pick the first one for now
-                        this.selectedGroupResourceProfile = this.groupResourceProfiles[0];
-                    }
+            services.GroupResourceProfileService.get(this.groupResourceProfileId)
+                .then(groupResourceProfile => {
+                    this.selectedGroupResourceProfile = groupResourceProfile;
                 })
                 .then(()=> {this.loadingCount--;}, () => {this.loadingCount--;});
         },
