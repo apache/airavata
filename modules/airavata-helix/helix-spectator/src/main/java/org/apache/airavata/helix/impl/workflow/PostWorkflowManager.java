@@ -43,10 +43,8 @@ import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.registry.api.RegistryService;
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.*;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
@@ -73,6 +71,7 @@ public class PostWorkflowManager extends WorkflowManager {
         props.put(ConsumerConfig.GROUP_ID_CONFIG, ServerSettings.getSetting("kafka.broker.consumer.group"));
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JobStatusResultDeserializer.class.getName());
+        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
         // Create the consumer using props.
         final Consumer<String, JobStatusResult> consumer = new KafkaConsumer<>(props);
         // Subscribe to the topic.
@@ -158,10 +157,11 @@ public class PostWorkflowManager extends WorkflowManager {
         return stat != null;
     }
 
-    private void process(JobStatusResult jobStatusResult) {
+    private boolean process(JobStatusResult jobStatusResult) {
 
         if (jobStatusResult == null) {
-            return;
+            logger.error("Job result is null");
+            return false;
         }
 
         try {
@@ -173,7 +173,7 @@ public class PostWorkflowManager extends WorkflowManager {
                 if (!JobStateValidator.isValid(currentJobStatus, jobStatusResult.getState())) {
                     logger.warn("Job state of " + jobStatusResult.getJobId() + " is not valid. Previous state " +
                             currentJobStatus + ", new state " + jobStatusResult.getState());
-                    return;
+                    return true;
                 }
 
                 String gateway = Optional.ofNullable(getGatewayByJobId(jobStatusResult.getJobId()))
@@ -295,11 +295,14 @@ public class PostWorkflowManager extends WorkflowManager {
 
                     }
                 }
+                return true;
             } else {
                 logger.warn("Could not find a monitoring register for job id " + jobStatusResult.getJobId());
+                return false;
             }
         } catch (Exception e) {
             logger.error("Failed to process job : " + jobStatusResult.getJobId() + ", with status : " + jobStatusResult.getState().name(), e);
+            return false;
         }
     }
 
@@ -307,7 +310,19 @@ public class PostWorkflowManager extends WorkflowManager {
         final Consumer<String, JobStatusResult> consumer = createConsumer();
 
         while (true) {
-            final ConsumerRecords<String, JobStatusResult> consumerRecords = consumer.poll(1000);
+            final ConsumerRecords<String, JobStatusResult> consumerRecords = consumer.poll(Long.MAX_VALUE);
+
+            for (TopicPartition partition : consumerRecords.partitions()) {
+                List<ConsumerRecord<String, JobStatusResult>> partitionRecords = consumerRecords.records(partition);
+                for (ConsumerRecord<String, JobStatusResult> record : partitionRecords) {
+                    boolean success = process(record.value());
+                    logger.info("Status of processing " + record.value().getJobId() + " : " + success);
+                    if (success) {
+                        consumer.commitSync(Collections.singletonMap(partition, new OffsetAndMetadata(record.offset() + 1)));
+                    }
+                }
+            }
+
             consumerRecords.forEach(record -> {
                 process(record.value());
             });
