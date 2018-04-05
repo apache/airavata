@@ -63,6 +63,11 @@ public class LocalAgentAdaptor implements AgentAdaptor {
     }
 
     @Override
+    public Boolean doesFileExist(String filePath) throws AgentException {
+        throw new AgentException("Operation not implemented");
+    }
+
+    @Override
     public List<String> getFileNameFromExtension(String fileName, String parentPath) throws AgentException {
         throw new AgentException("Operation not implemented");
     }
