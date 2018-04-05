@@ -1,10 +1,9 @@
 {% load navigation_tags wagtailimages_tags wagtailcore_tags %}
 
-<div class="row new-collaborators text-center">
-  {% for item in footer_text %}
-  <div class="col-md-2 mx-auto">
-    {% image item.image original as tmp_photo %}
-    <a href="{{ item.image_link}}"><img src="{{tmp_photo.url}}" style="width:{{item.image_width}};height={{item.image_height}}" alt="image" class="img-fluid"/></a>
+<div class="container-fluid">
+  <div class="row">
+    {% for block in footer_text.footer %}
+      {% include_block block.value %}
+    {% endfor %}
   </div>
-  {% endfor %}
 </div>

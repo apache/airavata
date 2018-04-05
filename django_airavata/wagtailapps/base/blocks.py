@@ -15,6 +15,7 @@ class ImageBlock(StructBlock):
     caption = CharBlock(required=False)
     width = CharBlock(required=False)
     height = IntegerBlock(required=False)
+    redirect_url = TextBlock(required=False,null=True,blank=True,help_text="Give a redirect link on clicking the image")
     custom_class = TextBlock(required=False,blank=True, help_text="control this element by giving unique class names separated by space and styling the class in css")
 
     class Meta:
@@ -33,6 +34,35 @@ class ParagraphBlock(StructBlock) :
         icon = "fa-paragraph"
         template = "blocks/paragraph_block.html"
         help_text = "Create a free form paragraph"
+
+
+class HeadingBlock(StructBlock):
+    """
+    Custom `StructBlock` that allows the user to select h1 - h4 sizes for headers
+    """
+    heading_text = CharBlock(classname="title", required=True)
+    size = ChoiceBlock(choices=[
+        ('', 'Select a header size'),
+        ('h1', 'H1'),
+        ('h2', 'H2'),
+        ('h3', 'H3'),
+        ('h4', 'H4')
+    ], blank=True, required=False)
+    custom_class = TextBlock(required=False,blank=True, help_text="control this element by giving unique class names separated by space and styling the class in css")
+
+    class Meta:
+        icon = "title"
+        template = "blocks/heading_block.html"
+
+class PlaceholderBlock(StructBlock):
+    """
+    Custom 'StructBlock' that acts as a placeholder
+    """
+    custom_class = TextBlock(required=False,blank=True, help_text="control this element by giving unique class names separated by space and styling the class in css")
+
+    class Meta:
+        icon = "fa-map-marker"
+        template = "blocks/placeholder_block.html"
 
 
 class CustomEmbedBlock(StructBlock):
@@ -57,7 +87,20 @@ class CssCommentBlock(StructBlock):
     class Meta:
         icon = "fa-comment"
         template = "blocks/css_comment.html"
-        help_text = "Enter a css comment"
+        help_text = "Css Comment"
+
+class HorizontalRule(StructBlock):
+    """
+    HorizontalRule
+    """
+    thickness = IntegerBlock(required=False,blank=True,help_text="Enter a thickness integer value. Eg(10)")
+    bg_color = TextBlock(required=True,help_text="Enter a hexcode color for the rule Eg(#000000)")
+    custom_class = TextBlock(required=False,blank=True, help_text="control this element by giving unique class names separated by space and styling the class in css")
+
+    class Meta:
+        icon = "fa-long-arrow-right"
+        template = "blocks/hrule.html"
+        help_text = "Horizontal Rule"
 
 
 # BootStrap Components
@@ -233,6 +276,24 @@ class BootstrapWell(StructBlock):
         icon = "fa-window-minimize"
         template = "blocks/bootstrap/well.html"
 
+
+class BootstrapMediaObject(StructBlock):
+    """
+    Custom 'StructBlock' that allows user to make a bootstrap media object.
+    """
+    media_img = ImageChooserBlock(required=True)
+    media_img_alt = TextBlock(required=True)
+    media_img_width = IntegerBlock(required=False,blank=True,help_text="Enter an image width as an integer value. Eg(50)")
+    media_img_height = IntegerBlock(required=False,blank=True,help_text="Enter an image height as an integer value Eg(50)")
+    heading_text = TextBlock(required=False,blank=True,help_text = "enter some heading text for media object")
+    body_text = RichTextBlock(required=True,help_text="Enter some message for the media object")
+    custom_class = TextBlock(required=False,blank=True, help_text="control this element by giving unique class names separated by space and styling the class in css")
+
+    class Meta:
+        icon = "fa-align-right"
+        template = "blocks/bootstrap/media.html"
+
+
 # StreamBlocks
 class BaseStreamBlock(StreamBlock):
     """
@@ -241,12 +302,16 @@ class BaseStreamBlock(StreamBlock):
     paragraph_block = ParagraphBlock()
     image_block = ImageBlock()
     embed_block = CustomEmbedBlock()
+    heading_block = HeadingBlock()
     bootstrap_jumbotron = BootstrapJumbotron()
     bootstrap_alert = BootstrapAlert()
     bootstrap_button = BootstrapButton()
     bootstrap_card = BootstrapCard()
     bootstrap_carousel = BootstrapCarousel()
     bootstrap_well = BootstrapWell()
+    horizontal_rule = HorizontalRule()
+    bootstrap_media_object = BootstrapMediaObject()
+    placeholder_block = PlaceholderBlock()
 
 
 class CssStreamBlock(StreamBlock):

@@ -1,20 +1,3 @@
-<div class="pga-header">
-  <nav class="navbar navbar-expand-lg" style="background-color: #303E4E">
-    <div class="container-fluid">
-      <!-- Brand and toggle get grouped for better mobile display -->
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-        <!--
-          <a class="navbar-brand" href="https://seagrid.org/home" title="PHP Gateway with Airavata">PGA</a>
-          -->
-      <!-- Collect the nav links, forms, and other content for toggling -->
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="nav navbar-nav ml-auto">
-          <li class="nav-item"><a class="nav-link" style="color: #999;" href="https://seagrid.org/create"><i class="fas fa-user"></i> Create account</a></li>
-          <li class="nav-item"><a class="nav-link" style="color: #999;" href="{% url 'django_airavata_auth:login' %}"><i class="fas fa-sign-in-alt"></i> Log in</a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-</div>
+{% load navigation_tags %}
+
+{% get_nav_extra %}

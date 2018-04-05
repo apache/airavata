@@ -3,7 +3,7 @@
   "model": "auth.user",
   "fields": {
     "password": "pbkdf2_sha256$36000$kSBYHC0WApTU$GhqnCk1geRftoLf27CUboofpZbF+N2TW98QbpuwCI6Q=",
-    "last_login": "2018-04-04T03:39:57.427Z",
+    "last_login": "2018-04-05T02:22:04.105Z",
     "is_superuser": true,
     "username": "stephenpaul2727",
     "first_name": "",
@@ -5453,50 +5453,36 @@
   }
 },
 {
+  "model": "django_airavata_wagtail_base.navextra",
+  "pk": 1,
+  "fields": {
+    "nav_logo": null,
+    "nav_logo_width": null,
+    "nav_logo_height": null,
+    "nav_text1": "Create Account",
+    "faicon1": "fa fa-user",
+    "nav_link1": "https://seagrid.org/create",
+    "nav_text2": "Log in",
+    "faicon2": "fas fa-sign-in-alt",
+    "nav_link2": "https://seagrid.org/login",
+    "nav_text3": null,
+    "faicon3": null,
+    "nav_link3": null,
+    "custom_class": "second-nav"
+  }
+},
+{
   "model": "django_airavata_wagtail_base.customcss",
   "pk": 1,
   "fields": {
-    "css": "[{\"type\": \"css_block\", \"value\": \".main-nav {\\r\\nbackground-color: #333 !important;\\r\\n}\\r\\n.main-nav a {\\r\\ncolor: #fff !important;\\r\\n}\\r\\n.main-nav a:hover {\\r\\ncolor: #20b2aa !important;\\r\\n}\\r\\n.main-nav ul {\\r\\nfont-size: 18px;\\r\\n}\", \"id\": \"8c8162c4-07f7-4d7e-aab4-83e3914013ff\"}]"
+    "css": "[{\"type\": \"css_comment\", \"value\": {\"message\": \"----- Navbar styles-----\"}, \"id\": \"4c471157-fba7-48fa-a776-20e0c14b0ce8\"}, {\"type\": \"css_block\", \"value\": \".main-nav {\\r\\nbackground-color: #333 !important;\\r\\n}\\r\\n.main-nav a {\\r\\ncolor: #fff !important;\\r\\n}\\r\\n.main-nav a:hover {\\r\\ncolor: #20b2aa !important;\\r\\n}\\r\\n.main-nav ul {\\r\\nfont-size: 18px;\\r\\n}\", \"id\": \"8c8162c4-07f7-4d7e-aab4-83e3914013ff\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"----- Second Nav Styles-------\"}, \"id\": \"30d593c9-e918-4242-bf22-2a3b98bfca04\"}, {\"type\": \"css_block\", \"value\": \".second-nav {\\r\\nbackground-color: #303E4E;\\r\\ncolor: #efefef;\\r\\npadding: 10px;\\r\\n}\\r\\n.second-nav a {\\r\\ncolor: #ffffff;\\r\\n}\", \"id\": \"73de932c-4efb-4c0d-9773-509ab334cb5e\"}]"
   }
 },
 {
   "model": "django_airavata_wagtail_base.footertext",
   "pk": 1,
   "fields": {
-    "image": 3,
-    "image_link": "https://www.iu.edu",
-    "image_width": null,
-    "image_height": null
-  }
-},
-{
-  "model": "django_airavata_wagtail_base.footertext",
-  "pk": 2,
-  "fields": {
-    "image": 9,
-    "image_link": "https://airavata.apache.org/",
-    "image_width": null,
-    "image_height": null
-  }
-},
-{
-  "model": "django_airavata_wagtail_base.footertext",
-  "pk": 3,
-  "fields": {
-    "image": 11,
-    "image_link": "https://www.xsede.org/",
-    "image_width": null,
-    "image_height": null
-  }
-},
-{
-  "model": "django_airavata_wagtail_base.footertext",
-  "pk": 4,
-  "fields": {
-    "image": 7,
-    "image_link": "https://www.nsf.gov/",
-    "image_width": 100,
-    "image_height": 100
+    "footer": "[{\"type\": \"placeholder_block\", \"value\": {\"custom_class\": \"col-md-2\"}, \"id\": \"ff7ca324-c4da-4d4b-a643-1031f9f0b7a2\"}, {\"type\": \"image_block\", \"value\": {\"image\": 3, \"caption\": \"\", \"width\": \"\", \"height\": null, \"redirect_url\": \"https://www.iu.edu\", \"custom_class\": \"col-md-2\"}, \"id\": \"e9e3c8b1-2900-435b-bacd-800027480d00\"}, {\"type\": \"image_block\", \"value\": {\"image\": 9, \"caption\": \"\", \"width\": \"\", \"height\": null, \"redirect_url\": \"https://airavata.apache.org/\", \"custom_class\": \"col-md-2\"}, \"id\": \"5427120c-55c4-4630-af4e-c7bd5a7d9ce6\"}, {\"type\": \"image_block\", \"value\": {\"image\": 11, \"caption\": \"\", \"width\": \"\", \"height\": null, \"redirect_url\": \"https://www.xsede.org/\", \"custom_class\": \"col-md-2\"}, \"id\": \"a1fcbad6-8c0d-4577-8f1a-60b70f2b9fd1\"}, {\"type\": \"image_block\", \"value\": {\"image\": 7, \"caption\": \"\", \"width\": \"100\", \"height\": 100, \"redirect_url\": \"https://www.nsf.gov/\", \"custom_class\": \"col-md-2\"}, \"id\": \"7a8dccc3-c4de-4121-8133-7ba35638fd9e\"}, {\"type\": \"placeholder_block\", \"value\": {\"custom_class\": \"col-md-2\"}, \"id\": \"a2df9ee4-c461-4136-9827-e966fb830ed5\"}]"
   }
 },
 {
@@ -5640,7 +5626,7 @@
   "pk": 6,
   "fields": {
     "sort_order": 0,
-    "body": "[{\"type\": \"bootstrap_well\", \"value\": {\"message\": \"<p><a href=\\\"https://sciencegateways.org/acs2018\\\">Free American Chemical Society (ACS) Workshop on Science Gateways, New Orleans, LA, Mar 20, 2018</a></p>\", \"well_bg_color\": \"bg-light\", \"custom_class\": \"mt-4 mb-4\"}, \"id\": \"fee7c1fa-ad67-469b-bc2f-c9180e06de3c\"}, {\"type\": \"image_block\", \"value\": {\"image\": 22, \"caption\": \"\", \"width\": \"\", \"height\": null, \"custom_class\": \"col-md-12\"}, \"id\": \"abbd77f9-552c-4560-8f82-92d346bf55dc\"}]",
+    "body": "[{\"type\": \"bootstrap_well\", \"value\": {\"message\": \"<p><a href=\\\"https://sciencegateways.org/acs2018\\\">Free American Chemical Society (ACS) Workshop on Science Gateways, New Orleans, LA, Mar 20, 2018</a></p>\", \"well_bg_color\": \"bg-light\", \"custom_class\": \"mt-4 mb-4\"}, \"id\": \"fee7c1fa-ad67-469b-bc2f-c9180e06de3c\"}, {\"type\": \"image_block\", \"value\": {\"image\": 22, \"caption\": \"\", \"width\": \"\", \"height\": null, \"redirect_url\": null, \"custom_class\": \"col-md-12\"}, \"id\": \"abbd77f9-552c-4560-8f82-92d346bf55dc\"}]",
     "page": 11
   }
 },
@@ -5685,7 +5671,7 @@
   "pk": 11,
   "fields": {
     "sort_order": 6,
-    "body": "[{\"type\": \"image_block\", \"value\": {\"image\": 15, \"caption\": \"\", \"width\": \"\", \"height\": null, \"custom_class\": \"col-md-12 mt-2\"}, \"id\": \"ef3e5cc7-eab4-4658-bab8-079c350e4ded\"}]",
+    "body": "[{\"type\": \"image_block\", \"value\": {\"image\": 15, \"caption\": \"\", \"width\": \"\", \"height\": null, \"redirect_url\": null, \"custom_class\": \"col-md-12 mt-2\"}, \"id\": \"ef3e5cc7-eab4-4658-bab8-079c350e4ded\"}]",
     "page": 11
   }
 },

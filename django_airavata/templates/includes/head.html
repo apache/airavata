@@ -6,7 +6,7 @@
     <title>
         {% block title %}
             {% block title_prefix %}
-                SEAGrid
+                {{get_site_root}}
             {% endblock %}
             {% if self.seo_title %}
                 {{ self.seo_title }}

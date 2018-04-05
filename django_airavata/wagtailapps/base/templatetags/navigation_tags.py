@@ -12,6 +12,8 @@ from django_airavata.wagtailapps.base.models import CustomHeaderLinks
 
 from django_airavata.wagtailapps.base.models import CustomCss
 
+from django_airavata.wagtailapps.base.models import NavExtra
+
 
 register = template.Library()
 # https://docs.djangoproject.com/en/1.9/howto/custom-template-tags/
@@ -114,7 +116,7 @@ def get_announcements(context):
 def get_footer_text(context):
     footer_text = None
     if FooterText.objects.first() is not None:
-        footer_text = FooterText.objects.all()
+        footer_text = FooterText.objects.first()
 
     return {
         'footer_text': footer_text,
@@ -148,4 +150,14 @@ def get_css(context):
 
     return {
         'custom_css': custom_css,
+    }
+
+@register.inclusion_tag('django_airavata_wagtail_base/includes/nav_extra.html', takes_context=True)
+def get_nav_extra(context):
+    nav_extra = ""
+    if NavExtra.objects.first() is not None:
+        nav_extra = NavExtra.objects.first()
+
+    return {
+        'navextra': nav_extra,
     }
