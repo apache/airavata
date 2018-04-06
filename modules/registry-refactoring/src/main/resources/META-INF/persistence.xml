@@ -73,7 +73,7 @@
         <class>org.apache.airavata.registry.core.entities.appcatalog.UserStoragePreferenceEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
-    <persistence-unit name="replicacatalog_data">
+    <persistence-unit name="replicacatalog_data_new">
         <class>org.apache.airavata.registry.core.entities.replicacatalog.ConfigurationEntity</class>
         <class>org.apache.airavata.registry.core.entities.replicacatalog.DataProductEntity</class>
         <class>org.apache.airavata.registry.core.entities.replicacatalog.DataProductMetadataEntity</class>
@@ -98,7 +98,7 @@
         <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowOutputEntity</class>
         <class>org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowStatusEntity</class>
     </persistence-unit>
-    <persistence-unit name="experiment_data">
+    <persistence-unit name="experiment_data_new">
         <class>org.apache.airavata.registry.core.entities.expcatalog.ComputeResourceSchedulingEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentErrorEntity</class>
