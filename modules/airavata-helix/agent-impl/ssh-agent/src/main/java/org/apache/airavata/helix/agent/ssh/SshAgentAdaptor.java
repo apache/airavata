@@ -505,10 +505,10 @@ public class SshAgentAdaptor implements AgentAdaptor {
                     logger.info("No file found for given path " + filePath);
                     return false;
                 } else {
-                    if (potentialFiles[0].trim().equals(new File(filePath).getName())) {
+                    if (potentialFiles[0].trim().equals(filePath)) {
                         return true;
                     } else {
-                        logger.info("Returned file name " + potentialFiles[0].trim() + " does not match with given name " + new File(filePath).getName());
+                        logger.info("Returned file name " + potentialFiles[0].trim() + " does not match with given name " + filePath);
                         return false;
                     }
                 }
