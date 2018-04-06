@@ -31,7 +31,8 @@ import java.util.Map;
 public class RepCatalogJPAUtils {
     private final static Logger logger = LoggerFactory.getLogger(RepCatalogJPAUtils.class);
 
-    private static final String PERSISTENCE_UNIT_NAME = "replicacatalog_data";
+    // TODO: we can rename this back to replicacatalog_data once we completely replace the other replicacatalog_data persistence context in airavata-registry-core
+    private static final String PERSISTENCE_UNIT_NAME = "replicacatalog_data_new";
     private static final String REPLICACATALOG_JDBC_DRIVER = "replicacatalog.jdbc.driver";
     private static final String REPLICACATALOG_JDBC_URL = "replicacatalog.jdbc.url";
     private static final String REPLICACATALOG_JDBC_USER = "replicacatalog.jdbc.user";
