@@ -3,7 +3,7 @@
   "model": "auth.user",
   "fields": {
     "password": "pbkdf2_sha256$36000$kw2ysZYzauw9$VFz74phHY8RREqO96EgthTw5xjOpOgfmb2aO0bwRPL4=",
-    "last_login": "2018-04-04T23:39:13.777Z",
+    "last_login": "2018-04-06T15:29:18.388Z",
     "is_superuser": true,
     "username": "stephenpaul2727",
     "first_name": "",
@@ -975,7 +975,7 @@
   "model": "django_airavata_wagtail_base.footertext",
   "pk": 1,
   "fields": {
-    "footer": "[{\"type\": \"horizontal_rule\", \"value\": {\"thickness\": 2, \"bg_color\": \"#000000\", \"custom_class\": \"col-m\"}, \"id\": \"2f869610-fca3-43b3-8b30-62ed03e4145a\"}, {\"type\": \"placeholder_block\", \"value\": {\"custom_class\": \"col-md-2 mt-4\"}, \"id\": \"3dd3423d-7110-4196-8d63-f35c21c068f3\"}, {\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-2 mt-4\", \"body\": \"<h2>Contact us</h2><p>SimVascular News Mailing List: <a href=\\\"https://simtk.org/mailman/listinfo/simvascular-news\\\">Sign up</a> - <a href=\\\"https://simtk.org/pipermail/simvascular-news/\\\">Archive</a></p><p><a href=\\\"https://simtk.org/forums/viewforum.php?f=188\\\">SimVascular Public Forum</a></p>\"}, \"id\": \"836a232b-a12d-4165-8517-30c4ba7e0dcd\"}, {\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-3 mx-auto mt-5 ml-3\", \"body\": \"<p><a href=\\\"https://simtk.org/tracker/?group_id=188\\\">Suggest new features or report bugs</a></p><p><a href=\\\"http://benefunder.org/causes/186/alison-marsden\\\">Make a Donation</a></p>\"}, \"id\": \"7b0e24c6-df49-419e-a5cb-32dd5d252387\"}, {\"type\": \"image_block\", \"value\": {\"image\": 2, \"caption\": \"\", \"width\": \"350\", \"height\": 300, \"redirect_url\": \"https://apache.org\", \"custom_class\": \"col-md-4 mx-auto mt-4\"}, \"id\": \"9070018c-62a8-4247-8cd6-b2f3d04f34c0\"}]"
+    "footer": "[{\"type\": \"horizontal_rule\", \"value\": {\"thickness\": 2, \"bg_color\": \"#000000\", \"custom_class\": \"col-m\"}, \"id\": \"2f869610-fca3-43b3-8b30-62ed03e4145a\"}, {\"type\": \"placeholder_block\", \"value\": {\"custom_class\": \"col-md-2 mt-4\"}, \"id\": \"3dd3423d-7110-4196-8d63-f35c21c068f3\"}, {\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-2 mt-4\", \"body\": \"<h2>Contact us</h2><p>SimVascular News Mailing List: <a href=\\\"https://simtk.org/mailman/listinfo/simvascular-news\\\">Sign up</a> - <a href=\\\"https://simtk.org/pipermail/simvascular-news/\\\">Archive</a></p><p><a href=\\\"https://simtk.org/forums/viewforum.php?f=188\\\">SimVascular Public Forum</a></p>\"}, \"id\": \"836a232b-a12d-4165-8517-30c4ba7e0dcd\"}, {\"type\": \"paragraph_block\", \"value\": {\"custom_class\": \"col-md-3 mx-auto mt-5 ml-3\", \"body\": \"<p><a href=\\\"https://simtk.org/tracker/?group_id=188\\\">Suggest new features or report bugs</a></p><p><a href=\\\"http://benefunder.org/causes/186/alison-marsden\\\">Make a Donation</a></p>\"}, \"id\": \"7b0e24c6-df49-419e-a5cb-32dd5d252387\"}, {\"type\": \"image_block\", \"value\": {\"image\": 2, \"caption\": \"\", \"width\": \"275\", \"height\": 125, \"redirect_url\": \"https://apache.org\", \"custom_class\": \"col-md-4 mx-auto mt-4\"}, \"id\": \"9070018c-62a8-4247-8cd6-b2f3d04f34c0\"}]"
   }
 },
 {
