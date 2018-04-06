@@ -192,8 +192,8 @@ class BootstrapCard(StructBlock):
     card_img = ImageChooserBlock(required=False)
     card_img_width = IntegerBlock(required=False, help_text="provide an image width")
     card_img_height = IntegerBlock(required=False, help_text="provide an image height")
-    card_title = TextBlock()
-    card_text = RichTextBlock()
+    card_title = TextBlock(required=False, null=True, blank=True)
+    card_text = RichTextBlock(required=False, null=True, blank=True)
     card_bg_color = ChoiceBlock(choices=[
         ('bg-primary', 'DEFAULT'),
         ('bg-secondary', 'GREY'),
