@@ -94,7 +94,12 @@ public class ArchiveTask extends DataStagingTask {
                 throw new TaskOnFailException("Failed while running the tar command " + tarringCommand, true, null);
             }
 
-            transferFileToStorage(tarCreationAbsPath, destFilePath, archiveFileName, adaptor, storageResourceAdaptor);
+            boolean fileTransferred = transferFileToStorage(tarCreationAbsPath, destFilePath, archiveFileName, adaptor, storageResourceAdaptor);
+
+            if (!fileTransferred) {
+                logger.error("Failed to transfer created archive file " + tarCreationAbsPath);
+                throw new TaskOnFailException("Failed to transfer created archive file " + tarCreationAbsPath, true, null);
+            }
 
             String deleteTarCommand = "rm " + tarCreationAbsPath;
             logger.info("Running delete temporary tar command " + deleteTarCommand);
