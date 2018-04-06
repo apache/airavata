@@ -3,7 +3,7 @@
   "model": "auth.user",
   "fields": {
     "password": "pbkdf2_sha256$36000$kSBYHC0WApTU$GhqnCk1geRftoLf27CUboofpZbF+N2TW98QbpuwCI6Q=",
-    "last_login": "2018-04-05T02:22:04.105Z",
+    "last_login": "2018-04-06T15:22:29.495Z",
     "is_superuser": true,
     "username": "stephenpaul2727",
     "first_name": "",
@@ -2058,7 +2058,7 @@
   "fields": {
     "path": "000100010001",
     "depth": 3,
-    "numchild": 7,
+    "numchild": 6,
     "title": "Seagrid Home",
     "draft_title": "Seagrid Home",
     "slug": "seagrid-home",
@@ -2245,9 +2245,9 @@
     "expired": false,
     "locked": false,
     "first_published_at": "2018-03-20T20:05:26.098Z",
-    "last_published_at": "2018-03-21T17:50:00.421Z",
-    "latest_revision_created_at": "2018-03-21T17:50:00.395Z",
-    "live_revision": 187
+    "last_published_at": "2018-04-06T15:23:44.865Z",
+    "latest_revision_created_at": "2018-04-06T15:23:44.843Z",
+    "live_revision": 207
   }
 },
 {
@@ -2281,39 +2281,6 @@
     "last_published_at": "2018-03-21T20:15:17.616Z",
     "latest_revision_created_at": "2018-03-21T20:15:17.570Z",
     "live_revision": 204
-  }
-},
-{
-  "model": "wagtailcore.page",
-  "pk": 13,
-  "fields": {
-    "path": "0001000100010007",
-    "depth": 4,
-    "numchild": 0,
-    "title": "something",
-    "draft_title": "something",
-    "slug": "something",
-    "content_type": [
-      "django_airavata_wagtail_base",
-      "blankpage"
-    ],
-    "live": true,
-    "has_unpublished_changes": false,
-    "url_path": "/home/seagrid-home/something/",
-    "owner": [
-      "stephenpaul2727"
-    ],
-    "seo_title": "",
-    "show_in_menus": true,
-    "search_description": "",
-    "go_live_at": null,
-    "expire_at": null,
-    "expired": false,
-    "locked": false,
-    "first_published_at": "2018-03-22T19:05:36.285Z",
-    "last_published_at": "2018-03-22T19:05:48.145Z",
-    "latest_revision_created_at": "2018-03-22T19:05:48.127Z",
-    "live_revision": 206
   }
 },
 {
@@ -4992,29 +4959,15 @@
 },
 {
   "model": "wagtailcore.pagerevision",
-  "pk": 205,
+  "pk": 207,
   "fields": {
-    "page": 13,
+    "page": 10,
     "submitted_for_moderation": false,
-    "created_at": "2018-03-22T19:05:36.268Z",
+    "created_at": "2018-04-06T15:23:44.843Z",
     "user": [
       "stephenpaul2727"
     ],
-    "content_json": "{\"pk\": 13, \"path\": \"0001000100010007\", \"depth\": 4, \"numchild\": 0, \"title\": \"something\", \"draft_title\": \"something\", \"slug\": \"something\", \"content_type\": 34, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/seagrid-home/something/\", \"owner\": 2, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": null, \"last_published_at\": null, \"latest_revision_created_at\": null, \"live_revision\": null, \"row\": [{\"pk\": 14, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"bootstrap_carousel\\\", \\\"value\\\": {\\\"c_image1\\\": 21, \\\"c_image2\\\": 20, \\\"c_image3\\\": 19, \\\"c_image4\\\": null, \\\"c_image5\\\": null, \\\"custom_class\\\": \\\"col-\\\"}, \\\"id\\\": \\\"de773f5f-0f75-4c21-9a47-c9efa63e5632\\\"}]\", \"page\": 13}]}",
-    "approved_go_live_at": null
-  }
-},
-{
-  "model": "wagtailcore.pagerevision",
-  "pk": 206,
-  "fields": {
-    "page": 13,
-    "submitted_for_moderation": false,
-    "created_at": "2018-03-22T19:05:48.127Z",
-    "user": [
-      "stephenpaul2727"
-    ],
-    "content_json": "{\"pk\": 13, \"path\": \"0001000100010007\", \"depth\": 4, \"numchild\": 0, \"title\": \"something\", \"draft_title\": \"something\", \"slug\": \"something\", \"content_type\": 34, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/seagrid-home/something/\", \"owner\": 2, \"seo_title\": \"\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-03-22T19:05:36.285Z\", \"last_published_at\": \"2018-03-22T19:05:36.285Z\", \"latest_revision_created_at\": \"2018-03-22T19:05:36.268Z\", \"live_revision\": 205, \"row\": [{\"pk\": 14, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"bootstrap_carousel\\\", \\\"value\\\": {\\\"c_image1\\\": 21, \\\"c_image2\\\": 20, \\\"c_image3\\\": 19, \\\"c_image4\\\": null, \\\"c_image5\\\": null, \\\"custom_class\\\": \\\"col-\\\"}, \\\"id\\\": \\\"de773f5f-0f75-4c21-9a47-c9efa63e5632\\\"}]\", \"page\": 13}]}",
+    "content_json": "{\"pk\": 10, \"path\": \"0001000100010005\", \"depth\": 4, \"numchild\": 0, \"title\": \"About New\", \"draft_title\": \"About New\", \"slug\": \"about-new\", \"content_type\": 33, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/seagrid-home/about-new/\", \"owner\": 1, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-03-20T20:05:26.098Z\", \"last_published_at\": \"2018-03-21T17:50:00.421Z\", \"latest_revision_created_at\": \"2018-03-21T17:50:00.395Z\", \"live_revision\": 187, \"row\": [{\"pk\": 4, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 18, \\\"is_card_img\\\": true, \\\"card_img\\\": 8, \\\"card_img_width\\\": null, \\\"card_img_height\\\": null, \\\"card_title\\\": \\\"Principal Investigator\\\", \\\"card_text\\\": \\\"<h4><b>Dr. Sudhakar Pamidighantam</b></h4><p><b>Contact:</b> <a href=\\\\\\\"mailto:pamidigs@iu.edu\\\\\\\">pamidigs@iu.edu</a></p>\\\", \\\"card_bg_color\\\": \\\"bg-light\\\", \\\"card_text_color\\\": \\\"text-dark\\\", \\\"btn_text\\\": \\\"Visit my Site\\\", \\\"btn_color\\\": \\\"btn-primary\\\", \\\"btn_link\\\": \\\"https://www.google.com\\\", \\\"custom_class\\\": \\\"mt-4 mx-auto col-md-2\\\"}, \\\"id\\\": \\\"65a2f93a-9e02-42f5-a7b5-8b69e459d1d2\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"mt-4 col-md-8 mx-auto\\\", \\\"body\\\": \\\"<p>The SEAGrid science gateway is led by Dr. Sudhakar Pamidighantam and powered by the NSF-funded <a href=\\\\\\\"https://scigap.org/\\\\\\\">SciGaP</a>project. This gateway is an agile platform suitable for both research and teaching in science and engineering disciplines.</p><p><b>Bio:</b> Dr. Pamidighantam is a senior member of the <a href=\\\\\\\"https://sgrc.iu.edu/\\\\\\\">Science Gateways Research Center</a> at Indiana University. Dr. Pamidighantam had been a senior research scientist at NCSA at the University of Illinois at Urbana-Champaign supporting computational chemistry and science gateways development in support of molecular sciences faculty. He serves XSEDE organization as an <a href=\\\\\\\"https://www.xsede.org/ecss\\\\\\\">ECSS</a> consultant and conducts research in computational chemistry. See <a href=\\\\\\\"https://scholar.google.com/citations?user=xlNkBCQAAAAJ&amp;hl=en&amp;oi=ao\\\\\\\">here</a> for Dr. Pamidighantam\\\\u2019s Google Scholar profile.</p><p><b>Usage:</b> SEAGrid has been in operation since 2005 and serves more than 600 scientists and students under 320 projects. Over this time, SEAGrid has supported and enabled more than 120 publications, 50 conference presentations, at least 13 graduate MS and Ph.D. theses. Since April 2015, SEAGrid has served close to 11M XD SUs to support almost 25,000 jobs.</p><p><b>Support:</b> SEAGrid currently supported by NSF Grant <a href=\\\\\\\"https://www.nsf.gov/awardsearch/showAward?AWD_ID=1339774\\\\\\\">#1339774</a>. Previous NSF support includes awards The SEAGrid gateway is a production community cyberinfrastructure resource developed under the NSF Middleware Initiative (NMI: Deployment) grant and supported by additional advanced support through XSEDE ASTA and ECSS program activities. An OGCE [5] project funded by NSF enabled the SEAGrid gateway to adapt sustainable middleware.</p><h3><b>Cite:</b></h3><h4><b>Citing SEAGrid in academic papers helps us show impact. If you use SEAGrid in your research please help by including the following citation information and acknowledgement in your paper.</b></h4><p>SEAGrid (<a href=\\\\\\\"https://seagrid.org/\\\\\\\">http:www.seagrid.org</a>)[*] is acknowledged for computational resources and services for the selected results used in this publication.</p><p>* (a) S. Pamidighantama, S Nakandala, E. Abeysinghe, C Wimalasena, S. Rathnayakae, S. Marru, M. Pierce, Community Science Exemplars in SEAGrid Science Gateway: Apache Airavata Based Implementation of Advanced Infrastructure, Procedia Computer Science Volume 80, 2016, Pages 1927\\\\u20131939</p><p>(b) N. Shen, Y. Fan, S. Pamidighantam, E-Science Infrastructures for Molecular Modeling and Parametrization, Journal of Computational Science 5 (2014), pp. 576-589; DOI information: 10.1016/j.jocs.2014.01.005</p><p>(c) R. Dooley, K. Milfeld, C. Guiang, S. Pamidighantam, G. Allen, From Proposal to Production: Lessons Learned Developing the Computational Chemistry Grid Cyberinfrastructure, Journal of Grid Computing, 2006, 4, 195-208.</p><p>(d) K. Milfeld, C. Guiang, S. Pamidighantam, J. Giuliani. Cluster Computing through an Application-oriented Computational Chemistry Grid. Proceedings of the 2005 Linux Clusters: The HPC Revolution, Apr. 2005.</p><p>(e) This work used the Extreme Science and Engineering Discovery Environment (XSEDE), which is supported by National Science Foundation grant number OCI-1053575.</p><p><a href=\\\\\\\"https://seagrid.org/themes/seagrid/assets/app/BibTex.txt\\\\\\\">Get BibTex</a></p>\\\"}, \\\"id\\\": \\\"97cfb3a8-80a5-4e0f-8c1f-e40057581061\\\"}]\", \"page\": 10}]}",
     "approved_go_live_at": null
   }
 },
@@ -5685,15 +5638,6 @@
   }
 },
 {
-  "model": "django_airavata_wagtail_base.rowblankpagerelation",
-  "pk": 14,
-  "fields": {
-    "sort_order": 0,
-    "body": "[{\"type\": \"bootstrap_carousel\", \"value\": {\"c_image1\": 21, \"c_image1_title\": null, \"c_image1_body\": null, \"c_image2\": 20, \"c_image2_title\": null, \"c_image2_body\": null, \"c_image3\": 19, \"c_image3_title\": null, \"c_image3_body\": null, \"c_image4\": null, \"c_image4_title\": null, \"c_image4_body\": null, \"c_image5\": null, \"c_image5_title\": null, \"c_image5_body\": null, \"custom_class\": \"col-\"}, \"id\": \"de773f5f-0f75-4c21-9a47-c9efa63e5632\"}]",
-    "page": 13
-  }
-},
-{
   "model": "django_airavata_wagtail_base.blankpage",
   "pk": 8,
   "fields": {}
@@ -5706,11 +5650,6 @@
 {
   "model": "django_airavata_wagtail_base.blankpage",
   "pk": 11,
-  "fields": {}
-},
-{
-  "model": "django_airavata_wagtail_base.blankpage",
-  "pk": 13,
   "fields": {}
 }
 ]
