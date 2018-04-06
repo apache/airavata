@@ -135,8 +135,8 @@ public class ApplicationDeploymentRepository extends AppCatAbstractRepository<Ap
         }
 
         else {
-            logger.error("Unsupported field name for app deployment.");
-            throw new IllegalArgumentException("Unsupported field name for app deployment.");
+            logger.error("Unsupported field name for app deployment in filters: " + filters);
+            throw new IllegalArgumentException("Unsupported field name for app deployment in filters: " + filters);
         }
     }
 
