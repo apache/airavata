@@ -727,7 +727,6 @@
                 <!--<module>modules/test-suite</module>-->
                 <module>modules/compute-account-provisioning</module>
                 <module>modules/airavata-helix</module>
-                <module>modules/airavata-helix-distribution</module>
                 <module>modules/job-monitor</module>
             </modules>
         </profile>

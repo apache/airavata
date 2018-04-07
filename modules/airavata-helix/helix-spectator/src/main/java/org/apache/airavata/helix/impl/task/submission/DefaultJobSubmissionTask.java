@@ -32,10 +32,9 @@ import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.*;
-import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.helix.task.TaskResult;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +43,7 @@ import java.util.List;
 @TaskDef(name = "Default Job Submission")
 public class DefaultJobSubmissionTask extends JobSubmissionTask {
 
-    private static final Logger logger = LogManager.getLogger(DefaultJobSubmissionTask.class);
+    private final static Logger logger = LoggerFactory.getLogger(DefaultJobSubmissionTask.class);
 
     private static final String DEFAULT_JOB_ID = "DEFAULT_JOB_ID";
 
@@ -89,8 +88,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                     statusList.get(0).setReason(submissionOutput.getFailureReason());
                     jobModel.setJobStatuses(statusList);
                     saveJobModel(jobModel);
-                    logger.error("expId: " + getExperimentId() + ", processid: " + getProcessId()+ ", taskId: " +
-                            getTaskId() + " :- Job submission failed for job name " + jobModel.getJobName()
+                    logger.error("Job submission failed for job name " + jobModel.getJobName()
                             + ". Exit code : " + submissionOutput.getExitCode() + ", Submission failed : "
                             + submissionOutput.isJobSubmissionFailed());
 
@@ -100,19 +98,16 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                             false, null);
 
                 } else {
-
                     String msg;
                     saveJobModel(jobModel);
                     ErrorModel errorModel = new ErrorModel();
                     if (submissionOutput.getExitCode() != Integer.MIN_VALUE) {
-                        msg = "expId:" + getExperimentId() + ", processId:" + getProcessId() + ", taskId: " + getTaskId() +
-                                " return non zero exit code:" + submissionOutput.getExitCode() + "  for JobName:" + jobModel.getJobName() +
+                        msg = "Returned non zero exit code:" + submissionOutput.getExitCode() + "  for JobName:" + jobModel.getJobName() +
                                 ", with failure reason : " + submissionOutput.getFailureReason()
                                 + " Hence changing job state to Failed." ;
                         errorModel.setActualErrorMessage(submissionOutput.getFailureReason());
                     } else {
-                        msg = "expId:" + getExperimentId() + ", processId:" + getProcessId() + ", taskId: " + getTaskId() +
-                                " doesn't  return valid job submission exit code for JobName:" + jobModel.getJobName() +
+                        msg = "Didn't return valid job submission exit code for JobName:" + jobModel.getJobName() +
                                 ", with failure reason : stdout ->" + submissionOutput.getStdOut() +
                                 " stderr -> " + submissionOutput.getStdErr() + " Hence changing job state to Failed." ;
                         errorModel.setActualErrorMessage(msg);
@@ -141,13 +136,13 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                     jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                     jobModel.setJobStatuses(Collections.singletonList(jobStatus));
                     saveAndPublishJobStatus(jobModel);
-                    createMonitoringNode(jobId);
+                    createMonitoringNode(jobId, mapData.getJobName());
                 }
 
                 if (getComputeResourceDescription().isGatewayUsageReporting()){
                     String loadCommand = getComputeResourceDescription().getGatewayUsageModuleLoadCommand();
                     String usageExecutable = getComputeResourceDescription().getGatewayUsageExecutable();
-                    ExperimentModel experiment = (ExperimentModel)getExperimentCatalog().get(ExperimentCatalogModelType.EXPERIMENT, getExperimentId());
+                    ExperimentModel experiment = getRegistryServiceClient().getExperiment(getExperimentId());
                     String username = experiment.getUserName() + "@" + getTaskContext().getGatewayComputeResourcePreference().getUsageReportingGatewayId();
                     RawCommandInfo rawCommandInfo = new RawCommandInfo(loadCommand + " && " + usageExecutable + " -gateway_user " +  username  +
                             " -submit_time \"`date '+%F %T %:z'`\"  -jobid " + jobId );

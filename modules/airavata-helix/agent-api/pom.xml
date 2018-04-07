@@ -30,7 +30,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <name>Agent API</name>
     <artifactId>agent-api</artifactId>
 
     <dependencies>
@@ -38,11 +38,6 @@
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
             <version>1.9.13</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-registry-cpi</artifactId>
-            <version>0.17-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>

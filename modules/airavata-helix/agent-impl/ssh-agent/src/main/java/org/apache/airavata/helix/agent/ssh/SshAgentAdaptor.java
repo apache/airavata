@@ -24,22 +24,23 @@ import org.apache.airavata.agents.api.*;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.credential.store.credential.Credential;
-import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
-import org.apache.airavata.credential.store.store.CredentialStoreException;
+import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
+import org.apache.airavata.credential.store.cpi.CredentialStoreService;
+import org.apache.airavata.model.credential.store.SSHCredential;
+import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 import org.apache.airavata.model.appcatalog.computeresource.*;
-import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.AppCatalog;
-import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.api.RegistryService;
+import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
+import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
 
 /**
  * TODO: Class level comments please
@@ -49,11 +50,9 @@ import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
  */
 public class SshAgentAdaptor implements AgentAdaptor {
 
+    private final static Logger logger = LoggerFactory.getLogger(SshAgentAdaptor.class);
+
     private Session session = null;
-    private AppCatalog appCatalog;
-    private ComputeResourceDescription computeResourceDescription;
-    private ResourceJobManager resourceJobManager;
-    private SSHJobSubmission sshJobSubmission;
 
     public void init(AdaptorParams adaptorParams) throws AgentException {
 
@@ -93,56 +92,49 @@ public class SshAgentAdaptor implements AgentAdaptor {
     @Override
     public void init(String computeResourceId, String gatewayId, String userId, String token) throws AgentException {
         try {
-            this.appCatalog = RegistryFactory.getAppCatalog();
-            this.computeResourceDescription = this.appCatalog.getComputeResource().getComputeResource(computeResourceId);
-            List<JobSubmissionInterface> jobSubmissionInterfaces = this.computeResourceDescription.getJobSubmissionInterfaces();
-            Optional<JobSubmissionInterface> jobSubmissionInterfaceOp = jobSubmissionInterfaces.stream()
-                    .filter(iface -> JobSubmissionProtocol.SSH == iface.getJobSubmissionProtocol() ||
-                            JobSubmissionProtocol.SSH_FORK == iface.getJobSubmissionProtocol())
-                    .findFirst();
+            ComputeResourceDescription computeResourceDescription = getRegistryServiceClient().getComputeResource(computeResourceId);
 
-            JobSubmissionInterface jobSubmissionInterface = jobSubmissionInterfaceOp.orElseThrow(() -> new AgentException("Could not find a Job submission interface with SSH"));
+            logger.info("Fetching credentials for cred store token " + token);
 
-            this.sshJobSubmission = this.appCatalog.getComputeResource().getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
-            this.resourceJobManager = sshJobSubmission.getResourceJobManager();
-
-            String jdbcUrl = ServerSettings.getCredentialStoreDBURL();
-            String jdbcUsr = ServerSettings.getCredentialStoreDBUser();
-            String jdbcPass = ServerSettings.getCredentialStoreDBPassword();
-            String driver = ServerSettings.getCredentialStoreDBDriver();
-            CredentialReaderImpl credentialReader = new CredentialReaderImpl(new DBUtil(jdbcUrl, jdbcUsr, jdbcPass, driver));
-            Credential credential = credentialReader.getCredential(gatewayId, token);
-
-            if (credential instanceof SSHCredential) {
-                SSHCredential sshCredential = SSHCredential.class.cast(credential);
-                SshAdaptorParams adaptorParams = new SshAdaptorParams();
-                adaptorParams.setHostName(this.computeResourceDescription.getHostName());
-                adaptorParams.setUserName(userId);
-                adaptorParams.setPassphrase(sshCredential.getPassphrase());
-                adaptorParams.setPrivateKey(sshCredential.getPrivateKey());
-                adaptorParams.setPublicKey(sshCredential.getPublicKey());
-                adaptorParams.setStrictHostKeyChecking(false);
-                init(adaptorParams);
+            SSHCredential sshCredential = getCredentialClient().getSSHCredential(token, gatewayId);
+            if (sshCredential == null) {
+                throw new AgentException("Null credential for token " + token);
             }
+            logger.info("Description for token : " + token + " : " + sshCredential.getDescription());
 
-        } catch (AppCatalogException e) {
-            e.printStackTrace();
-            throw new AgentException(e);
-        } catch (ApplicationSettingsException e) {
-            e.printStackTrace();
-            throw new AgentException(e);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            throw new AgentException(e);
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-            throw new AgentException(e);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new AgentException(e);
-        } catch (CredentialStoreException e) {
-            e.printStackTrace();
-            throw new AgentException(e);
+            SshAdaptorParams adaptorParams = new SshAdaptorParams();
+            adaptorParams.setHostName(computeResourceDescription.getHostName());
+            adaptorParams.setUserName(userId);
+            adaptorParams.setPassphrase(sshCredential.getPassphrase());
+            adaptorParams.setPrivateKey(sshCredential.getPrivateKey().getBytes());
+            adaptorParams.setPublicKey(sshCredential.getPublicKey().getBytes());
+            adaptorParams.setStrictHostKeyChecking(false);
+            init(adaptorParams);
+
+        } catch (Exception e) {
+            logger.error("Error while initializing ssh agent for compute resource " + computeResourceId + " to token " + token, e);
+            throw new AgentException("Error while initializing ssh agent for compute resource " + computeResourceId + " to token " + token, e);
+        }
+    }
+
+    // TODO this is inefficient. Try to use a connection pool
+    public static RegistryService.Client getRegistryServiceClient() throws AgentException {
+        try {
+            final int serverPort = Integer.parseInt(ServerSettings.getRegistryServerPort());
+            final String serverHost = ServerSettings.getRegistryServerHost();
+            return RegistryServiceClientFactory.createRegistryClient(serverHost, serverPort);
+        } catch (RegistryServiceException | ApplicationSettingsException e) {
+            throw new AgentException("Unable to create registry client...", e);
+        }
+    }
+
+    public static CredentialStoreService.Client getCredentialClient() throws AgentException {
+        try {
+            final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
+            final String serverHost =ServerSettings.getCredentialStoreServerHost();
+            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
+        } catch (CredentialStoreException | ApplicationSettingsException e) {
+            throw new AgentException("Unable to create credential client...", e);
         }
     }
 
@@ -151,7 +143,7 @@ public class SshAgentAdaptor implements AgentAdaptor {
         ChannelExec channelExec = null;
         try {
             channelExec = ((ChannelExec) session.openChannel("exec"));
-            channelExec.setCommand("cd " + workingDirectory + "; " + command);
+            channelExec.setCommand((workingDirectory != null ? "cd " + workingDirectory + "; " : "") + command);
             channelExec.setInputStream(null);
             InputStream out = channelExec.getInputStream();
             InputStream err = channelExec.getErrStream();
@@ -160,12 +152,9 @@ public class SshAgentAdaptor implements AgentAdaptor {
             commandOutput.readStdOutFromStream(out);
             commandOutput.readStdErrFromStream(err);
             return commandOutput;
-        } catch (JSchException e) {
-            e.printStackTrace();
-            throw new AgentException(e);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new AgentException(e);
+        } catch (JSchException | IOException e) {
+            logger.error("Failed to execute command " + command, e);
+            throw new AgentException("Failed to execute command " + command, e);
         } finally {
             if (channelExec != null) {
                 commandOutput.setExitCode(channelExec.getExitStatus());
@@ -200,8 +189,8 @@ public class SshAgentAdaptor implements AgentAdaptor {
                     + session.getUserName());
             throw new AgentException(e);
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new AgentException(e);
+            logger.error("Failed to create directory " + path, e);
+            throw new AgentException("Failed to create directory " + path, e);
         } finally {
             if (channelExec != null) {
                 channelExec.disconnect();
@@ -210,11 +199,8 @@ public class SshAgentAdaptor implements AgentAdaptor {
     }
 
     public void copyFileTo(String localFile, String remoteFile) throws AgentException {
-        FileInputStream fis = null;
-        String prefix = null;
-        if (new File(localFile).isDirectory()) {
-            prefix = localFile + File.separator;
-        }
+
+        FileInputStream fis;
         boolean ptimestamp = true;
 
         ChannelExec channelExec = null;
@@ -300,14 +286,17 @@ public class SshAgentAdaptor implements AgentAdaptor {
             //since remote file is always a file  we just return the file
             //return remoteFile;
         } catch (JSchException e) {
-            e.printStackTrace();
-            throw new AgentException(e);
+            logger.error("Failed to transfer file from " + localFile + " to remote location " + remoteFile, e);
+            throw new AgentException("Failed to transfer file from " + localFile + " to remote location " + remoteFile, e);
+
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            throw new AgentException(e);
+            logger.error("Failed to find local file " + localFile, e);
+            throw new AgentException("Failed to find local file " + localFile, e);
+
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new AgentException(e);
+            logger.error("Error while handling streams", e);
+            throw new AgentException("Error while handling streams", e);
+
         } finally {
             if (channelExec != null) {
                 channelExec.disconnect();
@@ -420,13 +409,23 @@ public class SshAgentAdaptor implements AgentAdaptor {
                 throw new AgentException(stdOutReader.getStdError());
             }
 
-        } catch (Exception e) {
-            //log.error(e.getMessage(), e);
-            throw new AgentException(e);
+        } catch (JSchException e) {
+            logger.error("Failed to transfer file remote from file " + remoteFile + " to location " + remoteFile, e);
+            throw new AgentException("Failed to transfer remote file from " + localFile + " to location " + remoteFile, e);
+
+        } catch (FileNotFoundException e) {
+            logger.error("Failed to find local file " + localFile, e);
+            throw new AgentException("Failed to find local file " + localFile, e);
+
+        } catch (IOException e) {
+            logger.error("Error while handling streams", e);
+            throw new AgentException("Error while handling streams", e);
+
         } finally {
             try {
                 if (fos != null) fos.close();
             } catch (Exception ee) {
+                logger.warn("Failed to close file output stream to " + localFile);
             }
 
             if (channelExec != null) {
@@ -459,13 +458,73 @@ public class SshAgentAdaptor implements AgentAdaptor {
             return Arrays.asList(stdOutReader.getStdOut().split("\n"));
 
         } catch (JSchException e) {
+            logger.error("Unable to retrieve command output. Command - " + command +
+                    " on server - " + session.getHost() + ":" + session.getPort() +
+                    " connecting user name - "
+                    + session.getUserName(), e);
             throw new AgentException("Unable to retrieve command output. Command - " + command +
                     " on server - " + session.getHost() + ":" + session.getPort() +
                     " connecting user name - "
                     + session.getUserName(), e);
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new AgentException(e);
+            logger.error("Error while handling streams", e);
+            throw new AgentException("Error while handling streams", e);
+        } finally {
+            if (channelExec != null) {
+                channelExec.disconnect();
+            }
+        }
+    }
+
+    @Override
+    public Boolean doesFileExist(String filePath) throws AgentException {
+        String command = "ls " + filePath;
+        ChannelExec channelExec = null;
+        try {
+            channelExec = (ChannelExec)session.openChannel("exec");
+            StandardOutReader stdOutReader = new StandardOutReader();
+
+            channelExec.setCommand(command);
+
+            InputStream out = channelExec.getInputStream();
+            InputStream err = channelExec.getErrStream();
+
+            channelExec.connect();
+
+            stdOutReader.readStdOutFromStream(out);
+            stdOutReader.readStdErrFromStream(err);
+            if (stdOutReader.getStdError().contains("ls:")) {
+                logger.info("Invalid file path " + filePath + ". stderr : " + stdOutReader.getStdError());
+                return false;
+            } else {
+                String[] potentialFiles = stdOutReader.getStdOut().split("\n");
+                if (potentialFiles.length > 1) {
+                    logger.info("More than one file matching to given path " + filePath);
+                    return false;
+                } else if (potentialFiles.length == 0) {
+                    logger.info("No file found for given path " + filePath);
+                    return false;
+                } else {
+                    if (potentialFiles[0].trim().equals(filePath)) {
+                        return true;
+                    } else {
+                        logger.info("Returned file name " + potentialFiles[0].trim() + " does not match with given name " + filePath);
+                        return false;
+                    }
+                }
+            }
+        } catch (JSchException e) {
+            logger.error("Unable to retrieve command output. Command - " + command +
+                    " on server - " + session.getHost() + ":" + session.getPort() +
+                    " connecting user name - "
+                    + session.getUserName(), e);
+            throw new AgentException("Unable to retrieve command output. Command - " + command +
+                    " on server - " + session.getHost() + ":" + session.getPort() +
+                    " connecting user name - "
+                    + session.getUserName(), e);
+        } catch (IOException e) {
+            logger.error("Error while handling streams", e);
+            throw new AgentException("Error while handling streams", e);
         } finally {
             if (channelExec != null) {
                 channelExec.disconnect();
@@ -484,7 +543,7 @@ public class SshAgentAdaptor implements AgentAdaptor {
         private String password;
         private String passphrase;
 
-        public DefaultUserInfo(String userName, String password, String passphrase) {
+        DefaultUserInfo(String userName, String password, String passphrase) {
             this.userName = userName;
             this.password = password;
             this.passphrase = passphrase;
@@ -568,13 +627,13 @@ public class SshAgentAdaptor implements AgentAdaptor {
         }
     }
 
-    static int checkAck(InputStream in) throws IOException {
+    private static int checkAck(InputStream in) throws IOException {
         int b = in.read();
         if (b == 0) return b;
         if (b == -1) return b;
 
         if (b == 1 || b == 2) {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             int c;
             do {
                 c = in.read();

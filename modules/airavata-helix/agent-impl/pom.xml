@@ -30,7 +30,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <name>Agent Impl</name>
     <artifactId>agent-impl</artifactId>
     <packaging>pom</packaging>
     <modules>

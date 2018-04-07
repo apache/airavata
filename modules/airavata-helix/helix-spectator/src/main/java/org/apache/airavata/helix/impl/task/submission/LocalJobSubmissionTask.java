@@ -25,7 +25,6 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapData;
-import org.apache.airavata.helix.impl.task.submission.config.SubmissionUtil;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskDef;
 import org.apache.airavata.model.job.JobModel;
@@ -55,7 +54,8 @@ public class LocalJobSubmissionTask extends JobSubmissionTask {
             jobModel.setTaskId(getTaskId());
             jobModel.setJobId(jobId);
 
-            File jobFile = SubmissionUtil.createJobFile(groovyMapData);
+            // TODO fix this
+            /*File jobFile = SubmissionUtil.createJobFile(groovyMapData);
 
             if (jobFile != null && jobFile.exists()) {
                 jobModel.setJobDescription(FileUtils.readFileToString(jobFile));
@@ -91,7 +91,7 @@ public class LocalJobSubmissionTask extends JobSubmissionTask {
                 saveAndPublishJobStatus(jobModel);
 
                 return null;
-            }
+            }*/
 
             return null;
         } catch (Exception e) {

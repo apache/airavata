@@ -27,8 +27,6 @@ import java.util.List;
 
 public class LocalAgentAdaptor implements AgentAdaptor {
 
-
-
     public void init(Object agentPams) throws AgentException {
         throw new AgentException("Operation not implemented");
     }
@@ -61,6 +59,11 @@ public class LocalAgentAdaptor implements AgentAdaptor {
 
     @Override
     public List<String> listDirectory(String path) throws AgentException {
+        throw new AgentException("Operation not implemented");
+    }
+
+    @Override
+    public Boolean doesFileExist(String filePath) throws AgentException {
         throw new AgentException("Operation not implemented");
     }
 

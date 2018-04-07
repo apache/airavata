@@ -23,10 +23,9 @@ import groovy.lang.Writable;
 import groovy.text.GStringTemplateEngine;
 import groovy.text.TemplateEngine;
 import org.apache.airavata.common.utils.ApplicationSettings;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.HashMap;
@@ -35,7 +34,7 @@ import java.util.Map;
 
 public class GroovyMapData {
 
-    private static final Logger logger = LogManager.getLogger(GroovyMapData.class);
+    private final static Logger logger = LoggerFactory.getLogger(GroovyMapData.class);
 
     @ScriptTag(name = "inputDir")
     private String inputDir;

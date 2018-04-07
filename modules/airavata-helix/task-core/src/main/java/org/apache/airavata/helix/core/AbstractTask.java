@@ -19,14 +19,23 @@
  */
 package org.apache.airavata.helix.core;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.helix.task.api.TaskHelper;
+import org.apache.airavata.helix.task.api.annotation.TaskOutPort;
 import org.apache.airavata.helix.task.api.annotation.TaskParam;
+import org.apache.curator.RetryPolicy;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.helix.HelixManager;
 import org.apache.helix.task.Task;
 import org.apache.helix.task.TaskCallbackContext;
 import org.apache.helix.task.TaskResult;
 import org.apache.helix.task.UserContentStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO: Class level comments please
@@ -36,11 +45,18 @@ import org.apache.helix.task.UserContentStore;
  */
 public abstract class AbstractTask extends UserContentStore implements Task {
 
+    private final static Logger logger = LoggerFactory.getLogger(AbstractTask.class);
+
     private static final String NEXT_JOB = "next-job";
     private static final String WORKFLOW_STARTED = "workflow-started";
 
+    private static CuratorFramework curatorClient = null;
+
     @TaskParam(name = "taskId")
     private String taskId;
+
+    @TaskOutPort(name = "Next Task")
+    private OutPort nextTask;
 
     private TaskCallbackContext callbackContext;
     private TaskHelper taskHelper;
@@ -71,6 +87,7 @@ public abstract class AbstractTask extends UserContentStore implements Task {
 
     @Override
     public final void cancel() {
+        logger.info("Cancelling task " + taskId);
         onCancel();
     }
 
@@ -78,6 +95,15 @@ public abstract class AbstractTask extends UserContentStore implements Task {
 
     public abstract void onCancel();
 
+    protected TaskResult onSuccess(String message) {
+        String successMessage = "Task " + getTaskId() + " completed." + (message != null ? " Message : " + message : "");
+        logger.info(successMessage);
+        return nextTask.invoke(new TaskResult(TaskResult.Status.COMPLETED, message));
+    }
+
+    protected TaskResult onFail(String reason, boolean fatal) {
+        return new TaskResult(fatal ? TaskResult.Status.FATAL_FAILED : TaskResult.Status.FAILED, reason);
+    }
     protected void publishErrors(Throwable e) {
         // TODO Publish through kafka channel with task and workflow id
         e.printStackTrace();
@@ -133,5 +159,28 @@ public abstract class AbstractTask extends UserContentStore implements Task {
 
     public void setRetryCount(int retryCount) {
         this.retryCount = retryCount;
+    }
+
+    public OutPort getNextTask() {
+        return nextTask;
+    }
+
+    public void setNextTask(OutPort nextTask) {
+        this.nextTask = nextTask;
+    }
+
+    protected synchronized CuratorFramework getCuratorClient() {
+
+        if (curatorClient == null) {
+            RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
+            try {
+                this.curatorClient = CuratorFrameworkFactory.newClient(ServerSettings.getZookeeperConnection(), retryPolicy);
+                this.curatorClient.start();
+            } catch (ApplicationSettingsException e) {
+                logger.error("Failed to create curator client ", e);
+                throw new RuntimeException(e);
+            }
+        }
+        return curatorClient;
     }
 }

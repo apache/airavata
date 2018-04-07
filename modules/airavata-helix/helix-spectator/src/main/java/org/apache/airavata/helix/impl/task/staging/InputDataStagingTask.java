@@ -30,8 +30,8 @@ import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.helix.task.TaskResult;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URI;
@@ -40,7 +40,7 @@ import java.net.URISyntaxException;
 @TaskDef(name = "Input Data Staging Task")
 public class InputDataStagingTask extends DataStagingTask {
 
-    private static final Logger logger = LogManager.getLogger(InputDataStagingTask.class);
+    private final static Logger logger = LoggerFactory.getLogger(InputDataStagingTask.class);
 
     @Override
     public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
@@ -93,23 +93,39 @@ public class InputDataStagingTask extends DataStagingTask {
 
             String localSourceFilePath = getLocalDataPath(sourceFileName);
             // Downloading input file from the storage resource
-            try {
-                logger.info("Downloading input file " + sourceURI.getPath() + " to the local path " + localSourceFilePath);
-                storageResourceAdaptor.downloadFile(sourceURI.getPath(), localSourceFilePath);
-                logger.info("Input file downloaded to " + localSourceFilePath);
-            } catch (AgentException e) {
-                throw new TaskOnFailException("Failed downloading input file " + sourceFileName + " to the local path " + localSourceFilePath, true, e);
-            }
 
-            // Uploading input file to the compute resource
             try {
-                logger.info("Uploading the input file to " + destinationURI.getPath() + " from local path " + localSourceFilePath);
-                adaptor.copyFileTo(localSourceFilePath, destinationURI.getPath());
-                logger.info("Output file uploaded to " + destinationURI.getPath());
-            } catch (AgentException e) {
-                throw new TaskOnFailException("Failed uploading the input file to " + destinationURI.getPath() + " from local path " + localSourceFilePath, true, e);
-            }
+                try {
+                    logger.info("Downloading input file " + sourceURI.getPath() + " to the local path " + localSourceFilePath);
+                    storageResourceAdaptor.downloadFile(sourceURI.getPath(), localSourceFilePath);
+                    logger.info("Input file downloaded to " + localSourceFilePath);
+                } catch (AgentException e) {
+                    throw new TaskOnFailException("Failed downloading input file " + sourceFileName + " to the local path " + localSourceFilePath, true, e);
+                }
 
+                File localFile = new File(localSourceFilePath);
+                if (localFile.exists()) {
+                    if (localFile.length() == 0) {
+                        logger.error("Local file " + localSourceFilePath +" size is 0 so ignoring the upload");
+                        return onFail("Input staging has failed as file " + localSourceFilePath + " size is 0", true, null);
+                    }
+                } else {
+                    throw new TaskOnFailException("Local file does not exist at " + localSourceFilePath, true, null);
+                }
+
+                // Uploading input file to the compute resource
+                try {
+                    logger.info("Uploading the input file to " + destinationURI.getPath() + " from local path " + localSourceFilePath);
+                    adaptor.copyFileTo(localSourceFilePath, destinationURI.getPath());
+                    logger.info("Input file uploaded to " + destinationURI.getPath());
+                } catch (AgentException e) {
+                    throw new TaskOnFailException("Failed uploading the input file to " + destinationURI.getPath() + " from local path " + localSourceFilePath, true, e);
+                }
+
+            } finally {
+                logger.info("Deleting temporary file " + localSourceFilePath);
+                deleteTempFile(localSourceFilePath);
+            }
             return onSuccess("Input data staging task " + getTaskId() + " successfully completed");
 
         } catch (TaskOnFailException e) {

@@ -20,6 +20,7 @@
 package org.apache.airavata.helix.impl.task.submission;
 
 import org.apache.airavata.agents.api.AgentAdaptor;
+import org.apache.airavata.agents.api.AgentException;
 import org.apache.airavata.agents.api.CommandOutput;
 import org.apache.airavata.agents.api.JobSubmissionOutput;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -36,16 +37,12 @@ import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.status.JobStatus;
-import org.apache.airavata.registry.cpi.*;
 import org.apache.commons.io.FileUtils;
-import org.apache.curator.RetryPolicy;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.helix.HelixManager;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.thrift.TException;
 import org.apache.zookeeper.CreateMode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.security.SecureRandom;
@@ -53,32 +50,16 @@ import java.util.*;
 
 public abstract class JobSubmissionTask extends AiravataTask {
 
-    private static final Logger logger = LogManager.getLogger(JobSubmissionTask.class);
-
-    private CuratorFramework curatorClient = null;
+    private final static Logger logger = LoggerFactory.getLogger(JobSubmissionTask.class);
 
     @Override
     public void init(HelixManager manager, String workflowName, String jobName, String taskName) {
         super.init(manager, workflowName, jobName, taskName);
-        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
-        try {
-            this.curatorClient = CuratorFrameworkFactory.newClient(ServerSettings.getZookeeperConnection(), retryPolicy);
-            this.curatorClient.start();
-        } catch (ApplicationSettingsException e) {
-            e.printStackTrace();
-            logger.error("Failed to create curator client ", e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    @SuppressWarnings("WeakerAccess")
-    public CuratorFramework getCuratorClient() {
-        return curatorClient;
     }
 
     // TODO perform exception handling
     @SuppressWarnings("WeakerAccess")
-    protected void createMonitoringNode(String jobId) throws Exception {
+    protected void createMonitoringNode(String jobId, String jobName) throws Exception {
         logger.info("Creating zookeeper paths for job monitoring for job id : " + jobId + ", process : "
                 + getProcessId() + ", gateway : " + getGatewayId());
         getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
@@ -92,15 +73,22 @@ public abstract class JobSubmissionTask extends AiravataTask {
         getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
                 "/monitoring/" + jobId + "/experiment", getExperimentId().getBytes());
         getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                "/monitoring/" + jobId + "/status", "pending".getBytes());
+                "/monitoring/" + jobId + "/jobName", jobName.getBytes());
+        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                "/monitoring/" + jobName + "/jobId", jobId.getBytes());
+        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                "/registry/" + getProcessId() + "/jobs/" + jobId, new byte[0]);
     }
 
     @SuppressWarnings("WeakerAccess")
     protected JobSubmissionOutput submitBatchJob(AgentAdaptor agentAdaptor, GroovyMapData groovyMapData, String workingDirectory) throws Exception {
         JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                getAppCatalog(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
+                getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
+
+        addMonitoringCommands(groovyMapData);
 
         String scriptAsString = groovyMapData.getAsString(jobManagerConfiguration.getJobDescriptionTemplateName());
+        logger.info("Generated job submission script : " + scriptAsString);
 
         int number = new SecureRandom().nextInt();
         number = (number < 0 ? -number : number);
@@ -112,13 +100,15 @@ public abstract class JobSubmissionTask extends AiravataTask {
         logger.info("Copying file form " + tempJobFile.getAbsolutePath() + " to remote path " + workingDirectory +
                 " of compute resource " + getTaskContext().getComputeResourceId());
         agentAdaptor.copyFileTo(tempJobFile.getAbsolutePath(), workingDirectory);
-        // TODO transfer file
+
         RawCommandInfo submitCommand = jobManagerConfiguration.getSubmitCommand(workingDirectory, tempJobFile.getPath());
 
-        logger.debug("Submit command for process id " + getProcessId() + " : " + submitCommand.getRawCommand());
+        logger.info("Submit command for process id " + getProcessId() + " : " + submitCommand.getRawCommand());
         logger.debug("Working directory for process id " + getProcessId() + " : " + workingDirectory);
 
-        CommandOutput commandOutput = agentAdaptor.executeCommand(submitCommand.getRawCommand(), workingDirectory);
+        CommandOutput commandOutput = submitCommandWithRecording(submitCommand, agentAdaptor, groovyMapData, workingDirectory);
+        logger.info("Job " + groovyMapData.getJobName() + " submitted to compute resource");
+        logger.info("Submission stdout: " + commandOutput.getStdOut() + ", stderr: " + commandOutput.getStdError());
 
         JobSubmissionOutput jsoutput = new JobSubmissionOutput();
         jsoutput.setDescription(scriptAsString);
@@ -142,6 +132,46 @@ public abstract class JobSubmissionTask extends AiravataTask {
         return jsoutput;
     }
 
+    /**
+     * This will write the standard output of the command to a file inside the working directory of the process and
+     * if the agent does not receive the output through first invocation, it retries by looking into the output file.
+     *
+     * @param submitCommand command to submit
+     * @param agentAdaptor agent adaptor to communicate with compute resource
+     * @param groovyMapData metadata object of the job
+     * @param workingDirectory working directory for the process
+     * @return {@link CommandOutput} of the submitted command
+     * @throws AgentException if agent failed to communicate with the compute host
+     */
+    private CommandOutput submitCommandWithRecording(RawCommandInfo submitCommand, AgentAdaptor agentAdaptor,
+                                                     GroovyMapData groovyMapData, String workingDirectory) throws AgentException {
+
+        String modifiedCommand =  submitCommand.getCommand() + " | tee " + getJobCommandRecordingFile(groovyMapData);
+        logger.info("Modified the submit command to support recording : " + modifiedCommand);
+
+        CommandOutput commandOutput = agentAdaptor.executeCommand(modifiedCommand, workingDirectory);
+
+        if (commandOutput.getStdOut() == null || "".equals(commandOutput.getStdOut())) {
+            logger.warn("command submission returned empty response so reading recording file at " + getJobCommandRecordingFile(groovyMapData));
+            CommandOutput recordingFileReadCommandOutput = agentAdaptor.executeCommand("cat " + getJobCommandRecordingFile(groovyMapData),
+                    groovyMapData.getWorkingDirectory());
+            if (recordingFileReadCommandOutput.getStdOut() != null && !"".equals(recordingFileReadCommandOutput.getStdOut())) {
+                logger.info("Received non empty output form recording file : " + recordingFileReadCommandOutput.getStdOut());
+                return recordingFileReadCommandOutput;
+            } else {
+                return commandOutput;
+            }
+        } else {
+            return commandOutput;
+        }
+    }
+
+    private String getJobCommandRecordingFile(GroovyMapData mapData) {
+        return (mapData.getWorkingDirectory().endsWith(File.separator) ?
+                mapData.getWorkingDirectory() : mapData.getWorkingDirectory() + File.separator) +
+                mapData.getJobName();
+    }
+
     @SuppressWarnings("WeakerAccess")
     public File getLocalDataDir() {
         String outputPath = ServerSettings.getLocalDataLocation();
@@ -152,7 +182,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
     @SuppressWarnings("WeakerAccess")
     public JobStatus getJobStatus(AgentAdaptor agentAdaptor, String jobID) throws Exception {
         JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                getAppCatalog(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
+                getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
         CommandOutput commandOutput = agentAdaptor.executeCommand(jobManagerConfiguration.getMonitorCommand(jobID).getRawCommand(), null);
 
         return jobManagerConfiguration.getParser().parseJobStatus(jobID, commandOutput.getStdOut());
@@ -162,7 +192,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
     @SuppressWarnings("WeakerAccess")
     public String getJobIdByJobName(AgentAdaptor agentAdaptor, String jobName, String userName) throws Exception {
         JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                getAppCatalog(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
+                getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
 
         RawCommandInfo jobIdMonitorCommand = jobManagerConfiguration.getJobIdMonitorCommand(jobName, userName);
         CommandOutput commandOutput = agentAdaptor.executeCommand(jobIdMonitorCommand.getRawCommand(), null);
@@ -170,8 +200,8 @@ public abstract class JobSubmissionTask extends AiravataTask {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public void saveJobModel(JobModel jobModel) throws RegistryException {
-        getExperimentCatalog().add(ExpCatChildDataType.JOB, jobModel, getProcessId());
+    public void saveJobModel(JobModel jobModel) throws TException {
+        getRegistryServiceClient().addJob(jobModel, getProcessId());
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -196,8 +226,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
                 jobStatus.setTimeOfStateChange(jobStatus.getTimeOfStateChange());
             }
 
-            CompositeIdentifier ids = new CompositeIdentifier(jobModel.getTaskId(), jobModel.getJobId());
-            getExperimentCatalog().add(ExpCatChildDataType.JOB_STATUS, jobStatus, ids);
+            getRegistryServiceClient().addJobStatus(jobStatus, jobModel.getTaskId(), jobModel.getJobId());
             JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), jobModel.getTaskId(),
                     getProcessId(), getProcessModel().getExperimentId(), getGatewayId());
 
@@ -209,5 +238,25 @@ public abstract class JobSubmissionTask extends AiravataTask {
         } catch (Exception e) {
             throw new Exception("Error persisting job status " + e.getLocalizedMessage(), e);
         }
+    }
+
+    private void addMonitoringCommands(GroovyMapData mapData) throws ApplicationSettingsException {
+        if (mapData.getPreJobCommands() == null) {
+            mapData.setPreJobCommands(new ArrayList<>());
+        }
+
+        mapData.getPreJobCommands().add(0, "curl -X POST -H \"Content-Type: application/vnd.kafka.json.v2+json\" " +
+                "-H \"Accept: application/vnd.kafka.v2+json\" " +
+                "--data '{\"records\":[{\"value\":{\"jobName\":\"" + mapData.getJobName() + "\", \"status\":\"RUNNING\"}}]}' \"" +
+                ServerSettings.getSetting("job.status.publish.endpoint") + "\"");
+
+        if (mapData.getPostJobCommands() == null) {
+            mapData.setPostJobCommands(new ArrayList<>());
+        }
+
+        mapData.getPostJobCommands().add("curl -X POST -H \"Content-Type: application/vnd.kafka.json.v2+json\" " +
+                "-H \"Accept: application/vnd.kafka.v2+json\" " +
+                "--data '{\"records\":[{\"value\":{\"jobName\":\"" + mapData.getJobName() + "\", \"status\":\"COMPLETED\"}}]}' \"" +
+                ServerSettings.getSetting("job.status.publish.endpoint") + "\"");
     }
 }

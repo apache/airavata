@@ -32,6 +32,7 @@ import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.model.messaging.event.Message;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.messaging.event.ProcessSubmitEvent;
+import org.apache.airavata.model.messaging.event.ProcessTerminateEvent;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -74,6 +75,19 @@ public class ProcessConsumer extends QueueingConsumer{
                         processSubmitEvent.getProcessId() + ", expId:" + processSubmitEvent.getExperimentId());
                 event = processSubmitEvent;
                 gatewayId = processSubmitEvent.getGatewayId();
+                MessageContext messageContext = new MessageContext(event, message.getMessageType(),
+                        message.getMessageId(), gatewayId, deliveryTag);
+                messageContext.setUpdatedTime(AiravataUtils.getTime(message.getUpdatedTime()));
+                messageContext.setIsRedeliver(envelope.isRedeliver());
+                handler.onMessage(messageContext);
+            } else if (message.getMessageType().equals(MessageType.TERMINATEPROCESS)) {
+                ProcessTerminateEvent processTerminateEvent = new ProcessTerminateEvent();
+                ThriftUtils.createThriftFromBytes(message.getEvent(), processTerminateEvent);
+                log.info(" Message Received with message id '" + message.getMessageId()
+                        + " and with message type:" + message.getMessageType() + ", for processId:" +
+                        processTerminateEvent.getProcessId());
+                event = processTerminateEvent;
+                gatewayId = processTerminateEvent.getGatewayId();
                 MessageContext messageContext = new MessageContext(event, message.getMessageType(),
                         message.getMessageId(), gatewayId, deliveryTag);
                 messageContext.setUpdatedTime(AiravataUtils.getTime(message.getUpdatedTime()));

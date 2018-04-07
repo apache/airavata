@@ -239,19 +239,24 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
     }
 
 
-    public void cancelExperiment(ExperimentModel experiment, ProcessModel processModel, String tokenId)
-            throws OrchestratorException {
-        // FIXME
-//        List<JobDetails> jobDetailsList = task.getJobDetailsList();
-//        for(JobDetails jobDetails:jobDetailsList) {
-//            JobState jobState = jobDetails.getJobStatuses().getJobState();
-//            if (jobState.getValue() > 4){
-//                logger.error("Cannot cancel the job, because current job state is : " + jobState.toString() +
-//                "jobId: " + jobDetails.getJobID() + " Job Name: " + jobDetails.getJobName());
-//                return;
-//            }
-//        }
-//        jobSubmitter.terminate(experiment.getExperimentID(),task.getTaskID(),tokenId);
+    public void cancelExperiment(ExperimentModel experiment, String tokenId) throws OrchestratorException {
+        logger.info("Terminating experiment " + experiment.getExperimentId());
+        RegistryService.Client registryServiceClient = getRegistryServiceClient();
+
+        try {
+            List<String> processIds = registryServiceClient.getProcessIds(experiment.getExperimentId());
+            if (processIds != null && processIds.size() > 0) {
+                for (String processId : processIds) {
+                    logger.info("Terminating process " + processId + " of experiment " + experiment.getExperimentId());
+                    jobSubmitter.terminate(experiment.getExperimentId(), processId, tokenId);
+                }
+            } else {
+                logger.warn("No processes found for experiment " + experiment.getExperimentId() + " to cancel");
+            }
+        } catch (TException e) {
+            logger.error("Failed to fetch process ids for experiment " + experiment.getExperimentId(), e);
+            throw new OrchestratorException("Failed to fetch process ids for experiment " + experiment.getExperimentId(), e);
+        }
     }
 
 

@@ -30,7 +30,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <name>Helix Workflow Impl</name>
     <artifactId>workflow-impl</artifactId>
 
     <dependencies>
