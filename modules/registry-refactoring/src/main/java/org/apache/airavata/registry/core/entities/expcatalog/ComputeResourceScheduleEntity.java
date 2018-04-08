@@ -17,40 +17,78 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+*//*
+
 package org.apache.airavata.registry.core.entities.expcatalog;
 
 import javax.persistence.*;
+import java.io.Serializable;
+
+*/
+/**
+ * The persistent class for the compute_resource_schedule database table.
+ *//*
 
 @Entity
-@Table(name = "EXPCAT_PROCESS_RESOURCE_SCHEDULING")
-public class ProcessResourceSchedulingEntity {
-    private String processId;
-    private String resourceHostId;
-    private int totalCPUCount;
-    private int nodeCount;
-    private int numberOfThreads;
-    private String queueName;
-    private int wallTimeLimit;
-    private int totalPhysicalMemory;
-    private String chessisNumber;
-    private String staticWorkingDir;
-    private String overrideLoginUserName;
-    private String overrideScratchLocation;
-    private String overrideAllocationProjectNumber;
-    private ProcessEntity process;
+@Table(name = "COMPUTE_RESOURCE_SCHEDULE")
+public class ComputeResourceScheduleEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "PROCESS_ID")
-    public String getProcessId() {
-        return processId;
-    }
-
-    public void setProcessId(String processId) {
-        this.processId = processId;
-    }
+    @Column(name = "EXPERIMENT_ID")
+    private String experimentId;
 
     @Column(name = "RESOURCE_HOST_ID")
+    private String resourceHostId;
+
+    @Column(name = "CPU_COUNT")
+    private int totalCPUCount;
+
+    @Column(name = "NODE_COUNT")
+    private int nodeCount;
+
+    @Column(name = "NUMBER_OF_THREADS")
+    private int numberOfThreads;
+
+    @Column(name = "QUEUE_NAME")
+    private String queueName;
+
+    @Column(name = "WALL_TIME_LIMIT")
+    private int wallTimeLimit;
+
+    @Column(name = "TOTAL_PHYSICAL_MEMORY")
+    private int totalPhysicalMemory;
+
+    @Column(name = "CHESSIS_NUMBER")
+    private String chessisNumber;
+
+    @Column(name = "STATIC_WORKING_DIRECTORY")
+    private String staticWorkingDir;
+
+    @Column(name = "OVERRIDE_LOGIN_USERNAME")
+    private String overrideLoginUserName;
+
+    @Column(name = "OVERRIDE_SCRATCH_LOCATION")
+    private String overrideScratchLocation;
+
+    @Column(name = "OVERRIDE_ALLOCATION_PROJECT_NUMBER")
+    private String overrideAllocationProjectNumber;
+
+    @OneToOne(targetEntity = UserConfigurationDataEntity.class, cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
+    private UserConfigurationDataEntity userConfiguration;
+
+    public ComputeResourceScheduleEntity() {
+    }
+
+    public String getExperimentId() {
+        return experimentId;
+    }
+
+    public void setExperimentId(String experimentId) {
+        this.experimentId = experimentId;
+    }
+
     public String getResourceHostId() {
         return resourceHostId;
     }
@@ -59,7 +97,6 @@ public class ProcessResourceSchedulingEntity {
         this.resourceHostId = resourceHostId;
     }
 
-    @Column(name = "CPU_COUNT")
     public int getTotalCPUCount() {
         return totalCPUCount;
     }
@@ -68,7 +105,6 @@ public class ProcessResourceSchedulingEntity {
         this.totalCPUCount = totalCPUCount;
     }
 
-    @Column(name = "NODE_COUNT")
     public int getNodeCount() {
         return nodeCount;
     }
@@ -77,7 +113,6 @@ public class ProcessResourceSchedulingEntity {
         this.nodeCount = nodeCount;
     }
 
-    @Column(name = "NUMBER_OF_THREADS")
     public int getNumberOfThreads() {
         return numberOfThreads;
     }
@@ -86,7 +121,6 @@ public class ProcessResourceSchedulingEntity {
         this.numberOfThreads = numberOfThreads;
     }
 
-    @Column(name = "QUEUE_NAME")
     public String getQueueName() {
         return queueName;
     }
@@ -95,7 +129,6 @@ public class ProcessResourceSchedulingEntity {
         this.queueName = queueName;
     }
 
-    @Column(name = "WALL_TIME_LIMIT")
     public int getWallTimeLimit() {
         return wallTimeLimit;
     }
@@ -104,7 +137,6 @@ public class ProcessResourceSchedulingEntity {
         this.wallTimeLimit = wallTimeLimit;
     }
 
-    @Column(name = "TOTAL_PHYSICAL_MEMORY")
     public int getTotalPhysicalMemory() {
         return totalPhysicalMemory;
     }
@@ -113,7 +145,6 @@ public class ProcessResourceSchedulingEntity {
         this.totalPhysicalMemory = totalPhysicalMemory;
     }
 
-    @Column(name = "CHESSIS_NUMBER")
     public String getChessisNumber() {
         return chessisNumber;
     }
@@ -122,7 +153,6 @@ public class ProcessResourceSchedulingEntity {
         this.chessisNumber = chessisNumber;
     }
 
-    @Column(name = "STATIC_WORKING_DIRECTORY")
     public String getStaticWorkingDir() {
         return staticWorkingDir;
     }
@@ -131,7 +161,6 @@ public class ProcessResourceSchedulingEntity {
         this.staticWorkingDir = staticWorkingDir;
     }
 
-    @Column(name = "OVERRIDE_LOGIN_USERNAME")
     public String getOverrideLoginUserName() {
         return overrideLoginUserName;
     }
@@ -140,7 +169,6 @@ public class ProcessResourceSchedulingEntity {
         this.overrideLoginUserName = overrideLoginUserName;
     }
 
-    @Column(name = "OVERRIDE_SCRATCH_LOCATION")
     public String getOverrideScratchLocation() {
         return overrideScratchLocation;
     }
@@ -149,7 +177,6 @@ public class ProcessResourceSchedulingEntity {
         this.overrideScratchLocation = overrideScratchLocation;
     }
 
-    @Column(name = "OVERRIDE_ALLOCATION_PROJECT_NUMBER")
     public String getOverrideAllocationProjectNumber() {
         return overrideAllocationProjectNumber;
     }
@@ -158,13 +185,11 @@ public class ProcessResourceSchedulingEntity {
         this.overrideAllocationProjectNumber = overrideAllocationProjectNumber;
     }
 
-    @OneToOne(targetEntity = ProcessEntity.class, cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID")
-    public ProcessEntity getProcess() {
-        return process;
+    public UserConfigurationDataEntity getUserConfiguration() {
+        return userConfiguration;
     }
 
-    public void setProcess(ProcessEntity process) {
-        this.process = process;
+    public void setUserConfiguration(UserConfigurationDataEntity userConfiguration) {
+        this.userConfiguration = userConfiguration;
     }
-}
+}*/

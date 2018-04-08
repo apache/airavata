@@ -21,55 +21,69 @@
 package org.apache.airavata.registry.core.entities.expcatalog;
 
 import java.io.Serializable;
+import java.math.BigInteger;
+import java.sql.Timestamp;
 
 /**
- * The primary key class for the experiment_status database table.
+ * The primary key class for the queue_status database table.
  */
-public class ExperimentStatusPK implements Serializable {
+public class QueueStatusPK implements Serializable {
     //default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
-    private String state;
-    private String experimentId;
+    private String hostName;
+    private String queueName;
+    private BigInteger time;
 
-    public ExperimentStatusPK() {
+    public QueueStatusPK() {
     }
 
-    public String getState() {
-        return state;
+    public String getHostName() {
+        return hostName;
     }
 
-    public void setState(String state) {
-        this.state = state;
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
     }
 
-    public String getExperimentId() {
-        return experimentId;
+    public String getQueueName() {
+        return queueName;
     }
 
-    public void setExperimentId(String experimentId) {
-        this.experimentId = experimentId;
+    public void setQueueName(String queueName) {
+        this.queueName = queueName;
+    }
+
+    public BigInteger getTime() {
+        return time;
+    }
+
+    public void setTime(BigInteger time) {
+        this.time = time;
     }
 
     public boolean equals(Object other) {
         if (this == other) {
             return true;
         }
-        if (!(other instanceof ExperimentStatusPK)) {
+        if (!(other instanceof QueueStatusPK)) {
             return false;
         }
-        ExperimentStatusPK castOther = (ExperimentStatusPK) other;
+        QueueStatusPK castOther = (QueueStatusPK) other;
         return
-                this.state.equals(castOther.state)
-                        && this.experimentId.equals(castOther.experimentId);
+                this.hostName.equals(castOther.hostName)
+                        && this.queueName.equals(castOther.queueName)
+                                && this.time.equals(castOther.time);
     }
 
     public int hashCode() {
         final int prime = 31;
         int hash = 17;
-        hash = hash * prime + this.state.hashCode();
-        hash = hash * prime + this.experimentId.hashCode();
+        hash = hash * prime + this.hostName.hashCode();
+        hash = hash * prime + this.queueName.hashCode();
+        hash = hash * prime + this.time.hashCode();
 
         return hash;
     }
+
 }

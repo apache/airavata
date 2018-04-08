@@ -22,40 +22,109 @@ package org.apache.airavata.registry.core.entities.expcatalog;
 
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.List;
 
+/**
+ * The persistent class for the process database table.
+ */
 @Entity
-@Table(name = "EXPCAT_PROCESS")
-public class ProcessEntity {
-    private String processId;
-    private String experimentId;
-    private long creationTime;
-    private long lastUpdateTime;
-    private String processDetail;
-    private String applicationInterfaceId;
-    private String applicationDeploymentId;
-    private String computeResourceId;
-    private String taskDag;
-    private String gatewayExecutionId;
-    private boolean enableEmailNotification;
-    private List<String> emailAddresses;
-    private String storageResourceId;
-    private String userDn;
-    private boolean generateCert;
-    private String experimentDataDir;
-    private String userName;
-
-    private List<ProcessStatusEntity> processStatuses;
-    private List<ProcessErrorEntity> processErrors;
-    private List<ProcessInputEntity> processInputs;
-    private List<ProcessOutputEntity> processOutputs;
-    private ProcessResourceSchedulingEntity processResourceSchedule;
-    private List<TaskEntity> tasks;
-
-    private ExperimentEntity experiment;
+@Table(name = "PROCESS")
+public class ProcessEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "PROCESS_ID")
+    private String processId;
+
+    @Column(name = "EXPERIMENT_ID")
+    private String experimentId;
+
+    @Column(name = "CREATION_TIME")
+    private Timestamp creationTime;
+
+    @Column(name = "LAST_UPDATE_TIME")
+    private Timestamp lastUpdateTime;
+
+    @Lob
+    @Column(name = "PROCESS_DETAIL")
+    private String processDetail;
+
+    @Column(name = "APPLICATION_INTERFACE_ID")
+    private String applicationInterfaceId;
+
+    @Column(name = "APPLICATION_DEPLOYMENT_ID")
+    private String applicationDeploymentId;
+
+    @Column(name = "COMPUTE_RESOURCE_ID")
+    private String computeResourceId;
+
+    @Lob
+    @Column(name = "TASK_DAG")
+    private String taskDag;
+
+    @Column(name = "GATEWAY_EXECUTION_ID")
+    private String gatewayExecutionId;
+
+    @Column(name = "ENABLE_EMAIL_NOTIFICATION")
+    private boolean enableEmailNotification;
+
+    @Lob
+    @ElementCollection
+    @CollectionTable(name="PROCESS_EMAIL", joinColumns = @JoinColumn(name="PROCESS_ID"))
+    @Column(name = "EMAIL_ADDRESSES")
+    private List<String> emailAddresses;
+
+    @Column(name = "STORAGE_RESOURCE_ID")
+    private String storageResourceId;
+
+    @Column(name = "USER_DN")
+    private String userDn;
+
+    @Column(name = "GENERATE_CERT")
+    private boolean generateCert;
+
+    @Column(name = "EXPERIMENT_DATA_DIR")
+    private String experimentDataDir;
+
+    @Column(name = "USERNAME")
+    private String userName;
+
+    @Column(name = "GROUP_RESOURCE_PROFILE_ID")
+    private String groupResourceProfileId;
+
+    @OneToMany(targetEntity = ProcessStatusEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "process")
+    private List<ProcessStatusEntity> processStatuses;
+
+    @OneToMany(targetEntity = ProcessErrorEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "process")
+    private List<ProcessErrorEntity> processErrors;
+
+    @OneToMany(targetEntity = ProcessInputEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "process")
+    private List<ProcessInputEntity> processInputs;
+
+    @OneToMany(targetEntity = ProcessOutputEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "process")
+    private List<ProcessOutputEntity> processOutputs;
+
+    @OneToOne(targetEntity = ProcessResourceScheduleEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "process")
+    private ProcessResourceScheduleEntity processResourceSchedule;
+
+    @OneToMany(targetEntity = TaskEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "process")
+    private List<TaskEntity> tasks;
+
+    @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
+    private ExperimentEntity experiment;
+
+    public ProcessEntity() {
+    }
+
     public String getProcessId() {
         return processId;
     }
@@ -64,7 +133,6 @@ public class ProcessEntity {
         this.processId = processId;
     }
 
-    @Column(name = "EXPERIMENT_ID")
     public String getExperimentId() {
         return experimentId;
     }
@@ -73,25 +141,22 @@ public class ProcessEntity {
         this.experimentId = experimentId;
     }
 
-    @Column(name = "CREATION_TIME")
-    public long getCreationTime() {
+    public Timestamp getCreationTime() {
         return creationTime;
     }
 
-    public void setCreationTime(long creationTime) {
+    public void setCreationTime(Timestamp creationTime) {
         this.creationTime = creationTime;
     }
 
-    @Column(name = "LAST_UPDATE_TIME")
-    public long getLastUpdateTime() {
+    public Timestamp getLastUpdateTime() {
         return lastUpdateTime;
     }
 
-    public void setLastUpdateTime(long lastUpdateTime) {
+    public void setLastUpdateTime(Timestamp lastUpdateTime) {
         this.lastUpdateTime = lastUpdateTime;
     }
 
-    @Column(name = "PROCESS_DETAIL")
     public String getProcessDetail() {
         return processDetail;
     }
@@ -100,7 +165,6 @@ public class ProcessEntity {
         this.processDetail = processDetail;
     }
 
-    @Column(name = "APPLICATION_INTERFACE_ID")
     public String getApplicationInterfaceId() {
         return applicationInterfaceId;
     }
@@ -109,7 +173,6 @@ public class ProcessEntity {
         this.applicationInterfaceId = applicationInterfaceId;
     }
 
-    @Column(name = "APPLICATION_DEPLOYMENT_ID")
     public String getApplicationDeploymentId() {
         return applicationDeploymentId;
     }
@@ -118,8 +181,6 @@ public class ProcessEntity {
         this.applicationDeploymentId = applicationDeploymentId;
     }
 
-
-    @Column(name = "COMPUTE_RESOURCE_ID")
     public String getComputeResourceId() {
         return computeResourceId;
     }
@@ -128,7 +189,6 @@ public class ProcessEntity {
         this.computeResourceId = computeResourceId;
     }
 
-    @Column(name = "TASK_DAG")
     public String getTaskDag() {
         return taskDag;
     }
@@ -137,7 +197,6 @@ public class ProcessEntity {
         this.taskDag = taskDag;
     }
 
-    @Column(name = "GATEWAY_EXECUTION_ID")
     public String getGatewayExecutionId() {
         return gatewayExecutionId;
     }
@@ -146,7 +205,6 @@ public class ProcessEntity {
         this.gatewayExecutionId = gatewayExecutionId;
     }
 
-    @Column(name = "ENABLE_EMAIL_NOTIFICATION")
     public boolean isEnableEmailNotification() {
         return enableEmailNotification;
     }
@@ -155,8 +213,6 @@ public class ProcessEntity {
         this.enableEmailNotification = enableEmailNotification;
     }
 
-    @ElementCollection
-    @CollectionTable(name="PROCESS_EMAIL", joinColumns = @JoinColumn(name="PROCESS_ID"))
     public List<String> getEmailAddresses() {
         return emailAddresses;
     }
@@ -165,7 +221,6 @@ public class ProcessEntity {
         this.emailAddresses = emailAddresses;
     }
 
-    @Column(name = "STORAGE_RESOURCE_ID")
     public String getStorageResourceId() {
         return storageResourceId;
     }
@@ -174,7 +229,6 @@ public class ProcessEntity {
         this.storageResourceId = storageResourceId;
     }
 
-    @Column(name = "USER_DN")
     public String getUserDn() {
         return userDn;
     }
@@ -183,7 +237,6 @@ public class ProcessEntity {
         this.userDn = userDn;
     }
 
-    @Column(name = "GENERATE_CERT")
     public boolean isGenerateCert() {
         return generateCert;
     }
@@ -192,7 +245,6 @@ public class ProcessEntity {
         this.generateCert = generateCert;
     }
 
-    @Column(name = "EXPERIMENT_DATA_DIR")
     public String getExperimentDataDir() {
         return experimentDataDir;
     }
@@ -201,7 +253,6 @@ public class ProcessEntity {
         this.experimentDataDir = experimentDataDir;
     }
 
-    @Column(name = "USER_NAME")
     public String getUserName() {
         return userName;
     }
@@ -210,25 +261,30 @@ public class ProcessEntity {
         this.userName = userName;
     }
 
-    @OneToMany(targetEntity = ProcessStatusEntity.class, cascade = CascadeType.ALL, mappedBy = "process")
+    public String getGroupResourceProfileId() {
+        return groupResourceProfileId;
+    }
+
+    public void setGroupResourceProfileId(String groupResourceProfileId) {
+        this.groupResourceProfileId = groupResourceProfileId;
+    }
+
     public List<ProcessStatusEntity> getProcessStatuses() {
         return processStatuses;
     }
 
-    public void setProcessStatuses(List<ProcessStatusEntity> processStatus) {
-        this.processStatuses = processStatus;
+    public void setProcessStatuses(List<ProcessStatusEntity> processStatuses) {
+        this.processStatuses = processStatuses;
     }
 
-    @OneToMany(targetEntity = ProcessErrorEntity.class, cascade = CascadeType.ALL, mappedBy = "process")
     public List<ProcessErrorEntity> getProcessErrors() {
         return processErrors;
     }
 
-    public void setProcessErrors(List<ProcessErrorEntity> processError) {
-        this.processErrors = processError;
+    public void setProcessErrors(List<ProcessErrorEntity> processErrors) {
+        this.processErrors = processErrors;
     }
 
-    @OneToMany(targetEntity = ProcessInputEntity.class, cascade = CascadeType.ALL, mappedBy = "process")
     public List<ProcessInputEntity> getProcessInputs() {
         return processInputs;
     }
@@ -237,7 +293,6 @@ public class ProcessEntity {
         this.processInputs = processInputs;
     }
 
-    @OneToMany(targetEntity = ProcessOutputEntity.class, cascade = CascadeType.ALL, mappedBy = "process")
     public List<ProcessOutputEntity> getProcessOutputs() {
         return processOutputs;
     }
@@ -246,16 +301,14 @@ public class ProcessEntity {
         this.processOutputs = processOutputs;
     }
 
-    @OneToOne(targetEntity = ProcessResourceSchedulingEntity.class, cascade = CascadeType.ALL, mappedBy = "process")
-    public ProcessResourceSchedulingEntity getProcessResourceSchedule() {
+    public ProcessResourceScheduleEntity getProcessResourceSchedule() {
         return processResourceSchedule;
     }
 
-    public void setProcessResourceSchedule(ProcessResourceSchedulingEntity proceeResourceSchedule) {
-        this.processResourceSchedule = proceeResourceSchedule;
+    public void setProcessResourceSchedule(ProcessResourceScheduleEntity processResourceSchedule) {
+        this.processResourceSchedule = processResourceSchedule;
     }
 
-    @OneToMany(targetEntity = TaskEntity.class, cascade = CascadeType.ALL, mappedBy = "process")
     public List<TaskEntity> getTasks() {
         return tasks;
     }
@@ -264,8 +317,6 @@ public class ProcessEntity {
         this.tasks = tasks;
     }
 
-    @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")
     public ExperimentEntity getExperiment() {
         return experiment;
     }

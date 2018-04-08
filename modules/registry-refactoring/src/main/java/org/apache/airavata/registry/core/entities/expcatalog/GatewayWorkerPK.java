@@ -23,52 +23,52 @@ package org.apache.airavata.registry.core.entities.expcatalog;
 import java.io.Serializable;
 
 /**
- * The primary key class for the experiment_status database table.
+ * The primary key class for the gateway_worker database table.
  */
-public class ExperimentStatusPK implements Serializable {
+public class GatewayWorkerPK implements Serializable {
     //default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
-    private String state;
-    private String experimentId;
+    private String gatewayId;
+    private String userName;
 
-    public ExperimentStatusPK() {
+    public GatewayWorkerPK() {
     }
 
-    public String getState() {
-        return state;
+    public String getGatewayId() {
+        return gatewayId;
     }
 
-    public void setState(String state) {
-        this.state = state;
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
     }
 
-    public String getExperimentId() {
-        return experimentId;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setExperimentId(String experimentId) {
-        this.experimentId = experimentId;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public boolean equals(Object other) {
         if (this == other) {
             return true;
         }
-        if (!(other instanceof ExperimentStatusPK)) {
+        if (!(other instanceof GatewayWorkerPK)) {
             return false;
         }
-        ExperimentStatusPK castOther = (ExperimentStatusPK) other;
+        GatewayWorkerPK castOther = (GatewayWorkerPK) other;
         return
-                this.state.equals(castOther.state)
-                        && this.experimentId.equals(castOther.experimentId);
+                this.gatewayId.equals(castOther.gatewayId)
+                        && this.userName.equals(castOther.userName);
     }
 
     public int hashCode() {
         final int prime = 31;
         int hash = 17;
-        hash = hash * prime + this.state.hashCode();
-        hash = hash * prime + this.experimentId.hashCode();
+        hash = hash * prime + this.gatewayId.hashCode();
+        hash = hash * prime + this.userName.hashCode();
 
         return hash;
     }
