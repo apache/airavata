@@ -26,7 +26,14 @@ import org.apache.airavata.model.WorkflowModel;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
@@ -42,15 +49,37 @@ import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.data.movement.DMType;
-import org.apache.airavata.model.data.movement.*;
+import org.apache.airavata.model.data.movement.DataMovementInterface;
+import org.apache.airavata.model.data.movement.DataMovementProtocol;
+import org.apache.airavata.model.data.movement.GridFTPDataMovement;
+import org.apache.airavata.model.data.movement.LOCALDataMovement;
+import org.apache.airavata.model.data.movement.SCPDataMovement;
+import org.apache.airavata.model.data.movement.UnicoreDataMovement;
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
-import org.apache.airavata.model.error.*;
-import org.apache.airavata.model.experiment.*;
+import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.error.AiravataErrorType;
+import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.model.error.AuthorizationException;
+import org.apache.airavata.model.error.DuplicateEntryException;
+import org.apache.airavata.model.error.ExperimentNotFoundException;
+import org.apache.airavata.model.error.InvalidRequestException;
+import org.apache.airavata.model.error.ProjectNotFoundException;
+import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.experiment.ExperimentSearchFields;
+import org.apache.airavata.model.experiment.ExperimentStatistics;
+import org.apache.airavata.model.experiment.ExperimentSummaryModel;
+import org.apache.airavata.model.experiment.ProjectSearchFields;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.status.*;
+import org.apache.airavata.model.status.ExperimentState;
+import org.apache.airavata.model.status.ExperimentStatus;
+import org.apache.airavata.model.status.JobStatus;
+import org.apache.airavata.model.status.ProcessStatus;
+import org.apache.airavata.model.status.QueueStatusModel;
+import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
@@ -59,29 +88,51 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
 import org.apache.airavata.registry.api.registry_apiConstants;
-import org.apache.airavata.registry.core.app.catalog.resources.*;
+import org.apache.airavata.registry.core.app.catalog.resources.CloudSubmissionResource;
+import org.apache.airavata.registry.core.app.catalog.resources.GridftpDataMovementResource;
+import org.apache.airavata.registry.core.app.catalog.resources.LocalDataMovementResource;
+import org.apache.airavata.registry.core.app.catalog.resources.LocalSubmissionResource;
+import org.apache.airavata.registry.core.app.catalog.resources.ScpDataMovementResource;
+import org.apache.airavata.registry.core.app.catalog.resources.SshJobSubmissionResource;
+import org.apache.airavata.registry.core.app.catalog.resources.UnicoreDataMovementResource;
+import org.apache.airavata.registry.core.app.catalog.resources.UnicoreJobSubmissionResource;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.core.experiment.catalog.resources.AbstractExpCatResource;
+import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationDeploymentRepository;
+import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationInterfaceRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.ComputeResourceRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationDeploymentRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationInterfaceRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.GroupResourceProfileRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationDeploymentRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.ApplicationInterfaceRepository;
 import org.apache.airavata.registry.core.repositories.appcatalog.GwyResourceProfileRepository;
+import org.apache.airavata.registry.core.repositories.appcatalog.UserResourceProfileRepository;
 import org.apache.airavata.registry.core.repositories.replicacatalog.DataProductRepository;
 import org.apache.airavata.registry.core.repositories.replicacatalog.DataReplicaLocationRepository;
-import org.apache.airavata.registry.core.repositories.appcatalog.UserResourceProfileRepository;
 import org.apache.airavata.registry.core.repositories.workflowcatalog.WorkflowRepository;
-import org.apache.airavata.registry.cpi.*;
+import org.apache.airavata.registry.core.utils.DBConstants;
+import org.apache.airavata.registry.cpi.AppCatalog;
+import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.CompositeIdentifier;
+import org.apache.airavata.registry.cpi.ComputeResource;
+import org.apache.airavata.registry.cpi.ExpCatChildDataType;
+import org.apache.airavata.registry.cpi.ExpCatParentDataType;
+import org.apache.airavata.registry.cpi.ExperimentCatalog;
+import org.apache.airavata.registry.cpi.ExperimentCatalogException;
+import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
+import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.cpi.ResultOrderType;
+import org.apache.airavata.registry.cpi.WorkflowCatalogException;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class RegistryServerHandler implements RegistryService.Iface {
     private final static Logger logger = LoggerFactory.getLogger(RegistryServerHandler.class);
@@ -1345,7 +1396,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
         try {
             List<String> appDeployments = new ArrayList<>();
             Map<String, String> filters = new HashMap<>();
-            filters.put(AppCatAbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, appModuleId);
+            filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, appModuleId);
             List<ApplicationDeploymentDescription> applicationDeployments = applicationDeploymentRepository.getApplicationDeployements(filters);
             for (ApplicationDeploymentDescription description : applicationDeployments){
                 appDeployments.add(description.getAppDeploymentId());
@@ -1364,7 +1415,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
     public List<ApplicationDeploymentDescription> getApplicationDeployments(String appModuleId) throws RegistryServiceException, TException {
         try {
             Map<String, String> filters = new HashMap<>();
-            filters.put(AppCatAbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, appModuleId);
+            filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, appModuleId);
             List<ApplicationDeploymentDescription> applicationDeployments = applicationDeploymentRepository.getApplicationDeployements(filters);
             return applicationDeployments;
         } catch (AppCatalogException e) {
@@ -1526,7 +1577,7 @@ public class RegistryServerHandler implements RegistryService.Iface {
             List<String> applicationModules = applicationInterface.getApplicationModules();
             if (applicationModules != null && !applicationModules.isEmpty()){
                 for (String moduleId : applicationModules) {
-                    filters.put(AppCatAbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, moduleId);
+                    filters.put(DBConstants.ApplicationDeployment.APPLICATION_MODULE_ID, moduleId);
                     List<ApplicationDeploymentDescription> applicationDeployments =
                             applicationDeploymentRepository.getApplicationDeployements(filters);
                     for (ApplicationDeploymentDescription deploymentDescription : applicationDeployments) {
