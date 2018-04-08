@@ -18,24 +18,50 @@
  * under the License.
  *
 */
-package org.apache.airavata.registry.core.entities.workspacecatalog;
+package org.apache.airavata.registry.core.entities.expcatalog;
+
+import org.apache.airavata.model.workspace.NotificationPriority;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
+/**
+ * The persistent class for the notification database table.
+ */
 @Entity
-@Table(name = "WORKSPACE_NOTIFICATION")
-public class NotificationEntity {
-    private String notificationId;
-    private String gatewayId;
-    private String title;
-    private String notificationMessage;
-    private long creationTime;
-    private long publishedTime;
-    private long expirationTime;
-    private String priority;
+@Table(name = "NOTIFICATION")
+public class NotificationEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "NOTIFICATION_ID")
+    private String notificationId;
+
+    @Column(name = "GATEWAY_ID")
+    private String gatewayId;
+
+    @Column(name = "TITLE")
+    private String title;
+
+    @Column(name = "NOTIFICATION_MESSAGE")
+    private String notificationMessage;
+
+    @Column(name = "CREATION_DATE")
+    private Timestamp creationTime;
+
+    @Column(name = "PUBLISHED_DATE")
+    private Timestamp publishedTime;
+
+    @Column(name = "EXPIRATION_DATE")
+    private Timestamp expirationTime;
+
+    @Column(name = "PRIORITY")
+    private NotificationPriority priority;
+
+    public NotificationEntity() {
+    }
+
     public String getNotificationId() {
         return notificationId;
     }
@@ -44,7 +70,6 @@ public class NotificationEntity {
         this.notificationId = notificationId;
     }
 
-    @Column(name = "GATEWAY_ID")
     public String getGatewayId() {
         return gatewayId;
     }
@@ -53,7 +78,6 @@ public class NotificationEntity {
         this.gatewayId = gatewayId;
     }
 
-    @Column(name = "TITLE")
     public String getTitle() {
         return title;
     }
@@ -62,8 +86,6 @@ public class NotificationEntity {
         this.title = title;
     }
 
-    @Lob
-    @Column(name = "NOTIFICATION_MESSAGE")
     public String getNotificationMessage() {
         return notificationMessage;
     }
@@ -72,39 +94,35 @@ public class NotificationEntity {
         this.notificationMessage = notificationMessage;
     }
 
-    @Column(name = "CREATION_TIME")
-    public long getCreationTime() {
+    public Timestamp getCreationTime() {
         return creationTime;
     }
 
-    public void setCreationTime(long creationTime) {
+    public void setCreationTime(Timestamp creationTime) {
         this.creationTime = creationTime;
     }
 
-    @Column(name = "PUBLISHED_TIME")
-    public long getPublishedTime() {
+    public Timestamp getPublishedTime() {
         return publishedTime;
     }
 
-    public void setPublishedTime(long publishedTime) {
+    public void setPublishedTime(Timestamp publishedTime) {
         this.publishedTime = publishedTime;
     }
 
-    @Column(name = "EXPIRATION_TIME")
-    public long getExpirationTime() {
+    public Timestamp getExpirationTime() {
         return expirationTime;
     }
 
-    public void setExpirationTime(long expirationTime) {
+    public void setExpirationTime(Timestamp expirationTime) {
         this.expirationTime = expirationTime;
     }
 
-    @Column(name = "PRIORITY")
-    public String getPriority() {
+    public NotificationPriority getPriority() {
         return priority;
     }
 
-    public void setPriority(String priority) {
+    public void setPriority(NotificationPriority priority) {
         this.priority = priority;
     }
 }

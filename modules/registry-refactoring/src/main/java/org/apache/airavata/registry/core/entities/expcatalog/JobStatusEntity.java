@@ -20,21 +20,58 @@
 */
 package org.apache.airavata.registry.core.entities.expcatalog;
 
+import org.apache.airavata.model.status.JobState;
+
 import javax.persistence.*;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
+/**
+ * The persistent class for the job_status database table.
+ */
 @Entity
-@Table(name = "EXPCAT_JOB_STATUS")
+@Table(name = "JOB_STATUS")
 @IdClass(JobStatusPK.class)
-public class JobStatusEntity {
-    private String jobId;
-    private String state;
-    private long timeOfStateChange;
-    private String reason;
+public class JobStatusEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    private JobEntity job;
+    @Id
+    @Column(name = "STATUS_ID")
+    private String statusId;
 
     @Id
     @Column(name = "JOB_ID")
+    private String jobId;
+
+    @Id
+    @Column(name = "TASK_ID")
+    private String taskId;
+
+    @Column(name = "STATE")
+    private JobState jobState;
+
+    @Column(name = "TIME_OF_STATE_CHANGE")
+    private Timestamp timeOfStateChange;
+
+    @Lob
+    @Column(name = "REASON")
+    private String reason;
+
+    @ManyToOne(targetEntity = JobEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "JOB_ID", referencedColumnName = "JOB_ID")
+    private JobEntity job;
+
+    public JobStatusEntity() {
+    }
+
+    public String getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(String statusId) {
+        this.statusId = statusId;
+    }
+
     public String getJobId() {
         return jobId;
     }
@@ -43,26 +80,30 @@ public class JobStatusEntity {
         this.jobId = jobId;
     }
 
-    @Id
-    @Column(name = "STATE")
-    public String getState() {
-        return state;
+    public String getTaskId() {
+        return taskId;
     }
 
-    public void setState(String state) {
-        this.state = state;
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
-    @Column(name = "TIME_OF_STATE_CHANGE")
-    public long getTimeOfStateChange() {
+    public JobState getState() {
+        return jobState;
+    }
+
+    public void setState(JobState jobState) {
+        this.jobState = jobState;
+    }
+
+    public Timestamp getTimeOfStateChange() {
         return timeOfStateChange;
     }
 
-    public void setTimeOfStateChange(long timeOfStateChange) {
+    public void setTimeOfStateChange(Timestamp timeOfStateChange) {
         this.timeOfStateChange = timeOfStateChange;
     }
 
-    @Column(name = "REASON")
     public String getReason() {
         return reason;
     }
@@ -71,8 +112,6 @@ public class JobStatusEntity {
         this.reason = reason;
     }
 
-    @ManyToOne(targetEntity = JobEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "JOB_ID", referencedColumnName = "JOB_ID")
     public JobEntity getJob() {
         return job;
     }
