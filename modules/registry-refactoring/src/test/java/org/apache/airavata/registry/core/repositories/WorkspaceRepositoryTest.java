@@ -22,18 +22,16 @@ package org.apache.airavata.registry.core.repositories;
 
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.model.workspace.Gateway;
-import org.apache.airavata.model.workspace.GatewayApprovalStatus;
 import org.apache.airavata.model.workspace.Notification;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.registry.core.entities.workspacecatalog.GatewayEntity;
-import org.apache.airavata.registry.core.entities.workspacecatalog.NotificationEntity;
-import org.apache.airavata.registry.core.entities.workspacecatalog.ProjectEntity;
+import org.apache.airavata.registry.core.entities.expcatalog.GatewayEntity;
+import org.apache.airavata.registry.core.entities.expcatalog.NotificationEntity;
+import org.apache.airavata.registry.core.entities.expcatalog.ProjectEntity;
 import org.apache.airavata.registry.core.entities.workspacecatalog.UserProfileEntity;
-import org.apache.airavata.registry.core.repositories.workspacecatalog.GatewayRepository;
-import org.apache.airavata.registry.core.repositories.workspacecatalog.NotificationRepository;
-import org.apache.airavata.registry.core.repositories.workspacecatalog.ProjectRepository;
+import org.apache.airavata.registry.core.repositories.expcatalog.GatewayRepository;
+import org.apache.airavata.registry.core.repositories.expcatalog.NotificationRepository;
+import org.apache.airavata.registry.core.repositories.expcatalog.ProjectRepository;
 import org.apache.airavata.registry.core.repositories.workspacecatalog.UserProfileRepository;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -62,7 +60,7 @@ public class WorkspaceRepositoryTest {
     @Before
     public void setupRepository() {
 
-        gatewayRepository = new GatewayRepository(Gateway.class, GatewayEntity.class);
+        /*gatewayRepository = new GatewayRepository(Gateway.class, GatewayEntity.class);
         notificationRepository = new NotificationRepository(Notification.class,
                 NotificationEntity.class);
         userProfileRepository = new UserProfileRepository(UserProfile.class, UserProfileEntity.class);
@@ -71,7 +69,7 @@ public class WorkspaceRepositoryTest {
         gatewayId = "test.com" + System.currentTimeMillis();
         notificationId = UUID.randomUUID().toString();
         userId = "testuser" + System.currentTimeMillis();
-        projectId = "project" + System.currentTimeMillis();
+        projectId = "project" + System.currentTimeMillis();*/
     }
 
 
