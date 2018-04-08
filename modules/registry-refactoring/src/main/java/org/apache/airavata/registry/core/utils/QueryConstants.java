@@ -21,6 +21,9 @@ package org.apache.airavata.registry.core.utils;
 
 import org.apache.airavata.model.user.UserProfile;
 import org.apache.airavata.registry.core.entities.appcatalog.*;
+import org.apache.airavata.registry.core.entities.expcatalog.GatewayEntity;
+import org.apache.airavata.registry.core.entities.expcatalog.NotificationEntity;
+import org.apache.airavata.registry.core.entities.expcatalog.ProjectEntity;
 import org.apache.airavata.registry.core.entities.replicacatalog.DataProductEntity;
 import org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowEntity;
 
@@ -99,6 +102,20 @@ public interface QueryConstants {
     String GET_ALL_USER_RESOURCE_PROFILE = "SELECT URP FROM " + UserResourceProfileEntity.class.getSimpleName() + " URP";
     String GET_ALL_GATEWAY_ID = "SELECT DISTINCT URP FROM " + UserResourceProfileEntity.class.getSimpleName() + " URP " +
             "WHERE URP.gatewayId LIKE :" + DBConstants.UserResourceProfile.GATEWAY_ID;
+
+    String GET_ALL_GATEWAYS = "SELECT G FROM " + GatewayEntity.class.getSimpleName() + " G";
+    String GET_GATEWAY_FROM_GATEWAY_NAME = "SELECT G FROM " + GatewayEntity.class.getSimpleName() + " G " +
+            "WHERE G.gatewayName LIKE :" + DBConstants.Gateway.GATEWAY_NAME;
+
+    String GET_ALL_GATEWAY_NOTIFICATIONS = "SELECT N FROM " + NotificationEntity.class.getSimpleName() + " N " +
+            "WHERE N.gatewayId LIKE :" + DBConstants.Notification.GATEWAY_ID;
+
+    String GET_ALL_PROJECTS = "SELECT P FROM " + ProjectEntity.class.getSimpleName() + " P";
+    String SEARCH_FOR_PROJECTS = "SELECT P FROM " + ProjectEntity.class.getSimpleName() + " P " +
+            "WHERE P.gatewayId LIKE :" + DBConstants.Project.GATEWAY_ID + " AND " +
+            "P.owner LIKE :" + DBConstants.Project.OWNER + " AND " +
+            "P.name LIKE :" + DBConstants.Project.PROJECT_NAME + " AND " +
+            "P.description LIKE :" + DBConstants.Project.DESCRIPTION;
 
     String GET_ALL_USER_COMPUTE_RESOURCE_PREFERENCE = "SELECT UCRP FROM " + UserComputeResourcePreferenceEntity.class.getSimpleName() + " UCRP " +
             "WHERE UCRP.userId LIKE :" + DBConstants.UserComputeResourcePreference.USER_ID + " AND UCRP.gatewayId LIKE :" +

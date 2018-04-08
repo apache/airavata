@@ -18,18 +18,153 @@
  * under the License.
  *
 */
-package org.apache.airavata.registry.core.repositories.workspacecatalog;
+package org.apache.airavata.registry.core.repositories.expcatalog;
 
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.registry.core.entities.workspacecatalog.ProjectEntity;
-import org.apache.airavata.registry.core.repositories.AbstractRepository;
+import org.apache.airavata.registry.core.entities.expcatalog.ProjectEntity;
+import org.apache.airavata.registry.core.utils.DBConstants;
+import org.apache.airavata.registry.core.utils.ObjectMapperSingleton;
+import org.apache.airavata.registry.core.utils.QueryConstants;
+import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.cpi.ResultOrderType;
+import org.dozer.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProjectRepository extends AbstractRepository<Project, ProjectEntity, String> {
+import java.sql.Timestamp;
+import java.util.*;
+
+public class ProjectRepository extends ExpCatAbstractRepository<Project, ProjectEntity, String> {
     private final static Logger logger = LoggerFactory.getLogger(ProjectRepository.class);
 
-    public ProjectRepository(Class<Project> thriftGenericClass, Class<ProjectEntity> dbEntityGenericClass) {
-        super(thriftGenericClass, dbEntityGenericClass);
+    public ProjectRepository() { super(Project.class, ProjectEntity.class); }
+
+    protected String saveProjectData(Project project, String gatewayId) throws RegistryException {
+        ProjectEntity projectEntity = saveProject(project, gatewayId);
+        return projectEntity.getProjectID();
     }
+
+    protected ProjectEntity saveProject(Project project, String gatewayId) throws RegistryException {
+        String projectID = getProjectId(project.getName());
+        Mapper mapper = ObjectMapperSingleton.getInstance();
+        ProjectEntity projectEntity = mapper.map(project, ProjectEntity.class);
+        projectEntity.setProjectID(projectID);
+        projectEntity.setGatewayId(gatewayId);
+
+        if (!isProjectExist(projectID)) {
+            logger.debug("Checking if the Project already exists");
+            projectEntity.setCreationTime(new Timestamp((System.currentTimeMillis())));
+        }
+
+        return execute(entityManager -> entityManager.merge(projectEntity));
+    }
+
+    public String addProject(Project project, String gatewayId) throws RegistryException {
+        return saveProjectData(project, gatewayId);
+    }
+
+    public void updateProject(Project project, String projectId) throws RegistryException {
+        saveProjectData(project, null);
+    }
+
+    private String getProjectId(String projectName){
+        String pro = projectName.replaceAll("\\s", "");
+        return pro + "_" + UUID.randomUUID();
+    }
+
+    public Project getProject(String projectId) throws RegistryException {
+        return get(projectId);
+    }
+
+    public List<Project> getProjectList(String fieldName, Object value) throws RegistryException {
+        return getProjectList(fieldName, value, -1, -1, null, null);
+    }
+
+    public List<Project> getProjectList(String fieldName, Object value, int limit, int offset,
+                                         Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException{
+        if (fieldName.equals(DBConstants.Project.OWNER)) {
+            logger.debug("Checking if the field name is owner");
+            List<Project> projectList = select(QueryConstants.GET_ALL_PROJECTS, 0);
+
+            if (!projectList.isEmpty() && projectList != null) {
+                logger.debug("The retrieved list is not empty or null");
+                return projectList;
+            }
+
+        }
+
+        return null;
+    }
+
+    public List<String> getProjectIDs(String fieldName, Object value) throws RegistryException {
+        List<Project> projectList = getProjectList(fieldName, value);
+        List<String> projectIds = new ArrayList<>();
+
+        if (!projectList.isEmpty() && projectList != null) {
+            logger.debug("The retrieved list is not empty or null");
+            for (Project project : projectList) {
+                projectIds.add(project.getProjectID());
+            }
+        }
+
+        return projectIds;
+    }
+
+    public List<Project> searchProjects(Map<String, String> filters) throws RegistryException {
+        return searchProjects(filters, -1, -1, null, null);
+    }
+
+    public List<Project> searchProjects(Map<String, String> filters, int limit,
+                                        int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
+        Map<String, Object> queryParameters = new HashMap<>();
+        for (String field : filters.keySet()) {
+
+            if (field.equals(DBConstants.Project.GATEWAY_ID)) {
+                logger.debug("Filter Projects by Gateway ID");
+                queryParameters.put(DBConstants.Project.GATEWAY_ID, filters.get(field));
+            }
+
+            else if (field.equals(DBConstants.Project.PROJECT_NAME)) {
+                logger.debug("Filter Projects by Project Name");
+                queryParameters.put(DBConstants.Project.PROJECT_NAME, filters.get(field));
+            }
+
+            else if (field.equals(DBConstants.Project.OWNER)) {
+                logger.debug("Filter Projects by Owner");
+                queryParameters.put(DBConstants.Project.OWNER, filters.get(field));
+            }
+
+            else if (field.equals(DBConstants.Project.DESCRIPTION)) {
+                logger.debug("Filter Projects by Description");
+                queryParameters.put(DBConstants.Project.DESCRIPTION, filters.get(field));
+            }
+        }
+
+        List<Project> projectList = select(QueryConstants.SEARCH_FOR_PROJECTS, -1, 0, queryParameters);
+        return projectList;
+    }
+
+    public List<Project> searchAllAccessibleProjects(List<String> accessibleProjectIds, Map<String, String> filters, int limit,
+                                                     int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
+        List<Project> projectList = new ArrayList<>();
+        for (Project project : searchProjects(filters, limit, offset, orderByIdentifier, resultOrderType)) {
+
+            if (accessibleProjectIds.contains(project.getProjectID())) {
+                logger.debug("Project is accessible");
+                projectList.add(project);
+            }
+
+        }
+
+        return projectList;
+    }
+
+    public boolean isProjectExist(String projectId) throws RegistryException {
+        return isExists(projectId);
+    }
+
+    public void removeProject(String projectId) throws RegistryException {
+        delete(projectId);
+    }
+
 }
