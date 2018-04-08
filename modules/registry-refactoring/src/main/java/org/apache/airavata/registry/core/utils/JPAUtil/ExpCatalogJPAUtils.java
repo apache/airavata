@@ -31,7 +31,7 @@ import java.util.Map;
 public class ExpCatalogJPAUtils {
     private final static Logger logger = LoggerFactory.getLogger(ExpCatalogJPAUtils.class);
 
-    private static final String PERSISTENCE_UNIT_NAME = "experiment_data";
+    private static final String PERSISTENCE_UNIT_NAME = "experiment_data_new";
     private static final String EXPCATALOG_JDBC_DRIVER = "registry.jdbc.driver";
     private static final String EXPCATALOG_JDBC_URL = "registry.jdbc.url";
     private static final String EXPCATALOG_JDBC_USER = "registry.jdbc.user";

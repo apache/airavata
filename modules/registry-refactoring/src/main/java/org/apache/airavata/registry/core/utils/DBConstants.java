@@ -78,6 +78,22 @@ public class DBConstants {
         public static final String GATEWAY_ID = "gatewayId";
     }
 
+    public static class Gateway {
+        public static final String GATEWAY_NAME = "gatewayName";
+    }
+
+    public static class Notification {
+        public static final String GATEWAY_ID = "gatewayId";
+    }
+
+    public static class Project {
+        public static final String GATEWAY_ID = "gatewayId";
+        public static final String OWNER = "owner";
+        public static final String PROJECT_NAME = "name";
+        public static final String DESCRIPTION = "description";
+        public static final String ACCESSIBLE_PROJECT_IDS = "accessibleProjectIds";
+    }
+
     public static class UserComputeResourcePreference {
         public static final String USER_ID = "userId";
         public static final String GATEWAY_ID = "gatewayId";
