@@ -90,7 +90,7 @@ public abstract class DataStagingTask extends AiravataTask {
             return adaptorSupport.fetchAdaptor(
                     getTaskContext().getGatewayId(),
                     getTaskContext().getComputeResourceId(),
-                    getTaskContext().getJobSubmissionProtocol().name(),
+                    getTaskContext().getJobSubmissionProtocol(),
                     getTaskContext().getComputeResourceCredentialToken(),
                     getTaskContext().getComputeResourceLoginUserName());
         } catch (Exception e) {
