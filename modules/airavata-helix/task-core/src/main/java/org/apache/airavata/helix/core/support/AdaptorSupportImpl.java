@@ -23,6 +23,7 @@ import org.apache.airavata.agents.api.*;
 import org.apache.airavata.helix.agent.ssh.SshAgentAdaptor;
 import org.apache.airavata.helix.agent.storage.StorageResourceAdaptorImpl;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 
 import java.io.File;
 
@@ -50,10 +51,17 @@ public class AdaptorSupportImpl implements AdaptorSupport {
     public void initializeAdaptor() {
     }
 
-    public AgentAdaptor fetchAdaptor(String gatewayId, String computeResource, String protocol, String authToken, String userId) throws AgentException {
-        SshAgentAdaptor agentAdaptor = new SshAgentAdaptor();
-        agentAdaptor.init(computeResource, gatewayId, userId, authToken);
-        return agentAdaptor;
+    public AgentAdaptor fetchAdaptor(String gatewayId, String computeResource, JobSubmissionProtocol protocol, String authToken, String userId) throws AgentException {
+
+        switch (protocol) {
+            case SSH:
+                SshAgentAdaptor agentAdaptor = new SshAgentAdaptor();
+                agentAdaptor.init(computeResource, gatewayId, userId, authToken);
+                return agentAdaptor;
+            default:
+                return null;
+        }
+
     }
 
     @Override
