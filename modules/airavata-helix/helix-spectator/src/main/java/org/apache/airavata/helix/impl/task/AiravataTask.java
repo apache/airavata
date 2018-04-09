@@ -81,6 +81,7 @@ public abstract class AiravataTask extends AbstractTask {
     private boolean skipTaskStatusPublish = false;
 
     protected TaskResult onSuccess(String message) {
+        logger.info(message);
         if (!skipTaskStatusPublish) {
             publishTaskState(TaskState.COMPLETED);
         }

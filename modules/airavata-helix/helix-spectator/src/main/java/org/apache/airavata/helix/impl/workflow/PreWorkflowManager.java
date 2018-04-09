@@ -253,20 +253,21 @@ public class PreWorkflowManager extends WorkflowManager {
                 }
 
                 String processId = event.getProcessId();
+                String experimentId = event.getExperimentId();
                 String gateway = event.getGatewayId();
 
-                logger.info("Received process launch message for process " + processId + " in gateway " + gateway);
+                logger.info("Received process launch message for process " + processId + " of experiment " + experimentId + " in gateway " + gateway);
 
                 try {
-                    logger.info("Launching the pre workflow for process " + processId + " in gateway " + gateway);
+                    logger.info("Launching the pre workflow for process " + processId + " of experiment " + experimentId + " in gateway " + gateway);
                     String workflowName = createAndLaunchPreWorkflow(processId);
-                    logger.info("Completed launching the pre workflow " + workflowName + " for process " + processId + " in gateway " + gateway);
+                    logger.info("Completed launching the pre workflow " + workflowName + " for process" + processId + " of experiment " + experimentId + " in gateway " + gateway);
 
                     // updating the process status
                     ProcessStatus status = new ProcessStatus();
                     status.setState(ProcessState.STARTED);
                     status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
-                    publishProcessStatus(event, status);
+                    publishProcessStatus(processId, experimentId, gateway, ProcessState.STARTED);
                     subscriber.sendAck(messageContext.getDeliveryTag());
                 } catch (Exception e) {
                     logger.error("Failed to launch the pre workflow for process " + processId + " in gateway " + gateway, e);
@@ -304,26 +305,5 @@ public class PreWorkflowManager extends WorkflowManager {
                 subscriber.sendAck(messageContext.getDeliveryTag());
             }
         }
-    }
-
-    private void publishProcessStatus(ProcessSubmitEvent event, ProcessStatus status) throws AiravataException {
-
-        RegistryService.Client registryClient = getRegistryClientPool().getResource();
-
-        try {
-            registryClient.updateProcessStatus(status, event.getProcessId());
-            getRegistryClientPool().returnResource(registryClient);
-
-        } catch (Exception e) {
-            logger.error("Failed to update process status " + event.getProcessId(), e);
-            getRegistryClientPool().returnBrokenResource(registryClient);
-        }
-
-        ProcessIdentifier identifier = new ProcessIdentifier(event.getProcessId(), event.getExperimentId(), event.getGatewayId());
-        ProcessStatusChangeEvent processStatusChangeEvent = new ProcessStatusChangeEvent(status.getState(), identifier);
-        MessageContext msgCtx = new MessageContext(processStatusChangeEvent, MessageType.PROCESS,
-                AiravataUtils.getId(MessageType.PROCESS.name()), event.getGatewayId());
-        msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-        getStatusPublisher().publish(msgCtx);
     }
 }
