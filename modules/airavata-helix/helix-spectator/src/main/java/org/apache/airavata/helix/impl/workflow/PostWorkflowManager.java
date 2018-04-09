@@ -28,6 +28,8 @@ import org.apache.airavata.helix.impl.task.*;
 import org.apache.airavata.helix.impl.task.completing.CompletingTask;
 import org.apache.airavata.helix.impl.task.staging.ArchiveTask;
 import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
+import org.apache.airavata.model.status.ProcessState;
+import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.monitor.JobStateValidator;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.monitor.kafka.JobStatusResultDeserializer;
@@ -196,8 +198,21 @@ public class PostWorkflowManager extends WorkflowManager {
 
                 // TODO get cluster lock before that
                 if ("cancel".equals(processStatus)) {
-                    logger.info("Cancelled post workflow for process " + processId);
-                    // TODO to be implemented
+                    logger.info("Cancelled post workflow for process " + processId + " in experiment " + experimentId);
+                    // This will mark an cancelling Experiment into a cancelled status for a set of valid job statuses
+                    switch (jobStatusResult.getState()) {
+                        case FAILED:
+                        case SUSPENDED:
+                        case CANCELED:
+                        case COMPLETE:
+                            logger.info("Job " + jobStatusResult.getJobId() + " status is " + jobStatusResult.getState() +
+                                    " so marking experiment " + experimentId + " as cancelled" );
+                            publishProcessStatus(processId, experimentId, gateway, ProcessState.CANCELED);
+                            break;
+                        default:
+                            logger.warn("Job " + jobStatusResult.getJobId() + " status " + jobStatusResult.getState() +
+                                    " is invalid to mark experiment " + experimentId + " as cancelled");
+                    }
                 } else {
 
                     if (jobStatusResult.getState() == JobState.COMPLETE || jobStatusResult.getState() == JobState.FAILED) {
