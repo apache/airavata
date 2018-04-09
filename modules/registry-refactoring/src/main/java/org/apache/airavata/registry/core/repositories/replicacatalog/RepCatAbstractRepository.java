@@ -118,7 +118,10 @@ public abstract class RepCatAbstractRepository<T, E, Id> {
             entityManager.getTransaction().begin();
             R r = committer.commit(entityManager);
             entityManager.getTransaction().commit();
-            return  r;
+            return r;
+        } catch(Exception e) {
+            logger.error("Failed to execute Replica Catalog transaction", e);
+            throw e;
         }finally {
             if (entityManager != null && entityManager.isOpen()) {
                 if (entityManager.getTransaction().isActive()) {

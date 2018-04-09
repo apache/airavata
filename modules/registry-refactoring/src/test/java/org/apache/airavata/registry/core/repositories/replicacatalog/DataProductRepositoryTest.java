@@ -21,6 +21,9 @@ package org.apache.airavata.registry.core.repositories.replicacatalog;
 
 import org.apache.airavata.model.data.replica.DataProductModel;
 import org.apache.airavata.model.data.replica.DataProductType;
+import org.apache.airavata.model.data.replica.DataReplicaLocationModel;
+import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
+import org.apache.airavata.model.data.replica.ReplicaPersistentType;
 import org.apache.airavata.registry.core.entities.replicacatalog.DataProductMetadataEntity;
 import org.apache.airavata.registry.core.repositories.replicacatalog.util.Initialize;
 import org.apache.airavata.registry.cpi.ReplicaCatalogException;
@@ -30,10 +33,13 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class DataProductRepositoryTest {
 
@@ -111,6 +117,38 @@ public class DataProductRepositoryTest {
         assertFalse(dataProductRepository.isDataProductExists(productUri1));
 
         dataProductRepository.removeDataProduct(productUri2);
+    }
+
+    @Test
+    public void testDataProductWithReplicaLocation() throws ReplicaCatalogException {
+        DataProductModel testDataProductModel1 = new DataProductModel();
+        testDataProductModel1.setGatewayId(gatewayId);
+        testDataProductModel1.setOwnerName(userId);
+        testDataProductModel1.setDataProductType(DataProductType.FILE);
+        testDataProductModel1.setProductName(productName);
+
+        DataReplicaLocationModel replicaLocationModel1 = new DataReplicaLocationModel();
+        replicaLocationModel1.setFilePath("/path/to/file.dat");
+        replicaLocationModel1.setReplicaDescription("Description of replica");
+        replicaLocationModel1.setReplicaLocationCategory(ReplicaLocationCategory.GATEWAY_DATA_STORE);
+        replicaLocationModel1.setReplicaName("file.dat");
+        replicaLocationModel1.setStorageResourceId("storage_resource_id");
+        replicaLocationModel1.setReplicaPersistentType(ReplicaPersistentType.PERSISTENT);
+
+        testDataProductModel1.addToReplicaLocations(replicaLocationModel1);
+
+        String productUri1 = dataProductRepository.registerDataProduct(testDataProductModel1);
+        assertTrue(dataProductRepository.isDataProductExists(productUri1));
+
+        DataProductModel retrievedDataProductModel1 = dataProductRepository.getDataProduct(productUri1);
+        assertEquals(productUri1, retrievedDataProductModel1.getProductUri());
+
+        assertEquals(1, retrievedDataProductModel1.getReplicaLocationsSize());
+        DataReplicaLocationModel retrievedReplicaLocationModel1 = retrievedDataProductModel1.getReplicaLocations().get(0);
+        assertEquals(productUri1, retrievedReplicaLocationModel1.getProductUri());
+
+        dataProductRepository.removeDataProduct(productUri1);
+        assertFalse(dataProductRepository.isDataProductExists(productUri1));
     }
 
 }
