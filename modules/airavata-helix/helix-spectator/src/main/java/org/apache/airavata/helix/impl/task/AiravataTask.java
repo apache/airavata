@@ -42,6 +42,7 @@ import org.apache.airavata.model.status.*;
 import org.apache.airavata.registry.api.RegistryService;
 import org.apache.airavata.registry.api.client.RegistryServiceClientFactory;
 import org.apache.airavata.registry.api.exception.RegistryServiceException;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.helix.HelixManager;
 import org.apache.helix.task.TaskResult;
 import org.apache.thrift.TException;
@@ -53,6 +54,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public abstract class AiravataTask extends AbstractTask {
 
@@ -62,8 +64,9 @@ public abstract class AiravataTask extends AbstractTask {
 
     private ProcessModel processModel;
     private ComputeResourceDescription computeResourceDescription;
-
     private TaskContext taskContext;
+    private String taskName;
+
 
     @TaskParam(name = "Process Id")
     private String processId;
@@ -86,22 +89,20 @@ public abstract class AiravataTask extends AbstractTask {
 
     protected TaskResult onFail(String reason, boolean fatal, Throwable error) {
 
-        String errorMessage;
         ProcessStatus status = new ProcessStatus(ProcessState.FAILED);
         StringWriter errors = new StringWriter();
 
-        if (error == null) {
-            errorMessage = "Task " + getTaskId() + " failed due to " + reason;
-            errors.write(errorMessage);
-            status.setReason(errorMessage);
-            logger.error(errorMessage);
+        String errorCode = UUID.randomUUID().toString();
+        String errorMessage = "Error Code : " + errorCode + ", Task " + getTaskId() + " failed due to " + reason +
+                (error == null ? "" : ", " + error.getMessage());
 
-        } else {
-            errorMessage = "Task " + getTaskId() + " failed due to " + reason + ", " + error.getMessage();
-            status.setReason(errorMessage);
-            error.printStackTrace(new PrintWriter(errors));
-            logger.error(errorMessage, error);
-        }
+        // wrapping from new error object with error code
+        error = new TaskOnFailException(errorMessage, true, error);
+
+        status.setReason(errorMessage);
+        errors.write(ExceptionUtils.getStackTrace(error));
+        logger.error(errorMessage, error);
+
         status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
         getTaskContext().setProcessStatus(status);
 
@@ -213,7 +214,7 @@ public abstract class AiravataTask extends AbstractTask {
         try {
             errorModel.setErrorId(AiravataUtils.getId("EXP_ERROR"));
             getRegistryServiceClient().addErrors("EXPERIMENT_ERROR", errorModel, experimentId);
-        } catch (TException e) {
+        } catch (Exception e) {
             String msg = "expId: " + getExperimentId() + " processId: " + getProcessId() + " : - Error while updating experiment errors";
             logger.error(msg, e);
         }
@@ -224,10 +225,8 @@ public abstract class AiravataTask extends AbstractTask {
         try {
             errorModel.setErrorId(AiravataUtils.getId("PROCESS_ERROR"));
             getRegistryServiceClient().addErrors("PROCESS_ERROR", errorModel, getProcessId());
-        } catch (TException e) {
-            String msg = "expId: " + getExperimentId() + " processId: " + getProcessId()
-                    + " : - Error while updating process errors";
-            logger.error(msg, e);
+        } catch (Exception e) {
+            logger.error("expId: " + getExperimentId() + " processId: " + getProcessId() + " : - Error while updating process errors", e);
         }
     }
 
@@ -236,10 +235,9 @@ public abstract class AiravataTask extends AbstractTask {
         try {
             errorModel.setErrorId(AiravataUtils.getId("TASK_ERROR"));
             getRegistryServiceClient().addErrors("TASK_ERROR", errorModel, getTaskId());
-        } catch (TException e) {
-            String msg = "expId: " + getExperimentId() + " processId: " + getProcessId() + " taskId: " + getTaskId()
-                    + " : - Error while updating task errors";
-            logger.error(msg, e);
+        } catch (Exception e) {
+            logger.error("expId: " + getExperimentId() + " processId: " + getProcessId() + " taskId: " + getTaskId()
+                    + " : - Error while updating task errors", e);
         }
     }
 
@@ -262,10 +260,13 @@ public abstract class AiravataTask extends AbstractTask {
             MDC.put("process", getProcessId());
             MDC.put("gateway", getGatewayId());
             MDC.put("task", getTaskId());
+            loadContext();
             if (!skipTaskStatusPublish) {
                 publishTaskState(TaskState.EXECUTING);
             }
             return onRun(helper, getTaskContext());
+        } catch (Exception e) {
+            return onFail("Unknown error while running task " + getTaskId(), true, e);
         } finally {
             MDC.clear();
         }
@@ -294,11 +295,20 @@ public abstract class AiravataTask extends AbstractTask {
 
     @Override
     public void init(HelixManager manager, String workflowName, String jobName, String taskName) {
-        super.init(manager, workflowName, jobName, taskName);
-        MDC.put("experiment", getExperimentId());
-        MDC.put("process", getProcessId());
-        MDC.put("gateway", getGatewayId());
-        MDC.put("task", getTaskId());
+
+        try {
+            super.init(manager, workflowName, jobName, taskName);
+            MDC.put("experiment", getExperimentId());
+            MDC.put("process", getProcessId());
+            MDC.put("gateway", getGatewayId());
+            MDC.put("task", getTaskId());
+            this.taskName = taskName;
+        } finally {
+            MDC.clear();
+        }
+    }
+
+    private void loadContext() throws TaskOnFailException {
         try {
             //logger.info("Gateway id is " + getGatewayId());
             processModel = getRegistryServiceClient().getProcess(processId);
@@ -318,12 +328,11 @@ public abstract class AiravataTask extends AbstractTask {
                                     processModel.getStorageResourceId()));
 
             this.taskContext = taskContextBuilder.build();
-            logger.info("Task " + taskName + " initialized");
+            logger.info("Task " + this.taskName + " initialized");
+
         } catch (Exception e) {
             logger.error("Error occurred while initializing the task " + getTaskId() + " of experiment " + getExperimentId(), e);
-           throw new RuntimeException("Error occurred while initializing the task " + getTaskId() + " of experiment " + getExperimentId(), e);
-        } finally {
-            MDC.clear();
+            throw new TaskOnFailException("Error occurred while initializing the task " + getTaskId() + " of experiment " + getExperimentId(), true, e);
         }
     }
 
