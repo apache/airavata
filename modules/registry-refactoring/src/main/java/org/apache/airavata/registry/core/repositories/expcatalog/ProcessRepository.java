@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, ProcessEntity, String> {
-    private final static Logger logger = LoggerFactory.getLogger(ProcessRepository.class);
+    private final static Logger logger = LoggerFactory.getLogger(ExperimentRepository.class);
 
     public ProcessRepository() { super(ProcessModel.class, ProcessEntity.class); }
 }

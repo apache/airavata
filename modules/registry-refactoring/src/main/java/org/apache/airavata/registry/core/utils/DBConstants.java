@@ -94,6 +94,25 @@ public class DBConstants {
         public static final String ACCESSIBLE_PROJECT_IDS = "accessibleProjectIds";
     }
 
+    public static class Experiment {
+        public static final String USER_NAME = "userName";
+        public static final String PROJECT_ID = "projectId";
+        public static final String GATEWAY_ID = "gatewayId";
+    }
+
+    public static class Process {
+        public static final String EXPERIMENT_ID = "experimentId";
+    }
+
+    public static class Task {
+        public static final String PARENT_PROCESS_ID = "parentProcessId";
+    }
+
+    public static class Job {
+        public static final String PROCESS_ID = "processId";
+        public static final String TASK_ID = "taskId";
+    }
+
     public static class UserComputeResourcePreference {
         public static final String USER_ID = "userId";
         public static final String GATEWAY_ID = "gatewayId";
