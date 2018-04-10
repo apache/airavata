@@ -12,6 +12,8 @@ from wagtail.admin.edit_handlers import (
     MultiFieldPanel,
     PageChooserPanel,
     StreamFieldPanel,
+    TabbedInterface,
+    ObjectList
 )
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Collection, Page, Orderable
@@ -497,6 +499,19 @@ class HomePage(Page):
         help_text='Choose Banner Image'
     )
 
+    boolean_choices = (
+        ("yes", "Yes"),
+        ("no", "No")
+    )
+
+    show_navbar = models.CharField(
+        choices=boolean_choices, max_length=5, help_text="Choose yes if you want to display the navbar on home page and no if you don't want to.", default=True
+    )
+
+    show_nav_extra = models.CharField(
+        choices = boolean_choices, max_length=5, help_text = "Choose yes if you want the secondary navbar to show on home page or no if you don't want to", default=True
+    )
+
     content_panels = Page.content_panels + [
         MultiFieldPanel([
             ImageChooserPanel('image'),
@@ -535,176 +550,17 @@ class HomePage(Page):
         ImageChooserPanel('banner_image')
     ]
 
-    def __str__(self):
-        return self.title
-
-class AboutPage(Page):
-    """
-    The About Page. You can see if you visit your site and edit the aboutpage
-    """
-    # Announcements
-    about_title = models.CharField(
-        max_length=255,
-        help_text = 'Write some title for about page'
-    )
-
-    person_logo = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+',
-        help_text='Person image'
-    )
-
-    person_occupation = models.CharField(
-        max_length=255,
-        help_text='Give a person occupation',
-        null=True,
-        blank=True,
-    )
-
-    person_name = models.CharField(
-        verbose_name='Person Name',
-        max_length=255,
-        help_text='Give a person name',
-        null=True,
-        blank=True,
-    )
-
-    body = StreamField(
-        BaseStreamBlock(), verbose_name="About content block", blank=True, null=True
-    )
-
-    contact_mail = models.CharField(
-        max_length=255,
-        help_text = 'Contact Mail',
-        null=True,
-        blank=True,
-    )
-
-    contact_phone = models.CharField(
-        max_length=12,
-        help_text = 'Contact Phone',
-        null=True,
-        blank=True,
-    )
-
-    contact_website = models.CharField(
-        max_length=255,
-        help_text = 'Contact Website',
-        null=True,
-        blank=True,
-    )
-
-    content_panels = Page.content_panels + [
-        MultiFieldPanel([
-            ImageChooserPanel('person_logo'),
-            FieldPanel('about_title', classname="full"),
-            FieldPanel('person_occupation', classname="full"),
-            FieldPanel('person_name', classname="full"),
-            FieldPanel('contact_mail', classname="full"),
-            FieldPanel('contact_phone', classname="full"),
-            FieldPanel('contact_website', classname="full"),
-            ], heading="Person section"),
-
-        MultiFieldPanel([
-            StreamFieldPanel('body'),
-        ], heading="Body section", classname="collapsible"),
+    customization_panels = [
+        FieldPanel('show_navbar'),
+        FieldPanel('show_nav_extra')
     ]
 
-    def __str__(self):
-        return self.about_title
-
-
-class ContactPage(Page):
-    """
-    The Contact Page. You can see if you visit your site and edit the contact page.
-    """
-
-    body = StreamField(
-        BaseStreamBlock(), verbose_name="Contact content block", blank=True, null=True
-    )
-
-    contact_mail = RichTextField(
-        null=True,
-        blank=True,
-        help_text='Give Mail with Text Description'
-    )
-
-    contact_phone = RichTextField(
-        help_text = 'Give Phone Number with Text Description',
-        null=True,
-        blank=True,
-    )
-
-    contact_website = RichTextField(
-        help_text = 'Give Website Link with Text Description',
-        null=True,
-        blank=True,
-    )
-
-    content_panels = Page.content_panels + [
-        MultiFieldPanel([
-            FieldPanel('contact_mail', classname="full"),
-            FieldPanel('contact_phone', classname="full"),
-            FieldPanel('contact_website', classname="full"),
-            ], heading="Contact section"),
-
-        MultiFieldPanel([
-            StreamFieldPanel('body'),
-        ], heading="Body section", classname="collapsible"),
-    ]
-
-    def __str__(self):
-        return self.title
-
-class DocumentationPage(Page):
-    """
-    The Documentation Page. You can see if you visit your site and edit the documentation page.
-    """
-
-    body = StreamField(
-        BaseStreamBlock(), verbose_name="Documentation content block", blank=True, null=True
-    )
-
-    documentation_title = models.CharField(
-        max_length=255,
-        help_text = 'Documentation Title',
-        null=True,
-        blank=True,
-    )
-
-    top_body = RichTextField(
-        help_text = 'Edit Top Body',
-        null=True,
-        blank=True,
-    )
-
-    bottom_body = RichTextField(
-        help_text = 'Edit Bottom Body',
-        null=True,
-        blank=True,
-    )
-
-    focus_text = RichTextField(
-        help_text = 'Edit Focus Text',
-        null=True,
-        blank=True,
-    )
-
-    content_panels = Page.content_panels + [
-        MultiFieldPanel([
-            FieldPanel('documentation_title', classname="full"),
-            FieldPanel('focus_text', classname="full"),
-            FieldPanel('bottom_body', classname="full"),
-            FieldPanel('top_body', classname="full"),
-            ], heading="Documentation section"),
-
-        MultiFieldPanel([
-            StreamFieldPanel('body'),
-        ], heading="Body section", classname="collapsible"),
-    ]
+    edit_handler = TabbedInterface([
+        ObjectList(content_panels, heading='Content'),
+        ObjectList(customization_panels, heading='Customization'),
+        ObjectList(Page.promote_panels, heading='Promote'),
+        ObjectList(Page.settings_panels, heading='Settings', classname="settings"),
+    ])
 
     def __str__(self):
         return self.title
@@ -732,9 +588,34 @@ class BlankPage(Page):
     The Blank Template Page. You can see if you visit your site and edit the blank page. Used to create free form content
     """
 
+    boolean_choices = (
+        ("yes", "Yes"),
+        ("no", "No")
+    )
+
+    show_navbar = models.CharField(
+        choices=boolean_choices, max_length=5, help_text="Choose yes if you want to display the navbar on home page and no if you don't want to.", default=True
+    )
+
+    show_nav_extra = models.CharField(
+        choices = boolean_choices, max_length=5, help_text = "Choose yes if you want the secondary navbar to show on home page or no if you don't want to", default=True
+    )
+
     content_panels = Page.content_panels + [
         InlinePanel("row", label="row")
     ]
+
+    customization_panels = [
+        FieldPanel('show_navbar'),
+        FieldPanel('show_nav_extra')
+    ]
+
+    edit_handler = TabbedInterface([
+        ObjectList(content_panels, heading='Content'),
+        ObjectList(customization_panels, heading='Customization'),
+        ObjectList(Page.promote_panels, heading='Promote'),
+        ObjectList(Page.settings_panels, heading='Settings', classname="settings"),
+    ])
 
     def __str__(self):
         return self.title

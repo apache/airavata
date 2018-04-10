@@ -23,6 +23,19 @@ class ImageBlock(StructBlock):
         template = "blocks/image_block.html"
 
 
+class FontAwesomeIcon(StructBlock):
+    """
+    Custom 'StructBlock' for utilizing images with associated caption and attribution django_airavata
+    """
+    icon_tag = TextBlock(required=True, blank=False, help_text = "Provide a font awesome icon class text")
+    icon_size = IntegerBlock(required=False,default=2,null=True, blank=True, help_text = "Provide a icon size in number type")
+    custom_class = TextBlock(required=False,blank=True, help_text="control this element by giving unique class names separated by space and styling the class in css")
+
+    class Meta:
+        icon = 'fa-flag'
+        template = "blocks/font_awesome_icon_block.html"
+
+
 class ParagraphBlock(StructBlock) :
     """
     Custom 'StructBlock' for creating rich text content
@@ -312,6 +325,7 @@ class BaseStreamBlock(StreamBlock):
     horizontal_rule = HorizontalRule()
     bootstrap_media_object = BootstrapMediaObject()
     placeholder_block = PlaceholderBlock()
+    font_awesome_icon_block = FontAwesomeIcon()
 
 
 class CssStreamBlock(StreamBlock):
