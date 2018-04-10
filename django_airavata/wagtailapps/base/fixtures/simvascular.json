@@ -3,7 +3,7 @@
   "model": "auth.user",
   "fields": {
     "password": "pbkdf2_sha256$36000$kw2ysZYzauw9$VFz74phHY8RREqO96EgthTw5xjOpOgfmb2aO0bwRPL4=",
-    "last_login": "2018-04-06T15:29:18.388Z",
+    "last_login": "2018-04-10T22:57:25.628Z",
     "is_superuser": true,
     "username": "stephenpaul2727",
     "first_name": "",
@@ -272,9 +272,9 @@
     "expired": false,
     "locked": false,
     "first_published_at": "2018-04-04T17:47:00.100Z",
-    "last_published_at": "2018-04-04T23:58:59.424Z",
-    "latest_revision_created_at": "2018-04-04T23:58:59.399Z",
-    "live_revision": 19
+    "last_published_at": "2018-04-10T22:57:45.186Z",
+    "latest_revision_created_at": "2018-04-10T22:57:45.156Z",
+    "live_revision": 239
   }
 },
 {
@@ -305,9 +305,9 @@
     "expired": false,
     "locked": false,
     "first_published_at": "2018-04-04T23:57:59.933Z",
-    "last_published_at": "2018-04-05T00:03:58.503Z",
-    "latest_revision_created_at": "2018-04-05T00:03:58.471Z",
-    "live_revision": 23
+    "last_published_at": "2018-04-10T22:58:26.271Z",
+    "latest_revision_created_at": "2018-04-10T22:58:26.246Z",
+    "live_revision": 241
   }
 },
 {
@@ -338,9 +338,9 @@
     "expired": false,
     "locked": false,
     "first_published_at": "2018-04-05T00:09:24.366Z",
-    "last_published_at": "2018-04-05T01:52:19.715Z",
-    "latest_revision_created_at": "2018-04-05T01:52:19.686Z",
-    "live_revision": 39
+    "last_published_at": "2018-04-10T22:58:10.764Z",
+    "latest_revision_created_at": "2018-04-10T22:58:10.738Z",
+    "live_revision": 240
   }
 },
 {
@@ -876,6 +876,48 @@
   }
 },
 {
+  "model": "wagtailcore.pagerevision",
+  "pk": 239,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-10T22:57:45.156Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 2, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 208, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 6, \"seo_title\": \"Home\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-04T17:47:00.100Z\", \"last_published_at\": \"2018-04-04T23:58:59.424Z\", \"latest_revision_created_at\": \"2018-04-04T23:58:59.399Z\", \"live_revision\": 19, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"SimVascular Supercomputing Gateway\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto mt-5\\\"}, \\\"id\\\": \\\"da9696f2-41d4-4518-991d-d01641a0792e\\\"}, {\\\"type\\\": \\\"horizontal_rule\\\", \\\"value\\\": {\\\"thickness\\\": 2, \\\"bg_color\\\": \\\"#000000\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto\\\"}, \\\"id\\\": \\\"6c40adc1-ec0c-48c0-be36-28ce966d5165\\\"}, {\\\"type\\\": \\\"bootstrap_media_object\\\", \\\"value\\\": {\\\"media_img\\\": 1, \\\"media_img_alt\\\": \\\"sim-heart\\\", \\\"media_img_width\\\": null, \\\"media_img_height\\\": null, \\\"heading_text\\\": \\\"\\\", \\\"body_text\\\": \\\"<p>Welcome to SimVasucular Supercomputing Gateway! Our gateway provides access to high performance computer clusters for SimVascular users who would like to run simulation with super computing (10x~ faster than desktop). The svSolver needed for running simulation is already setup and ready to use from the computer clusters. Through the gateway, SimVascular users just simply create simualtion jobs, upload input/data files, launch simualtion, and download results once the simulation is finished. There is no hassle for users to compile or setup svSolver. Detailed instructions about how to use the gateway are provided <a href=\\\\\\\"https://gateway.simvascular.org/pages/instructions\\\\\\\">here</a>.<br/></p><p>SimVascular is an open source integrated software suite for image-based cardiovascular modeling and patient-specific simulation, providing a complete pipeline from medical image visualization/segmentation, 3D model construction, meshing, to blood flow simulation and hemodynamics analysis. It is recommended that new users to SimVascular first go through <a href=\\\\\\\"http://simvascular.org/\\\\\\\">SimVascular Documentation Website</a> to understand the workflow in SimVascular. With SimVascular, users can create input/data files for simulation and upload to the gateway.</p>\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto\\\"}, \\\"id\\\": \\\"4a2ec18e-75c4-4800-b544-d6d2f8b66074\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto\\\", \\\"body\\\": \\\"<h4>Usage Policy</h4><p>SimVascular Supercomputing Gateway is mainly for educational purpose. Only users from American institutions can be granted access after approval.</p>\\\"}, \\\"id\\\": \\\"bcbbe4ef-6746-4bc9-a166-91e650570ebb\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 240,
+  "fields": {
+    "page": 6,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-10T22:58:10.738Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 6, \"path\": \"0001000100010002\", \"depth\": 4, \"numchild\": 0, \"title\": \"News\", \"draft_title\": \"News\", \"slug\": \"news\", \"content_type\": 208, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/news/\", \"owner\": 6, \"seo_title\": \"\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-05T00:09:24.366Z\", \"last_published_at\": \"2018-04-05T01:52:19.715Z\", \"latest_revision_created_at\": \"2018-04-05T01:52:19.686Z\", \"live_revision\": 39, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 5, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"News\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-12 text-center mt-4\\\"}, \\\"id\\\": \\\"b5059f93-4152-4207-9abc-9dd10ab3a049\\\"}]\", \"page\": 6}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 241,
+  "fields": {
+    "page": 4,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-10T22:58:26.246Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 4, \"path\": \"0001000100010001\", \"depth\": 4, \"numchild\": 0, \"title\": \"Instructions\", \"draft_title\": \"Instructions\", \"slug\": \"instructions\", \"content_type\": 208, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/instructions/\", \"owner\": 6, \"seo_title\": \"\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-04T23:57:59.933Z\", \"last_published_at\": \"2018-04-05T00:03:58.503Z\", \"latest_revision_created_at\": \"2018-04-05T00:03:58.471Z\", \"live_revision\": 23, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 3, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-1\\\"}, \\\"id\\\": \\\"de4d241e-a219-4f94-99f0-ea2430a518ab\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mt-4\\\", \\\"body\\\": \\\"<h2>Instructions</h2><p>The instructions here guide users to create new accounts, create simulation jobs, upload input/data files, run simulation and download simulation results.</p><h2>Create Account</h2><p>If you are a college student, or work in a research institute, please use &quot;Sign in with CILogon&quot;. In this option, under &quot;Select An Identity Provider&quot;, find your institute, then click &quot;Log On&quot; and sign in with your institute ID and password.<br/></p><p>If you can&#x27;t find your institute, you need to create a new account by providing username, password, email, name.<br/> Attention: after signing up, you can&#x27;t access the computer resource until approved.</p><h2>Log In</h2><p>Based on the way you created your account, choose the corresponding way to log in.</p><h2>Create/Browse Projects</h2><p>It&#x27;s not required to create a new project. By default, &quot;Default Poject&quot; is already created for you. In one project, you can create multiple exeperiments (i.e. simulation jobs).<br/></p><p>To browse existing projects: click &quot;Project&quot; -&gt; &quot;Browse&quot; at the upper-left corner.<br/> To create a new project: click &quot;Project&quot; -&gt; &quot;Create&quot; at the upper-left corner.</p><h2>Create/Browse Experiments (Simulation Jobs)</h2><p>To browse existing experiments: click &quot;Experiment&quot; -&gt; &quot;Browse&quot; at the upper-left corner.<br/></p><p>To create a new experiment:<br/> 1. click &quot;Experiment&quot; -&gt; &quot;Create&quot; at the upper-left corner.<br/> 2. Give a name and click &quot;Continue&quot;.<br/> 3. Click the corresponding buttons &quot;Choose File&quot; to upload required files for simulation, such as geombc.dat.1, restart.0.1, bct.dat, solver.inp, numstart.dat. For certain complicated simulation, extra files can be uploaded as optional input files.</p><p>To create those input/data files from SimVascular: in SimVascular, after a job is set up, right click the job node in Data Manager and click &quot;Export Data Files&quot;. Then, all files will be exported to a specified folder.</p><ol><li>Specify compute resource.<br/> 5. Select a queue, specify the number of nodes and cores. ATTENTION: Our computer cluster has a limited number of nodes. Each node has 24 cores. Please choose appropriate queue, node and core numbers for your simulation job.</li></ol><p>For a small simulatio job: choose queue &quot;shared&quot;, 1 node, 1~23 cores.</p><p>For a medium simulatio job: choose queue &quot;compute&quot;, 1 node, 24 cores.</p><p>For a large simulatio job: choose queue &quot;compute&quot;, 2 node, 48 cores.</p><ol><li>Provide email address to receive notifications (optional).<br/> 7. Click &quot;Save and launch&quot; to launch the simulation job. Attention: if all the nodes are occupied by other users, your job will be in the waiting queue until the number of nodes you request become available.<br/> 8. Gateway then shows a webpage about the status of the current experiment.<br/> 9. You can also browse an existing exepriment and click &quot;Clone&quot; to create a new experiment with the same parameters.</li></ol><h2>Download Results</h2><p>Once the experiment is completed (&quot;Status&quot; becomes &quot;COMPLETED&quot;), go to the experiment summary page, files are available in &quot;Outputs&quot;, and you can download proc-xx.czf.tar.gz which contains all simulation results.You can also click &quot;Open&quot; in &quot;Storage Directory&quot; to get a list of all input and output files and download specific files.</p>\\\"}, \\\"id\\\": \\\"387e3079-aea2-403b-902b-fea70426ec8f\\\"}]\", \"page\": 4}]}",
+    "approved_go_live_at": null
+  }
+},
+{
   "model": "wagtailcore.collection",
   "pk": 1,
   "fields": {
@@ -1047,16 +1089,25 @@
 {
   "model": "django_airavata_wagtail_base.blankpage",
   "pk": 3,
-  "fields": {}
+  "fields": {
+    "show_navbar": "yes",
+    "show_nav_extra": "yes"
+  }
 },
 {
   "model": "django_airavata_wagtail_base.blankpage",
   "pk": 4,
-  "fields": {}
+  "fields": {
+    "show_navbar": "yes",
+    "show_nav_extra": "yes"
+  }
 },
 {
   "model": "django_airavata_wagtail_base.blankpage",
   "pk": 6,
-  "fields": {}
+  "fields": {
+    "show_navbar": "yes",
+    "show_nav_extra": "yes"
+  }
 }
 ]
