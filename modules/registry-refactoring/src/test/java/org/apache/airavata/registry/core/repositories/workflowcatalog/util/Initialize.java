@@ -17,10 +17,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.registry.core.repositories.util;
+package org.apache.airavata.registry.core.repositories.workflowcatalog.util;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.derby.drda.NetworkServerControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,10 +38,9 @@ import java.util.StringTokenizer;
 public class Initialize {
     private static final Logger logger = LoggerFactory.getLogger(Initialize.class);
     public static final String DERBY_SERVER_MODE_SYS_PROPERTY = "derby.drda.startNetworkServer";
-    public  String scriptName = "appcatalog-derby.sql";
+    public  String scriptName = "workflowcatalog-derby.sql";
     private NetworkServerControl server;
     private static final String delimiter = ";";
-    public static final String COMPUTE_RESOURCE_TABLE = "COMPUTE_RESOURCE";
     private String jdbcUrl = null;
     private String jdbcDriver = null;
     private String jdbcUser = null;
@@ -91,12 +91,11 @@ public class Initialize {
     }
 
     public void initializeDB() {
-
         try{
-            jdbcDriver = ServerSettings.getSetting("appcatalog.jdbc.driver");
-            jdbcUrl = ServerSettings.getSetting("appcatalog.jdbc.url");
-            jdbcUser = ServerSettings.getSetting("appcatalog.jdbc.user");
-            jdbcPassword = ServerSettings.getSetting("appcatalog.jdbc.password");
+            jdbcDriver = ServerSettings.getSetting("workflowcatalog.jdbc.driver");
+            jdbcUrl = ServerSettings.getSetting("workflowcatalog.jdbc.url");
+            jdbcUser = ServerSettings.getSetting("workflowcatalog.jdbc.user");
+            jdbcPassword = ServerSettings.getSetting("workflowcatalog.jdbc.password");
             jdbcUrl = jdbcUrl + "?" + "user=" + jdbcUser + "&" + "password=" + jdbcPassword;
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read properties", e);
@@ -104,19 +103,17 @@ public class Initialize {
 
         startDerbyInServerMode();
         if(!isServerStarted(server, 20)){
-           throw new RuntimeException("Derby server cound not started within five seconds...");
+            throw new RuntimeException("Derby server could not started within five seconds...");
         }
-//      startDerbyInEmbeddedMode();
-
         Connection conn = null;
         try {
             Class.forName(jdbcDriver).newInstance();
             conn = DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcPassword);
-            if (!isDatabaseStructureCreated(COMPUTE_RESOURCE_TABLE, conn)) {
+            if (!isDatabaseStructureCreated(DBConstants.WORKFLOW, conn)) {
                 executeSQLScript(conn);
-                logger.info("New Database created for App Catalog !!!");
+                logger.info("New Database created for Workflow Catalog !!!");
             } else {
-                logger.debug("Database already created for App Catalog!");
+                logger.debug("Database already created for Workflow Catalog!");
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -167,51 +164,49 @@ public class Initialize {
         BufferedReader reader = null;
         try{
 
-        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(scriptName);
-        reader = new BufferedReader(new InputStreamReader(inputStream));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            line = line.trim();
-            if (line.startsWith("//")) {
-                continue;
-            }
-            if (line.startsWith("--")) {
-                continue;
-            }
-            StringTokenizer st = new StringTokenizer(line);
-            if (st.hasMoreTokens()) {
-                String token = st.nextToken();
-                if ("REM".equalsIgnoreCase(token)) {
+            InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(scriptName);
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (line.startsWith("//")) {
                     continue;
                 }
-            }
-            sql.append(" ").append(line);
+                if (line.startsWith("--")) {
+                    continue;
+                }
+                StringTokenizer st = new StringTokenizer(line);
+                if (st.hasMoreTokens()) {
+                    String token = st.nextToken();
+                    if ("REM".equalsIgnoreCase(token)) {
+                        continue;
+                    }
+                }
+                sql.append(" ").append(line);
 
-            // SQL defines "--" as a comment to EOL
-            // and in Oracle it may contain a hint
-            // so we cannot just remove it, instead we must end it
-            if (line.indexOf("--") >= 0) {
-                sql.append("\n");
+                // SQL defines "--" as a comment to EOL
+                // and in Oracle it may contain a hint
+                // so we cannot just remove it, instead we must end it
+                if (line.indexOf("--") >= 0) {
+                    sql.append("\n");
+                }
+                if ((checkStringBufferEndsWith(sql, delimiter))) {
+                    executeSQL(sql.substring(0, sql.length() - delimiter.length()), conn);
+                    sql.replace(0, sql.length(), "");
+                }
             }
-            if ((checkStringBufferEndsWith(sql, delimiter))) {
-                executeSQL(sql.substring(0, sql.length() - delimiter.length()), conn);
-                sql.replace(0, sql.length(), "");
+            // Catch any statements not followed by ;
+            if (sql.length() > 0) {
+                executeSQL(sql.toString(), conn);
             }
-        }
-        // Catch any statements not followed by ;
-        if (sql.length() > 0) {
-            executeSQL(sql.toString(), conn);
-        }
         }catch (IOException e){
-            logger.error("Error occurred while executing SQL script for creating Airavata database", e);
-            throw new Exception("Error occurred while executing SQL script for creating Airavata database", e);
+            logger.error("Error occurred while executing SQL script for creating Airavata Workflow Catalog database", e);
+            throw new Exception("Error occurred while executing SQL script for creating Airavata Workflow Catalog database", e);
         }finally {
             if (reader != null) {
                 reader.close();
             }
-
         }
-
     }
 
     private static void executeSQL(String sql, Connection conn) throws Exception {

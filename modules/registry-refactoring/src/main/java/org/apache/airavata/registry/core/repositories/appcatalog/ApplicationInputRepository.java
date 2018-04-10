@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,23 +16,17 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
-package org.apache.airavata.registry.core.repositories.workflowcatalog;
+ */
+package org.apache.airavata.registry.core.repositories.appcatalog;
 
-import org.apache.airavata.model.EdgeModel;
-import org.apache.airavata.registry.core.entities.workflowcatalog.EdgeEntity;
-import org.apache.airavata.registry.core.entities.workflowcatalog.EdgePK;
-import org.apache.airavata.registry.core.repositories.AbstractRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.registry.core.entities.appcatalog.ApplicationInputEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.ApplicationInputPK;
 
-public class EdgeRepository extends AbstractRepository<EdgeModel, EdgeEntity, EdgePK> {
+public class ApplicationInputRepository extends AppCatAbstractRepository<InputDataObjectType, ApplicationInputEntity, ApplicationInputPK> {
 
-
-    private final static Logger logger = LoggerFactory.getLogger(EdgeRepository.class);
-
-    public EdgeRepository(Class<EdgeModel> thriftGenericClass, Class<EdgeEntity> dbEntityGenericClass) {
-        super(thriftGenericClass, dbEntityGenericClass);
+    public ApplicationInputRepository () {
+        super(InputDataObjectType.class, ApplicationInputEntity.class);
     }
+
 }

@@ -20,9 +20,7 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -30,21 +28,36 @@ import java.io.Serializable;
  * 
  */
 @Entity
-@Table(name = "gsissh_postjobcommand")
+@Table(name = "GSISSH_POSTJOBCOMMAND")
+@IdClass(GsisshPostjobcommandPK.class)
 public class GsisshPostjobcommandEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@EmbeddedId
-	private GsisshPostjobcommandPK id;
+	@Id
+	@Column(name = "SUBMISSION_ID")
+	private String submissionId;
+
+	@Id
+	@Column(name = "COMMAND")
+	private String command;
 
 	public GsisshPostjobcommandEntity() {
 	}
 
-	public GsisshPostjobcommandPK getId() {
-		return id;
+	public String getSubmissionId() {
+		return submissionId;
 	}
 
-	public void setId(GsisshPostjobcommandPK id) {
-		this.id = id;
+	public void setSubmissionId(String submissionId) {
+		this.submissionId = submissionId;
 	}
+
+	public String getCommand() {
+		return command;
+	}
+
+	public void setCommand(String command) {
+		this.command = command;
+	}
+
 }

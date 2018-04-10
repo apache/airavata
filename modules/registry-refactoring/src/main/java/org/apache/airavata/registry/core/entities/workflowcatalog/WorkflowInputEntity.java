@@ -20,32 +20,34 @@
 */
 package org.apache.airavata.registry.core.entities.workflowcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
-
 
 /**
  * The persistent class for the workflow_input database table.
  */
 @Entity
-@Table(name = "workflow_input")
+@Table(name = "WORKFLOW_INPUT")
+@IdClass(WorkflowInputPK.class)
 public class WorkflowInputEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private WorkflowInputPK id;
+    @Id
+    @Column(name = "TEMPLATE_ID")
+    private String templateId;
+
+    @Id
+    @Column(name = "INPUT_KEY")
+    private String name;
 
     @Column(name = "APP_ARGUMENT")
-    private String appArgument;
+    private String applicationArgument;
 
     @Column(name = "DATA_STAGED")
-    private short dataStaged;
+    private boolean dataStaged;
 
     @Column(name = "DATA_TYPE")
-    private String dataType;
+    private String type;
 
     @Column(name = "INPUT_ORDER")
     private int inputOrder;
@@ -54,57 +56,65 @@ public class WorkflowInputEntity implements Serializable {
     private String inputValue;
 
     @Column(name = "IS_REQUIRED")
-    private short isRequired;
+    private boolean isRequired;
 
     @Column(name = "METADATA")
-    private String metadata;
+    private String metaData;
 
     @Column(name = "REQUIRED_TO_COMMANDLINE")
-    private short requiredToCommandline;
+    private boolean requiredToAddedToCommandLine;
 
     @Column(name = "STANDARD_INPUT")
-    private short standardInput;
+    private boolean standardInput;
 
     @Column(name = "USER_FRIENDLY_DESC")
-    private String userFriendlyDesc;
+    private String userFriendlyDescription;
 
-
-    @Column(name = "TEMPLATE_ID")
-    private String templateId;
+    @ManyToOne(targetEntity = WorkflowEntity.class, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "TEMPLATE_ID")
+    private WorkflowEntity workflow;
 
     public WorkflowInputEntity() {
     }
 
-    public WorkflowInputPK getId() {
-        return id;
+    public String getTemplateId() {
+        return templateId;
     }
 
-    public void setId(WorkflowInputPK id) {
-        this.id = id;
+    public void setTemplateId(String templateId) {
+        this.templateId = templateId;
     }
 
-    public String getAppArgument() {
-        return appArgument;
+    public String getName() {
+        return name;
     }
 
-    public void setAppArgument(String appArgument) {
-        this.appArgument = appArgument;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public short getDataStaged() {
+    public String getApplicationArgument() {
+        return applicationArgument;
+    }
+
+    public void setApplicationArgument(String applicationArgument) {
+        this.applicationArgument = applicationArgument;
+    }
+
+    public boolean getDataStaged() {
         return dataStaged;
     }
 
-    public void setDataStaged(short dataStaged) {
+    public void setDataStaged(boolean dataStaged) {
         this.dataStaged = dataStaged;
     }
 
-    public String getDataType() {
-        return dataType;
+    public String getType() {
+        return type;
     }
 
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public int getInputOrder() {
@@ -123,51 +133,51 @@ public class WorkflowInputEntity implements Serializable {
         this.inputValue = inputValue;
     }
 
-    public short getIsRequired() {
+    public boolean getIsRequired() {
         return isRequired;
     }
 
-    public void setIsRequired(short isRequired) {
+    public void setIsRequired(boolean isRequired) {
         this.isRequired = isRequired;
     }
 
-    public String getMetadata() {
-        return metadata;
+    public String getMetaData() {
+        return metaData;
     }
 
-    public void setMetadata(String metadata) {
-        this.metadata = metadata;
+    public void setMetaData(String metaData) {
+        this.metaData = metaData;
     }
 
-    public short getRequiredToCommandline() {
-        return requiredToCommandline;
+    public boolean getRequiredToAddedToCommandLine() {
+        return requiredToAddedToCommandLine;
     }
 
-    public void setRequiredToCommandline(short requiredToCommandline) {
-        this.requiredToCommandline = requiredToCommandline;
+    public void setRequiredToAddedToCommandLine(boolean requiredToAddedToCommandLine) {
+        this.requiredToAddedToCommandLine = requiredToAddedToCommandLine;
     }
 
-    public short getStandardInput() {
+    public boolean getStandardInput() {
         return standardInput;
     }
 
-    public void setStandardInput(short standardInput) {
+    public void setStandardInput(boolean standardInput) {
         this.standardInput = standardInput;
     }
 
-    public String getUserFriendlyDesc() {
-        return userFriendlyDesc;
+    public String getUserFriendlyDescription() {
+        return userFriendlyDescription;
     }
 
-    public void setUserFriendlyDesc(String userFriendlyDesc) {
-        this.userFriendlyDesc = userFriendlyDesc;
+    public void setUserFriendlyDescription(String userFriendlyDescription) {
+        this.userFriendlyDescription = userFriendlyDescription;
     }
 
-    public String getTemplateId() {
-        return templateId;
+    public WorkflowEntity getWorkflow() {
+        return workflow;
     }
 
-    public void setTemplateId(String templateId) {
-        this.templateId = templateId;
+    public void setWorkflow(WorkflowEntity workflow) {
+        this.workflow = workflow;
     }
 }

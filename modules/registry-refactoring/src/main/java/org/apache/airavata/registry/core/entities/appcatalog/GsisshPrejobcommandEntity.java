@@ -20,32 +20,43 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
-
 
 /**
  * The persistent class for the gsissh_prejobcommand database table.
  */
 @Entity
-@Table(name = "gsissh_prejobcommand")
+@Table(name = "GSISSH_PREJOBCOMMAND")
+@IdClass(GsisshPrejobcommandPK.class)
 public class GsisshPrejobcommandEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private GsisshPrejobcommandPK id;
+    @Id
+    @Column(name = "SUBMISSION_ID")
+    private String submissionId;
 
+    @Id
+    @Column(name = "COMMAND")
+    private String command;
 
     public GsisshPrejobcommandEntity() {
     }
 
-    public GsisshPrejobcommandPK getId() {
-        return id;
+    public String getSubmissionId() {
+        return submissionId;
     }
 
-    public void setId(GsisshPrejobcommandPK id) {
-        this.id = id;
+    public void setSubmissionId(String submissionId) {
+        this.submissionId = submissionId;
     }
+
+    public String getCommand() {
+        return command;
+    }
+
+    public void setCommand(String command) {
+        this.command = command;
+    }
+
 }

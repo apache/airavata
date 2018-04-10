@@ -20,24 +20,18 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import java.io.Serializable;
 
 /**
  * The primary key class for the application_output database table.
  * 
  */
-@Embeddable
 public class ApplicationOutputPK implements Serializable {
 	//default serial version id, required for serializable classes.
 	private static final long serialVersionUID = 1L;
 
-	@Column(name="INTERFACE_ID", insertable=false, updatable=false)
 	private String interfaceId;
-
-	@Column(name="OUTPUT_KEY")
-	private String outputKey;
+	private String name;
 
 	public ApplicationOutputPK() {
 	}
@@ -50,12 +44,12 @@ public class ApplicationOutputPK implements Serializable {
 		this.interfaceId = interfaceId;
 	}
 
-	public String getOutputKey() {
-		return outputKey;
+	public String getName() {
+		return name;
 	}
 
-	public void setOutputKey(String outputKey) {
-		this.outputKey = outputKey;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public boolean equals(Object other) {
@@ -68,14 +62,14 @@ public class ApplicationOutputPK implements Serializable {
 		ApplicationOutputPK castOther = (ApplicationOutputPK)other;
 		return 
 			this.interfaceId.equals(castOther.interfaceId)
-			&& this.outputKey.equals(castOther.outputKey);
+			&& this.name.equals(castOther.name);
 	}
 
 	public int hashCode() {
 		final int prime = 31;
 		int hash = 17;
 		hash = hash * prime + this.interfaceId.hashCode();
-		hash = hash * prime + this.outputKey.hashCode();
+		hash = hash * prime + this.name.hashCode();
 		
 		return hash;
 	}

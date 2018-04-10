@@ -22,7 +22,7 @@ package org.apache.airavata.registry.core.repositories.appcatalog;
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.groupresourceprofile.*;
-import org.apache.airavata.registry.core.repositories.util.Initialize;
+import org.apache.airavata.registry.core.repositories.appcatalog.util.Initialize;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.junit.After;
 import org.junit.Before;
@@ -35,9 +35,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
-/**
- * Created by skariyat on 2/10/18.
- */
 public class GroupResourceProfileRepositoryTest {
 
     private static Initialize initialize;
@@ -214,5 +211,8 @@ public class GroupResourceProfileRepositoryTest {
         assertTrue(groupResourceProfileRepository.getAllGroupBatchQueueResourcePolicies(groupResourceProfileId).size() == 2);
 
         groupResourceProfileRepository.removeGroupResourceProfile(groupResourceProfileId);
+        computeResourceRepository.removeComputeResource(resourceId1);
+        computeResourceRepository.removeComputeResource(resourceId2);
+
     }
 }

@@ -24,17 +24,22 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
-
 /**
  * The persistent class for the gridftp_endpoint database table.
  */
 @Entity
-@Table(name = "gridftp_endpoint")
+@Table(name = "GRIDFTP_ENDPOINT")
+@IdClass(GridftpEndpointPK.class)
 public class GridftpEndpointEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private GridftpEndpointPK id;
+    @Id
+    @Column(name = "DATA_MOVEMENT_INTERFACE_ID")
+    private String dataMovementInterfaceId;
+
+    @Id
+    @Column(name = "ENDPOINT")
+    private String endpoint;
 
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
@@ -50,20 +55,28 @@ public class GridftpEndpointEntity implements Serializable {
     public GridftpEndpointEntity() {
     }
 
+    public String getDataMovementInterfaceId() {
+        return dataMovementInterfaceId;
+    }
+
+    public void setDataMovementInterfaceId(String dataMovementInterfaceId) {
+        this.dataMovementInterfaceId = dataMovementInterfaceId;
+    }
+
+    public String getEndpoint() {
+        return endpoint;
+    }
+
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
+    }
+
     public GridftpDataMovementEntity getGridftpDataMovement() {
         return gridftpDataMovement;
     }
 
     public void setGridftpDataMovement(GridftpDataMovementEntity gridftpDataMovement) {
         this.gridftpDataMovement = gridftpDataMovement;
-    }
-
-    public GridftpEndpointPK getId() {
-        return id;
-    }
-
-    public void setId(GridftpEndpointPK id) {
-        this.id = id;
     }
 
     public Timestamp getCreationTime() {
