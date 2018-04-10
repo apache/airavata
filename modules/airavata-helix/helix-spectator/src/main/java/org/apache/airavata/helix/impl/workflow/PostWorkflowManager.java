@@ -24,12 +24,12 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.helix.core.OutPort;
+import org.apache.airavata.helix.core.util.MonitoringUtil;
 import org.apache.airavata.helix.impl.task.*;
 import org.apache.airavata.helix.impl.task.completing.CompletingTask;
 import org.apache.airavata.helix.impl.task.staging.ArchiveTask;
 import org.apache.airavata.helix.impl.task.staging.OutputDataStagingTask;
 import org.apache.airavata.model.status.ProcessState;
-import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.monitor.JobStateValidator;
 import org.apache.airavata.monitor.JobStatusResult;
 import org.apache.airavata.monitor.kafka.JobStatusResultDeserializer;
@@ -48,8 +48,6 @@ import org.apache.airavata.registry.api.RegistryService;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,84 +79,6 @@ public class PostWorkflowManager extends WorkflowManager {
         return consumer;
     }
 
-    private void registerWorkflow(String processId, String workflowId) throws Exception {
-        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                "/registry/" + processId + "/workflows/" + workflowId , new byte[0]);
-    }
-
-    private String getExperimentIdByJobId(String jobId) throws Exception {
-        String path = "/monitoring/" + jobId + "/experiment";
-        if (getCuratorClient().checkExists().forPath(path) != null) {
-            byte[] processBytes = getCuratorClient().getData().forPath(path);
-            return new String(processBytes);
-        } else {
-            return null;
-        }
-    }
-
-    private String getTaskIdByJobId(String jobId) throws Exception {
-        String path = "/monitoring/" + jobId + "/task";
-        if (getCuratorClient().checkExists().forPath(path) != null) {
-            byte[] processBytes = getCuratorClient().getData().forPath(path);
-            return new String(processBytes);
-        } else {
-            return null;
-        }
-    }
-
-    private String getProcessIdByJobId(String jobId) throws Exception {
-        String path = "/monitoring/" + jobId + "/process";
-        if (getCuratorClient().checkExists().forPath(path) != null) {
-            byte[] processBytes = getCuratorClient().getData().forPath(path);
-            return new String(processBytes);
-        } else {
-            return null;
-        }
-    }
-
-    private String getGatewayByJobId(String jobId) throws Exception {
-        String path = "/monitoring/" + jobId + "/gateway";
-        if (getCuratorClient().checkExists().forPath(path) != null) {
-            byte[] gatewayBytes = getCuratorClient().getData().forPath(path);
-            return new String(gatewayBytes);
-        } else {
-            return null;
-        }
-    }
-
-    private void updateStatusOfJob(String jobId, JobState jobState) throws Exception {
-        String path = "/monitoring/" + jobId + "/status";
-        if (getCuratorClient().checkExists().forPath(path) != null) {
-            getCuratorClient().delete().forPath(path);
-        }
-        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(path, jobState.name().getBytes());
-    }
-
-    private JobState getCurrentStatusOfJob(String jobId) throws Exception {
-        String path = "/monitoring/" + jobId + "/status";
-        if (getCuratorClient().checkExists().forPath(path) != null) {
-            byte[] gatewayBytes = getCuratorClient().getData().forPath(path);
-            return JobState.valueOf(new String(gatewayBytes));
-        } else {
-            return null;
-        }
-    }
-
-    private String getStatusOfProcess(String processId) throws Exception {
-        String path = "/registry/" + processId + "/status";
-        if (getCuratorClient().checkExists().forPath(path) != null) {
-            byte[] statusBytes = getCuratorClient().getData().forPath(path);
-            return new String(statusBytes);
-        } else {
-            return null;
-        }
-    }
-
-    private boolean hasMonitoringRegistered(String jobId) throws Exception {
-        Stat stat = getCuratorClient().checkExists().forPath("/monitoring/" + jobId);
-        return stat != null;
-    }
-
     private boolean process(JobStatusResult jobStatusResult) {
 
         if (jobStatusResult == null) {
@@ -169,28 +89,28 @@ public class PostWorkflowManager extends WorkflowManager {
         try {
             logger.info("Processing job result of job id " + jobStatusResult.getJobId() + " sent by " + jobStatusResult.getPublisherName());
 
-            if (hasMonitoringRegistered(jobStatusResult.getJobId())) {
+            if (MonitoringUtil.hasMonitoringRegistered(getCuratorClient(), jobStatusResult.getJobId())) {
 
-                JobState currentJobStatus = getCurrentStatusOfJob(jobStatusResult.getJobId());
+                JobState currentJobStatus = MonitoringUtil.getCurrentStatusOfJob(getCuratorClient(), jobStatusResult.getJobId());
                 if (!JobStateValidator.isValid(currentJobStatus, jobStatusResult.getState())) {
                     logger.warn("Job state of " + jobStatusResult.getJobId() + " is not valid. Previous state " +
                             currentJobStatus + ", new state " + jobStatusResult.getState());
                     return true;
                 }
 
-                String gateway = Optional.ofNullable(getGatewayByJobId(jobStatusResult.getJobId()))
+                String gateway = Optional.ofNullable(MonitoringUtil.getGatewayByJobId(getCuratorClient(), jobStatusResult.getJobId()))
                         .orElseThrow(() -> new Exception("Can not find the gateway for job id " + jobStatusResult.getJobId()));
 
-                String processId = Optional.ofNullable(getProcessIdByJobId(jobStatusResult.getJobId()))
+                String processId = Optional.ofNullable(MonitoringUtil.getProcessIdByJobId(getCuratorClient(), jobStatusResult.getJobId()))
                         .orElseThrow(() -> new Exception("Can not find the process for job id " + jobStatusResult.getJobId()));
 
-                String experimentId = Optional.ofNullable(getExperimentIdByJobId(jobStatusResult.getJobId()))
+                String experimentId = Optional.ofNullable(MonitoringUtil.getExperimentIdByJobId(getCuratorClient(), jobStatusResult.getJobId()))
                         .orElseThrow(() -> new Exception("Can not find the experiment for job id " + jobStatusResult.getJobId()));
 
-                String task = Optional.ofNullable(getTaskIdByJobId(jobStatusResult.getJobId()))
+                String task = Optional.ofNullable(MonitoringUtil.getTaskIdByJobId(getCuratorClient(), jobStatusResult.getJobId()))
                         .orElseThrow(() -> new Exception("Can not find the task for job id " + jobStatusResult.getJobId()));
 
-                String processStatus = getStatusOfProcess(processId);
+                String processStatus = MonitoringUtil.getStatusOfProcess(getCuratorClient(), processId);
 
                 logger.info("Updating the job status for job id : " + jobStatusResult.getJobId() + " with process id "
                         + processId + ", exp id " + experimentId + ", gateway " + gateway + " and status " + jobStatusResult.getState().name());
@@ -258,6 +178,7 @@ public class PostWorkflowManager extends WorkflowManager {
                                 } else if (taskModel.getTaskType() == TaskTypes.DATA_STAGING) {
                                     if (jobSubmissionFound) {
                                         DataStagingTaskModel subTaskModel = (DataStagingTaskModel) ThriftUtils.getSubTaskModel(taskModel);
+                                        assert subTaskModel != null;
                                         switch (subTaskModel.getType()) {
                                             case OUPUT:
                                                 airavataTask = new OutputDataStagingTask();
@@ -296,7 +217,7 @@ public class PostWorkflowManager extends WorkflowManager {
                         String workflowName = getWorkflowOperator().launchWorkflow(processId + "-POST-" + UUID.randomUUID().toString(),
                                 new ArrayList<>(allTasks), true, false);
                         try {
-                            registerWorkflow(processId, workflowName);
+                            MonitoringUtil.registerWorkflow(getCuratorClient(), processId, workflowName);
                         } catch (Exception e) {
                             logger.error("Failed to save workflow " + workflowName + " of process " + processId + " in zookeeper registry. " +
                                     "This will affect cancellation tasks", e);
@@ -379,7 +300,7 @@ public class PostWorkflowManager extends WorkflowManager {
             msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             getStatusPublisher().publish(msgCtx);
 
-            updateStatusOfJob(jobId, jobState);
+            MonitoringUtil.updateStatusOfJob(getCuratorClient(), jobId, jobState);
         } catch (Exception e) {
             throw new Exception("Error persisting job status " + e.getLocalizedMessage(), e);
         }
