@@ -3,7 +3,7 @@
   "model": "auth.user",
   "fields": {
     "password": "pbkdf2_sha256$36000$8PWMgXlEiVYW$+OIzFTeWKxHkSLsllU0C7lo/D/NcIYylxofejp0FREg=",
-    "last_login": "2018-04-06T15:41:59.333Z",
+    "last_login": "2018-04-10T23:01:04.682Z",
     "is_superuser": true,
     "username": "stephenpaul2727",
     "first_name": "",
@@ -204,9 +204,9 @@
     "expired": false,
     "locked": false,
     "first_published_at": "2018-04-06T15:48:40.532Z",
-    "last_published_at": "2018-04-06T16:28:12.738Z",
-    "latest_revision_created_at": "2018-04-06T16:28:12.706Z",
-    "live_revision": 20
+    "last_published_at": "2018-04-10T23:01:15.134Z",
+    "latest_revision_created_at": "2018-04-10T23:01:15.109Z",
+    "live_revision": 242
   }
 },
 {
@@ -237,9 +237,9 @@
     "expired": false,
     "locked": false,
     "first_published_at": "2018-04-06T16:33:08.917Z",
-    "last_published_at": "2018-04-06T16:37:01.569Z",
-    "latest_revision_created_at": "2018-04-06T16:37:01.543Z",
-    "live_revision": 26
+    "last_published_at": "2018-04-10T23:02:33.079Z",
+    "latest_revision_created_at": "2018-04-10T23:02:33.051Z",
+    "live_revision": 243
   }
 },
 {
@@ -607,6 +607,34 @@
   }
 },
 {
+  "model": "wagtailcore.pagerevision",
+  "pk": 242,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-10T23:01:15.109Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 1, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 241, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 7, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T15:48:40.532Z\", \"last_published_at\": \"2018-04-06T16:28:12.738Z\", \"latest_revision_created_at\": \"2018-04-06T16:28:12.706Z\", \"live_revision\": 20, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"100%\\\", \\\"height\\\": 150, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 hero-banner\\\"}, \\\"id\\\": \\\"7307f657-dffc-41a9-b79d-efdd89c3c6f3\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"Welcome to research computing\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5 heading-home\\\"}, \\\"id\\\": \\\"226ba2cc-5d0f-4893-b7b1-531a76e0e6b6\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"at the University of South Dakota!\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center heading-home\\\"}, \\\"id\\\": \\\"f4bb4e12-a03f-4a63-a5f2-49175538fe9a\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-2\\\", \\\"body\\\": \\\"<p></p><h3>If you need help, you can find it on USD&#x27;s <a href=\\\\\\\"http://usdrcg.github.io/\\\\\\\">Research Computing Site</a>.<br/></h3><h3>This Science Gateway provides access to supercomputing resources without the complexity that often accompanies them. By using this site, you can focus on your computational research instead of fretting about complicated interfaces.<br/><br/><br/><br/><br/><br/><br/></h3><h3>Log In!</h3>\\\"}, \\\"id\\\": \\\"715ea27a-9185-44c3-84cd-2d7669f1416a\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"bootstrap_button\\\", \\\"value\\\": {\\\"button_text\\\": \\\"Log In\\\", \\\"button_link\\\": \\\"https://sciencegateway.usd.edu/login\\\", \\\"button_color\\\": \\\"btn-secondary\\\", \\\"button_size\\\": \\\"btn-lg\\\", \\\"custom_class\\\": \\\"col-md-12 mt-2 login-home\\\"}, \\\"id\\\": \\\"8758ebe0-6bc4-416c-ad06-ae8188ca0301\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 243,
+  "fields": {
+    "page": 4,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-10T23:02:33.051Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 4, \"path\": \"0001000100010001\", \"depth\": 4, \"numchild\": 0, \"title\": \"About\", \"draft_title\": \"About\", \"slug\": \"about\", \"content_type\": 241, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/about/\", \"owner\": 7, \"seo_title\": \"about\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T16:33:08.917Z\", \"last_published_at\": \"2018-04-06T16:37:01.569Z\", \"latest_revision_created_at\": \"2018-04-06T16:37:01.543Z\", \"live_revision\": 26, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 4, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"About Science Gateway at USD\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-5\\\"}, \\\"id\\\": \\\"1481119d-4f4d-492b-9b2c-01ff44b77b6c\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 mx-auto text-center mt-2\\\", \\\"body\\\": \\\"<p></p><p>Science Gateways are virtual environments that accelerate scientific discovery by enabling scientific communities to utilize distributed computational and data resources (that is, cyberinfrastructure). Successful Science Gateways provide access to sophisticated and powerful resources, while shielding their users from the resources\\\\u2019 complexities.</p><p>Research Computing at USD wants you to be able to focus on the science. Let us worry about cyberinfrastructure.</p>\\\"}, \\\"id\\\": \\\"2c0084fd-c765-4bc9-b719-8d26f201e6d1\\\"}]\", \"page\": 4}]}",
+    "approved_go_live_at": null
+  }
+},
+{
   "model": "wagtailcore.collection",
   "pk": 1,
   "fields": {
@@ -794,11 +822,17 @@
 {
   "model": "django_airavata_wagtail_base.blankpage",
   "pk": 3,
-  "fields": {}
+  "fields": {
+    "show_navbar": "yes",
+    "show_nav_extra": "yes"
+  }
 },
 {
   "model": "django_airavata_wagtail_base.blankpage",
   "pk": 4,
-  "fields": {}
+  "fields": {
+    "show_navbar": "yes",
+    "show_nav_extra": "yes"
+  }
 }
 ]
