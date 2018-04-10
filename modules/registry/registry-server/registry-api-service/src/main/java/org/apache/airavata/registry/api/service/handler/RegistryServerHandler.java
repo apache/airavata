@@ -2478,10 +2478,10 @@ public class RegistryServerHandler implements RegistryService.Iface {
     }
 
     @Override
-    public List<GroupResourceProfile> getGroupResourceList(String gatewayId) throws RegistryServiceException, TException {
+    public List<GroupResourceProfile> getGroupResourceList(String gatewayId, List<String> accessibleGroupResProfileIds) throws RegistryServiceException, TException {
         try {
             GroupResourceProfileRepository groupResourceProfileRepository = new GroupResourceProfileRepository();
-            return groupResourceProfileRepository.getAllGroupResourceProfiles(gatewayId);
+            return groupResourceProfileRepository.getAllGroupResourceProfiles(gatewayId, accessibleGroupResProfileIds);
         } catch (Exception e) {
             logger.error("Error while retrieving group resource list ", e);
             RegistryServiceException exception = new RegistryServiceException();

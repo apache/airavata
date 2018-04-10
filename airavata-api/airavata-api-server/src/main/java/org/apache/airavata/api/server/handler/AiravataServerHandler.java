@@ -5211,8 +5211,8 @@ public class AiravataServerHandler implements Airavata.Iface {
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
         try {
+            List<String> accessibleGroupResProfileIds = new ArrayList<>();
             if (ServerSettings.isEnableSharing()) {
-                List<String> accessibleGroupResProfileIds = new ArrayList<>();
                 List<SearchCriteria> filters = new ArrayList<>();
                 SearchCriteria searchCriteria = new SearchCriteria();
                 searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
@@ -5222,19 +5222,12 @@ public class AiravataServerHandler implements Airavata.Iface {
                 sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         userName + "@" + gatewayId, filters, 0, -1).stream().forEach(p -> accessibleGroupResProfileIds
                         .add(p.entityId));
-                // TODO: push accessibleGroupResProfileIds filtering down
-                List<GroupResourceProfile> groupResourceProfileList = regClient.getGroupResourceList(gatewayId);
-                registryClientPool.returnResource(regClient);
-                sharingClientPool.returnResource(sharingClient);
-                return groupResourceProfileList.stream()
-                        .filter(grp -> accessibleGroupResProfileIds.contains(grp.getGroupResourceProfileId()))
-                        .collect(Collectors.toList());
-            } else {
-                List<GroupResourceProfile> groupResourceProfileList = regClient.getGroupResourceList(gatewayId);
-                registryClientPool.returnResource(regClient);
-                sharingClientPool.returnResource(sharingClient);
-                return groupResourceProfileList;
+
             }
+            List<GroupResourceProfile> groupResourceProfileList = regClient.getGroupResourceList(gatewayId, accessibleGroupResProfileIds);
+            registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
+            return groupResourceProfileList;
         } catch (Exception e) {
             String msg = "Error retrieving list group resource profile list. GatewayId: "+ gatewayId;
             logger.error(msg, e);

@@ -86,9 +86,14 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
         return isExists(groupResourceProfilePK);
     }
 
-    public List<GroupResourceProfile> getAllGroupResourceProfiles(String gatewayId) {
+    public List<GroupResourceProfile> getAllGroupResourceProfiles(String gatewayId, List<String> accessibleGroupResProfileIds) {
         Map<String,Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.GroupResourceProfile.GATEWAY_ID, gatewayId);
+
+        if (accessibleGroupResProfileIds != null && !accessibleGroupResProfileIds.isEmpty()) {
+            queryParameters.put(DBConstants.GroupResourceProfile.ACCESSIBLE_GROUP_RESOURCE_IDS, accessibleGroupResProfileIds);
+            return select(QueryConstants.FIND_ACCESSIBLE_GROUP_RESOURCE_PROFILES, -1, 0, queryParameters);
+        }
         List<GroupResourceProfile> groupResourceProfileList = select(QueryConstants.FIND_ALL_GROUP_RESOURCE_PROFILES, -1, 0, queryParameters);
         return groupResourceProfileList;
     }

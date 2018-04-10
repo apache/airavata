@@ -205,7 +205,7 @@ public class GroupResourceProfileRepositoryTest {
         assertTrue(getBatchQueuePolicy.getMaxAllowedCores() == 3);
         assertTrue(getBatchQueuePolicy.getMaxAllowedWalltime() == 12);
 
-        assertTrue(groupResourceProfileRepository.getAllGroupResourceProfiles(gatewayId).size() == 1);
+        assertTrue(groupResourceProfileRepository.getAllGroupResourceProfiles(gatewayId, null).size() == 1);
         assertTrue(groupResourceProfileRepository.getAllGroupComputeResourcePreferences(groupResourceProfileId).size() == 2);
         assertTrue(groupResourceProfileRepository.getAllGroupComputeResourcePolicies(groupResourceProfileId).size() == 2);
         assertTrue(groupResourceProfileRepository.getAllGroupBatchQueueResourcePolicies(groupResourceProfileId).size() == 2);
