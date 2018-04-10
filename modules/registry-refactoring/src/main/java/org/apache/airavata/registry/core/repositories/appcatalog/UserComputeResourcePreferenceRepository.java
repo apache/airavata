@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,22 +16,19 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
-package org.apache.airavata.registry.core.repositories.workflowcatalog;
+ */
+package org.apache.airavata.registry.core.repositories.appcatalog;
 
-import org.apache.airavata.model.ComponentStatus;
-import org.apache.airavata.registry.core.entities.workflowcatalog.ComponentStatusEntity;
-import org.apache.airavata.registry.core.repositories.AbstractRepository;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserComputeResourcePreference;
+import org.apache.airavata.registry.core.entities.appcatalog.UserComputeResourcePreferenceEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.UserComputeResourcePreferencePK;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ComponentStatusRepository extends AbstractRepository<ComponentStatus, ComponentStatusEntity, String> {
+public class UserComputeResourcePreferenceRepository extends AppCatAbstractRepository<UserComputeResourcePreference, UserComputeResourcePreferenceEntity, UserComputeResourcePreferencePK> {
 
-
-    private final static Logger logger = LoggerFactory.getLogger(ComponentStatusRepository.class);
-
-    public ComponentStatusRepository(Class<ComponentStatus> thriftGenericClass, Class<ComponentStatusEntity> dbEntityGenericClass) {
-        super(thriftGenericClass, dbEntityGenericClass);
+    public UserComputeResourcePreferenceRepository() {
+        super(UserComputeResourcePreference.class, UserComputeResourcePreferenceEntity.class);
     }
+
 }

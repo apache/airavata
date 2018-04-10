@@ -20,22 +20,16 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import java.io.Serializable;
 
 /**
  * The primary key class for the gridftp_endpoint database table.
  */
-@Embeddable
 public class GridftpEndpointPK implements Serializable {
     //default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "DATA_MOVEMENT_INTERFACE_ID", insertable = false, updatable = false)
     private String dataMovementInterfaceId;
-
-    @Column(name = "ENDPOINT")
     private String endpoint;
 
     public GridftpEndpointPK() {

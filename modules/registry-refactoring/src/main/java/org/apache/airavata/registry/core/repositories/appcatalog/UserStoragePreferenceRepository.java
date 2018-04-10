@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,22 +16,19 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
-package org.apache.airavata.registry.core.repositories.workflowcatalog;
+ */
+package org.apache.airavata.registry.core.repositories.appcatalog;
 
-import org.apache.airavata.model.WorkflowStatus;
-import org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowStatusEntity;
-import org.apache.airavata.registry.core.entities.workflowcatalog.WorkflowStatusPK;
-import org.apache.airavata.registry.core.repositories.AbstractRepository;
+import org.apache.airavata.model.appcatalog.userresourceprofile.UserStoragePreference;
+import org.apache.airavata.registry.core.entities.appcatalog.UserStoragePreferenceEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.UserStoragePreferencePK;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WorkflowStatusRepository extends AbstractRepository<WorkflowStatus, WorkflowStatusEntity, WorkflowStatusPK> {
+public class UserStoragePreferenceRepository extends AppCatAbstractRepository<UserStoragePreference, UserStoragePreferenceEntity, UserStoragePreferencePK> {
 
-    private final static Logger logger = LoggerFactory.getLogger(WorkflowStatusRepository.class);
-
-    public WorkflowStatusRepository(Class<WorkflowStatus> thriftGenericClass, Class<WorkflowStatusEntity> dbEntityGenericClass) {
-        super(thriftGenericClass, dbEntityGenericClass);
+    public UserStoragePreferenceRepository() {
+        super(UserStoragePreference.class, UserStoragePreferenceEntity.class);
     }
+
 }

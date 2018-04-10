@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,22 +16,17 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
-package org.apache.airavata.registry.core.repositories.workflowcatalog;
+ */
+package org.apache.airavata.registry.core.repositories.appcatalog;
 
-import org.apache.airavata.model.PortModel;
-import org.apache.airavata.registry.core.entities.workflowcatalog.PortEntity;
-import org.apache.airavata.registry.core.entities.workflowcatalog.PortPK;
-import org.apache.airavata.registry.core.repositories.AbstractRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.registry.core.entities.appcatalog.ApplicationOutputEntity;
+import org.apache.airavata.registry.core.entities.appcatalog.ApplicationOutputPK;
 
-public class PortRepository extends AbstractRepository<PortModel, PortEntity, PortPK> {
+public class ApplicationOutputRepository extends AppCatAbstractRepository<OutputDataObjectType, ApplicationOutputEntity, ApplicationOutputPK> {
 
-    private final static Logger logger = LoggerFactory.getLogger(PortRepository.class);
-
-    public PortRepository(Class<PortModel> thriftGenericClass, Class<PortEntity> dbEntityGenericClass) {
-        super(thriftGenericClass, dbEntityGenericClass);
+    public ApplicationOutputRepository () {
+        super(OutputDataObjectType.class, ApplicationOutputEntity.class);
     }
+
 }

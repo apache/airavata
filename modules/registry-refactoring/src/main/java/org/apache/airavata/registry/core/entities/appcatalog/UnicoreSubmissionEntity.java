@@ -32,7 +32,7 @@ import java.io.Serializable;
  * 
  */
 @Entity
-@Table(name="unicore_submission")
+@Table(name="UNICORE_SUBMISSION")
 public class UnicoreSubmissionEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 

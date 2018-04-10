@@ -20,23 +20,66 @@
 */
 package org.apache.airavata.registry.core.entities.replicacatalog;
 
+import org.apache.airavata.model.data.replica.ReplicaLocationCategory;
+import org.apache.airavata.model.data.replica.ReplicaPersistentType;
+
+import java.io.Serializable;
+import java.util.*;
 import javax.persistence.*;
 import java.sql.Timestamp;
 
+/**
+ * The persistent class for the data_replica_location database table.
+ */
 @Entity
-@Table(name = "data_replica_location", schema = "airavata_catalog", catalog = "")
-public class DataReplicaLocationEntity {
-    private String replicaId;
-    private String replicaName;
-    private String replicaDescription;
-    private String storageResourceId;
-    private String filePath;
-    private Timestamp creationTime;
-    private Timestamp lastModifiedTime;
-    private Timestamp validUntilTime;
+@Table(name = "DATA_REPLICA_LOCATION")
+public class DataReplicaLocationEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
     @Column(name = "REPLICA_ID")
+    private String replicaId;
+
+    @Column(name = "PRODUCT_URI")
+    private String productUri;
+
+    @Column(name = "REPLICA_NAME")
+    private String replicaName;
+
+    @Column(name = "REPLICA_DESCRIPTION")
+    private String replicaDescription;
+
+    @Column(name = "STORAGE_RESOURCE_ID")
+    private String storageResourceId;
+
+    @Column(name = "FILE_PATH")
+    private String filePath;
+
+    @Column(name = "CREATION_TIME")
+    private Timestamp creationTime;
+
+    @Column(name = "LAST_MODIFIED_TIME")
+    private Timestamp lastModifiedTime;
+
+    @Column(name = "VALID_UNTIL_TIME")
+    private Timestamp validUntilTime;
+
+    @Column(name = "REPLICA_LOCATION_CATEGORY")
+    private ReplicaLocationCategory replicaLocationCategory;
+
+    @Column(name = "REPLICA_PERSISTENT_TYPE")
+    private ReplicaPersistentType replicaPersistentType;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="DATA_REPLICA_METADATA", joinColumns = @JoinColumn(name="REPLICA_ID"))
+    @MapKeyColumn(name = "METADATA_KEY")
+    @Column(name = "METADATA_VALUE")
+    private Map<String, String> replicaMetadata;
+
+    @ManyToOne(targetEntity = DataProductEntity.class, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "PRODUCT_URI")
+    private DataProductEntity dataProduct;
+
     public String getReplicaId() {
         return replicaId;
     }
@@ -45,8 +88,14 @@ public class DataReplicaLocationEntity {
         this.replicaId = replicaId;
     }
 
-    @Basic
-    @Column(name = "REPLICA_NAME")
+    public String getProductUri() {
+        return productUri;
+    }
+
+    public void setProductUri(String productUri) {
+        this.productUri = productUri;
+    }
+
     public String getReplicaName() {
         return replicaName;
     }
@@ -55,8 +104,6 @@ public class DataReplicaLocationEntity {
         this.replicaName = replicaName;
     }
 
-    @Basic
-    @Column(name = "REPLICA_DESCRIPTION")
     public String getReplicaDescription() {
         return replicaDescription;
     }
@@ -65,8 +112,6 @@ public class DataReplicaLocationEntity {
         this.replicaDescription = replicaDescription;
     }
 
-    @Basic
-    @Column(name = "STORAGE_RESOURCE_ID")
     public String getStorageResourceId() {
         return storageResourceId;
     }
@@ -75,8 +120,6 @@ public class DataReplicaLocationEntity {
         this.storageResourceId = storageResourceId;
     }
 
-    @Basic
-    @Column(name = "FILE_PATH")
     public String getFilePath() {
         return filePath;
     }
@@ -85,8 +128,6 @@ public class DataReplicaLocationEntity {
         this.filePath = filePath;
     }
 
-    @Basic
-    @Column(name = "CREATION_TIME")
     public Timestamp getCreationTime() {
         return creationTime;
     }
@@ -95,8 +136,6 @@ public class DataReplicaLocationEntity {
         this.creationTime = creationTime;
     }
 
-    @Basic
-    @Column(name = "LAST_MODIFIED_TIME")
     public Timestamp getLastModifiedTime() {
         return lastModifiedTime;
     }
@@ -105,8 +144,6 @@ public class DataReplicaLocationEntity {
         this.lastModifiedTime = lastModifiedTime;
     }
 
-    @Basic
-    @Column(name = "VALID_UNTIL_TIME")
     public Timestamp getValidUntilTime() {
         return validUntilTime;
     }
@@ -115,39 +152,35 @@ public class DataReplicaLocationEntity {
         this.validUntilTime = validUntilTime;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        DataReplicaLocationEntity that = (DataReplicaLocationEntity) o;
-
-        if (replicaId != null ? !replicaId.equals(that.replicaId) : that.replicaId != null) return false;
-        if (replicaName != null ? !replicaName.equals(that.replicaName) : that.replicaName != null) return false;
-        if (replicaDescription != null ? !replicaDescription.equals(that.replicaDescription) : that.replicaDescription != null)
-            return false;
-        if (storageResourceId != null ? !storageResourceId.equals(that.storageResourceId) : that.storageResourceId != null)
-            return false;
-        if (filePath != null ? !filePath.equals(that.filePath) : that.filePath != null) return false;
-        if (creationTime != null ? !creationTime.equals(that.creationTime) : that.creationTime != null) return false;
-        if (lastModifiedTime != null ? !lastModifiedTime.equals(that.lastModifiedTime) : that.lastModifiedTime != null)
-            return false;
-        if (validUntilTime != null ? !validUntilTime.equals(that.validUntilTime) : that.validUntilTime != null)
-            return false;
-
-        return true;
+    public ReplicaLocationCategory getReplicaLocationCategory() {
+        return replicaLocationCategory;
     }
 
-    @Override
-    public int hashCode() {
-        int result = replicaId != null ? replicaId.hashCode() : 0;
-        result = 31 * result + (replicaName != null ? replicaName.hashCode() : 0);
-        result = 31 * result + (replicaDescription != null ? replicaDescription.hashCode() : 0);
-        result = 31 * result + (storageResourceId != null ? storageResourceId.hashCode() : 0);
-        result = 31 * result + (filePath != null ? filePath.hashCode() : 0);
-        result = 31 * result + (creationTime != null ? creationTime.hashCode() : 0);
-        result = 31 * result + (lastModifiedTime != null ? lastModifiedTime.hashCode() : 0);
-        result = 31 * result + (validUntilTime != null ? validUntilTime.hashCode() : 0);
-        return result;
+    public void setReplicaLocationCategory(ReplicaLocationCategory replicaLocationCategory) {
+        this.replicaLocationCategory = replicaLocationCategory;
+    }
+
+    public ReplicaPersistentType getReplicaPersistentType() {
+        return replicaPersistentType;
+    }
+
+    public void setReplicaPersistentType(ReplicaPersistentType replicaPersistentType) {
+        this.replicaPersistentType = replicaPersistentType;
+    }
+
+    public Map<String, String> getReplicaMetadata() {
+        return replicaMetadata;
+    }
+
+    public void setReplicaMetadata(Map<String, String> replicaMetadata) {
+        this.replicaMetadata = replicaMetadata;
+    }
+
+    public DataProductEntity getDataProduct() {
+        return dataProduct;
+    }
+
+    public void setDataProduct(DataProductEntity dataProduct) {
+        this.dataProduct = dataProduct;
     }
 }

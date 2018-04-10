@@ -20,123 +20,138 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
  * The persistent class for the application_output database table.
  */
 @Entity
-@Table(name = "application_output")
+@Table(name = "APPLICATION_OUTPUT")
+@IdClass(ApplicationOutputPK.class)
 public class ApplicationOutputEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private ApplicationOutputPK id;
+    @Id
+    @Column(name="INTERFACE_ID")
+    private String interfaceId;
+
+    @Id
+    @Column(name="OUTPUT_KEY")
+    private String name;
 
     @Column(name = "APP_ARGUMENT")
-    private String appArgument;
+    private String applicationArgument;
 
     @Column(name = "DATA_MOVEMENT")
-    private short dataMovement;
+    private boolean dataMovement;
 
     @Column(name = "DATA_NAME_LOCATION")
-    private String dataNameLocation;
+    private String location;
 
     @Column(name = "DATA_TYPE")
-    private String dataType;
+    private String type;
 
     @Column(name = "IS_REQUIRED")
-    private short isRequired;
+    private boolean isRequired;
 
     @Column(name = "OUTPUT_STREAMING")
-    private short outputStreaming;
+    private boolean outputStreaming;
 
     @Column(name = "OUTPUT_VALUE")
-    private String outputValue;
+    private String value;
 
     @Column(name = "REQUIRED_TO_COMMANDLINE")
-    private short requiredToCommandline;
+    private boolean requiredToAddedToCommandLine;
 
     @Column(name = "SEARCH_QUERY")
     private String searchQuery;
 
+    @ManyToOne(targetEntity = ApplicationInterfaceEntity.class, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "INTERFACE_ID")
+    private ApplicationInterfaceEntity applicationInterface;
+
     public ApplicationOutputEntity() {
     }
 
-    public ApplicationOutputPK getId() {
-        return id;
+    public String getInterfaceId() {
+        return interfaceId;
     }
 
-    public void setId(ApplicationOutputPK id) {
-        this.id = id;
+    public void setInterfaceId(String interfaceId) {
+        this.interfaceId = interfaceId;
     }
 
-    public String getAppArgument() {
-        return appArgument;
+    public String getName() {
+        return name;
     }
 
-    public void setAppArgument(String appArgument) {
-        this.appArgument = appArgument;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public short getDataMovement() {
+    public String getApplicationArgument() {
+        return applicationArgument;
+    }
+
+    public void setApplicationArgument(String applicationArgument) {
+        this.applicationArgument = applicationArgument;
+    }
+
+    public boolean getDataMovement() {
         return dataMovement;
     }
 
-    public void setDataMovement(short dataMovement) {
+    public void setDataMovement(boolean dataMovement) {
         this.dataMovement = dataMovement;
     }
 
-    public String getDataNameLocation() {
-        return dataNameLocation;
+    public String getLocation() {
+        return location;
     }
 
-    public void setDataNameLocation(String dataNameLocation) {
-        this.dataNameLocation = dataNameLocation;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
-    public String getDataType() {
-        return dataType;
+    public String getType() {
+        return type;
     }
 
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public short getIsRequired() {
+    public boolean getIsRequired() {
         return isRequired;
     }
 
-    public void setIsRequired(short isRequired) {
+    public void setIsRequired(boolean isRequired) {
         this.isRequired = isRequired;
     }
 
-    public short getOutputStreaming() {
+    public boolean getOutputStreaming() {
         return outputStreaming;
     }
 
-    public void setOutputStreaming(short outputStreaming) {
+    public void setOutputStreaming(boolean outputStreaming) {
         this.outputStreaming = outputStreaming;
     }
 
-    public String getOutputValue() {
-        return outputValue;
+    public String getValue() {
+        return value;
     }
 
-    public void setOutputValue(String outputValue) {
-        this.outputValue = outputValue;
+    public void setValue(String value) {
+        this.value = value;
     }
 
-    public short getRequiredToCommandline() {
-        return requiredToCommandline;
+    public boolean getRequiredToAddedToCommandLine() {
+        return requiredToAddedToCommandLine;
     }
 
-    public void setRequiredToCommandline(short requiredToCommandline) {
-        this.requiredToCommandline = requiredToCommandline;
+    public void setRequiredToAddedToCommandLine(boolean requiredToAddedToCommandLine) {
+        this.requiredToAddedToCommandLine = requiredToAddedToCommandLine;
     }
 
     public String getSearchQuery() {
@@ -146,4 +161,13 @@ public class ApplicationOutputEntity implements Serializable {
     public void setSearchQuery(String searchQuery) {
         this.searchQuery = searchQuery;
     }
+
+    public ApplicationInterfaceEntity getApplicationInterface() {
+        return applicationInterface;
+    }
+
+    public void setApplicationInterface(ApplicationInterfaceEntity applicationInterface) {
+        this.applicationInterface = applicationInterface;
+    }
+
 }

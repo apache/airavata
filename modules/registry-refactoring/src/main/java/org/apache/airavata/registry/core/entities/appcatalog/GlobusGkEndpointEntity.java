@@ -20,34 +20,44 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
-
 
 /**
  * The persistent class for the globus_gk_endpoint database table.
  * 
  */
 @Entity
-@Table(name="globus_gk_endpoint")
+@Table(name="GLOBUS_GK_ENDPOINT")
+@IdClass(GlobusGkEndpointPK.class)
 public class GlobusGkEndpointEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@EmbeddedId
-	private GlobusGkEndpointPK id;
+	@Id
+	@Column(name = "SUBMISSION_ID")
+	private String submissionId;
 
-	
+	@Id
+	@Column(name = "ENDPOINT")
+	private String endpoint;
 
 	public GlobusGkEndpointEntity() {
 	}
 
-	public GlobusGkEndpointPK getId() {
-		return id;
+	public String getSubmissionId() {
+		return submissionId;
 	}
 
-	public void setId(GlobusGkEndpointPK id) {
-		this.id = id;
+	public void setSubmissionId(String submissionId) {
+		this.submissionId = submissionId;
 	}
+
+	public String getEndpoint() {
+		return endpoint;
+	}
+
+	public void setEndpoint(String endpoint) {
+		this.endpoint = endpoint;
+	}
+
 }

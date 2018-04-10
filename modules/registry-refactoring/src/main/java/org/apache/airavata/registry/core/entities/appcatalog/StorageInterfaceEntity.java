@@ -20,10 +20,7 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -31,12 +28,18 @@ import java.sql.Timestamp;
  * The persistent class for the storage_interface database table.
  */
 @Entity
-@Table(name = "storage_interface")
+@Table(name = "STORAGE_INTERFACE")
+@IdClass(StorageInterfacePK.class)
 public class StorageInterfaceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private StorageInterfacePK id;
+    @Id
+    @Column(name = "STORAGE_RESOURCE_ID")
+    private String storageResourceId;
+
+    @Id
+    @Column(name = "DATA_MOVEMENT_INTERFACE_ID")
+    private String dataMovementInterfaceId;
 
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
@@ -53,12 +56,20 @@ public class StorageInterfaceEntity implements Serializable {
     public StorageInterfaceEntity() {
     }
 
-    public StorageInterfacePK getId() {
-        return id;
+    public String getStorageResourceId() {
+        return storageResourceId;
     }
 
-    public void setId(StorageInterfacePK id) {
-        this.id = id;
+    public void setStorageResourceId(String storageResourceId) {
+        this.storageResourceId = storageResourceId;
+    }
+
+    public String getDataMovementInterfaceId() {
+        return dataMovementInterfaceId;
+    }
+
+    public void setDataMovementInterfaceId(String dataMovementInterfaceId) {
+        this.dataMovementInterfaceId = dataMovementInterfaceId;
     }
 
     public Timestamp getCreationTime() {

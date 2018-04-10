@@ -1,4 +1,4 @@
-/*
+/**
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,23 +16,16 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
-package org.apache.airavata.registry.core.repositories.workflowcatalog;
+ */
+package org.apache.airavata.registry.core.repositories.appcatalog;
 
-import org.apache.airavata.model.NodeModel;
-import org.apache.airavata.registry.core.entities.workflowcatalog.NodeEntity;
-import org.apache.airavata.registry.core.entities.workflowcatalog.NodePK;
-import org.apache.airavata.registry.core.repositories.AbstractRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
+import org.apache.airavata.registry.core.entities.appcatalog.ApplicationModuleEntity;
 
-public class NodeRepository extends AbstractRepository<NodeModel, NodeEntity, NodePK> {
+public class ApplicationModuleRepository extends AppCatAbstractRepository<ApplicationModule, ApplicationModuleEntity, String> {
 
-
-    private final static Logger logger = LoggerFactory.getLogger(NodeRepository.class);
-
-    public NodeRepository(Class<NodeModel> thriftGenericClass, Class<NodeEntity> dbEntityGenericClass) {
-        super(thriftGenericClass, dbEntityGenericClass);
+    public ApplicationModuleRepository () {
+        super(ApplicationModule.class, ApplicationModuleEntity.class);
     }
+
 }

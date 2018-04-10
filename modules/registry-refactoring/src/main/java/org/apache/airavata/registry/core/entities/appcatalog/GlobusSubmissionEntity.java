@@ -31,7 +31,7 @@ import java.io.Serializable;
  * 
  */
 @Entity
-@Table(name = "globus_submission")
+@Table(name = "GLOBUS_SUBMISSION")
 public class GlobusSubmissionEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
