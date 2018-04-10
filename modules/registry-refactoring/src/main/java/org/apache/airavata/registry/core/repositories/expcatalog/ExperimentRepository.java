@@ -511,7 +511,7 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
     }*/
 
     public List<ExperimentModel> getExperimentList(String fieldName, Object value) throws RegistryException {
-        return getExperimentList(fieldName, value, -1, -1, null, null);
+        return getExperimentList(fieldName, value, -1, 0, null, null);
     }
 
     public List<ExperimentModel> getExperimentList(String fieldName, Object value, int limit, int offset,
@@ -522,21 +522,21 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
             logger.debug("Search criteria is Username");
             Map<String, Object> queryParameters = new HashMap<>();
             queryParameters.put(DBConstants.Experiment.USER_NAME, value);
-            experimentModelList = select(QueryConstants.GET_EXPERIMENTS_FOR_USER, -1, 0, queryParameters);
+            experimentModelList = select(QueryConstants.GET_EXPERIMENTS_FOR_USER, limit, offset, queryParameters);
         }
 
         else if (fieldName.equals(DBConstants.Experiment.PROJECT_ID)) {
             logger.debug("Search criteria is ProjectId");
             Map<String, Object> queryParameters = new HashMap<>();
             queryParameters.put(DBConstants.Experiment.PROJECT_ID, value);
-            experimentModelList = select(QueryConstants.GET_EXPERIMENTS_FOR_PROJECT_ID, -1, 0, queryParameters);
+            experimentModelList = select(QueryConstants.GET_EXPERIMENTS_FOR_PROJECT_ID, limit, offset, queryParameters);
         }
 
         else if (fieldName.equals(DBConstants.Experiment.PROJECT_ID)) {
             logger.debug("Search criteria is GatewayId");
             Map<String, Object> queryParameters = new HashMap<>();
             queryParameters.put(DBConstants.Experiment.GATEWAY_ID, value);
-            experimentModelList = select(QueryConstants.GET_EXPERIMENTS_FOR_GATEWAY_ID, -1, 0, queryParameters);
+            experimentModelList = select(QueryConstants.GET_EXPERIMENTS_FOR_GATEWAY_ID, limit, offset, queryParameters);
         }
 
         else {

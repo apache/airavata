@@ -105,6 +105,7 @@
         <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentInputEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentOutputEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentStatusEntity</class>
+        <class>org.apache.airavata.registry.core.entities.expcatalog.ExperimentSummaryEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.GatewayEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.GatewayWorkerEntity</class>
         <class>org.apache.airavata.registry.core.entities.expcatalog.JobEntity</class>

@@ -29,19 +29,19 @@ public class JobStatusPK implements Serializable {
     //default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
-    private String stateId;
+    private String statusId;
     private String jobId;
     private String taskId;
 
     public JobStatusPK() {
     }
 
-    public String getStateId() {
-        return stateId;
+    public String getStatusId() {
+        return statusId;
     }
 
-    public void setStateId(String stateId) {
-        this.stateId = stateId;
+    public void setStatusId(String statusId) {
+        this.statusId = statusId;
     }
 
     public String getJobId() {
@@ -69,7 +69,7 @@ public class JobStatusPK implements Serializable {
         }
         JobStatusPK castOther = (JobStatusPK) other;
         return
-                this.stateId.equals(castOther.stateId)
+                this.statusId.equals(castOther.statusId)
                         && this.jobId.equals(castOther.jobId)
                                 && this.taskId.equals(castOther.taskId);
     }
@@ -77,7 +77,7 @@ public class JobStatusPK implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int hash = 17;
-        hash = hash * prime + this.stateId.hashCode();
+        hash = hash * prime + this.statusId.hashCode();
         hash = hash * prime + this.jobId.hashCode();
         hash = hash * prime + this.taskId.hashCode();
 

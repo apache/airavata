@@ -93,6 +93,11 @@ public class ProjectRepository extends ExpCatAbstractRepository<Project, Project
 
         }
 
+        else {
+            logger.error("Unsupported field name for Project module.");
+            throw new IllegalArgumentException("Unsupported field name for Project module.");
+        }
+
         return null;
     }
 
@@ -110,52 +115,61 @@ public class ProjectRepository extends ExpCatAbstractRepository<Project, Project
         return projectIds;
     }
 
-    public List<Project> searchProjects(Map<String, String> filters) throws RegistryException {
-        return searchProjects(filters, -1, -1, null, null);
-    }
-
     public List<Project> searchProjects(Map<String, String> filters, int limit,
                                         int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
-        Map<String, Object> queryParameters = new HashMap<>();
-        for (String field : filters.keySet()) {
-
-            if (field.equals(DBConstants.Project.GATEWAY_ID)) {
-                logger.debug("Filter Projects by Gateway ID");
-                queryParameters.put(DBConstants.Project.GATEWAY_ID, filters.get(field));
-            }
-
-            else if (field.equals(DBConstants.Project.PROJECT_NAME)) {
-                logger.debug("Filter Projects by Project Name");
-                queryParameters.put(DBConstants.Project.PROJECT_NAME, filters.get(field));
-            }
-
-            else if (field.equals(DBConstants.Project.OWNER)) {
-                logger.debug("Filter Projects by Owner");
-                queryParameters.put(DBConstants.Project.OWNER, filters.get(field));
-            }
-
-            else if (field.equals(DBConstants.Project.DESCRIPTION)) {
-                logger.debug("Filter Projects by Description");
-                queryParameters.put(DBConstants.Project.DESCRIPTION, filters.get(field));
-            }
-        }
-
-        List<Project> projectList = select(QueryConstants.SEARCH_FOR_PROJECTS, -1, 0, queryParameters);
-        return projectList;
+        return searchAllAccessibleProjects(null, filters, limit, offset, orderByIdentifier, resultOrderType);
     }
 
     public List<Project> searchAllAccessibleProjects(List<String> accessibleProjectIds, Map<String, String> filters, int limit,
                                                      int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
-        List<Project> projectList = new ArrayList<>();
-        for (Project project : searchProjects(filters, limit, offset, orderByIdentifier, resultOrderType)) {
+        String query = "SELECT DISTINCT P FROM " + ProjectEntity.class.getSimpleName() + " P ";
 
-            if (accessibleProjectIds.contains(project.getProjectID())) {
-                logger.debug("Project is accessible");
-                projectList.add(project);
+        if (!filters.isEmpty() && filters != null) {
+
+            for (String field : filters.keySet()) {
+
+                query += " WHERE ";
+
+                if (field.equals(DBConstants.Project.GATEWAY_ID)) {
+                    logger.debug("Filter Projects by Gateway ID");
+                    query += "P.gatewayId LIKE :" + filters.get(field) + " AND ";
+                }
+
+                else if (field.equals(DBConstants.Project.OWNER)) {
+                    logger.debug("Filter Projects by Owner");
+                    query += "P.owner LIKE :" + filters.get(field) + " AND ";
+                }
+
+                else if (field.equals(DBConstants.Project.PROJECT_NAME)) {
+                    logger.debug("Filter Projects by Project Name");
+                    query += "P.name LIKE :" + filters.get(field) + " AND ";
+                }
+
+                else if (field.equals(DBConstants.Project.DESCRIPTION)) {
+                    logger.debug("Filter Projects by Description");
+                    query += "P.description LIKE :" + filters.get(field) + " AND ";
+                }
+
+                else {
+                    logger.error("Unsupported field name for Project module.");
+                    throw new IllegalArgumentException("Unsupported field name for Project module.");
+                }
+
             }
 
         }
 
+        if (!accessibleProjectIds.isEmpty() && accessibleProjectIds != null) {
+            logger.debug("Filter Projects by Accessible Project IDs");
+            query += " P.projectId IN :" + accessibleProjectIds;
+        }
+
+        else {
+            logger.debug("Removing the last operator from the query");
+            query = query.substring(0, query.length() - 5);
+        }
+
+        List<Project> projectList = select(query, offset);
         return projectList;
     }
 
