@@ -114,12 +114,14 @@ public class PostWorkflowManager extends WorkflowManager {
 
                 logger.info("Updating the job status for job id : " + jobStatusResult.getJobId() + " with process id "
                         + processId + ", exp id " + experimentId + ", gateway " + gateway + " and status " + jobStatusResult.getState().name());
+
                 saveAndPublishJobStatus(jobStatusResult.getJobId(), task, processId, experimentId, gateway, jobStatusResult.getState());
 
                 // TODO get cluster lock before that
-                if ("cancel".equals(processStatus)) {
+                if (MonitoringUtil.CANCEL.equals(processStatus)) {
                     logger.info("Cancelled post workflow for process " + processId + " in experiment " + experimentId);
                     // This will mark an cancelling Experiment into a cancelled status for a set of valid job statuses
+                    // This is a safety check. Cancellation is originally handled in Job Cancellation Workflow
                     switch (jobStatusResult.getState()) {
                         case FAILED:
                         case SUSPENDED:
@@ -222,9 +224,13 @@ public class PostWorkflowManager extends WorkflowManager {
                             logger.error("Failed to save workflow " + workflowName + " of process " + processId + " in zookeeper registry. " +
                                     "This will affect cancellation tasks", e);
                         }
+
                     } else if (jobStatusResult.getState() == JobState.CANCELED) {
-                        logger.info("Job " + jobStatusResult.getJobId() + " was externally cancelled");
-                        //
+                        logger.info("Job " + jobStatusResult.getJobId() + " was externally cancelled but process is not marked as cancelled yet");
+                        MonitoringUtil.registerCancelProcess(getCuratorClient(), processId);
+                        publishProcessStatus(processId, experimentId,gateway, ProcessState.CANCELED);
+                        logger.info("Marked process " + processId + " of experiment " + experimentId + " as cancelled as job is already being cancelled");
+
                     } else if (jobStatusResult.getState() == JobState.SUBMITTED) {
                         logger.info("Job " + jobStatusResult.getJobId() + " was submitted");
 
