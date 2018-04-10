@@ -91,13 +91,24 @@ public class DBConstants {
         public static final String OWNER = "owner";
         public static final String PROJECT_NAME = "name";
         public static final String DESCRIPTION = "description";
-        public static final String ACCESSIBLE_PROJECT_IDS = "accessibleProjectIds";
     }
 
     public static class Experiment {
         public static final String USER_NAME = "userName";
         public static final String PROJECT_ID = "projectId";
         public static final String GATEWAY_ID = "gatewayId";
+        public static final String EXPERIMENT_ID = "experimentId";
+        public static final String EXPERIMENT_NAME = "experimentName";
+        public static final String DESCRIPTION = "description";
+        public static final String EXECUTION_ID = "executionId";
+        public static final String CREATION_TIME = "creationTime";
+        public static final String RESOURCE_HOST_ID = "resourceHostId";
+    }
+
+    public final class ExperimentStatus {
+        public static final String EXPERIMENT_ID = "experimentId";
+        public static final String STATE = "state";
+        public static final String REASON = "reason";
     }
 
     public static class Process {
@@ -111,6 +122,11 @@ public class DBConstants {
     public static class Job {
         public static final String PROCESS_ID = "processId";
         public static final String TASK_ID = "taskId";
+    }
+
+    public static class ExperimentSummary {
+        public static final String FROM_DATE = "fromDate";
+        public static final String TO_DATE = "toDate";
     }
 
     public static class UserComputeResourcePreference {

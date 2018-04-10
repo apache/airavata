@@ -111,11 +111,6 @@ public interface QueryConstants {
             "WHERE N.gatewayId LIKE :" + DBConstants.Notification.GATEWAY_ID;
 
     String GET_ALL_PROJECTS = "SELECT P FROM " + ProjectEntity.class.getSimpleName() + " P";
-    String SEARCH_FOR_PROJECTS = "SELECT DISTINCT P FROM " + ProjectEntity.class.getSimpleName() + " P " +
-            "WHERE P.gatewayId LIKE :" + DBConstants.Project.GATEWAY_ID + " AND " +
-            "P.owner LIKE :" + DBConstants.Project.OWNER + " AND " +
-            "P.name LIKE :" + DBConstants.Project.PROJECT_NAME + " AND " +
-            "P.description LIKE :" + DBConstants.Project.DESCRIPTION;
 
     String GET_EXPERIMENTS_FOR_USER = "SELECT E FROM " + ExperimentEntity.class.getSimpleName() + " E " +
             "WHERE E.userName LIKE :" + DBConstants.Experiment.USER_NAME;
