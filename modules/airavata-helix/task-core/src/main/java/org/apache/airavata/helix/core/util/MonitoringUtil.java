@@ -7,6 +7,8 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 public class MonitoringUtil {
 
     private final static Logger logger = LoggerFactory.getLogger(MonitoringUtil.class);
@@ -26,6 +28,7 @@ public class MonitoringUtil {
     private static final String JOB_NAME = "/jobName";
     private static final String WORKFLOWS = "/workflows";
 
+    public static final String CANCEL = "cancel";
 
     public static String getExperimentIdByJobId(CuratorFramework curatorClient, String jobId) throws Exception {
         String path = MONITORING + jobId + EXPERIMENT;
@@ -130,6 +133,24 @@ public class MonitoringUtil {
         if (curatorClient.checkExists().forPath(path) != null) {
             byte[] statusBytes = curatorClient.getData().forPath(path);
             return new String(statusBytes);
+        } else {
+            return null;
+        }
+    }
+
+    public static void registerCancelProcess(CuratorFramework curatorClient, String processId) throws Exception {
+        String path = REGISTRY + processId + STATUS;
+        if (curatorClient.checkExists().forPath(path) != null) {
+            curatorClient.delete().forPath(path);
+        }
+        curatorClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
+                path , CANCEL.getBytes());
+    }
+
+    public static List<String> getWorkflowsOfProcess(CuratorFramework curatorClient, String processId) throws Exception {
+        String path = REGISTRY + processId + WORKFLOWS;
+        if (curatorClient.checkExists().forPath(path) != null) {
+            return curatorClient.getChildren().forPath(path);
         } else {
             return null;
         }

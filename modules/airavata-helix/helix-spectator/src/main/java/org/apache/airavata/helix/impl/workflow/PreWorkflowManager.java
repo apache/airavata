@@ -26,6 +26,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
+import org.apache.airavata.helix.core.util.MonitoringUtil;
 import org.apache.airavata.helix.impl.task.AiravataTask;
 import org.apache.airavata.helix.impl.task.cancel.CancelCompletingTask;
 import org.apache.airavata.helix.impl.task.cancel.RemoteJobCancellationTask;
@@ -69,29 +70,6 @@ public class PreWorkflowManager extends WorkflowManager {
         List<String> routingKeys = new ArrayList<>();
         routingKeys.add(ServerSettings.getRabbitmqProcessExchangeName());
         this.subscriber = MessagingFactory.getSubscriber(new ProcessLaunchMessageHandler(), routingKeys, Type.PROCESS_LAUNCH);
-    }
-
-    private void registerWorkflow(String processId, String workflowId) throws Exception {
-        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                "/registry/" + processId + "/workflows/" + workflowId , new byte[0]);
-    }
-
-    private void registerCancelProcess(String processId) throws Exception {
-        String path = "/registry/" + processId + "/status";
-        if (getCuratorClient().checkExists().forPath(path) != null) {
-            getCuratorClient().delete().forPath(path);
-        }
-        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                path , "cancel".getBytes());
-    }
-
-    private List<String> getWorkflowsOfProcess(String processId) throws Exception {
-        String path = "/registry/" + processId + "/workflows";
-        if (getCuratorClient().checkExists().forPath(path) != null) {
-            return getCuratorClient().getChildren().forPath(path);
-        } else {
-            return null;
-        }
     }
 
     private String createAndLaunchPreWorkflow(String processId) throws Exception {
@@ -153,7 +131,7 @@ public class PreWorkflowManager extends WorkflowManager {
         String workflowName = getWorkflowOperator().launchWorkflow(processId + "-PRE-" + UUID.randomUUID().toString(),
                 new ArrayList<>(allTasks), true, false);
         try {
-            registerWorkflow(processId, workflowName);
+            MonitoringUtil.registerWorkflow(getCuratorClient(), processId, workflowName);
         } catch (Exception e) {
             logger.error("Failed to save workflow " + workflowName + " of process " + processId + " in zookeeper registry. " +
                     "This will affect cancellation tasks", e);
@@ -179,8 +157,8 @@ public class PreWorkflowManager extends WorkflowManager {
 
         String experimentId = processModel.getExperimentId();
 
-        registerCancelProcess(processId);
-        List<String> workflows = getWorkflowsOfProcess(processId);
+        MonitoringUtil.registerCancelProcess(getCuratorClient(), processId);
+        List<String> workflows = MonitoringUtil.getWorkflowsOfProcess(getCuratorClient(), processId);
         final List<AbstractTask> allTasks = new ArrayList<>();
         if (workflows != null && workflows.size() > 0) {
             for (String wf : workflows) {
