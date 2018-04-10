@@ -3,7 +3,7 @@
   "model": "auth.user",
   "fields": {
     "password": "pbkdf2_sha256$36000$9e7NwEtywbng$bEmcs9cz0bgp1ai2Kbzfn8GgccaPJKvC11DIbyPDMMo=",
-    "last_login": "2018-04-05T22:52:21.161Z",
+    "last_login": "2018-04-10T23:05:05.442Z",
     "is_superuser": true,
     "username": "stephenpaul2727",
     "first_name": "",
@@ -328,9 +328,9 @@
     "expired": false,
     "locked": false,
     "first_published_at": "2018-04-05T23:03:07.327Z",
-    "last_published_at": "2018-04-06T00:00:15.149Z",
-    "latest_revision_created_at": "2018-04-06T00:00:15.117Z",
-    "live_revision": 30
+    "last_published_at": "2018-04-10T23:05:23.323Z",
+    "latest_revision_created_at": "2018-04-10T23:05:23.290Z",
+    "live_revision": 245
   }
 },
 {
@@ -361,9 +361,9 @@
     "expired": false,
     "locked": false,
     "first_published_at": "2018-04-06T00:02:02.704Z",
-    "last_published_at": "2018-04-06T00:05:30.538Z",
-    "latest_revision_created_at": "2018-04-06T00:05:30.513Z",
-    "live_revision": 33
+    "last_published_at": "2018-04-10T23:05:33.412Z",
+    "latest_revision_created_at": "2018-04-10T23:05:33.391Z",
+    "live_revision": 246
   }
 },
 {
@@ -394,9 +394,9 @@
     "expired": false,
     "locked": false,
     "first_published_at": "2018-04-06T00:06:12.220Z",
-    "last_published_at": "2018-04-06T00:06:30.678Z",
-    "latest_revision_created_at": "2018-04-06T00:06:30.657Z",
-    "live_revision": 35
+    "last_published_at": "2018-04-10T23:05:42.586Z",
+    "latest_revision_created_at": "2018-04-10T23:05:42.563Z",
+    "live_revision": 247
   }
 },
 {
@@ -427,9 +427,9 @@
     "expired": false,
     "locked": false,
     "first_published_at": "2018-04-06T00:07:14.453Z",
-    "last_published_at": "2018-04-06T00:07:14.453Z",
-    "latest_revision_created_at": "2018-04-06T00:07:14.437Z",
-    "live_revision": 36
+    "last_published_at": "2018-04-10T23:06:01.371Z",
+    "latest_revision_created_at": "2018-04-10T23:06:01.342Z",
+    "live_revision": 248
   }
 },
 {
@@ -937,6 +937,76 @@
   }
 },
 {
+  "model": "wagtailcore.pagerevision",
+  "pk": 244,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-10T23:05:15.562Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 3, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 274, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 8, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-05T23:03:07.327Z\", \"last_published_at\": \"2018-04-06T00:00:15.149Z\", \"latest_revision_created_at\": \"2018-04-06T00:00:15.117Z\", \"live_revision\": 30, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 2, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 mt-4\\\"}, \\\"id\\\": \\\"1460a2e8-f993-4227-a043-d19921c00828\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"240\\\", \\\"height\\\": 60, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-2 mx-auto mt-5\\\"}, \\\"id\\\": \\\"79c267c9-51a4-4cb9-8c96-6918df2b85eb\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"Searching SRA Gateway\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 ml-auto mt-5\\\"}, \\\"id\\\": \\\"051d329e-2488-4d24-946d-89c991d3c949\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-2 mx-auto\\\", \\\"body\\\": \\\"<h4></h4><hr/><p></p><h4><a href=\\\\\\\"http://searchsra.scigap.org/login\\\\\\\">Login</a></h4><hr/><p></p><h4><a href=\\\\\\\"http://searchsra.scigap.org/create\\\\\\\">Register</a></h4><hr/><p></p>\\\"}, \\\"id\\\": \\\"7f899743-ff1a-496c-8223-1922763f5c2f\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 ml-auto\\\", \\\"body\\\": \\\"<h2>Welcome!</h2><p>The Sequence Read Archive is NCBI\\\\u2019s flagship database that makes biological sequence data available to the research community to enhance reproducibility and allow for new discoveries by comparing data sets. Searching SRA gateway is part of the joint project that will innovate a resource that will allow researchers to explore data in the SRA.</p>\\\"}, \\\"id\\\": \\\"1cddf952-fc7e-423f-9e74-b702ba43e8c4\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-2 mx-auto\\\"}, \\\"id\\\": \\\"6c71eb29-4cde-4627-ae76-abb8e516be8d\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 30, \\\"is_card_img\\\": true, \\\"card_img\\\": 3, \\\"card_img_width\\\": 350, \\\"card_img_height\\\": 100, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SciGaP is a hosted service with a public API that science gateways can use to manage applications and workflows running on remote supercomputers, as well as other services. Gateway developers can thus concentrate their efforts on building their scientific communities and not worry about operations.</p><p>Science Gateway Platform as a Service (SciGaP) provides application programmer interfaces (APIs) to hosted generic infrastructure services that can be used by domain science communities to create Science Gateways.</p><p><a href=\\\\\\\"http://scigap.org/\\\\\\\">Learn more</a></p>\\\", \\\"card_bg_color\\\": \\\"\\\", \\\"card_text_color\\\": \\\"\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-4 sponsor-cards\\\"}, \\\"id\\\": \\\"773b57c5-379e-4925-a0fa-cb972e13ecb2\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 30, \\\"is_card_img\\\": true, \\\"card_img\\\": 4, \\\"card_img_width\\\": 300, \\\"card_img_height\\\": 100, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>Apache Airavata is a software framework which is dominantly used to build Web-based science gateways and assist to compose, manage, execute and monitor large scale applications and workflows on distributed computing resources such as local clusters, supercomputers, national grids, academic and commercial clouds. Airavata mainly supports long running applications and workflows on distributed computational resources.</p><p><a href=\\\\\\\"http://airavata.apache.org/\\\\\\\">Learn more</a></p>\\\", \\\"card_bg_color\\\": \\\"\\\", \\\"card_text_color\\\": \\\"\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-4 sponsor-cards\\\"}, \\\"id\\\": \\\"fa47723b-1b3f-4151-a0bd-5cb84521137d\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 245,
+  "fields": {
+    "page": 3,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-10T23:05:23.290Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 3, \"path\": \"000100010001\", \"depth\": 3, \"numchild\": 3, \"title\": \"Home\", \"draft_title\": \"Home\", \"slug\": \"home\", \"content_type\": 274, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/\", \"owner\": 8, \"seo_title\": \"\", \"show_in_menus\": false, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-05T23:03:07.327Z\", \"last_published_at\": \"2018-04-10T23:05:15.593Z\", \"latest_revision_created_at\": \"2018-04-10T23:05:15.562Z\", \"live_revision\": 244, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 1, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 2, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"\\\", \\\"height\\\": null, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-12 mt-4\\\"}, \\\"id\\\": \\\"1460a2e8-f993-4227-a043-d19921c00828\\\"}]\", \"page\": 3}, {\"pk\": 2, \"sort_order\": 1, \"body\": \"[{\\\"type\\\": \\\"image_block\\\", \\\"value\\\": {\\\"image\\\": 1, \\\"caption\\\": \\\"\\\", \\\"width\\\": \\\"240\\\", \\\"height\\\": 60, \\\"redirect_url\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-2 mx-auto mt-5\\\"}, \\\"id\\\": \\\"79c267c9-51a4-4cb9-8c96-6918df2b85eb\\\"}, {\\\"type\\\": \\\"heading_block\\\", \\\"value\\\": {\\\"heading_text\\\": \\\"Searching SRA Gateway\\\", \\\"size\\\": \\\"h1\\\", \\\"custom_class\\\": \\\"col-md-8 ml-auto mt-5\\\"}, \\\"id\\\": \\\"051d329e-2488-4d24-946d-89c991d3c949\\\"}]\", \"page\": 3}, {\"pk\": 3, \"sort_order\": 2, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-2 mx-auto\\\", \\\"body\\\": \\\"<h4></h4><hr/><p></p><h4><a href=\\\\\\\"http://searchsra.scigap.org/login\\\\\\\">Login</a></h4><hr/><p></p><h4><a href=\\\\\\\"http://searchsra.scigap.org/create\\\\\\\">Register</a></h4><hr/><p></p>\\\"}, \\\"id\\\": \\\"7f899743-ff1a-496c-8223-1922763f5c2f\\\"}, {\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-8 ml-auto\\\", \\\"body\\\": \\\"<h2>Welcome!</h2><p>The Sequence Read Archive is NCBI\\\\u2019s flagship database that makes biological sequence data available to the research community to enhance reproducibility and allow for new discoveries by comparing data sets. Searching SRA gateway is part of the joint project that will innovate a resource that will allow researchers to explore data in the SRA.</p>\\\"}, \\\"id\\\": \\\"1cddf952-fc7e-423f-9e74-b702ba43e8c4\\\"}]\", \"page\": 3}, {\"pk\": 4, \"sort_order\": 3, \"body\": \"[{\\\"type\\\": \\\"placeholder_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-2 mx-auto\\\"}, \\\"id\\\": \\\"6c71eb29-4cde-4627-ae76-abb8e516be8d\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 30, \\\"is_card_img\\\": true, \\\"card_img\\\": 3, \\\"card_img_width\\\": 350, \\\"card_img_height\\\": 100, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>SciGaP is a hosted service with a public API that science gateways can use to manage applications and workflows running on remote supercomputers, as well as other services. Gateway developers can thus concentrate their efforts on building their scientific communities and not worry about operations.</p><p>Science Gateway Platform as a Service (SciGaP) provides application programmer interfaces (APIs) to hosted generic infrastructure services that can be used by domain science communities to create Science Gateways.</p><p><a href=\\\\\\\"http://scigap.org/\\\\\\\">Learn more</a></p>\\\", \\\"card_bg_color\\\": \\\"\\\", \\\"card_text_color\\\": \\\"\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-4 sponsor-cards\\\"}, \\\"id\\\": \\\"773b57c5-379e-4925-a0fa-cb972e13ecb2\\\"}, {\\\"type\\\": \\\"bootstrap_card\\\", \\\"value\\\": {\\\"card_width\\\": 30, \\\"is_card_img\\\": true, \\\"card_img\\\": 4, \\\"card_img_width\\\": 300, \\\"card_img_height\\\": 100, \\\"card_title\\\": \\\"\\\", \\\"card_text\\\": \\\"<p>Apache Airavata is a software framework which is dominantly used to build Web-based science gateways and assist to compose, manage, execute and monitor large scale applications and workflows on distributed computing resources such as local clusters, supercomputers, national grids, academic and commercial clouds. Airavata mainly supports long running applications and workflows on distributed computational resources.</p><p><a href=\\\\\\\"http://airavata.apache.org/\\\\\\\">Learn more</a></p>\\\", \\\"card_bg_color\\\": \\\"\\\", \\\"card_text_color\\\": \\\"\\\", \\\"btn_text\\\": \\\"\\\", \\\"btn_color\\\": \\\"\\\", \\\"btn_link\\\": \\\"\\\", \\\"custom_class\\\": \\\"col-md-4 sponsor-cards\\\"}, \\\"id\\\": \\\"fa47723b-1b3f-4151-a0bd-5cb84521137d\\\"}]\", \"page\": 3}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 246,
+  "fields": {
+    "page": 4,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-10T23:05:33.391Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 4, \"path\": \"0001000100010001\", \"depth\": 4, \"numchild\": 0, \"title\": \"Documentation\", \"draft_title\": \"Documentation\", \"slug\": \"documentation\", \"content_type\": 274, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/documentation/\", \"owner\": 8, \"seo_title\": \"documentation\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T00:02:02.704Z\", \"last_published_at\": \"2018-04-06T00:05:30.538Z\", \"latest_revision_created_at\": \"2018-04-06T00:05:30.513Z\", \"live_revision\": 33, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 5, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 text-center mt-5\\\", \\\"body\\\": \\\"<h2><b>Documentation</b></h2>\\\"}, \\\"id\\\": \\\"8c9cdfd4-343f-4432-9567-5d0775a666d9\\\"}]\", \"page\": 4}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 247,
+  "fields": {
+    "page": 5,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-10T23:05:42.563Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 5, \"path\": \"0001000100010002\", \"depth\": 4, \"numchild\": 0, \"title\": \"About\", \"draft_title\": \"About\", \"slug\": \"about\", \"content_type\": 274, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/about/\", \"owner\": 8, \"seo_title\": \"about\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T00:06:12.220Z\", \"last_published_at\": \"2018-04-06T00:06:30.678Z\", \"latest_revision_created_at\": \"2018-04-06T00:06:30.657Z\", \"live_revision\": 35, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 6, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 text-center mt-5\\\", \\\"body\\\": \\\"<h2><b>About</b></h2>\\\"}, \\\"id\\\": \\\"8902a118-08d2-4851-a4a0-13af0598bb78\\\"}]\", \"page\": 5}]}",
+    "approved_go_live_at": null
+  }
+},
+{
+  "model": "wagtailcore.pagerevision",
+  "pk": 248,
+  "fields": {
+    "page": 6,
+    "submitted_for_moderation": false,
+    "created_at": "2018-04-10T23:06:01.342Z",
+    "user": [
+      "stephenpaul2727"
+    ],
+    "content_json": "{\"pk\": 6, \"path\": \"0001000100010003\", \"depth\": 4, \"numchild\": 0, \"title\": \"Contact\", \"draft_title\": \"Contact\", \"slug\": \"contact\", \"content_type\": 274, \"live\": true, \"has_unpublished_changes\": false, \"url_path\": \"/home/home/contact/\", \"owner\": 8, \"seo_title\": \"contact\", \"show_in_menus\": true, \"search_description\": \"\", \"go_live_at\": null, \"expire_at\": null, \"expired\": false, \"locked\": false, \"first_published_at\": \"2018-04-06T00:07:14.453Z\", \"last_published_at\": \"2018-04-06T00:07:14.453Z\", \"latest_revision_created_at\": \"2018-04-06T00:07:14.437Z\", \"live_revision\": 36, \"show_navbar\": \"yes\", \"show_nav_extra\": \"yes\", \"row\": [{\"pk\": 7, \"sort_order\": 0, \"body\": \"[{\\\"type\\\": \\\"paragraph_block\\\", \\\"value\\\": {\\\"custom_class\\\": \\\"col-md-12 text-center mt-5\\\", \\\"body\\\": \\\"<h2><b>Contact</b></h2>\\\"}, \\\"id\\\": \\\"30401d0e-fa90-44e2-9838-ad604884fd45\\\"}]\", \"page\": 6}]}",
+    "approved_go_live_at": null
+  }
+},
+{
   "model": "wagtailcore.collection",
   "pk": 1,
   "fields": {
@@ -1101,7 +1171,7 @@
   "model": "django_airavata_wagtail_base.customcss",
   "pk": 1,
   "fields": {
-    "css": "[{\"type\": \"css_comment\", \"value\": {\"message\": \"-----navbar styles----\"}, \"id\": \"f4355b2e-dd22-4a1b-b570-f15ec9eb0df4\"}, {\"type\": \"css_block\", \"value\": \".main-nav {\\r\\nbackground: #FFFFFF;\\r\\ncolor: #000000;\\r\\nheight: 73px;\\r\\n}\\r\\n.main-nav a {\\r\\n}\\r\\n.main-nav a:hover {\\r\\nbackground-color: #efefef;\\r\\n}\\r\\n.main-nav ul {\\r\\nfont-size: 18px;\\r\\n}\", \"id\": \"1d20d1b8-c531-413d-8783-7fd5e98d41c6\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"------ second nav styles-------\"}, \"id\": \"2c6ad41f-9eb1-4321-9a08-efcaeaba7181\"}, {\"type\": \"css_block\", \"value\": \".second-nav {\\r\\nbackground: #1C293C;\\r\\npadding: 10px;\\r\\n}\\r\\n.second-nav a {\\r\\ncolor: #999;\\r\\n}\\r\\n.second-nav a:hover {\\r\\ncolor: #FFFFFF;\\r\\n}\", \"id\": \"b482aebf-0b18-4dc3-8c9d-819124285160\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"------sponsor logo on home page styles------\"}, \"id\": \"37dea527-a577-417e-b54f-21ffa48611ed\"}, {\"type\": \"css_block\", \"value\": \".card {\\r\\nborder:none !important;\\r\\n}\", \"id\": \"20e9fed6-5885-439c-992f-1286101808f9\"}]"
+    "css": "[{\"type\": \"css_comment\", \"value\": {\"message\": \"-----navbar styles----\"}, \"id\": \"f4355b2e-dd22-4a1b-b570-f15ec9eb0df4\"}, {\"type\": \"css_block\", \"value\": \".main-nav {\\r\\nbackground: #FFFFFF;\\r\\nheight: 73px;\\r\\n}\\r\\n.main-nav a {\\r\\ncolor: #5e91e5 !important;\\r\\n}\\r\\n.main-nav a:hover {\\r\\nbackground-color: #efefef;\\r\\n}\\r\\n.main-nav ul {\\r\\nfont-size: 18px;\\r\\n}\", \"id\": \"1d20d1b8-c531-413d-8783-7fd5e98d41c6\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"------ second nav styles-------\"}, \"id\": \"2c6ad41f-9eb1-4321-9a08-efcaeaba7181\"}, {\"type\": \"css_block\", \"value\": \".second-nav {\\r\\nbackground: #1C293C;\\r\\npadding: 10px;\\r\\n}\\r\\n.second-nav a {\\r\\ncolor: #999;\\r\\n}\\r\\n.second-nav a:hover {\\r\\ncolor: #FFFFFF;\\r\\n}\", \"id\": \"b482aebf-0b18-4dc3-8c9d-819124285160\"}, {\"type\": \"css_comment\", \"value\": {\"message\": \"------sponsor logo on home page styles------\"}, \"id\": \"37dea527-a577-417e-b54f-21ffa48611ed\"}, {\"type\": \"css_block\", \"value\": \".card {\\r\\nborder:none !important;\\r\\n}\", \"id\": \"20e9fed6-5885-439c-992f-1286101808f9\"}]"
   }
 },
 {
@@ -1183,21 +1253,33 @@
 {
   "model": "django_airavata_wagtail_base.blankpage",
   "pk": 3,
-  "fields": {}
+  "fields": {
+    "show_navbar": "yes",
+    "show_nav_extra": "yes"
+  }
 },
 {
   "model": "django_airavata_wagtail_base.blankpage",
   "pk": 4,
-  "fields": {}
+  "fields": {
+    "show_navbar": "yes",
+    "show_nav_extra": "yes"
+  }
 },
 {
   "model": "django_airavata_wagtail_base.blankpage",
   "pk": 5,
-  "fields": {}
+  "fields": {
+    "show_navbar": "yes",
+    "show_nav_extra": "yes"
+  }
 },
 {
   "model": "django_airavata_wagtail_base.blankpage",
   "pk": 6,
-  "fields": {}
+  "fields": {
+    "show_navbar": "yes",
+    "show_nav_extra": "yes"
+  }
 }
 ]
