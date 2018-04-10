@@ -37,6 +37,7 @@ import java.util.*;
 
 public class DataProductRepository extends RepCatAbstractRepository<DataProductModel, DataProductEntity, String> implements DataProductInterface {
     private final static Logger logger = LoggerFactory.getLogger(DataProductRepository.class);
+    private final static DataReplicaLocationRepository dataReplicaLocationRepository = new DataReplicaLocationRepository();
 
     public DataProductRepository() {
         super(DataProductModel.class, DataProductEntity.class);
@@ -69,17 +70,28 @@ public class DataProductRepository extends RepCatAbstractRepository<DataProductM
             throw new ReplicaCatalogException("Parent product does not exist or parent type is not Collection");
         }
 
-        if (dataProductEntity.getReplicaLocations() != null) {
-            logger.debug("Populating the product URI for ReplicaLocations objects for the Data Product");
-            dataProductEntity.getReplicaLocations().forEach(dataReplicaLocationEntity -> dataReplicaLocationEntity.setProductUri(productUri));
-        }
+        final Timestamp currentTime = new Timestamp(System.currentTimeMillis());
 
         if (!isDataProductExists(productUri)) {
             logger.debug("Checking if the Data Product already exists");
-            dataProductEntity.setCreationTime(new Timestamp(System.currentTimeMillis()));
+            dataProductEntity.setCreationTime(currentTime);
         }
 
-        dataProductEntity.setLastModifiedTime(new Timestamp(System.currentTimeMillis()));
+        if (dataProductEntity.getReplicaLocations() != null) {
+            logger.debug("Populating the product URI for ReplicaLocations objects for the Data Product");
+            dataProductEntity.getReplicaLocations().forEach(dataReplicaLocationEntity -> {
+                dataReplicaLocationEntity.setProductUri(productUri);
+                if (dataReplicaLocationEntity.getReplicaId() == null) {
+                    dataReplicaLocationEntity.setReplicaId(UUID.randomUUID().toString());
+                }
+                if (!dataReplicaLocationRepository.isExists(dataReplicaLocationEntity.getReplicaId())){
+                    dataReplicaLocationEntity.setCreationTime(currentTime);
+                }
+                dataReplicaLocationEntity.setLastModifiedTime(currentTime);
+            });
+        }
+
+        dataProductEntity.setLastModifiedTime(currentTime);
 
         return execute(entityManager -> entityManager.merge(dataProductEntity));
 
