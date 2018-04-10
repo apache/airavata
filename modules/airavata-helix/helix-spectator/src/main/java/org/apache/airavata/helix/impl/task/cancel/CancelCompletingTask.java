@@ -25,7 +25,10 @@ public class CancelCompletingTask extends AiravataTask {
             logger.info("Making process as cancelled as the job is already being cancelled or not available");
             saveAndPublishProcessStatus(ProcessState.CANCELED);
         } else {
-            logger.info("Not updating process as cancelled as the job is not cancelled yet");
+            // TODO: Some schedulers do not send notifications once the job is cancelled. It will cause experiment to stay in
+            // cancelling state forever. So we are making the experiment is CANCELLED irrespective of the state of the job
+            logger.info("Job is not in the saturated state but updating experiment as cancelled");
+            saveAndPublishProcessStatus(ProcessState.CANCELED);
         }
         return onSuccess("Process " + getProcessId() + " successfully cancelled");
     }
