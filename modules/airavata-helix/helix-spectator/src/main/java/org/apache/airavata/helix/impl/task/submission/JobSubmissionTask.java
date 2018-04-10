@@ -57,28 +57,6 @@ public abstract class JobSubmissionTask extends AiravataTask {
         super.init(manager, workflowName, jobName, taskName);
     }
 
-    // TODO perform exception handling
-    @SuppressWarnings("WeakerAccess")
-    protected void createMonitoringNode(String jobId, String jobName) throws Exception {
-        logger.info("Creating zookeeper paths for job monitoring for job id : " + jobId + ", process : "
-                + getProcessId() + ", gateway : " + getGatewayId());
-        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                "/monitoring/" + jobId + "/lock", new byte[0]);
-        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                "/monitoring/" + jobId + "/gateway", getGatewayId().getBytes());
-        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                "/monitoring/" + jobId + "/process", getProcessId().getBytes());
-        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                "/monitoring/" + jobId + "/task", getTaskId().getBytes());
-        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                "/monitoring/" + jobId + "/experiment", getExperimentId().getBytes());
-        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                "/monitoring/" + jobId + "/jobName", jobName.getBytes());
-        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                "/monitoring/" + jobName + "/jobId", jobId.getBytes());
-        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                "/registry/" + getProcessId() + "/jobs/" + jobId, new byte[0]);
-    }
 
     @SuppressWarnings("WeakerAccess")
     protected JobSubmissionOutput submitBatchJob(AgentAdaptor agentAdaptor, GroovyMapData groovyMapData, String workingDirectory) throws Exception {
@@ -179,13 +157,20 @@ public abstract class JobSubmissionTask extends AiravataTask {
         return new File(outputPath + getProcessId());
     }
 
-    @SuppressWarnings("WeakerAccess")
-    public JobStatus getJobStatus(AgentAdaptor agentAdaptor, String jobID) throws Exception {
+    public boolean cancelJob(AgentAdaptor agentAdaptor, String jobId) throws Exception {
         JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
                 getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
-        CommandOutput commandOutput = agentAdaptor.executeCommand(jobManagerConfiguration.getMonitorCommand(jobID).getRawCommand(), null);
+        CommandOutput commandOutput = agentAdaptor.executeCommand(jobManagerConfiguration.getCancelCommand(jobId).getRawCommand(), null);
+        return commandOutput.getExitCode() == 0;
+    }
 
-        return jobManagerConfiguration.getParser().parseJobStatus(jobID, commandOutput.getStdOut());
+    @SuppressWarnings("WeakerAccess")
+    public JobStatus getJobStatus(AgentAdaptor agentAdaptor, String jobIc) throws Exception {
+        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
+                getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
+        CommandOutput commandOutput = agentAdaptor.executeCommand(jobManagerConfiguration.getMonitorCommand(jobIc).getRawCommand(), null);
+
+        return jobManagerConfiguration.getParser().parseJobStatus(jobIc, commandOutput.getStdOut());
 
     }
 

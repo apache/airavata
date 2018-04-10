@@ -23,6 +23,8 @@ import org.apache.airavata.helix.core.AbstractTask;
 import org.apache.airavata.helix.core.OutPort;
 import org.apache.airavata.helix.task.api.annotation.TaskOutPort;
 import org.apache.airavata.helix.task.api.annotation.TaskParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -34,6 +36,8 @@ import java.util.*;
  * @since 1.0.0-SNAPSHOT
  */
 public class TaskUtil {
+
+    private final static Logger logger = LoggerFactory.getLogger(TaskUtil.class);
 
     public static <T extends AbstractTask> List<OutPort> getOutPortsOfTask(T taskObj) throws IllegalAccessException {
 
