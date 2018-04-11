@@ -311,7 +311,7 @@ public abstract class AiravataTask extends AbstractTask {
 
     private void loadContext() throws TaskOnFailException {
         try {
-            //logger.info("Gateway id is " + getGatewayId());
+            logger.info("Loading context for task " + getTaskId());
             processModel = getRegistryServiceClient().getProcess(processId);
 
             this.computeResourceDescription = getRegistryServiceClient().getComputeResource(this.processModel.getComputeResourceId());
