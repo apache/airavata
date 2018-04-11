@@ -45,12 +45,7 @@ import org.apache.airavata.model.appcatalog.accountprovisioning.SSHAccountProvis
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.StoragePreference;
@@ -5079,9 +5074,31 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public void createGroupResourceProfile(AuthzToken authzToken, GroupResourceProfile groupResourceProfile) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
+        String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
         try {
-            regClient.createGroupResourceProfile(groupResourceProfile);
+            String groupResourceProfileId = regClient.createGroupResourceProfile(groupResourceProfile);
+            if(ServerSettings.isEnableSharing()) {
+                try {
+                    Entity entity = new Entity();
+                    entity.setEntityId(groupResourceProfileId);
+                    entity.setDomainId(groupResourceProfile.getGatewayId());
+                    entity.setEntityTypeId(groupResourceProfile.getGatewayId() + ":" + "GROUP_RESOURCE_PROFILE");
+                    entity.setOwnerId(userName + "@" + groupResourceProfile.getGatewayId());
+                    entity.setName(groupResourceProfile.getGroupResourceProfileName());
+
+                    sharingClient.createEntity(entity);
+                } catch (Exception ex) {
+                    logger.error(ex.getMessage(), ex);
+                    logger.error("Rolling back group resource profile creation Group Resource Profile ID : " + groupResourceProfileId);
+                    regClient.removeGroupResourceProfile(groupResourceProfileId);
+                    AiravataSystemException ase = new AiravataSystemException();
+                    ase.setMessage("Failed to create sharing registry record");
+                    throw ase;
+                }
+            }
             registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
         } catch (Exception e) {
             String msg = "Error creating group resource profile.";
             logger.error(msg, e);
@@ -5096,9 +5113,23 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public void updateGroupResourceProfile(AuthzToken authzToken, GroupResourceProfile groupResourceProfile) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
+            if(ServerSettings.isEnableSharing()) {
+                try {
+                    String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                    String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                    if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId,
+                            groupResourceProfile.getGroupResourceProfileId(), gatewayId + ":WRITE")){
+                        throw new AuthorizationException("User does not have permission to update group resource profile");
+                    }
+                } catch (Exception e) {
+                    throw new AuthorizationException("User does not have permission to update group resource profile");
+                }
+            }
             regClient.updateGroupResourceProfile(groupResourceProfile);
             registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
         } catch (Exception e) {
             String msg = "Error updating group resource profile. groupResourceProfileId: "+groupResourceProfile.getGroupResourceProfileId();
             logger.error(msg, e);
@@ -5113,9 +5144,23 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public GroupResourceProfile getGroupResourceProfile(AuthzToken authzToken, String groupResourceProfileId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
-            GroupResourceProfile groupResourceProfile = regClient.getGroupResourceProfile( groupResourceProfileId);
+            if(ServerSettings.isEnableSharing()) {
+                try {
+                    String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                    String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                    if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId,
+                            groupResourceProfileId, gatewayId + ":READ")){
+                        throw new AuthorizationException("User does not have permission to access group resource profile");
+                    }
+                } catch (Exception e) {
+                    throw new AuthorizationException("User does not have permission to access group resource profile");
+                }
+            }
+            GroupResourceProfile groupResourceProfile = regClient.getGroupResourceProfile(groupResourceProfileId);
             registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
             return groupResourceProfile;
         } catch (Exception e) {
             String msg = "Error retrieving group resource profile. groupResourceProfileId: "+ groupResourceProfileId;
@@ -5131,9 +5176,23 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public boolean removeGroupResourceProfile(AuthzToken authzToken, String groupResourceProfileId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
+            if(ServerSettings.isEnableSharing()) {
+                try {
+                    String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                    String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                    if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId,
+                            groupResourceProfileId, gatewayId + ":WRITE")){
+                        throw new AuthorizationException("User does not have permission to remove group resource profile");
+                    }
+                } catch (Exception e) {
+                    throw new AuthorizationException("User does not have permission to remove group resource profile");
+                }
+            }
             boolean result = regClient.removeGroupResourceProfile(groupResourceProfileId);
             registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
             return result;
         } catch (Exception e) {
             String msg = "Error removing group resource profile. groupResourceProfileId: "+ groupResourceProfileId;
@@ -5152,8 +5211,8 @@ public class AiravataServerHandler implements Airavata.Iface {
         SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         String userName = authzToken.getClaimsMap().get(Constants.USER_NAME);
         try {
+            List<String> accessibleGroupResProfileIds = new ArrayList<>();
             if (ServerSettings.isEnableSharing()) {
-                List<String> accessibleGroupResProfileIds = new ArrayList<>();
                 List<SearchCriteria> filters = new ArrayList<>();
                 SearchCriteria searchCriteria = new SearchCriteria();
                 searchCriteria.setSearchField(EntitySearchField.ENTITY_TYPE_ID);
@@ -5163,19 +5222,12 @@ public class AiravataServerHandler implements Airavata.Iface {
                 sharingClient.searchEntities(authzToken.getClaimsMap().get(Constants.GATEWAY_ID),
                         userName + "@" + gatewayId, filters, 0, -1).stream().forEach(p -> accessibleGroupResProfileIds
                         .add(p.entityId));
-                // TODO: push accessibleGroupResProfileIds filtering down
-                List<GroupResourceProfile> groupResourceProfileList = regClient.getGroupResourceList(gatewayId);
-                registryClientPool.returnResource(regClient);
-                sharingClientPool.returnResource(sharingClient);
-                return groupResourceProfileList.stream()
-                        .filter(grp -> accessibleGroupResProfileIds.contains(grp.getGroupResourceProfileId()))
-                        .collect(Collectors.toList());
-            } else {
-                List<GroupResourceProfile> groupResourceProfileList = regClient.getGroupResourceList(gatewayId);
-                registryClientPool.returnResource(regClient);
-                sharingClientPool.returnResource(sharingClient);
-                return groupResourceProfileList;
+
             }
+            List<GroupResourceProfile> groupResourceProfileList = regClient.getGroupResourceList(gatewayId, accessibleGroupResProfileIds);
+            registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
+            return groupResourceProfileList;
         } catch (Exception e) {
             String msg = "Error retrieving list group resource profile list. GatewayId: "+ gatewayId;
             logger.error(msg, e);
@@ -5191,9 +5243,23 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public boolean removeGroupComputePrefs(AuthzToken authzToken, String computeResourceId, String groupResourceProfileId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
+            if(ServerSettings.isEnableSharing()) {
+                try {
+                    String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                    String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                    if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId,
+                            groupResourceProfileId, gatewayId + ":WRITE")){
+                        throw new AuthorizationException("User does not have permission to remove group compute preferences");
+                    }
+                } catch (Exception e) {
+                    throw new AuthorizationException("User does not have permission to remove group compute preferences");
+                }
+            }
             boolean result = regClient.removeGroupComputePrefs(computeResourceId, groupResourceProfileId);
             registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
             return result;
         } catch (Exception e) {
             String msg = "Error removing group compute resource preferences. GroupResourceProfileId: "+ groupResourceProfileId;
@@ -5209,9 +5275,24 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public boolean removeGroupComputeResourcePolicy(AuthzToken authzToken, String resourcePolicyId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
+            if(ServerSettings.isEnableSharing()) {
+                try {
+                    ComputeResourcePolicy computeResourcePolicy = regClient.getGroupComputeResourcePolicy(resourcePolicyId);
+                    String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                    String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                    if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId,
+                            computeResourcePolicy.getGroupResourceProfileId(), gatewayId + ":WRITE")){
+                        throw new AuthorizationException("User does not have permission to remove group compute resource policy");
+                    }
+                } catch (Exception e) {
+                    throw new AuthorizationException("User does not have permission to remove group compute resource policy");
+                }
+            }
             boolean result = regClient.removeGroupComputeResourcePolicy(resourcePolicyId);
             registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
             return result;
         } catch (Exception e) {
             String msg = "Error removing group compute resource policy. ResourcePolicyId: "+ resourcePolicyId;
@@ -5227,9 +5308,24 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public boolean removeGroupBatchQueueResourcePolicy(AuthzToken authzToken, String resourcePolicyId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
+            if(ServerSettings.isEnableSharing()) {
+                try {
+                    BatchQueueResourcePolicy batchQueueResourcePolicy = regClient.getBatchQueueResourcePolicy(resourcePolicyId);
+                    String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                    String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                    if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId,
+                            batchQueueResourcePolicy.getGroupResourceProfileId(), gatewayId + ":WRITE")){
+                        throw new AuthorizationException("User does not have permission to remove batch queue resource policy");
+                    }
+                } catch (Exception e) {
+                    throw new AuthorizationException("User does not have permission to remove batch queue resource policy");
+                }
+            }
             boolean result = regClient.removeGroupBatchQueueResourcePolicy(resourcePolicyId);
             registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
             return result;
         } catch (Exception e) {
             String msg = "Error removing batch queue resource policy. ResourcePolicyId: "+ resourcePolicyId;
@@ -5245,9 +5341,23 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public GroupComputeResourcePreference getGroupComputeResourcePreference(AuthzToken authzToken, String computeResourceId, String groupResourceProfileId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
+            if(ServerSettings.isEnableSharing()) {
+                try {
+                    String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                    String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                    if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId,
+                            groupResourceProfileId, gatewayId + ":READ")){
+                        throw new AuthorizationException("User does not have permission to access group resource profile");
+                    }
+                } catch (Exception e) {
+                    throw new AuthorizationException("User does not have permission to access group resource profile");
+                }
+            }
             GroupComputeResourcePreference groupComputeResourcePreference = regClient.getGroupComputeResourcePreference(computeResourceId, groupResourceProfileId);
             registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
             return groupComputeResourcePreference;
         } catch (Exception e) {
             String msg = "Error retrieving Group compute preference. GroupResourceProfileId: "+ groupResourceProfileId;
@@ -5263,9 +5373,25 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public ComputeResourcePolicy getGroupComputeResourcePolicy(AuthzToken authzToken, String resourcePolicyId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
+            if(ServerSettings.isEnableSharing()) {
+                try {
+                    ComputeResourcePolicy computeResourcePolicy = regClient.getGroupComputeResourcePolicy(resourcePolicyId);
+                    String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                    String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                    if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId,
+                            computeResourcePolicy.getGroupResourceProfileId(), gatewayId + ":READ")){
+                        throw new AuthorizationException("User does not have permission to access group resource profile");
+                    }
+                } catch (Exception e) {
+                    throw new AuthorizationException("User does not have permission to access group resource profile");
+                }
+            }
+
             ComputeResourcePolicy computeResourcePolicy = regClient.getGroupComputeResourcePolicy(resourcePolicyId);
             registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
             return computeResourcePolicy;
         } catch (Exception e) {
             String msg = "Error retrieving Group compute resource policy. ResourcePolicyId: "+ resourcePolicyId;
@@ -5281,9 +5407,24 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public BatchQueueResourcePolicy getBatchQueueResourcePolicy(AuthzToken authzToken, String resourcePolicyId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
+            if(ServerSettings.isEnableSharing()) {
+                try {
+                    BatchQueueResourcePolicy batchQueueResourcePolicy = regClient.getBatchQueueResourcePolicy(resourcePolicyId);
+                    String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                    String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                    if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId,
+                            batchQueueResourcePolicy.getGroupResourceProfileId(), gatewayId + ":READ")){
+                        throw new AuthorizationException("User does not have permission to access group resource profile");
+                    }
+                } catch (Exception e) {
+                    throw new AuthorizationException("User does not have permission to access group resource profile");
+                }
+            }
             BatchQueueResourcePolicy batchQueueResourcePolicy = regClient.getBatchQueueResourcePolicy(resourcePolicyId);
             registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
             return batchQueueResourcePolicy;
         } catch (Exception e) {
             String msg = "Error retrieving Group batch queue resource policy. ResourcePolicyId: "+ resourcePolicyId;
@@ -5299,9 +5440,23 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public List<GroupComputeResourcePreference> getGroupComputeResourcePrefList(AuthzToken authzToken, String groupResourceProfileId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
+            if(ServerSettings.isEnableSharing()) {
+                try {
+                    String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                    String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                    if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId,
+                            groupResourceProfileId, gatewayId + ":READ")){
+                        throw new AuthorizationException("User does not have permission to access group resource profile");
+                    }
+                } catch (Exception e) {
+                    throw new AuthorizationException("User does not have permission to access group resource profile");
+                }
+            }
             List<GroupComputeResourcePreference> groupComputeResourcePreferenceList = regClient.getGroupComputeResourcePrefList(groupResourceProfileId);
             registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
             return groupComputeResourcePreferenceList;
         } catch (Exception e) {
             String msg = "Error retrieving Group compute resource preference. GroupResourceProfileId: "+ groupResourceProfileId;
@@ -5317,9 +5472,23 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public List<BatchQueueResourcePolicy> getGroupBatchQueueResourcePolicyList(AuthzToken authzToken, String groupResourceProfileId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
+            if(ServerSettings.isEnableSharing()) {
+                try {
+                    String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                    String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                    if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId,
+                            groupResourceProfileId, gatewayId + ":READ")){
+                        throw new AuthorizationException("User does not have permission to access group resource profile");
+                    }
+                } catch (Exception e) {
+                    throw new AuthorizationException("User does not have permission to access group resource profile");
+                }
+            }
             List<BatchQueueResourcePolicy> batchQueueResourcePolicyList = regClient.getGroupBatchQueueResourcePolicyList(groupResourceProfileId);
             registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
             return batchQueueResourcePolicyList;
         } catch (Exception e) {
             String msg = "Error retrieving Group batch queue resource policy list. GroupResourceProfileId: "+ groupResourceProfileId;
@@ -5335,9 +5504,23 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public List<ComputeResourcePolicy> getGroupComputeResourcePolicyList(AuthzToken authzToken, String groupResourceProfileId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         RegistryService.Client regClient = registryClientPool.getResource();
+        SharingRegistryService.Client sharingClient = sharingClientPool.getResource();
         try {
+            if(ServerSettings.isEnableSharing()) {
+                try {
+                    String gatewayId = authzToken.getClaimsMap().get(Constants.GATEWAY_ID);
+                    String userId = authzToken.getClaimsMap().get(Constants.USER_NAME);
+                    if (!sharingClient.userHasAccess(gatewayId, userId + "@" + gatewayId,
+                            groupResourceProfileId, gatewayId + ":READ")){
+                        throw new AuthorizationException("User does not have permission to access group resource profile");
+                    }
+                } catch (Exception e) {
+                    throw new AuthorizationException("User does not have permission to access group resource profile");
+                }
+            }
             List<ComputeResourcePolicy> computeResourcePolicyList = regClient.getGroupComputeResourcePolicyList(groupResourceProfileId);
             registryClientPool.returnResource(regClient);
+            sharingClientPool.returnResource(sharingClient);
             return computeResourcePolicyList;
         } catch (Exception e) {
             String msg = "Error retrieving Group compute resource policy list. GroupResourceProfileId: "+ groupResourceProfileId;

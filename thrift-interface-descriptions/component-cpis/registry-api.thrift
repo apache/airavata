@@ -2571,7 +2571,7 @@ service RegistryService {
                * Group Resource Profile API methods
                *
                */
-               void createGroupResourceProfile(1: required group_resource_profile_model.GroupResourceProfile groupResourceProfile)
+               string createGroupResourceProfile(1: required group_resource_profile_model.GroupResourceProfile groupResourceProfile)
                         throws (1: registry_api_errors.RegistryServiceException rse)
 
                void updateGroupResourceProfile(1: required group_resource_profile_model.GroupResourceProfile groupResourceProfile)
@@ -2583,7 +2583,7 @@ service RegistryService {
                bool removeGroupResourceProfile(1: required string groupResourceProfileId)
                                     throws (1: registry_api_errors.RegistryServiceException rse)
 
-               list<group_resource_profile_model.GroupResourceProfile> getGroupResourceList(1: required string gatewayId)
+               list<group_resource_profile_model.GroupResourceProfile> getGroupResourceList(1: required string gatewayId, 2: required list<string> accessibleGroupResProfileIds)
                                 throws (1: registry_api_errors.RegistryServiceException rse)
 
                bool removeGroupComputePrefs(1: required string computeResourceId, 2: required string groupResourceProfileId)
