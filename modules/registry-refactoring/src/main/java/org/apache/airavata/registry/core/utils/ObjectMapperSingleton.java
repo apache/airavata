@@ -20,7 +20,12 @@
 */
 package org.apache.airavata.registry.core.utils;
 
+import org.apache.thrift.TBase;
+import org.apache.thrift.TFieldIdEnum;
+import org.dozer.CustomFieldMapper;
 import org.dozer.DozerBeanMapper;
+import org.dozer.classmap.ClassMap;
+import org.dozer.fieldmap.FieldMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +45,40 @@ public class ObjectMapperSingleton extends DozerBeanMapper{
                     new ArrayList<String>(){{
                         add("dozer_mapping.xml");
                     }});
+            instance.setCustomFieldMapper(new MyCustomFieldMapper());
         }
         return instance;
+    }
+
+    private static class MyCustomFieldMapper implements CustomFieldMapper {
+        @Override
+        public boolean mapField(Object source, Object destination, Object sourceFieldValue, ClassMap classMap, FieldMap fieldMap) {
+            // Just skipping mapping field if not set on Thrift source model
+            if (isSourceUnsetThriftField(source, fieldMap)) {
+                logger.debug("Skipping field " + fieldMap.getSrcFieldName() + " since it is unset thrift field");
+                return true;
+            }
+            return false;
+        }
+
+        private boolean isSourceUnsetThriftField(Object source, FieldMap fieldMap) {
+            if (source instanceof TBase) {
+                TBase thriftSource = (TBase) source;
+                try {
+                    Class<?> thriftFieldsEnum = Class.forName(thriftSource.getClass().getName() + "$_Fields");
+                    TFieldIdEnum srcField = (TFieldIdEnum) thriftFieldsEnum.getMethod(
+                            "findByName", String.class).invoke(null, fieldMap.getSrcFieldName());
+                    // FIXME: Dozer can handle case insensitive field matching, for example, "gatewayID" maps to
+                    // "gatewayId" but this method of looking up field by name is case sensitive. For example,
+                    // it fails to find "gatewayID" on GatewayResourceProfile.
+                    if (srcField != null && !thriftSource.isSet(srcField)) {
+                        return true;
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException("Thrift model class has no _Fields enum", e);
+                }
+            }
+            return false;
+        }
     }
 }
