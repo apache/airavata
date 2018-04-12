@@ -557,6 +557,7 @@ public class ThriftDataModelConversion {
             data.setStorageId(resource.getStorageId());
             data.setExperimentDataDir(resource.getExperimentDataDir());
             data.setUseUserCRPref(resource.getUseUserCRPref());
+            data.setGroupResourceProfileId(resource.getGroupResourceProfileId());
 
             ComputationalResourceSchedulingModel resourceSchedulingModel = new ComputationalResourceSchedulingModel();
             resourceSchedulingModel.setResourceHostId(resource.getResourceHostId());
