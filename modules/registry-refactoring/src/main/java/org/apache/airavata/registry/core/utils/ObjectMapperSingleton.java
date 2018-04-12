@@ -24,6 +24,8 @@ import org.dozer.DozerBeanMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+
 public class ObjectMapperSingleton extends DozerBeanMapper{
     private final static Logger logger = LoggerFactory.getLogger(ObjectMapperSingleton.class);
 
@@ -32,8 +34,13 @@ public class ObjectMapperSingleton extends DozerBeanMapper{
     private ObjectMapperSingleton(){}
 
     public static ObjectMapperSingleton getInstance(){
-        if(instance == null)
+        if(instance == null) {
             instance = new ObjectMapperSingleton();
+            instance.setMappingFiles(
+                    new ArrayList<String>(){{
+                        add("dozer_mapping.xml");
+                    }});
+        }
         return instance;
     }
 }

@@ -119,7 +119,6 @@
         <class>org.apache.airavata.registry.core.entities.appcatalog.AppModuleMappingPK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ApplicationInputPK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ApplicationOutputPK</class>
-        <class>org.apache.airavata.registry.core.entities.appcatalog.StorageInterfacePK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.JobManagerCommandPK</class>
         <class>org.apache.airavata.registry.core.entities.appcatalog.ParallelismCommandPK</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
