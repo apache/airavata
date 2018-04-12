@@ -6,11 +6,11 @@
     <mapping>
         <class-a>org.apache.airavata.model.appcatalog.storageresource.StorageResourceDescription</class-a>
         <class-b>org.apache.airavata.registry.core.entities.appcatalog.StorageInterfaceEntity</class-b>
-        <field custom-converter="org.apache.airavata.registry.core.utils.DozerConvertor.StorageDateConverter">
+        <field custom-converter="org.apache.airavata.registry.core.utils.DozerConverter.StorageDateConverter">
             <a>creationTime</a>
             <b>creationTime</b>
         </field>
-        <field custom-converter="org.apache.airavata.registry.core.utils.DozerConvertor.StorageDateConverter">
+        <field custom-converter="org.apache.airavata.registry.core.utils.DozerConverter.StorageDateConverter">
             <a>updateTime</a>
             <b>updateTime</b>
         </field>
