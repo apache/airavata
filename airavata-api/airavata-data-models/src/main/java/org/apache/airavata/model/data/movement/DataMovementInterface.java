@@ -41,6 +41,9 @@ public class DataMovementInterface implements org.apache.thrift.TBase<DataMoveme
   private static final org.apache.thrift.protocol.TField DATA_MOVEMENT_INTERFACE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("dataMovementInterfaceId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField DATA_MOVEMENT_PROTOCOL_FIELD_DESC = new org.apache.thrift.protocol.TField("dataMovementProtocol", org.apache.thrift.protocol.TType.I32, (short)2);
   private static final org.apache.thrift.protocol.TField PRIORITY_ORDER_FIELD_DESC = new org.apache.thrift.protocol.TField("priorityOrder", org.apache.thrift.protocol.TType.I32, (short)3);
+  private static final org.apache.thrift.protocol.TField CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("creationTime", org.apache.thrift.protocol.TType.I64, (short)4);
+  private static final org.apache.thrift.protocol.TField UPDATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("updateTime", org.apache.thrift.protocol.TType.I64, (short)5);
+  private static final org.apache.thrift.protocol.TField STORAGE_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("storageResourceId", org.apache.thrift.protocol.TType.STRING, (short)6);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new DataMovementInterfaceStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new DataMovementInterfaceTupleSchemeFactory();
@@ -48,6 +51,9 @@ public class DataMovementInterface implements org.apache.thrift.TBase<DataMoveme
   private java.lang.String dataMovementInterfaceId; // required
   private DataMovementProtocol dataMovementProtocol; // required
   private int priorityOrder; // required
+  private long creationTime; // optional
+  private long updateTime; // optional
+  private java.lang.String storageResourceId; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -57,7 +63,10 @@ public class DataMovementInterface implements org.apache.thrift.TBase<DataMoveme
      * @see DataMovementProtocol
      */
     DATA_MOVEMENT_PROTOCOL((short)2, "dataMovementProtocol"),
-    PRIORITY_ORDER((short)3, "priorityOrder");
+    PRIORITY_ORDER((short)3, "priorityOrder"),
+    CREATION_TIME((short)4, "creationTime"),
+    UPDATE_TIME((short)5, "updateTime"),
+    STORAGE_RESOURCE_ID((short)6, "storageResourceId");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -78,6 +87,12 @@ public class DataMovementInterface implements org.apache.thrift.TBase<DataMoveme
           return DATA_MOVEMENT_PROTOCOL;
         case 3: // PRIORITY_ORDER
           return PRIORITY_ORDER;
+        case 4: // CREATION_TIME
+          return CREATION_TIME;
+        case 5: // UPDATE_TIME
+          return UPDATE_TIME;
+        case 6: // STORAGE_RESOURCE_ID
+          return STORAGE_RESOURCE_ID;
         default:
           return null;
       }
@@ -119,7 +134,10 @@ public class DataMovementInterface implements org.apache.thrift.TBase<DataMoveme
 
   // isset id assignments
   private static final int __PRIORITYORDER_ISSET_ID = 0;
+  private static final int __CREATIONTIME_ISSET_ID = 1;
+  private static final int __UPDATETIME_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
+  private static final _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.UPDATE_TIME,_Fields.STORAGE_RESOURCE_ID};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -129,6 +147,12 @@ public class DataMovementInterface implements org.apache.thrift.TBase<DataMoveme
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, DataMovementProtocol.class)));
     tmpMap.put(_Fields.PRIORITY_ORDER, new org.apache.thrift.meta_data.FieldMetaData("priorityOrder", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.CREATION_TIME, new org.apache.thrift.meta_data.FieldMetaData("creationTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
+    tmpMap.put(_Fields.UPDATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("updateTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
+    tmpMap.put(_Fields.STORAGE_RESOURCE_ID, new org.apache.thrift.meta_data.FieldMetaData("storageResourceId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(DataMovementInterface.class, metaDataMap);
   }
@@ -162,6 +186,11 @@ public class DataMovementInterface implements org.apache.thrift.TBase<DataMoveme
       this.dataMovementProtocol = other.dataMovementProtocol;
     }
     this.priorityOrder = other.priorityOrder;
+    this.creationTime = other.creationTime;
+    this.updateTime = other.updateTime;
+    if (other.isSetStorageResourceId()) {
+      this.storageResourceId = other.storageResourceId;
+    }
   }
 
   public DataMovementInterface deepCopy() {
@@ -174,6 +203,11 @@ public class DataMovementInterface implements org.apache.thrift.TBase<DataMoveme
     this.dataMovementProtocol = null;
     this.priorityOrder = 0;
 
+    setCreationTimeIsSet(false);
+    this.creationTime = 0;
+    setUpdateTimeIsSet(false);
+    this.updateTime = 0;
+    this.storageResourceId = null;
   }
 
   public java.lang.String getDataMovementInterfaceId() {
@@ -252,6 +286,73 @@ public class DataMovementInterface implements org.apache.thrift.TBase<DataMoveme
     __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __PRIORITYORDER_ISSET_ID, value);
   }
 
+  public long getCreationTime() {
+    return this.creationTime;
+  }
+
+  public void setCreationTime(long creationTime) {
+    this.creationTime = creationTime;
+    setCreationTimeIsSet(true);
+  }
+
+  public void unsetCreationTime() {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __CREATIONTIME_ISSET_ID);
+  }
+
+  /** Returns true if field creationTime is set (has been assigned a value) and false otherwise */
+  public boolean isSetCreationTime() {
+    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __CREATIONTIME_ISSET_ID);
+  }
+
+  public void setCreationTimeIsSet(boolean value) {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __CREATIONTIME_ISSET_ID, value);
+  }
+
+  public long getUpdateTime() {
+    return this.updateTime;
+  }
+
+  public void setUpdateTime(long updateTime) {
+    this.updateTime = updateTime;
+    setUpdateTimeIsSet(true);
+  }
+
+  public void unsetUpdateTime() {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.clearBit(__isset_bitfield, __UPDATETIME_ISSET_ID);
+  }
+
+  /** Returns true if field updateTime is set (has been assigned a value) and false otherwise */
+  public boolean isSetUpdateTime() {
+    return org.apache.thrift.EncodingUtils.testBit(__isset_bitfield, __UPDATETIME_ISSET_ID);
+  }
+
+  public void setUpdateTimeIsSet(boolean value) {
+    __isset_bitfield = org.apache.thrift.EncodingUtils.setBit(__isset_bitfield, __UPDATETIME_ISSET_ID, value);
+  }
+
+  public java.lang.String getStorageResourceId() {
+    return this.storageResourceId;
+  }
+
+  public void setStorageResourceId(java.lang.String storageResourceId) {
+    this.storageResourceId = storageResourceId;
+  }
+
+  public void unsetStorageResourceId() {
+    this.storageResourceId = null;
+  }
+
+  /** Returns true if field storageResourceId is set (has been assigned a value) and false otherwise */
+  public boolean isSetStorageResourceId() {
+    return this.storageResourceId != null;
+  }
+
+  public void setStorageResourceIdIsSet(boolean value) {
+    if (!value) {
+      this.storageResourceId = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, java.lang.Object value) {
     switch (field) {
     case DATA_MOVEMENT_INTERFACE_ID:
@@ -278,6 +379,30 @@ public class DataMovementInterface implements org.apache.thrift.TBase<DataMoveme
       }
       break;
 
+    case CREATION_TIME:
+      if (value == null) {
+        unsetCreationTime();
+      } else {
+        setCreationTime((java.lang.Long)value);
+      }
+      break;
+
+    case UPDATE_TIME:
+      if (value == null) {
+        unsetUpdateTime();
+      } else {
+        setUpdateTime((java.lang.Long)value);
+      }
+      break;
+
+    case STORAGE_RESOURCE_ID:
+      if (value == null) {
+        unsetStorageResourceId();
+      } else {
+        setStorageResourceId((java.lang.String)value);
+      }
+      break;
+
     }
   }
 
@@ -291,6 +416,15 @@ public class DataMovementInterface implements org.apache.thrift.TBase<DataMoveme
 
     case PRIORITY_ORDER:
       return getPriorityOrder();
+
+    case CREATION_TIME:
+      return getCreationTime();
+
+    case UPDATE_TIME:
+      return getUpdateTime();
+
+    case STORAGE_RESOURCE_ID:
+      return getStorageResourceId();
 
     }
     throw new java.lang.IllegalStateException();
@@ -309,6 +443,12 @@ public class DataMovementInterface implements org.apache.thrift.TBase<DataMoveme
       return isSetDataMovementProtocol();
     case PRIORITY_ORDER:
       return isSetPriorityOrder();
+    case CREATION_TIME:
+      return isSetCreationTime();
+    case UPDATE_TIME:
+      return isSetUpdateTime();
+    case STORAGE_RESOURCE_ID:
+      return isSetStorageResourceId();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -355,6 +495,33 @@ public class DataMovementInterface implements org.apache.thrift.TBase<DataMoveme
         return false;
     }
 
+    boolean this_present_creationTime = true && this.isSetCreationTime();
+    boolean that_present_creationTime = true && that.isSetCreationTime();
+    if (this_present_creationTime || that_present_creationTime) {
+      if (!(this_present_creationTime && that_present_creationTime))
+        return false;
+      if (this.creationTime != that.creationTime)
+        return false;
+    }
+
+    boolean this_present_updateTime = true && this.isSetUpdateTime();
+    boolean that_present_updateTime = true && that.isSetUpdateTime();
+    if (this_present_updateTime || that_present_updateTime) {
+      if (!(this_present_updateTime && that_present_updateTime))
+        return false;
+      if (this.updateTime != that.updateTime)
+        return false;
+    }
+
+    boolean this_present_storageResourceId = true && this.isSetStorageResourceId();
+    boolean that_present_storageResourceId = true && that.isSetStorageResourceId();
+    if (this_present_storageResourceId || that_present_storageResourceId) {
+      if (!(this_present_storageResourceId && that_present_storageResourceId))
+        return false;
+      if (!this.storageResourceId.equals(that.storageResourceId))
+        return false;
+    }
+
     return true;
   }
 
@@ -371,6 +538,18 @@ public class DataMovementInterface implements org.apache.thrift.TBase<DataMoveme
       hashCode = hashCode * 8191 + dataMovementProtocol.getValue();
 
     hashCode = hashCode * 8191 + priorityOrder;
+
+    hashCode = hashCode * 8191 + ((isSetCreationTime()) ? 131071 : 524287);
+    if (isSetCreationTime())
+      hashCode = hashCode * 8191 + org.apache.thrift.TBaseHelper.hashCode(creationTime);
+
+    hashCode = hashCode * 8191 + ((isSetUpdateTime()) ? 131071 : 524287);
+    if (isSetUpdateTime())
+      hashCode = hashCode * 8191 + org.apache.thrift.TBaseHelper.hashCode(updateTime);
+
+    hashCode = hashCode * 8191 + ((isSetStorageResourceId()) ? 131071 : 524287);
+    if (isSetStorageResourceId())
+      hashCode = hashCode * 8191 + storageResourceId.hashCode();
 
     return hashCode;
   }
@@ -409,6 +588,36 @@ public class DataMovementInterface implements org.apache.thrift.TBase<DataMoveme
     }
     if (isSetPriorityOrder()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.priorityOrder, other.priorityOrder);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetCreationTime()).compareTo(other.isSetCreationTime());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetCreationTime()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.creationTime, other.creationTime);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetUpdateTime()).compareTo(other.isSetUpdateTime());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetUpdateTime()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.updateTime, other.updateTime);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = java.lang.Boolean.valueOf(isSetStorageResourceId()).compareTo(other.isSetStorageResourceId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetStorageResourceId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.storageResourceId, other.storageResourceId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -452,6 +661,28 @@ public class DataMovementInterface implements org.apache.thrift.TBase<DataMoveme
     sb.append("priorityOrder:");
     sb.append(this.priorityOrder);
     first = false;
+    if (isSetCreationTime()) {
+      if (!first) sb.append(", ");
+      sb.append("creationTime:");
+      sb.append(this.creationTime);
+      first = false;
+    }
+    if (isSetUpdateTime()) {
+      if (!first) sb.append(", ");
+      sb.append("updateTime:");
+      sb.append(this.updateTime);
+      first = false;
+    }
+    if (isSetStorageResourceId()) {
+      if (!first) sb.append(", ");
+      sb.append("storageResourceId:");
+      if (this.storageResourceId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.storageResourceId);
+      }
+      first = false;
+    }
     sb.append(")");
     return sb.toString();
   }
@@ -533,6 +764,30 @@ public class DataMovementInterface implements org.apache.thrift.TBase<DataMoveme
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 4: // CREATION_TIME
+            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+              struct.creationTime = iprot.readI64();
+              struct.setCreationTimeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 5: // UPDATE_TIME
+            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+              struct.updateTime = iprot.readI64();
+              struct.setUpdateTimeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 6: // STORAGE_RESOURCE_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.storageResourceId = iprot.readString();
+              struct.setStorageResourceIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -559,6 +814,23 @@ public class DataMovementInterface implements org.apache.thrift.TBase<DataMoveme
       oprot.writeFieldBegin(PRIORITY_ORDER_FIELD_DESC);
       oprot.writeI32(struct.priorityOrder);
       oprot.writeFieldEnd();
+      if (struct.isSetCreationTime()) {
+        oprot.writeFieldBegin(CREATION_TIME_FIELD_DESC);
+        oprot.writeI64(struct.creationTime);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetUpdateTime()) {
+        oprot.writeFieldBegin(UPDATE_TIME_FIELD_DESC);
+        oprot.writeI64(struct.updateTime);
+        oprot.writeFieldEnd();
+      }
+      if (struct.storageResourceId != null) {
+        if (struct.isSetStorageResourceId()) {
+          oprot.writeFieldBegin(STORAGE_RESOURCE_ID_FIELD_DESC);
+          oprot.writeString(struct.storageResourceId);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -579,6 +851,26 @@ public class DataMovementInterface implements org.apache.thrift.TBase<DataMoveme
       oprot.writeString(struct.dataMovementInterfaceId);
       oprot.writeI32(struct.dataMovementProtocol.getValue());
       oprot.writeI32(struct.priorityOrder);
+      java.util.BitSet optionals = new java.util.BitSet();
+      if (struct.isSetCreationTime()) {
+        optionals.set(0);
+      }
+      if (struct.isSetUpdateTime()) {
+        optionals.set(1);
+      }
+      if (struct.isSetStorageResourceId()) {
+        optionals.set(2);
+      }
+      oprot.writeBitSet(optionals, 3);
+      if (struct.isSetCreationTime()) {
+        oprot.writeI64(struct.creationTime);
+      }
+      if (struct.isSetUpdateTime()) {
+        oprot.writeI64(struct.updateTime);
+      }
+      if (struct.isSetStorageResourceId()) {
+        oprot.writeString(struct.storageResourceId);
+      }
     }
 
     @Override
@@ -590,6 +882,19 @@ public class DataMovementInterface implements org.apache.thrift.TBase<DataMoveme
       struct.setDataMovementProtocolIsSet(true);
       struct.priorityOrder = iprot.readI32();
       struct.setPriorityOrderIsSet(true);
+      java.util.BitSet incoming = iprot.readBitSet(3);
+      if (incoming.get(0)) {
+        struct.creationTime = iprot.readI64();
+        struct.setCreationTimeIsSet(true);
+      }
+      if (incoming.get(1)) {
+        struct.updateTime = iprot.readI64();
+        struct.setUpdateTimeIsSet(true);
+      }
+      if (incoming.get(2)) {
+        struct.storageResourceId = iprot.readString();
+        struct.setStorageResourceIdIsSet(true);
+      }
     }
   }
 

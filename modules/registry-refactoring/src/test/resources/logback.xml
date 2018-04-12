@@ -24,8 +24,8 @@
             <pattern>[%p] %m%n</pattern>
         </encoder>
     </appender>
+    <logger name="org.apache.airavata.registry" level="INFO"/>
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
-        <!--<appender-ref ref="LOGFILE"/>-->
     </root>
 </configuration>
