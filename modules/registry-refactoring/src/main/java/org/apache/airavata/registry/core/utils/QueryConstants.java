@@ -39,6 +39,8 @@ public interface QueryConstants {
             "WHERE CR.groupResourceProfileId LIKE : " + DBConstants.GroupResourceProfile.GROUP_RESOURCE_PROFILE_ID;
 
     String FIND_STORAGE_RESOURCE = "SELECT DISTINCT SR FROM " + StorageResourceEntity.class.getSimpleName() + " SR " +
-            "WHERE SR.hostName LIKE : " + DBConstants.StorageResource.HOST_NAME;
+            "WHERE SR.hostName LIKE :" + DBConstants.StorageResource.HOST_NAME;
     String FIND_ALL_STORAGE_RESOURCES = "SELECT SR FROM " + StorageResourceEntity.class.getSimpleName() + " SR";
+    String FIND_ALL_AVAILABLE_STORAGE_RESOURCES = "SELECT SR FROM " + StorageResourceEntity.class.getSimpleName() + " SR " +
+            "WHERE SR.enabled = TRUE";
 }

@@ -42,7 +42,7 @@ public class StorageInterfaceEntity implements Serializable {
     private String dataMovementInterfaceId;
 
     @Column(name = "CREATION_TIME")
-    private long creationTime;
+    private Timestamp creationTime;
 
     @Column(name = "DATA_MOVEMENT_PROTOCOL")
     private String dataMovementProtocol;
@@ -51,7 +51,7 @@ public class StorageInterfaceEntity implements Serializable {
     private int priorityOrder;
 
     @Column(name = "UPDATE_TIME")
-    private long updateTime;
+    private Timestamp updateTime;
 
     @ManyToOne(targetEntity = StorageResourceEntity.class, cascade = CascadeType.MERGE)
     @JoinColumn(name = "STORAGE_RESOURCE_ID")
@@ -100,19 +100,19 @@ public class StorageInterfaceEntity implements Serializable {
         this.priorityOrder = priorityOrder;
     }
 
-    public long getCreationTime() {
+    public Timestamp getCreationTime() {
         return creationTime;
     }
 
-    public void setCreationTime(long creationTime) {
+    public void setCreationTime(Timestamp creationTime) {
         this.creationTime = creationTime;
     }
 
-    public long getUpdateTime() {
+    public Timestamp getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(long updateTime) {
+    public void setUpdateTime(Timestamp updateTime) {
         this.updateTime = updateTime;
     }
 }

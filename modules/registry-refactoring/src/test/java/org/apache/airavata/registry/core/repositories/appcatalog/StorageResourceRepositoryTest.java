@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Created by skariyat on 3/13/18.
@@ -104,6 +105,8 @@ public class StorageResourceRepositoryTest {
                     System.out.println("Data Movement Protocol :" + dataMovementInterface.getDataMovementProtocol().toString());
                 }
             }
+        } else {
+            fail("Created Storage Resource not found");
         }
 
         description.setHostName("localhost2");
@@ -124,7 +127,7 @@ public class StorageResourceRepositoryTest {
             dataMovement.setSshPort(22);
             dataMovement.setSecurityProtocol(SecurityProtocol.SSH_KEYS);
             return new ComputeResourceRepository().addScpDataMovement(dataMovement);
-        }catch (AppCatalogException e) {
+        } catch (AppCatalogException e) {
             logger.error(e.getMessage(), e);
         }
         return null;
@@ -139,7 +142,7 @@ public class StorageResourceRepositoryTest {
             endPoints.add("23.344.44.454");
             dataMovement.setGridFTPEndPoints(endPoints);
             return new ComputeResourceRepository().addGridFTPDataMovement(dataMovement);
-        }catch (AppCatalogException e) {
+        } catch (AppCatalogException e) {
             logger.error(e.getMessage(), e);
         }
         return null;

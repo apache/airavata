@@ -132,7 +132,7 @@
                 <configuration>
                     <failIfNoTests>false</failIfNoTests>
                     <!--<skipTests>${skipTests}</skipTests>-->
-                    <skipTests>false</skipTests>
+                    <skipTests>true</skipTests>
                     <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
                 </configuration>
             </plugin>
