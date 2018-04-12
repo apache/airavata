@@ -31,6 +31,7 @@ public class StorageInterfacePK implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String storageResourceId;
+
 	private String dataMovementInterfaceId;
 
 	public StorageInterfacePK() {
