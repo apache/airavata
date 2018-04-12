@@ -33,12 +33,8 @@ public class StorageInterfacePK implements Serializable {
 	//default serial version id, required for serializable classes.
 	private static final long serialVersionUID = 1L;
 
-	@Column(name="STORAGE_RESOURCE_ID", insertable=false, updatable=false)
-	@Id
 	private String storageResourceId;
 
-	@Column(name="DATA_MOVEMENT_INTERFACE_ID")
-	@Id
 	private String dataMovementInterfaceId;
 
 	public StorageInterfacePK() {

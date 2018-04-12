@@ -325,17 +325,8 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
 
     @Override
     public String addDataMovementProtocol(String resourceId, DMType dmType, DataMovementInterface dataMovementInterface) throws AppCatalogException {
-        if (dmType.equals(DMType.COMPUTE_RESOURCE)){
-            return (new DataMovementRepository()).addDataMovementProtocol(resourceId, dataMovementInterface);
-        }
-        else if (dmType.equals(DMType.STORAGE_RESOURCE)){
-            Mapper mapper = ObjectMapperSingleton.getInstance();
-            StorageInterfaceEntity storageInterfaceEntity = mapper.map(dataMovementInterface, StorageInterfaceEntity.class);
-            storageInterfaceEntity.setStorageResourceId(resourceId);
-            execute(entityManager -> entityManager.merge(storageInterfaceEntity));
-            return storageInterfaceEntity.getStorageResourceId();
-        }
-        return null;
+        return (new DataMovementRepository()).addDataMovementProtocol(resourceId, dataMovementInterface);
+
     }
 
     @Override
