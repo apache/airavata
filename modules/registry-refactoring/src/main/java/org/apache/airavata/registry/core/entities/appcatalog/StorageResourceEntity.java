@@ -38,7 +38,7 @@ public class StorageResourceEntity implements Serializable {
     private String storageResourceId;
 
     @Column(name = "CREATION_TIME")
-    private long creationTime;
+    private Timestamp creationTime;
 
     @Column(name = "DESCRIPTION")
     private String storageResourceDescription;
@@ -50,7 +50,7 @@ public class StorageResourceEntity implements Serializable {
     private String hostName;
 
     @Column(name = "UPDATE_TIME")
-    private long updateTime;
+    private Timestamp updateTime;
 
     @OneToMany(targetEntity = StorageInterfaceEntity.class, cascade = CascadeType.ALL,
             mappedBy = "storageResource", fetch = FetchType.EAGER)
@@ -91,19 +91,19 @@ public class StorageResourceEntity implements Serializable {
         this.hostName = hostName;
     }
 
-    public long getCreationTime() {
+    public Timestamp getCreationTime() {
         return creationTime;
     }
 
-    public void setCreationTime(long creationTime) {
+    public void setCreationTime(Timestamp creationTime) {
         this.creationTime = creationTime;
     }
 
-    public long getUpdateTime() {
+    public Timestamp getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(long updateTime) {
+    public void setUpdateTime(Timestamp updateTime) {
         this.updateTime = updateTime;
     }
 
