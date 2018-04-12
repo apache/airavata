@@ -107,10 +107,7 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
     }
 
     public boolean removeComputeResourcePolicy(String resourcePolicyId) {
-        ComputeResourcePolicyPK computeResourcePolicyPK = new ComputeResourcePolicyPK();
-        computeResourcePolicyPK.setResourcePolicyId(resourcePolicyId);
-
-        return (new ComputeResourcePolicyRepository().delete(computeResourcePolicyPK));
+        return (new ComputeResourcePolicyRepository().delete(resourcePolicyId));
     }
 
     public boolean removeBatchQueueResourcePolicy(String resourcePolicyId) {
@@ -129,10 +126,7 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
     }
 
     public ComputeResourcePolicy getComputeResourcePolicy(String resourcePolicyId) {
-        ComputeResourcePolicyPK computeResourcePolicyPK = new ComputeResourcePolicyPK();
-        computeResourcePolicyPK.setResourcePolicyId(resourcePolicyId);
-
-        return (new ComputeResourcePolicyRepository().get(computeResourcePolicyPK));
+        return (new ComputeResourcePolicyRepository().get(resourcePolicyId));
     }
 
     public BatchQueueResourcePolicy getBatchQueueResourcePolicy(String resourcePolicyId) {
