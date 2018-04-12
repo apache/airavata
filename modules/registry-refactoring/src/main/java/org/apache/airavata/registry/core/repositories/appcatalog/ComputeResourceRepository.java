@@ -344,14 +344,8 @@ public class ComputeResourceRepository extends AppCatAbstractRepository<ComputeR
 
     @Override
     public String addDataMovementProtocol(String resourceId, DMType dmType, DataMovementInterface dataMovementInterface) throws AppCatalogException {
-        if (dmType.equals(DMType.COMPUTE_RESOURCE)){
-            return (new DataMovementRepository()).addDataMovementProtocol(resourceId, dataMovementInterface);
-        }
-        else if (dmType.equals(DMType.STORAGE_RESOURCE)){
-            //TODO - COMPLETE this after StorageResourceRepo implementation
-            return null;
-        }
-        return null;
+        return (new DataMovementRepository()).addDataMovementProtocol(resourceId, dataMovementInterface);
+
     }
 
     @Override

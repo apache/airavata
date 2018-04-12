@@ -34,11 +34,11 @@ public class StorageInterfaceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "STORAGE_RESOURCE_ID")
+    @Column(name="STORAGE_RESOURCE_ID")
     private String storageResourceId;
 
     @Id
-    @Column(name = "DATA_MOVEMENT_INTERFACE_ID")
+    @Column(name="DATA_MOVEMENT_INTERFACE_ID")
     private String dataMovementInterfaceId;
 
     @Column(name = "CREATION_TIME")
@@ -52,6 +52,10 @@ public class StorageInterfaceEntity implements Serializable {
 
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
+
+    @ManyToOne(targetEntity = StorageResourceEntity.class, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "STORAGE_RESOURCE_ID")
+    private StorageResourceEntity storageResource;
 
     public StorageInterfaceEntity() {
     }
@@ -72,12 +76,12 @@ public class StorageInterfaceEntity implements Serializable {
         this.dataMovementInterfaceId = dataMovementInterfaceId;
     }
 
-    public Timestamp getCreationTime() {
-        return creationTime;
+    public StorageResourceEntity getStorageResource() {
+        return storageResource;
     }
 
-    public void setCreationTime(Timestamp creationTime) {
-        this.creationTime = creationTime;
+    public void setStorageResource(StorageResourceEntity storageResource) {
+        this.storageResource = storageResource;
     }
 
     public String getDataMovementProtocol() {
@@ -94,6 +98,14 @@ public class StorageInterfaceEntity implements Serializable {
 
     public void setPriorityOrder(int priorityOrder) {
         this.priorityOrder = priorityOrder;
+    }
+
+    public Timestamp getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(Timestamp creationTime) {
+        this.creationTime = creationTime;
     }
 
     public Timestamp getUpdateTime() {
