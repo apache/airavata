@@ -1,4 +1,4 @@
-package org.apache.airavata.registry.core.utils.DozerConvertor;
+package org.apache.airavata.registry.core.utils.DozerConverter;
 
 import org.dozer.DozerConverter;
 
