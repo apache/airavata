@@ -121,8 +121,14 @@
   mysql_user: name="{{ db_user }}" password="{{ db_password }}" host="{{ item }}"
   with_items:
     - "{{ groups['api-orch'] }}"
-    - "{{ groups['gfac'] }}"
     - "localhost"
+
+# TODO: database access from GFac is no longer needed (GFac deprecated and only using Registry API)
+- name: give access to {{ db_user }} from remote
+  mysql_user: name="{{ db_user }}" password="{{ db_password }}" host="{{ item }}"
+  with_items:
+    - "{{ groups['gfac'] }}"
+  when: "'gfac' in groups"
 
 - name: create new user {{ db_user }} with all privilege
   mysql_user: name="{{ db_user }}"
