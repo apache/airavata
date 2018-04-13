@@ -128,14 +128,20 @@ public class OutputDataStagingTask extends DataStagingTask {
                 }
 
                 for (String temp : fileNames) {
-                    if (temp != null && !temp.equals("")) {
+                    if (!"".equals(temp)) {
                         sourceFileName = temp;
+                    } else {
+                        logger.warn("Ignoring file transfer as filename is empty or null");
+                        continue;
                     }
                     if (destParentPath.endsWith(File.separator)) {
                         destinationURI = new URI(destParentPath + sourceFileName);
                     } else {
                         destinationURI = new URI(destParentPath + File.separator + sourceFileName);
                     }
+
+                    URI newSourceURI = new URI((sourceParentPath.endsWith(File.separator) ?
+                            sourceParentPath : sourceParentPath + File.separator) + sourceFileName);
 
                     //Wildcard support is only enabled for output data staging
                     assert processOutput != null;
@@ -151,7 +157,7 @@ public class OutputDataStagingTask extends DataStagingTask {
                     }
 
                     logger.info("Transferring file " + sourceFileName);
-                    boolean transferred = transferFileToStorage(sourceURI.getPath(), destinationURI.getPath(), sourceFileName, adaptor, storageResourceAdaptor);
+                    boolean transferred = transferFileToStorage(newSourceURI.getPath(), destinationURI.getPath(), sourceFileName, adaptor, storageResourceAdaptor);
                     if (transferred) {
                         saveExperimentOutput(processOutput.getName(), destinationURI.toString());
                     } else {
