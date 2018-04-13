@@ -46,7 +46,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>ssh-agent</artifactId>
+            <artifactId>sshj-agent</artifactId>
             <version>0.17-SNAPSHOT</version>
         </dependency>
     </dependencies>
