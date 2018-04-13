@@ -32,8 +32,13 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class DataReplicaLocationRepositoryTest {
@@ -102,6 +107,7 @@ public class DataReplicaLocationRepositoryTest {
         DataReplicaLocationModel retrievedDataReplicaLocationModel = dataReplicaLocationRepository.getReplicaLocation(replicaId1);
         assertTrue(retrievedDataReplicaLocationModel.getReplicaMetadata().size() == 2);
         assertEquals(retrievedDataReplicaLocationModel.getReplicaPersistentType(), testDataReplicaLocationModel1.getReplicaPersistentType());
+        assertFalse(retrievedDataReplicaLocationModel.isSetValidUntilTime());
 
         testDataProductModel.setReplicaLocations(Arrays.asList(testDataReplicaLocationModel1, testDataReplicaLocationModel2));
         dataProductRepository.updateDataProduct(testDataProductModel);

@@ -20,12 +20,10 @@
 */
 package org.apache.airavata.registry.core.entities.appcatalog;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * The persistent class for the storage_resource database table.
@@ -43,16 +41,20 @@ public class StorageResourceEntity implements Serializable {
     private Timestamp creationTime;
 
     @Column(name = "DESCRIPTION")
-    private String description;
+    private String storageResourceDescription;
 
     @Column(name = "ENABLED")
-    private short enabled;
+    private boolean enabled;
 
     @Column(name = "HOST_NAME")
     private String hostName;
 
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
+
+    @OneToMany(targetEntity = StorageInterfaceEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "storageResource", fetch = FetchType.EAGER)
+    private List<StorageInterfaceEntity> dataMovementInterfaces;
 
     public StorageResourceEntity() {
     }
@@ -65,27 +67,19 @@ public class StorageResourceEntity implements Serializable {
         this.storageResourceId = storageResourceId;
     }
 
-    public Timestamp getCreationTime() {
-        return creationTime;
+    public String getStorageResourceDescription() {
+        return storageResourceDescription;
     }
 
-    public void setCreationTime(Timestamp creationTime) {
-        this.creationTime = creationTime;
+    public void setStorageResourceDescription(String storageResourceDescription) {
+        this.storageResourceDescription = storageResourceDescription;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public short getEnabled() {
+    public boolean isEnabled() {
         return enabled;
     }
 
-    public void setEnabled(short enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
@@ -97,11 +91,27 @@ public class StorageResourceEntity implements Serializable {
         this.hostName = hostName;
     }
 
+    public Timestamp getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(Timestamp creationTime) {
+        this.creationTime = creationTime;
+    }
+
     public Timestamp getUpdateTime() {
         return updateTime;
     }
 
     public void setUpdateTime(Timestamp updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public List<StorageInterfaceEntity> getDataMovementInterfaces() {
+        return dataMovementInterfaces;
+    }
+
+    public void setDataMovementInterfaces(List<StorageInterfaceEntity> dataMovementInterfaces) {
+        this.dataMovementInterfaces = dataMovementInterfaces;
     }
 }

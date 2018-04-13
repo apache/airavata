@@ -146,6 +146,7 @@ public class DataProductRepositoryTest {
         assertEquals(1, retrievedDataProductModel1.getReplicaLocationsSize());
         DataReplicaLocationModel retrievedReplicaLocationModel1 = retrievedDataProductModel1.getReplicaLocations().get(0);
         assertEquals(productUri1, retrievedReplicaLocationModel1.getProductUri());
+        assertFalse(retrievedReplicaLocationModel1.isSetValidUntilTime());
 
         dataProductRepository.removeDataProduct(productUri1);
         assertFalse(dataProductRepository.isDataProductExists(productUri1));

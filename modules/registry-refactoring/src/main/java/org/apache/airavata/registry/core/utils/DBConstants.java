@@ -64,6 +64,10 @@ public class DBConstants {
         public static final String COMPUTE_RESOURCE_ID = "computeResourceId";
     }
 
+    public static class StorageResource {
+        public static final String HOST_NAME = "hostName";
+    }
+
     public static class ResourceJobManager {
         public static final String RESOURCE_JOB_MANAGER_ID = "resourceJobManagerId";
     }
@@ -71,6 +75,7 @@ public class DBConstants {
     public static class GroupResourceProfile {
         public static final String GATEWAY_ID = "gatewayId";
         public static final String GROUP_RESOURCE_PROFILE_ID = "groupResourceProfileId";
+        public static final String ACCESSIBLE_GROUP_RESOURCE_IDS = "accessibleGroupResProfileIds";
     }
 
     public static class UserResourceProfile {

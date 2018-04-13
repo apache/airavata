@@ -90,6 +90,9 @@ public interface QueryConstants {
     String GET_PARALLELISM_PREFIX = "SELECT DISTINCT PF FROM " + ParallelismCommandEntity.class.getSimpleName() + " PF " +
             "WHERE PF.resourceJobManagerId LIKE :" + DBConstants.ResourceJobManager.RESOURCE_JOB_MANAGER_ID;
 
+    String FIND_ACCESSIBLE_GROUP_RESOURCE_PROFILES = "SELECT G FROM " + GroupResourceProfileEntity.class.getSimpleName() + " G " +
+            "WHERE G.gatewayId LIKE :" + DBConstants.GroupResourceProfile.GATEWAY_ID + " AND G.groupResourceProfileId IN :"
+            + DBConstants.GroupResourceProfile.ACCESSIBLE_GROUP_RESOURCE_IDS;
     String FIND_ALL_GROUP_RESOURCE_PROFILES = "SELECT G FROM " + GroupResourceProfileEntity.class.getSimpleName() + " G " +
             "WHERE G.gatewayId LIKE :" + DBConstants.GroupResourceProfile.GATEWAY_ID;
     String FIND_ALL_GROUP_COMPUTE_PREFERENCES = "SELECT GC FROM "+ GroupComputeResourcePrefEntity.class.getSimpleName() + " GC " +
@@ -151,4 +154,9 @@ public interface QueryConstants {
     String GET_WORKFLOW_GIVEN_NAME = "SELECT W FROM " + WorkflowEntity.class.getSimpleName() + " W " +
             "WHERE W.workflowName LIKE :" + DBConstants.Workflow.WORKFLOW_NAME;
 
+    String FIND_STORAGE_RESOURCE = "SELECT DISTINCT SR FROM " + StorageResourceEntity.class.getSimpleName() + " SR " +
+            "WHERE SR.hostName LIKE :" + DBConstants.StorageResource.HOST_NAME;
+    String FIND_ALL_STORAGE_RESOURCES = "SELECT SR FROM " + StorageResourceEntity.class.getSimpleName() + " SR";
+    String FIND_ALL_AVAILABLE_STORAGE_RESOURCES = "SELECT SR FROM " + StorageResourceEntity.class.getSimpleName() + " SR " +
+            "WHERE SR.enabled = TRUE";
 }
