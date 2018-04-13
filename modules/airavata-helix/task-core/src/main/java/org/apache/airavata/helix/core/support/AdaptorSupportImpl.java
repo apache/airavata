@@ -20,6 +20,8 @@
 package org.apache.airavata.helix.core.support;
 
 import org.apache.airavata.agents.api.*;
+import org.apache.airavata.helix.adaptor.SSHJAgentAdaptor;
+import org.apache.airavata.helix.adaptor.SSHJStorageAdaptor;
 import org.apache.airavata.helix.agent.ssh.SshAgentAdaptor;
 import org.apache.airavata.helix.agent.storage.StorageResourceAdaptorImpl;
 import org.apache.airavata.helix.task.api.support.AdaptorSupport;
@@ -55,7 +57,7 @@ public class AdaptorSupportImpl implements AdaptorSupport {
 
         switch (protocol) {
             case SSH:
-                SshAgentAdaptor agentAdaptor = new SshAgentAdaptor();
+                SSHJAgentAdaptor agentAdaptor = new SSHJAgentAdaptor();
                 agentAdaptor.init(computeResource, gatewayId, userId, authToken);
                 return agentAdaptor;
             default:
@@ -66,7 +68,7 @@ public class AdaptorSupportImpl implements AdaptorSupport {
 
     @Override
     public StorageResourceAdaptor fetchStorageAdaptor(String gatewayId, String storageResourceId, String protocol, String authToken, String userId) throws AgentException {
-        StorageResourceAdaptor storageResourceAdaptor = new StorageResourceAdaptorImpl();
+        SSHJStorageAdaptor storageResourceAdaptor = new SSHJStorageAdaptor();
         storageResourceAdaptor.init(storageResourceId, gatewayId, userId, authToken);
         return storageResourceAdaptor;
     }
