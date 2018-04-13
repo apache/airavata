@@ -288,6 +288,7 @@ public class ExperimentRegistry {
             processResource.setExperimentDataDir(process.getExperimentDataDir());
             processResource.setUserName(process.getUserName());
             processResource.setUseUserCRPref(process.isUseUserCRPref());
+            processResource.setGroupResourceProfileId(process.getGroupResourceProfileId());
             if(process.isEnableEmailNotification()){
                 processResource.setEnableEmailNotification(true);
                 if(process.getEmailAddresses() != null){
