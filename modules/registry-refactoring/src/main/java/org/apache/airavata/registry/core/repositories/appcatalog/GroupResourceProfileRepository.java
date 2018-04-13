@@ -27,9 +27,7 @@ import org.apache.airavata.registry.core.entities.appcatalog.*;
 import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.core.utils.QueryConstants;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by skariyat on 2/8/18.
@@ -40,10 +38,26 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
         super(GroupResourceProfile.class, GroupResourceProfileEntity.class);
     }
 
-    public void addGroupResourceProfile(GroupResourceProfile groupResourceProfile) {
+    public String addGroupResourceProfile(GroupResourceProfile groupResourceProfile) {
 
+        final String groupResourceProfileId = UUID.randomUUID().toString();
+        groupResourceProfile.setGroupResourceProfileId(groupResourceProfileId);
         groupResourceProfile.setCreationTime(System.currentTimeMillis());
-        updateGroupResourceProfile(groupResourceProfile);
+        if (groupResourceProfile.getComputePreferences() != null) {
+            for (GroupComputeResourcePreference groupComputeResourcePreference: groupResourceProfile.getComputePreferences()) {
+                groupComputeResourcePreference.setGroupResourceProfileId(groupResourceProfileId);
+                if (groupComputeResourcePreference.getGroupSSHAccountProvisionerConfigs() != null) {
+                    groupComputeResourcePreference.getGroupSSHAccountProvisionerConfigs().forEach(gssh -> gssh.setGroupResourceProfileId(groupResourceProfileId));
+                }
+            }
+        }
+        if (groupResourceProfile.getBatchQueueResourcePolicies() != null) {
+            groupResourceProfile.getBatchQueueResourcePolicies().forEach(bq -> bq.setGroupResourceProfileId(groupResourceProfileId));
+        }
+        if (groupResourceProfile.getComputeResourcePolicies() != null) {
+            groupResourceProfile.getComputeResourcePolicies().forEach(cr -> cr.setGroupResourceProfileId(groupResourceProfileId));
+        }
+        return updateGroupResourceProfile(groupResourceProfile);
     }
 
     public String updateGroupResourceProfile(GroupResourceProfile updatedGroupResourceProfile) {
@@ -72,9 +86,14 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
         return isExists(groupResourceProfilePK);
     }
 
-    public List<GroupResourceProfile> getAllGroupResourceProfiles(String gatewayId) {
+    public List<GroupResourceProfile> getAllGroupResourceProfiles(String gatewayId, List<String> accessibleGroupResProfileIds) {
         Map<String,Object> queryParameters = new HashMap<>();
         queryParameters.put(DBConstants.GroupResourceProfile.GATEWAY_ID, gatewayId);
+
+        if (accessibleGroupResProfileIds != null && !accessibleGroupResProfileIds.isEmpty()) {
+            queryParameters.put(DBConstants.GroupResourceProfile.ACCESSIBLE_GROUP_RESOURCE_IDS, accessibleGroupResProfileIds);
+            return select(QueryConstants.FIND_ACCESSIBLE_GROUP_RESOURCE_PROFILES, -1, 0, queryParameters);
+        }
         List<GroupResourceProfile> groupResourceProfileList = select(QueryConstants.FIND_ALL_GROUP_RESOURCE_PROFILES, -1, 0, queryParameters);
         return groupResourceProfileList;
     }
@@ -88,10 +107,7 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
     }
 
     public boolean removeComputeResourcePolicy(String resourcePolicyId) {
-        ComputeResourcePolicyPK computeResourcePolicyPK = new ComputeResourcePolicyPK();
-        computeResourcePolicyPK.setResourcePolicyId(resourcePolicyId);
-
-        return (new ComputeResourcePolicyRepository().delete(computeResourcePolicyPK));
+        return (new ComputeResourcePolicyRepository().delete(resourcePolicyId));
     }
 
     public boolean removeBatchQueueResourcePolicy(String resourcePolicyId) {
@@ -110,10 +126,7 @@ public class GroupResourceProfileRepository extends AppCatAbstractRepository<Gro
     }
 
     public ComputeResourcePolicy getComputeResourcePolicy(String resourcePolicyId) {
-        ComputeResourcePolicyPK computeResourcePolicyPK = new ComputeResourcePolicyPK();
-        computeResourcePolicyPK.setResourcePolicyId(resourcePolicyId);
-
-        return (new ComputeResourcePolicyRepository().get(computeResourcePolicyPK));
+        return (new ComputeResourcePolicyRepository().get(resourcePolicyId));
     }
 
     public BatchQueueResourcePolicy getBatchQueueResourcePolicy(String resourcePolicyId) {
