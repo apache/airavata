@@ -70,7 +70,7 @@ public abstract class DataStagingTask extends AiravataTask {
             StorageResourceAdaptor storageResourceAdaptor = adaptorSupport.fetchStorageAdaptor(
                     getGatewayId(),
                     getTaskContext().getStorageResourceId(),
-                    "SSH",
+                    getTaskContext().getDataMovementProtocol(),
                     getTaskContext().getStorageResourceCredentialToken(),
                     getTaskContext().getStorageResourceLoginUserName());
 
