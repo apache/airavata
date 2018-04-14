@@ -1,7 +1,7 @@
 {% load wagtailimages_tags %}
 
 <div class="{{self.custom_class}}">
-  <div class="card {{self.card_bg_color}} {{self.card_text_color}}" style="width:{{self.card_width}}rem;">
+  <div class="card {{self.card_bg_color}} {{self.card_text_color}}" {% if self.card_width %} style="width:{{self.card_width}}rem;" {% endif %}>
     {% if self.is_card_img %}
       {% image self.card_img original as tmp_photo %}
       <img src="{{tmp_photo.url}}" style="width:{{self.card_img_width}};height:{{self.card_img_height}};margin:auto" alt="image" class="card-img-top img-fluid"/>

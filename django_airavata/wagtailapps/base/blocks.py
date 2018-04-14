@@ -200,7 +200,7 @@ class BootstrapCard(StructBlock):
     Custom 'StructBlock' that allows the user to make a bootstrap card
     """
 
-    card_width = IntegerBlock(help_text="18 works best for card")
+    card_width = IntegerBlock(help_text="18 works best for card", required=False, blank=True)
     is_card_img = BooleanBlock(required=False)
     card_img = ImageChooserBlock(required=False)
     card_img_width = IntegerBlock(required=False, help_text="provide an image width")

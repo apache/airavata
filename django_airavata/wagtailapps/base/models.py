@@ -77,6 +77,7 @@ class NavExtra(models.Model):
     )
     nav_logo_width = models.IntegerField(null=True,blank=True, help_text="Navbar Logo width")
     nav_logo_height = models.IntegerField(null=True,blank=True, help_text="Navbar Logo height")
+    nav_logo_link = models.CharField(max_length=255, default="#", help_text="Give a redirect link for the Logo")
     nav_text1 = models.CharField(max_length=25, help_text = "Give a text for link 1")
     faicon1 = models.CharField(max_length = 50, help_text="Provide a class name of icon from font awesome website")
     nav_link1 = models.CharField(max_length=255, help_text = "Provide a link address for link 1")
@@ -92,6 +93,7 @@ class NavExtra(models.Model):
         ImageChooserPanel('nav_logo'),
         FieldPanel('nav_logo_width'),
         FieldPanel('nav_logo_height'),
+        FieldPanel('nav_logo_link'),
         FieldPanel('nav_text1'),
         FieldPanel('faicon1'),
         FieldPanel('nav_link1'),

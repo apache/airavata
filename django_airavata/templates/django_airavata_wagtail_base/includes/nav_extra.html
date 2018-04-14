@@ -4,7 +4,7 @@
   {% if navextra.nav_logo %}
   <li class="nav-item">
     {% image navextra.nav_logo original as tmp_photo %}
-    <img src="{{tmp_photo.url}}" style="width:{{navextra.nav_logo_width}};height:{{navextra.nav_logo_height}};" alt="nav-extra-logo" class="nav-link">
+    <a href="{{navextra.nav_logo_link}}"><img src="{{tmp_photo.url}}" style="width:{{navextra.nav_logo_width}};height:{{navextra.nav_logo_height}};" alt="nav-extra-logo" class="nav-link"></a>
   </li>
   {% endif %}
   {% if navextra.nav_text1 %}
