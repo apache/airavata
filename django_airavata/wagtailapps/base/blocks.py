@@ -327,7 +327,6 @@ class BaseStreamBlock(StreamBlock):
     placeholder_block = PlaceholderBlock()
     font_awesome_icon_block = FontAwesomeIcon()
 
-
 class CssStreamBlock(StreamBlock):
     """
     Define the custom blocks for css that 'StreamField' will utilize

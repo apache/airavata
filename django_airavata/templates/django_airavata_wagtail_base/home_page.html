@@ -82,4 +82,10 @@
 		{% if page.banner_image %}{% image page.banner_image original class="img-fluid" %}{% endif %}
 	</div>
 </div>
+
+{% if page.show_footer == "yes" %}
+ <footer class="theme-footer">
+   {% include "includes/footer.html" %}
+ </footer>
+ {% endif %}
 {% endblock content %}

@@ -29,4 +29,10 @@
   </div>
   {% endfor %}
 </div>
+
+{% if page.show_footer == "yes" %}
+ <footer class="theme-footer">
+   {% include "includes/footer.html" %}
+ </footer>
+ {% endif %}
 {% endblock content %}

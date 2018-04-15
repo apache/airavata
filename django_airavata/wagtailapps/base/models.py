@@ -180,6 +180,15 @@ class Navbar(models.Model):
         default = '#',
     )
 
+    boolean_choices = (
+        ("yes", "Yes"),
+        ("no", "No")
+    )
+
+    logo_with_text = models.CharField(
+        choices=boolean_choices, max_length=5, help_text="Choose yes if you want to display the text next to the logo", default="no"
+    )
+
     logo_width = models.IntegerField(
         help_text = 'Provide a width for the logo',
         null=True,
@@ -221,6 +230,7 @@ class Navbar(models.Model):
         FieldPanel('logo_width'),
         FieldPanel('logo_height'),
         FieldPanel('logo_text'),
+        FieldPanel('logo_with_text'),
         FieldPanel('logo_text_size'),
         FieldPanel('logo_text_color'),
     ]
@@ -596,11 +606,15 @@ class BlankPage(Page):
     )
 
     show_navbar = models.CharField(
-        choices=boolean_choices, max_length=5, help_text="Choose yes if you want to display the navbar on home page and no if you don't want to.", default=True
+        choices=boolean_choices, max_length=5, help_text="Choose yes if you want to display the navbar on home page and no if you don't want to.", default="yes"
     )
 
     show_nav_extra = models.CharField(
-        choices = boolean_choices, max_length=5, help_text = "Choose yes if you want the secondary navbar to show on home page or no if you don't want to", default=True
+        choices = boolean_choices, max_length=5, help_text = "Choose yes if you want the secondary navbar to show on home page or no if you don't want to", default="yes"
+    )
+
+    show_footer = models.CharField(
+        choices = boolean_choices, max_length=5, help_text = "Choose yes if you want the Footer to show on home page or no if you don't want to", default="yes"
     )
 
     content_panels = Page.content_panels + [
@@ -609,7 +623,138 @@ class BlankPage(Page):
 
     customization_panels = [
         FieldPanel('show_navbar'),
-        FieldPanel('show_nav_extra')
+        FieldPanel('show_nav_extra'),
+        FieldPanel('show_footer')
+    ]
+
+    edit_handler = TabbedInterface([
+        ObjectList(content_panels, heading='Content'),
+        ObjectList(customization_panels, heading='Customization'),
+        ObjectList(Page.promote_panels, heading='Promote'),
+        ObjectList(Page.settings_panels, heading='Settings', classname="settings"),
+    ])
+
+    def __str__(self):
+        return self.title
+
+
+class RowCybergatewayHomePageRelation(Orderable, Row):
+    page = ParentalKey('django_airavata_wagtail_base.CybergatewayHomePage', on_delete=models.CASCADE, related_name='row')
+
+
+class CybergatewayHomePage(Page):
+    """
+    The Cybergateway themed template Page
+    """
+
+    # Hero section of HomePage
+    site_logo = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text='Site Logo Image'
+    )
+
+    site_link = models.CharField(
+    max_length=255,
+    default="#",
+    help_text = 'Give a site redirect link',
+    )
+
+    site_text = models.CharField(
+    max_length=50,
+    default="#",
+    help_text = 'Give a Site Name',
+    )
+
+    site_header = models.CharField(
+    max_length=70,
+    default="#",
+    help_text = 'Give a Site Header Name',
+    )
+
+    site_link1 = models.CharField(
+    max_length=70,
+    default="#",
+    help_text = 'Give a Site Nav Link [1]',
+    )
+
+    site_link_text1 = models.CharField(
+    max_length=70,
+    help_text = 'Give a Site Nav Link Text [1]',
+    )
+
+    site_link2 = models.CharField(
+    max_length=70,
+    default='#',
+    help_text = 'Give a Site Nav Link [2]',
+    )
+
+    site_link_text2 = models.CharField(
+    max_length=70,
+    help_text = 'Give a Site Nav Link Text [2]',
+    )
+
+    site_link3 = models.CharField(
+    max_length=70,
+    default="#",
+    help_text = 'Give a Site Nav Link [3]',
+    )
+
+    site_link_text3 = models.CharField(
+    max_length=70,
+    help_text = 'Give a Site Nav Link Text [3]',
+    )
+
+    contact = StreamField(
+        BaseStreamBlock(), verbose_name="Contact Info Block", blank=True, null=True
+    )
+
+    footer = StreamField(
+        BaseStreamBlock(), verbose_name="Footer Content Block", blank=True, null=True
+    )
+
+    boolean_choices = (
+        ("yes", "Yes"),
+        ("no", "No")
+    )
+
+    show_navbar = models.CharField(
+        choices=boolean_choices, max_length=5, help_text="Choose yes if you want to display the navbar on home page and no if you don't want to.", default="yes"
+    )
+
+    show_nav_extra = models.CharField(
+        choices = boolean_choices, max_length=5, help_text = "Choose yes if you want the secondary navbar to show on home page or no if you don't want to", default="yes"
+    )
+
+    show_footer = models.CharField(
+        choices = boolean_choices, max_length=5, help_text = "Choose yes if you want the Footer to show on home page or no if you don't want to", default="yes"
+    )
+
+    content_panels = Page.content_panels + [
+        MultiFieldPanel([
+            ImageChooserPanel('site_logo'),
+            FieldPanel('site_link'),
+            FieldPanel('site_text'),
+            FieldPanel('site_header'),
+            FieldPanel('site_link1'),
+            FieldPanel('site_link_text1'),
+            FieldPanel('site_link2'),
+            FieldPanel('site_link_text2'),
+            FieldPanel('site_link3'),
+            FieldPanel('site_link_text3'),
+            ], heading="Navbar Section"),
+        InlinePanel("row", label="row"),
+        StreamFieldPanel('contact'),
+        StreamFieldPanel('footer'),
+    ]
+
+    customization_panels = [
+        FieldPanel('show_navbar'),
+        FieldPanel('show_nav_extra'),
+        FieldPanel('show_footer')
     ]
 
     edit_handler = TabbedInterface([
