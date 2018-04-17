@@ -96,6 +96,7 @@ public class DBConstants {
         public static final String OWNER = "owner";
         public static final String PROJECT_NAME = "name";
         public static final String DESCRIPTION = "description";
+        public static final String ACCESSIBLE_PROJECT_IDS = "accessibleProjectIds";
     }
 
     public static class Experiment {

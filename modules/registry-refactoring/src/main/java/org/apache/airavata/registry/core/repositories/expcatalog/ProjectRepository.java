@@ -45,13 +45,20 @@ public class ProjectRepository extends ExpCatAbstractRepository<Project, Project
     }
 
     protected ProjectEntity saveProject(Project project, String gatewayId) throws RegistryException {
-        String projectID = getProjectId(project.getName());
+        if (project.getProjectID() == null) {
+            logger.debug("Setting the Project's ProjectId");
+            project.setProjectID(getProjectId(project.getName()));
+        }
+
         Mapper mapper = ObjectMapperSingleton.getInstance();
         ProjectEntity projectEntity = mapper.map(project, ProjectEntity.class);
-        projectEntity.setProjectID(projectID);
-        projectEntity.setGatewayId(gatewayId);
 
-        if (!isProjectExist(projectID)) {
+        if (project.getGatewayId() == null) {
+            logger.debug("Setting the Project's GatewayId");
+            projectEntity.setGatewayId(project.getGatewayId());
+        }
+
+        if (!isProjectExist(projectEntity.getProjectID())) {
             logger.debug("Checking if the Project already exists");
             projectEntity.setCreationTime(new Timestamp((System.currentTimeMillis())));
         }
@@ -64,7 +71,7 @@ public class ProjectRepository extends ExpCatAbstractRepository<Project, Project
     }
 
     public void updateProject(Project project, String projectId) throws RegistryException {
-        saveProjectData(project, null);
+        saveProjectData(project, projectId);
     }
 
     private String getProjectId(String projectName){
@@ -122,30 +129,35 @@ public class ProjectRepository extends ExpCatAbstractRepository<Project, Project
 
     public List<Project> searchAllAccessibleProjects(List<String> accessibleProjectIds, Map<String, String> filters, int limit,
                                                      int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
-        String query = "SELECT DISTINCT P FROM " + ProjectEntity.class.getSimpleName() + " P WHERE ";
+        String query = "SELECT P FROM " + ProjectEntity.class.getSimpleName() + " P WHERE ";
+        Map<String, Object> queryParameters = new HashMap<>();
 
-        if (!filters.isEmpty() && filters != null) {
+        if (filters != null && !filters.isEmpty()) {
 
             for (String field : filters.keySet()) {
 
                 if (field.equals(DBConstants.Project.GATEWAY_ID)) {
                     logger.debug("Filter Projects by Gateway ID");
-                    query += "P.gatewayId LIKE :" + filters.get(field) + " AND ";
+                    queryParameters.put(DBConstants.Project.GATEWAY_ID, filters.get(field));
+                    query += "P.gatewayId LIKE :" + DBConstants.Project.GATEWAY_ID + " AND ";
                 }
 
                 else if (field.equals(DBConstants.Project.OWNER)) {
                     logger.debug("Filter Projects by Owner");
-                    query += "P.owner LIKE :" + filters.get(field) + " AND ";
+                    queryParameters.put(DBConstants.Project.OWNER, filters.get(field));
+                    query += "P.owner LIKE :" + DBConstants.Project.OWNER + " AND ";
                 }
 
                 else if (field.equals(DBConstants.Project.PROJECT_NAME)) {
                     logger.debug("Filter Projects by Project Name");
-                    query += "P.name LIKE :" + filters.get(field) + " AND ";
+                    queryParameters.put(DBConstants.Project.PROJECT_NAME, filters.get(field));
+                    query += "P.name LIKE :" + DBConstants.Project.PROJECT_NAME + " AND ";
                 }
 
                 else if (field.equals(DBConstants.Project.DESCRIPTION)) {
                     logger.debug("Filter Projects by Description");
-                    query += "P.description LIKE :" + filters.get(field) + " AND ";
+                    queryParameters.put(DBConstants.Project.DESCRIPTION, filters.get(field));
+                    query += "P.description LIKE :" + DBConstants.Project.DESCRIPTION + " AND ";
                 }
 
                 else {
@@ -159,11 +171,8 @@ public class ProjectRepository extends ExpCatAbstractRepository<Project, Project
 
         if (accessibleProjectIds != null && !accessibleProjectIds.isEmpty()) {
             logger.debug("Filter Projects by Accessible Project IDs");
-            query += "P.projectId IN (";
-            for(String projectId : accessibleProjectIds) {
-                query += (":" + projectId + ",");
-            }
-            query = query.substring(0, query.length() - 1) + ")";
+            queryParameters.put(DBConstants.Project.ACCESSIBLE_PROJECT_IDS, accessibleProjectIds);
+            query += "P.projectID IN :" + DBConstants.Project.ACCESSIBLE_PROJECT_IDS;
         }
 
         else {
@@ -171,7 +180,7 @@ public class ProjectRepository extends ExpCatAbstractRepository<Project, Project
             query = query.substring(0, query.length() - 5);
         }
 
-        List<Project> projectList = select(query, offset);
+        List<Project> projectList = select(query, limit, offset, queryParameters);
         return projectList;
     }
 
