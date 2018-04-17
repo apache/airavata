@@ -1,7 +1,8 @@
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
+import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.registry.core.repositories.expcatalog.util.Initialize;
-import org.apache.airavata.registry.core.utils.DBConstants;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.junit.After;
 import org.junit.Before;
@@ -16,6 +17,7 @@ import static org.junit.Assert.assertFalse;
 public class GatewayRepositoryTest {
 
     private static Initialize initialize;
+    private String testGatewayId = "testGateway";
     GatewayRepository gatewayRepository;
     private static final Logger logger = LoggerFactory.getLogger(GatewayRepositoryTest.class);
 
@@ -37,8 +39,25 @@ public class GatewayRepositoryTest {
     }
 
     @Test
-    public void GatewayRepositoryTest() throws RegistryException {
+    public void GatewayRepositoryTest() throws ApplicationSettingsException, RegistryException {
+        Gateway gateway = new Gateway();
+        gateway.setGatewayId(testGatewayId);
+        gateway.setDomain("SEAGRID");
+        gateway.setEmailAddress("abc@d.com");
 
+        String gatewayId = gatewayRepository.addGateway(gateway);
+        assertEquals(testGatewayId, gatewayId);
+
+        gateway.setGatewayAdminFirstName("ABC");
+        gatewayRepository.updateGateway(testGatewayId, gateway);
+
+        Gateway retrievedGateway = gatewayRepository.getGateway(gatewayId);
+        assertEquals(gateway.getGatewayAdminFirstName(), retrievedGateway.getGatewayAdminFirstName());
+
+        assertTrue(gatewayRepository.getAllGateways().size() == 1);
+
+        gatewayRepository.removeGateway(gatewayId);
+        assertFalse(gatewayRepository.isGatewayExist(gatewayId));
     }
 
 }
