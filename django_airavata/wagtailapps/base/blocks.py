@@ -41,12 +41,25 @@ class ParagraphBlock(StructBlock) :
     Custom 'StructBlock' for creating rich text content
     """
     custom_class = TextBlock(required=False,blank=True, help_text="control this element by giving unique class names separated by space and styling the class in css")
-    body = RichTextBlock();
+    body = RichTextBlock()
 
     class Meta:
         icon = "fa-paragraph"
         template = "blocks/paragraph_block.html"
         help_text = "Create a free form paragraph"
+
+
+class IuFooter(StructBlock):
+    """
+    Custom 'StructBlock' for creating IU Footer
+    """
+    custom_class = TextBlock(required=False,blank=True, help_text="control this element by giving unique class names separated by space and styling the class in css")
+    footer_links = RichTextBlock()
+
+    class Meta:
+        icon = "fa-university"
+        template = "blocks/iu_footer.html"
+        help_text = "Create an IU Footer"
 
 
 class HeadingBlock(StructBlock):
@@ -326,6 +339,7 @@ class BaseStreamBlock(StreamBlock):
     bootstrap_media_object = BootstrapMediaObject()
     placeholder_block = PlaceholderBlock()
     font_awesome_icon_block = FontAwesomeIcon()
+    iu_footer_block = IuFooter()
 
 class CssStreamBlock(StreamBlock):
     """
