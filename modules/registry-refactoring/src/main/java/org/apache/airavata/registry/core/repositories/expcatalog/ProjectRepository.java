@@ -122,13 +122,11 @@ public class ProjectRepository extends ExpCatAbstractRepository<Project, Project
 
     public List<Project> searchAllAccessibleProjects(List<String> accessibleProjectIds, Map<String, String> filters, int limit,
                                                      int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
-        String query = "SELECT DISTINCT P FROM " + ProjectEntity.class.getSimpleName() + " P ";
+        String query = "SELECT DISTINCT P FROM " + ProjectEntity.class.getSimpleName() + " P WHERE ";
 
         if (!filters.isEmpty() && filters != null) {
 
             for (String field : filters.keySet()) {
-
-                query += " WHERE ";
 
                 if (field.equals(DBConstants.Project.GATEWAY_ID)) {
                     logger.debug("Filter Projects by Gateway ID");
@@ -159,9 +157,13 @@ public class ProjectRepository extends ExpCatAbstractRepository<Project, Project
 
         }
 
-        if (!accessibleProjectIds.isEmpty() && accessibleProjectIds != null) {
+        if (accessibleProjectIds != null && !accessibleProjectIds.isEmpty()) {
             logger.debug("Filter Projects by Accessible Project IDs");
-            query += " P.projectId IN :" + accessibleProjectIds;
+            query += "P.projectId IN (";
+            for(String projectId : accessibleProjectIds) {
+                query += (":" + projectId + ",");
+            }
+            query = query.substring(0, query.length() - 1) + ")";
         }
 
         else {

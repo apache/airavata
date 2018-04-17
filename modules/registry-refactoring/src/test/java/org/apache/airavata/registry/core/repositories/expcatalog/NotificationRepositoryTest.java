@@ -1,7 +1,8 @@
 package org.apache.airavata.registry.core.repositories.expcatalog;
 
+import org.apache.airavata.model.workspace.Notification;
+import org.apache.airavata.model.workspace.NotificationPriority;
 import org.apache.airavata.registry.core.repositories.expcatalog.util.Initialize;
-import org.apache.airavata.registry.core.utils.DBConstants;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.junit.After;
 import org.junit.Before;
@@ -11,11 +12,11 @@ import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 public class NotificationRepositoryTest {
 
     private static Initialize initialize;
+    private String testGateway = "testGateway";
     NotificationRepository notificationRepository;
     private static final Logger logger = LoggerFactory.getLogger(NotificationRepositoryTest.class);
 
@@ -38,7 +39,24 @@ public class NotificationRepositoryTest {
 
     @Test
     public void NotificationRepositoryTest() throws RegistryException {
+        Notification notification = new Notification();
+        notification.setNotificationId("notificationId");
+        notification.setGatewayId(testGateway);
+        notification.setTitle("notificationTitle");
+        notification.setNotificationMessage("notificationMessage");
 
+        String notificationId = notificationRepository.createNotification(notification);
+        assertEquals(notification.getNotificationId(), notificationId);
+
+        notification.setPriority(NotificationPriority.NORMAL);
+        notificationRepository.updateNotification(notification);
+
+        Notification retrievedNotification = notificationRepository.getNotification(notificationId);
+        assertEquals(NotificationPriority.NORMAL, retrievedNotification.getPriority());
+
+        assertTrue(notificationRepository.getAllGatewayNotifications(testGateway).size() == 1);
+
+        notificationRepository.deleteNotification(notificationId);
     }
 
 }
