@@ -849,7 +849,7 @@ class UserProfileViewSet(mixins.ListModelMixin, GenericAPIBackedViewSet):
             self.authz_token, self.gateway_id, 0, -1)
 
 
-class GroupResourceProfileViewSet(ReadOnlyAPIBackedViewSet):
+class GroupResourceProfileViewSet(GenericAPIBackedViewSet):
     serializer_class = serializers.GroupResourceProfileSerializer
 
     def get_list(self):
@@ -859,3 +859,9 @@ class GroupResourceProfileViewSet(ReadOnlyAPIBackedViewSet):
     def get_instance(self, lookup_value):
         return self.request.airavata_client.getGroupResourceProfile(
             self.authz_token, lookup_value)
+
+    def perform_create(self, serializer):
+        self.request.airavata_client.createGroupResourceProfile(self, self.authz_token, serializer.save())
+
+    def perform_update(self, serializer):
+        self.request.airavata_client.updateGroupResourceProfile(self, self.authz_token, serializer.save())
