@@ -1,4 +1,7 @@
 ---
+# Gather facts on the following
+- hosts: api-orch
+- hosts: gfac
 
 - hosts: database
   tags: mysql , airavata

@@ -118,14 +118,14 @@
     - "{{ mysql_databases }}"
 
 - name: give access to {{ db_user }} from remote
-  mysql_user: name="{{ db_user }}" password="{{ db_password }}" host="{{ item }}"
+  mysql_user: name="{{ db_user }}" password="{{ db_password }}" host="{{ hostvars[item]['ansible_default_ipv4']['address'] }}"
   with_items:
     - "{{ groups['api-orch'] }}"
     - "localhost"
 
 # TODO: database access from GFac is no longer needed (GFac deprecated and only using Registry API)
 - name: give access to {{ db_user }} from remote
-  mysql_user: name="{{ db_user }}" password="{{ db_password }}" host="{{ item }}"
+  mysql_user: name="{{ db_user }}" password="{{ db_password }}" host="{{ hostvars[item]['ansible_default_ipv4']['address'] }}"
   with_items:
     - "{{ groups['gfac'] }}"
   when: "'gfac' in groups"
