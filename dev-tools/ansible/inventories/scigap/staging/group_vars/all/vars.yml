@@ -36,7 +36,7 @@ old_airavata_dist: "apache-airavata-server-0.17-SNAPSHOT"
 git_branch: staging
 
 # Database related variables
-db_server: "{{ groups['database'][0] }}"
+db_server: "{{ hostvars[groups['database'][0]]['ansible_default_ipv4']['address'] }}"
 db_server_port: "3306"
 db_user: "airavata"
 db_password: "{{ vault_db_password }}"
