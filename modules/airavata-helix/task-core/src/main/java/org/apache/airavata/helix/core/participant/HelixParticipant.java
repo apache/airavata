@@ -41,9 +41,7 @@ import org.apache.helix.task.TaskStateModelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * TODO: Class level comments please
@@ -51,9 +49,12 @@ import java.util.Map;
  * @author dimuthu
  * @since 1.0.0-SNAPSHOT
  */
-public class HelixParticipant <T extends AbstractTask> implements Runnable {
+public class HelixParticipant<T extends AbstractTask> implements Runnable {
 
     private final static Logger logger = LoggerFactory.getLogger(HelixParticipant.class);
+
+    private final static int PARTICIPANT_SHUTDOWN_GRACE_PERIOD = 30000;
+    private final static int PARTICIPANT_SHUTDOWN_GRACE_RETRIES = 2;
 
     private String zkAddress;
     private String clusterName;
@@ -62,6 +63,7 @@ public class HelixParticipant <T extends AbstractTask> implements Runnable {
     private String taskTypeName;
     private PropertyResolver propertyResolver;
     private Class<T> taskClass;
+    private final List<AbstractTask> runningTasks = Collections.synchronizedList(new ArrayList<AbstractTask>());
 
     public HelixParticipant(Class<T> taskClass, String taskTypeName) throws ApplicationSettingsException {
 
@@ -82,14 +84,23 @@ public class HelixParticipant <T extends AbstractTask> implements Runnable {
         }
     }
 
+    public void registerRunningTask(AbstractTask task) {
+        runningTasks.add(task);
+    }
+
+    public void unregisterRunningTask(AbstractTask task) {
+        runningTasks.remove(task);
+    }
+
     public Map<String, TaskFactory> getTaskFactory() {
         Map<String, TaskFactory> taskRegistry = new HashMap<String, TaskFactory>();
 
         TaskFactory taskFac = new TaskFactory() {
             public Task createNewTask(TaskCallbackContext context) {
                 try {
-                    return taskClass.newInstance()
-                            .setCallbackContext(context)
+                    T task = taskClass.newInstance();
+                    task.setParticipant(HelixParticipant.this);
+                    return task.setCallbackContext(context)
                             .setTaskHelper(new TaskHelperImpl());
                 } catch (InstantiationException | IllegalAccessException e) {
                     e.printStackTrace();
@@ -133,6 +144,7 @@ public class HelixParticipant <T extends AbstractTask> implements Runnable {
                         @Override
                         public void run() {
                             logger.debug("Participant: " + participantName + ", shutdown hook called.");
+                            zkHelixAdmin.enableInstance(clusterName, participantName, false);
                             disconnect();
                         }
                     }
@@ -168,8 +180,7 @@ public class HelixParticipant <T extends AbstractTask> implements Runnable {
             Thread.currentThread().join();
         } catch (InterruptedException ex) {
             logger.error("Participant: " + participantName + ", is interrupted! reason: " + ex, ex);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             logger.error("Error in connect() for Participant: " + participantName + ", reason: " + ex, ex);
         } finally {
             disconnect();
@@ -178,6 +189,26 @@ public class HelixParticipant <T extends AbstractTask> implements Runnable {
 
     private void disconnect() {
         if (zkHelixManager != null) {
+            if (runningTasks.size() > 0) {
+                for (int i = 0; i <= PARTICIPANT_SHUTDOWN_GRACE_RETRIES; i++) {
+                    logger.info("Shutting down gracefully [RETRY " + i + "]");
+                    try {
+                        Thread.sleep(PARTICIPANT_SHUTDOWN_GRACE_PERIOD);
+                    } catch (InterruptedException e) {
+                        logger.warn("Waiting for running tasks failed [RETRY " + i + "]", e);
+                    }
+                    if (runningTasks.size() == 0) {
+                        break;
+                    }
+                }
+
+                synchronized (runningTasks) {
+                    for (AbstractTask runningTask : runningTasks) {
+                        logger.warn("Cancelling task with id: " + runningTask.getTaskId() + " forcefully");
+                        runningTask.cancel();
+                    }
+                }
+            }
             logger.info("Participant: " + participantName + ", has disconnected from cluster: " + clusterName);
             zkHelixManager.disconnect();
         }

@@ -21,6 +21,7 @@ package org.apache.airavata.helix.core;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.helix.core.participant.HelixParticipant;
 import org.apache.airavata.helix.core.util.TaskUtil;
 import org.apache.airavata.helix.task.api.TaskHelper;
 import org.apache.airavata.helix.task.api.annotation.TaskOutPort;
@@ -60,11 +61,15 @@ public abstract class AbstractTask extends UserContentStore implements Task {
 
     private TaskCallbackContext callbackContext;
     private TaskHelper taskHelper;
+    private HelixParticipant participant;
 
     private int retryCount = 3;
 
     @Override
     public void init(HelixManager manager, String workflowName, String jobName, String taskName) {
+        if (participant != null) {
+            participant.registerRunningTask(this);
+        }
         super.init(manager, workflowName, jobName, taskName);
         try {
             TaskUtil.deserializeTaskData(this, this.callbackContext.getTaskConfig().getConfigMap());
@@ -78,16 +83,21 @@ public abstract class AbstractTask extends UserContentStore implements Task {
         boolean isThisNextJob = getUserContent(WORKFLOW_STARTED, Scope.WORKFLOW) == null ||
                 this.callbackContext.getJobConfig().getJobId()
                         .equals(this.callbackContext.getJobConfig().getWorkflow() + "_" + getUserContent(NEXT_JOB, Scope.WORKFLOW));
-        if (isThisNextJob) {
-            return onRun(this.taskHelper);
-        } else {
-            return new TaskResult(TaskResult.Status.COMPLETED, "Not a target job");
+
+        TaskResult result = isThisNextJob ? onRun(this.taskHelper) : new TaskResult(TaskResult.Status.COMPLETED, "Not a target job");
+
+        if (participant != null) {
+            participant.unregisterRunningTask(this);
         }
+        return result;
     }
 
     @Override
     public final void cancel() {
         logger.info("Cancelling task " + taskId);
+        if (participant != null) {
+            participant.unregisterRunningTask(this);
+        }
         onCancel();
     }
 
@@ -104,6 +114,7 @@ public abstract class AbstractTask extends UserContentStore implements Task {
     protected TaskResult onFail(String reason, boolean fatal) {
         return new TaskResult(fatal ? TaskResult.Status.FATAL_FAILED : TaskResult.Status.FAILED, reason);
     }
+
     protected void publishErrors(Throwable e) {
         // TODO Publish through kafka channel with task and workflow id
         e.printStackTrace();
@@ -182,5 +193,9 @@ public abstract class AbstractTask extends UserContentStore implements Task {
             }
         }
         return curatorClient;
+    }
+
+    public void setParticipant(HelixParticipant participant) {
+        this.participant = participant;
     }
 }
