@@ -1,4 +1,13 @@
-
+const parseQueryParams = function (url, queryParams = "") {
+    if (queryParams && typeof(queryParams) != "string") {
+        queryParams = Object.keys(queryParams).map(key => encodeURIComponent(key) + "=" + encodeURIComponent(queryParams[key])).join("&");
+    }
+    if (queryParams && queryParams !== "") {
+        return url + "?" + queryParams;
+    } else {
+        return url;
+    }
+}
 export default {
     getCSRFToken: function () {
         var csrfToken = document.cookie.split(';').map(val => val.trim()).filter(val => val.startsWith("csrftoken" + '=')).map(val => val.split("=")[1]);
@@ -19,12 +28,14 @@ export default {
         }
         return headers;
     },
-    post: function (url, body, mediaType = "application/json") {
+    post: function (url, body,queryParams = "", mediaType = "application/json") {
         var headers = this.createHeaders(mediaType)
         // Browsers automatically handle content type for FormData request bodies
         if (body instanceof FormData) {
             headers.delete("Content-Type");
         }
+        console.log("post body",body);
+        url=parseQueryParams(url,queryParams)
         return fetch(url, {
             method: 'post',
             body: body,
@@ -38,7 +49,7 @@ export default {
                 return response.json().then(json => {
                     error.data = json;
                 })
-                .then(() => Promise.reject(error),() => Promise.reject(error));
+                    .then(() => Promise.reject(error), () => Promise.reject(error));
             }
         })
     },
@@ -57,7 +68,7 @@ export default {
                 return response.json().then(json => {
                     error.data = json;
                 })
-                .then(() => Promise.reject(error),() => Promise.reject(error));
+                    .then(() => Promise.reject(error), () => Promise.reject(error));
             }
         })
     },
@@ -66,7 +77,7 @@ export default {
             queryParams = Object.keys(queryParams).map(key => encodeURIComponent(key) + "=" + encodeURIComponent(queryParams[key])).join("&")
         }
         if (queryParams) {
-            url=url+"?"+queryParams
+            url = url + "?" + queryParams
         }
         var headers = this.createHeaders(mediaType)
         return fetch(url, {
@@ -74,7 +85,7 @@ export default {
             headers: headers,
             credentials: "same-origin"
         }).then((response) => {
-            console.log("FetchUtils",response);
+            console.log("FetchUtils", response);
             if (response.ok) {
                 return Promise.resolve(response.json())
             } else {
@@ -82,11 +93,11 @@ export default {
                 return response.json().then(json => {
                     error.data = json;
                 })
-                .then(() => Promise.reject(error),() => Promise.reject(error));
+                    .then(() => Promise.reject(error), () => Promise.reject(error));
             }
         })
     },
-    delete: function(url) {
+    delete: function (url) {
         var headers = this.createHeaders()
         return fetch(url, {
             method: 'delete',
@@ -101,7 +112,7 @@ export default {
                 return response.json().then(json => {
                     error.data = json;
                 })
-                .then(() => Promise.reject(error),() => Promise.reject(error));
+                    .then(() => Promise.reject(error), () => Promise.reject(error));
             }
         })
     }

@@ -861,7 +861,7 @@ class GroupResourceProfileViewSet(GenericAPIBackedViewSet):
             self.authz_token, lookup_value)
 
     def perform_create(self, serializer):
-        self.request.airavata_client.createGroupResourceProfile(self, self.authz_token, serializer.save())
+        return self.request.airavata_client.createGroupResourceProfile(self, self.authz_token, serializer.save())
 
     def perform_update(self, serializer):
-        self.request.airavata_client.updateGroupResourceProfile(self, self.authz_token, serializer.save())
+        return self.request.airavata_client.updateGroupResourceProfile(self, self.authz_token, serializer.save())

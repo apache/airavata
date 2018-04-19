@@ -1,12 +1,15 @@
 export default {
   watch: {
-    data: function (newValue) {
-      this.$emit('input', newValue)
+    data: {
+      handler: function (newValue) {
+        this.$emit('input', newValue)
+      },
+      deep:true
     }
   },
-  data:function () {
+  data: function () {
     return {
-      data:this.value
+      data: this.value
     }
   },
   props: {

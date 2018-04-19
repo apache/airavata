@@ -122,7 +122,7 @@
         }
         this.$router.push({
           name: 'group_resource_preference', params: {
-            data: preference
+            value: preference
           }
         });
       },

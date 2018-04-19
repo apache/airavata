@@ -32,18 +32,21 @@
           <button class="interface-btn" v-on:click="createComputePreferenceClickHandler()">Add Compute <span>Preference</span>
           </button>
         </div>
+        <tab-action-console v-bind:save="saveGroupResourceProfile" v-bind:enableCancel="false"></tab-action-console>
       </div>
     </div>
   </div>
 </template>
 <script>
-  import ComputePreference from './ComputePreference';
+  const ComputePreference= ()=>import('./ComputePreference') ;
+  import TabActionConsole from '../TabActionConsole'
   import {components as comps} from 'django-airavata-common-ui'
+  import DjangoAiravataAPI from 'django-airavata-api'
 
   export default {
     name: "group-compute-resource-preference",
     props: {
-      data: {
+      value: {
         type: Object,
         default: function () {
           return {
@@ -59,13 +62,16 @@
     },
     data: function () {
       return {
-        selectedGroups: ""
+        selectedGroups: [],
+        data:this.value,
+        service:DjangoAiravataAPI.services.ServiceFactory.service("GroupResourcePreference")
       }
     },
 
     components: {
       ComputePreference,
       "auto-complete": comps.Autocomplete,
+      TabActionConsole
 
     },
     methods: {
@@ -97,15 +103,29 @@
         this.createComputePreferences();
         this.computePreferenceClickHandler(this.data.computePreferences.length-1);
       },
-      createComputeResourcePolicies: function () {
-
-      }
-      ,
-      createBatchResourcePolicies: function () {
-
-      }
-      ,
-      updateComputePreference: function (index) {
+      saveGroupResourceProfile: function () {
+        let groupResourceProfile=Object.assign({},this.data);
+        let computePreferences=groupResourceProfile.computePreferences;
+        let batchQueueResourcePolicies=[];
+        let computeResourcePolicies=[];
+        for(let computePreference of computePreferences){
+          for(let computeResourcePolicy of computePreferences.computeResourcePolicies){
+            for(let batchQueueResourcePolicy of computeResourcePolicy.batchQueueResourcePolicies){
+              batchQueueResourcePolicies.push(batchQueueResourcePolicy);
+            }
+            delete computeResourcePolicy.batchQueueResourcePolicies;
+            computeResourcePolicies.push(computeResourcePolicy);
+          }
+          delete computePreference.computeResourcePolicies;
+          delete computePreference.batchQueueResourcePolicies;
+        }
+        groupResourceProfile.computeResourcePolicies=computeResourcePolicies;
+        groupResourceProfile.batchQueueResourcePolicies=batchQueueResourcePolicies;
+        if(computePreferences.groupResourceProfileId){
+          this.services.update({groupResourceProfile:groupResourceProfile});
+        }else{
+          this.services.create(groupResourceProfile);
+        }
       },
       computePreferenceClickHandler: function (index) {
         this.$router.push({
