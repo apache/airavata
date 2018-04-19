@@ -29,7 +29,7 @@ import UnicoreJobSubmissionService from './services/UnicoreJobSubmissionService'
 import SCPDataMovementService from './services/SCPDataMovementService'
 import GridFTPDataMovementService from './services/GridFTPDataMovementService'
 import UnicoreDataMovementService from './services/UnicoreDataMovementService'
-
+import ServiceFactory from './services/ServiceFactory'
 import FetchUtils from './utils/FetchUtils'
 import PaginationIterator from './utils/PaginationIterator'
 
@@ -67,6 +67,7 @@ exports.services = {
     GridFTPDataMovementService,
     SCPDataMovementService,
     UnicoreDataMovementService,
+    ServiceFactory
 }
 
 exports.utils = {
