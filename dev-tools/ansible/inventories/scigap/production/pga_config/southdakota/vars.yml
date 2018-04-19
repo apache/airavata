@@ -40,7 +40,7 @@ oauth_client_secret: "{{ vault_oauth_client_secret }}"
 oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
 
 auth_options:
-  - name: "Locally Created Gateway Account (Users without University Account)"
+  - name: "Created Gateway Account (Users without University Account)"
     oauth_grant_type: "password"
   - name: "University Account"
     oauth_grant_type: "authorization_code"
