@@ -55,11 +55,14 @@
 <style scoped>
   .array-view-main {
     position: fixed;
-    width: 100%;
     height: 50px;
+    bottom: 0px;
+    left: 10px;
+    right: 10px;
     display: inline-block;
     border: 1px solid #9d9d9d;
     padding-top: 10px;
+    background-color: #FFFFFF;
   }
 
   .left {
@@ -87,5 +90,8 @@
     margin-left: 35%;
     margin-right: 35%;
     float: none;
+  }
+  .array-view-main + * {
+    padding-bottom: 50px;
   }
 </style>
