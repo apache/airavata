@@ -366,29 +366,32 @@ public class AllocationManagerServerHandler implements AllocationRegistryService
             UserSpecificResourceDetail userSpecificResourceDetail = new UserSpecificResourceDetail();
             userAllocDetail = new UserAllocationDetailRepository().get(projectId + "");
             userSpecificResourceDetail = new UserSpecificResourceDetailRespository().getSpecificResource(projectId, specificResourceName);
-            userSpecificResourceDetail.setStartDate(startDate);
-            userSpecificResourceDetail.setEndDate(endDate);
-            userSpecificResourceDetail.setAllocatedServiceUnits(awardAllocation);
-            userSpecificResourceDetail.setSubStatus(DBConstants.RequestStatus.APPROVED);
-
-            (new UserSpecificResourceDetailRespository()).update(userSpecificResourceDetail);
-
-            List<UserSpecificResourceDetail> userSpecificResourceDetailList = getUserSpecificResource(authzToken, projectId);
-            boolean check = true;
-            for (UserSpecificResourceDetail userSpecificResourceDetail1 : userSpecificResourceDetailList) {
-                if (!userSpecificResourceDetail1.getSubStatus().equals(DBConstants.RequestStatus.APPROVED)) {
-                    check = false;
-                    break;
-                }
+            if (userSpecificResourceDetail != null) {
+	            userSpecificResourceDetail.setStartDate(startDate);
+	            userSpecificResourceDetail.setEndDate(endDate);
+	            userSpecificResourceDetail.setAllocatedServiceUnits(awardAllocation);
+	            userSpecificResourceDetail.setSubStatus(DBConstants.RequestStatus.APPROVED);
+	
+	            (new UserSpecificResourceDetailRespository()).update(userSpecificResourceDetail);
+	
+	            List<UserSpecificResourceDetail> userSpecificResourceDetailList = getUserSpecificResource(authzToken, projectId);
+	            boolean check = true;
+	            for (UserSpecificResourceDetail userSpecificResourceDetail1 : userSpecificResourceDetailList) {
+	                if (!userSpecificResourceDetail1.getSubStatus().equals(DBConstants.RequestStatus.APPROVED)) {
+	                    check = false;
+	                    break;
+	                }
+	            }
+	            if (check) {
+	                userAllocDetail.setAllocationStatus(DBConstants.RequestStatus.APPROVED);
+	            } else {
+	                userAllocDetail.setAllocationStatus(DBConstants.RequestStatus.PARTIALLYAPPROVED);
+	            }
+	            // updates the request
+	            (new UserAllocationDetailRepository()).update(userAllocDetail);
+	            return true;
             }
-            if (check) {
-                userAllocDetail.setAllocationStatus(DBConstants.RequestStatus.APPROVED);
-            } else {
-                userAllocDetail.setAllocationStatus(DBConstants.RequestStatus.PARTIALLYAPPROVED);
-            }
-            // updates the request
-            (new UserAllocationDetailRepository()).update(userAllocDetail);
-            return true;
+            return false;
         } catch (Exception ex) {
             throw new AllocationManagerException()
                     .setMessage(ex.getMessage() + " Stack trace:" + ExceptionUtils.getStackTrace(ex));
