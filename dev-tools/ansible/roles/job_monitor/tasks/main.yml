@@ -1,0 +1,82 @@
+#
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+
+# Create the directory for Helix deployment
+- name: Create helix deployment directory
+  file: path="{{ helix_dir }}" state=directory owner={{ user }} group={{ group }}
+
+# Copy job monitoring distributions to the deployment directory
+- name: Copy Job monitoring distributions to airavata-helix deployment directory
+  unarchive: "src={{ airavata_source_dir }}/modules/job-monitor/job-monitor-distribution/target/{{ item }}
+              dest={{ helix_dir }}/ copy=no"
+  with_items:
+  - "{{ email_monitor_dist_name }}"
+  - "{{ realtime_monitor_dist_name }}"
+
+# Copy properties files, logback.xml files & config files
+
+- name: Copy Airavata server properties files
+  template: "src={{ item.name }}/airavata-server.properties.j2
+            dest={{ helix_dir }}/{{ item.dir }}/conf/airavata-server.properties
+            owner={{ user }}
+            group={{ group }}
+            mode=\"u=rw,g=r,o=r\""
+  with_items:
+  - { name: email-monitor, dir: "{{ email_monitor_version }}" }
+  - { name: realtime-monitor, dir: "{{ realtime_monitor_version }}" }
+
+- name: Copy logback configuration file
+  template: "src={{ item.name }}/logback.xml.j2
+            dest={{ helix_dir }}/{{ item.dir }}/conf/logback.xml
+            owner={{ user }}
+            group={{ group }}
+            mode=\"u=rw,g=r,o=r\""
+  with_items:
+  - { name: email-monitor, dir: "{{ email_monitor_version }}" }
+  - { name: realtime-monitor, dir: "{{ realtime_monitor_version }}" }
+
+- name: Copy email-monitor configuration file
+  template: src=email-monitor/email-config.yaml.j2
+            dest="{{ helix_dir }}/{{ email_monitor_version }}/conf/email-config.yaml"
+            owner={{ user }}
+            group={{ group }}
+            mode="u=rw,g=r,o=r"
+
+- name: Create logs directory
+  file: "path={{ item }} state=directory owner={{ user }} group={{ group }}"
+  with_items:
+  - "{{ email_monitor_log_dir }}"
+  - "{{ realtime_monitor_log_dir }}"
+
+- name: Stop daemons
+  command: "{{ item.command }} chdir={{ helix_dir }}/{{ item.dir }}/"
+  with_items:
+  - { command: ./bin/email-monitor-daemon.sh stop, dir: "{{ email_monitor_version }}" }
+  - { command: ./bin/realtime-monitor-daemon.sh stop, dir: "{{ realtime_monitor_version }}" }
+
+# Run bash-scripts
+- name: Start daemons
+  command: "{{ item.command }} chdir={{ helix_dir }}/{{ item.dir }}/"
+  with_items:
+  - { command: ./bin/email-monitor-daemon.sh start, dir: "{{ email_monitor_version }}" }
+  - { command: ./bin/realtime-monitor-daemon.sh start, dir: "{{ realtime_monitor_version }}" }
+...
