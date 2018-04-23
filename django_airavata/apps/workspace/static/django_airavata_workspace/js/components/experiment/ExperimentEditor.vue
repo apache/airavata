@@ -50,17 +50,12 @@
                             <h2 class="h6 mb-3">
                                 Application Inputs
                             </h2>
-                            <b-form-group v-for="experimentInput in localExperiment.experimentInputs"
-                                    :label="experimentInput.name" :label-for="experimentInput.name" :key="experimentInput.name"
-                                    :feedback="getValidationFeedback(['experimentInputs', experimentInput.name, 'value'])"
-                                    :state="getValidationState(['experimentInputs', experimentInput.name, 'value'])">
-                                <b-form-input v-if="isSimpleInput(experimentInput)" :id="experimentInput.name" type="text" v-model="experimentInput.value" required
-                                    :placeholder="experimentInput.userFriendlyDescription"
-                                    :state="getValidationState(['experimentInputs', experimentInput.name, 'value'])"></b-form-input>
-                                <b-form-file v-if="isFileInput(experimentInput)" :id="experimentInput.name" type="text" v-model="experimentInput.value" required
-                                    :placeholder="experimentInput.userFriendlyDescription"
-                                    :state="getValidationState(['experimentInputs', experimentInput.name, 'value'])"></b-form-file>
-                            </b-form-group>
+                            <component :is="getInputEditorComponentName(experimentInput)"
+                                v-for="experimentInput in localExperiment.experimentInputs"
+                                :experiment="localExperiment"
+                                :experiment-input="experimentInput"
+                                v-model="experimentInput.value"
+                                :key="experimentInput.name"/>
                         </div>
                     </div>
                 </div>
@@ -102,6 +97,8 @@
 <script>
 import ComputationalResourceSchedulingEditor from './ComputationalResourceSchedulingEditor.vue'
 import GroupResourceProfileSelector from './GroupResourceProfileSelector.vue'
+import StringInputEditor from './input-editors/StringInputEditor.vue'
+import FileInputEditor from './input-editors/FileInputEditor.vue'
 import {models, services, utils as apiUtils} from 'django-airavata-api'
 import {utils} from 'django-airavata-common-ui'
 
@@ -130,6 +127,8 @@ export default {
     components: {
         ComputationalResourceSchedulingEditor,
         GroupResourceProfileSelector,
+        StringInputEditor,
+        FileInputEditor,
     },
     mounted: function () {
         services.ProjectService.listAll()
@@ -214,18 +213,15 @@ export default {
         getValidationState: function(properties) {
             return this.getValidationFeedback(properties) ? 'invalid' : null;
         },
-        isSimpleInput: function(experimentInput) {
-            return [
-                models.DataType.STRING,
-                models.DataType.FLOAT,
-                models.DataType.INTEGER,
-            ].indexOf(experimentInput.type) >= 0;
-        },
-        isFileInput: function(experimentInput) {
-            return [
-                models.DataType.URI,
-            ].indexOf(experimentInput.type) >= 0;
-        },
+        getInputEditorComponentName: function(experimentInput) {
+            if (experimentInput.type === models.DataType.STRING) {
+                return 'string-input-editor';
+            } else if (experimentInput.type === models.DataType.URI) {
+                return 'file-input-editor';
+            }
+            // Default
+            return 'string-input-editor';
+        }
     },
     watch: {
         experiment: function(newValue) {
