@@ -125,6 +125,8 @@ public class TaskRepositoryTest {
         taskRepository.removeTask(taskId);
         assertFalse(taskRepository.isTaskExist(taskId));
 
+        gatewayRepository.removeGateway(gatewayId);
+        projectRepository.removeProject(projectId);
     }
 
 }

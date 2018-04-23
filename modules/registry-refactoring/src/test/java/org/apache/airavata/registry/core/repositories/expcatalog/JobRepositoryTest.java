@@ -130,6 +130,8 @@ public class JobRepositoryTest {
         jobRepository.removeJob(cis);
         assertFalse(jobRepository.isJobExist(cis));
 
+        gatewayRepository.removeGateway(gatewayId);
+        projectRepository.removeProject(projectId);
     }
 
 }

@@ -84,6 +84,8 @@ public class ProjectRepositoryTest {
 
         projectRepository.removeProject(projectId);
         assertFalse(projectRepository.isProjectExist(projectId));
+
+        gatewayRepository.removeGateway(gatewayId);
     }
 
 }

@@ -159,6 +159,9 @@ public class ProcessRepositoryTest {
         experimentRepository.removeExperiment(experimentId);
         processRepository.removeProcess(processId);
         assertFalse(processRepository.isProcessExist(processId));
+
+        gatewayRepository.removeGateway(gatewayId);
+        projectRepository.removeProject(projectId);
     }
 
 }
