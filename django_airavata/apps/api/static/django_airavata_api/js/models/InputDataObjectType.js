@@ -26,9 +26,10 @@ export default class InputDataObjectType extends BaseModel {
         super(FIELDS, data);
     }
 
-    validate() {
+    validate(experiment, value = undefined) {
+        let inputValue = typeof value != 'undefined' ? value : this.value;
         let results = {};
-        if (this.isRequired && this.isEmpty(this.value)) {
+        if (this.isRequired && this.isEmpty(inputValue)) {
             results['value'] = 'This field is required.';
         }
         return results;

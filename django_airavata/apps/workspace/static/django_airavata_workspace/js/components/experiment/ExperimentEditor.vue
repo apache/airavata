@@ -55,7 +55,9 @@
                                 :experiment="localExperiment"
                                 :experiment-input="experimentInput"
                                 v-model="experimentInput.value"
-                                :key="experimentInput.name"/>
+                                :key="experimentInput.name"
+                                @invalid="recordInvalidInputEditorValue(experimentInput.name)"
+                                @valid="recordValidInputEditorValue(experimentInput.name)"/>
                         </div>
                     </div>
                 </div>
@@ -122,6 +124,7 @@ export default {
         return {
             projects: [],
             localExperiment: this.experiment.clone(),
+            invalidInputs: [],
         }
     },
     components: {
@@ -141,9 +144,12 @@ export default {
                 text: project.name,
             }));
         },
-        isSaveDisabled: function() {
+        valid: function() {
             const validation = this.localExperiment.validate();
-            return Object.keys(validation).length > 0;
+            return Object.keys(validation).length === 0 && this.invalidInputs.length === 0;
+        },
+        isSaveDisabled: function() {
+            return !this.valid;
         },
     },
     methods: {
@@ -192,21 +198,6 @@ export default {
             });
             return Promise.all(uploads);
         },
-        getApplicationInputState: function(applicationInput) {
-            const validation = this.getApplicationInputValidation(applicationInput);
-            return validation !== null ? 'invalid' : null;
-        },
-        getApplicationInputFeedback: function(applicationInput) {
-            const validation = this.getApplicationInputValidation(applicationInput);
-            return validation !== null ? validation['value'] : null;
-        },
-        getApplicationInputValidation: function(applicationInput) {
-            const validationResults = applicationInput.validate();
-            if (validationResults !== null && 'value' in validationResults) {
-                return validationResults;
-            }
-            return null;
-        },
         getValidationFeedback: function(properties) {
             return utils.getProperty(this.localExperiment.validate(), properties);
         },
@@ -221,7 +212,18 @@ export default {
             }
             // Default
             return 'string-input-editor';
-        }
+        },
+        recordInvalidInputEditorValue: function(experimentInputName) {
+            if (!this.invalidInputs.includes(experimentInputName)) {
+                this.invalidInputs.push(experimentInputName);
+            }
+        },
+        recordValidInputEditorValue: function(experimentInputName) {
+            if (this.invalidInputs.includes(experimentInputName)) {
+                const index = this.invalidInputs.indexOf(experimentInputName);
+                this.invalidInputs.splice(index, 1);
+            }
+        },
     },
     watch: {
         experiment: function(newValue) {

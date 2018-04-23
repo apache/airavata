@@ -74,19 +74,6 @@ export default class Experiment extends BaseModel {
 
     validate() {
         let validationResults = {};
-        const experimentInputsValidation = this.experimentInputs
-            .map(experimentInput => {
-                const validation = experimentInput.validate();
-                if (validation && 'value' in validation) {
-                    return {[experimentInput.name]: validation};
-                } else {
-                    return null;
-                }
-            })
-            .reduce((accumulator, currentValue) => Object.assign(accumulator, currentValue), {});
-        if (Object.keys(experimentInputsValidation).length > 0) {
-            validationResults['experimentInputs'] = experimentInputsValidation;
-        }
         const userConfigurationDataValidation = this.userConfigurationData.validate();
         if (Object.keys(userConfigurationDataValidation).length > 0) {
             validationResults['userConfigurationData'] = userConfigurationDataValidation;
