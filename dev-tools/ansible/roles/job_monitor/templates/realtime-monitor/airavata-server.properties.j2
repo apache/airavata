@@ -1,5 +1,3 @@
-#
-#
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -18,33 +16,13 @@
 # under the License.
 #
 
----
+zookeeper.server.connection={{ zookeeper_url }}
+zookeeper.timeout=30000
 
-- hosts: zookeeper
-  tags: zookeeper, airavata
-  roles:
-    - env_setup
-    - java
-    - zookeeper
+realtime.monitor.broker.url={{ realtime_monitor_broker_url }}
+realtime.monitor.broker.consumer.group={{ realtime_monitor_broker_consumer_group }}
+realtime.monitor.broker.topic={{ realtime_monitor_broker_topic }}
 
-- hosts: kafka
-  tags: kafka, airavata
-  roles:
-    - env_setup
-    - zookeeper
-    - kafka
-
-- hosts: helix
-  tags: helix, airavata
-  roles:
-    - role: common
-      become: yes
-      become_user: "{{user}}"
-    - role: helix_setup
-      become: yes
-      become_user: "{{user}}"
-    - role: job_monitor
-      become: yes
-      become_user: "{{user}}"
-
-...
+job.monitor.broker.url={{ job_monitor_broker_url }}
+job.monitor.broker.topic={{ job_monitor_broker_topic }}
+job.monitor.broker.publisher.id={{ realtime_job_monitor_broker_publisher }}

@@ -1,5 +1,3 @@
-#
-#
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -18,33 +16,16 @@
 # under the License.
 #
 
----
+###########################################################################
+# Helix Controller configurations
+###########################################################################
 
-- hosts: zookeeper
-  tags: zookeeper, airavata
-  roles:
-    - env_setup
-    - java
-    - zookeeper
+helix.cluster.name={{ helix_cluster_name }}
+helix.controller.name={{ helix_controller_name }}
 
-- hosts: kafka
-  tags: kafka, airavata
-  roles:
-    - env_setup
-    - zookeeper
-    - kafka
-
-- hosts: helix
-  tags: helix, airavata
-  roles:
-    - role: common
-      become: yes
-      become_user: "{{user}}"
-    - role: helix_setup
-      become: yes
-      become_user: "{{user}}"
-    - role: job_monitor
-      become: yes
-      become_user: "{{user}}"
-
-...
+###########################################################################
+# Zookeeper Server Configuration
+###########################################################################
+embedded.zk=false
+zookeeper.server.connection={{ zookeeper_url }}
+zookeeper.timeout=30000

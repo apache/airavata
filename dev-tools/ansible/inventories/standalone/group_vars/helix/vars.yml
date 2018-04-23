@@ -19,32 +19,25 @@
 #
 
 ---
+helix_version: 0.7.1
+helix_url: http://www-eu.apache.org/dist//helix/{{helix_version}}/binaries/helix-core-{{helix_version}}-pkg.tar
+helix_dir: "{{ deployment_dir }}/airavata-helix"
+helix_cluster_name: "AiravataDemoCluster"
 
-- hosts: zookeeper
-  tags: zookeeper, airavata
-  roles:
-    - env_setup
-    - java
-    - zookeeper
+snapshot_version: "0.17-SNAPSHOT"
 
-- hosts: kafka
-  tags: kafka, airavata
-  roles:
-    - env_setup
-    - zookeeper
-    - kafka
+# Job Monitoring related variables
+job_monitor_broker_url: "192.168.99.103:9092"
+realtime_monitor_broker_url: "localhost:9092"
 
-- hosts: helix
-  tags: helix, airavata
-  roles:
-    - role: common
-      become: yes
-      become_user: "{{user}}"
-    - role: helix_setup
-      become: yes
-      become_user: "{{user}}"
-    - role: job_monitor
-      become: yes
-      become_user: "{{user}}"
+# Kafka related variables
+kafka_port: "9092"
+kafka_broker_url: "192.168.99.103:{{ kafka_port }}"
+kafka_broker_topic: "parsed-data"
+kafka_broker_consumer_group: "MonitoringConsumer"
 
+running_on_aws: "false"
+kafka_broker_list_url: "{{ kafka_broker_url }}"
+kafka_topic_prefix: "local"
+enable_kafka_logging: "false"
 ...
