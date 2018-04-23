@@ -93,7 +93,7 @@ public class ProjectRepository extends ExpCatAbstractRepository<Project, Project
             logger.debug("Checking if the field name is owner");
             List<Project> projectList = select(QueryConstants.GET_ALL_PROJECTS, 0);
 
-            if (!projectList.isEmpty() && projectList != null) {
+            if (projectList != null && !projectList.isEmpty()) {
                 logger.debug("The retrieved list is not empty or null");
                 return projectList;
             }
@@ -112,7 +112,7 @@ public class ProjectRepository extends ExpCatAbstractRepository<Project, Project
         List<Project> projectList = getProjectList(fieldName, value);
         List<String> projectIds = new ArrayList<>();
 
-        if (!projectList.isEmpty() && projectList != null) {
+        if (projectList != null && !projectList.isEmpty()) {
             logger.debug("The retrieved list is not empty or null");
             for (Project project : projectList) {
                 projectIds.add(project.getProjectID());

@@ -85,7 +85,7 @@ public class ProcessEntity implements Serializable {
     @Column(name = "GENERATE_CERT")
     private boolean generateCert;
 
-    @Column(name = "EXPERIMENT_DATA_DIR")
+    @Column(name = "EXPERIMENT_DATA_DIR", length = 512)
     private String experimentDataDir;
 
     @Column(name = "USERNAME")
@@ -95,27 +95,27 @@ public class ProcessEntity implements Serializable {
     private String groupResourceProfileId;
 
     @OneToMany(targetEntity = ProcessStatusEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "process")
+            mappedBy = "process", fetch = FetchType.EAGER)
     private List<ProcessStatusEntity> processStatuses;
 
     @OneToMany(targetEntity = ProcessErrorEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "process")
+            mappedBy = "process", fetch = FetchType.EAGER)
     private List<ProcessErrorEntity> processErrors;
 
     @OneToMany(targetEntity = ProcessInputEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "process")
+            mappedBy = "process", fetch = FetchType.EAGER)
     private List<ProcessInputEntity> processInputs;
 
     @OneToMany(targetEntity = ProcessOutputEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "process")
+            mappedBy = "process", fetch = FetchType.EAGER)
     private List<ProcessOutputEntity> processOutputs;
 
     @OneToOne(targetEntity = ProcessResourceScheduleEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "process")
+            mappedBy = "process", fetch = FetchType.EAGER)
     private ProcessResourceScheduleEntity processResourceSchedule;
 
     @OneToMany(targetEntity = TaskEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "process")
+            mappedBy = "process", fetch = FetchType.EAGER)
     private List<TaskEntity> tasks;
 
     @ManyToOne(targetEntity = ExperimentEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)

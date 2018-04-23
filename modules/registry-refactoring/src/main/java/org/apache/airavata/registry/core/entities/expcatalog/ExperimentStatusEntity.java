@@ -34,10 +34,13 @@ public class ExperimentStatusEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
+    @Column(name = "STATUS_ID")
+    private String statusId;
+
+    @Id
     @Column(name = "EXPERIMENT_ID")
     private String experimentId;
 
-    @Id
     @Column(name = "STATE")
     private String state;
 
@@ -53,6 +56,14 @@ public class ExperimentStatusEntity implements Serializable {
     private ExperimentEntity experiment;
 
     public ExperimentStatusEntity() {
+    }
+
+    public String getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(String statusId) {
+        this.statusId = statusId;
     }
 
     public String getExperimentId() {

@@ -45,9 +45,11 @@ public class TaskErrorEntity implements Serializable {
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
 
+    @Lob
     @Column(name = "ACTUAL_ERROR_MESSAGE")
     private String actualErrorMessage;
 
+    @Lob
     @Column(name = "USER_FRIENDLY_MESSAGE")
     private String userFriendlyMessage;
 

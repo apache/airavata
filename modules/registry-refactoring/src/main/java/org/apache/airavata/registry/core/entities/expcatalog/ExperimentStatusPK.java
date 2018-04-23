@@ -29,18 +29,18 @@ public class ExperimentStatusPK implements Serializable {
     //default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
-    private String state;
+    private String statusId;
     private String experimentId;
 
     public ExperimentStatusPK() {
     }
 
-    public String getState() {
-        return state;
+    public String getStatusId() {
+        return statusId;
     }
 
-    public void setState(String state) {
-        this.state = state;
+    public void setStatusId(String statusId) {
+        this.statusId = statusId;
     }
 
     public String getExperimentId() {
@@ -60,14 +60,14 @@ public class ExperimentStatusPK implements Serializable {
         }
         ExperimentStatusPK castOther = (ExperimentStatusPK) other;
         return
-                this.state.equals(castOther.state)
+                this.statusId.equals(castOther.statusId)
                         && this.experimentId.equals(castOther.experimentId);
     }
 
     public int hashCode() {
         final int prime = 31;
         int hash = 17;
-        hash = hash * prime + this.state.hashCode();
+        hash = hash * prime + this.statusId.hashCode();
         hash = hash * prime + this.experimentId.hashCode();
 
         return hash;

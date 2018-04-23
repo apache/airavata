@@ -87,7 +87,7 @@ public class GatewayRepository extends ExpCatAbstractRepository<Gateway, Gateway
         queryParameters.put(DBConstants.Gateway.GATEWAY_NAME, gatewayName);
         List<Gateway> gatewayList = select(QueryConstants.GET_GATEWAY_FROM_GATEWAY_NAME, -1, 0, queryParameters);
 
-        if (!gatewayList.isEmpty() && gatewayList != null) {
+        if (gatewayList != null && !gatewayList.isEmpty()) {
             logger.debug("Return the record (there is only one record)");
             return gatewayList.get(0);
         }
