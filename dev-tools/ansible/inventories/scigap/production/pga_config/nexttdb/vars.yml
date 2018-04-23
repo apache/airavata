@@ -25,11 +25,11 @@ user: "pga"
 group: "pga"
 doc_root_dir: "/var/www/portals/{{ gateway_id }}"
 vhost_servername: "nexttdb.sciencegateway.scigap.org"
-vhost_ssl: false
+vhost_ssl: true
 # TODO: have Ansible manage these files as well
-#ssl_certificate_file: "/etc/letsencrypt/live/hpcgateway.uky.edu/cert.pem"
-#ssl_certificate_chain_file: "/etc/letsencrypt/live/hpcgateway.uky.edu/fullchain.pem"
-#ssl_certificate_key_file: "/etc/letsencrypt/live/hpcgateway.uky.edu/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/nexttdb.sciencegateway.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/nexttdb.sciencegateway.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/nexttdb.sciencegateway.scigap.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
@@ -42,11 +42,11 @@ oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.wel
 auth_options:
   - name: "NextGen Thermodynamics Gateway"
     oauth_grant_type: "password"
-# - name: "CILogon"
-#    oauth_grant_type: "authorization_code"
-#   oauth_authorize_url_extra_params: "kc_idp_hint=cilogon"
-#   logo: "/assets/cilogon-logo-24x24-b.png"
-oauth_callback_url: "http://{{ vhost_servername }}/callback-url"
+  - name: "CILogon"
+    oauth_grant_type: "authorization_code"
+    oauth_authorize_url_extra_params: "kc_idp_hint=cilogon"
+    logo: "/assets/cilogon-logo-24x24-b.png"
+oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 
 gateway_id: "nexttdb"
 # relative to document root dir
