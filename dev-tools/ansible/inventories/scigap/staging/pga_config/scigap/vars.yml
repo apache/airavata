@@ -23,23 +23,26 @@ pga_repo: "https://github.com/apache/airavata-php-gateway.git"
 git_branch: "master"
 user: "pga"
 group: "pga"
-doc_root_dir: "/var/www/portals/{{ gateway_id }}"
-vhost_servername: "staging.ultrascan.scigap.org"
+doc_root_dir: "/var/www/portals/scigap"
+vhost_servername: "staging.scigap.org"
 vhost_ssl: True
-ssl_certificate_file: "/etc/letsencrypt/live/staging.ultrascan.scigap.org/cert.pem"
-ssl_certificate_chain_file: "/etc/letsencrypt/live/staging.ultrascan.scigap.org/fullchain.pem"
-ssl_certificate_key_file: "/etc/letsencrypt/live/staging.ultrascan.scigap.org/privkey.pem"
+ssl_certificate_file: "/etc/letsencrypt/live/staging.scigap.org/cert.pem"
+ssl_certificate_chain_file: "/etc/letsencrypt/live/staging.scigap.org/fullchain.pem"
+ssl_certificate_key_file: "/etc/letsencrypt/live/staging.scigap.org/privkey.pem"
 
 ## Keycloak related variables
 tenant_domain: "{{ gateway_id }}"
-admin_username: "admin"
+admin_username: "scigap_admin"
 admin_password: "{{ vault_admin_password }}"
 oauth_client_key: "{{ vault_oauth_client_key }}"
 oauth_client_secret: "{{ vault_oauth_client_secret }}"
+# With Keycloak, we have to have static role names
+#user_role_name: "airavata-user"
+initial_role_name: "gateway-provider"
 oidc_discovery_url: "https://iam.scigap.org/auth/realms/{{ tenant_domain }}/.well-known/openid-configuration"
 
 auth_options:
-  - name: "Ultrascan Gateway"
+  - name: "SciGaP"
     oauth_grant_type: "password"
   - name: "CILogon"
     oauth_grant_type: "authorization_code"
@@ -47,20 +50,18 @@ auth_options:
     logo: "/assets/cilogon-logo-24x24-b.png"
 oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 
-gateway_id: "ultrascan"
+gateway_id: "scigap"
 # relative to document root dir
-experiment_data_dir: "{{ user_data_dir }}/ultrascan"
+experiment_data_dir: "{{ user_data_dir }}/scigap"
 gateway_data_store_resource_id: "pga.staging.scigap.org_aa63ffa0-a99f-4885-8f4b-81e3c4c4d737"
-gateway_data_store_ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCqFFN7+93U5cELQCdZl+XiXmFxiSnQDXJaIdTKML3X/KU/0GkwUOBkrKVJaJEgpt+cSPLIg/qM4nVjt3iTfBIx9SPb6q8sHxSKnnNS/mfFvSOn/mxdNVgqNgTlqRy5axaeTn8wxa0afihZZLhU0MvUl0rrAcsR2gBU2zWeE9t+gj/HQ5D/dNmKQUJpexyY79RQi6mDwUPwHPXcLs+6YrJ68kpjmGQgGXUvCK/29neRvKpOXKds8E1kaa9nouxiQDCwAQKtqg8VAtfgMOX8gjur9DC1s45Ryjv+bLDuQ7MFMf5wEWg6QKSYoF94/JX3bC9nVjlL2wGX9HsWPDpWY2K5"
-data_sharing_enabled: "false"
 
 ## Portal related variables
-super_admin_portal: "false"
+super_admin_portal: "true"
 admin_emails: "['sgrc-iu-group@iu.edu']"
 portal_email_username: "pga.airavata@gmail.com"
 portal_email_password: "{{ vault_portal_email_password }}"
-portal_theme: "base"
-portal_title: "Dev Ultrascan SciGaP Dashboard"
+portal_theme: "scigap"
+portal_theme_repo: "https://github.com/SciGaP/scigap-portal-theme"
+portal_title: "SciGaP Admin Portal"
+#pga_google_analytics_id: "UA-111528347-4"
 ...
-
-
