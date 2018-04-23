@@ -22,6 +22,7 @@ package org.apache.airavata.helix.impl.task.submission;
 import org.apache.airavata.agents.api.AgentAdaptor;
 import org.apache.airavata.agents.api.JobSubmissionOutput;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.helix.core.util.MonitoringUtil;
 import org.apache.airavata.helix.impl.task.TaskContext;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapBuilder;
 import org.apache.airavata.helix.impl.task.submission.config.GroovyMapData;
@@ -32,7 +33,6 @@ import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.*;
-import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.helix.task.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +51,20 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
     @Override
     public TaskResult onRun(TaskHelper taskHelper, TaskContext taskContext) {
 
+        String jobId = null;
+        AgentAdaptor adaptor;
+
+        try {
+            adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(
+                    getTaskContext().getGatewayId(),
+                    getTaskContext().getComputeResourceId(),
+                    getTaskContext().getJobSubmissionProtocol(),
+                    getTaskContext().getComputeResourceCredentialToken(),
+                    getTaskContext().getComputeResourceLoginUserName());
+        } catch (Exception e) {
+            return onFail("Failed to fetch adaptor to connect to " + getTaskContext().getComputeResourceId(), true, e);
+        }
+
         try {
             saveAndPublishProcessStatus(ProcessState.EXECUTING);
 
@@ -64,13 +78,6 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
             jobModel.setJobName(mapData.getJobName());
             jobModel.setJobDescription("Sample description");
 
-            AgentAdaptor adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(
-                    getTaskContext().getGatewayId(),
-                    getTaskContext().getComputeResourceId(),
-                    getTaskContext().getJobSubmissionProtocol().name(),
-                    getTaskContext().getComputeResourceCredentialToken(),
-                    getTaskContext().getComputeResourceLoginUserName());
-
             JobSubmissionOutput submissionOutput = submitBatchJob(adaptor, mapData, mapData.getWorkingDirectory());
 
             jobModel.setJobDescription(submissionOutput.getDescription());
@@ -78,7 +85,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
             jobModel.setStdErr(submissionOutput.getStdErr());
             jobModel.setStdOut(submissionOutput.getStdOut());
 
-            String jobId = submissionOutput.getJobId();
+            jobId = submissionOutput.getJobId();
 
             if (submissionOutput.getExitCode() != 0 || submissionOutput.isJobSubmissionFailed()) {
 
@@ -137,20 +144,7 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                     jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
                     jobModel.setJobStatuses(Collections.singletonList(jobStatus));
                     saveAndPublishJobStatus(jobModel);
-                    createMonitoringNode(jobId, mapData.getJobName());
                 }
-
-                if (getComputeResourceDescription().isGatewayUsageReporting()){
-                    String loadCommand = getComputeResourceDescription().getGatewayUsageModuleLoadCommand();
-                    String usageExecutable = getComputeResourceDescription().getGatewayUsageExecutable();
-                    ExperimentModel experiment = (ExperimentModel)getExperimentCatalog().get(ExperimentCatalogModelType.EXPERIMENT, getExperimentId());
-                    String username = experiment.getUserName() + "@" + getTaskContext().getGatewayComputeResourcePreference().getUsageReportingGatewayId();
-                    RawCommandInfo rawCommandInfo = new RawCommandInfo(loadCommand + " && " + usageExecutable + " -gateway_user " +  username  +
-                            " -submit_time \"`date '+%F %T %:z'`\"  -jobid " + jobId );
-                    adaptor.executeCommand(rawCommandInfo.getRawCommand(), null);
-                }
-
-                return onSuccess("Submitted job to compute resource");
 
             } else {
 
@@ -184,11 +178,46 @@ public class DefaultJobSubmissionTask extends JobSubmissionTask {
                         "doesn't return a valid JobId. " + "Hence changing experiment state to Failed";
                 logger.error(msg);
                 return onFail("Couldn't find job id in both submitted and verified steps. " + msg, false, null);
+
             } else {
-                return onSuccess("Submitted job to compute resource after retry");
+
+                // creating monitoring nodes
+                MonitoringUtil.createMonitoringNode(getCuratorClient(), jobId, mapData.getJobName(), getTaskId(),
+                        getProcessId(), getExperimentId(), getGatewayId());
+
+                // usage reporting as the last step of job submission task
+                if (getComputeResourceDescription().isGatewayUsageReporting()){
+                    String loadCommand = getComputeResourceDescription().getGatewayUsageModuleLoadCommand();
+                    String usageExecutable = getComputeResourceDescription().getGatewayUsageExecutable();
+                    ExperimentModel experiment = getRegistryServiceClient().getExperiment(getExperimentId());
+                    String username = experiment.getUserName() + "@" + getTaskContext().getGatewayComputeResourcePreference().getUsageReportingGatewayId();
+                    RawCommandInfo rawCommandInfo = new RawCommandInfo(loadCommand + " && " + usageExecutable + " -gateway_user " +  username  +
+                            " -submit_time \"`date '+%F %T %:z'`\"  -jobid " + jobId );
+                    adaptor.executeCommand(rawCommandInfo.getRawCommand(), null);
+                }
+
+                return onSuccess("Submitted job to compute resource");
             }
 
         } catch (Exception e) {
+
+            logger.error("Task failed due to unexpected issue. Trying to control damage");
+
+            if (jobId != null && !jobId.isEmpty()) {
+                logger.warn("Job " + jobId + " has already being submitted. Trying to cancel the job");
+                try {
+                    boolean cancelled = cancelJob(adaptor, jobId);
+                    if (cancelled) {
+                        logger.info("Job " + jobId + " cancellation triggered");
+                    } else {
+                        logger.error("Failed to cancel job " + jobId + ". Please contact system admins");
+                    }
+                } catch (Exception e1) {
+                    logger.error("Error while cancelling the job " + jobId + ". Please contact system admins");
+                    // ignore as we have nothing to do at this point
+                }
+            }
+
             return onFail("Task failed due to unexpected issue", false, e);
         }
     }

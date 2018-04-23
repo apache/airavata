@@ -17,24 +17,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.airavata.helix.task.api.support;
+package org.apache.airavata.helix.adaptor.wrapper;
 
-import org.apache.airavata.agents.api.*;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.data.movement.DataMovementProtocol;
+import net.schmizz.sshj.sftp.SFTPClient;
 
-import java.io.File;
+import java.io.IOException;
+import java.util.function.Consumer;
 
-/**
- * TODO: Class level comments please
- *
- * @author dimuthu
- * @since 1.0.0-SNAPSHOT
- */
-public interface AdaptorSupport {
-    public void initializeAdaptor();
+public class SFTPClientWrapper extends SFTPClient {
+    private SFTPClient sftpClient;
+    private Consumer<Integer> onCloseFunction;
 
-    public AgentAdaptor fetchAdaptor(String gatewayId, String computeResource, JobSubmissionProtocol protocol, String authToken, String userId) throws Exception;
-    public StorageResourceAdaptor fetchStorageAdaptor(String gatewayId, String storageResourceId, DataMovementProtocol protocol, String authToken, String userId) throws AgentException;
+    public SFTPClientWrapper(SFTPClient sftpClient, Consumer<Integer> onCloseFunction) {
+        super(sftpClient.getSFTPEngine());
+        this.onCloseFunction = onCloseFunction;
+    }
 
+    @Override
+    public void close() throws IOException {
+        onCloseFunction.accept(-1);
+        super.close();
+    }
 }
