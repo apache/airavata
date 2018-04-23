@@ -30,7 +30,6 @@ public class ExperimentRepositoryTest {
     private static Initialize initialize;
     GatewayRepository gatewayRepository;
     ProjectRepository projectRepository;
-    UserConfigurationDataRepository userConfigurationDataRepository;
     ExperimentRepository experimentRepository;
     private static final Logger logger = LoggerFactory.getLogger(ExperimentRepositoryTest.class);
 
@@ -41,7 +40,6 @@ public class ExperimentRepositoryTest {
             initialize.initializeDB();
             gatewayRepository = new GatewayRepository();
             projectRepository = new ProjectRepository();
-            userConfigurationDataRepository = new UserConfigurationDataRepository();
             experimentRepository = new ExperimentRepository();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -88,12 +86,12 @@ public class ExperimentRepositoryTest {
         UserConfigurationDataModel userConfigurationDataModel = new UserConfigurationDataModel();
         userConfigurationDataModel.setAiravataAutoSchedule(true);
         userConfigurationDataModel.setOverrideManualScheduledParams(false);
-        assertEquals(experimentId, userConfigurationDataRepository.addUserConfigurationData(userConfigurationDataModel, experimentId));
+        assertEquals(experimentId, experimentRepository.addUserConfigurationData(userConfigurationDataModel, experimentId));
 
         userConfigurationDataModel.setStorageId("storage2");
-        userConfigurationDataRepository.updateUserConfigurationData(userConfigurationDataModel, experimentId);
+        experimentRepository.updateUserConfigurationData(userConfigurationDataModel, experimentId);
 
-        assertEquals("storage2", userConfigurationDataRepository.getUserConfigurationData(experimentId).getStorageId());
+        assertEquals("storage2", experimentRepository.getUserConfigurationData(experimentId).getStorageId());
 
         InputDataObjectType inputDataObjectTypeExp = new InputDataObjectType();
         inputDataObjectTypeExp.setName("inputE");
