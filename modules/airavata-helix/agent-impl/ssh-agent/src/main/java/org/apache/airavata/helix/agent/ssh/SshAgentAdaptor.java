@@ -21,24 +21,14 @@ package org.apache.airavata.helix.agent.ssh;
 
 import com.jcraft.jsch.*;
 import org.apache.airavata.agents.api.*;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.DBUtil;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.credential.store.credential.Credential;
-import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
-import org.apache.airavata.credential.store.store.CredentialStoreException;
-import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
+import org.apache.airavata.model.credential.store.SSHCredential;
 import org.apache.airavata.model.appcatalog.computeresource.*;
-import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.AppCatalog;
-import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -91,37 +81,26 @@ public class SshAgentAdaptor implements AgentAdaptor {
     @Override
     public void init(String computeResourceId, String gatewayId, String userId, String token) throws AgentException {
         try {
-            AppCatalog appCatalog = RegistryFactory.getAppCatalog();
-            ComputeResourceDescription computeResourceDescription = appCatalog.getComputeResource().getComputeResource(computeResourceId);
-
-            String jdbcUrl = ServerSettings.getCredentialStoreDBURL();
-            String jdbcUsr = ServerSettings.getCredentialStoreDBUser();
-            String jdbcPass = ServerSettings.getCredentialStoreDBPassword();
-            String driver = ServerSettings.getCredentialStoreDBDriver();
-            CredentialReaderImpl credentialReader = new CredentialReaderImpl(new DBUtil(jdbcUrl, jdbcUsr, jdbcPass, driver));
+            ComputeResourceDescription computeResourceDescription = AgentUtils.getRegistryServiceClient().getComputeResource(computeResourceId);
 
             logger.info("Fetching credentials for cred store token " + token);
 
-            Credential credential = credentialReader.getCredential(gatewayId, token);
-            if (credential == null) {
+            SSHCredential sshCredential = AgentUtils.getCredentialClient().getSSHCredential(token, gatewayId);
+            if (sshCredential == null) {
                 throw new AgentException("Null credential for token " + token);
             }
-            logger.info("Description for token : " + token + " : " + credential.getDescription());
+            logger.info("Description for token : " + token + " : " + sshCredential.getDescription());
 
-            if (credential instanceof SSHCredential) {
-                SSHCredential sshCredential = SSHCredential.class.cast(credential);
-                SshAdaptorParams adaptorParams = new SshAdaptorParams();
-                adaptorParams.setHostName(computeResourceDescription.getHostName());
-                adaptorParams.setUserName(userId);
-                adaptorParams.setPassphrase(sshCredential.getPassphrase());
-                adaptorParams.setPrivateKey(sshCredential.getPrivateKey());
-                adaptorParams.setPublicKey(sshCredential.getPublicKey());
-                adaptorParams.setStrictHostKeyChecking(false);
-                init(adaptorParams);
-            }
+            SshAdaptorParams adaptorParams = new SshAdaptorParams();
+            adaptorParams.setHostName(computeResourceDescription.getHostName());
+            adaptorParams.setUserName(userId);
+            adaptorParams.setPassphrase(sshCredential.getPassphrase());
+            adaptorParams.setPrivateKey(sshCredential.getPrivateKey().getBytes());
+            adaptorParams.setPublicKey(sshCredential.getPublicKey().getBytes());
+            adaptorParams.setStrictHostKeyChecking(false);
+            init(adaptorParams);
 
-        } catch (AppCatalogException | ApplicationSettingsException | InstantiationException | IllegalAccessException |
-                ClassNotFoundException | CredentialStoreException e) {
+        } catch (Exception e) {
             logger.error("Error while initializing ssh agent for compute resource " + computeResourceId + " to token " + token, e);
             throw new AgentException("Error while initializing ssh agent for compute resource " + computeResourceId + " to token " + token, e);
         }
@@ -446,6 +425,62 @@ public class SshAgentAdaptor implements AgentAdaptor {
             }
             return Arrays.asList(stdOutReader.getStdOut().split("\n"));
 
+        } catch (JSchException e) {
+            logger.error("Unable to retrieve command output. Command - " + command +
+                    " on server - " + session.getHost() + ":" + session.getPort() +
+                    " connecting user name - "
+                    + session.getUserName(), e);
+            throw new AgentException("Unable to retrieve command output. Command - " + command +
+                    " on server - " + session.getHost() + ":" + session.getPort() +
+                    " connecting user name - "
+                    + session.getUserName(), e);
+        } catch (IOException e) {
+            logger.error("Error while handling streams", e);
+            throw new AgentException("Error while handling streams", e);
+        } finally {
+            if (channelExec != null) {
+                channelExec.disconnect();
+            }
+        }
+    }
+
+    @Override
+    public Boolean doesFileExist(String filePath) throws AgentException {
+        String command = "ls " + filePath;
+        ChannelExec channelExec = null;
+        try {
+            channelExec = (ChannelExec)session.openChannel("exec");
+            StandardOutReader stdOutReader = new StandardOutReader();
+
+            channelExec.setCommand(command);
+
+            InputStream out = channelExec.getInputStream();
+            InputStream err = channelExec.getErrStream();
+
+            channelExec.connect();
+
+            stdOutReader.readStdOutFromStream(out);
+            stdOutReader.readStdErrFromStream(err);
+            if (stdOutReader.getStdError().contains("ls:")) {
+                logger.info("Invalid file path " + filePath + ". stderr : " + stdOutReader.getStdError());
+                return false;
+            } else {
+                String[] potentialFiles = stdOutReader.getStdOut().split("\n");
+                if (potentialFiles.length > 1) {
+                    logger.info("More than one file matching to given path " + filePath);
+                    return false;
+                } else if (potentialFiles.length == 0) {
+                    logger.info("No file found for given path " + filePath);
+                    return false;
+                } else {
+                    if (potentialFiles[0].trim().equals(filePath)) {
+                        return true;
+                    } else {
+                        logger.info("Returned file name " + potentialFiles[0].trim() + " does not match with given name " + filePath);
+                        return false;
+                    }
+                }
+            }
         } catch (JSchException e) {
             logger.error("Unable to retrieve command output. Command - " + command +
                     " on server - " + session.getHost() + ":" + session.getPort() +

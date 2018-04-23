@@ -37,9 +37,9 @@ import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.status.JobStatus;
-import org.apache.airavata.registry.cpi.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.helix.HelixManager;
+import org.apache.thrift.TException;
 import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,33 +57,11 @@ public abstract class JobSubmissionTask extends AiravataTask {
         super.init(manager, workflowName, jobName, taskName);
     }
 
-    // TODO perform exception handling
-    @SuppressWarnings("WeakerAccess")
-    protected void createMonitoringNode(String jobId, String jobName) throws Exception {
-        logger.info("Creating zookeeper paths for job monitoring for job id : " + jobId + ", process : "
-                + getProcessId() + ", gateway : " + getGatewayId());
-        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                "/monitoring/" + jobId + "/lock", new byte[0]);
-        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                "/monitoring/" + jobId + "/gateway", getGatewayId().getBytes());
-        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                "/monitoring/" + jobId + "/process", getProcessId().getBytes());
-        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                "/monitoring/" + jobId + "/task", getTaskId().getBytes());
-        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                "/monitoring/" + jobId + "/experiment", getExperimentId().getBytes());
-        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                "/monitoring/" + jobId + "/jobName", jobName.getBytes());
-        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                "/monitoring/" + jobName + "/jobId", jobId.getBytes());
-        getCuratorClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(
-                "/registry/" + getProcessId() + "/jobs/" + jobId, new byte[0]);
-    }
 
     @SuppressWarnings("WeakerAccess")
     protected JobSubmissionOutput submitBatchJob(AgentAdaptor agentAdaptor, GroovyMapData groovyMapData, String workingDirectory) throws Exception {
         JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                getAppCatalog(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
+                getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
 
         addMonitoringCommands(groovyMapData);
 
@@ -179,20 +157,27 @@ public abstract class JobSubmissionTask extends AiravataTask {
         return new File(outputPath + getProcessId());
     }
 
-    @SuppressWarnings("WeakerAccess")
-    public JobStatus getJobStatus(AgentAdaptor agentAdaptor, String jobID) throws Exception {
+    public boolean cancelJob(AgentAdaptor agentAdaptor, String jobId) throws Exception {
         JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                getAppCatalog(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
-        CommandOutput commandOutput = agentAdaptor.executeCommand(jobManagerConfiguration.getMonitorCommand(jobID).getRawCommand(), null);
+                getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
+        CommandOutput commandOutput = agentAdaptor.executeCommand(jobManagerConfiguration.getCancelCommand(jobId).getRawCommand(), null);
+        return commandOutput.getExitCode() == 0;
+    }
 
-        return jobManagerConfiguration.getParser().parseJobStatus(jobID, commandOutput.getStdOut());
+    @SuppressWarnings("WeakerAccess")
+    public JobStatus getJobStatus(AgentAdaptor agentAdaptor, String jobIc) throws Exception {
+        JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
+                getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
+        CommandOutput commandOutput = agentAdaptor.executeCommand(jobManagerConfiguration.getMonitorCommand(jobIc).getRawCommand(), null);
+
+        return jobManagerConfiguration.getParser().parseJobStatus(jobIc, commandOutput.getStdOut());
 
     }
 
     @SuppressWarnings("WeakerAccess")
     public String getJobIdByJobName(AgentAdaptor agentAdaptor, String jobName, String userName) throws Exception {
         JobManagerConfiguration jobManagerConfiguration = JobFactory.getJobManagerConfiguration(JobFactory.getResourceJobManager(
-                getAppCatalog(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
+                getRegistryServiceClient(), getTaskContext().getJobSubmissionProtocol(), getTaskContext().getPreferredJobSubmissionInterface()));
 
         RawCommandInfo jobIdMonitorCommand = jobManagerConfiguration.getJobIdMonitorCommand(jobName, userName);
         CommandOutput commandOutput = agentAdaptor.executeCommand(jobIdMonitorCommand.getRawCommand(), null);
@@ -200,8 +185,8 @@ public abstract class JobSubmissionTask extends AiravataTask {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public void saveJobModel(JobModel jobModel) throws RegistryException {
-        getExperimentCatalog().add(ExpCatChildDataType.JOB, jobModel, getProcessId());
+    public void saveJobModel(JobModel jobModel) throws TException {
+        getRegistryServiceClient().addJob(jobModel, getProcessId());
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -226,8 +211,7 @@ public abstract class JobSubmissionTask extends AiravataTask {
                 jobStatus.setTimeOfStateChange(jobStatus.getTimeOfStateChange());
             }
 
-            CompositeIdentifier ids = new CompositeIdentifier(jobModel.getTaskId(), jobModel.getJobId());
-            getExperimentCatalog().add(ExpCatChildDataType.JOB_STATUS, jobStatus, ids);
+            getRegistryServiceClient().addJobStatus(jobStatus, jobModel.getTaskId(), jobModel.getJobId());
             JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), jobModel.getTaskId(),
                     getProcessId(), getProcessModel().getExperimentId(), getGatewayId());
 

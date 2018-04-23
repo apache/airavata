@@ -58,7 +58,7 @@ public class ForkJobSubmissionTask extends JobSubmissionTask {
             AgentAdaptor adaptor = taskHelper.getAdaptorSupport().fetchAdaptor(
                     getTaskContext().getGatewayId(),
                     getTaskContext().getComputeResourceId(),
-                    getTaskContext().getJobSubmissionProtocol().name(),
+                    getTaskContext().getJobSubmissionProtocol(),
                     getTaskContext().getComputeResourceCredentialToken(),
                     getTaskContext().getComputeResourceLoginUserName());
 

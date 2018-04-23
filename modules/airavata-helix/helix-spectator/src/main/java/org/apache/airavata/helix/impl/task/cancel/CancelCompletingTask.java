@@ -17,7 +17,19 @@ public class CancelCompletingTask extends AiravataTask {
     public TaskResult onRun(TaskHelper helper, TaskContext taskContext) {
         logger.info("Starting cancel completing task for task " + getTaskId() + ", experiment id " + getExperimentId());
         logger.info("Process " + getProcessId() + " successfully cancelled");
-        saveAndPublishProcessStatus(ProcessState.CANCELED);
+        String cancelled = getContextVariable(RemoteJobCancellationTask.JOB_ALREADY_CANCELLED_OR_NOT_AVAILABLE);
+
+        if ("true".equals(cancelled)) {
+            // make  the experiment state as cancelled if it is already being cancelled or similar state.
+            // Otherwise wait for the post workflow to cancel the experiment
+            logger.info("Making process as cancelled as the job is already being cancelled or not available");
+            saveAndPublishProcessStatus(ProcessState.CANCELED);
+        } else {
+            // TODO: Some schedulers do not send notifications once the job is cancelled. It will cause experiment to stay in
+            // cancelling state forever. So we are making the experiment is CANCELLED irrespective of the state of the job
+            logger.info("Job is not in the saturated state but updating experiment as cancelled");
+            saveAndPublishProcessStatus(ProcessState.CANCELED);
+        }
         return onSuccess("Process " + getProcessId() + " successfully cancelled");
     }
 

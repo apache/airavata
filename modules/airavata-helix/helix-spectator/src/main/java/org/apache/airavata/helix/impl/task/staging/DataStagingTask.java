@@ -57,15 +57,11 @@ public abstract class DataStagingTask extends AiravataTask {
 
     @SuppressWarnings("WeakerAccess")
     protected StorageResourceDescription getStorageResource() throws TaskOnFailException {
-        try {
-            StorageResourceDescription storageResource = getTaskContext().getStorageResource();
-            if (storageResource == null) {
-                throw new TaskOnFailException("Storage resource can not be null for task " + getTaskId(), true, null);
-            }
-            return storageResource;
-        } catch (AppCatalogException e) {
-            throw new TaskOnFailException("Failed to fetch the storage resource for task " + getTaskId(), true, e);
+        StorageResourceDescription storageResource = getTaskContext().getStorageResource();
+        if (storageResource == null) {
+            throw new TaskOnFailException("Storage resource can not be null for task " + getTaskId(), true, null);
         }
+        return storageResource;
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -74,7 +70,7 @@ public abstract class DataStagingTask extends AiravataTask {
             StorageResourceAdaptor storageResourceAdaptor = adaptorSupport.fetchStorageAdaptor(
                     getGatewayId(),
                     getTaskContext().getStorageResourceId(),
-                    "SSH",
+                    getTaskContext().getDataMovementProtocol(),
                     getTaskContext().getStorageResourceCredentialToken(),
                     getTaskContext().getStorageResourceLoginUserName());
 
@@ -94,7 +90,7 @@ public abstract class DataStagingTask extends AiravataTask {
             return adaptorSupport.fetchAdaptor(
                     getTaskContext().getGatewayId(),
                     getTaskContext().getComputeResourceId(),
-                    getTaskContext().getJobSubmissionProtocol().name(),
+                    getTaskContext().getJobSubmissionProtocol(),
                     getTaskContext().getComputeResourceCredentialToken(),
                     getTaskContext().getComputeResourceLoginUserName());
         } catch (Exception e) {
@@ -138,8 +134,20 @@ public abstract class DataStagingTask extends AiravataTask {
         return filePath;
     }
 
-    protected void transferFileToStorage(String sourcePath, String destPath, String fileName, AgentAdaptor adaptor,
+    protected boolean transferFileToStorage(String sourcePath, String destPath, String fileName, AgentAdaptor adaptor,
                               StorageResourceAdaptor storageResourceAdaptor) throws TaskOnFailException {
+
+        try {
+            boolean fileExists = adaptor.doesFileExist(sourcePath);
+            if (!fileExists) {
+                logger.warn("Ignoring the file " + sourcePath + " transfer as it is not available");
+                return false;
+            }
+        } catch (AgentException e) {
+            logger.error("Error while checking the file " + sourcePath + " existence");
+            throw new TaskOnFailException("Error while checking the file " + sourcePath + " existence", true, e);
+        }
+
         String localSourceFilePath = getLocalDataPath(fileName);
 
         try {
@@ -152,6 +160,15 @@ public abstract class DataStagingTask extends AiravataTask {
                         localSourceFilePath, true, e);
             }
 
+            File localFile = new File(localSourceFilePath);
+            if (localFile.exists()) {
+                if (localFile.length() == 0) {
+                    logger.warn("Local file " + localSourceFilePath +" size is 0 so ignoring the upload");
+                    return false;
+                }
+            } else {
+                throw new TaskOnFailException("Local file does not exist at " + localSourceFilePath, true, null);
+            }
             // Uploading output file to the storage resource
             try {
                 logger.info("Uploading the output file to " + destPath + " from local path " + localSourceFilePath);
@@ -162,6 +179,7 @@ public abstract class DataStagingTask extends AiravataTask {
                         localSourceFilePath, true, e);
             }
 
+            return true;
         } finally {
             logger.info("Deleting temporary file " + localSourceFilePath);
             deleteTempFile(localSourceFilePath);

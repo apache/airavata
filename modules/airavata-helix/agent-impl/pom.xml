@@ -35,6 +35,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>ssh-agent</module>
+        <module>sshj-agent</module>
     </modules>
 
     <dependencies>

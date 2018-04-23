@@ -103,6 +103,16 @@ public class InputDataStagingTask extends DataStagingTask {
                     throw new TaskOnFailException("Failed downloading input file " + sourceFileName + " to the local path " + localSourceFilePath, true, e);
                 }
 
+                File localFile = new File(localSourceFilePath);
+                if (localFile.exists()) {
+                    if (localFile.length() == 0) {
+                        logger.error("Local file " + localSourceFilePath +" size is 0 so ignoring the upload");
+                        return onFail("Input staging has failed as file " + localSourceFilePath + " size is 0", true, null);
+                    }
+                } else {
+                    throw new TaskOnFailException("Local file does not exist at " + localSourceFilePath, true, null);
+                }
+
                 // Uploading input file to the compute resource
                 try {
                     logger.info("Uploading the input file to " + destinationURI.getPath() + " from local path " + localSourceFilePath);
