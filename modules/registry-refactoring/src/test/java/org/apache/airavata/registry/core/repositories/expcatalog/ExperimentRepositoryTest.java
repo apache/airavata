@@ -153,6 +153,9 @@ public class ExperimentRepositoryTest {
 
         experimentRepository.removeExperiment(experimentId);
         assertFalse(experimentRepository.isExperimentExist(experimentId));
+
+        gatewayRepository.removeGateway(gatewayId);
+        projectRepository.removeProject(projectId);
     }
 
 }
