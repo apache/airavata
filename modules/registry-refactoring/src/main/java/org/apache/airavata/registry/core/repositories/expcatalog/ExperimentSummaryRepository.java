@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,42 +27,47 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
 
     public List<ExperimentSummaryModel> searchAllAccessibleExperiments(List<String> accessibleExperimentIds, Map<String, String> filters, int limit,
                                                                        int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
-        String query = "SELECT DISTINCT ES FROM " + ExperimentSummaryEntity.class.getSimpleName() + " ES ";
+        String query = "SELECT DISTINCT ES FROM " + ExperimentSummaryEntity.class.getSimpleName() + " ES WHERE ";
+        Map<String, Object> queryParameters = new HashMap<>();
 
-        if (!filters.isEmpty() && filters != null) {
+        if (filters != null && !filters.isEmpty()) {
 
             for (String field : filters.keySet()) {
 
-                query += " WHERE ";
-
                 if (field.equals(DBConstants.Experiment.USER_NAME)) {
                     logger.debug("Filter Experiments by User");
-                    query += "ES.userName LIKE :" + filters.get(field) + " AND ";
+                    queryParameters.put(DBConstants.Experiment.USER_NAME, filters.get(field));
+                    query += "ES.userName LIKE :" + DBConstants.Experiment.USER_NAME + " AND ";
                 }
 
                 else if (field.equals(DBConstants.Experiment.GATEWAY_ID)) {
                     logger.debug("Filter Experiments by Gateway ID");
-                    query += "ES.gatewayId LIKE :" + filters.get(field) + " AND ";
+                    queryParameters.put(DBConstants.Experiment.GATEWAY_ID, filters.get(field));
+                    query += "ES.gatewayId LIKE :" + DBConstants.Experiment.GATEWAY_ID + " AND ";
                 }
 
                 else if (field.equals(DBConstants.Experiment.PROJECT_ID)) {
                     logger.debug("Filter Experiments by Project ID");
-                    query += "ES.projectId LIKE :" + filters.get(field) + " AND ";
+                    queryParameters.put(DBConstants.Experiment.PROJECT_ID, filters.get(field));
+                    query += "ES.projectId LIKE :" + DBConstants.Experiment.PROJECT_ID + " AND ";
                 }
 
                 else if (field.equals(DBConstants.Experiment.EXPERIMENT_NAME)) {
                     logger.debug("Filter Experiments by Name");
-                    query += "ES.name LIKE :" + filters.get(field) + " AND ";
+                    queryParameters.put(DBConstants.Experiment.EXPERIMENT_NAME, filters.get(field));
+                    query += "ES.name LIKE :" + DBConstants.Experiment.EXPERIMENT_NAME + " AND ";
                 }
 
                 else if (field.equals(DBConstants.Experiment.DESCRIPTION)) {
                     logger.debug("Filter Experiments by Description");
-                    query += "ES.description LIKE :" + filters.get(field) + " AND ";
+                    queryParameters.put(DBConstants.Experiment.DESCRIPTION, filters.get(field));
+                    query += "ES.description LIKE :" + DBConstants.Experiment.DESCRIPTION + " AND ";
                 }
 
                 else if (field.equals(DBConstants.Experiment.EXECUTION_ID)) {
                     logger.debug("Filter Experiments by Execution ID");
-                    query += "ES.executionId LIKE :" + filters.get(field) + " AND ";
+                    queryParameters.put(DBConstants.Experiment.EXECUTION_ID, filters.get(field));
+                    query += "ES.executionId LIKE :" + DBConstants.Experiment.EXECUTION_ID + " AND ";
                 }
 
             }
@@ -71,7 +77,8 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
         if (filters.get(DBConstants.ExperimentStatus.STATE) != null) {
             logger.debug("Filter Experiments by State");
             String state = ExperimentState.valueOf(filters.get(DBConstants.ExperimentStatus.STATE)).toString();
-            query += "ES.state LIKE :" + state + " AND ";
+            queryParameters.put(DBConstants.ExperimentStatus.STATE, state);
+            query += "ES.state LIKE :" + DBConstants.ExperimentStatus.STATE + " AND ";
         }
 
         if (filters.get(DBConstants.ExperimentSummary.FROM_DATE) != null
@@ -82,14 +89,17 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
 
             if (toDate.after(fromDate)) {
                 logger.debug("Filter Experiments by Date");
-                query += "ES.creationTime BETWEEN :" + fromDate + " AND :" + toDate + " AND ";
+                queryParameters.put(DBConstants.ExperimentSummary.FROM_DATE, fromDate);
+                queryParameters.put(DBConstants.ExperimentSummary.TO_DATE, toDate);
+                query += "ES.creationTime BETWEEN :" + DBConstants.ExperimentSummary.FROM_DATE + " AND :" + DBConstants.ExperimentSummary.TO_DATE + " AND ";
             }
 
         }
 
-        if (!accessibleExperimentIds.isEmpty() && accessibleExperimentIds != null) {
+        if (accessibleExperimentIds != null && !accessibleExperimentIds.isEmpty()) {
             logger.debug("Filter Projects by Accessible Experiment IDs");
-            query += " ES.experimentId IN :" + accessibleExperimentIds;
+            queryParameters.put(DBConstants.Experiment.ACCESSIBLE_EXPERIMENT_IDS, accessibleExperimentIds);
+            query += " ES.experimentId IN :" + DBConstants.Experiment.ACCESSIBLE_EXPERIMENT_IDS;
         }
 
         else {
@@ -97,7 +107,7 @@ public class ExperimentSummaryRepository extends ExpCatAbstractRepository<Experi
             query = query.substring(0, query.length() - 5);
         }
 
-        List<ExperimentSummaryModel> experimentSummaryModelList = select(query, offset);
+        List<ExperimentSummaryModel> experimentSummaryModelList = select(query, limit, offset, queryParameters);
         return experimentSummaryModelList;
     }
 

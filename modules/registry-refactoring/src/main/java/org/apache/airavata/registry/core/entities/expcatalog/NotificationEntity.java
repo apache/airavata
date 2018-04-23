@@ -44,7 +44,7 @@ public class NotificationEntity implements Serializable {
     @Column(name = "TITLE")
     private String title;
 
-    @Column(name = "NOTIFICATION_MESSAGE")
+    @Column(name = "NOTIFICATION_MESSAGE", length = 4096)
     private String notificationMessage;
 
     @Column(name = "CREATION_DATE")

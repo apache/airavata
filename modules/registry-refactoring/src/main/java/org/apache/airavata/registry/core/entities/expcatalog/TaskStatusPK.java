@@ -29,18 +29,18 @@ public class TaskStatusPK implements Serializable {
     //default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
-    private String state;
+    private String statusId;
     private String taskId;
 
     public TaskStatusPK() {
     }
 
-    public String getState() {
-        return state;
+    public String getStatusId() {
+        return statusId;
     }
 
-    public void setState(String state) {
-        this.state = state;
+    public void setStatusId(String statusId) {
+        this.statusId = statusId;
     }
 
     public String getTaskId() {
@@ -60,14 +60,14 @@ public class TaskStatusPK implements Serializable {
         }
         TaskStatusPK castOther = (TaskStatusPK) other;
         return
-                this.state.equals(castOther.state)
+                this.statusId.equals(castOther.statusId)
                         && this.taskId.equals(castOther.taskId);
     }
 
     public int hashCode() {
         final int prime = 31;
         int hash = 17;
-        hash = hash * prime + this.state.hashCode();
+        hash = hash * prime + this.statusId.hashCode();
         hash = hash * prime + this.taskId.hashCode();
 
         return hash;

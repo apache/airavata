@@ -57,15 +57,15 @@ public class TaskEntity implements Serializable {
     private ByteBuffer subTaskModel;
 
     @OneToMany(targetEntity = TaskStatusEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "task")
+            mappedBy = "task", fetch = FetchType.EAGER)
     private List<TaskStatusEntity> taskStatuses;
 
     @OneToMany(targetEntity = TaskErrorEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "task")
+            mappedBy = "task", fetch = FetchType.EAGER)
     private List<TaskErrorEntity> taskErrors;
 
     @OneToMany(targetEntity = JobEntity.class, cascade = CascadeType.ALL,
-            mappedBy = "task")
+            mappedBy = "task", fetch = FetchType.EAGER)
     private List<JobEntity> jobs;
 
     @ManyToOne(targetEntity = ProcessEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)

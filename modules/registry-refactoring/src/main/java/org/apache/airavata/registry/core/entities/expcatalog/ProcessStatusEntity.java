@@ -34,10 +34,13 @@ public class ProcessStatusEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
+    @Column(name = "STATUS_ID")
+    private String statusId;
+
+    @Id
     @Column(name = "PROCESS_ID")
     private String processId;
 
-    @Id
     @Column(name = "STATE")
     private String state;
 
@@ -53,6 +56,14 @@ public class ProcessStatusEntity implements Serializable {
     private ProcessEntity process;
 
     public ProcessStatusEntity() {
+    }
+
+    public String getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(String statusId) {
+        this.statusId = statusId;
     }
 
     public String getProcessId() {

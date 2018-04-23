@@ -29,18 +29,18 @@ public class ProcessStatusPK implements Serializable {
     //default serial version id, required for serializable classes.
     private static final long serialVersionUID = 1L;
 
-    private String state;
+    private String statusId;
     private String processId;
 
     public ProcessStatusPK() {
     }
 
-    public String getState() {
-        return state;
+    public String getStatusId() {
+        return statusId;
     }
 
-    public void setState(String state) {
-        this.state = state;
+    public void setStatusId(String statusId) {
+        this.statusId = statusId;
     }
 
     public String getProcessId() {
@@ -60,14 +60,14 @@ public class ProcessStatusPK implements Serializable {
         }
         ProcessStatusPK castOther = (ProcessStatusPK) other;
         return
-                this.state.equals(castOther.state)
+                this.statusId.equals(castOther.statusId)
                         && this.processId.equals(castOther.processId);
     }
 
     public int hashCode() {
         final int prime = 31;
         int hash = 17;
-        hash = hash * prime + this.state.hashCode();
+        hash = hash * prime + this.statusId.hashCode();
         hash = hash * prime + this.processId.hashCode();
 
         return hash;

@@ -43,6 +43,7 @@ public class JobEntity implements Serializable {
     @Column(name = "PROCESS_ID")
     private String processId;
 
+    @Lob
     @Column(name = "JOB_DESCRIPTION")
     private String jobDescription;
 
@@ -69,7 +70,8 @@ public class JobEntity implements Serializable {
     @Column(name = "EXIT_CODE")
     private int exitCode;
 
-    @OneToMany(targetEntity = JobStatusEntity.class, cascade = CascadeType.ALL, mappedBy = "job")
+    @OneToMany(targetEntity = JobStatusEntity.class, cascade = CascadeType.ALL,
+            mappedBy = "job", fetch = FetchType.EAGER)
     private List<JobStatusEntity> jobStatuses;
 
     @ManyToOne(targetEntity = TaskEntity.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)

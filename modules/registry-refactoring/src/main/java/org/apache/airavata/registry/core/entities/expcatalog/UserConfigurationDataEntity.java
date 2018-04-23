@@ -87,9 +87,9 @@ public class UserConfigurationDataEntity implements Serializable {
     private String overrideAllocationProjectNumber;
 
     @Column(name = "STORAGE_RESOURCE_ID")
-    private String storageResourceId;
+    private String storageId;
 
-    @Column(name = "EXPERIMENT_DATA_DIR")
+    @Column(name = "EXPERIMENT_DATA_DIR", length = 512)
     private String experimentDataDir;
 
     @Column(name = "GROUP_RESOURCE_PROFILE_ID")
@@ -253,12 +253,12 @@ public class UserConfigurationDataEntity implements Serializable {
         this.overrideAllocationProjectNumber = overrideAllocationProjectNumber;
     }
 
-    public String getStorageResourceId() {
-        return storageResourceId;
+    public String getStorageId() {
+        return storageId;
     }
 
-    public void setStorageResourceId(String storageResourceId) {
-        this.storageResourceId = storageResourceId;
+    public void setStorageId(String storageId) {
+        this.storageId = storageId;
     }
 
     public String getExperimentDataDir() {

@@ -22,6 +22,7 @@ package org.apache.airavata.registry.core.entities.expcatalog;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -42,7 +43,7 @@ public class ExperimentErrorEntity implements Serializable {
     private String experimentId;
 
     @Column(name = "CREATION_TIME")
-    private long creationTime;
+    private Timestamp creationTime;
 
     @Lob
     @Column(name = "ACTUAL_ERROR_MESSAGE")
@@ -84,11 +85,11 @@ public class ExperimentErrorEntity implements Serializable {
         this.experimentId = experimentId;
     }
 
-    public long getCreationTime() {
+    public Timestamp getCreationTime() {
         return creationTime;
     }
 
-    public void setCreationTime(long creationTime) {
+    public void setCreationTime(Timestamp creationTime) {
         this.creationTime = creationTime;
     }
 
