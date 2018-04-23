@@ -24,6 +24,7 @@ import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.status.*;
 import org.apache.airavata.registry.core.entities.expcatalog.*;
 import org.apache.airavata.registry.core.utils.DBConstants;
@@ -112,6 +113,22 @@ public class ExperimentRepository extends ExpCatAbstractRepository<ExperimentMod
 
     public ExperimentModel getExperiment(String experimentId) throws RegistryException {
         return get(experimentId);
+    }
+
+    public String addUserConfigurationData(UserConfigurationDataModel userConfigurationDataModel, String experimentId) throws RegistryException {
+        ExperimentModel experimentModel = getExperiment(experimentId);
+        experimentModel.setUserConfigurationData(userConfigurationDataModel);
+        updateExperiment(experimentModel, experimentId);
+        return experimentId;
+    }
+
+    public String updateUserConfigurationData(UserConfigurationDataModel updatedUserConfigurationDataModel, String experimentId) throws RegistryException {
+        return addUserConfigurationData(updatedUserConfigurationDataModel, experimentId);
+    }
+
+    public UserConfigurationDataModel getUserConfigurationData(String experimentId) throws RegistryException {
+        ExperimentModel experimentModel = getExperiment(experimentId);
+        return experimentModel.getUserConfigurationData();
     }
 
     public String addExperimentInputs(List<InputDataObjectType> experimentInputs, String experimentId) throws RegistryException {

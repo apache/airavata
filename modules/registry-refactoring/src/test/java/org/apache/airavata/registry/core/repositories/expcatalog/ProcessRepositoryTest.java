@@ -33,7 +33,6 @@ public class ProcessRepositoryTest {
     ProjectRepository projectRepository;
     ExperimentRepository experimentRepository;
     ProcessRepository processRepository;
-    ProcessResourceScheduleRepository processResourceScheduleRepository;
     private static final Logger logger = LoggerFactory.getLogger(ProcessRepositoryTest.class);
 
     @Before
@@ -45,7 +44,6 @@ public class ProcessRepositoryTest {
             projectRepository = new ProjectRepository();
             experimentRepository = new ExperimentRepository();
             processRepository = new ProcessRepository();
-            processResourceScheduleRepository = new ProcessResourceScheduleRepository();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -94,11 +92,11 @@ public class ProcessRepositoryTest {
         assertEquals("detail", retrievedProcessModel.getProcessDetail());
 
         ComputationalResourceSchedulingModel computationalResourceSchedulingModel = new ComputationalResourceSchedulingModel();
-        assertEquals(processId, processResourceScheduleRepository.addProcessResourceSchedule(computationalResourceSchedulingModel, processId));
+        assertEquals(processId, processRepository.addProcessResourceSchedule(computationalResourceSchedulingModel, processId));
 
         computationalResourceSchedulingModel.setQueueName("queue");
-        processResourceScheduleRepository.updateProcessResourceSchedule(computationalResourceSchedulingModel, processId);
-        assertEquals("queue", processResourceScheduleRepository.getProcessResourceSchedule(processId).getQueueName());
+        processRepository.updateProcessResourceSchedule(computationalResourceSchedulingModel, processId);
+        assertEquals("queue", processRepository.getProcessResourceSchedule(processId).getQueueName());
 
         InputDataObjectType inputDataObjectProType = new InputDataObjectType();
         inputDataObjectProType.setName("inputP");

@@ -5,6 +5,7 @@ import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.core.entities.expcatalog.ProcessEntity;
 import org.apache.airavata.registry.core.utils.DBConstants;
@@ -106,6 +107,22 @@ public class ProcessRepository extends ExpCatAbstractRepository<ProcessModel, Pr
     public ProcessModel getProcess(String processId) throws RegistryException {
         ProcessRepository processRepository = new ProcessRepository();
         return processRepository.get(processId);
+    }
+
+    public String addProcessResourceSchedule(ComputationalResourceSchedulingModel computationalResourceSchedulingModel, String processId) throws RegistryException {
+        ProcessModel processModel = getProcess(processId);
+        processModel.setProcessResourceSchedule(computationalResourceSchedulingModel);
+        updateProcess(processModel, processId);
+        return processId;
+    }
+
+    public String updateProcessResourceSchedule(ComputationalResourceSchedulingModel computationalResourceSchedulingModel, String processId) throws RegistryException {
+        return addProcessResourceSchedule(computationalResourceSchedulingModel, processId);
+    }
+
+    public ComputationalResourceSchedulingModel getProcessResourceSchedule(String processId) throws RegistryException {
+        ProcessModel processModel = getProcess(processId);
+        return processModel.getProcessResourceSchedule();
     }
 
     public String addProcessInputs(List<InputDataObjectType> processInputs, String processId) throws RegistryException {
