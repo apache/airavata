@@ -19,32 +19,12 @@
 #
 
 ---
+# Kafka related handlers
+- name: start kafka
+  service: name=kafka state=started enabled=yes
 
-- hosts: zookeeper
-  tags: zookeeper, airavata
-  roles:
-    - env_setup
-    - java
-    - zookeeper
+- name: stop kafka
+  service: name=kafka state=stopped enabled=yes
 
-- hosts: kafka
-  tags: kafka, airavata
-  roles:
-    - env_setup
-    - zookeeper
-    - kafka
-
-- hosts: helix
-  tags: helix, airavata
-  roles:
-    - role: common
-      become: yes
-      become_user: "{{user}}"
-    - role: helix_setup
-      become: yes
-      become_user: "{{user}}"
-    - role: job_monitor
-      become: yes
-      become_user: "{{user}}"
-
-...
+- name: restart kafka
+  service: name=kafka state=restarted enabled=yes
