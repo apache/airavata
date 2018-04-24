@@ -45,7 +45,7 @@ auth_options:
   - name: "GSU Login"
     oauth_grant_type: "authorization_code"
     oauth_authorize_url_extra_params: "kc_idp_hint=cilogon"
-    logo: "/assets/cilogon-logo-24x24-b.png"
+    logo: "/assets/gsu.png" #cilogon-logo-24x24-b.png
 oauth_callback_url: "https://{{ vhost_servername }}/callback-url"
 
 gateway_id: "georgiastate"
