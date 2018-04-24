@@ -24,13 +24,10 @@ export OAUTHLIB_INSECURE_TRANSPORT=1
 
 3. Input your Username and Password and click `Sign In`. If you are authorized by gateway admin to access the CMS dashboard, you will be redirected to the Wagtail dashboard which should look like shown below:
 
-
 ![wagtail dashboard](https://github.com/stephenpaul2727/airavata-django-portal/blob/cms/docimages/wagtail-dashboard.png)
 
 
 #### CMS Dashboard Overview
-
-![wagtail dashboard_overview][logo]
 
 ![wagtail dashboard overview](https://github.com/stephenpaul2727/airavata-django-portal/blob/cms/docimages/wagtail-dashboard-overview.png)
 
