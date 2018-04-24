@@ -26,6 +26,59 @@ const parsePathParams = function (url) {
     return pathParams;
 }
 
+const parseServiceMapping = function (serviceConfiguration) {
+    let supportedFunctions = [];
+    if (serviceConfiguration.viewSet === true) {
+        supportedFunctions = ['list', 'create', 'update', 'delete', 'retrieve'];
+    } else if (serviceConfiguration.viewSet instanceof Array) {
+        supportedFunctions = serviceConfiguration.viewSet;
+    }
+    if (supportedFunctions) {
+        let url = serviceConfiguration.url;
+        delete serviceConfiguration.viewSet;
+        delete serviceConfiguration.url;
+        for (let supportedFunction of supportedFunctions) {
+            switch (supportedFunction) {
+                case "list":
+                    serviceConfiguration["list"] = {
+                        url: url,
+                        requestType: getKey,
+                    }
+                    break;
+                case "create":
+                    serviceConfiguration["create"] = {
+                        url: url,
+                        requestType: postKey,
+                        bodyParams: {
+                            name: "data"
+                        }
+                    }
+                    break;
+                case "update":
+                    serviceConfiguration["update"] = {
+                        url: url + "/" + "<lookup>/",
+                        requestType: putKey,
+                        bodyParams: {
+                            name: "data"
+                        }
+                    }
+                    break;
+                case  "retrieve":
+                    serviceConfiguration["retrieve"] = {
+                        url: url + "/" + "<lookup>/",
+                        requestType: getKey,
+                    }
+                    break;
+                case "delete":
+                    serviceConfiguration["delete"] = {
+                        url: url + "/" + "<lookup>/",
+                        requestType: delKey,
+                    }
+            }
+        }
+    }
+}
+
 const parseQueryMapping = function (queryParamsMapping) {
     let newQueryParamMapping = {};
     if (!queryParamsMapping) {
@@ -42,8 +95,12 @@ const parseQueryMapping = function (queryParamsMapping) {
 }
 
 class ServiceFactory {
-    constructor(serviceConfiguration) {
-        this.serviceConfigurations = serviceConfiguration;
+    constructor(serviceConfigurations) {
+        for(let serviceName of Object.keys(serviceConfigurations)){
+            parseServiceMapping(serviceConfigurations[serviceName]);
+        }
+        console.log(serviceConfigurations);
+        this.serviceConfigurations = serviceConfigurations;
     }
 
     /*
@@ -63,6 +120,8 @@ class ServiceFactory {
             switch (config.requestType.toLowerCase()) {
                 case postKey:
                 case getKey:
+                case putKey:
+                case delKey:
                     break;
                 default:
                     throw new TypeError("Invalid request type: " + config.requestType + " for the function: " + functionName + " in the service: " + serviceName);
@@ -106,6 +165,10 @@ class ServiceFactory {
                         return FetchUtils.post(url, bodyParams, queryParams).then(paginationHandler);
                     case getKey:
                         return FetchUtils.get(url, queryParams).then(paginationHandler);
+                    case putKey:
+                        return FetchUtils.put(url, bodyParams);
+                    case delKey:
+                        return FetchUtils.delete(url);
                 }
             }
         }

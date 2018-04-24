@@ -2,35 +2,34 @@ const post = "post";
 const get = "get";
 const put = "put";
 const del = "delete";
+/*
+examples:
+
+Generating Services based on the API view set
+{
+serviceName:{
+url:'/example/api',
+viewSet:true
+}
+}
+Normal service configuration:
+{
+serviceName:{
+serviceAction1:{
+url:'/example/api/<look_up>',  # the <look_up> implies a path parameter lok_up
+requestType:'post',
+bodyParams:[...] # body parameter names for json parameter if body params id=s a list of array else an object with the param name for the body object
+queryParams:[] # list query param names/ query param name to param name mapping
+
+
+}
+}
+}
+ */
 
 export default {
     "GroupResourcePreference": {
-        "list": {
-            url: "/api/group-resource-profiles",
-            requestType: get
-        },
-        "instance": {
-            url: "/api/group-resource-profiles/<lookup_value:lookUp>",
-            requestType: get,
-            queryParams:[
-                "name1",{
-                "name2":"name3"
-                }
-            ]
-        },
-        "create": {
-            url: "/api/group-resource-profile",
-            requestType: post,
-            bodyParams: {
-                name: "groupResourceProfile"
-            }
-        },
-        "update": {
-            url: "",
-            requestType: post,
-            bodyParams: {
-                name: "groupResourceProfile"
-            }
-        }
+        url: "/api/group-resource-profiles",
+        viewSet: true
     }
 }
