@@ -28,14 +28,14 @@ export OAUTHLIB_INSECURE_TRANSPORT=1
 
 ![wagtail dashboard][logo]
 
-[logo]: https://github.com/stephenpaul2727/airavata-django-portal/tree/cms/docimages/wagtail-dashboard.png "Wagtail Dashboard"
+[logo]: https://github.com/stephenpaul2727/airavata-django-portal/blob/cms/docimages/wagtail-dashboard.png "Wagtail Dashboard"
 
 
 #### CMS Dashboard Overview
 
 ![wagtail dashboard_overview][logo]
 
-[logo]: https://github.com/stephenpaul2727/airavata-django-portal/tree/cms/docimages/wagtail-dashboard-overview.png "Wagtail Dashboard Overview"
+[logo]: https://github.com/stephenpaul2727/airavata-django-portal/blob/cms/docimages/wagtail-dashboard-overview.png "Wagtail Dashboard Overview"
 
 
 #### Creating a New Page
