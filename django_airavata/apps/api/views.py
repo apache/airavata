@@ -849,7 +849,7 @@ class UserProfileViewSet(mixins.ListModelMixin, GenericAPIBackedViewSet):
             self.authz_token, self.gateway_id, 0, -1)
 
 
-class GroupResourceProfileViewSet(GenericAPIBackedViewSet):
+class GroupResourceProfileViewSet(APIBackedViewSet):
     serializer_class = serializers.GroupResourceProfileSerializer
 
     def get_list(self):

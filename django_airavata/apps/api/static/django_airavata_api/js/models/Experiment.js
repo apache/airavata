@@ -74,19 +74,6 @@ export default class Experiment extends BaseModel {
 
     validate() {
         let validationResults = {};
-        const experimentInputsValidation = this.experimentInputs
-            .map(experimentInput => {
-                const validation = experimentInput.validate();
-                if (validation && 'value' in validation) {
-                    return {[experimentInput.name]: validation};
-                } else {
-                    return null;
-                }
-            })
-            .reduce((accumulator, currentValue) => Object.assign(accumulator, currentValue), {});
-        if (Object.keys(experimentInputsValidation).length > 0) {
-            validationResults['experimentInputs'] = experimentInputsValidation;
-        }
         const userConfigurationDataValidation = this.userConfigurationData.validate();
         if (Object.keys(userConfigurationDataValidation).length > 0) {
             validationResults['userConfigurationData'] = userConfigurationDataValidation;
@@ -101,13 +88,9 @@ export default class Experiment extends BaseModel {
     }
 
     get isProgressing() {
-        const progressingStates = [ExperimentState.SCHEDULED,
-                                   ExperimentState.LAUNCHED,
-                                   ExperimentState.EXECUTING,
-                                   ExperimentState.CANCELING];
         return this.experimentStatus
             && this.experimentStatus.length > 0
-            && progressingStates.indexOf(this.experimentStatus[0].state) >= 0;
+            && this.experimentStatus[0].state.isProgressing;
     }
 
     get hasLaunched() {

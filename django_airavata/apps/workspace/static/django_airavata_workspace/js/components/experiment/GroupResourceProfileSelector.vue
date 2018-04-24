@@ -5,7 +5,7 @@
                 <b-form-select id="group-resource-profile"
                     v-model="groupResourceProfileId"
                     :options="groupResourceProfileOptions" required
-                    @changed="groupResourceProfileChanged"
+                    @change="groupResourceProfileChanged"
                     :disabled="loading">
                     <template slot="first">
                         <option :value="null" disabled>Select an allocation</option>
@@ -72,7 +72,8 @@ export default {
                 })
                 .then(()=> {this.loadingCount--;}, () => {this.loadingCount--;});
         },
-        groupResourceProfileChanged: function() {
+        groupResourceProfileChanged: function(groupResourceProfileId) {
+            this.groupResourceProfileId = groupResourceProfileId
             this.emitValueChanged();
         },
         emitValueChanged: function() {

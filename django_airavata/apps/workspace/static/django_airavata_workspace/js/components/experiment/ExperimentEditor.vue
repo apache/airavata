@@ -50,17 +50,14 @@
                             <h2 class="h6 mb-3">
                                 Application Inputs
                             </h2>
-                            <b-form-group v-for="experimentInput in localExperiment.experimentInputs"
-                                    :label="experimentInput.name" :label-for="experimentInput.name" :key="experimentInput.name"
-                                    :feedback="getValidationFeedback(['experimentInputs', experimentInput.name, 'value'])"
-                                    :state="getValidationState(['experimentInputs', experimentInput.name, 'value'])">
-                                <b-form-input v-if="isSimpleInput(experimentInput)" :id="experimentInput.name" type="text" v-model="experimentInput.value" required
-                                    :placeholder="experimentInput.userFriendlyDescription"
-                                    :state="getValidationState(['experimentInputs', experimentInput.name, 'value'])"></b-form-input>
-                                <b-form-file v-if="isFileInput(experimentInput)" :id="experimentInput.name" type="text" v-model="experimentInput.value" required
-                                    :placeholder="experimentInput.userFriendlyDescription"
-                                    :state="getValidationState(['experimentInputs', experimentInput.name, 'value'])"></b-form-file>
-                            </b-form-group>
+                            <component :is="getInputEditorComponentName(experimentInput)"
+                                v-for="experimentInput in localExperiment.experimentInputs"
+                                :experiment="localExperiment"
+                                :experiment-input="experimentInput"
+                                v-model="experimentInput.value"
+                                :key="experimentInput.name"
+                                @invalid="recordInvalidInputEditorValue(experimentInput.name)"
+                                @valid="recordValidInputEditorValue(experimentInput.name)"/>
                         </div>
                     </div>
                 </div>
@@ -102,6 +99,8 @@
 <script>
 import ComputationalResourceSchedulingEditor from './ComputationalResourceSchedulingEditor.vue'
 import GroupResourceProfileSelector from './GroupResourceProfileSelector.vue'
+import StringInputEditor from './input-editors/StringInputEditor.vue'
+import FileInputEditor from './input-editors/FileInputEditor.vue'
 import {models, services, utils as apiUtils} from 'django-airavata-api'
 import {utils} from 'django-airavata-common-ui'
 
@@ -125,11 +124,14 @@ export default {
         return {
             projects: [],
             localExperiment: this.experiment.clone(),
+            invalidInputs: [],
         }
     },
     components: {
         ComputationalResourceSchedulingEditor,
         GroupResourceProfileSelector,
+        StringInputEditor,
+        FileInputEditor,
     },
     mounted: function () {
         services.ProjectService.listAll()
@@ -142,9 +144,12 @@ export default {
                 text: project.name,
             }));
         },
-        isSaveDisabled: function() {
+        valid: function() {
             const validation = this.localExperiment.validate();
-            return Object.keys(validation).length > 0;
+            return Object.keys(validation).length === 0 && this.invalidInputs.length === 0;
+        },
+        isSaveDisabled: function() {
+            return !this.valid;
         },
     },
     methods: {
@@ -193,38 +198,31 @@ export default {
             });
             return Promise.all(uploads);
         },
-        getApplicationInputState: function(applicationInput) {
-            const validation = this.getApplicationInputValidation(applicationInput);
-            return validation !== null ? 'invalid' : null;
-        },
-        getApplicationInputFeedback: function(applicationInput) {
-            const validation = this.getApplicationInputValidation(applicationInput);
-            return validation !== null ? validation['value'] : null;
-        },
-        getApplicationInputValidation: function(applicationInput) {
-            const validationResults = applicationInput.validate();
-            if (validationResults !== null && 'value' in validationResults) {
-                return validationResults;
-            }
-            return null;
-        },
         getValidationFeedback: function(properties) {
             return utils.getProperty(this.localExperiment.validate(), properties);
         },
         getValidationState: function(properties) {
             return this.getValidationFeedback(properties) ? 'invalid' : null;
         },
-        isSimpleInput: function(experimentInput) {
-            return [
-                models.DataType.STRING,
-                models.DataType.FLOAT,
-                models.DataType.INTEGER,
-            ].indexOf(experimentInput.type) >= 0;
+        getInputEditorComponentName: function(experimentInput) {
+            if (experimentInput.type === models.DataType.STRING) {
+                return 'string-input-editor';
+            } else if (experimentInput.type === models.DataType.URI) {
+                return 'file-input-editor';
+            }
+            // Default
+            return 'string-input-editor';
         },
-        isFileInput: function(experimentInput) {
-            return [
-                models.DataType.URI,
-            ].indexOf(experimentInput.type) >= 0;
+        recordInvalidInputEditorValue: function(experimentInputName) {
+            if (!this.invalidInputs.includes(experimentInputName)) {
+                this.invalidInputs.push(experimentInputName);
+            }
+        },
+        recordValidInputEditorValue: function(experimentInputName) {
+            if (this.invalidInputs.includes(experimentInputName)) {
+                const index = this.invalidInputs.indexOf(experimentInputName);
+                this.invalidInputs.splice(index, 1);
+            }
         },
     },
     watch: {

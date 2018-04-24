@@ -23,7 +23,9 @@ def start_login(request):
     # # Store state in session for later validation
     # request.session['OAUTH2_STATE'] = state
     # return redirect(authorization_url)
-    return render(request, 'django_airavata_auth/login.html')
+    return render(request, 'django_airavata_auth/login.html', {
+        'next': request.GET.get('next', None)
+    })
 
 def handle_login(request):
     username = request.POST['username']
@@ -33,8 +35,8 @@ def handle_login(request):
     try:
         if user is not None:
             login(request, user)
-            # TODO: handle 'next' query param
-            return redirect(settings.LOGIN_REDIRECT_URL)
+            next_url = request.POST.get('next', settings.LOGIN_REDIRECT_URL)
+            return redirect(next_url)
         else:
             # TODO: add error message that login failed
             return render(request, 'django_airavata_auth/login.html', {
@@ -53,7 +55,8 @@ def callback(request):
     try:
         user = authenticate(request=request)
         login(request, user)
-        return redirect(settings.LOGIN_REDIRECT_URL)
+        next_url = request.GET.get('next', settings.LOGIN_REDIRECT_URL)
+        return redirect(next_url)
     except Exception as err:
         logger.exception("An error occurred while processing OAuth2 callback: {}".format(request.build_absolute_uri()))
         return redirect(reverse('django_airavata_auth:error'))

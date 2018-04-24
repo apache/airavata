@@ -1,10 +1,10 @@
 <template>
   <div class="new_app">
     <div class="new_app_header">
-      <h3 style="display: inline-block">Group Resource Profiles</h3>
+      <h3 style="display: inline-block">Group Resource Profile</h3>
       <div class="new-application-tab-main">
         <div class="entry">
-          <div class="heading">Group Resource Profile Name</div>
+          <div class="heading">Name</div>
           <input type="text" v-model="data.groupResourceProfileName"/>
         </div>
         <div class="entry">
@@ -19,7 +19,7 @@
           <a class="list-item" v-for="computePreference,index in data.computePreferences" v-bind:key="index"
              v-on:click="computePreferenceClickHandler(index)">
             <span v-if="computePreference.groupResourceProfileId">
-              {{computePreference.groupResourceProfileId}}
+              {{getComputeResourceName(computePreference.computeResourceId)}}
             </span>
             <span v-else class="un-saved">
               Un Saved Compute Preference {{index}}
@@ -134,6 +134,10 @@
             index: index
           }
         });
+      },
+      getComputeResourceName: function (computeResourceId) {
+        // TODO: load compute resources to get the real name
+        return (computeResourceId && computeResourceId.indexOf("_") > 0) ? computeResourceId.split("_")[0] : computeResourceId;
       }
     }
   }

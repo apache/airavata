@@ -9,6 +9,7 @@ var chalk = require('chalk')
 var webpack = require('webpack')
 var config = require('../config')
 var webpackConfig = require('./webpack.prod.conf')
+webpackConfig.watch = process.env.WEBPACK_WATCH === "true"
 
 var spinner = ora('building for production...')
 spinner.start()

@@ -63,8 +63,7 @@ export default {
             localComputationalResourceScheduling: this.value.clone(),
             computeResources: {},
             applicationDeployments: [],
-            selectedGroupResourceProfile: null,
-            appDeploymentId: null,
+            selectedGroupResourceProfileData: null,
             resourceHostId: null,
             // TODO: replace this with Loading spinner, better mechanism
             loadingCount: 0,
@@ -111,18 +110,32 @@ export default {
             return this.selectedGroupResourceProfile.batchQueueResourcePolicies.filter(bqrp => {
                 return bqrp.computeResourceId === this.localComputationalResourceScheduling.resourceHostId;
             });
+        },
+        selectedGroupResourceProfile: function() {
+            // Reload selectedGroupResourceProfile when group-resource-profile-id changes
+            if (this.selectedGroupResourceProfileData
+                    && this.selectedGroupResourceProfileData.groupResourceProfileId !== this.groupResourceProfileId) {
+                this.selectedGroupResourceProfileData = null;
+                this.loadGroupResourceProfile();
+            }
+            return this.selectedGroupResourceProfileData;
+        },
+        appDeploymentId: function() {
+            if (!this.resourceHostId) {
+                return null;
+            }
+            // Find application deployment that corresponds to this compute resource
+            let selectedApplicationDeployment = this.applicationDeployments.find(dep => dep.computeHostId === this.resourceHostId);
+            if (!selectedApplicationDeployment) {
+                throw new Error("Failed to find application deployment!");
+            }
+            return selectedApplicationDeployment.appDeploymentId;
         }
     },
     methods: {
         computeResourceChanged: function(selectedComputeResourceId) {
             this.localComputationalResourceScheduling.resourceHostId = selectedComputeResourceId;
             this.emitValueChanged();
-            // Find application deployment that corresponds to this compute resource
-            let selectedApplicationDeployment = this.applicationDeployments.find(dep => dep.computeHostId === selectedComputeResourceId);
-            if (!selectedApplicationDeployment) {
-                throw new Error("Failed to find application deployment!");
-            }
-            this.appDeploymentId = selectedApplicationDeployment.appDeploymentId;
         },
         loadApplicationDeployments: function(appModuleId) {
             this.loadingCount++;
@@ -142,7 +155,7 @@ export default {
             this.loadingCount++;
             services.GroupResourceProfileService.get(this.groupResourceProfileId)
                 .then(groupResourceProfile => {
-                    this.selectedGroupResourceProfile = groupResourceProfile;
+                    this.selectedGroupResourceProfileData = groupResourceProfile;
                 })
                 .then(()=> {this.loadingCount--;}, () => {this.loadingCount--;});
         },
@@ -174,6 +187,13 @@ export default {
         },
     },
     watch: {
+        computeResourceOptions: function(newOptions) {
+            // If the selected resourceHostId is not in the new list of
+            // computeResourceOptions, reset it to null
+            if (this.resourceHostId !== null && !newOptions.find(opt => opt.value === this.resourceHostId)) {
+                this.resourceHostId = null;
+            }
+        }
     }
 }
 </script>

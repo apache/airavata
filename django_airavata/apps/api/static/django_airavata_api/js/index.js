@@ -2,6 +2,7 @@ import ApplicationInterfaceDefinition from './models/ApplicationInterfaceDefinit
 import ApplicationModule from './models/ApplicationModule'
 import DataType from './models/DataType'
 import Experiment from './models/Experiment'
+import ExperimentState from './models/ExperimentState'
 import InputDataObjectType from './models/InputDataObjectType'
 import OutputDataObjectType from './models/OutputDataObjectType'
 import Project from './models/Project'
@@ -37,6 +38,7 @@ exports.models = {
     ApplicationModule,
     DataType,
     Experiment,
+    ExperimentState,
     FullExperiment,
     InputDataObjectType,
     OutputDataObjectType,

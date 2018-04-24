@@ -16,7 +16,8 @@ class ApplicationIterfaceService {
     }
 
     get(appInterfaceId) {
-        // TODO
+        return FetchUtils.get('/api/application-interfaces/' + encodeURIComponent(appInterfaceId) + '/')
+            .then(json => new ApplicationInterfaceDefinition(json))
     }
 
     getForAppModuleId(appModuleId) {

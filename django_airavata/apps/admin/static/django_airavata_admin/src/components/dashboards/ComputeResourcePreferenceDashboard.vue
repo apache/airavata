@@ -1,15 +1,15 @@
 <template>
   <div class="new_app">
     <div class="new_app_header">
-      <h4 style="display: inline-block">Add Group Resource Preferences</h4>
-      <label v-on:click="newGroupResourcePreference()">New Application <span>+</span></label>
+      <h4 style="display: inline-block">Group Resource Profiles</h4>
+      <label v-on:click="newGroupResourcePreference()">New Group Resource Profile <span>+</span></label>
     </div>
     <div class="applications">
-      <h6 style="color: #666666;">Group Resource Preferences</h6>
+      <h6 style="color: #666666;">Group Resource Profile</h6>
       <div class="container-fluid">
         <div class="row">
-          <application-card v-for="preference in preferences" v-bind:app-module="transform(preference)"
-                            v-bind:key="preference.groupResourceProfileId" v-on:app-selected="clickHandler(preference)">
+          <application-card v-for="groupResourceProfile in groupResourceProfiles" v-bind:app-module="transform(groupResourceProfile)"
+                            v-bind:key="groupResourceProfile.groupResourceProfileId" v-on:app-selected="clickHandler(groupResourceProfile)">
           </application-card>
         </div>
       </div>
@@ -19,6 +19,7 @@
 
 <script>
   import {components as comps} from 'django-airavata-common-ui'
+  import {models, services} from 'django-airavata-api'
 
   export default {
     name: "compute-resource-preference",
@@ -27,72 +28,7 @@
     },
     data: function () {
       return {
-        preferences: [
-          {
-            groupResourceProfileId: 1,
-            groupResourceProfileName: "Test1",
-            creationTime: 101,
-            updatedTime: 201,
-            computePreferences: [{
-              computeResourceId: 101,
-              groupResourceProfileId: 1,
-              overridebyAiravata: null,
-              loginUserName: "hello",
-              preferredJobSubmissionProtocol: null,
-              preferredDataMovementProtocol: null,
-              preferredBatchQueue: null,
-              scratchLocation: null,
-              allocationProjectNumber: null,
-              resourceSpecificCredentialStoreToken: null,
-              usageReportingGatewayId: null,
-              qualityOfService: null,
-              reservation: null,
-              reservationStartTime: null,
-              reservationEndTime: null,
-              sshAccountProvisiogroupSSHAccountProvisionerConfigsner: null,
-              sshAccountProvisionerAdditionalInfo: null,
-              batchQueueResourcePolicies: []
-            },
-            {
-              computeResourceId: 101,
-              groupResourceProfileId: 2,
-              overridebyAiravata: null,
-              loginUserName: "hi",
-              preferredJobSubmissionProtocol: null,
-              preferredDataMovementProtocol: null,
-              preferredBatchQueue: null,
-              scratchLocation: null,
-              allocationProjectNumber: null,
-              resourceSpecificCredentialStoreToken: null,
-              usageReportingGatewayId: null,
-              qualityOfService: null,
-              reservation: null,
-              reservationStartTime: null,
-              reservationEndTime: null,
-              sshAccountProvisiogroupSSHAccountProvisionerConfigsner: null,
-              sshAccountProvisionerAdditionalInfo: null,
-              batchQueueResourcePolicies: []
-            }],
-            computeResourcePolicies: [{
-              resourcePolicyId: 1001,
-              computeResourceId: 101,
-              groupResourceProfileId: 1,
-              allowedBatchQueues: []
-            }],
-            batchQueueResourcePolicies: [{
-              resourcePolicyId: 1001,
-              computeResourceId: 101,
-              groupResourceProfileId: 1,
-              queuename: "cpu",
-              maxAllowedNodes: null,
-              maxAllowedCores: null,
-              maxAllowedWalltime: null,
-            }],
-            groupResourceProfileName: null,
-            creationTime: null,
-            updatedTime: null
-          }
-        ]
+        groupResourceProfiles: null,
       }
     },
     methods: {
@@ -136,7 +72,16 @@
           appModuleVersion: null,
           appModuleDescription: null
         }
-      }
+      },
+      loadGroupResourceProfiles: function() {
+        services.GroupResourceProfileService.list()
+          .then(groupResourceProfiles => {
+            this.groupResourceProfiles = groupResourceProfiles;
+          });
+      },
+    },
+    mounted: function() {
+      this.loadGroupResourceProfiles();
     }
   }
 </script>
