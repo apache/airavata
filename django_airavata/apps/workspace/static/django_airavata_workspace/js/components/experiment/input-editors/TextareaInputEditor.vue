@@ -1,23 +1,16 @@
 <template>
-    <b-form-group :label="experimentInput.name" :label-for="experimentInput.name"
-        :state="validationState">
+    <input-editor-form-group :label="experimentInput.name" :label-for="experimentInput.name"
+        :state="validationState" :feedback-messages="validationFeedback">
         <b-form-textarea :id="experimentInput.name" v-model="data"
             :rows="rows"
             :placeholder="experimentInput.userFriendlyDescription"
             :state="validationState"
             @input="valueChanged"/>
-        <template slot="invalid-feedback">
-            <ul v-if="validationFeedback && validationFeedback.length > 1">
-                <li v-for="feedback in validationFeedback">{{ feedback }}</li>
-            </ul>
-            <div v-else-if="validationFeedback && validationFeedback.length === 1">
-                {{ validationFeedback[0] }}
-            </div>
-        </template>
-    </b-form-group>
+    </input-editor-form-group>
 </template>
 
 <script>
+import InputEditorFormGroup from './InputEditorFormGroup.vue'
 import InputEditorMixin from './InputEditorMixin'
 
 const DEFAULT_ROWS = 3;
@@ -30,6 +23,9 @@ export default {
             type: String,
             required: true,
         },
+    },
+    components: {
+        InputEditorFormGroup,
     },
     computed: {
         rows: function() {
