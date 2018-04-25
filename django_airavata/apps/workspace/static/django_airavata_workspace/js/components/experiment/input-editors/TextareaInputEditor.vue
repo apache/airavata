@@ -1,11 +1,19 @@
 <template>
     <b-form-group :label="experimentInput.name" :label-for="experimentInput.name"
-        :feedback="validationFeedback" :state="validationState">
+        :state="validationState">
         <b-form-textarea :id="experimentInput.name" v-model="data"
             :rows="rows"
             :placeholder="experimentInput.userFriendlyDescription"
             :state="validationState"
             @input="valueChanged"/>
+        <template slot="invalid-feedback">
+            <ul v-if="validationFeedback && validationFeedback.length > 1">
+                <li v-for="feedback in validationFeedback">{{ feedback }}</li>
+            </ul>
+            <div v-else-if="validationFeedback && validationFeedback.length === 1">
+                {{ validationFeedback[0] }}
+            </div>
+        </template>
     </b-form-group>
 </template>
 

@@ -1,6 +1,7 @@
 
 import BaseModel from './BaseModel';
-import DataType from './DataType'
+import DataType from './DataType';
+import ValidatorFactory from './validators/ValidatorFactory';
 
 const FIELDS = [
     'name',
@@ -44,6 +45,15 @@ export default class InputDataObjectType extends BaseModel {
         }
     }
 
+    get editorValidations() {
+        const metadata = this._getMetadata();
+        if (metadata && 'editor' in metadata && 'validations' in metadata['editor']) {
+            return metadata['editor']['validations'];
+        } else {
+            return {};
+        }
+    }
+
     _getMetadata() {
         // metaData could really be anything, here we expect it to be an object
         // so safely check if it is first
@@ -57,8 +67,17 @@ export default class InputDataObjectType extends BaseModel {
     validate(experiment, value = undefined) {
         let inputValue = typeof value != 'undefined' ? value : this.value;
         let results = {};
+        let valueErrorMessages = [];
         if (this.isRequired && this.isEmpty(inputValue)) {
-            results['value'] = 'This field is required.';
+            valueErrorMessages.push('This field is required.');
+        }
+        // Run through any validations if configured
+        if (Object.keys(this.editorValidations).length > 0) {
+            const validatorFactory = new ValidatorFactory();
+            valueErrorMessages = valueErrorMessages.concat(validatorFactory.validate(this.editorValidations, inputValue));
+        }
+        if (valueErrorMessages.length > 0) {
+            results['value'] = valueErrorMessages;
         }
         return results;
     }
