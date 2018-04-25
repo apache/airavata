@@ -101,6 +101,7 @@ import ComputationalResourceSchedulingEditor from './ComputationalResourceSchedu
 import GroupResourceProfileSelector from './GroupResourceProfileSelector.vue'
 import StringInputEditor from './input-editors/StringInputEditor.vue'
 import FileInputEditor from './input-editors/FileInputEditor.vue'
+import TextareaInputEditor from './input-editors/TextareaInputEditor.vue'
 import {models, services, utils as apiUtils} from 'django-airavata-api'
 import {utils} from 'django-airavata-common-ui'
 
@@ -132,6 +133,7 @@ export default {
         GroupResourceProfileSelector,
         StringInputEditor,
         FileInputEditor,
+        TextareaInputEditor,
     },
     mounted: function () {
         services.ProjectService.listAll()
@@ -206,8 +208,8 @@ export default {
         },
         getInputEditorComponentName: function(experimentInput) {
             // If input specifices an editor UI component, use that
-            if (experimentInput.uiComponentId) {
-                return experimentInput.uiComponentId;
+            if (experimentInput.editorUIComponentId) {
+                return experimentInput.editorUIComponentId;
             }
             // Default UI components based on input type
             if (experimentInput.type === models.DataType.STRING) {

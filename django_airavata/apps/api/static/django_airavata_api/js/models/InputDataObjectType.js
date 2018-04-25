@@ -26,12 +26,21 @@ export default class InputDataObjectType extends BaseModel {
         super(FIELDS, data);
     }
 
-    get uiComponentId() {
+    get editorUIComponentId() {
         const metadata = this._getMetadata();
         if (metadata && 'editor' in metadata && 'ui-component-id' in metadata['editor']) {
             return metadata['editor']['ui-component-id'];
         } else {
             return null;
+        }
+    }
+
+    get editorConfig() {
+        const metadata = this._getMetadata();
+        if (metadata && 'editor' in metadata && 'config' in metadata['editor']) {
+            return metadata['editor']['config'];
+        } else {
+            return {};
         }
     }
 
