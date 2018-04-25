@@ -99,6 +99,7 @@
 <script>
 import ComputationalResourceSchedulingEditor from './ComputationalResourceSchedulingEditor.vue'
 import GroupResourceProfileSelector from './GroupResourceProfileSelector.vue'
+import RadioButtonInputEditor from './input-editors/RadioButtonInputEditor.vue'
 import StringInputEditor from './input-editors/StringInputEditor.vue'
 import FileInputEditor from './input-editors/FileInputEditor.vue'
 import TextareaInputEditor from './input-editors/TextareaInputEditor.vue'
@@ -131,8 +132,9 @@ export default {
     components: {
         ComputationalResourceSchedulingEditor,
         GroupResourceProfileSelector,
-        StringInputEditor,
         FileInputEditor,
+        RadioButtonInputEditor,
+        StringInputEditor,
         TextareaInputEditor,
     },
     mounted: function () {
