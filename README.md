@@ -249,6 +249,17 @@ export OAUTHLIB_INSECURE_TRANSPORT=1
 6. If you just want the page not to be displayed on the live website. But you want to keep the page in the CMS. Click "**Unpublish**" instead of "**DELETE**". This will ensure that the page doesn't get completely deleted. If you want to publish in the future, you can do it.
 
 
-
-
-
+### Snippets
+1. Snippets are reusable pieces of code across the whole website. 
+2. Every website has snippets. For eg. Navbar
+3. Navbar is consistent across every page. Navbar won't be changed for each page.
+4. Similar consistency applies for Footer, Sidebar, Announcments, CSS, Secondary navbar, Header Links.
+5. You can configure these items when you visit the "**Snippets**" tab on the left side dark colored bar on dashboard.
+6. It consists of the following fields:
+  * **Announcements** -> ( If you want announcements to be displayed on the home page, then you can click it and add as many announcements as you want. They will be displayed on the top portion of your website's home page. These announcemnts won't appear on other pages. A good example would be a convocation which is taking place and you want all the people visiting your website to see it.)
+  * **Custom CSS** -> ( This is the place where you can add styles to the custom class unique selectors you defined while creating a page. This is basically writing css and controlling the element you selected. You can provide css comment or css block. A css comment is used to separate each style. for eg.(Navbar Styles). A css block is where you write css for the selector and its children. `Do not add additional Custom Css by clicking Add Custom CSS. Only the first one will take effet` )
+  * **Header Custom Links** -> ( The Links on the main navbar are automatically generated depending on the child pages you created from the home page. If you want some other link to be displayed manually on the navbar. you can use this. Click on it and specify the link text and link to make it appear on the Main Navbar. `Do not add additional custom header links by clicking Add Header Custom Links. Only the first one will take effet`)
+  * **Footer** -> ( You can design a Footer using this item. It will remain consistent and will appear on every page on website. If you don't want it to appear on a particular page, you can visit that particular page and go to "**Customization**" Tab and set "**Show Footer**" to No. `Do not add additional footers by clicking Add Footer. Only the first one will take effet` )
+  * **Nav Extra** -> ( You can make a secondary navbar just below the main navbar if you want to. You can also add a brand logo and links to this navbar. You can customize its color and other properties by giving a custom class selector and specifying styles in "**Custom CSS**". If you don't want it to appear on a particular page, you can visit that particular page and go to "**Customization**" Tab and set "**Show Nav Extra**" to No. `Do not add additional nav extra by clicking Add Nav Extra. Only the first one will take effet` )
+  * **Navbar** -> ( This is the main navbar which exists across every page. When you click on Navbar you can add Logo image and text. If you don't want it to appear on a particular page, you can visit that particular page and go to "**Customization**" Tab and set "**Show Navbar**" to No. It has a pre-defined class selector named '**main-nav**'. you can visit "**Custom Css** and write a css block with the '.main-nav' and give it some styles. When you click on Navbar you can add Logo image and text. If you don't want it to appear on a particular page, you can visit that particular page and go to "**Customization**" Tab and set "**Show Navbar**" to No.`Do not add additional navbars by clicking Add Navbar. Only the first one will take effet`)
+  
