@@ -50,7 +50,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.List;
@@ -105,7 +104,11 @@ public abstract class AiravataTask extends AbstractTask {
         logger.error(errorMessage, error);
 
         status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-        getTaskContext().setProcessStatus(status);
+        if (getTaskContext() != null) { // task context could be null if the initialization failed
+            getTaskContext().setProcessStatus(status);
+        } else {
+            logger.warn("Task context is null. So can not store the process status in the context");
+        }
 
         ErrorModel errorModel = new ErrorModel();
         errorModel.setUserFriendlyMessage(reason);
@@ -114,7 +117,7 @@ public abstract class AiravataTask extends AbstractTask {
 
         if (!skipTaskStatusPublish) {
             publishTaskState(TaskState.FAILED);
-            saveAndPublishProcessStatus();
+            saveAndPublishProcessStatus(taskContext != null ? taskContext.getProcessStatus() : status);
             saveExperimentError(errorModel);
             saveProcessError(errorModel);
             saveTaskError(errorModel);
@@ -126,14 +129,17 @@ public abstract class AiravataTask extends AbstractTask {
     protected void saveAndPublishProcessStatus(ProcessState state) {
         ProcessStatus processStatus = new ProcessStatus(state);
         processStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-        getTaskContext().setProcessStatus(processStatus);
-        saveAndPublishProcessStatus();
+        if (getTaskContext() != null) {
+            getTaskContext().setProcessStatus(processStatus);
+        } else {
+            logger.warn("Task context is null. So can not store the process status in the context");
+        }
+        saveAndPublishProcessStatus((taskContext != null ? taskContext.getProcessStatus() : processStatus));
     }
 
     @SuppressWarnings("WeakerAccess")
-    protected void saveAndPublishProcessStatus() {
+    protected void saveAndPublishProcessStatus(ProcessStatus status) {
         try {
-            ProcessStatus status = taskContext.getProcessStatus();
             if (status.getTimeOfStateChange() == 0 || status.getTimeOfStateChange() > 0 ){
                 status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             } else {
