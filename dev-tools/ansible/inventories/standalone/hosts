@@ -22,3 +22,9 @@
 
 [keycloak]
 192.168.99.102 ansible_connection=ssh ansible_user=root
+
+[kafka]
+192.168.99.102 ansible_connection=ssh ansible_user=root
+
+[helix]
+192.168.99.102 ansible_connection=ssh ansible_user=root
