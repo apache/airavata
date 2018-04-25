@@ -71,8 +71,8 @@ export OAUTHLIB_INSECURE_TRANSPORT=1
 17. Please tick the **Show in Menu** to make the page appear in the Navbar Menu. This only works for children of **Home** This doesn't work for children of other pages.
 18. Now head back to the **CONTENT** Section where you have already provided a Title. 
 19. Click on "**+**" beside Row. 
-20. It will open up a **PANEL** which contains all the items you can use to build an awesome website. Please click this [https://github.com/stephenpaul2727](link) to see which one to choose for which purpose.
-21. Every page follows a "**Bootstrap Grid Layout**" to make the website design process easy [https://getbootstrap.com/docs/4.0/layout/grid/](Learn-more).
+20. It will open up a **PANEL** which contains all the items you can use to build an awesome website. Please click this [link](https://github.com/stephenpaul2727) to see which one to choose for which purpose.
+21. Every page follows a "**Bootstrap Grid Layout**" to make the website design process easy [Learn More](https://getbootstrap.com/docs/4.0/layout/grid/).
 22. To understand this layout in laymens terms, This layout will divide each page into rows and columns like a Table. Columns are limited to 12. You can add as many rows as you can. 
 23. This layout enables you to place items on panel correctly on the website. Please go through the link mentioned above. It is a good read.
 24. Initially after clicking "**+**". it will open up one row. you can add as many items in that row as you can by clicking small grey "+" circle shaped icons on the top and bottom of each item.
