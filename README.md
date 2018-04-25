@@ -89,19 +89,164 @@ export OAUTHLIB_INSECURE_TRANSPORT=1
 33. Congratulations! you have created a page using CMS.
 
 #### UNDERSTANDING PANEL
+1. A panel contains all the items that are necessary to build a great website. It is the arsenal for a content editor.
+2. Developers will update this list in the future if they see fit. so please be on look out for any new items in the future.
+3. Lets get to the details of each item.
 
+###### Paragraph Block
+1. This is the most important item of all the items in the panel.
+2. This will let you create a paragraph/text on the website.
+3. When you click on it, it will open two fields.
+  * **Custom Class** -> ( you can provide a list of class selectors separated by white-space. you already know about "col-md-x". You can also add other classes like text-center to center the text etc. you can also give a custom unique class name for this paragraph. This will let you add css to that particular paragraph by editing in Custom CSS Snippet )
+  * **Body** -> (This is called a Draftail Editor. This is the place where you can write some text that you want to get displayed on the web page. The icons here are self-explanatory. You can find more info [here](https://github.com/springload/draftail))
+  
+###### Image Block
+1. This will let you put an image on the webpage.
+2. When you click on it, it will open the following fields:
+  * **Image** -> (Click Choose Image which will let you choose an image from images available or let you upload a new one)
+  * **Caption** -> (If you want a text to be displayed below the image saying what is it, you can give it a caption. or you can leave blank)
+  * **Width** -> (Specify some width for the image. Should be an integer value between 10-1000 ideally. If you want to make it occupy the whole width. specify 100%. You can leave blank to get original image size.)
+  * **Height** -> (You can leave blank in most of the cases. If you specify, it should be an integer value between 10-1000. You can also specify 100% if you want it to take the entire height. )
+  * **Redirect URL** -> (You can specify a redirect link for the image so that when you click on the image, it will redirect to some other page. You can leave blank.)
+  * **Custom Class** -> (Refer to Paragraph Block custom class description)
+  
+###### Embed Block
+1. This will let you embed youtube videos.
+2. When you click on it, it will open the following fields:
+  * **Embed** -> (Go to youtube and click a video. Copy the url. Paste it here for the video to appear here)
+  * **Custom Class** -> (Refer to Paragraph Block custom class description)
+  
+###### Heading Block
+1. This will let you write heading text of 6 varying sizes (H1, H2, H3, H4, H5, H6).
+2. H1 is the biggest text. H6 is the smallest.
+3. Don't choose this block just to make text bigger. If you want to make text bigger. you can give a custom class name and head over to custom css and specify font-size.
+4. This block is used for the purpose of headings and sub-headings.
+5. When you click on it, it will open the following fields:
+  * **Heading Text** -> (Specify some heading text)
+  * **Select a Header Size** -> (Select one of H1-H6)
+  * **Custom Class** -> (Refer to Paragraph Block custom class description)
+  
+###### Bootstrap Jumbotron
+1. This will let you create a highlight part for the webpage similar to [this](https://getbootstrap.com/docs/4.1/components/jumbotron/). Usually kept on the top of a page.
+2. When you click on it, it will open the following fields:
+  * **Title** -> (Specify Title)
+  * **Body** -> (Specify description)
+  * **Button Text** -> (Specify button text if you want a button. otherwise leave blank and leave all the below button fields blank)
+  * **Button Link** -> (Specify button redirect link)
+  * **Button Color** -> (Select a button color.)
+  * **Button Size** -> (Select a button size)
+  * **Custom Class** -> (Refer to Paragraph Block custom class description)
+  
+###### Bootstrap Alert
+1. This will let you create an alert on the webpage similar to [this](https://getbootstrap.com/docs/4.1/components/alerts/)
+2. When you click on it, it will open the following fields.
+  * **Alert Text** -> (Specify some text to be displayed in alert)
+  * **Alert Color** -> (Select some color for the alert)
+  * **Is Link** -> (If the alert is a link. Tick this.)
+  * **Alert Link** -> (Specify alert redirect link)
+  * **Custom Class** -> (Refer to Paragraph Block custom class description)
+  
+###### Bootstrap Button
+1. This will let you create a bootstrap button on the webpage similar to [this](https://getbootstrap.com/docs/4.1/components/buttons/)
+2. When you click on it, it will open the following fields:
+  * **Button Text** -> (Specify button text if you want a button. otherwise leave blank and leave all the below button fields blank)
+  * **Button Link** -> (Specify button redirect link)
+  * **Button Color** -> (Select a button color.)
+  * **Button Size** -> (Select a button size)
+  * **Custom Class** -> (Refer to Paragraph Block custom class description)
+  
+###### Bootstrap Card
+1. This will let you create a bootstrap card on the webpage similar to [this](https://getbootstrap.com/docs/4.1/components/card/)
+2. When you click on it, it will open the following fields:
+  * **Card Width** -> (Leave blank if you want the card to take the width of the specified columns)
+  * **Is Card Img** -> (Tick it if card is displaying an image inside it.)
+  * **Card Img** -> (Click Choose Image which will let you choose an image from images available or let you upload a new one)
+  * **Card Img Width** -> (Specify some width for the image. Should be an integer value between 10-1000 ideally. If you want to make it occupy the whole width. specify 100%. You can leave blank to get original image size)
+  * **Card Img Height** -> (You can leave blank in most of the cases. If you specify, it should be an integer value between 10-1000. You can also specify 100% if you want it to take the entire height. )
+  * **Card Title** -> (Specify a Card Title)
+  * **Card text** -> (Specify a Card Body)
+  * **Card Bg Color** -> (Select a Card Color)
+  * **Card Text Color** -> (Select a color for the text on the card)
+  * **Button Text** -> (Specify button text if you want a button. otherwise leave blank and leave all the below button fields blank)
+  * **Button Link** -> (Specify button redirect link)
+  * **Button Color** -> (Select a button color.)
+  * **Custom Class** -> (Refer to Paragraph Block custom class description)
+  
+###### Bootstrap Carousel
+1. This will let you create a rotating image carousel on the webpage similar to [this](https://getbootstrap.com/docs/4.1/components/carousel/)
+2. When you click on it, it will open the following fields:
+  * **Cimage 1** -> (Click Choose Image which will let you choose an image from images available or let you upload a new one)
+  * **Cimage 1 title** -> (Choose a title caption to be displayed on the image)
+  * **Cimage 1 body** -> (Choose a body caption to be displayed on the image)
+  * **Custom Class** -> (Refer to Paragraph Block custom class description)
+3. Similary there are Cimage 2 through 5. So you can have a 5 image carousel at max. Always start with Cimage1 followed by Cimage2 and so on.
 
+###### Bootstrap Well
+1. This will let you create highlighted text. Use it to highlight something on a webpage. Refer to Bootstrap Alert for more functionality. 
+2. When you click on it, it will open the following fields:
+  * **Message** -> (Write some text you want to be highlighted)
+  * **Well Bg Color** -> (Select a color to make it background for the text)
+  * **Custom Class** -> (Refer to Paragraph Block custom class description)
+  
+###### Horizontal Rule
+1. This will let you create a horizontal line on the webpage. This is not a normal horizontal line. you can customize the thickness and color of it. Use it to separate rows if you like.
+2. When you click on it, it will open the following fields:
+  * **Thickness** -> (select a number between 1 and 10)
+  * **Bg color** -> (Give a hex code color for the line. You can select a hex color [here](https://www.w3schools.com/colors/colors_picker.asp))
+  * **Custom Class** -> (Refer to Paragraph Block custom class description)
+  
+###### Bootstrap Media Object
+1. This will let you create a media object on the webpage similar to [this](https://getbootstrap.com/docs/4.0/layout/media-object/)
+2. Use this item for describing a person, university etc. with an image and a description.
+3. When you click on it, it will open the following fields:
+  * **Media img** -> (Click Choose Image which will let you choose an image from images available or let you upload a new one)
+  * **Media img alt** -> (Create a text to be displayed if the image is not working for some reason)
+  * **Media img width** -> (Choose the width for the image. Leave blank if you choose.)
+  * **Media img height** -> (Choose the height for the image. Leave blank if you choose.)
+  * **Heading text** -> (Provide the text description for the media object. For example, person name)
+  * **Body Text** -> (Provide some body text for the media object. For example, person details)
+  * **Custom Class** -> (Refer to Paragraph Block custom class description)
 
-
- 
+###### Placeholder Block
+1. This is a block which doesn't contain any content. It just creates a space of given columns. Use it to align content properly.
+2. When you click on it, it will open the following fields:
+  * **Custom Class** -> (Give a bootstrap column for eg. col-md-3. This will leave a space of three columns in a row)
+  
+###### Font Awesome Icon Block
+1. This is a block which can make a font awesome icon of varying size.
+2. When you click on it, it will open the following fields:
+  * **Icon tag** -> (Head over to [font awesome website](https://fontawesome.com/icons?d=gallery) and select a free icon you like to be displayed on the web page. For eg. (fas fa-bell)
+  * **Icon Size** -> (Select an icon size as an integer value between 1 and 50)
+  * **Custom Class** -> (Refer to Paragraph Block custom class description)
+  
+###### IU Footer Block
+1. This is a block which can be used to make an iu footer.
+2. This is a unique block which mocks the Indiana University footer as shown [here](https://www.iu.edu)
+3. If you use this don't use the footer in the snippets. Alternatively, you can also go to the **Customization** tab of the page and set **Show Footer** to **No**
+4. When you click on it, it will open the following fields:
+  * **Footer Links** -> (Give the links you want to appear on the footer)
+  * **Custom class** -> (Refer to Paragraph Block custom class description)
   
 
-
-
+#### Modifying a Page content / Unpublishing a page
+1. Go to the page you want to modify by selecting the pages link on the dark side bar on the left.
+2. When you get to the page, Click "**pencil**" icon beside the page to visit the content of the page.
+3. Modify the content on the page by creating a row or adding items to a row. 
+4. Also, you can customize the page to make navbar, nav-extra and footer snippets not show up. 
+5. After you are done with changes, preview the page and publish it if it looks as you want it.
+6. If you published the page and you noticed some abnormalities and you want it to take it to the previous version, you hover over the page and find **MORE** link.
+7. Then click on the **revisions** link to visit all the previous revisions. Click on Preview to check if that was the previous state you want to return to.
+8. If that is the state, Click **Review this Revision** to visit the content page. Then Click **Publish** to publish the previous state of the page.
 
 #### Deleting a Page
+1. Go to the page you want to delete by selecting the pages link on the dark side bar on the left.
+2. When you get to the page, Click "**pencil**" icon beside the page to visit the content of the page.
+3. On the "**Pencil**" icon next to "**Save Draft**", click it and select "**DELETE** to delete the page.
+4. It will verify again whether you are 100% sure to delete that page. 
+5. Click "**Yes, Delete It**" to delete the page.
+6. If you just want the page not to be displayed on the live website. But you want to keep the page in the CMS. Click "**Unpublish**" instead of "**DELETE**". This will ensure that the page doesn't get completely deleted. If you want to publish in the future, you can do it.
 
 
 
-#### Modifying a Page content
+
 
