@@ -93,6 +93,8 @@ export OAUTHLIB_INSECURE_TRANSPORT=1
 2. Developers will update this list in the future if they see fit. so please be on look out for any new items in the future.
 3. Lets get to the details of each item.
 
+![PANEL](https://github.com/stephenpaul2727/airavata-django-portal/blob/cms/docimages/panel.png)
+
 ###### Paragraph Block
 1. This is the most important item of all the items in the panel.
 2. This will let you create a paragraph/text on the website.
