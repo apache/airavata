@@ -155,6 +155,7 @@ threadpool.size=10
 start.submitter=true
 embedded.mode=true
 enable.validation=true
+host.scheduler=org.apache.airavata.gfac.impl.DefaultHostScheduler
 
 ###########################################################################
 #  Registry Server Configurations
@@ -269,7 +270,7 @@ experiment.launch..queue.name=experiment.launch.queue
 # Zookeeper Server Configuration
 ###########################################################################
 embedded.zk=false
-zookeeper.server.connection={{ zookeeper_url }}
+zookeeper.server.connection={{ zookeeper_connection_url }}
 zookeeper.timeout=30000
 
 ########################################################################

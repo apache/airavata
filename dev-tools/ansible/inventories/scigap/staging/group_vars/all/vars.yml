@@ -59,7 +59,7 @@ rabbitmq_broker_url: "amqp://{{ rabbitmq_user }}:{{ rabbitmq_password }}@{{ rabb
 
 # Zoookeeper related variables
 zookeeper_client_port: 2181
-zookeeper_url: "{{ groups['zookeeper'][0] }}:{{ zookeeper_client_port }}"
+zookeeper_connection_url: "{{ groups['zookeeper'][0] }}:{{ zookeeper_client_port }}"
 
 # API Server related variables
 api_server_name: "apiserver-node0"
@@ -138,3 +138,25 @@ keycloak_db_username: "keycloak"
 keycloak_db_password: "{{ vault_keycloak_db_password }}"
 keycloak_master_account_username: "AiravataAdmin"
 keycloak_master_account_password: "{{ vault_keycloak_master_account_password }}"
+
+# Helix
+helix_version: 0.7.1
+helix_url: http://www-eu.apache.org/dist//helix/{{helix_version}}/binaries/helix-core-{{helix_version}}-pkg.tar
+helix_dir: "{{ deployment_dir }}/airavata-helix"
+helix_cluster_name: "AiravataDemoCluster"
+snapshot_version: "0.17-SNAPSHOT"
+
+# Listening port for kafka installations
+kafka_listener_port: 9092
+kafka_rest_proxy_listener_port: 8082
+
+# Realtime Monitoring related variables
+realtime_monitor_broker_url: "{{ groups['kafka'][0] }}:{{ kafka_listener_port }}"
+realtime_monitor_broker_publisher: "RealtimeProducer"
+realtime_monitor_broker_consumer_group: "monitor"
+realtime_monitor_broker_topic: "helix-airavata-mq"
+
+# Variables related to the broker in which parsed job statuses are published
+job_monitor_broker_url: "{{ groups['kafka'][0] }}:{{ kafka_listener_port }}"
+job_monitor_broker_topic: "parsed-data"
+job_monitor_broker_consumer_group: "MonitoringConsumer"

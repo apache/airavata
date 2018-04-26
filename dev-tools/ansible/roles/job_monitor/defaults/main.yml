@@ -35,15 +35,15 @@ email_job_monitor_broker_publisher: "EmailBasedProducer"
 realtime_monitor_version: "realtime-monitor-{{ snapshot_version }}"
 realtime_monitor_dist_name: "{{ realtime_monitor_version }}-bin.tar.gz"
 realtime_monitor_log_dir: "{{ helix_dir }}/{{ realtime_monitor_version }}/logs"
-realtime_job_monitor_broker_publisher: "RealtimeProducer"
+realtime_monitor_broker_publisher: "RealtimeProducer"
 realtime_monitor_broker_consumer_group: "monitor"
 realtime_monitor_broker_topic: "helix-airavata-mq"
 
 job_monitor_broker_topic: "parsed-data"
 
 # kafka related variables
-kafka_broker_topic: "parsed-data"
-kafka_broker_consumer_group: "MonitoringConsumer"
+job_monitor_broker_topic: "parsed-data"
+job_monitor_broker_consumer_group: "MonitoringConsumer"
 
 helix_log_max_history: 30
 helix_log_total_size_cap: "1GB"

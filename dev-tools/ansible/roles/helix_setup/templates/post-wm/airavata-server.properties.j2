@@ -25,9 +25,9 @@ regserver.server.port={{ registry_port }}
 ###########################################################################
 # Helix workflow manager configurations
 ###########################################################################
-kafka.broker.url={{ kafka_broker_url }}
-kafka.broker.topic={{ kafka_broker_topic }}
-kafka.broker.consumer.group={{ kafka_broker_consumer_group }}
+kafka.broker.url={{ job_monitor_broker_url }}
+kafka.broker.topic={{ job_monitor_broker_topic }}
+kafka.broker.consumer.group={{ job_monitor_broker_consumer_group }}
 helix.cluster.name={{ helix_cluster_name }}
 post.workflow.manager.name={{ helix_post_wm_name }}
 
@@ -50,5 +50,5 @@ experiment.launch..queue.name=experiment.launch.queue
 ###########################################################################
 # Zookeeper Server Configuration
 ###########################################################################
-zookeeper.server.connection={{ zookeeper_url }}
+zookeeper.server.connection={{ zookeeper_connection_url }}
 zookeeper.timeout=30000

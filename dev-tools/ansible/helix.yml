@@ -19,18 +19,13 @@
 #
 
 ---
-
-- hosts: zookeeper
-  tags: zookeeper, airavata
-  roles:
-    - env_setup
-    - java
-    - zookeeper
-
 - hosts: kafka
   tags: kafka, airavata
   roles:
     - env_setup
+    - role: common
+      become: yes
+      become_user: "{{user}}"
     - zookeeper
     - kafka
 
@@ -46,5 +41,4 @@
     - role: job_monitor
       become: yes
       become_user: "{{user}}"
-
 ...
